@@ -1,17 +1,12 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/reservationpage.dart';
 import 'package:dashboard_new1/tabbarview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
-
-import '../../component/textStyle.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
-import 'booking_table.dart';
+import 'dashboard/F3_alert.dart';
 import 'dashboard/defult_dashboard_view.dart';
 
 class DashBoarScreen extends StatefulWidget {
@@ -24,8 +19,8 @@ class DashBoarScreen extends StatefulWidget {
 }
 
 class _DashBoarScreenState extends State<DashBoarScreen> {
-
-  final DashboardController locationCtrl = Get.put(DashboardController());
+  final dashBoardCntrl = Get.find<DashboardController>();
+  // final DashboardController locationCtrl = Get.put(DashboardController());
   String? selectedValue;
   String selectedJourneyType = 'Journey Type';
   String selectedVehicleType = 'Saloon';
@@ -53,6 +48,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   int dropdownIndex = 0;
   bool isDropdownOpen = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +63,18 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
+      // Debug print key pressed
+      print("Pressed key: ${event.logicalKey}");
+      print("Key label: ${event.logicalKey.keyLabel}");
+      if(event.logicalKey.keyLabel == "F#"){
+        dashBoardCntrl.shortCutKeyValue.value = "alert";
+      }
+      if(event.logicalKey.keyLabel == "Escape" &&
+          dashBoardCntrl.shortCutKeyValue.value == "alert"){
+        dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+      }
+      }
+    if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value != "alert") {
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         setState(() {
           selectedIndex = (selectedIndex + 1) % menus.length;
@@ -111,210 +119,242 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       }
     }
   }
+  FocusNode _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      backgroundColor: Color(0xFFEEF0F3),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                // Column(
-                //   children: [
-                 /* TopNavBar(
-                      onMenuSelect: (String value) {
-                        setState(() {
-                          if (selectedTexts.contains(value)) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("⚠ '$value' is already selected."),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          } else if (selectedTexts.length < 20) {
-                            selectedTexts.add(value);
-                            limitReached = false;
-                          } else {
-                            limitReached = true;
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("⚠ You opened too many tabs."),
-                                backgroundColor: Colors.red,
-                                behavior: SnackBarBehavior.floating,
-                                duration: Duration(seconds: 3),
-                              ),
-                            );
-                          }
-                        });
-                      },
-                    ),*/
-                Container(
-                  color: const Color(0xFF43489A),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  height: 60,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        const Text(
-                          "NEXUS",
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
-                        ),
-                        const SizedBox(width: 20),
-                        for (int i = 0; i < menus.length; i++)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  if (selectedIndex == i) {
-                                    isDropdownOpen = !isDropdownOpen;
-                                  } else {
-                                    selectedIndex = i;
-                                    isDropdownOpen = true;
-                                  }
-                                });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: selectedIndex == i ? Colors.white24 : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(menus[i].icon, color: Colors.white, size: 16),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      menus[i].label,
-                                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                                    ),
-                                  ],
+    return RawKeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKey: (RawKeyEvent event) {
+        if (event is RawKeyDownEvent) {
+          final key = event.logicalKey;
+          print('Pressed key: ${key.debugName}'); // e.g., "F1"
+          print('Key code: ${event.data}'); // e.g., 112 (optional for fine-tuned web detection)
+        if(key.debugName == "F3"){
+          dashBoardCntrl.shortCutKeyValue.value = "alert";
+          // set up the AlertDialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                scrollable: true,
+
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(AppText.driverInfo),
+                    GestureDetector(
+                        onTap: (){
+                          dashBoardCntrl.shortCutKeyValue.value = "arrow";
+                          Get.back();
+                        },
+                        child: Icon(Icons.close)),
+                  ],
+                ),
+                content: F3AlertWidget(),
+                actions: [
+                  // cancelButton,
+                  // continueButton,
+                ],
+              );
+            },
+          ).then((result) {
+            dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+            print("Alert closed");
+            print("Close reason: $result");
+            // Yahan aap custom action le sakte ho
+          });
+        }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Color(0xFFEEF0F3),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    color: const Color(0xFF43489A),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 60,
+                    width: Get.width,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          const Text(
+                            "NEXUS",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
+                          ),
+                          const SizedBox(width: 20),
+                          for (int i = 0; i < menus.length; i++)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedIndex == i) {
+                                      isDropdownOpen = !isDropdownOpen;
+                                    } else {
+                                      selectedIndex = i;
+                                      isDropdownOpen = true;
+                                    }
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: selectedIndex == i ? Colors.white24 : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(menus[i].icon, color: Colors.white, size: 16),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        menus[i].label,
+                                        style: const TextStyle(color: Colors.white, fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width/7.3,
                           ),
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Colors.cyanAccent.shade400,
+                            child: Icon(Icons.email, color: DynamicColors.whiteClr),
+                          ),
+                          SizedBox(width: 15),
+                          Icon(Icons.notifications, color: Colors.cyanAccent.shade400),
+                          SizedBox(width: 15),
+                          Icon(Icons.power_settings_new, color: Colors.red),
+                          SizedBox(width: 15),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: screenWidth,
+                    padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
+                    color: Colors.grey.shade300,
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        // Home icon container
+                        Container(
+                          padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: DynamicColors.primaryClr,
+                            border: Border.all(color: DynamicColors.textClr),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                            Icons.home,
+                            color: DynamicColors.whiteClr,
+                          ),
+                        ),
+
+                        // Dynamic selected tabs
+                        ...selectedTexts.map((text) {
+                          return Container(
+                            padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(text, style: TextStyle(fontSize: 16)),
+                                SizedBox(width: 5),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedTexts.remove(text);
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.cancel,
+                                    color: Color(0xFF43489A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
                       ],
                     ),
                   ),
-                ),
-                Container(
-                  width: screenWidth,
-                  padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
-                  color: Colors.grey.shade300,
-                  child: Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: [
-                      // Home icon container
-                      Container(
-                        padding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: DynamicColors.primaryClr,
-                          border: Border.all(color: DynamicColors.textClr),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Icon(
-                          Icons.home,
-                          color: DynamicColors.whiteClr,
-                        ),
-                      ),
+                  //   ],
+                  // ),
+                  getSelectedWidget(
 
-                      // Dynamic selected tabs
-                      ...selectedTexts.map((text) {
-                        return Container(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(text, style: TextStyle(fontSize: 16)),
-                              SizedBox(width: 5),
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedTexts.remove(text);
-                                  });
-                                },
-                                child: Icon(
-                                  Icons.cancel,
-                                  color: Color(0xFF43489A),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ],
                   ),
-                ),
-                //   ],
-                // ),
-                getSelectedWidget(),
-                // ),
-              ],
-            ),
-            // 🔽 Dropdown - Show only if open
-            if (isDropdownOpen)
-              Column(
-                children: [
-                  SizedBox(
-                    height: 70,
-                  ),
-                  Material(
-                    elevation: 4,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        maxHeight: 300,
-                        minWidth: 160,
-                        maxWidth: 300,
-                      ),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: menus[selectedIndex].subItems.length,
-                        itemBuilder: (context, j) {
-                          return Container(
-                            color: dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
-                            child: ListTile(
-                              title: Text(
-                                menus[selectedIndex].subItems[j],
-                                style: TextStyle(
-                                  color: dropdownIndex == j ? Colors.white : Colors.black,
-                                ),
-                              ),
-                              onTap: () {
-                                widget.onSelect?.call(menus[selectedIndex].subItems[j]);
-                                setState(() {
-                                  isDropdownOpen = false;
-                                });
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
+                  // ),
                 ],
               ),
-          ],
+              // 🔽 Dropdown - Show only if open
+              if (isDropdownOpen)
+                Column(
+                  children: [
+                    SizedBox(
+                      height: 70,
+                    ),
+                    Material(
+                      elevation: 4,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          // maxHeight: 300,
+                          minWidth: 160,
+                          maxWidth: 300,
+                        ),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: menus[selectedIndex].subItems.length,
+                          itemBuilder: (context, j) {
+                            return Container(
+                              color: dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
+                              child: ListTile(
+                                title: Text(
+                                  menus[selectedIndex].subItems[j],
+                                  style: TextStyle(
+                                    color: dropdownIndex == j ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                                onTap: () {
+                                  widget.onSelect?.call(menus[selectedIndex].subItems[j]);
+                                  setState(() {
+                                    isDropdownOpen = false;
+                                  });
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
 
   }
 
-  Widget getSelectedWidget() {
+  Widget getSelectedWidget({GestureTapCallback? onTap}) {
     if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {

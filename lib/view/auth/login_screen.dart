@@ -43,6 +43,7 @@ class LoginScreen extends StatelessWidget {
               height: 35,
             ),
             CustomButton(
+                verticalPadding: 0.0,
               onTap: (){
                 Get.offAllNamed(Routes.dashBoarScreen);
               },

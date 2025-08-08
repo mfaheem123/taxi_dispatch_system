@@ -16,12 +16,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: "Nexus Tech",
       theme: ThemeData(
-
-
       ),
-
-
-
 
       initialRoute: AppPages.initial,
       debugShowCheckedModeBanner: false,

@@ -76,9 +76,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                           children: [
                             Text(AppText.pick,
                             style: mozillaTextSemiBoldText(
+                              context: context,
                               fontSize: 16,
-
-                                latterSpacing: 1.0
                             ),
                             ),
                             SizedBox(
@@ -242,9 +241,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                           CrossAxisAlignment.center,
                           children: [
                             Text(AppText.drop,
-                              style: mozillaTextSemiBoldText(
+                              style: mozillaTextSemiBoldText(context: context,
                                   fontSize: 16,
-                                  latterSpacing: 1.0
                               ),
                             ),
                             SizedBox(
@@ -718,9 +716,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                            child: Row(
                              children: [
                                Text(AppText.name,
-                                 style: mozillaTextSemiBoldText(
+                                 style: mozillaTextSemiBoldText( context: context,
                                      fontSize: 16,
-                                     latterSpacing: 1.0
                                  ),
                                ),
                                SizedBox(
@@ -749,9 +746,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                 width: 25,
                               ),
                               Text(AppText.email,
-                                style: mozillaTextSemiBoldText(
+                                style: mozillaTextSemiBoldText( context: context,
                                     fontSize: 16,
-                                    latterSpacing: 1.0
                                 ),
                               ),
                               SizedBox(
@@ -780,9 +776,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                 width: 25,
                               ),
                               Text(AppText.mobile,
-                                style: mozillaTextSemiBoldText(
+                                style: mozillaTextSemiBoldText( context: context,
                                     fontSize: 16,
-                                    latterSpacing: 1.0
                                 ),
                               ),
                               SizedBox(
@@ -811,9 +806,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               width: 25,
                             ),
                             Text(AppText.tel,
-                              style: mozillaTextSemiBoldText(
+                              style: mozillaTextSemiBoldText( context: context,
                                   fontSize: 16,
-                                  latterSpacing: 1.0
                               ),
                             ),
                             SizedBox(
@@ -853,9 +847,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                            child: Row(
                              children: [
                                Text(AppText.date,
-                                 style: mozillaTextSemiBoldText(
+                                 style: mozillaTextSemiBoldText( context: context,
                                      fontSize: 16,
-                                     latterSpacing: 1.0
                                  ),
                                ),
                                SizedBox(
@@ -876,9 +869,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                width: 25,
                              ),
                              Text(AppText.time,
-                               style: mozillaTextSemiBoldText(
+                               style: mozillaTextSemiBoldText( context: context,
                                    fontSize: 16,
-                                   latterSpacing: 1.0
                                ),
                              ),
                              SizedBox(
@@ -899,9 +891,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                  width: 25,
                                ),
                                Text(AppText.lead,
-                                 style: mozillaTextSemiBoldText(
+                                 style: mozillaTextSemiBoldText( context: context,
                                      fontSize: 16,
-                                     latterSpacing: 1.0
                                  ),
                                ),
                                SizedBox(
@@ -931,9 +922,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                  width: 25,
                                ),
                                Text(AppText.jour,
-                                 style: mozillaTextSemiBoldText(
+                                 style: mozillaTextSemiBoldText( context: context,
                                      fontSize: 16,
-                                     latterSpacing: 1.0
                                  ),
                                ),
                                SizedBox(
@@ -1160,9 +1150,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             child: Row(
                               children: [
                                 Text(AppText.jour,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                                 SizedBox(
@@ -1210,9 +1199,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                   width: 10,
                                 ),
                                 Text(AppText.quotation,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                               ],
@@ -1230,9 +1218,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               //   width: 10,
                               // ),
                               Text(AppText.sms,
-                                style: mozillaTextSemiBoldText(
+                                style: mozillaTextSemiBoldText( context: context,
                                     fontSize: 16,
-                                    latterSpacing: 1.0
                                 ),
                               ),
 
@@ -1249,9 +1236,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               }
                               ),
                               Text(AppText.email,
-                                style: mozillaTextSemiBoldText(
+                                style: mozillaTextSemiBoldText( context: context,
                                     fontSize: 16,
-                                    latterSpacing: 1.0
                                 ),
                               ),
                               SizedBox(width: 35,)
@@ -1327,9 +1313,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             child: Row(
                               children: [
                                 Text(AppText.pay,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                                 SizedBox(
@@ -1360,9 +1345,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             child: Row(
                               children: [
                                 Text(AppText.pay,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                                 SizedBox(
@@ -1743,9 +1727,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             child: Row(
                               children: [
                                 Text(AppText.drv,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                                 SizedBox(
@@ -1773,9 +1756,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             child: Row(
                               children: [
                                 Text(AppText.fare,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                       fontSize: 16,
-                                      latterSpacing: 1.0
                                   ),
                                 ),
                                 SizedBox(
@@ -1924,7 +1906,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     btnColor: DynamicColors.redClr,
                                     borderRadius: 3,
                                     verticalPadding: 0,
-                                    style: mozillaTextSemiBoldText(
+                                    style: mozillaTextSemiBoldText( context: context,
                                       color: DynamicColors.whiteClr,
                                       fontSize: 10,
                                       fontWeight: FontWeight.w800
@@ -1940,7 +1922,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     height: 30,
                                   borderRadius: 3,
                                   verticalPadding: 0,
-                                  style: mozillaTextSemiBoldText(
+                                  style: mozillaTextSemiBoldText( context: context,
                                     color: DynamicColors.whiteClr,
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800

@@ -14,6 +14,7 @@ class DashboardController extends GetxController {
   String selectedAccountType = 'Account';
   String selectedPaymentMethod = 'Cash';
   String selectedDriver = 'Select Driver';
+  RxString shortCutKeyValue = 'alert'.obs;
 
   ///bool
 
@@ -28,6 +29,8 @@ class DashboardController extends GetxController {
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = false.obs;
   RxBool emailCheckbox = false.obs;
+  RxBool hideDashBoard = true.obs;
+
 
   ///Todo booking form data
 

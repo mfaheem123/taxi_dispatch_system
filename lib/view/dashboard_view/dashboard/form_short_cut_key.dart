@@ -32,7 +32,7 @@ class FormShortCutKey extends StatelessWidget {
             children: [
               Text(AppText.booking,
                 style: mozillaTextSemiBoldText(
-                    latterSpacing: 1.0,
+                  context: context,
                     fontSize: 14,
                     color: DynamicColors.whiteClr
                 ),

@@ -54,3 +54,8 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
+
+onKeyBoardEnter({GestureTapCallback? onTap}) {
+  return onTap;
+  // Yahan aap apna existing onTap wala function call kar do
+}

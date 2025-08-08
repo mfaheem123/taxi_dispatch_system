@@ -26,5 +26,12 @@ class AppText{
   static get veh => "VEH";
   static get drv => "DRV";
   static get fare => "FARE";
+  static get driverInfo => "DRIVER INFORMATION";
+  static get vehicle => "VEHICLE #";
+  static get make => "MAKE";
+  static get clr => "COLOR";
+  static get vehicleType => "VEHICLE TYPE";
+  static get model => "MODEL";
+  static get mobileNo => "Mobile #";
   static get welcomeText => "WELCOME TO YOUR DASHBOARD...!";
 }
