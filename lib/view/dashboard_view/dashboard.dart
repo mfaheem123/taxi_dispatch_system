@@ -40,101 +40,100 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFEEF0F3),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Column(
-              //   children: [
-              TopNavBar(
-                onMenuSelect: (String value) {
-                  setState(() {
-                    if (selectedTexts.contains(value)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("⚠ '$value' is already selected."),
-                          backgroundColor: Colors.red,
-                          behavior: SnackBarBehavior.floating,
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    } else if (selectedTexts.length < 20) {
-                      selectedTexts.add(value);
-                      limitReached = false;
-                    } else {
-                      limitReached = true;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("⚠ You opened too many tabs."),
-                          backgroundColor: Colors.red,
-                          behavior: SnackBarBehavior.floating,
-                          duration: Duration(seconds: 3),
-                        ),
-                      );
-                    }
-                  });
-                },
-              ),
-              Container(
-                width: screenWidth,
-                padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
-                color: Colors.grey.shade300,
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    // Home icon container
-                    Container(
+        child:  Column(
+          children: [
+            // Column(
+            //   children: [
+             /* TopNavBar(
+                  onMenuSelect: (String value) {
+                    setState(() {
+                      if (selectedTexts.contains(value)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("⚠ '$value' is already selected."),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      } else if (selectedTexts.length < 20) {
+                        selectedTexts.add(value);
+                        limitReached = false;
+                      } else {
+                        limitReached = true;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("⚠ You opened too many tabs."),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                ),*/
+            TopNavBarss(),
+            Container(
+              width: screenWidth,
+              padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
+              color: Colors.grey.shade300,
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  // Home icon container
+                  Container(
+                    padding:
+                    EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: DynamicColors.primaryClr,
+                      border: Border.all(color: DynamicColors.textClr),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Icon(
+                      Icons.home,
+                      color: DynamicColors.whiteClr,
+                    ),
+                  ),
+
+                  // Dynamic selected tabs
+                  ...selectedTexts.map((text) {
+                    return Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                      EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                       decoration: BoxDecoration(
-                        color: DynamicColors.primaryClr,
-                        border: Border.all(color: DynamicColors.textClr),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Icon(
-                        Icons.home,
-                        color: DynamicColors.whiteClr,
-                      ),
-                    ),
-
-                    // Dynamic selected tabs
-                    ...selectedTexts.map((text) {
-                      return Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(text, style: TextStyle(fontSize: 16)),
-                            SizedBox(width: 5),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedTexts.remove(text);
-                                });
-                              },
-                              child: Icon(
-                                Icons.cancel,
-                                color: Color(0xFF43489A),
-                              ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(text, style: TextStyle(fontSize: 16)),
+                          SizedBox(width: 5),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedTexts.remove(text);
+                              });
+                            },
+                            child: Icon(
+                              Icons.cancel,
+                              color: Color(0xFF43489A),
                             ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ],
-                ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
-              //   ],
-              // ),
-              getSelectedWidget(),
-              // ),
-            ],
-          ),
+            ),
+            //   ],
+            // ),
+            getSelectedWidget(),
+            // ),
+          ],
         ),
       ),
     );
