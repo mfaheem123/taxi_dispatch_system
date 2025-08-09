@@ -43,6 +43,7 @@ dependencies:
   popup_menu_plus: ^0.0.6
   table_calendar: ^3.2.0
   flutter_advanced_switch: ^3.1.0
+  data_table_2: ^2.6.0
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,10 @@ flutter:
     - family: MozillaText-SemiBold
       fonts:
         - asset: assets/font-family/MozillaText-SemiBold.ttf
+
+    - family: MozillaText-Regular
+      fonts:
+        - asset: assets/font-family/MozillaText-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

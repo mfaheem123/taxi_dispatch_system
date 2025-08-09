@@ -1,6 +1,7 @@
 
 
 
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -92,7 +93,7 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
             },
             child: Container(
               width:widget.containerWidth?? 250,
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.only(top: 6,bottom: 6,left: 3),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.grey),
                 borderRadius: BorderRadius.circular(8),
@@ -101,6 +102,10 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
                 widget.items.isNotEmpty
                     ? widget.items[_selectedIndex]
                     : "No Data",
+                style: mozillaTextRegularText(
+                  fontSize: 13,
+
+                ),
               ),
             ),
           ),

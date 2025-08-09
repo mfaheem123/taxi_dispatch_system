@@ -12,12 +12,15 @@ import 'package:intl/intl.dart';
 import 'package:popup_menu_plus/popup_menu_plus.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../../../component/calender.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/via_location.dart';
 import 'focusable_text_button.dart';
 import 'form_short_cut_key.dart';
+
+import 'package:table_calendar/table_calendar.dart';
 
 class BookingFormWidget extends StatefulWidget {
   BookingFormWidget({super.key});
@@ -66,173 +69,126 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                   policy: OrderedTraversalPolicy(),
                   child: Column(
                     children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                          children: [
-                            Text(AppText.pick,
-                            style: mozillaTextSemiBoldText(
-                              context: context,
-                              fontSize: 16,
-                            ),
-                            ),
-                            SizedBox(
-                              width: 25,
-                            ),
-                            SizedBox(
-                              width: Get.width/4.5,
-                              height: 35,
-                              child: RawKeyboardListener(
-                                // focusNode: locationCtrl.keyboardFocusNode,
-                                focusNode: locationCtrl
-                                    .pickupKeyboardFocusNode,
-                                onKey: (event) {
-                                  if (event
-                                  is RawKeyDownEvent) {
-                                    if (event
-                                        .logicalKey ==
-                                        LogicalKeyboardKey
-                                            .arrowDown) {
-                                      if (locationCtrl
-                                          .highlightedIndex
-                                          .value <
-                                          locationCtrl
-                                              .suggestions
-                                              .length -
-                                              1) {
-                                        locationCtrl
-                                            .highlightedIndex
-                                            .value++;
-                                      }
-                                    } else if (event
-                                        .logicalKey ==
-                                        LogicalKeyboardKey
-                                            .arrowUp) {
-                                      if (locationCtrl
-                                          .highlightedIndex
-                                          .value >
-                                          0) {
-                                        locationCtrl
-                                            .highlightedIndex
-                                            .value--;
-                                      }
-                                    } else if (event
-                                        .logicalKey ==
-                                        LogicalKeyboardKey
-                                            .enter) {
-                                      final selected =
-                                      locationCtrl
-                                          .suggestions[
-                                      locationCtrl
-                                          .highlightedIndex
-                                          .value];
-                                      locationCtrl
-                                          .selectSuggestion(
-                                          selected);
-                                    }
-                                  }
-                                },
-                                child: Focus(
-                                  focusNode: locationCtrl
-                                      .pickupFocusNode, // <-- NEW
-                                  onFocusChange:
-                                      (hasFocus) {
-                                    if (hasFocus) {
-                                      locationCtrl
-                                          .activeFieldKey
-                                          .value =
-                                          locationCtrl
-                                              .pickupFieldKey;
-                                    }
-                                  },
-                                  child: SizedBox(
-                                    height: 40,
-                                    child: CustomTextField(
-                                      key: locationCtrl
-                                          .pickupFieldKey,
-                                      borderRadius: 4,
-                                      contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                      controller: controller
-                                          .PickupController,
-                                      focusNode: locationCtrl
-                                          .pickupTextFieldFocusNode,
-                                      onChanged: locationCtrl
-                                          .onInputChanged,
-                                      prefixIcon: Icon(
-                                          Icons
-                                              .location_pin,
-                                          color: Colors
-                                              .red),
-                                      labelText:
-                                      'PickUP Location',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  String temPic = controller
-                                      .PickupController.text;
-                                  String temDrop = locationCtrl
-                                      .DropoffController.text;
-                                  controller
-                                      .PickupController.text = temDrop;
-                                  locationCtrl
-                                      .DropoffController.text = temPic;
-                                  controller.update();
-                                },
-                                icon: Icon(
-                                    Icons
-                                        .swap_vert,
-                                    color: Color(
-                                        0xFF575797),
-                                    size: 21)),
-                            // ),
-                            GestureDetector(
-                              onTap: (){
-
-                              },
-                              child: GestureDetector(
-
-                                child: SizedBox(
-                                  width: Get.width/13,
-                                  height: 35,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
-                                        border: Border.all(color: DynamicColors.primaryClr)
-                                    ),
-                                    child: buildMenuTab(Icons.book_online, "Select Plot", "Select Plot",
-                                        ["BASE NE7", "WILLESDEN",], bookingKey),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: SizedBox(
-                                width: Get.width/13,
-                                height: 35,
-                                child: CustomTextField(
-                                  borderRadius: 4,
-                                  controller: TextEditingController(),
-                                ),
-                              ),
-                            ),
-
-                            // ),
-                          ],
+                    SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Label
+                        Text(
+                          AppText.pick,
+                          style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 16,
+                          ),
                         ),
-                      ),
-                      SizedBox(
+                        const SizedBox(width: 20),
+
+                        // Pickup Location Input with Keyboard Support
+                        SizedBox(
+                          width: Get.width / 4.5,
+                          height: 40,
+                          child: RawKeyboardListener(
+                            focusNode: locationCtrl.pickupKeyboardFocusNode,
+                            onKey: (event) {
+                              if (event is RawKeyDownEvent) {
+                                if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                                    locationCtrl.highlightedIndex.value <
+                                        locationCtrl.suggestions.length - 1) {
+                                  locationCtrl.highlightedIndex.value++;
+                                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp &&
+                                    locationCtrl.highlightedIndex.value > 0) {
+                                  locationCtrl.highlightedIndex.value--;
+                                } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                  final selected = locationCtrl
+                                      .suggestions[locationCtrl.highlightedIndex.value];
+                                  locationCtrl.selectSuggestion(selected);
+                                }
+                              }
+                            },
+                            child: Focus(
+                              focusNode: locationCtrl.pickupFocusNode,
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  locationCtrl.activeFieldKey.value =
+                                      locationCtrl.pickupFieldKey;
+                                }
+                              },
+                              child: CustomTextField(
+                                key: locationCtrl.pickupFieldKey,
+                                borderRadius: 6,
+                                contentPadding:
+                                const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                controller: controller.PickupController,
+                                focusNode: locationCtrl.pickupTextFieldFocusNode,
+                                onChanged: locationCtrl.onInputChanged,
+                                prefixIcon: const Icon(Icons.location_pin, color: Colors.red),
+                                labelText: 'PickUP Location',
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Swap Button
+                        IconButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(Colors.grey.shade100),
+                            shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            )),
+                          ),
+                          onPressed: () {
+                            String temPic = controller.PickupController.text;
+                            String temDrop = locationCtrl.DropoffController.text;
+                            controller.PickupController.text = temDrop;
+                            locationCtrl.DropoffController.text = temPic;
+                            controller.update();
+                          },
+                          icon: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 21),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Select Plot Button
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              height: 40,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                              ),
+                              child: Center(
+                                child: buildMenuTab(Icons.book_online, "Select Plot", "Select Plot",
+                                    ["BASE NE7", "WILLESDEN"], bookingKey),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Extra Text Field
+                        SizedBox(
+                          width: Get.width / 13,
+                          height: 40,
+                          child: CustomTextField(
+                            borderRadius: 6,
+                            controller: TextEditingController(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      SingleChildScrollView(
+                      /*SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           mainAxisAlignment:
@@ -388,8 +344,124 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             // ),
                           ],
                         ),
-                      ),
-                      SizedBox(
+                      ),*/
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Label
+                        Text(
+                          AppText.drop,
+                          style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+
+                        // Dropoff Location Input with Keyboard Support
+                        SizedBox(
+                          width: Get.width / 4.5,
+                          height: 40,
+                          child: RawKeyboardListener(
+                            focusNode: locationCtrl.dropoffKeyboardFocusNode,
+                            onKey: (event) {
+                              if (event is RawKeyDownEvent) {
+                                if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                                    locationCtrl.highlightedIndex.value <
+                                        locationCtrl.suggestions.length - 1) {
+                                  locationCtrl.highlightedIndex.value++;
+                                } else if (event.logicalKey == LogicalKeyboardKey.arrowUp &&
+                                    locationCtrl.highlightedIndex.value > 0) {
+                                  locationCtrl.highlightedIndex.value--;
+                                } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                  final selected = locationCtrl
+                                      .suggestions[locationCtrl.highlightedIndex.value];
+                                  locationCtrl.selectSuggestion(selected);
+                                }
+                              }
+                            },
+                            child: Focus(
+                              focusNode: locationCtrl.dropoffFocusNode,
+                              onFocusChange: (hasFocus) {
+                                if (hasFocus) {
+                                  locationCtrl.activeFieldKey.value =
+                                      locationCtrl.dropoffFieldKey;
+                                }
+                              },
+                              child: CustomTextField(
+                                key: locationCtrl.dropoffFieldKey,
+                                borderRadius: 6,
+                                contentPadding:
+                                const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                                controller: controller.DropoffController,
+                                focusNode: locationCtrl.dropoffTextFieldFocusNode,
+                                onChanged: locationCtrl.onInputChanged,
+                                prefixIcon: const Icon(Icons.location_pin, color: Colors.red),
+                                labelText: 'Drop Location',
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Swap Button
+                        IconButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStateProperty.all(Colors.grey.shade100),
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                            ),
+                          ),
+                          onPressed: () {
+                            String temPic = controller.PickupController.text;
+                            String temDrop = locationCtrl.DropoffController.text;
+                            controller.PickupController.text = temDrop;
+                            locationCtrl.DropoffController.text = temPic;
+                            controller.update();
+                          },
+                          icon: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 21),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Select Plot Button
+                        MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              height: 40,
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                              ),
+                              child: Center(
+                                child: buildMenuTab(Icons.book_online, "Select Plot", "Select Plot",
+                                    ["BASE NE7", "WILLESDEN"], bookingDropKey),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        // Extra Text Field
+                        SizedBox(
+                          width: Get.width / 13,
+                          height: 40,
+                          child: CustomTextField(
+                            borderRadius: 6,
+                            controller: TextEditingController(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
                         height: screenHeight * 0.01,
                       ),
                       if (dashboardController.selectedJourneyType ==
@@ -706,7 +778,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       ),
 
 
-                      Row(
+                   /*   Row(
                         mainAxisAlignment:
                         MainAxisAlignment.start,
                         crossAxisAlignment:
@@ -830,13 +902,24 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         ),
                       )
                         ],
-                      ),
+                      ),*/
 
+                      Wrap(
+                        spacing: 25, // horizontal gap
+                        runSpacing: 15, // vertical gap when wrapped
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          _buildField(context, AppText.name),
+                          _buildField(context, AppText.email),
+                          _buildField(context, AppText.mobile),
+                          _buildField(context, AppText.tel),
+                        ],
+                      ),
 
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      Row(
+                  /*    Row(
                         mainAxisAlignment:
                         MainAxisAlignment.start,
                         crossAxisAlignment:
@@ -949,8 +1032,70 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                          ),
 
                         ],
-                      ),
-
+                      ),*/
+        Wrap(
+        spacing: 25, // horizontal gap
+        runSpacing: 15, // vertical gap
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+        _buildFielddd(
+        context,
+        AppText.date,
+        CalendarDropdown(),
+        ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppText.time,
+                style: mozillaTextSemiBoldText(
+                  context: context,
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(width: 10),
+              SizedBox(
+                width: 200, // fixed width per field
+                height: 35,
+                child: CustomTimePicker()
+              ),
+            ],
+          ),
+          _buildFielddd(
+        context,
+        AppText.lead,
+        SizedBox(
+        height: 30,
+        child: CustomTextField(
+        hintText: "MINS",
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        keyboardType: TextInputType.number,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+        controller: TextEditingController(),
+        borderRadius: 4,
+        ),
+        ),
+        ),
+          _buildFielddd(
+        context,
+        AppText.jour,
+        Container(
+        height: 30,
+        decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: DynamicColors.primaryClr),
+        ),
+        child: buildMenuTab(
+        Icons.book_online,
+        "O/W",
+        "Select Plot",
+        ["O/W", "R/N", "W/R"],
+        jourKey,
+        ),
+        ),
+        ),
+        ],
+        ),
 
                       SizedBox(
                         height: screenHeight * 0.01,
@@ -1143,7 +1288,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       ),*/
                       ///todo select two ways
 
-                      Row(
+                 /*     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
@@ -1301,12 +1446,159 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               ))
 
                         ],
+                      ),*/
+                      Wrap(
+                        spacing: 38, // Horizontal gap
+                        runSpacing: 10, // Vertical gap when wrapping
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          // Journey Type + Dropdown
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppText.jour,
+                                style: mozillaTextSemiBoldText(
+                                  context: context,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 15),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: DynamicColors.primaryClr),
+                                ),
+                                child: buildMenuTab(
+                                  Icons.book_online,
+                                  "Select Account",
+                                  "Select Account",
+                                  ["O/W", "R/N", "W/R"],
+                                  accKey,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Switch + Quotation
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AdvancedSwitch(
+                                controller: controller.switchController,
+                                activeColor: Colors.green,
+                                inactiveColor: Colors.grey,
+                                borderRadius: BorderRadius.circular(15),
+                                width: 30,
+                                height: 15,
+                                onChanged: (v) {},
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                AppText.quotation,
+                                style: mozillaTextSemiBoldText(context: context, fontSize: 16),
+                              ),
+                            ],
+                          ),
+
+                          // SMS Checkbox
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                activeColor: DynamicColors.primaryClr,
+                                value: controller.smsCheckbox.value,
+                                onChanged: (v) {
+                                  controller.smsCheckbox.value = v!;
+                                  controller.update();
+                                },
+                              ),
+                              Text(
+                                AppText.sms,
+                                style: mozillaTextSemiBoldText(context: context, fontSize: 16),
+                              ),
+                            ],
+                          ),
+
+                          // Email Checkbox
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                activeColor: DynamicColors.primaryClr,
+                                value: controller.emailCheckbox.value,
+                                onChanged: (v) {
+                                  controller.emailCheckbox.value = v!;
+                                  controller.update();
+                                },
+                              ),
+                              Text(
+                                AppText.email,
+                                style: mozillaTextSemiBoldText(context: context, fontSize: 16),
+                              ),
+                            ],
+                          ),
+
+                          // Pass, Lugg, Slugg fields
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Pass",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Lugg",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Slugg",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
 
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      Row(
+                      /*Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
@@ -1410,313 +1702,115 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                           )
 
                         ],
-                      ),
-               /*       SizedBox(height: screenHeight * 0.01),
-                      Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.start,
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: SizedBox(
-                              height: screenHeight * 0.06,
-                              child: TextFormField(
-                                initialValue: '1',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'Passengers',
-                                  labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 14),
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior
-                                      .auto,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Flexible(
-                            flex: 1,
-                            child: SizedBox(
-                              height: screenHeight * 0.06,
-                              child: TextFormField(
-                                initialValue: '',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'Luggage',
-                                  labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 14),
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior
-                                      .auto,
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Flexible(
-                            flex: 1,
-                            child: SizedBox(
-                              height: screenHeight * 0.06,
-                              child: TextFormField(
-                                initialValue: '',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText:
-                                  'Small luggage',
-                                  labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 14),
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior
-                                      .auto,
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 5),
-                          Flexible(
-                            flex: 1,
-                            child: SizedBox(
-                              height: screenHeight * 0.06,
-                              child: TextFormField(
-                                initialValue: '',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  labelText: 'Email',
-                                  labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 14),
-                                  hintText:
-                                  'Example@gmail.com',
-                                  hintStyle: TextStyle(
-                                      color: Colors.grey),
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior
-                                      .auto,
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: screenHeight * 0.01,
-                      ),
-                      Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.start,
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            fit: FlexFit.loose,
-                            child: SizedBox(
-                              height: screenHeight * 0.05,
-                              child:
-                              DropdownButtonFormField<
-                                  String>(
-                                value:
-                                dashboardController.selectedPaymentMethod,
-                                onChanged: (newValue) {
-                                  setState(() {
-                                    dashboardController.selectedPaymentMethod =
-                                    newValue!;
-                                  });
-                                },
-                                items: ['Cash', 'Card']
-                                    .map((String value) {
-                                  return DropdownMenuItem<
-                                      String>(
-                                    value: value,
-                                    child: Text(
-                                      value,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 13,
-                                        fontWeight:
-                                        FontWeight.bold,
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  suffixIcon: Icon(
-                                    Icons
-                                        .keyboard_arrow_down_rounded,
-                                    color:
-                                    Color(0xFF43489A),
-                                    size: 20,
-                                  ),
-                                  hintText: 'Cash',
-                                  hintStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 13,
-                                    fontWeight:
-                                    FontWeight.bold,
-                                  ),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                ),
-                                icon: SizedBox.shrink(),
-                                dropdownColor:
-                                Color(0xFFEFF0F2),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Flexible(
-                            flex: 1,
-                            fit: FlexFit.loose,
-                            child: SizedBox(
-                              height: screenHeight * 0.07,
-                              child: TextFormField(
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 13,
-                                  fontWeight:
-                                  FontWeight.bold,
-                                ),
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                  EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 16),
-                                  filled: true,
-                                  fillColor:
-                                  Color(0xFFEFF0F2),
-                                  // prefixIcon: Icon(Icons.phone, color: Color(0xFF43489A), size: 20),
-                                  labelText:
-                                  'Special Requirements',
-                                  labelStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 13,
-                                    fontWeight:
-                                    FontWeight.bold,
-                                  ),
-                                  border:
-                                  OutlineInputBorder(
-                                    borderRadius:
-                                    BorderRadius
-                                        .circular(5),
-                                    borderSide:
-                                    BorderSide.none,
-                                  ),
-                                  floatingLabelBehavior:
-                                  FloatingLabelBehavior
-                                      .auto,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),*/
+                      Wrap(
+                        spacing: 85, // Horizontal gap between items
+                        runSpacing: 15, // Vertical gap between rows
+                        alignment: WrapAlignment.spaceBetween,
+                        children: [
+                          // Pay Dropdown
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppText.pay,
+                                style: mozillaTextSemiBoldText(
+                                  context: context,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 25),
+                              GestureDetector(
+                                child: Container(
+                                  width: Get.width / 13,
+                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: DynamicColors.primaryClr),
+                                  ),
+                                  child: buildMenuTab(
+                                    Icons.book_online,
+                                    "Cash",
+                                    "Select Account",
+                                    ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"],
+                                    payKey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // VEH Dropdown
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppText.pay,
+                                style: mozillaTextSemiBoldText(
+                                  context: context,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(width: 25),
+                              GestureDetector(
+                                child: Container(
+                                  width: Get.width / 13,
+                                  padding: EdgeInsets.symmetric(horizontal: 6),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: DynamicColors.primaryClr),
+                                  ),
+                                  child: buildMenuTab(
+                                    Icons.book_online,
+                                    "VEH",
+                                    "Select Account",
+                                    [
+                                      "SALOON",
+                                      "ESTATE",
+                                      "MPV6",
+                                      "MPV PLUS",
+                                      "MPV7",
+                                      "MPV EXECUTIVE",
+                                      "MINI BUS"
+                                    ],
+                                    vehKey,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Icon Buttons Section
+                          Container(
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: DynamicColors.secondaryClr,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.person, size: 20),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.shopping_cart_checkout_outlined, size: 20),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.attach_money, size: 20),
+                                ),
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: Icon(Icons.note_add_sharp, size: 20),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
@@ -2110,6 +2204,52 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     );
   }
 
+  /// Reusable Field Builder
+  Widget _buildFielddd(BuildContext context, String label, Widget fieldWidget) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: mozillaTextSemiBoldText(
+            context: context,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 200, // field width
+          child: fieldWidget,
+        ),
+      ],
+    );
+  }
+
+  /// Reusable Field Widget
+  Widget _buildField(BuildContext context, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: mozillaTextSemiBoldText(
+            context: context,
+            fontSize: 16,
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 200, // fixed width per field
+          height: 35,
+          child: CustomTextField(
+            controller: TextEditingController(),
+            borderRadius: 4,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget buildMenuTab(IconData icon, String label, String menuKey,
       List<String> items, GlobalKey key) {
     return GestureDetector(
@@ -2171,97 +2311,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 
 
 ///todo calender widget
-class CalendarDropdown extends StatefulWidget {
-  const CalendarDropdown({Key? key}) : super(key: key);
 
-  @override
-  State<CalendarDropdown> createState() => _CalendarDropdownState();
-}
 
-class _CalendarDropdownState extends State<CalendarDropdown> {
-  final TextEditingController _controller = TextEditingController();
-  final DateFormat _dateFormat = DateFormat('dd/MM/yyyy');
-  OverlayEntry? _calendarOverlay;
-  final LayerLink _layerLink = LayerLink();
 
-  DateTime? selectedDate;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedDate = DateTime.now();
-    _controller.text = _dateFormat.format(selectedDate!);
-  }
-
-  void _toggleCalendar() {
-    if (_calendarOverlay == null) {
-      _calendarOverlay = _createCalendarOverlay();
-      Overlay.of(context).insert(_calendarOverlay!);
-    } else {
-      _calendarOverlay?.remove();
-      _calendarOverlay = null;
-    }
-  }
-
-  OverlayEntry _createCalendarOverlay() {
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        // width: 280,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          offset: const Offset(0, 55),
-          showWhenUnlinked: false,
-          child: Material(
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            child: CalendarDatePicker(
-              initialDate: selectedDate!,
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-              onDateChanged: (picked) {
-                setState(() {
-                  selectedDate = picked;
-                  _controller.text = _dateFormat.format(picked);
-                });
-                _toggleCalendar(); // Close calendar
-              },
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    _calendarOverlay?.remove();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: SizedBox(
-          height: 30,
-          child: TextFormField(
-            controller: _controller,
-            readOnly: true,
-            onTap: _toggleCalendar,
-            decoration: const InputDecoration(
-              // labelText: "DATE",
-              contentPadding: EdgeInsets.symmetric(horizontal: 6),
-              suffix: Icon(Icons.calendar_today,size: 15,),
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 ///todo calender widget
 
@@ -2448,3 +2500,4 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
 
 ///todo Time widget
+

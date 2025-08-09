@@ -1,6 +1,7 @@
 
 
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,7 +21,7 @@ class DriversView extends StatelessWidget {
       builder: (controller) {
         return SizedBox(
           width: screenWidth * 0.2,
-          height: screenHeight * 0.485,
+          height: screenHeight * 0.465,
           child: Container(
             // height: screenHeight * 0.6,
             decoration: BoxDecoration(
@@ -32,12 +33,8 @@ class DriversView extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    // margin:
-                    // const EdgeInsets.only(bottom: 16),
-                    // padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      // border: Border.all(color: DynamicColors.secondaryClr)
                     ),
                     child: Column(
                       children: [
@@ -114,18 +111,17 @@ class DriversView extends StatelessWidget {
                               border: Border.all(color: DynamicColors.secondaryClr)
                           ),
                           child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceEvenly,
                             children: [
                               Expanded(
                                 child: RowButtonWidgetMap(
-                                  color:controller.driverSelectionTab.value == "activeDriver"?
+                                  color: controller.driverSelectionTab.value == "activeDriver"?
                                   DynamicColors.primaryClr:DynamicColors.secondaryClr,
                                                           onTap: (){
                                                             controller.driverSelectionTab.value = "activeDriver";
                                                             controller.update();
                                                           },
                                                           widget: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
                                                             children: [
                                                               CircleAvatar(
                                                                 radius: 8,
@@ -134,7 +130,13 @@ class DriversView extends StatelessWidget {
                                     ),
                                                               Padding(
                                                                 padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                                                child: Text("(3)"),
+                                                                child: Text("(3)",
+                                                                style: mozillaTextRegularText(
+                                                                  fontSize: 13,
+                                                                  color:controller.driverSelectionTab.value == "activeDriver"?
+                                                                  DynamicColors.whiteClr:DynamicColors.primaryClr
+                                                                ),
+                                                                ),
                                                               ),
                                                             ],
                                                           ),
@@ -150,6 +152,7 @@ class DriversView extends StatelessWidget {
                                     controller.update();
                                   },
                                  widget: Row(
+                                   mainAxisAlignment: MainAxisAlignment.center,
                                    children: [
                                      CircleAvatar(
                                        radius: 8,
@@ -158,7 +161,13 @@ class DriversView extends StatelessWidget {
                                       ),
                                      Padding(
                                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                       child: Text("(0)"),
+                                       child: Text("(0)",
+                                           style: mozillaTextRegularText(
+                                             fontSize: 13,
+color: controller.driverSelectionTab.value != "activeDriver"?
+                                               DynamicColors.whiteClr:DynamicColors.primaryClr
+                                           ),
+                                       ),
                                      ),
                                    ],
                                  ),
@@ -167,6 +176,65 @@ class DriversView extends StatelessWidget {
                             ],
                           ),
                         ),
+                        ListView.builder(
+                            itemCount: 4,
+                            shrinkWrap: true,
+
+                            physics: NeverScrollableScrollPhysics(),
+                            itemBuilder: (BuildContext context,index){
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: CustomButton(
+                                    height: 30,
+                                    borderRadius: 0,
+                                    verticalPadding: 0,
+                                    btnText: "X1",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 16,
+                                      color: DynamicColors.whiteClr
+                                    ),
+
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text("SALOON ",
+                                    style: mozillaTextRegularText(
+                                        fontSize: 13
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                  child: Icon(Icons.phone_android_rounded),
+                                ),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text(
+                                    "1133Hr 01Min-", // your text
+                                    style: mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis, // show "..."
+                                    maxLines: 1,                      // only one line
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CustomButton(
+                                    height: 30,
+                                    btnColor: DynamicColors.secondaryClr,
+                                    borderRadius: 0,
+                                    verticalPadding: 0,
+                                    btnText: "-",
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          );
+                        }),
                       ],
                     ),
                   ),

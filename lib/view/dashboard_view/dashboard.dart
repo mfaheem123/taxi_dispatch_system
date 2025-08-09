@@ -4,6 +4,7 @@ import 'package:dashboard_new1/tabbarview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../component/textStyle.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
@@ -105,6 +106,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           String selectedItem = menus[selectedIndex].subItems[dropdownIndex];
           widget.onSelect?.call(selectedItem);
           setState(() {
+            selectedTexts.remove(selectedItem);
+            selectedTexts.add(selectedItem);
             isDropdownOpen = false;
           });
         } else {
@@ -145,7 +148,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(AppText.driverInfo),
+                    Text(AppText.driverInfo,
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: DynamicColors.textClr
+                      ),
+                    ),
                     GestureDetector(
                         onTap: (){
                           dashBoardCntrl.shortCutKeyValue.value = "arrow";
@@ -167,6 +176,46 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
             print("Close reason: $result");
             // Yahan aap custom action le sakte ho
           });
+        }else if (key.debugName == "F4"){
+          dashBoardCntrl.shortCutKeyValue.value = "alert";
+          // set up the AlertDialog
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                scrollable: true,
+
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(AppText.driverEarning,
+                    style: mozillaTextSemiBoldText(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: DynamicColors.textClr
+                    ),
+                    ),
+                    GestureDetector(
+                        onTap: (){
+                          dashBoardCntrl.shortCutKeyValue.value = "arrow";
+                          Get.back();
+                        },
+                        child: Icon(Icons.close)),
+                  ],
+                ),
+                content: F4AlertWidget(),
+                actions: [
+                  // cancelButton,
+                  // continueButton,
+                ],
+              );
+            },
+          ).then((result) {
+            dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+            print("Alert closed");
+            print("Close reason: $result");
+            // Yahan aap custom action le sakte ho
+          });
         }
         }
       },
@@ -175,8 +224,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         body: SafeArea(
           child: Stack(
             children: [
+
               Column(
                 children: [
+                  // Fixed top navigation bar
                   Container(
                     color: const Color(0xFF43489A),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -241,67 +292,73 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    width: screenWidth,
-                    padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
-                    color: Colors.grey.shade300,
-                    child: Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        // Home icon container
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
                         Container(
-                          padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: DynamicColors.primaryClr,
-                            border: Border.all(color: DynamicColors.textClr),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Icon(
-                            Icons.home,
-                            color: DynamicColors.whiteClr,
+                          width: screenWidth,
+                          padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
+                          color: Colors.grey.shade300,
+                          child: Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              // Home icon container
+                              Container(
+                                padding:
+                                EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: DynamicColors.primaryClr,
+                                  border: Border.all(color: DynamicColors.textClr),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Icon(
+                                  Icons.home,
+                                  color: DynamicColors.whiteClr,
+                                ),
+                              ),
+
+                              // Dynamic selected tabs
+                              ...selectedTexts.map((text) {
+                                return Container(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(text, style: TextStyle(fontSize: 16)),
+                                      SizedBox(width: 5),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedTexts.remove(text);
+                                          });
+                                        },
+                                        child: Icon(
+                                          Icons.cancel,
+                                          color: Color(0xFF43489A),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
                           ),
                         ),
+                        getSelectedWidget(
 
-                        // Dynamic selected tabs
-                        ...selectedTexts.map((text) {
-                          return Container(
-                            padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(text, style: TextStyle(fontSize: 16)),
-                                SizedBox(width: 5),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedTexts.remove(text);
-                                    });
-                                  },
-                                  child: Icon(
-                                    Icons.cancel,
-                                    color: Color(0xFF43489A),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                        ),
                       ],
                     ),
-                  ),
-                  //   ],
-                  // ),
-                  getSelectedWidget(
-
-                  ),
-                  // ),
+                    ),
+                  )
+                // ),
                 ],
               ),
               // 🔽 Dropdown - Show only if open
@@ -333,8 +390,12 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                   ),
                                 ),
                                 onTap: () {
-                                  widget.onSelect?.call(menus[selectedIndex].subItems[j]);
+                                  final selectedItem = menus[selectedIndex].subItems[j];
+                                  widget.onSelect?.call(selectedItem);
                                   setState(() {
+                                    selectedTexts.remove(selectedItem);
+                                    selectedTexts.add(selectedItem);
+                                    dropdownIndex = j;
                                     isDropdownOpen = false;
                                   });
                                 },

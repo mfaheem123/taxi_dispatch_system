@@ -6,8 +6,10 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../component/calender.dart';
 import '../../../component/keyboard_dropdown_widget.dart';
 import '../../../component/textStyle.dart';
+import 'booking_form_widget.dart';
 
 class F3AlertWidget extends StatelessWidget {
   F3AlertWidget({super.key});
@@ -132,55 +134,154 @@ class F3AlertWidget extends StatelessWidget {
 }
 
 
-void showAnimatedF3Alert(BuildContext context) {
-  showGeneralDialog(
-    context: context,
-    barrierDismissible: true,
-    barrierLabel: '',
-    barrierColor: Colors.black54, // background overlay color
-    transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (context, animation1, animation2) {
-      return const SizedBox(); // Required but unused
-    },
-    transitionBuilder: (context, animation1, animation2, child) {
-      return ScaleTransition(
-        scale: CurvedAnimation(parent: animation1, curve: Curves.easeOutBack),
-        child: FadeTransition(
-          opacity: animation1,
-          child: Container(
-            width: Get.width/2,
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+class F4AlertWidget extends StatelessWidget {
+  F4AlertWidget({super.key});
+
+  List<String> list = [
+    "SELECT DRIVER",
+    "25 GEORGE HAMPTON",
+    "26 PAUL DOUBLEDAY",
+    "27 RICHARD HARDWICK",
+    "28 LANRE OKERJO",
+    "29 NICOLAS GREY",
+    "50 NADEEM",
+    "60 EDWARD",
+    "TEST TEST DRIVER",
+    "X1 ANDRE",
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // height: Get.height/2,
+      width: Get.width/3,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(0)
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Divider(),
+          Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
                 children: [
-                  Text(AppText.driverInfo),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const Icon(Icons.close),
+                  Text(AppText.from),
+                  SizedBox(
+                      height: 45,
+                      width: Get.width/10,
+                      child: CalendarDropdown()),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(AppText.to),
+                ],
+              ),
+              Column(
+                children: [
+                  Text(AppText.drivers),
+                  KeyboardDropdown(
+                    containerWidth: Get.width/10,
+                    initialValue: list.first,
+                    onChanged: (v){
+
+                    },
+                    items: list,
                   ),
                 ],
               ),
-              content: const Text("Driver details go here..."), // Replace with F3AlertWidget content
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel"),
+            ],
+          ),
+
+
+
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(
+                          key: AppText.make,
+                          value: "Blue"
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(
+                          key: AppText.clr,
+                          value: "White"
+                      ),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Action here
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text("Continue"),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(
+                          key: AppText.vehicleType,
+                          value: "saloon"
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(
+                          key: AppText.model,
+                          value: "2020"
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6.0),
+                      child: customKeyValue(
+                          key: AppText.mobileNo,
+                          value: "+12313232"
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  customKeyValue({key,value}){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        Text(key??AppText.vehicle,
+          style: mozillaTextSemiBoldText(
+              fontSize: 14,
+              color: DynamicColors.textClr.withOpacity(0.7)
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
+          child: Text(value??"vehicle Value",
+            style: mozillaTextSemiBoldText(
+                fontSize: 14,
+                color: DynamicColors.textClr.withOpacity(0.7)
             ),
           ),
         ),
-      );
-    },
-  );
+      ],
+    );
+  }
 }

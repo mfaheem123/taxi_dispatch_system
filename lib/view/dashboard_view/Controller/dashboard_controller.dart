@@ -14,7 +14,8 @@ class DashboardController extends GetxController {
   String selectedAccountType = 'Account';
   String selectedPaymentMethod = 'Cash';
   String selectedDriver = 'Select Driver';
-  RxString shortCutKeyValue = 'alert'.obs;
+  // Start with shortcut mode that allows navigation; set to "alert" only when showing a modal
+  RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   ///bool
 
@@ -30,6 +31,8 @@ class DashboardController extends GetxController {
   RxBool smsCheckbox = false.obs;
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
+
+
 
 
   ///Todo booking form data

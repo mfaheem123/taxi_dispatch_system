@@ -45,7 +45,40 @@ TextStyle mozillaTextSemiBoldText({
 
   return TextStyle(
     fontSize: finalFontSize,
-    color: color ?? DynamicColors.whiteClr,
+    color: color ?? DynamicColors.textClr,
     fontWeight: fontWeight ?? FontWeight.w700,
+    fontFamily: "MozillaText-SemiBold"
+  );
+}
+
+TextStyle mozillaTextRegularText({
+  BuildContext? context, // context lena zaroori hai for MediaQuery
+  double? fontSize,
+  Color? color,
+  FontWeight? fontWeight,
+}) {
+  double finalFontSize = fontSize ?? 20;
+
+  if (context != null) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Responsive font size
+    if (screenWidth < 600) {
+      // Mobile
+      finalFontSize = fontSize ?? 16;
+    } else if (screenWidth >= 600 && screenWidth < 1024) {
+      // Tablet
+      finalFontSize = fontSize ?? 18;
+    } else {
+      // Desktop / Web
+      finalFontSize = fontSize ?? 20;
+    }
+  }
+
+  return TextStyle(
+    fontSize: finalFontSize,
+    color: color ?? DynamicColors.textClr,
+    fontWeight: fontWeight ?? FontWeight.w700,
+    fontFamily: "MozillaText-Regular"
   );
 }
