@@ -362,7 +362,8 @@ class _TableScreenState extends State<TableScreen> {
                   maxLines: 1,
                 ),
             ),
-            DataCell(Row(
+            DataCell(
+                Row(
               children: [
                 Icon(Icons.reply, color: Colors.blue),
                 Padding(

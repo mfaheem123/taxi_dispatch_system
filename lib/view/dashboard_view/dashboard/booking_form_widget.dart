@@ -1094,6 +1094,81 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
         ),
         ),
         ),
+
+          // DRIVER Dropdown
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppText.drv,
+                style: mozillaTextSemiBoldText(
+                  context: context,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(width: 12),
+              Container(
+                width: 160, // Fixed for better alignment
+                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                ),
+                child: buildMenuTab(
+                  Icons.book_online,
+                  "DIRVER",
+                  "Select Account",
+                  ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"],
+                  dRVKey,
+                ),
+              ),
+            ],
+          ),
+
+          // Fare Input
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppText.fare,
+                style: mozillaTextSemiBoldText(
+                  context: context,
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(width: 12),
+              SizedBox(
+                height: 33,
+                width: 120,
+                child: CustomTextField(
+                  hintText: "Slugg",
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(6),
+                  ],
+                  keyboardType: TextInputType.number,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  controller: TextEditingController(),
+                  borderRadius: 6,
+                ),
+              ),
+            ],
+          ),
+
+          // Calendar Button
+          Container(
+            height: 33,
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            decoration: BoxDecoration(
+              color: DynamicColors.secondaryClr,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.calendar_month, size: 20),
+              splashRadius: 20,
+            ),
+          ),
         ],
         ),
 
@@ -1814,92 +1889,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       SizedBox(
                         height: screenHeight * 0.01,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text(AppText.drv,
-                                  style: mozillaTextSemiBoldText( context: context,
-                                      fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 25,
-                                ),
-                                GestureDetector(
-                                  child: Container(
-                                    width: Get.width/13,
-                                    padding: EdgeInsets.symmetric(horizontal: 6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
-                                        border: Border.all(color: DynamicColors.primaryClr)
-                                    ),
-                                    child: buildMenuTab(Icons.book_online,
-                                        "DIRVER", "Select Account",
-                                        ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID",],
-                                        dRVKey),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text(AppText.fare,
-                                  style: mozillaTextSemiBoldText( context: context,
-                                      fontSize: 16,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 25,
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: SizedBox(
-                                    height: 30,
-                                    width: Get.width/13,
-                                    child: CustomTextField(
-                                      hintText: "Slugg",
-                                      inputFormatters: [FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(6),
-                                      ],
-                                      keyboardType: TextInputType.number,
-                                      contentPadding: EdgeInsets.symmetric(horizontal: 4),
-                                      controller: TextEditingController(),
-                                      borderRadius: 4,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            height: 33,
-
-                            decoration: BoxDecoration(
-                                color: DynamicColors.secondaryClr,
-                                borderRadius: BorderRadius.circular(4)
-                            ),
-                            child: Center(
-                              child: Row(
-                                children: [
-                                  IconButton(onPressed: (){
-
-                                  }, icon: Icon(Icons.calendar_month,
-                                    size: 20,
-                                  )),
-                                ],
-                              ),
-                            ),
-                          )
-
-                        ],
-                      ),
-                      SizedBox(
+        SizedBox(
                         height: screenHeight * 0.03,
                       ),
                       Container(

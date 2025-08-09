@@ -31,214 +31,212 @@ class DriversView extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: 35,
-                          padding: EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 35,
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        decoration: BoxDecoration(
                             color: DynamicColors.secondaryClr
-                          ),
-                          child: Row(
-                            children: [
-                              Text("Driver".toUpperCase(),
-                              style: headingText(
-                                fontSize: 14,
-                                latterSpacing: 1.0,
-                                color: DynamicColors.primaryClr
-                              ),
-                              ),
-                              Spacer(),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.reset_tv_outlined,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.refresh,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.visibility_off_sharp,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.mail,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.send,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                              IconButton(
-                                  padding: EdgeInsets.zero,
-                                  onPressed: (){
-
-                              }, icon: Icon(Icons.share,
-                              size: 17,
-                                color: DynamicColors.primaryClr,
-                              )),
-                            ],
-                          ),
                         ),
-                        Container(
-                          width: Get.width,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: DynamicColors.secondaryClr)
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: RowButtonWidgetMap(
-                                  color: controller.driverSelectionTab.value == "activeDriver"?
-                                  DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                                                          onTap: (){
-                                                            controller.driverSelectionTab.value = "activeDriver";
-                                                            controller.update();
-                                                          },
-                                                          widget: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.center,
-                                                            children: [
-                                                              CircleAvatar(
-                                                                radius: 8,
-                                backgroundColor: DynamicColors.greenClr,
+                        child: Row(
+                          children: [
+                            Text("Driver".toUpperCase(),
+                              style: headingText(
+                                  fontSize: 14,
+                                  latterSpacing: 1.0,
+                                  color: DynamicColors.primaryClr
+                              ),
+                            ),
+                            Spacer(),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.reset_tv_outlined,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.refresh,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.visibility_off_sharp,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.mail,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.send,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                            IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.share,
+                              size: 17,
+                              color: DynamicColors.primaryClr,
+                            )),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: Get.width,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: DynamicColors.secondaryClr)
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                color: controller.driverSelectionTab.value == "activeDriver"?
+                                DynamicColors.primaryClr:DynamicColors.secondaryClr,
+                                onTap: (){
+                                  controller.driverSelectionTab.value = "activeDriver";
+                                  controller.update();
+                                },
+                                widget: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 8,
+                                      backgroundColor: DynamicColors.greenClr,
                                       //     .value = "MAPS",
                                     ),
-                                                              Padding(
-                                                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                                                child: Text("(3)",
-                                                                style: mozillaTextRegularText(
-                                                                  fontSize: 13,
-                                                                  color:controller.driverSelectionTab.value == "activeDriver"?
-                                                                  DynamicColors.whiteClr:DynamicColors.primaryClr
-                                                                ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-
-                                ),
-                              ),
-                              Expanded(
-                                child: RowButtonWidgetMap(
-                                  color:controller.driverSelectionTab.value != "activeDriver"?
-                                  DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                                  onTap: (){
-                                    controller.driverSelectionTab.value = "offlineDriver";
-                                    controller.update();
-                                  },
-                                 widget: Row(
-                                   mainAxisAlignment: MainAxisAlignment.center,
-                                   children: [
-                                     CircleAvatar(
-                                       radius: 8,
-                                        backgroundColor: DynamicColors.redClr,
-                                        //     .value = "MAPS",
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                      child: Text("(3)",
+                                        style: mozillaTextRegularText(
+                                            fontSize: 13,
+                                            color:controller.driverSelectionTab.value == "activeDriver"?
+                                            DynamicColors.whiteClr:DynamicColors.primaryClr
+                                        ),
                                       ),
-                                     Padding(
-                                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                       child: Text("(0)",
-                                           style: mozillaTextRegularText(
-                                             fontSize: 13,
-color: controller.driverSelectionTab.value != "activeDriver"?
-                                               DynamicColors.whiteClr:DynamicColors.primaryClr
-                                           ),
-                                       ),
-                                     ),
-                                   ],
-                                 ),
+                                    ),
+                                  ],
+                                ),
+
+                              ),
+                            ),
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                color:controller.driverSelectionTab.value != "activeDriver"?
+                                DynamicColors.primaryClr:DynamicColors.secondaryClr,
+                                onTap: (){
+                                  controller.driverSelectionTab.value = "offlineDriver";
+                                  controller.update();
+                                },
+                                widget: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 8,
+                                      backgroundColor: DynamicColors.redClr,
+                                      //     .value = "MAPS",
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                      child: Text("(0)",
+                                        style: mozillaTextRegularText(
+                                            fontSize: 13,
+                                            color: controller.driverSelectionTab.value != "activeDriver"?
+                                            DynamicColors.whiteClr:DynamicColors.primaryClr
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        ListView.builder(
-                            itemCount: 4,
-                            shrinkWrap: true,
-
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (BuildContext context,index){
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: CustomButton(
-                                    height: 30,
-                                    borderRadius: 0,
-                                    verticalPadding: 0,
-                                    btnText: "X1",
-                                    style: mozillaTextRegularText(
-                                      fontSize: 16,
-                                      color: DynamicColors.whiteClr
-                                    ),
-
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text("SALOON ",
-                                    style: mozillaTextRegularText(
-                                        fontSize: 13
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                                  child: Icon(Icons.phone_android_rounded),
-                                ),
-
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text(
-                                    "1133Hr 01Min-", // your text
-                                    style: mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis, // show "..."
-                                    maxLines: 1,                      // only one line
-                                  ),
-                                ),
-                                Expanded(
-                                  child: CustomButton(
-                                    height: 30,
-                                    btnColor: DynamicColors.secondaryClr,
-                                    borderRadius: 0,
-                                    verticalPadding: 0,
-                                    btnText: "-",
-                                  ),
-                                ),
-
-                              ],
                             ),
-                          );
-                        }),
-                      ],
-                    ),
+                          ],
+                        ),
+                      ),
+                      ListView.builder(
+                          itemCount: 4,
+                          shrinkWrap: true,
+
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (BuildContext context,index){
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomButton(
+                                      height: 30,
+                                      borderRadius: 0,
+                                      verticalPadding: 0,
+                                      btnText: "X1",
+                                      style: mozillaTextRegularText(
+                                          fontSize: 16,
+                                          color: DynamicColors.whiteClr
+                                      ),
+
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text("SALOON ",
+                                      style: mozillaTextRegularText(
+                                          fontSize: 13
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                    child: Icon(Icons.phone_android_rounded),
+                                  ),
+
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: Text(
+                                      "1133Hr 01Min-", // your text
+                                      style: mozillaTextRegularText(fontSize: 13),
+                                      overflow: TextOverflow.ellipsis, // show "..."
+                                      maxLines: 1,                      // only one line
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: CustomButton(
+                                      height: 30,
+                                      btnColor: DynamicColors.secondaryClr,
+                                      borderRadius: 0,
+                                      verticalPadding: 0,
+                                      btnText: "-",
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            );
+                          }),
+                    ],
                   ),
-                )
+                ),
 
                 ///todo before coding
                 /*Expanded(

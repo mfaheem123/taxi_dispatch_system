@@ -28,18 +28,15 @@ class FormShortCutKey extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Text(AppText.booking,
-                style: mozillaTextSemiBoldText(
-                  context: context,
-                    fontSize: 14,
-                    color: DynamicColors.whiteClr
-                ),
-              ),
-            ],
+          Text(AppText.booking,
+            style: mozillaTextSemiBoldText(
+                context: context,
+                fontSize: 14,
+                color: DynamicColors.whiteClr
+            ),
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Obx(
                     ()=> MouseRegion(
