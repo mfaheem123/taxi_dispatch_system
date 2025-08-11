@@ -52,6 +52,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
 
     return GetBuilder<DashboardController>(
@@ -73,39 +75,47 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               decoration: BoxDecoration(color: DynamicColors.secondaryClr),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Row(
+                child:     Wrap(
+                  spacing: 10, // horizontal gap
+                  runSpacing: 8, // vertical gap when wrapped
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    ShortcutKeyWidget(),
-                    ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
-                    ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
-                    ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
-                    ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6.0),
-                      child: CustomButton(
-                        width: 120,
-                        height: 35,
-                        borderRadius: 6,
-                        verticalPadding: 0,
-                        style: mozillaTextSemiBoldText(
-                          fontSize: 11,
-                          color: DynamicColors.whiteClr
-                        ),
-                        onTap: (){
-                          dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
-                          dashboardController.update();
-                        },
-                        btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
-                      ),
-                    )
-                    // Text(
-                    //   AppText.welcomeText,
-                    //   style: headingText(
-                    //       fontSize: 18,
-                    //       fontWeight: FontWeight.bold,
-                    //       color: DynamicColors.primaryClr),
-                    // ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                     Row(
+                       children: [
+                         ShortcutKeyWidget(),
+                         ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
+                         ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
+                         ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
+                         ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
+                       ],
+                     ),
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(right: 6.0),
+                              child: CustomButton(
+                                width: 120,
+                                height: 35,
+                                borderRadius: 6,
+                                verticalPadding: 0,
+                                style: mozillaTextSemiBoldText(
+                                    fontSize: 11,
+                                    color: DynamicColors.whiteClr
+                                ),
+                                onTap: (){
+                                  dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
+                                  dashboardController.update();
+                                },
+                                btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
+                              ),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -121,7 +131,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                           visible: dashboardController.hideDashBoard.value,
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
-                            child: Row(
+                            child: width >=1920? Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
@@ -137,6 +147,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                 //Driver
                                 DriversView(),
+                              ],
+                            ):Column(
+                              children: [
+                                BookingFormWidget(),
+                                Row(
+                                  children: [
+                                    /// todo MAP SECTION
+                                    MapViewWidget(),
+                                    /// todo MAP SECTION
+                                    SizedBox(width: screenWidth * 0.0133),
+
+                                    //Driver
+                                    DriversView(),
+                                  ],
+                                )
                               ],
                             ),
                           ),

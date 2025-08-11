@@ -16,11 +16,15 @@ class DriversView extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+    print(width);
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return SizedBox(
-          width: screenWidth * 0.2,
+          width: width >= 1900? screenWidth * 0.3:screenWidth/2,
           height: screenHeight * 0.465,
           child: Container(
             // height: screenHeight * 0.6,
@@ -39,68 +43,64 @@ class DriversView extends StatelessWidget {
                     children: [
                       Container(
                         height: 35,
+                        width: Get.width,
                         padding: EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
                             color: DynamicColors.secondaryClr
                         ),
                         child: Row(
                           children: [
+                            Expanded(child:
                             Text("Driver".toUpperCase(),
                               style: headingText(
                                   fontSize: 14,
                                   latterSpacing: 1.0,
                                   color: DynamicColors.primaryClr
                               ),
+                            ),),
+                            // Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.reset_tv_outlined,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
                             ),
-                            Spacer(),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.reset_tv_outlined,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.refresh,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.visibility_off_sharp,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.mail,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.send,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
-                            IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: (){
-
-                                }, icon: Icon(Icons.share,
-                              size: 17,
-                              color: DynamicColors.primaryClr,
-                            )),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.refresh,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.visibility_off_sharp,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.mail,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.send,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.share,
+                                size: 17,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -111,65 +111,63 @@ class DriversView extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            Expanded(
-                              child: RowButtonWidgetMap(
-                                color: controller.driverSelectionTab.value == "activeDriver"?
-                                DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                                onTap: (){
-                                  controller.driverSelectionTab.value = "activeDriver";
-                                  controller.update();
-                                },
-                                widget: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 8,
-                                      backgroundColor: DynamicColors.greenClr,
-                                      //     .value = "MAPS",
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                      child: Text("(3)",
-                                        style: mozillaTextRegularText(
-                                            fontSize: 13,
-                                            color:controller.driverSelectionTab.value == "activeDriver"?
-                                            DynamicColors.whiteClr:DynamicColors.primaryClr
-                                        ),
+                            RowButtonWidgetMap(
+                              width: Get.width/10,
+                              color: controller.driverSelectionTab.value == "activeDriver"?
+                              DynamicColors.primaryClr:DynamicColors.secondaryClr,
+                              onTap: (){
+                                controller.driverSelectionTab.value = "activeDriver";
+                                controller.update();
+                              },
+                              widget: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 8,
+                                    backgroundColor: DynamicColors.greenClr,
+                                    //     .value = "MAPS",
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                    child: Text("(3)",
+                                      style: mozillaTextRegularText(
+                                          fontSize: 13,
+                                          color:controller.driverSelectionTab.value == "activeDriver"?
+                                          DynamicColors.whiteClr:DynamicColors.primaryClr
                                       ),
                                     ),
-                                  ],
-                                ),
-
+                                  ),
+                                ],
                               ),
+
                             ),
-                            Expanded(
-                              child: RowButtonWidgetMap(
-                                color:controller.driverSelectionTab.value != "activeDriver"?
-                                DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                                onTap: (){
-                                  controller.driverSelectionTab.value = "offlineDriver";
-                                  controller.update();
-                                },
-                                widget: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 8,
-                                      backgroundColor: DynamicColors.redClr,
-                                      //     .value = "MAPS",
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                      child: Text("(0)",
-                                        style: mozillaTextRegularText(
-                                            fontSize: 13,
-                                            color: controller.driverSelectionTab.value != "activeDriver"?
-                                            DynamicColors.whiteClr:DynamicColors.primaryClr
-                                        ),
+                            RowButtonWidgetMap(
+                              width: Get.width/10,
+                              color:controller.driverSelectionTab.value != "activeDriver"?
+                              DynamicColors.primaryClr:DynamicColors.secondaryClr,
+                              onTap: (){
+                                controller.driverSelectionTab.value = "offlineDriver";
+                                controller.update();
+                              },
+                              widget: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 8,
+                                    backgroundColor: DynamicColors.redClr,
+                                    //     .value = "MAPS",
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                    child: Text("(0)",
+                                      style: mozillaTextRegularText(
+                                          fontSize: 13,
+                                          color: controller.driverSelectionTab.value != "activeDriver"?
+                                          DynamicColors.whiteClr:DynamicColors.primaryClr
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
@@ -185,18 +183,17 @@ class DriversView extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(vertical: 2.0),
                               child: Row(
                                 children: [
-                                  Expanded(
-                                    child: CustomButton(
-                                      height: 30,
-                                      borderRadius: 0,
-                                      verticalPadding: 0,
-                                      btnText: "X1",
-                                      style: mozillaTextRegularText(
-                                          fontSize: 16,
-                                          color: DynamicColors.whiteClr
-                                      ),
-
+                                  CustomButton(
+                                    height: 30,
+                                    borderRadius: 0,
+                                    width: 130,
+                                    verticalPadding: 0,
+                                    btnText: "X1",
+                                    style: mozillaTextRegularText(
+                                        fontSize: 16,
+                                        color: DynamicColors.whiteClr
                                     ),
+
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 8.0),
@@ -220,14 +217,13 @@ class DriversView extends StatelessWidget {
                                       maxLines: 1,                      // only one line
                                     ),
                                   ),
-                                  Expanded(
-                                    child: CustomButton(
-                                      height: 30,
-                                      btnColor: DynamicColors.secondaryClr,
-                                      borderRadius: 0,
-                                      verticalPadding: 0,
-                                      btnText: "-",
-                                    ),
+                                  CustomButton(
+                                    height: 30,
+                                    width: 130,
+                                    btnColor: DynamicColors.secondaryClr,
+                                    borderRadius: 0,
+                                    verticalPadding: 0,
+                                    btnText: "-",
                                   ),
 
                                 ],

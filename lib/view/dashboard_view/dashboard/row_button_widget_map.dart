@@ -2,6 +2,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../component/textStyle.dart';
 
@@ -9,12 +10,14 @@ class RowButtonWidgetMap extends StatelessWidget {
   RowButtonWidgetMap({super.key,
     this.text, this.onTap, this.color, this.textClr,
     this.widget,
+    this.width,
   });
   GestureTapCallback? onTap;
   String? text;
   Color? color;
   Color? textClr;
   Widget? widget;
+  double? width;
 
 
   @override
@@ -23,7 +26,7 @@ class RowButtonWidgetMap extends StatelessWidget {
       onTap: onTap,
       child: Container(
         height: 40,
-        // width: Get.width/75,
+        width: width,
         // padding: EdgeInsets
         //     .symmetric(
         //   horizontal:

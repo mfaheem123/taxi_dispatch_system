@@ -170,7 +170,7 @@ class F4AlertWidget extends StatelessWidget {
                   Text(AppText.from),
                   SizedBox(
                       height: 45,
-                      width: Get.width/10,
+                      // width: Get.width/10,
                       child: CalendarDropdown()),
                 ],
               ),

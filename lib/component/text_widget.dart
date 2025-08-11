@@ -20,6 +20,7 @@ class AppText{
   static get time => "TIME";
   static get lead => "LEAD";
   static get jour => "JOUR";
+  static get acc => "ACC";
   static get quotation => "QUOTATION";
   static get sms => "SMS";
   static get pay => "PAY";

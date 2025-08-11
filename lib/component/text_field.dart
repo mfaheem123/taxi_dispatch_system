@@ -1,6 +1,7 @@
 
 
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.hintText,
     this.keyboardType,
     this.inputFormatters,
+    this.hintStyle,
   });
 
   String? labelText;
@@ -30,20 +32,32 @@ class CustomTextField extends StatelessWidget {
   final EdgeInsetsGeometry? contentPadding;
   TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final TextStyle? hintStyle;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
           width: Get.width/2.5,
+        height: 30,
           child: TextField(
             controller: controller,
             focusNode: focusNode,
             onChanged: onChanged,
             keyboardType: keyboardType,
+            style: hintStyle?? mozillaTextSemiBoldText(
+                context: context,
+                fontSize: 10,
+                fontWeight: FontWeight.w800
+            ),
             inputFormatters: inputFormatters,
             decoration: InputDecoration(
               prefixIcon: prefixIcon,
               hintText: hintText,
+              hintStyle: hintStyle?? mozillaTextSemiBoldText(
+                context: context,
+                fontSize: 10,
+                fontWeight: FontWeight.w800
+              ),
               labelText: labelText,
               contentPadding: contentPadding?? EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               border: OutlineInputBorder(
