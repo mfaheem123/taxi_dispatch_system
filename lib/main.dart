@@ -3,8 +3,11 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'dart:html' as html;
 
 void main() {
+  disableInspect();
+  html.document.documentElement?.requestFullscreen();
   runApp(const MyApp());
 }
 
@@ -42,3 +45,23 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
+
+void disableInspect() {
+  // Disable right click
+  html.document.onContextMenu.listen((event) => event.preventDefault());
+
+  // Disable specific keys
+  html.document.onKeyDown.listen((event) {
+    // F12
+    if (event.keyCode == 123) {
+      event.preventDefault();
+    }
+    // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
+    if (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) {
+      event.preventDefault();
+    }
+    if (event.ctrlKey && event.keyCode == 85) {
+      event.preventDefault();
+    }
+  });
+}

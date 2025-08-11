@@ -8,10 +8,14 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'Controller/dashboard_controller.dart';
 
-class BookingTable extends StatelessWidget {
+class BookingTable extends StatefulWidget {
+  @override
+  State<BookingTable> createState() => _BookingTableState();
+}
+
+class _BookingTableState extends State<BookingTable> {
   // final DashboardController controller = Get.find();
 
-  String? selectedValue;
 
   @override
   Widget build(BuildContext context) {
@@ -55,17 +59,17 @@ class BookingTable extends StatelessWidget {
                         width: 150,
                         child: Container(color: DynamicColors.secondaryClr,
                           child: DropdownButton<String>(
-                            value: selectedValue,
+                            value: tabList[index].selectedDropDownValue,
                             icon: const Icon(Icons.arrow_drop_down),
                             isExpanded: true,
-                            hint: Text("JOB DUE BY",
-                              style: mozillaTextRegularText(
-                                  fontSize: 13,
-                                  color: DynamicColors.textClr
-                              ),
-                            ),
+                            // hint: Text("JOB DUE BY",
+                            //   style: mozillaTextRegularText(
+                            //       fontSize: 13,
+                            //       color: DynamicColors.textClr
+                            //   ),
+                            // ),
                             underline: const SizedBox(),
-                            items: tabList[index].dropDownList!.map((item) {
+                            items: tabList[index].dropDownList.map((item) {
                               return DropdownMenuItem<String>(
                                 value: item,
                                 child: Text(item,
@@ -82,8 +86,11 @@ class BookingTable extends StatelessWidget {
                               if (selectedIndex != -1) {
                                 tabList[selectedIndex].selectedClr!.value = false;
                               }
-                              selectedValue = value;
-                              tabList[index].selectedClr!.value = true; // <-- fix selection
+                             setState(() {
+                               tabList[index].selectedDropDownValue = value;
+                               tabList[index].selectedClr!.value = true; // <-- fix selection
+
+                             });
                               controller.update();
                               // });
                             },
@@ -103,65 +110,6 @@ class BookingTable extends StatelessWidget {
                 width: double.infinity,
                 child:
                 TableScreen(),
-                /*Obx(() => SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      headingRowColor: MaterialStateProperty.all(Colors.blue.shade100),
-                      border: TableBorder.all(
-                        color: Colors.white,
-                        width: 2,
-                      ),
-                      columnSpacing: 60,
-                      dataRowMinHeight: 48,
-                      dataRowMaxHeight: 56,
-                      columns: const [
-                        DataColumn(label: Text('S.NO', style: _headerStyle)),
-                        DataColumn(label: Text('REF#', style: _headerStyle)),
-                        DataColumn(label: Text('DATE', style: _headerStyle)),
-                        DataColumn(label: Text('TIME', style: _headerStyle)),
-                        DataColumn(label: Text('CUSTOMER NAME', style: _headerStyle)),
-                        DataColumn(label: Text('PICKUP POINT', style: _headerStyle)),
-                        DataColumn(label: Text('DROPOFF POINT', style: _headerStyle)),
-                        DataColumn(label: Text('PHONE', style: _headerStyle)),
-                        DataColumn(label: Text('VEHICLE', style: _headerStyle)),
-                        DataColumn(label: Text('STATUS', style: _headerStyle)),
-                        DataColumn(label: Text('DRIVER', style: _headerStyle)),
-                        DataColumn(label: Text('ACCOUNT', style: _headerStyle)),
-                        DataColumn(label: Text('FARES', style: _headerStyle)),
-                        DataColumn(label: Text('ACTION', style: _headerStyle)),
-                      ],
-                      rows: List.generate(controller.bookings.length, (index) {
-                        final booking = controller.bookings[index];
-                        return DataRow(cells: [
-                          DataCell(Text('${booking.sno}')),
-                          DataCell(Text(booking.ref)),
-                          DataCell(Text(booking.date)),
-                          DataCell(Text(booking.time)),
-                          DataCell(Text(booking.customerName)),
-                          DataCell(Text(booking.pickupPoint)),
-                          DataCell(Text(booking.dropoffPoint)),
-                          DataCell(Text(booking.phone)),
-                          DataCell(Text(booking.vehicle)),
-                          DataCell(Text(booking.status)),
-                          DataCell(_buildStatus(booking.driver)),
-                          DataCell(Text(booking.account)),
-                          DataCell(Text('\$${booking.fares.toStringAsFixed(2)}')),
-                          DataCell(Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.edit, color: Color(0xFF43489A)),
-                                onPressed: () => controller.editBooking(index),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
-                                onPressed: () => controller.deleteBooking(index),
-                              ),
-                            ],
-                          )),
-                        ]);
-                      }),
-                    ),
-                  ),*/
         ),
             ],
           ),
@@ -173,20 +121,19 @@ class BookingTable extends StatelessWidget {
 
 
 List<TableSelectClass> tabList = [
-  TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "COMPLETED", selectedClr: false.obs),
-  TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "RECENT BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "QUOTED BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "WEB BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs),
-  TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs),
+  TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "COMPLETED", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "RECENT BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "QUOTED BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "WEB BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs, dropDownList: []),
   TableSelectClass(titleText: "JOB DUE BY", selectedClr: false.obs,dropDown: true,dropDownList: [
     "JOB DUE BY",
     "15 MIN",
     "30 MIN",
-    "15 MIN",
     "60 MIN",]),
 ];
 
@@ -194,8 +141,9 @@ class TableSelectClass{
   RxBool? selectedClr = false.obs;
   String? titleText;
   bool dropDown = false;
-  List<String>? dropDownList = [];
-  TableSelectClass({this.selectedClr, this.dropDown = false,this.titleText,this.dropDownList});
+  List<String> dropDownList = [];
+  String? selectedDropDownValue;
+  TableSelectClass({this.selectedClr, this.dropDown = false,this.titleText,required this.dropDownList,this.selectedDropDownValue});
 }
 
 
@@ -216,11 +164,15 @@ class _TableScreenState extends State<TableScreen> {
   @override
   Widget build(BuildContext context) {
     return DataTable2(
-      columnSpacing: 10,
-      horizontalMargin: 7,
-      // minWidth: 1400,
+      columnSpacing: 20, // columns ke beech ka space
+      horizontalMargin: 10, // side margin
+      minWidth: 1000, // yeh set karein taki scroll enable ho
       headingRowHeight: 70,
       columns: [
+        // Gap column (just for spacing)
+        // DataColumn(
+        //   label: SizedBox.shrink(), // yaha gap adjust karein
+        // ),
         // DataColumn2(
         //   label: Text("")/*Checkbox(
         //     value: false,
@@ -255,6 +207,10 @@ class _TableScreenState extends State<TableScreen> {
             });
           },
           cells: [
+
+            // Gap cell
+            // DataCell(
+            //     SizedBox.shrink()),
             // DataCell(
             //   Icon(Icons.laptop_chromebook_outlined),
             //   /*Checkbox(
@@ -357,7 +313,6 @@ class _TableScreenState extends State<TableScreen> {
             DataCell(
                 Text(
                     "CASH",
-
               style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
                   maxLines: 1,
                 ),
@@ -367,14 +322,14 @@ class _TableScreenState extends State<TableScreen> {
               children: [
                 Icon(Icons.reply, color: Colors.blue),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 1.0),
                     child: Text("|")),
                 Icon(Icons.edit_calendar_rounded, color: Colors.red),
                 Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2.0),child: Text("|")),
+                    padding: const EdgeInsets.symmetric(horizontal: 1.0),child: Text("|")),
                 Icon(Icons.delete_forever, color: Colors.green),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
                   child: Text("|"),
                 ),
                 Icon(Icons.more_horiz, color: Colors.green),
@@ -394,7 +349,7 @@ class _TableScreenState extends State<TableScreen> {
         children: [
           Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 4),
-          title== "TYPE"?SizedBox.shrink():  SizedBox(
+          title== "TYPE"? SizedBox.shrink() :  SizedBox(
             width: 100,
             height: 28,
             child: TextField(
@@ -411,21 +366,6 @@ class _TableScreenState extends State<TableScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildChip(String text, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12),
       ),
     );
   }
