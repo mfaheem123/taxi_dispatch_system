@@ -25,7 +25,7 @@ class ShortcutKeyWidget extends StatelessWidget {
             child: Center(
               child: Text(keyss??"F1",
                 style: headingText(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: DynamicColors.whiteClr
                 ),
               ),
@@ -34,7 +34,7 @@ class ShortcutKeyWidget extends StatelessWidget {
           SizedBox(width: 4,),
           Text(valuess??"BASE ADDRESS",
             style: headingText(
-                fontSize: 15,
+                fontSize: 14,
                 latterSpacing: 1.0
             ),
           )

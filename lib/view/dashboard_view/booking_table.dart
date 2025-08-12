@@ -6,6 +6,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../component/images.dart';
 import 'Controller/dashboard_controller.dart';
 
 class BookingTable extends StatefulWidget {
@@ -343,7 +344,7 @@ class _TableScreenState extends State<TableScreen> {
             DataCell(
                 Row(
               children: [
-                Icon(Icons.reply, color: Colors.blue),
+                ImageIcon(AssetImage(Images.fowardIcon),color: Colors.green),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1.0),
                     child: Text("|")),

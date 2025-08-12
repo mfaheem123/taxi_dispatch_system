@@ -33,6 +33,14 @@ class DashboardController extends GetxController {
   RxBool hideDashBoard = true.obs;
 
 
+  /// unique keys
+  final GlobalKey bookingKey = GlobalKey();
+  final GlobalKey bookingDropKey = GlobalKey();
+  final GlobalKey jourKey = GlobalKey();
+  final GlobalKey accKey = GlobalKey();
+  final GlobalKey payKey = GlobalKey();
+  final GlobalKey vehKey = GlobalKey();
+  final GlobalKey dRVKey = GlobalKey();
 
 
   ///Todo booking form data

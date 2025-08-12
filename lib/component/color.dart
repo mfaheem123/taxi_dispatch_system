@@ -11,5 +11,6 @@ class DynamicColors {
   static Color whiteClr = Colors.white;
   static Color redClr = Colors.red;
   static Color greenClr = Colors.green;
+  static Color gryClr = Colors.grey;
 
 }

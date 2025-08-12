@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
+import '../../routes/app_pages.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
 import 'dashboard/defult_dashboard_view.dart';
+import 'dart:html' as html;
 
 class DashBoarScreen extends StatefulWidget {
   final void Function(String)? onSelect;
@@ -45,21 +47,33 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
     MenuItemData("SETTINGS", Icons.settings, ["COMPANY INFORMATION", "COMPANY CONFIGURATION", "DOCUMENT NUMBER", "TEMPLATE SETTINGS", "BOOKING CLEARING UTILITY", "LOCATION TYPE SHORTCUTS", "VOIP SETTINGS", "GENERAL SMS CONFIG", "SMS SETTINGS", "CHAT WITH DRIVER AND PASSENGER", "PERMISSION SETTINGS"]),
   ];
 
-  int selectedIndex = 0;
+  int? selectedIndex;
   int dropdownIndex = 0;
   bool isDropdownOpen = false;
 
 
+  late final List<GlobalKey> menuKeys;
   @override
   void initState() {
     super.initState();
     RawKeyboard.instance.addListener(_handleKey);
+    menuKeys = List.generate(menus.length, (_) => GlobalKey());
+
   }
 
   @override
   void dispose() {
     RawKeyboard.instance.removeListener(_handleKey);
     super.dispose();
+  }
+
+  double _getMenuX(int index) {
+    final renderBox = menuKeys[index].currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox != null) {
+      final offset = renderBox.localToGlobal(Offset.zero);
+      return offset.dx;
+    }
+    return 0;
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -74,20 +88,24 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           dashBoardCntrl.shortCutKeyValue.value == "alert"){
         dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
       }
+      else if(event.logicalKey.keyLabel == "F2"){
+        final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
+        html.window.open(newTabUrl, '_blank');
+      }
       }
     if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value != "alert") {
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         setState(() {
-          selectedIndex = (selectedIndex + 1) % menus.length;
+          selectedIndex = (selectedIndex! + 1) % menus.length;
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         setState(() {
-          selectedIndex = (selectedIndex - 1 + menus.length) % menus.length;
+          selectedIndex = (selectedIndex! - 1 + menus.length) % menus.length;
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (isDropdownOpen) {
           setState(() {
-            dropdownIndex = (dropdownIndex + 1) % menus[selectedIndex].subItems.length;
+            dropdownIndex = (dropdownIndex + 1) % menus[selectedIndex!].subItems.length;
           });
         } else {
           setState(() {
@@ -97,13 +115,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         if (isDropdownOpen) {
           setState(() {
-            dropdownIndex = (dropdownIndex - 1 + menus[selectedIndex].subItems.length) %
-                menus[selectedIndex].subItems.length;
+            dropdownIndex = (dropdownIndex - 1 + menus[selectedIndex!].subItems.length) %
+                menus[selectedIndex!].subItems.length;
           });
         }
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         if (isDropdownOpen) {
-          String selectedItem = menus[selectedIndex].subItems[dropdownIndex];
+          String selectedItem = menus[selectedIndex!].subItems[dropdownIndex];
           widget.onSelect?.call(selectedItem);
           setState(() {
             selectedTexts.remove(selectedItem);
@@ -244,6 +262,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                           const SizedBox(width: 20),
                           for (int i = 0; i < menus.length; i++)
                             Padding(
+                              key: menuKeys[i],
                               padding: const EdgeInsets.symmetric(horizontal: 8),
                               child: InkWell(
                                 onTap: () {
@@ -362,50 +381,51 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                 ],
               ),
               // 🔽 Dropdown - Show only if open
-              if (isDropdownOpen)
-                Column(
-                  children: [
-                    SizedBox(
-                      height: 70,
-                    ),
-                    Material(
-                      elevation: 4,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(
-                          // maxHeight: 300,
-                          minWidth: 160,
-                          maxWidth: 300,
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: menus[selectedIndex].subItems.length,
-                          itemBuilder: (context, j) {
-                            return Container(
-                              color: dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
-                              child: ListTile(
-                                title: Text(
-                                  menus[selectedIndex].subItems[j],
-                                  style: TextStyle(
-                                    color: dropdownIndex == j ? Colors.white : Colors.black,
+              if (isDropdownOpen && selectedIndex != null)
+                Positioned(
+                  top: 50, // navbar height
+                  left: _getMenuX(selectedIndex!),
+                  child: Column(
+                    children: [
+                      Material(
+                        elevation: 4,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            // maxHeight: 300,
+                            minWidth: 160,
+                            maxWidth: 300,
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: menus[selectedIndex!].subItems.length,
+                            itemBuilder: (context, j) {
+                              return Container(
+                                color: dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
+                                child: ListTile(
+                                  title: Text(
+                                    menus[selectedIndex!].subItems[j],
+                                    style: TextStyle(
+                                      color: dropdownIndex == j ? Colors.white : Colors.black,
+                                    ),
                                   ),
+                                  onTap: () {
+                                    final selectedItem = menus[selectedIndex!].subItems[j];
+                                    widget.onSelect?.call(selectedItem);
+                                    setState(() {
+                                      selectedTexts.remove(selectedItem);
+                                      selectedTexts.add(selectedItem);
+                                      dropdownIndex = j;
+                                      isDropdownOpen = false;
+                                    });
+                                  },
                                 ),
-                                onTap: () {
-                                  final selectedItem = menus[selectedIndex].subItems[j];
-                                  widget.onSelect?.call(selectedItem);
-                                  setState(() {
-                                    selectedTexts.remove(selectedItem);
-                                    selectedTexts.add(selectedItem);
-                                    dropdownIndex = j;
-                                    isDropdownOpen = false;
-                                  });
-                                },
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
             ],
           ),

@@ -16,6 +16,9 @@ import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
+import '../widgets/pickup_widget.dart';
+import '../widgets/time_picker_widget.dart';
+import '../widgets/user_info_widget.dart';
 import '../widgets/via_location.dart';
 import 'focusable_text_button.dart';
 import 'form_short_cut_key.dart';
@@ -30,18 +33,11 @@ class BookingFormWidget extends StatefulWidget {
 }
 
 class _BookingFormWidgetState extends State<BookingFormWidget> {
-  final DashboardController locationCtrl = Get.put(DashboardController());
 
   final dashboardController = Get.find<DashboardController>();
   String selectedMenu = "";
   String selectedDropdownItem = "";
-  final GlobalKey bookingKey = GlobalKey();
-  final GlobalKey bookingDropKey = GlobalKey();
-  final GlobalKey jourKey = GlobalKey();
-  final GlobalKey accKey = GlobalKey();
-  final GlobalKey payKey = GlobalKey();
-  final GlobalKey vehKey = GlobalKey();
-  final GlobalKey dRVKey = GlobalKey();
+
 
   String? selectedDropDownValue;
 
@@ -65,277 +61,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               SizedBox(
                 height: screenHeight * 0.018,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min, // sirf jitni jagah chahiye utni le
-                  mainAxisAlignment: MainAxisAlignment.start, // gap remove
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Label
-                    Text(
-                      AppText.pick,
-                      style: mozillaTextSemiBoldText(
-                        context: context,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-
-                    // Pickup Location Input with Keyboard Support
-                    SizedBox(
-                      width: Get.width / 4.5,
-                      height: 30,
-                      child: RawKeyboardListener(
-                        focusNode: locationCtrl.pickupKeyboardFocusNode,
-                        onKey: (event) {
-                          if (event is RawKeyDownEvent) {
-                            if (event.logicalKey ==
-                                LogicalKeyboardKey.arrowDown &&
-                                locationCtrl.highlightedIndex.value <
-                                    locationCtrl.suggestions.length - 1) {
-                              locationCtrl.highlightedIndex.value++;
-                            } else if (event.logicalKey ==
-                                LogicalKeyboardKey.arrowUp &&
-                                locationCtrl.highlightedIndex.value > 0) {
-                              locationCtrl.highlightedIndex.value--;
-                            } else if (event.logicalKey ==
-                                LogicalKeyboardKey.enter) {
-                              final selected = locationCtrl.suggestions[
-                              locationCtrl.highlightedIndex.value];
-                              locationCtrl.selectSuggestion(selected);
-                            }
-                          }
-                        },
-                        child: Focus(
-                          focusNode: locationCtrl.pickupFocusNode,
-                          onFocusChange: (hasFocus) {
-                            if (hasFocus) {
-                              locationCtrl.activeFieldKey.value =
-                                  locationCtrl.pickupFieldKey;
-                            }
-                          },
-                          child: CustomTextField(
-                            key: locationCtrl.pickupFieldKey,
-                            borderRadius: 6,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 12),
-                            controller: controller.PickupController,
-                            focusNode:
-                            locationCtrl.pickupTextFieldFocusNode,
-                            onChanged: locationCtrl.onInputChanged,
-                            prefixIcon: const Icon(Icons.location_pin,
-                                color: Colors.red),
-                            hintText: 'PickUP Location'.toUpperCase(),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Swap Button
-                    IconButton(
-
-                      style: ButtonStyle(
-                        backgroundColor:
-                        WidgetStateProperty.all(Colors.grey.shade100),
-                        shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            )),
-                      ),
-                      onPressed: () {
-                        String temPic = controller.PickupController.text;
-                        String temDrop =
-                            locationCtrl.DropoffController.text;
-                        controller.PickupController.text = temDrop;
-                        locationCtrl.DropoffController.text = temPic;
-                        controller.update();
-                      },
-                      icon: const Icon(Icons.swap_vert,
-                          color: Color(0xFF575797), size: 20),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Select Plot Button
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 30,
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: DynamicColors.primaryClr,
-                                width: 1.2),
-                          ),
-                          child: Center(
-                            child: buildMenuTab(
-                                Icons.book_online,
-                                "Select Plot",
-                                "Select Plot",
-                                ["BASE NE7", "WILLESDEN"],
-                                bookingKey),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Extra Text Field
-                    SizedBox(
-                      width: Get.width / 13,
-                      child: CustomTextField(
-                        hintText: "PICKUP NOTES",
-                        borderRadius: 6,
-                        controller: TextEditingController(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: screenHeight * 0.01,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Label
-                    Text(
-                      AppText.drop,
-                      style: mozillaTextSemiBoldText(
-                        context: context,
-                        fontSize: 13,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-
-                    // Dropoff Location Input with Keyboard Support
-                    SizedBox(
-                      width: Get.width / 4.5,
-                      height: 30,
-                      child: RawKeyboardListener(
-                        focusNode: locationCtrl.dropoffKeyboardFocusNode,
-                        onKey: (event) {
-                          if (event is RawKeyDownEvent) {
-                            if (event.logicalKey ==
-                                LogicalKeyboardKey.arrowDown &&
-                                locationCtrl.highlightedIndex.value <
-                                    locationCtrl.suggestions.length - 1) {
-                              locationCtrl.highlightedIndex.value++;
-                            } else if (event.logicalKey ==
-                                LogicalKeyboardKey.arrowUp &&
-                                locationCtrl.highlightedIndex.value > 0) {
-                              locationCtrl.highlightedIndex.value--;
-                            } else if (event.logicalKey ==
-                                LogicalKeyboardKey.enter) {
-                              final selected = locationCtrl.suggestions[
-                              locationCtrl.highlightedIndex.value];
-                              locationCtrl.selectSuggestion(selected);
-                            }
-                          }
-                        },
-                        child: Focus(
-                          focusNode: locationCtrl.dropoffFocusNode,
-                          onFocusChange: (hasFocus) {
-                            if (hasFocus) {
-                              locationCtrl.activeFieldKey.value =
-                                  locationCtrl.dropoffFieldKey;
-                            }
-                          },
-                          child: CustomTextField(
-                            key: locationCtrl.dropoffFieldKey,
-                            borderRadius: 6,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 12),
-                            controller: controller.DropoffController,
-                            focusNode:
-                            locationCtrl.dropoffTextFieldFocusNode,
-                            onChanged: locationCtrl.onInputChanged,
-                            prefixIcon: const Icon(Icons.location_pin,
-                                color: Colors.red),
-                            hintText: 'Drop Location',
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Swap Button
-                    IconButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                        WidgetStateProperty.all(Colors.grey.shade100),
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6)),
-                        ),
-                      ),
-                      onPressed: () {
-                        String temPic = controller.PickupController.text;
-                        String temDrop =
-                            locationCtrl.DropoffController.text;
-                        controller.PickupController.text = temDrop;
-                        locationCtrl.DropoffController.text = temPic;
-                        controller.update();
-                      },
-                      icon: const Icon(Icons.swap_vert,
-                          color: Color(0xFF575797), size: 21),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Select Plot Button
-                    MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 30,
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(
-                                color: DynamicColors.primaryClr,
-                                width: 1.2),
-                          ),
-                          child: Center(
-                            child: buildMenuTab(
-                                Icons.book_online,
-                                "Select Plot",
-                                "Select Plot",
-                                ["BASE NE7", "WILLESDEN"],
-                                bookingDropKey),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 10),
-
-                    // Extra Text Field
-                    SizedBox(
-                      width: Get.width / 13,
-                      height: 30,
-                      child: CustomTextField(
-                        borderRadius: 6,
-                        hintText: "DROPOFF NOTE",
-                        controller: TextEditingController(),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ///todo pick and drop widget
+              PickupWidget(),
+              ///todo pick and drop widget
               SizedBox(
                 height: screenHeight * 0.01,
               ),
@@ -351,51 +79,51 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       child: Column(
                         children: [
                           RawKeyboardListener(
-                            focusNode: locationCtrl.via1KeyboardFocusNode,
+                            focusNode: controller.via1KeyboardFocusNode,
                             onKey: (event) {
                               if (event is RawKeyDownEvent) {
                                 if (event.logicalKey ==
                                     LogicalKeyboardKey.arrowDown) {
-                                  if (locationCtrl
+                                  if (controller
                                       .highlightedIndex.value <
-                                      locationCtrl.suggestions.length -
+                                      controller.suggestions.length -
                                           1) {
-                                    locationCtrl.highlightedIndex.value++;
+                                    controller.highlightedIndex.value++;
                                   }
                                 } else if (event.logicalKey ==
                                     LogicalKeyboardKey.arrowUp) {
-                                  if (locationCtrl
+                                  if (controller
                                       .highlightedIndex.value >
                                       0) {
-                                    locationCtrl.highlightedIndex.value--;
+                                    controller.highlightedIndex.value--;
                                   }
                                 } else if (event.logicalKey ==
                                     LogicalKeyboardKey.enter) {
                                   final selected =
-                                  locationCtrl.suggestions[
-                                  locationCtrl
+                                  controller.suggestions[
+                                  controller
                                       .highlightedIndex.value];
-                                  locationCtrl.selectSuggestion(selected);
+                                  controller.selectSuggestion(selected);
                                 }
                               }
                             },
                             child: Focus(
-                              focusNode: locationCtrl.via1FocusNode,
+                              focusNode: controller.via1FocusNode,
                               onFocusChange: (hasFocus) {
                                 if (hasFocus) {
-                                  locationCtrl.activeFieldKey.value =
-                                      locationCtrl.via1FieldKey;
+                                  controller.activeFieldKey.value =
+                                      controller.via1FieldKey;
                                 }
                               },
                               child: SizedBox(
                                 height: screenHeight * 0.05,
                                 child: TextFormField(
-                                  key: locationCtrl.via1FieldKey,
+                                  key: controller.via1FieldKey,
                                   controller:
-                                  locationCtrl.ViaLocation1Controller,
+                                  controller.ViaLocation1Controller,
                                   focusNode:
-                                  locationCtrl.via1TextFieldFocusNode,
-                                  onChanged: locationCtrl.onInputChanged,
+                                  controller.via1TextFieldFocusNode,
+                                  onChanged: controller.onInputChanged,
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.symmetric(
                                         horizontal: 1, vertical: 10),
@@ -405,10 +133,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                         color: Color(0xFF43489A)),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
-                                        locationCtrl
+                                        controller
                                             .ViaLocation1Controller
                                             .clear();
-                                        locationCtrl.suggestions.clear();
+                                        controller.suggestions.clear();
                                       },
                                       child: Icon(Icons.cancel,
                                           color: Color(0xFF575797),
@@ -445,51 +173,51 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       child: Column(
                         children: [
                           RawKeyboardListener(
-                            focusNode: locationCtrl.via2KeyboardFocusNode,
+                            focusNode: controller.via2KeyboardFocusNode,
                             onKey: (event) {
                               if (event is RawKeyDownEvent) {
                                 if (event.logicalKey ==
                                     LogicalKeyboardKey.arrowDown) {
-                                  if (locationCtrl
+                                  if (controller
                                       .highlightedIndex.value <
-                                      locationCtrl.suggestions.length -
+                                      controller.suggestions.length -
                                           1) {
-                                    locationCtrl.highlightedIndex.value++;
+                                    controller.highlightedIndex.value++;
                                   }
                                 } else if (event.logicalKey ==
                                     LogicalKeyboardKey.arrowUp) {
-                                  if (locationCtrl
+                                  if (controller
                                       .highlightedIndex.value >
                                       0) {
-                                    locationCtrl.highlightedIndex.value--;
+                                    controller.highlightedIndex.value--;
                                   }
                                 } else if (event.logicalKey ==
                                     LogicalKeyboardKey.enter) {
                                   final selected =
-                                  locationCtrl.suggestions[
-                                  locationCtrl
+                                  controller.suggestions[
+                                  controller
                                       .highlightedIndex.value];
-                                  locationCtrl.selectSuggestion(selected);
+                                  controller.selectSuggestion(selected);
                                 }
                               }
                             },
                             child: Focus(
-                              focusNode: locationCtrl.via2FocusNode,
+                              focusNode: controller.via2FocusNode,
                               onFocusChange: (hasFocus) {
                                 if (hasFocus) {
-                                  locationCtrl.activeFieldKey.value =
-                                      locationCtrl.via2FieldKey;
+                                  controller.activeFieldKey.value =
+                                      controller.via2FieldKey;
                                 }
                               },
                               child: SizedBox(
                                 height: screenHeight * 0.05,
                                 child: TextFormField(
-                                  key: locationCtrl.via2FieldKey,
+                                  key: controller.via2FieldKey,
                                   controller:
-                                  locationCtrl.ViaLocation2Controller,
+                                  controller.ViaLocation2Controller,
                                   focusNode:
-                                  locationCtrl.via2TextFieldFocusNode,
-                                  onChanged: locationCtrl.onInputChanged,
+                                  controller.via2TextFieldFocusNode,
+                                  onChanged: controller.onInputChanged,
                                   decoration: InputDecoration(
                                     contentPadding: EdgeInsets.symmetric(
                                         horizontal: 1, vertical: 10),
@@ -499,10 +227,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                         color: Color(0xFF43489A)),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
-                                        locationCtrl
+                                        controller
                                             .ViaLocation2Controller
                                             .clear();
-                                        locationCtrl.suggestions.clear();
+                                        controller.suggestions.clear();
                                       },
                                       child: Icon(Icons.cancel,
                                           color: Color(0xFF575797),
@@ -530,17 +258,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                   ],
                 ),
               ],
-              Wrap(
-                spacing: 10, // horizontal gap
-                runSpacing: 8, // vertical gap when wrapped
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  _buildField(context, AppText.name),
-                  _buildField(context, AppText.email),
-                  _buildField(context, AppText.mobile),
-                  _buildField(context, AppText.tel),
-                ],
-              ),
+              ///todo user info widget
+              UserInfoWidget(),
+              ///todo user info widget
               SizedBox(
                 height: screenHeight * 0.01,
               ),
@@ -565,10 +285,12 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         ),
                       ),
                       const SizedBox(width: 10),
+                      ///todo Time widget
                       SizedBox(
                           width: 180, // fixed width per field
                           height: 30,
-                          child: CustomTimePicker()),
+                          child:  CustomTimePicker()),
+                      ///todo Time widget
                     ],
                   ),
                   _buildFielddd(
@@ -604,7 +326,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         "O/W",
                         "Select Plot",
                         ["O/W", "R/N", "W/R"],
-                        jourKey,
+                        controller.jourKey,
                       ),
                     ),
                   ),
@@ -713,10 +435,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         AppText.pay,
                         style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 16,
+                          fontSize: 13,
                         ),
                       ),
-                      SizedBox(width: 25),
+                      SizedBox(width: 5),
                       GestureDetector(
                         child: Container(
                           width: Get.width / 13,
@@ -736,7 +458,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               "ACCOUNT",
                               "CREDIT CARD PAID"
                             ],
-                            payKey,
+                            controller.payKey,
                           ),
                         ),
                       ),
@@ -769,7 +491,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         AppText.veh,
                         style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 16,
+                          fontSize: 13,
                         ),
                       ),
                       SizedBox(width: 25),
@@ -795,7 +517,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               "MPV EXECUTIVE",
                               "MINI BUS"
                             ],
-                            vehKey,
+                            controller.vehKey,
                           ),
                         ),
                       ),
@@ -818,7 +540,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       Text(
                         AppText.quotation,
                         style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 16),
+                            context: context, fontSize: 13),
                       ),
                     ],
                   ),
@@ -838,7 +560,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       Text(
                         AppText.sms,
                         style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 16),
+                            context: context, fontSize: 13),
                       ),
                     ],
                   ),
@@ -858,7 +580,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       Text(
                         AppText.email,
                         style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 16),
+                            context: context, fontSize: 13),
                       ),
                     ],
                   ),
@@ -1108,30 +830,6 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     );
   }
 
-  /// Reusable Field Widget
-  Widget _buildField(BuildContext context, String label) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: mozillaTextSemiBoldText(
-            context: context,
-            fontSize: 13,
-          ),
-        ),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 150, // fixed width per field
-          height: 30,
-          child: CustomTextField(
-            controller: TextEditingController(),
-            borderRadius: 4,
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget buildMenuTab(IconData icon, String label, String menuKey,
       List<String> items, GlobalKey key) {
@@ -1194,200 +892,3 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 ///todo calender widget
 
 ///todo calender widget
-
-///todo Time widget
-
-class CustomTimePicker extends StatefulWidget {
-  const CustomTimePicker({Key? key}) : super(key: key);
-
-  @override
-  State<CustomTimePicker> createState() => _CustomTimePickerState();
-}
-
-class _CustomTimePickerState extends State<CustomTimePicker> {
-  final TextEditingController _timeController = TextEditingController();
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
-
-  int selectedHour = 9;
-  int selectedMinute = 8;
-  String selectedPeriod = "AM";
-
-  @override
-  void initState() {
-    super.initState();
-    _updateTimeText();
-  }
-
-  void _updateTimeText() {
-    final hourStr = selectedHour.toString().padLeft(2, '0');
-    final minuteStr = selectedMinute.toString().padLeft(2, '0');
-    _timeController.text = "$hourStr:$minuteStr $selectedPeriod";
-  }
-
-  void _toggleTimeDropdown() {
-    if (_overlayEntry == null) {
-      _overlayEntry = _buildOverlayEntry();
-      Overlay.of(context).insert(_overlayEntry!);
-    } else {
-      _closeDropdown();
-    }
-  }
-
-  void _closeDropdown() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
-  void _selectAndClose({int? hour, int? minute, String? period}) {
-    setState(() {
-      if (hour != null) selectedHour = hour;
-      if (minute != null) selectedMinute = minute;
-      if (period != null) selectedPeriod = period;
-      _updateTimeText();
-    });
-    _closeDropdown();
-  }
-
-  OverlayEntry _buildOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    final offset = renderBox.localToGlobal(Offset.zero);
-
-    return OverlayEntry(
-      builder: (context) => Positioned(
-        left: offset.dx,
-        top: offset.dy + 80,
-        width: 150,
-        height: 200,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          child: Material(
-            elevation: 4,
-            child: Row(
-              children: [
-                _buildScrollColumn(
-                  1,
-                  12,
-                  selectedHour,
-                  (value) => _selectAndClose(hour: value),
-                ),
-                _buildScrollColumn(
-                  0,
-                  59,
-                  selectedMinute,
-                  (value) => _selectAndClose(minute: value),
-                ),
-                _buildAmPmColumn(),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildScrollColumn(
-      int start, int end, int selected, Function(int) onSelect) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: end - start + 1,
-        itemBuilder: (context, index) {
-          int value = start + index;
-          final valueStr = value.toString().padLeft(2, '0');
-          final isSelected = value == selected;
-
-          return InkWell(
-            onTap: () => onSelect(value),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              color: isSelected ? Colors.blue : null,
-              child: Center(
-                child: Text(
-                  valueStr,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildAmPmColumn() {
-    return Expanded(
-      child: Column(
-        children: ['AM', 'PM'].map((period) {
-          final isSelected = period == selectedPeriod;
-          return InkWell(
-            onTap: () => _selectAndClose(period: period),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              color: isSelected ? Colors.blue : null,
-              child: Center(
-                child: Text(
-                  period,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    _timeController.dispose();
-    _overlayEntry?.remove();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: SizedBox(
-          height: 30,
-          child: TextFormField(
-            controller: _timeController,
-            readOnly: true,
-            style: mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-            ),
-            onTap: _toggleTimeDropdown,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 6),
-              hintText: "TIME",
-              hintStyle: mozillaTextSemiBoldText(
-                  context: context,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800
-              ),
-              suffixIcon: Icon(
-                Icons.access_time,
-                size: 18,
-              ),
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-///todo Time widget

@@ -3,6 +3,7 @@
 import 'package:get/get.dart';
 import '../view/auth/login_screen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
+import '../view/dashboard_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
 part 'app_routes.dart';
 
@@ -21,6 +22,10 @@ class AppPages {
       name: _Paths.dashBoarScreen,
       page: () => DashBoarScreen(),
       binding: DashBoardBindings(),
+    ),
+    GetPage(
+      name: _Paths.createBooking,
+      page: () => CreateBooking(),
     ),
   ];
 }
