@@ -47,7 +47,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
     MenuItemData("SETTINGS", Icons.settings, ["COMPANY INFORMATION", "COMPANY CONFIGURATION", "DOCUMENT NUMBER", "TEMPLATE SETTINGS", "BOOKING CLEARING UTILITY", "LOCATION TYPE SHORTCUTS", "VOIP SETTINGS", "GENERAL SMS CONFIG", "SMS SETTINGS", "CHAT WITH DRIVER AND PASSENGER", "PERMISSION SETTINGS"]),
   ];
 
-  int? selectedIndex;
+  int selectedIndex= 0;
   int dropdownIndex = 0;
   bool isDropdownOpen = false;
 
@@ -96,16 +96,16 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
     if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value != "alert") {
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         setState(() {
-          selectedIndex = (selectedIndex! + 1) % menus.length;
+          selectedIndex = (selectedIndex + 1) % menus.length;
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
         setState(() {
-          selectedIndex = (selectedIndex! - 1 + menus.length) % menus.length;
+          selectedIndex = (selectedIndex - 1 + menus.length) % menus.length;
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         if (isDropdownOpen) {
           setState(() {
-            dropdownIndex = (dropdownIndex + 1) % menus[selectedIndex!].subItems.length;
+            dropdownIndex = (dropdownIndex + 1) % menus[selectedIndex].subItems.length;
           });
         } else {
           setState(() {
@@ -115,13 +115,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         if (isDropdownOpen) {
           setState(() {
-            dropdownIndex = (dropdownIndex - 1 + menus[selectedIndex!].subItems.length) %
-                menus[selectedIndex!].subItems.length;
+            dropdownIndex = (dropdownIndex - 1 + menus[selectedIndex].subItems.length) %
+                menus[selectedIndex].subItems.length;
           });
         }
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         if (isDropdownOpen) {
-          String selectedItem = menus[selectedIndex!].subItems[dropdownIndex];
+          String selectedItem = menus[selectedIndex].subItems[dropdownIndex];
           widget.onSelect?.call(selectedItem);
           setState(() {
             selectedTexts.remove(selectedItem);
@@ -384,7 +384,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
               if (isDropdownOpen && selectedIndex != null)
                 Positioned(
                   top: 50, // navbar height
-                  left: _getMenuX(selectedIndex!),
+                  left: _getMenuX(selectedIndex),
                   child: Column(
                     children: [
                       Material(
@@ -397,19 +397,19 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                           ),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            itemCount: menus[selectedIndex!].subItems.length,
+                            itemCount: menus[selectedIndex].subItems.length,
                             itemBuilder: (context, j) {
                               return Container(
                                 color: dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
                                 child: ListTile(
                                   title: Text(
-                                    menus[selectedIndex!].subItems[j],
+                                    menus[selectedIndex].subItems[j],
                                     style: TextStyle(
                                       color: dropdownIndex == j ? Colors.white : Colors.black,
                                     ),
                                   ),
                                   onTap: () {
-                                    final selectedItem = menus[selectedIndex!].subItems[j];
+                                    final selectedItem = menus[selectedIndex].subItems[j];
                                     widget.onSelect?.call(selectedItem);
                                     setState(() {
                                       selectedTexts.remove(selectedItem);

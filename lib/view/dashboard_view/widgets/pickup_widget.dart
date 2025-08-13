@@ -112,15 +112,8 @@ class _PickupWidgetState extends State<PickupWidget> {
                               onChanged: controller.onInputChanged,
                               prefixIcon: const Icon(Icons.location_pin, color: Colors.red),
                               hintText: 'PICKUP LOCATION',
-                            ),
-                          ),
-                        ),
-                      ),
+                      suffixIcon: IconButton(
 
-                      SizedBox(width: isMobile ? 0 : 10, height: isMobile ? 10 : 0),
-
-                      // Swap Button
-                      IconButton(
                         style: ButtonStyle(
                           backgroundColor: WidgetStateProperty.all(Colors.grey.shade100),
                           shape: WidgetStateProperty.all(
@@ -139,6 +132,13 @@ class _PickupWidgetState extends State<PickupWidget> {
                         icon: const Icon(Icons.swap_vert,
                             color: Color(0xFF575797), size: 20),
                       ),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      // Swap Button
+
 
                       SizedBox(width: isMobile ? 0 : 10, height: isMobile ? 10 : 0),
 
@@ -148,6 +148,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                         child: GestureDetector(
                           onTap: () {},
                           child: Container(
+                              width: notesWidth,
                             height: 30, // ✅ match field height
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             decoration: BoxDecoration(
@@ -223,11 +224,11 @@ class _PickupWidgetState extends State<PickupWidget> {
                             }
                           },
                           child: Focus(
-                            focusNode: controller.pickupFocusNode,
+                            focusNode: controller.dropoffFocusNode,
                             onFocusChange: (hasFocus) {
                               if (hasFocus) {
                                 controller.activeFieldKey.value =
-                                    controller.pickupFieldKey;
+                                    controller.dropoffFieldKey;
                               }
                             },
                             child: CustomTextField(
@@ -236,37 +237,34 @@ class _PickupWidgetState extends State<PickupWidget> {
                               contentPadding:
                               const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                               controller: controller.DropoffController,
-                              focusNode: controller.pickupTextFieldFocusNode,
+                              focusNode: controller.dropoffTextFieldFocusNode,
                               onChanged: controller.onInputChanged,
                               prefixIcon: const Icon(Icons.location_pin, color: Colors.red),
                               hintText: 'Drop Location',
+                          suffixIcon: IconButton(
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(Colors.grey.shade100),
+                              shape: WidgetStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            ),
+                            onPressed: () {
+                              String temPic = controller.PickupController.text;
+                              String temDrop = controller.DropoffController.text;
+                              controller.PickupController.text = temDrop;
+                              controller.DropoffController.text = temPic;
+                              controller.update();
+                            },
+                            icon: const Icon(Icons.swap_vert,
+                                color: Color(0xFF575797), size: 20),
+                          ),
                             ),
                           ),
                         ),
                       ),
 
-                      SizedBox(width: isMobile ? 0 : 10, height: isMobile ? 10 : 0),
-
-                      // Swap Button
-                      IconButton(
-                        style: ButtonStyle(
-                          backgroundColor: WidgetStateProperty.all(Colors.grey.shade100),
-                          shape: WidgetStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                        ),
-                        onPressed: () {
-                          String temPic = controller.PickupController.text;
-                          String temDrop = controller.DropoffController.text;
-                          controller.PickupController.text = temDrop;
-                          controller.DropoffController.text = temPic;
-                          controller.update();
-                        },
-                        icon: const Icon(Icons.swap_vert,
-                            color: Color(0xFF575797), size: 20),
-                      ),
 
                       SizedBox(width: isMobile ? 0 : 10, height: isMobile ? 10 : 0),
 
@@ -276,6 +274,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                         child: GestureDetector(
                           onTap: () {},
                           child: Container(
+                              width: notesWidth,
                               height: 30, // ✅ match field height
                               padding: const EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
@@ -298,7 +297,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                         width: notesWidth,
                         height: 30, // ✅ match height
                         child: CustomTextField(
-                          hintText: "PICKUP NOTES",
+                          hintText: "DROP NOTES",
                           borderRadius: 6,
                           controller: TextEditingController(),
                         ),

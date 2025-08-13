@@ -39,7 +39,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   String selectedDropdownItem = "";
 
 
-  String? selectedDropDownValue;
+
 
   @override
   Widget build(BuildContext context) {
@@ -261,10 +261,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               ///todo user info widget
               UserInfoWidget(),
               ///todo user info widget
-              SizedBox(
-                height: screenHeight * 0.01,
-              ),
-              Wrap(
+
+                /*  Wrap(
                 spacing: 10, // horizontal gap
                 runSpacing: 8, // vertical gap
                 crossAxisAlignment: WrapCrossAlignment.center,
@@ -475,7 +473,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                     child: Icon(Icons.calendar_month, size: 20),
                   ),
                 ],
-              ),
+              ),*/
               SizedBox(
                 height: screenHeight * 0.01,
               ),
@@ -809,26 +807,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     });
   }
 
-  /// Reusable Field Builder
-  Widget _buildFielddd(BuildContext context, String label, Widget fieldWidget) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: mozillaTextSemiBoldText(
-            context: context,
-            fontSize: 13,
-          ),
-        ),
-        const SizedBox(width: 10),
-        SizedBox(
-          width: 150, // field width
-          child: fieldWidget,
-        ),
-      ],
-    );
-  }
+
+
 
 
   Widget buildMenuTab(IconData icon, String label, String menuKey,

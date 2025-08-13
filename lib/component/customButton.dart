@@ -9,14 +9,15 @@ import 'package:get/get.dart';
 import 'color.dart';
 
 class CustomButton extends StatelessWidget {
-  CustomButton({super.key,this.onTap,
+  CustomButton({this.onTap,
   this.width,
     this.btnText,
     this.height,
     this.borderRadius,
     this.style,
     this.verticalPadding,
-    this.btnColor
+    this.btnColor,
+    this.key
   });
 
   final GestureTapCallback? onTap;
@@ -27,10 +28,12 @@ class CustomButton extends StatelessWidget {
   String? btnText;
   final TextStyle? style;
   final Color? btnColor;
+  Key? key;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      key: key,
       onTap: onTap,
       child: SizedBox(
         width: width ?? Get.width/2.5,

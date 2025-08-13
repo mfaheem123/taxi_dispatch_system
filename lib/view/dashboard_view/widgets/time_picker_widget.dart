@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 
 class CustomTimePicker extends StatefulWidget {
@@ -395,7 +396,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
         decoration: BoxDecoration(
           // border: Border.all(color: active ? Colors.blue : Colors.grey.shade400),
           borderRadius: BorderRadius.circular(6),
@@ -403,8 +405,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         ),
         child: Text(
           text,
-          style: TextStyle(
-            fontSize: 16,
+          style: mozillaTextSemiBoldText(
+            fontSize: 10,
             fontWeight: active ? FontWeight.w700 : FontWeight.w500,
             color: active ? Colors.blue.shade800 : Colors.black87,
           ),
@@ -468,34 +470,52 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       focusNode: _focusNode,
       autofocus: true,
       onKey: _onRawKey,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _partBox(dayText, activePart == 0, onTap: () {
-            setState(() {
-              activePart = 0;
-              _focusNode.requestFocus();
-            });
-          }),
-          const SizedBox(width: 6),
-          Text('/', style: TextStyle(fontSize: 18, color: Colors.grey[700])),
-          const SizedBox(width: 6),
-          _partBox(monthText, activePart == 1, onTap: () {
-            setState(() {
-              activePart = 1;
-              _focusNode.requestFocus();
-            });
-          }),
-          const SizedBox(width: 6),
-          Text('/', style: TextStyle(fontSize: 18, color: Colors.grey[700])),
-          const SizedBox(width: 6),
-          _partBox(yearText, activePart == 2, onTap: () {
-            setState(() {
-              activePart = 2;
-              _focusNode.requestFocus();
-            });
-          }),
-        ],
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: DynamicColors.primaryClr),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisSize: MainAxisSize.min,
+          children: [
+            _partBox(dayText, activePart == 0, onTap: () {
+              setState(() {
+                activePart = 0;
+                _focusNode.requestFocus();
+              });
+            }),
+
+            Text('/', style: mozillaTextSemiBoldText(
+                context: context,
+                fontSize: 10,
+                fontWeight: FontWeight.w800
+            ),),
+
+            _partBox(monthText, activePart == 1, onTap: () {
+              setState(() {
+                activePart = 1;
+                _focusNode.requestFocus();
+              });
+            }),
+
+            Text('/', style: mozillaTextSemiBoldText(
+                context: context,
+                fontSize: 10,
+                fontWeight: FontWeight.w800
+            ),),
+
+            _partBox(yearText, activePart == 2, onTap: () {
+              setState(() {
+                activePart = 2;
+                _focusNode.requestFocus();
+              });
+            }),
+            Icon(Icons.calendar_month,
+            size: 20,
+            )
+          ],
+        ),
       ),
     );
   }

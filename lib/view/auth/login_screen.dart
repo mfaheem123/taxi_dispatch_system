@@ -29,15 +29,21 @@ class LoginScreen extends StatelessWidget {
             SizedBox(
               height: 40,
             ),
-            CustomTextField(
-              hintText: AppText.username,
-              controller: TextEditingController(),),
+            SizedBox(
+              width:50,
+              child: CustomTextField(
+                hintText: AppText.username,
+                controller: TextEditingController(),),
+            ),
             SizedBox(
               height: 30,
             ),
-            CustomTextField(
-              controller: TextEditingController(),
-              hintText: AppText.password,
+            SizedBox(
+              width:50,
+              child: CustomTextField(
+                controller: TextEditingController(),
+                hintText: AppText.password,
+              ),
             ),
             SizedBox(
               height: 35,

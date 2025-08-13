@@ -344,19 +344,19 @@ class _TableScreenState extends State<TableScreen> {
             DataCell(
                 Row(
               children: [
-                ImageIcon(AssetImage(Images.fowardIcon),color: Colors.green),
+                ImageIcon(AssetImage(Images.fowardIcon),color: Colors.green,size: 20,),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1.0),
                     child: Text("|")),
-                Icon(Icons.edit_calendar_rounded, color: Colors.red),
+                Icon(Icons.edit_calendar_rounded, color: Colors.red,size: 20,),
                 Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 1.0),child: Text("|")),
-                Icon(Icons.delete_forever, color: Colors.green),
+                Icon(Icons.delete_forever, color: Colors.green,size: 20,),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 1.0),
                   child: Text("|"),
                 ),
-                Icon(Icons.more_horiz, color: Colors.green),
+                Icon(Icons.more_horiz, color: Colors.green,size: 20,),
               ],
             )),
           ],

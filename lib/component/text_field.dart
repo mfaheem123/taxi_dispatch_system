@@ -20,6 +20,7 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.hintStyle,
+    this.suffixIcon,
   });
 
   String? labelText;
@@ -33,6 +34,7 @@ class CustomTextField extends StatelessWidget {
   TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
   final TextStyle? hintStyle;
+  Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,7 @@ class CustomTextField extends StatelessWidget {
                 fontWeight: FontWeight.w800
               ),
               labelText: labelText,
+              suffixIcon: suffixIcon,
               contentPadding: contentPadding?? EdgeInsets.symmetric(vertical: 0, horizontal: 20),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius??20), // Rounded corners
