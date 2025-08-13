@@ -39,7 +39,7 @@ class DashboardController extends GetxController {
   final GlobalKey jourKey = GlobalKey();
   final GlobalKey accKey = GlobalKey();
   final GlobalKey payKey = GlobalKey();
-  final GlobalKey vehKey = GlobalKey();
+  String? vehKey;
   final GlobalKey dRVKey = GlobalKey();
 
 

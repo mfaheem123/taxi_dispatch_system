@@ -38,7 +38,40 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   String selectedMenu = "";
   String selectedDropdownItem = "";
 
+  // FocusNodes
+  final FocusNode vehFocus = FocusNode();
+  final FocusNode switchFocus = FocusNode();
+  final FocusNode smsFocus = FocusNode();
+  final FocusNode emailFocus = FocusNode();
+  final FocusNode passFocus = FocusNode();
+  final FocusNode luggFocus = FocusNode();
+  final FocusNode sluggFocus = FocusNode();
 
+  // Controllers
+  final TextEditingController passController = TextEditingController();
+  final TextEditingController luggController = TextEditingController();
+  final TextEditingController sluggController = TextEditingController();
+
+  // State variables
+  bool switchValue = false;
+  bool smsChecked = false;
+  bool emailChecked = false;
+
+  @override
+  void dispose() {
+    vehFocus.dispose();
+    switchFocus.dispose();
+    smsFocus.dispose();
+    emailFocus.dispose();
+    passFocus.dispose();
+    luggFocus.dispose();
+    sluggFocus.dispose();
+
+    passController.dispose();
+    luggController.dispose();
+    sluggController.dispose();
+    super.dispose();
+  }
 
 
   @override
@@ -477,169 +510,180 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               SizedBox(
                 height: screenHeight * 0.01,
               ),
-              Wrap(
-                spacing: 38, // Horizontal gap
-                runSpacing: 10, // Vertical gap when wrapping
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppText.veh,
-                        style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                        ),
-                      ),
-                      SizedBox(width: 25),
-                      GestureDetector(
-                        child: Container(
-                          width: Get.width / 13,
-                          padding: EdgeInsets.symmetric(horizontal: 6),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                                color: DynamicColors.primaryClr),
+              FocusTraversalGroup(
+                policy: WidgetOrderTraversalPolicy(),
+                child: Wrap(
+                  spacing: 38, // Horizontal gap
+                  runSpacing: 10, // Vertical gap when wrapping
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          AppText.veh,
+                          style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
                           ),
-                          child: buildMenuTab(
-                            Icons.book_online,
-                            "VEH",
-                            "Select Account",
-                            [
-                              "SALOON",
-                              "ESTATE",
-                              "MPV6",
-                              "MPV PLUS",
-                              "MPV7",
-                              "MPV EXECUTIVE",
-                              "MINI BUS"
+                        ),
+                        SizedBox(width: 25),
+                        GestureDetector(
+                          child: Container(
+                            width: Get.width / 13,
+                            padding: EdgeInsets.symmetric(horizontal: 6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                  color: DynamicColors.primaryClr),
+                            ),
+                            child:
+                            CustomDropdownButton(
+                              itemList: [  "SALOON",
+                                "ESTATE",
+                                "MPV6",
+                                "MPV PLUS",
+                                "MPV7",
+                                "MPV EXECUTIVE",
+                                "MINI BUS"],
+                              hintText: "VEH",
+                              selectedDropDownValue: controller.vehKey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    // Switch + Quotation
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Focus(
+                          focusNode: switchFocus,
+                          onKey: (node, event) {
+                            if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
+                                event.isKeyPressed(LogicalKeyboardKey.space)) {
+                              // onChanged(!value);
+                              return KeyEventResult.handled;
+                            }
+                            return KeyEventResult.ignored;
+                          },
+                          child: AdvancedSwitch(
+                            controller: controller.switchController,
+                            activeColor: Colors.green,
+                            inactiveColor: Colors.grey,
+                            borderRadius: BorderRadius.circular(15),
+                            width: 30,
+                            height: 15,
+                            onChanged: (v) {},
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          AppText.quotation,
+                          style: mozillaTextSemiBoldText(
+                              context: context, fontSize: 13),
+                        ),
+                      ],
+                    ),
+
+                    // SMS Checkbox
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Checkbox(
+                          activeColor: DynamicColors.primaryClr,
+                          value: controller.smsCheckbox.value,
+                          onChanged: (v) {
+                            controller.smsCheckbox.value = v!;
+                            controller.update();
+                          },
+                        ),
+                        Text(
+                          AppText.sms,
+                          style: mozillaTextSemiBoldText(
+                              context: context, fontSize: 13),
+                        ),
+                      ],
+                    ),
+
+                    // Email Checkbox
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Checkbox(
+                          activeColor: DynamicColors.primaryClr,
+                          value: controller.emailCheckbox.value,
+                          onChanged: (v) {
+                            controller.emailCheckbox.value = v!;
+                            controller.update();
+                          },
+                        ),
+                        Text(
+                          AppText.email,
+                          style: mozillaTextSemiBoldText(
+                              context: context, fontSize: 13),
+                        ),
+                      ],
+                    ),
+
+                    // Pass, Lugg, Slugg fields
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          height: 30,
+                          child: CustomTextField(
+                            hintText: "Pass",
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
                             ],
-                            controller.vehKey,
+                            keyboardType: TextInputType.number,
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 4),
+                            controller: TextEditingController(),
+                            borderRadius: 4,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  // Switch + Quotation
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      AdvancedSwitch(
-                        controller: controller.switchController,
-                        activeColor: Colors.green,
-                        inactiveColor: Colors.grey,
-                        borderRadius: BorderRadius.circular(15),
-                        width: 30,
-                        height: 15,
-                        onChanged: (v) {},
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        AppText.quotation,
-                        style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 13),
-                      ),
-                    ],
-                  ),
-
-                  // SMS Checkbox
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        activeColor: DynamicColors.primaryClr,
-                        value: controller.smsCheckbox.value,
-                        onChanged: (v) {
-                          controller.smsCheckbox.value = v!;
-                          controller.update();
-                        },
-                      ),
-                      Text(
-                        AppText.sms,
-                        style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 13),
-                      ),
-                    ],
-                  ),
-
-                  // Email Checkbox
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        activeColor: DynamicColors.primaryClr,
-                        value: controller.emailCheckbox.value,
-                        onChanged: (v) {
-                          controller.emailCheckbox.value = v!;
-                          controller.update();
-                        },
-                      ),
-                      Text(
-                        AppText.email,
-                        style: mozillaTextSemiBoldText(
-                            context: context, fontSize: 13),
-                      ),
-                    ],
-                  ),
-
-                  // Pass, Lugg, Slugg fields
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 60,
-                        height: 30,
-                        child: CustomTextField(
-                          hintText: "Pass",
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          keyboardType: TextInputType.number,
-                          contentPadding:
-                          EdgeInsets.symmetric(horizontal: 4),
-                          controller: TextEditingController(),
-                          borderRadius: 4,
+                        SizedBox(width: 8),
+                        SizedBox(
+                          width: 60,
+                          height: 30,
+                          child: CustomTextField(
+                            hintText: "Lugg",
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
+                            ],
+                            keyboardType: TextInputType.number,
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 4),
+                            controller: TextEditingController(),
+                            borderRadius: 4,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      SizedBox(
-                        width: 60,
-                        height: 30,
-                        child: CustomTextField(
-                          hintText: "Lugg",
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          keyboardType: TextInputType.number,
-                          contentPadding:
-                          EdgeInsets.symmetric(horizontal: 4),
-                          controller: TextEditingController(),
-                          borderRadius: 4,
+                        SizedBox(width: 8),
+                        SizedBox(
+                          width: 60,
+                          height: 30,
+                          child: CustomTextField(
+                            hintText: "Slugg",
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(2),
+                            ],
+                            keyboardType: TextInputType.number,
+                            contentPadding:
+                            EdgeInsets.symmetric(horizontal: 4),
+                            controller: TextEditingController(),
+                            borderRadius: 4,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      SizedBox(
-                        width: 60,
-                        height: 30,
-                        child: CustomTextField(
-                          hintText: "Slugg",
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(2),
-                          ],
-                          keyboardType: TextInputType.number,
-                          contentPadding:
-                          EdgeInsets.symmetric(horizontal: 4),
-                          controller: TextEditingController(),
-                          borderRadius: 4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
