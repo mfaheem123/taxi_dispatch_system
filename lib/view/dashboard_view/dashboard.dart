@@ -78,9 +78,6 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
-      // Debug print key pressed
-      print("Pressed key: ${event.logicalKey}");
-      print("Key label: ${event.logicalKey.keyLabel}");
       if(event.logicalKey.keyLabel == "F#"){
         dashBoardCntrl.shortCutKeyValue.value = "alert";
       }

@@ -29,6 +29,7 @@ import 'package:table_calendar/table_calendar.dart';
 class BookingFormWidget extends StatefulWidget {
   BookingFormWidget({super.key});
 
+
   @override
   State<BookingFormWidget> createState() => _BookingFormWidgetState();
 }
@@ -41,6 +42,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 
   // FocusNodes
   final FocusNode vehFocus = FocusNode();
+  final List<FocusNode> _focusNodes =
+  List.generate(4, (index) => FocusNode()); // 4 icons
+
 
   final FocusNode emailFocus = FocusNode();
   final FocusNode passFocus = FocusNode();
@@ -69,6 +73,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     passController.dispose();
     luggController.dispose();
     sluggController.dispose();
+    for (var node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
     super.dispose();
   }
 
@@ -707,30 +715,32 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                   Container(
                     height: 30,
                     decoration: BoxDecoration(
-                      color: DynamicColors.secondaryClr,
+                      color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.person, size: 20),
+                        _buildFocusableIcon(
+                          icon: Icons.person,
+                          focusNode: _focusNodes[0],
+                          onPressed: () => print("Person clicked"),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(
-                              Icons.shopping_cart_checkout_outlined,
-                              size: 20),
+                        _buildFocusableIcon(
+                          icon: Icons.shopping_cart_checkout_outlined,
+                          focusNode: _focusNodes[1],
+                          onPressed: () => print("Cart clicked"),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.attach_money, size: 20),
+                        _buildFocusableIcon(
+                          icon: Icons.attach_money,
+                          focusNode: _focusNodes[2],
+                          onPressed: () => print("Money clicked"),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Icon(Icons.note_add_sharp, size: 20),
+                        _buildFocusableIcon(
+                          icon: Icons.note_add_sharp,
+                          focusNode: _focusNodes[3],
+                          onPressed: () => print("Note clicked"),
                         ),
                       ],
                     ),
@@ -859,60 +869,36 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   }
 
 
+  Widget _buildFocusableIcon({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required FocusNode focusNode,
+  }) {
+    bool isFocused = focusNode.hasFocus;
 
-
-
-  Widget buildMenuTab(IconData icon, String label, String menuKey,
-      List<String> items, GlobalKey key) {
-    return GestureDetector(
-      key: key,
-      onTap: () async {
-        setState(() {
-          selectedMenu = menuKey;
-        });
-
-        final RenderBox renderBox =
-            key.currentContext!.findRenderObject() as RenderBox;
-        final Offset offset = renderBox.localToGlobal(Offset.zero);
-        final Size size = renderBox.size;
-
-        final selected = await showMenu<String>(
-          context: context,
-          position: RelativeRect.fromLTRB(
-            offset.dx,
-            offset.dy + size.height,
-            offset.dx + size.width,
-            offset.dy,
-          ),
-          items: items
-              .map((e) => PopupMenuItem<String>(value: e, child: Text(e)))
-              .toList(),
-          elevation: 8.0,
-        );
-
-        if (selected != null) {
-          setState(() {
-            selectedDropdownItem = selected;
-          });
-          // if (onMenuSelect != null) {
-          //   onMenuSelect!(selected);
-          // }
+    return RawKeyboardListener(
+      focusNode: focusNode,
+      onKey: (event) {
+        if (event is RawKeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.enter) {
+          onPressed();
         }
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        decoration: BoxDecoration(
-          // color: selectedMenu == menuKey
-          //     ? Colors.cyanAccent.shade400
-          //     : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: DynamicColors.textClr,
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
+      child: GestureDetector(
+        onTap: onPressed,
+        child: AnimatedScale(
+          scale: isFocused ? 1.3 : 1.0, // bigger zoom
+          duration: const Duration(milliseconds: 150),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: isFocused ? Colors.orange.withOpacity(0.2) : Colors.transparent, // highlight
+              border: isFocused
+                  ? Border.all(color: Colors.orange, width: 2)
+                  : null,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Icon(icon, size: 20),
           ),
         ),
       ),

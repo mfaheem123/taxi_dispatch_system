@@ -27,25 +27,7 @@ class ByDefaultDashboard extends StatefulWidget {
 }
 
 class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
-  // final dashboardController = Get.find<DashboardController>();
 
-  // final DashboardController locationCtrl = Get.put(DashboardController());
-
-  String? selectedValue;
-
-  String selectedJourneyType = 'Journey Type';
-
-  String selectedVehicleType = 'Saloon';
-
-  String selectedPaymentMethod = 'Cash';
-
-  String selectedAccountType = 'Account';
-
-  String selectedDriver = 'Select Driver';
-
-  List<String> selectedTexts = [];
-
-  bool limitReached = false;
   FocusNode _focusNode = FocusNode();
 
   @override
@@ -64,8 +46,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
           onKey: (RawKeyEvent event) {
             if (event is RawKeyDownEvent) {
               final key = event.logicalKey;
-              print('Pressed key: ${key.debugName}'); // e.g., "F1"
-              print('Key code: ${event.data}'); // e.g., 112 (optional for fine-tuned web detection)
             }
           },
           child: Column(
@@ -75,7 +55,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               decoration: BoxDecoration(color: DynamicColors.secondaryClr),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
-                child:     Wrap(
+                child: Wrap(
                   spacing: 10, // horizontal gap
                   runSpacing: 8, // vertical gap when wrapped
                   crossAxisAlignment: WrapCrossAlignment.center,

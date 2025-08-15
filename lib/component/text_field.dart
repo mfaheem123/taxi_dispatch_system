@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
+
 class CustomTextField extends StatelessWidget {
   CustomTextField({super.key,
   this.labelText,
@@ -41,6 +43,7 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
   final GestureTapCallback? onTap;
+  final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,9 @@ class CustomTextField extends StatelessWidget {
             keyboardType: keyboardType,
             onSubmitted: onSubmitted,
             textInputAction: textInputAction,
-            onTap: onTap,
+            onTap: onTap??(){
+              dashBoardCntrl.shortCutKeyValue.value = "formKey";
+            },
             style: hintStyle?? mozillaTextSemiBoldText(
                 context: context,
                 fontSize: 10,
