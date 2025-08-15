@@ -23,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.onSubmitted,
     this.textInputAction,
+    this.onTap,
   });
 
   String? labelText;
@@ -39,6 +40,7 @@ class CustomTextField extends StatelessWidget {
   Widget? suffixIcon;
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
+  final GestureTapCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class CustomTextField extends StatelessWidget {
             keyboardType: keyboardType,
             onSubmitted: onSubmitted,
             textInputAction: textInputAction,
+            onTap: onTap,
             style: hintStyle?? mozillaTextSemiBoldText(
                 context: context,
                 fontSize: 10,

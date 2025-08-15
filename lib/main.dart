@@ -20,7 +20,6 @@ class MyApp extends StatelessWidget {
       title: "Nexus Tech",
       theme: ThemeData(
       ),
-
       initialRoute: AppPages.initial,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {

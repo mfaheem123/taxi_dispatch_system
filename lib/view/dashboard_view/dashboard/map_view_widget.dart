@@ -1,6 +1,3 @@
-
-
-
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
@@ -8,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-
+import 'dart:html' as html;
 import '../../../component/textStyle.dart';
+import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
 
 class MapViewWidget extends StatelessWidget {
@@ -144,6 +142,13 @@ class MapViewWidget extends StatelessWidget {
                           child: IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: (){
+
+                                final newTabUrll = Uri.base.origin + '/#' + Routes.viewDriversMap;
+                                html.window.open(
+                                  newTabUrll,
+                                  '_blank', // "_blank" nayi window/tab me open karega
+                                  'width=1200,height=800,noopener,noreferrer', // Optional: size aur options
+                                );
 
                               }, icon: Icon(Icons.crop_square_outlined))),
                     ))

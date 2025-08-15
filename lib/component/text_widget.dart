@@ -36,6 +36,7 @@ class AppText{
   static get mobileNo => "Mobile #";
   static get driverEarning => "DRIVER EARNINGS";
   static get from => "From";
+  static get comingSoon => "coming soon...";
   static get to => "To";
   static get drivers => "Drivers";
   static get welcomeText => "WELCOME TO YOUR DASHBOARD...!";

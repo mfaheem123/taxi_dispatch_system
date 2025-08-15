@@ -17,6 +17,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/pickup_widget.dart';
+import '../widgets/quotation_widget.dart';
 import '../widgets/time_picker_widget.dart';
 import '../widgets/user_info_widget.dart';
 import '../widgets/via_location.dart';
@@ -40,12 +41,12 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 
   // FocusNodes
   final FocusNode vehFocus = FocusNode();
-  final FocusNode switchFocus = FocusNode();
-  final FocusNode smsFocus = FocusNode();
+
   final FocusNode emailFocus = FocusNode();
   final FocusNode passFocus = FocusNode();
   final FocusNode luggFocus = FocusNode();
   final FocusNode sluggFocus = FocusNode();
+  final FocusNode checkboxFocus = FocusNode();
 
   // Controllers
   final TextEditingController passController = TextEditingController();
@@ -60,13 +61,11 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   @override
   void dispose() {
     vehFocus.dispose();
-    switchFocus.dispose();
-    smsFocus.dispose();
     emailFocus.dispose();
     passFocus.dispose();
     luggFocus.dispose();
     sluggFocus.dispose();
-
+    checkboxFocus.dispose();
     passController.dispose();
     luggController.dispose();
     sluggController.dispose();
@@ -530,8 +529,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         SizedBox(width: 25),
                         GestureDetector(
                           child: Container(
+                            height: 30,
                             width: Get.width / 13,
-                            padding: EdgeInsets.symmetric(horizontal: 6),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(
@@ -539,7 +538,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             ),
                             child:
                             CustomDropdownButton(
-                              itemList: [  "SALOON",
+                              itemList: ["SALOON",
                                 "ESTATE",
                                 "MPV6",
                                 "MPV PLUS",
@@ -557,26 +556,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Focus(
-                          focusNode: switchFocus,
-                          onKey: (node, event) {
-                            if (event.isKeyPressed(LogicalKeyboardKey.enter) ||
-                                event.isKeyPressed(LogicalKeyboardKey.space)) {
-                              // onChanged(!value);
-                              return KeyEventResult.handled;
-                            }
-                            return KeyEventResult.ignored;
-                          },
-                          child: AdvancedSwitch(
-                            controller: controller.switchController,
-                            activeColor: Colors.green,
-                            inactiveColor: Colors.grey,
-                            borderRadius: BorderRadius.circular(15),
-                            width: 30,
-                            height: 15,
-                            onChanged: (v) {},
-                          ),
-                        ),
+                        QuotationWidget(),
                         SizedBox(width: 10),
                         Text(
                           AppText.quotation,
@@ -590,13 +570,25 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Checkbox(
-                          activeColor: DynamicColors.primaryClr,
-                          value: controller.smsCheckbox.value,
-                          onChanged: (v) {
-                            controller.smsCheckbox.value = v!;
-                            controller.update();
+                        RawKeyboardListener(
+                          focusNode: checkboxFocus,
+                          onKey: (event) {
+                            if (event is RawKeyDownEvent &&
+                                (event.logicalKey == LogicalKeyboardKey.enter ||
+                                    event.logicalKey == LogicalKeyboardKey.space)) {
+                              setState(() {
+                                controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                              });
+                            }
                           },
+                          child: Checkbox(
+                            activeColor: DynamicColors.primaryClr,
+                            value: controller.smsCheckbox.value,
+                            onChanged: (v) {
+                              controller.smsCheckbox.value = v!;
+                              controller.update();
+                            },
+                          ),
                         ),
                         Text(
                           AppText.sms,
@@ -610,13 +602,25 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Checkbox(
-                          activeColor: DynamicColors.primaryClr,
-                          value: controller.emailCheckbox.value,
-                          onChanged: (v) {
-                            controller.emailCheckbox.value = v!;
-                            controller.update();
+                        RawKeyboardListener(
+                          focusNode: emailFocus,
+                          onKey: (event) {
+                            if (event is RawKeyDownEvent &&
+                                (event.logicalKey == LogicalKeyboardKey.enter ||
+                                    event.logicalKey == LogicalKeyboardKey.space)) {
+                              setState(() {
+                                controller.emailCheckbox.value = !controller.emailCheckbox.value; // ✅ toggle
+                              });
+                            }
                           },
+                          child: Checkbox(
+                            activeColor: DynamicColors.primaryClr,
+                            value: controller.emailCheckbox.value,
+                            onChanged: (v) {
+                              controller.emailCheckbox.value = v!;
+                              controller.update();
+                            },
+                          ),
                         ),
                         Text(
                           AppText.email,
@@ -838,7 +842,10 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                           ),
-                          onTap: () {},
+                          onTap: () {
+                            controller.shortCutKeyValue.value ="shortCutKey";
+                            controller.update();
+                          },
                           btnText: "SAVE [HOME]",
                         ),
                       ],

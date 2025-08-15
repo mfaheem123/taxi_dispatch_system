@@ -93,7 +93,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         html.window.open(newTabUrl, '_blank');
       }
       }
-    if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value != "alert") {
+    if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value == "shortCutKey") {
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         setState(() {
           selectedIndex = (selectedIndex + 1) % menus.length;
@@ -150,91 +150,52 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       focusNode: _focusNode,
       autofocus: true,
       onKey: (RawKeyEvent event) {
+        html.window.onKeyDown.listen((html.KeyboardEvent e) {
+          e.preventDefault();
+        });
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
-          print('Pressed key: ${key.debugName}'); // e.g., "F1"
-          print('Key code: ${event.data}'); // e.g., 112 (optional for fine-tuned web detection)
-        if(key.debugName == "F3"){
-          dashBoardCntrl.shortCutKeyValue.value = "alert";
-          // set up the AlertDialog
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                scrollable: true,
+          print('Pressed key: ${key.debugName}');
+          print('Key code: ${event.data}');
 
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppText.driverInfo,
-                      style: mozillaTextSemiBoldText(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: DynamicColors.textClr
-                      ),
-                    ),
-                    GestureDetector(
-                        onTap: (){
-                          dashBoardCntrl.shortCutKeyValue.value = "arrow";
-                          Get.back();
-                        },
-                        child: Icon(Icons.close)),
-                  ],
-                ),
-                content: F3AlertWidget(),
-                actions: [
-                  // cancelButton,
-                  // continueButton,
-                ],
-              );
-            },
-          ).then((result) {
-            dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
-            print("Alert closed");
-            print("Close reason: $result");
-            // Yahan aap custom action le sakte ho
-          });
-        }else if (key.debugName == "F4"){
-          dashBoardCntrl.shortCutKeyValue.value = "alert";
-          // set up the AlertDialog
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                scrollable: true,
-
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(AppText.driverEarning,
-                    style: mozillaTextSemiBoldText(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                      color: DynamicColors.textClr
-                    ),
-                    ),
-                    GestureDetector(
-                        onTap: (){
-                          dashBoardCntrl.shortCutKeyValue.value = "arrow";
-                          Get.back();
-                        },
-                        child: Icon(Icons.close)),
-                  ],
-                ),
-                content: F4AlertWidget(),
-                actions: [
-                  // cancelButton,
-                  // continueButton,
-                ],
-              );
-            },
-          ).then((result) {
-            dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
-            print("Alert closed");
-            print("Close reason: $result");
-            // Yahan aap custom action le sakte ho
-          });
-        }
+          // F3
+          if (key.debugName == "F3") {
+            showShortcutDialog(
+              context,
+              title: AppText.driverInfo,
+              contentWidget: F3AlertWidget(),
+            );
+          }else if (key.debugName == "F4") {
+            showShortcutDialog(
+              context,
+              title: AppText.driverEarning,
+              contentWidget: F4AlertWidget(),
+            );
+          }else if (key.debugName == "F8") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F8",),
+            );
+          }else if (key.debugName == "F9") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F9",),
+            );
+          }else if (key.debugName == "F6") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F6",),
+            );
+          }else if (key.debugName == "F1") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F1",),
+            );
+          }
         }
       },
       child: Scaffold(
@@ -267,6 +228,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                               child: InkWell(
                                 onTap: () {
                                   setState(() {
+                                    dashBoardCntrl.shortCutKeyValue.value = 'shortCutKey';
                                     if (selectedIndex == i) {
                                       isDropdownOpen = !isDropdownOpen;
                                     } else {
@@ -370,9 +332,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                             ],
                           ),
                         ),
-                        getSelectedWidget(
-
-                        ),
+                        getSelectedWidget(),
                       ],
                     ),
                     ),

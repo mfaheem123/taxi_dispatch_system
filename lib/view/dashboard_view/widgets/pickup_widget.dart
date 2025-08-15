@@ -35,6 +35,7 @@ class _PickupWidgetState extends State<PickupWidget> {
   final FocusNode swap1FN = FocusNode();
   final FocusNode swap2FN = FocusNode();
 
+
   @override
   void dispose() {
     plot1FN.dispose();
@@ -131,6 +132,9 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 prefixIcon: const Icon(Icons.location_pin,
                                     color: Colors.red),
                                 textInputAction: TextInputAction.next,
+                                onTap: (){
+                                  controller.shortCutKeyValue.value = "formKey";
+                                },
                                 onSubmitted: (_) =>
                                     FocusScope.of(context).nextFocus(),
                                 suffixIcon: KbdActivatable(
@@ -169,8 +173,8 @@ class _PickupWidgetState extends State<PickupWidget> {
                             child: Container(
                               width: notesWidth,
                               height: 30,
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
+                              // padding:
+                              // const EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(
@@ -306,8 +310,6 @@ class _PickupWidgetState extends State<PickupWidget> {
                             child: Container(
                               width: notesWidth,
                               height: 30,
-                              padding:
-                              const EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(

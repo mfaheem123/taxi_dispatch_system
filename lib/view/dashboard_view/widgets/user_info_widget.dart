@@ -139,6 +139,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               width: fieldWidth,
                               textInputAction: TextInputAction.next),
                         ),
+                        const SizedBox(width: 12),
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(2),
@@ -146,6 +147,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               width: fieldWidth,
                               textInputAction: TextInputAction.next),
                         ),
+                        const SizedBox(width: 12),
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(3),
@@ -155,6 +157,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               keyboardType: TextInputType.phone,
                               formatDigitsOnly: false),
                         ),
+                        const SizedBox(width: 12),
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(4),
@@ -232,9 +235,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             width: fieldWidth,
                             child: Container(
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
+
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: DynamicColors.primaryClr),
                               ),
                               child:
@@ -270,7 +273,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             width: fieldWidth,
                             child: Container(
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
@@ -350,15 +352,13 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             width: fieldWidth,
                             child: Container(
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: DynamicColors.primaryClr),
                               ),
-                              child:
-                              CustomDropdownButton(
+                              child: CustomDropdownButton(
                                 itemList: ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"],
-                                hintText: "DRIVER",
+                                hintText: "CASH",
                                 selectedDropDownValue: payValue,
                               ),
                             ),
@@ -385,7 +385,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                   color: DynamicColors.secondaryClr,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Icon(Icons.calendar_month, size: 20),
+                                child: const Icon(Icons.calculate, size: 20),
                               ),
                             ),
                           ),
@@ -419,7 +419,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           if (isMobile)
             Expanded(
               child: CustomTextField(

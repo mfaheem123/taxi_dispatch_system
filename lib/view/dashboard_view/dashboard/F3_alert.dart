@@ -9,7 +9,60 @@ import 'package:get/get.dart';
 import '../../../component/calender.dart';
 import '../../../component/keyboard_dropdown_widget.dart';
 import '../../../component/textStyle.dart';
+import '../Controller/dashboard_controller.dart';
+import '../widgets/time_picker_widget.dart';
 import 'booking_form_widget.dart';
+
+
+
+
+// Common dialog function
+void showShortcutDialog(BuildContext context,{
+  required String title,
+  required Widget contentWidget,
+}) {
+  final dashBoardCntrl = Get.find<DashboardController>();
+  dashBoardCntrl.shortCutKeyValue.value = "alert";
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        scrollable: true,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: mozillaTextSemiBoldText(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: DynamicColors.textClr,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                dashBoardCntrl.shortCutKeyValue.value = "arrow";
+                Get.back();
+              },
+              child: const Icon(Icons.close),
+            ),
+          ],
+        ),
+        content: contentWidget,
+      );
+    },
+  ).then((result) {
+    dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+    print("Alert closed");
+    print("Close reason: $result");
+  });
+}
+
+
+
+
+
 
 class F3AlertWidget extends StatelessWidget {
   F3AlertWidget({super.key});
@@ -38,9 +91,7 @@ class F3AlertWidget extends StatelessWidget {
           KeyboardDropdown(
             containerWidth: Get.width/6,
             initialValue: list.first,
-            onChanged: (v){
-
-            },
+            onChanged: (v){},
             items: list,
           ),
           Row(
@@ -166,12 +217,15 @@ class F4AlertWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(AppText.from),
-                  SizedBox(
-                      height: 45,
-                      // width: Get.width/10,
-                      child: CalendarDropdown()),
+                  Container(
+                      height: 30,
+                      width: Get.width/10,
+                      padding: EdgeInsets.symmetric(horizontal: 6),
+                      child: KeyboardDatePicker(),
+                  ),
                 ],
               ),
               Column(
@@ -285,3 +339,22 @@ class F4AlertWidget extends StatelessWidget {
     );
   }
 }
+
+class ComingSoonWidget extends StatelessWidget {
+  ComingSoonWidget({super.key,this.shotCutKey});
+  String? shotCutKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: kToolbarHeight*3,
+      width: Get.width/10,
+      child: Center(
+        child: Text("$shotCutKey Coming soon..........."),
+      ),
+    );
+  }
+}
+
+
+
