@@ -4,503 +4,341 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/textStyle.dart';
 import '../Controller/dashboard_controller.dart';
 
-class DriversView extends StatelessWidget {
+class DriversView extends StatefulWidget {
   const DriversView({super.key});
+
+  @override
+  State<DriversView> createState() => _DriversViewState();
+}
+
+class _DriversViewState extends State<DriversView> {
+  final FocusNode _focusNode = FocusNode();
+
+  // Header icons list
+  final List<IconData> headerIcons = [
+    Icons.reset_tv_outlined,
+    Icons.refresh,
+    Icons.visibility_off_sharp,
+    Icons.mail,
+    Icons.send,
+    Icons.share
+  ];
+
+  int selectedHeaderIndex = 0; // upar icons ke liye
+  bool isHeaderMode = true; // true = header select ho raha hai, false = driver list
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
-    print(width);
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
-        return SizedBox(
-          width: width >= 1900? screenWidth * 0.3:screenWidth/2,
-          height: screenHeight * 0.465,
-          child: Container(
-            // height: screenHeight * 0.6,
-            decoration: BoxDecoration(
-              // color: Color(0xFFA0DCFF),
-              // color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 35,
-                        width: Get.width,
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                            color: DynamicColors.secondaryClr
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(child:
-                            Text("Driver".toUpperCase(),
-                              style: headingText(
-                                  fontSize: 14,
-                                  latterSpacing: 1.0,
-                                  color: DynamicColors.primaryClr
-                              ),
-                            ),),
-                            // Spacer(),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.reset_tv_outlined,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.refresh,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.visibility_off_sharp,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.mail,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.send,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.share,
-                                size: 17,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: Get.width,
-                        decoration: BoxDecoration(
-                            border: Border.all(color: DynamicColors.secondaryClr)
-                        ),
-                        child: Row(
-                          children: [
-                            RowButtonWidgetMap(
-                              width: Get.width/10,
-                              color: controller.driverSelectionTab.value == "activeDriver"?
-                              DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                              onTap: (){
-                                controller.driverSelectionTab.value = "activeDriver";
-                                controller.update();
-                              },
-                              widget: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 8,
-                                    backgroundColor: DynamicColors.greenClr,
-                                    //     .value = "MAPS",
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                    child: Text("(3)",
-                                      style: mozillaTextRegularText(
-                                          fontSize: 13,
-                                          color:controller.driverSelectionTab.value == "activeDriver"?
-                                          DynamicColors.whiteClr:DynamicColors.primaryClr
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                            ),
-                            RowButtonWidgetMap(
-                              width: Get.width/10,
-                              color:controller.driverSelectionTab.value != "activeDriver"?
-                              DynamicColors.primaryClr:DynamicColors.secondaryClr,
-                              onTap: (){
-                                controller.driverSelectionTab.value = "offlineDriver";
-                                controller.update();
-                              },
-                              widget: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 8,
-                                    backgroundColor: DynamicColors.redClr,
-                                    //     .value = "MAPS",
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                                    child: Text("(0)",
-                                      style: mozillaTextRegularText(
-                                          fontSize: 13,
-                                          color: controller.driverSelectionTab.value != "activeDriver"?
-                                          DynamicColors.whiteClr:DynamicColors.primaryClr
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      ListView.builder(
-                          itemCount: 4,
-                          shrinkWrap: true,
-
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (BuildContext context,index){
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2.0),
-                              child: Row(
-                                children: [
-                                  CustomButton(
-                                    height: 30,
-                                    borderRadius: 0,
-                                    width: 130,
-                                    verticalPadding: 0,
-                                    btnText: "X1",
-                                    style: mozillaTextRegularText(
-                                        fontSize: 16,
-                                        color: DynamicColors.whiteClr
-                                    ),
-
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text("SALOON ",
-                                      style: mozillaTextRegularText(
-                                          fontSize: 13
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                                    child: Icon(Icons.phone_android_rounded),
-                                  ),
-
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8.0),
-                                    child: Text(
-                                      "1133Hr 01Min-", // your text
-                                      style: mozillaTextRegularText(fontSize: 13),
-                                      overflow: TextOverflow.ellipsis, // show "..."
-                                      maxLines: 1,                      // only one line
-                                    ),
-                                  ),
-                                  CustomButton(
-                                    height: 30,
-                                    width: 130,
-                                    btnColor: DynamicColors.secondaryClr,
-                                    borderRadius: 0,
-                                    verticalPadding: 0,
-                                    btnText: "-",
-                                  ),
-
-                                ],
-                              ),
-                            );
-                          }),
-                    ],
-                  ),
-                ),
-
-                ///todo before coding
-                /*Expanded(
-                  // flex: 3,
-                  child: Container(
-                    margin:
-                    const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(16),
+        return RawKeyboardListener(
+          focusNode: _focusNode,
+          onKey: (event) {
+            // if(controller.shortCutKeyValue.value == ""){
+              if (event is RawKeyDownEvent) {
+                controller.shortCutKeyValue.value = "driverIconSelect";
+                if(controller.shortCutKeyValue.value == "driverIconSelect"){
+                  if (event.logicalKey == LogicalKeyboardKey.tab) {
+                    // Tab dabane se Header <-> Driver list toggle ho jaye
+                    setState(() {
+                      isHeaderMode = !isHeaderMode;
+                    });
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+                    if (isHeaderMode) {
+                      if (selectedHeaderIndex < headerIcons.length - 1) {
+                        setState(() {
+                          selectedHeaderIndex++;
+                        });
+                      }
+                    } else {
+                      if (controller.selectedDriverIndex < 3) {
+                        controller.selectedDriverIndex++;
+                        controller.update();
+                      }
+                    }
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+                    if (isHeaderMode) {
+                      if (selectedHeaderIndex > 0) {
+                        setState(() {
+                          selectedHeaderIndex--;
+                        });
+                      }
+                    } else {
+                      if (controller.selectedDriverIndex > 0) {
+                        controller.selectedDriverIndex--;
+                        controller.update();
+                      }
+                    }
+                  } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                    if (isHeaderMode) {
+                      debugPrint(
+                          "Header Icon Selected: ${headerIcons[selectedHeaderIndex]}");
+                      // yahan aap har icon ka specific action karwa sakte ho
+                    } else {
+                      debugPrint(
+                          "Enter pressed on Driver ${controller.selectedDriverIndex}");
+                      // driver list action
+                    }
+                  }
+                }
+              }
+            // }
+          },
+          child: SizedBox(
+            width: screenWidth >= 1900 ? screenWidth * 0.2 : screenWidth / 2,
+            height: screenHeight * 0.465,
+            child: Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  // ----- Header -----
+                  Container(
+                    height: 40,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: DynamicColors.secondaryClr,
                       borderRadius:
-                      BorderRadius.circular(16),
-                      border: Border.all(
-                          color: Colors.grey.shade300),
+                      const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
-                    child: Column(
-                      crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                    child:  Row(
                       children: [
-                        SizedBox(height: 28),
-                        Center(
-                          child: RichText(
-                            text: const TextSpan(
-                              style: TextStyle(
-                                  fontWeight:
-                                  FontWeight.w900,
-                                  fontSize: 18),
-                              children: [
-                                TextSpan(
-                                  text: 'DRIVERS ',
-                                  style: TextStyle(
-                                      color: Colors
-                                          .deepPurple),
-                                ),
-                                TextSpan(
-                                  text: '(3)',
-                                  style: TextStyle(
-                                      color:
-                                      Colors.redAccent),
-                                ),
-                              ],
+                        Expanded(
+                          child: Text(
+                            "Driver".toUpperCase(),
+                            style: headingText(
+                              fontSize: 14,
+                              latterSpacing: 1.0,
+                              color: DynamicColors.primaryClr,
                             ),
                           ),
                         ),
-                        SizedBox(
-                            height: screenHeight * 0.03125),
+                        ...headerIcons.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final icon = entry.value;
+                          final isSelected = isHeaderMode && selectedHeaderIndex == index;
 
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets
-                                    .symmetric(
-                                    horizontal: 12,
-                                    vertical: 6),
+                          return GestureDetector(
+                            onTap: () {
+                              debugPrint("Clicked on header icon index $index");
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Container(
                                 decoration: BoxDecoration(
-                                  color: Color(0xFF43489A),
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      20),
+                                  shape: BoxShape.circle,
+                                  color: isSelected
+                                      ? Colors.blue.shade200
+                                      : Colors.transparent,
                                 ),
-                                child: Row(
-                                  mainAxisSize:
-                                  MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 8,
-                                      height: 8,
-                                      margin: const EdgeInsets
-                                          .only(right: 6),
-                                      decoration:
-                                      const BoxDecoration(
-                                        color: Colors.green,
-                                        shape:
-                                        BoxShape.circle,
-                                      ),
-                                    ),
-                                    const Text(
-                                      " Online ",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight:
-                                        FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
+                                padding: const EdgeInsets.all(4),
+                                child: Icon(
+                                  icon,
+                                  size: 18,
+                                  color: DynamicColors.primaryClr,
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Container(
-                                padding: const EdgeInsets
-                                    .symmetric(
-                                    horizontal: 12,
-                                    vertical: 6),
-                                decoration: BoxDecoration(
-                                  color:
-                                  Colors.lightBlueAccent,
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      20),
-                                ),
-                                child: Row(
-                                  mainAxisSize:
-                                  MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 8,
-                                      height: 8,
-                                      margin: const EdgeInsets
-                                          .only(right: 6),
-                                      decoration:
-                                      const BoxDecoration(
-                                        color: Colors.yellow,
-                                        shape:
-                                        BoxShape.circle,
-                                      ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ),
+
+                  // ----- Tabs -----
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: DynamicColors.secondaryClr),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              controller.driverSelectionTab.value =
+                              "activeDriver";
+                              controller.update();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              color: controller.driverSelectionTab.value ==
+                                  "activeDriver"
+                                  ? DynamicColors.primaryClr
+                                  : DynamicColors.secondaryClr,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                      radius: 6,
+                                      backgroundColor:
+                                      DynamicColors.greenClr),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "(3)",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 13,
+                                      color: controller.driverSelectionTab
+                                          .value ==
+                                          "activeDriver"
+                                          ? DynamicColors.whiteClr
+                                          : DynamicColors.primaryClr,
                                     ),
-                                    const Text(
-                                      " Pending ",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight:
-                                        FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                        SizedBox(
-                            height: screenHeight * 0.0375),
-
-                        // Driver list
-                        Padding(
-                          padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: 30),
-                          child: ListView.builder(
-                              itemCount: 5,
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              itemBuilder: (BuildContext context,index){
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: const [
-                                      CircleAvatar(
-                                          radius: 5,
-                                          backgroundColor:
-                                          Colors.green),
-                                      SizedBox(width: 6),
-                                      Text("Nadeem",
-                                          style: TextStyle(
-                                              fontSize: 18)),
-                                    ],
+                        Expanded(
+                          child: InkWell(
+                            onTap: () {
+                              controller.driverSelectionTab.value =
+                              "offlineDriver";
+                              controller.update();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              color: controller.driverSelectionTab.value !=
+                                  "activeDriver"
+                                  ? DynamicColors.primaryClr
+                                  : DynamicColors.secondaryClr,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                      radius: 6,
+                                      backgroundColor: DynamicColors.redClr),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    "(0)",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 13,
+                                      color: controller.driverSelectionTab
+                                          .value !=
+                                          "activeDriver"
+                                          ? DynamicColors.whiteClr
+                                          : DynamicColors.primaryClr,
+                                    ),
                                   ),
-                                );
-                              }),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                       Expanded(
-                                        flex: 2,
-                                        child: Builder(builder: (context) {
-                                          final screenHeight =
-                                              MediaQuery.of(context).size.height;
-                                          final screenWidth =
-                                              MediaQuery.of(context).size.width;
-                                          final isMobile = screenWidth < 600;
 
-                                          // Local method: footer button builder
-                                          Widget footerButton(
-                                              IconData icon, String label) {
-                                            return Expanded(
-                                              child: ElevatedButton.icon(
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                  Color(0xFF43489A),
-                                                  foregroundColor: Colors.white,
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                    BorderRadius.circular(6),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(
-                                                    vertical: isMobile ? 10 : 14,
-                                                  ),
-                                                  textStyle: TextStyle(
-                                                      fontSize:
-                                                      isMobile ? 12 : 14),
-                                                ),
-                                                onPressed: () {},
-                                                icon: Icon(icon,
-                                                    size: isMobile ? 16 : 20),
-                                                label: Text(label),
-                                              ),
-                                            );
-                                          }
+                  // ----- Driver List -----
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 4,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      itemBuilder: (context, index) {
+                        final isSelected =
+                            !isHeaderMode && controller.selectedDriverIndex == index;
 
-                                          return Container(
-                                            padding: const EdgeInsets.all(16),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                              BorderRadius.circular(16),
-                                              border: Border.all(
-                                                  color: Colors.grey.shade300),
-                                            ),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                              children: [
-                                                SizedBox(height: 28),
-                                                const Text(
-                                                  "PLOTS",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w900,
-                                                    color: Color(0xFF43489A),
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                    height:
-                                                    screenHeight * 0.0125),
-
-                                                // Plot chips row
-                                                Row(
-                                                  children: [
-                                                    buildChip("LND 4",
-                                                        isFirst: true),
-                                                    buildChip("HRW1"),
-                                                    buildChip("HTH2"),
-                                                    buildChip("SW1",
-                                                        isLast: true),
-                                                  ],
-                                                ),
-                                                SizedBox(
-                                                    height: screenHeight * 0.02),
-
-                                                // Footer buttons row
-                                                Row(
-                                                  children: [
-                                                    footerButton(
-                                                        Icons.send, "SMS"),
-                                                    const SizedBox(width: 10),
-                                                    footerButton(
-                                                        Icons.download_sharp,
-                                                        "E/APP"),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        }),
-                                      ),*/
-                ///todo before coding
-              ],
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          color: isSelected
+                              ? Colors.blue.shade100
+                              : Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 10),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  child: CustomButton(
+                                    height: 28,
+                                    borderRadius: 4,
+                                    verticalPadding: 0,
+                                    btnText: "X1",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 14,
+                                      color: DynamicColors.whiteClr,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "SALOON",
+                                    style:
+                                    mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                const Icon(Icons.phone_android_rounded,
+                                    size: 18),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    "1133Hr 01Min -",
+                                    style:
+                                    mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: 40,
+                                  child: CustomButton(
+                                    height: 28,
+                                    btnColor: DynamicColors.secondaryClr,
+                                    borderRadius: 4,
+                                    verticalPadding: 0,
+                                    btnText: "-",
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
-      }
+      },
     );
   }
 }

@@ -61,39 +61,33 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                     Row(
-                       children: [
                          ShortcutKeyWidget(),
                          ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
                          ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
                          ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
                          ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
-                       ],
-                     ),
-                        Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 6.0),
-                              child: CustomButton(
-                                width: 120,
-                                height: 35,
-                                borderRadius: 6,
-                                verticalPadding: 0,
-                                style: mozillaTextSemiBoldText(
-                                    fontSize: 11,
-                                    color: DynamicColors.whiteClr
-                                ),
-                                onTap: (){
-                                  dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
-                                  dashboardController.update();
-                                },
-                                btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
-                              ),
-                            )
-                          ],
-                        )
+                        width >= 1900 ?
+                        Spacer():SizedBox.shrink(),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 6.0),
+                          child: CustomButton(
+                            width: 120,
+                            height: 35,
+                            borderRadius: 6,
+                            verticalPadding: 0,
+                            style: mozillaTextSemiBoldText(
+                                fontSize: 11,
+                                color: DynamicColors.whiteClr
+                            ),
+                            onTap: (){
+                              dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
+                              dashboardController.update();
+                            },
+                            btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
+                          ),
+                        ),
                       ],
                     ),
                   ],

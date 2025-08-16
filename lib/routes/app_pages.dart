@@ -17,7 +17,7 @@ class AppPages {
     GetPage(
       name: _Paths.loginScreen,
       page: () => LoginScreen(),
-      // binding: DashBoardBinding(),
+      binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.dashBoarScreen,

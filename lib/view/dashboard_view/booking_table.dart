@@ -15,8 +15,6 @@ class BookingTable extends StatefulWidget {
 }
 
 class _BookingTableState extends State<BookingTable> {
-  // final DashboardController controller = Get.find();
-
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +27,6 @@ class _BookingTableState extends State<BookingTable> {
               SizedBox(
                 width: Get.width,
                 child: Stack(
-
                   children: [
                     SizedBox(
                       height: 40,
@@ -130,7 +127,7 @@ class _BookingTableState extends State<BookingTable> {
 
 
               SizedBox(
-                height: 500,
+                height: Get.height/1.6,
                 width: double.infinity,
                 child:
                 TableScreen(),
@@ -174,36 +171,81 @@ class TableSelectClass{
 
 
 
-
-
 class TableScreen extends StatefulWidget {
   @override
   State<TableScreen> createState() => _TableScreenState();
 }
 
 class _TableScreenState extends State<TableScreen> {
-  List<bool> selectedRows = List.generate(10, (_) => false);
-  String? dropdownValue = "Today";
+  final int rowCount = 20; // total rows
+  late List<bool> selectedRows;
+  late List<List<FocusNode>> rowCellFocusNodes; // har row ke har cell ka focus
+  int currentRowIndex = 0;
+  int currentColIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectedRows = List.generate(rowCount, (index) => false);
+
+    /// har row ke liye cells ke focusNodes bnao
+    rowCellFocusNodes = List.generate(
+      rowCount,
+          (row) => List.generate(15, (col) => FocusNode()), // 15 columns
+    );
+
+    // Default: first row first column focus
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      rowCellFocusNodes[0][0].requestFocus();
+    });
+  }
+
+  void _handleKey(RawKeyEvent event, int row, int col) {
+    print(dashBoardCntrl.shortCutKeyValue.value);
+    if (dashBoardCntrl.shortCutKeyValue.value == "tableSelected") {
+      if (event is RawKeyDownEvent) {
+        final key = event.logicalKey;
+
+        if (key == LogicalKeyboardKey.enter) {
+          setState(() {
+            selectedRows[row] = !selectedRows[row];
+          });
+        } else if (key == LogicalKeyboardKey.arrowDown) {
+          setState(() {
+            currentRowIndex = (row + 1) % rowCount;
+            rowCellFocusNodes[currentRowIndex][col].requestFocus();
+          });
+        } else if (key == LogicalKeyboardKey.arrowUp) {
+          setState(() {
+            currentRowIndex = (row - 1 + rowCount) % rowCount;
+            rowCellFocusNodes[currentRowIndex][col].requestFocus();
+          });
+        } else if (key == LogicalKeyboardKey.arrowRight) {
+          setState(() {
+            currentColIndex = (col + 1) % rowCellFocusNodes[row].length;
+            rowCellFocusNodes[row][currentColIndex].requestFocus();
+          });
+        } else if (key == LogicalKeyboardKey.arrowLeft) {
+          setState(() {
+            currentColIndex = (col - 1 + rowCellFocusNodes[row].length) %
+                rowCellFocusNodes[row].length;
+            rowCellFocusNodes[row][currentColIndex].requestFocus();
+          });
+        }
+      }
+    }
+  }
+
+  final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
-    return DataTable2(
-      columnSpacing: 20, // columns ke beech ka space
-      horizontalMargin: 10, // side margin
-      minWidth: 1000, // yeh set karein taki scroll enable ho
+    return DataTable(
+      columnSpacing: 20,
+      horizontalMargin: 10,
       headingRowHeight: 70,
       columns: [
-        // Gap column (just for spacing)
-        // DataColumn(
-        //   label: SizedBox.shrink(), // yaha gap adjust karein
-        // ),
-        // DataColumn2(
-        //   label: Text("")/*Checkbox(
-        //     value: false,
-        //     onChanged: (_) {},
-        //   )*/,
-        //   size: ColumnSize.S,
-        // ),
         _buildHeaderWithSearch("TYPE"),
         _buildHeaderWithSearch("REF #"),
         _buildHeaderWithSearch("DATETIME"),
@@ -221,167 +263,142 @@ class _TableScreenState extends State<TableScreen> {
         _buildHeaderWithSearch("ACC"),
       ],
       rows: List<DataRow>.generate(
-        10,
-            (index) => DataRow(
+        rowCount,
+            (rowIndex) =>
+            DataRow(
+              selected: selectedRows[rowIndex],
+              onSelectChanged: (value) {
+                setState(() {
+                  selectedRows[rowIndex] = value ?? false;
+                });
+              },
+              cells: List<DataCell>.generate(15, (colIndex) {
+                Widget child;
+                if (colIndex == 0) {
+                  child = Icon(
+                      Icons.laptop_chromebook_outlined, color: Colors.blue);
+                } else if (colIndex == 1) {
+                  child = Text("BCB74867",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 2) {
+                  child = Text("02-05-25 23:36",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 3) {
+                  child = Text("NADEEM",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 4) {
+                  child = Text(
+                    "FLAT 10 BLANDFORD COURT ...",
+                    maxLines: 1,
+                    style: mozillaTextRegularText(
+                        fontWeight: FontWeight.w800, fontSize: 12),
+                  );
+                } else if (colIndex == 5) {
+                  child = Text("65 JEDBURGH ROAD, LONDON",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 6) {
+                  child = Text("DRV",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 7) {
+                  child = Text("CAPITA BUSI ...",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 8) {
+                  child = Text("SALOON",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 9) {
+                  child = Text("Lorem ipsum dolor sit amet...",
+                      maxLines: 1,
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 10) {
+                  child = Text("£ 14.00",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 11) {
+                  child = Text("WAITING",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 12) {
+                  child = Text("o/w",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else if (colIndex == 13) {
+                  child = Text("CASH",
+                      style: mozillaTextRegularText(
+                          fontWeight: FontWeight.w800, fontSize: 12));
+                } else {
+                  // last cell with icons
+                  child = Row(
+                    children: [
+                      ImageIcon(AssetImage(Images.fowardIcon),
+                          color: Colors.green, size: 20),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                          child: Text("|")),
+                      Icon(Icons.edit_calendar_rounded,
+                          color: Colors.red, size: 20),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                          child: Text("|")),
+                      Icon(Icons.delete_forever, color: Colors.green, size: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                        child: Text("|"),
+                      ),
+                      Icon(Icons.more_horiz, color: Colors.green, size: 20),
+                    ],
+                  );
+                }
 
-          selected: selectedRows[index],
-          onSelectChanged: (value) {
-            setState(() {
-              selectedRows[index] = value ?? false;
-            });
-          },
-          cells: [
-
-            // Gap cell
-            // DataCell(
-            //     SizedBox.shrink()),
-            // DataCell(
-            //   Icon(Icons.laptop_chromebook_outlined),
-            //   /*Checkbox(
-            //   value: selectedRows[index],
-            //   onChanged: (value) {
-            //     setState(() {
-            //       selectedRows[index] = value ?? false;
-            //     });
-            //   },
-            // )*/),
-            DataCell(Icon(Icons.laptop_chromebook_outlined, color: Colors.blue)),
-            DataCell(Text(
-              "BCB74867",
-              maxLines: 1,
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
+                return DataCell(
+                  Focus(
+                    focusNode: rowCellFocusNodes[rowIndex][colIndex],
+                    onKey: (node, event) {
+                      _handleKey(event, rowIndex, colIndex);
+                      return KeyEventResult.handled;
+                    },
+                    child: child,
+                  ),
+                );
+              }),
             ),
-            ),
-            DataCell(Text(
-              "02-05-25 23:36",
-              maxLines: 1,
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-            ),),
-            DataCell(Text(
-              "NADEEM",
-              maxLines: 1,
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-            ),),
-            DataCell(Text(
-              "FLAT 10 BLANDFORD COURT 4-6 BRON ... BITTACY HILL, LONDON, NW7 1LB",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-            )),
-            DataCell(
-                Text(
-                    "65 JEDBURGH ROAD, LONDON, E13 9LF",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "DRV",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "CAPITA BUSI ...",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "SALOON",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu",
-
-                  style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-                  maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "£ 14.00",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "WAITING",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "o/w",
-
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-              maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Text(
-                    "CASH",
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
-                  maxLines: 1,
-                ),
-            ),
-            DataCell(
-                Row(
-              children: [
-                ImageIcon(AssetImage(Images.fowardIcon),color: Colors.green,size: 20,),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                    child: Text("|")),
-                Icon(Icons.edit_calendar_rounded, color: Colors.red,size: 20,),
-                Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 1.0),child: Text("|")),
-                Icon(Icons.delete_forever, color: Colors.green,size: 20,),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                  child: Text("|"),
-                ),
-                Icon(Icons.more_horiz, color: Colors.green,size: 20,),
-              ],
-            )),
-          ],
-        ),
       ),
     );
   }
 
   DataColumn _buildHeaderWithSearch(String title) {
-    print(title);
     return DataColumn(
       label: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 4),
-          title== "TYPE"? SizedBox.shrink() :  SizedBox(
+          title == "TYPE"
+              ? SizedBox.shrink()
+              : SizedBox(
             width: 100,
             height: 28,
             child: TextField(
-              style: mozillaTextRegularText(fontWeight: FontWeight.w800, fontSize: 12),
+              onTap: () {
+                dashBoardCntrl.shortCutKeyValue.value = "tableSelected";
+              },
+              style: mozillaTextRegularText(
+                  fontWeight: FontWeight.w800, fontSize: 12),
               decoration: InputDecoration(
                 hintText: "Search",
-                hintStyle: mozillaTextRegularText(fontWeight: FontWeight.w800,color: DynamicColors.textClr.withOpacity(0.8), fontSize: 12),
-                contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                hintStyle: mozillaTextRegularText(
+                    fontWeight: FontWeight.w800,
+                    color: DynamicColors.textClr.withOpacity(0.8),
+                    fontSize: 12),
+                contentPadding:
+                EdgeInsets.symmetric(horizontal: 6, vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(4),
                   borderSide: BorderSide(color: Colors.grey),
@@ -394,6 +411,3 @@ class _TableScreenState extends State<TableScreen> {
     );
   }
 }
-
-
-

@@ -53,9 +53,6 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   final FocusNode checkboxFocus = FocusNode();
 
   // Controllers
-  final TextEditingController passController = TextEditingController();
-  final TextEditingController luggController = TextEditingController();
-  final TextEditingController sluggController = TextEditingController();
 
   // State variables
   bool switchValue = false;
@@ -70,13 +67,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     luggFocus.dispose();
     sluggFocus.dispose();
     checkboxFocus.dispose();
-    passController.dispose();
-    luggController.dispose();
-    sluggController.dispose();
     for (var node in _focusNodes) {
       node.dispose();
     }
-    super.dispose();
     super.dispose();
   }
 
@@ -90,7 +83,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 
     return GetBuilder<DashboardController>(builder: (controller) {
       return Container(
-          width: width >= 1900 ? screenWidth * 0.45:screenWidth,
+          width: width >= 1900 ? screenWidth * 0.45: screenWidth,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
@@ -700,52 +693,41 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               SizedBox(
                 height: screenHeight * 0.01,
               ),
-              Wrap(
-                spacing: 85, // Horizontal gap between items
-                runSpacing: 15, // Vertical gap between rows
-                alignment: WrapAlignment.spaceBetween,
-                children: [
-                  // Pay Dropdown
-
-
-                  // VEH Dropdown
-
-
-                  // Icon Buttons Section
-                  Container(
-                    height: 30,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildFocusableIcon(
-                          icon: Icons.person,
-                          focusNode: _focusNodes[0],
-                          onPressed: () => print("Person clicked"),
-                        ),
-                        _buildFocusableIcon(
-                          icon: Icons.shopping_cart_checkout_outlined,
-                          focusNode: _focusNodes[1],
-                          onPressed: () => print("Cart clicked"),
-                        ),
-                        _buildFocusableIcon(
-                          icon: Icons.attach_money,
-                          focusNode: _focusNodes[2],
-                          onPressed: () => print("Money clicked"),
-                        ),
-                        _buildFocusableIcon(
-                          icon: Icons.note_add_sharp,
-                          focusNode: _focusNodes[3],
-                          onPressed: () => print("Note clicked"),
-                        ),
-                      ],
-                    ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildFocusableIcon(
+                        icon: Icons.person,
+                        focusNode: _focusNodes[0],
+                        onPressed: () => print("Person clicked"),
+                      ),
+                      _buildFocusableIcon(
+                        icon: Icons.shopping_cart_checkout_outlined,
+                        focusNode: _focusNodes[1],
+                        onPressed: () => print("Cart clicked"),
+                      ),
+                      _buildFocusableIcon(
+                        icon: Icons.attach_money,
+                        focusNode: _focusNodes[2],
+                        onPressed: () => print("Money clicked"),
+                      ),
+                      _buildFocusableIcon(
+                        icon: Icons.note_add_sharp,
+                        focusNode: _focusNodes[3],
+                        onPressed: () => print("Note clicked"),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               SizedBox(
                 height: screenHeight * 0.01,

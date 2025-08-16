@@ -23,6 +23,7 @@ class DashboardController extends GetxController {
   RxBool isHoveredF8 = false.obs;
   RxBool isHoveredF9 = false.obs;
   RxBool isHoveredVLA = false.obs;
+  bool isDropdownOpen = false;
 
   ///text editing controllers
   final pickupController = TextEditingController();
@@ -41,11 +42,15 @@ class DashboardController extends GetxController {
   final GlobalKey payKey = GlobalKey();
   String? vehKey;
   final GlobalKey dRVKey = GlobalKey();
+  FocusNode focusNode = FocusNode();
 
+  /// RxInt
+  int selectedIndex= 0;
+  int dropdownIndex = 0;
+  RxInt selectionMenuBtn = 0.obs;
 
   ///Todo booking form data
 
-  var bookings = <Booking>[].obs;
   var selectedBookingTab  = 'TODAY BOOKINGS'.obs;
 
   RxString selectedTab = 'MAPS'.obs;
@@ -55,6 +60,7 @@ class DashboardController extends GetxController {
   var suggestions = <String>[].obs;
   var inputText = ''.obs;
   final highlightedIndex = 0.obs;
+  int selectedDriverIndex = 0;
   final pickupFieldKey = GlobalKey();
   final dropoffFieldKey = GlobalKey();
   final via1FieldKey = GlobalKey();
@@ -109,6 +115,7 @@ class DashboardController extends GetxController {
     'Faisalabad',
   ];
 
+
   void onInputChanged(String value) {
     inputText.value = value;
     if (value.isEmpty) {
@@ -144,44 +151,10 @@ class DashboardController extends GetxController {
     suggestions.clear();
   }
 
-  //Date
-  Future<void> pickDate(BuildContext context) async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate != null) {
-      String formattedDate = DateFormat('EEE d-M-yyyy').format(pickedDate);
-      selectedDate.value = formattedDate;
-      dateController.text = formattedDate;
-    }
-  }
-
-  //Time
-  Future<void> pickTime(BuildContext context) async {
-    final pickedTime = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-
-    if (pickedTime != null) {
-      final now = DateTime.now();
-      final formattedTime = DateFormat('HH:mm').format(
-        DateTime(
-            now.year, now.month, now.day, pickedTime.hour, pickedTime.minute),
-      );
-      selectedTime.value = formattedTime;
-      timeController.text = formattedTime;
-    }
-  }
 
   @override
   void onInit() {
     super.onInit();
-    loadDummyBookings();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     PickupController.addListener(() {
@@ -218,42 +191,6 @@ class DashboardController extends GetxController {
   }
 
 
-  void loadDummyBookings() {
-    bookings.value = List.generate(12, (index) {
-      return Booking(
-        sno: index + 1,
-        ref: 'NTG54851${800 + index}',
-        date: 'Fri - 7 - 2025',
-        time: '18:${30 + index}',
-        customerName: 'Nadeem',
-        pickupPoint: 'NW6 7BP, London',
-        dropoffPoint: '6 Warrior Garden, London',
-        phone: '07590455507',
-        vehicle: 'Saloon',
-        status: 'Waiting',
-        driver: '!',
-        account: 'Cash',
-        fares: 146.35,
-      );
-  });
-  }
-  // void editBooking(int index) {
-  //   var booking = bookings[index];
-  // }
-
-  void editBooking(int index) {
-    print('Editing booking at index $index: ${bookings[index].ref}');
-  }
-
-
-  void deleteBooking(int index) {
-    bookings.removeAt(index);
-  }
-
-  void selectTab(String tab) {
-    selectedBookingTab.value = tab;
-  }
-
   @override
   void onClose() {
     // suggestionFocusNode.dispose();
@@ -274,18 +211,6 @@ class DashboardController extends GetxController {
     super.onClose();
   }
 
-// @override
-  // void onClose() {
-  //   suggestionFocusNode.dispose();
-  //   keyboardFocusNode.dispose();
-  //   PickupController.dispose();
-  //   DropoffController.dispose();
-  //   ViaLocation1Controller.dispose();
-  //   ViaLocation2Controller.dispose();
-  //   referenceNumberController.dispose();
-  //   dateController.dispose();
-  //   super.onClose();
-  // }
 }
 
 class DashBoardBindings implements Bindings {

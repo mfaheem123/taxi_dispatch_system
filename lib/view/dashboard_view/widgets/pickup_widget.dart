@@ -12,9 +12,6 @@ import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
 
 class PickupWidget extends StatefulWidget {
   const PickupWidget({super.key});
@@ -24,12 +21,9 @@ class PickupWidget extends StatefulWidget {
 }
 
 class _PickupWidgetState extends State<PickupWidget> {
-  String selectedMenu = "";
-  String selectedDropdownItem = "";
 
   // Extra focus nodes for non-textfield clickable items
   final FocusNode plot1FN = FocusNode();
-  final FocusNode notes1FN = FocusNode();
   final FocusNode plot2FN = FocusNode();
   final FocusNode notes2FN = FocusNode();
   final FocusNode swap1FN = FocusNode();
@@ -39,7 +33,6 @@ class _PickupWidgetState extends State<PickupWidget> {
   @override
   void dispose() {
     plot1FN.dispose();
-    notes1FN.dispose();
     plot2FN.dispose();
     notes2FN.dispose();
     swap1FN.dispose();
@@ -213,7 +206,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                     ),
                   ),
 
-                  SizedBox(height: screenHeight * 0.01),
+                  SizedBox(height: screenHeight * 0.019),
 
                   // ================= DROPOFF ROW =================
                   SingleChildScrollView(
