@@ -234,7 +234,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                             width: pickupWidth,
                             height: 30,
                             child: RawKeyboardListener(
-                              focusNode: controller.dropoffKeyboardFocusNode,
+                              focusNode: controller.dropOffKeyboardFocusNode,
                               onKey: (event) {
                                 if (event is RawKeyDownEvent) {
                                   if (event.logicalKey ==
@@ -258,7 +258,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 key: controller.dropoffFieldKey,
                                 controller: controller.DropoffController,
                                 focusNode:
-                                controller.dropoffTextFieldFocusNode,
+                                controller.dropOffTextFieldFocusNode,
                                 hintText: 'DROP LOCATION',
                                 borderRadius: 4,
                                 prefixIcon: const Icon(Icons.location_pin,
@@ -533,7 +533,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 child: CustomTextField(
                                   key: controller.via2FieldKey,
                                   controller: controller.viaLocation2Controller,
-                                  focusNode: controller.dropoffTextFieldFocusNode,
+                                  focusNode: controller.dropOffTextFieldFocusNode,
                                   hintText: 'DROP LOCATION',
                                   borderRadius: 4,
                                   prefixIcon: const Icon(Icons.location_pin,

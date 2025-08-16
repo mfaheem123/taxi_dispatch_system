@@ -81,12 +81,12 @@ class DashboardController extends GetxController {
   // final keyboardFocusNode = FocusNode();
 
   final FocusNode pickupKeyboardFocusNode = FocusNode();
-  final FocusNode dropoffKeyboardFocusNode = FocusNode();
+  final FocusNode dropOffKeyboardFocusNode = FocusNode();
   final FocusNode via1KeyboardFocusNode = FocusNode();
   final FocusNode via2KeyboardFocusNode = FocusNode();
 
   final FocusNode pickupTextFieldFocusNode = FocusNode();
-  final FocusNode dropoffTextFieldFocusNode = FocusNode();
+  final FocusNode dropOffTextFieldFocusNode = FocusNode();
   final FocusNode via1TextFieldFocusNode = FocusNode();
   final FocusNode via2TextFieldFocusNode = FocusNode();
 

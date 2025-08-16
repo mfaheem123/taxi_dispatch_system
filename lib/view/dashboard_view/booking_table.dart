@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/images.dart';
 import 'Controller/dashboard_controller.dart';
+import 'dashboard/F3_alert.dart';
 
 class BookingTable extends StatefulWidget {
   @override
@@ -127,7 +128,7 @@ class _BookingTableState extends State<BookingTable> {
 
 
               SizedBox(
-                height: Get.height/1.6,
+                // height: Get.height/1.6,
                 width: double.infinity,
                 child: TableScreen(),
         ),
@@ -335,7 +336,11 @@ class _TableScreenState extends State<TableScreen> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          print("alert");
+                          showShortcutDialog(
+                            context,
+                            title: "testing",
+                            contentWidget: Center(child: Text("Testing"),),
+                          );
                         },
                         child: ImageIcon(AssetImage(Images.fowardIcon),
                             color: Colors.green, size: 20),
@@ -345,7 +350,11 @@ class _TableScreenState extends State<TableScreen> {
                           child: Text("|")),
                       GestureDetector(
                         onTap: (){
-                          print("alert2");
+                          showShortcutDialog(
+                            context,
+                            title: "testing",
+                            contentWidget: Center(child: Text("Testing"),),
+                          );
                         },
                         child: Icon(Icons.edit_calendar_rounded,
                             color: Colors.red, size: 20),
@@ -355,7 +364,11 @@ class _TableScreenState extends State<TableScreen> {
                           child: Text("|")),
                       GestureDetector(
                           onTap: (){
-                            print("alert3");
+                            showShortcutDialog(
+                              context,
+                              title: "testing",
+                              contentWidget: Center(child: Text("Testing"),),
+                            );
                           },
                           child: Icon(Icons.delete_forever, color: Colors.green, size: 20)),
                       Padding(
@@ -364,7 +377,11 @@ class _TableScreenState extends State<TableScreen> {
                       ),
                       GestureDetector(
                           onTap: (){
-                            print("alert4");
+                            showShortcutDialog(
+                              context,
+                              title: "testing",
+                              contentWidget: Center(child: Text("Testing"),),
+                            );
                           },
                           child: Icon(Icons.more_horiz, color: Colors.green, size: 20)),
                     ],

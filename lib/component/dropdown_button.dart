@@ -75,6 +75,30 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
     }
   }
 
+  void _closeDropdownByKeyboard() {
+    if (_isDropdownOpen) {
+      final RenderBox? renderBox =
+      _dropdownKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        final Offset position =
+        renderBox.localToGlobal(renderBox.size.center(Offset.zero));
+
+        // Dropdown ko ESC se close karna (mouse click simulate)
+        GestureBinding.instance.handlePointerEvent(
+          PointerDownEvent(position: position),
+        );
+        GestureBinding.instance.handlePointerEvent(
+          PointerUpEvent(position: position),
+        );
+      }
+
+      setState(() {
+        _isDropdownOpen = false;
+      });
+      _focusNode.unfocus();
+    }
+  }
+
   final GlobalKey _dropdownKey = GlobalKey();
 
   @override
@@ -103,9 +127,37 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
                   (_highlightedIndex - 1 + widget.itemList.length) %
                       widget.itemList.length;
             });
+          } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+            // 👇 Yahan ESC press par dropdown band hoga
+            _closeDropdownByKeyboard();
           }
         }
       },
+    /*  onKey: (event) async {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.enter) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            if (!_isDropdownOpen) {
+              _openDropdownByKeyboard();
+            } else {
+              _selectHighlightedItem();
+            }
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            setState(() {
+              _highlightedIndex =
+                  (_highlightedIndex + 1) % widget.itemList.length;
+            });
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            setState(() {
+              _highlightedIndex =
+                  (_highlightedIndex - 1 + widget.itemList.length) %
+                      widget.itemList.length;
+            });
+          }
+        }
+      },*/
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(

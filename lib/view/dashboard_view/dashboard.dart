@@ -132,6 +132,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           print('Pressed key: ${key.debugName}');
           print('Key code: ${event.data}');
 
+
+
           // F3
           if (key.debugName == "F3") {
             showShortcutDialog(
@@ -177,7 +179,6 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         body: SafeArea(
           child: Stack(
             children: [
-
               GetBuilder<DashboardController>(
                 builder: (controller) {
                   return Column(
