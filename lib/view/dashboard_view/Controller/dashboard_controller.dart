@@ -67,7 +67,7 @@ class DashboardController extends GetxController {
   final highlightedIndex = 0.obs;
   int selectedDriverIndex = 0;
   final pickupFieldKey = GlobalKey();
-  final dropoffFieldKey = GlobalKey();
+  final dropOffFieldKey = GlobalKey();
   final via1FieldKey = GlobalKey();
   final via2FieldKey = GlobalKey();
   final stackKey = GlobalKey();
@@ -138,7 +138,7 @@ class DashboardController extends GetxController {
       PickupController.text = value;
       PickupController.selection =
           TextSelection.collapsed(offset: value.length);
-    } else if (activeFieldKey.value == dropoffFieldKey) {
+    } else if (activeFieldKey.value == dropOffFieldKey) {
       DropoffController.text = value;
       DropoffController.selection =
           TextSelection.collapsed(offset: value.length);
@@ -172,7 +172,7 @@ class DashboardController extends GetxController {
 
     DropoffController.addListener(() {
       if (DropoffController.selection.baseOffset != -1) {
-        activeFieldKey.value = dropoffFieldKey;
+        activeFieldKey.value = dropOffFieldKey;
         inputText.value = DropoffController.text;
         onInputChanged(DropoffController.text);
       }
