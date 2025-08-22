@@ -30,7 +30,7 @@ class CustomTextField extends StatelessWidget {
 
   String? labelText;
   String? hintText;
-  TextEditingController controller = TextEditingController();
+  final TextEditingController controller;
   final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
   final Widget? prefixIcon;
@@ -43,7 +43,6 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
   final GestureTapCallback? onTap;
-  final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +56,10 @@ class CustomTextField extends StatelessWidget {
             keyboardType: keyboardType,
             onSubmitted: onSubmitted,
             textInputAction: textInputAction,
-            onTap: onTap??(){
-              dashBoardCntrl.shortCutKeyValue.value = "formKey";
-            },
+            onTap: onTap??
+                    () {
+                  Get.find<DashboardController>().shortCutKeyValue.value = "formKey";
+                },
             style: hintStyle?? mozillaTextSemiBoldText(
                 context: context,
                 fontSize: 10,

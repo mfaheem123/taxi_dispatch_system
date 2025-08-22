@@ -19,6 +19,14 @@ class _QuotationWidgetState extends State<QuotationWidget> {
   final FocusNode switchFocus = FocusNode();
 
   @override
+  void initState() {
+    super.initState();
+    switchFocus.addListener(() {
+      setState(() {}); // jab focus aye/jae to rebuild hoga
+    });
+  }
+
+  @override
   void dispose() {
     switchFocus.dispose();
     super.dispose();
@@ -44,14 +52,18 @@ class _QuotationWidgetState extends State<QuotationWidget> {
               controller.switchController.value =
               !controller.switchController.value;
             },
-            child: AdvancedSwitch(
-              controller: controller.switchController,
-              activeColor: DynamicColors.primaryClr,
-              inactiveColor: Colors.grey,
-              borderRadius: BorderRadius.circular(15),
-              width: 30,
-              height: 15,
-              onChanged: (v) {},
+            child: AnimatedScale(
+              scale: switchFocus.hasFocus ? 1.4 : 1.0, // zoom when focused
+              duration: const Duration(milliseconds: 200),
+              child: AdvancedSwitch(
+                controller: controller.switchController,
+                activeColor: DynamicColors.primaryClr,
+                inactiveColor: Colors.grey,
+                borderRadius: BorderRadius.circular(15),
+                width: 30,
+                height: 15,
+                onChanged: (v) {},
+              ),
             ),
           ),
         );

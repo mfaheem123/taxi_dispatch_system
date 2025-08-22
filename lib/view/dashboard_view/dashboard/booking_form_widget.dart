@@ -61,12 +61,12 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
 
   @override
   void dispose() {
-    vehFocus.dispose();
-    emailFocus.dispose();
-    passFocus.dispose();
-    luggFocus.dispose();
-    sluggFocus.dispose();
-    checkboxFocus.dispose();
+    // vehFocus.dispose();
+    // emailFocus.dispose();
+    // passFocus.dispose();
+    // luggFocus.dispose();
+    // sluggFocus.dispose();
+    // checkboxFocus.dispose();
     for (var node in _focusNodes) {
       node.dispose();
     }

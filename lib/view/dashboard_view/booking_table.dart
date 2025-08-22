@@ -129,8 +129,7 @@ class _BookingTableState extends State<BookingTable> {
               SizedBox(
                 height: Get.height/1.6,
                 width: double.infinity,
-                child:
-                TableScreen(),
+                child: TableScreen(),
         ),
             ],
           ),
@@ -166,9 +165,6 @@ class TableSelectClass{
   String? selectedDropDownValue;
   TableSelectClass({this.selectedClr, this.dropDown = false,this.titleText,required this.dropDownList,this.selectedDropDownValue});
 }
-
-
-
 
 
 class TableScreen extends StatefulWidget {
@@ -337,22 +333,40 @@ class _TableScreenState extends State<TableScreen> {
                   // last cell with icons
                   child = Row(
                     children: [
-                      ImageIcon(AssetImage(Images.fowardIcon),
-                          color: Colors.green, size: 20),
+                      GestureDetector(
+                        onTap: (){
+                          print("alert");
+                        },
+                        child: ImageIcon(AssetImage(Images.fowardIcon),
+                            color: Colors.green, size: 20),
+                      ),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 1.0),
                           child: Text("|")),
-                      Icon(Icons.edit_calendar_rounded,
-                          color: Colors.red, size: 20),
+                      GestureDetector(
+                        onTap: (){
+                          print("alert2");
+                        },
+                        child: Icon(Icons.edit_calendar_rounded,
+                            color: Colors.red, size: 20),
+                      ),
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 1.0),
                           child: Text("|")),
-                      Icon(Icons.delete_forever, color: Colors.green, size: 20),
+                      GestureDetector(
+                          onTap: (){
+                            print("alert3");
+                          },
+                          child: Icon(Icons.delete_forever, color: Colors.green, size: 20)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 1.0),
                         child: Text("|"),
                       ),
-                      Icon(Icons.more_horiz, color: Colors.green, size: 20),
+                      GestureDetector(
+                          onTap: (){
+                            print("alert4");
+                          },
+                          child: Icon(Icons.more_horiz, color: Colors.green, size: 20)),
                     ],
                   );
                 }

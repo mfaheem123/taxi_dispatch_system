@@ -48,191 +48,193 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               final key = event.logicalKey;
             }
           },
-          child: Column(
-            children: [
-              Container(
-              width: screenWidth,
-              decoration: BoxDecoration(color: DynamicColors.secondaryClr),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Wrap(
-                  spacing: 10, // horizontal gap
-                  runSpacing: 8, // vertical gap when wrapped
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                         ShortcutKeyWidget(),
-                         ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
-                         ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
-                         ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
-                         ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
-                        width >= 1900 ?
-                        Spacer():SizedBox.shrink(),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 6.0),
-                          child: CustomButton(
-                            width: 120,
-                            height: 35,
-                            borderRadius: 6,
-                            verticalPadding: 0,
-                            style: mozillaTextSemiBoldText(
-                                fontSize: 11,
-                                color: DynamicColors.whiteClr
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                width: screenWidth,
+                decoration: BoxDecoration(color: DynamicColors.secondaryClr),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Wrap(
+                    spacing: 10, // horizontal gap
+                    runSpacing: 8, // vertical gap when wrapped
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                           ShortcutKeyWidget(),
+                           ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
+                           ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
+                           ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
+                           ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
+                          width >= 1900 ?
+                          Spacer():SizedBox.shrink(),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6.0),
+                            child: CustomButton(
+                              width: 120,
+                              height: 35,
+                              borderRadius: 6,
+                              verticalPadding: 0,
+                              style: mozillaTextSemiBoldText(
+                                  fontSize: 11,
+                                  color: DynamicColors.whiteClr
+                              ),
+                              onTap: (){
+                                dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
+                                dashboardController.update();
+                              },
+                              btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
                             ),
-                            onTap: (){
-                              dashboardController.hideDashBoard.value = !dashboardController.hideDashBoard.value;
-                              dashboardController.update();
-                            },
-                            btnText:dashboardController.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-              Stack(
-                key: dashboardController.stackKey,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Visibility(
-                          visible: dashboardController.hideDashBoard.value,
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: width >=1920? Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(
-                                  width: screenWidth * 0.007,
-                                ),
-                                BookingFormWidget(),
-                                SizedBox(width: screenWidth * 0.011),
+                Stack(
+                  key: dashboardController.stackKey,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: Column(
+                        children: [
+                          Visibility(
+                            visible: dashboardController.hideDashBoard.value,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: width >=1920? Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    width: screenWidth * 0.007,
+                                  ),
+                                  BookingFormWidget(),
+                                  SizedBox(width: screenWidth * 0.011),
 
-                                /// todo MAP SECTION
-                                MapViewWidget(),
-                                /// todo MAP SECTION
-                                SizedBox(width: screenWidth * 0.0133),
+                                  /// todo MAP SECTION
+                                  MapViewWidget(),
+                                  /// todo MAP SECTION
+                                  SizedBox(width: screenWidth * 0.0133),
 
-                                //Driver
-                                DriversView(),
-                              ],
-                            ):Column(
-                              children: [
-                                BookingFormWidget(),
-                                Row(
-                                  children: [
-                                    /// todo MAP SECTION
-                                    MapViewWidget(),
-                                    /// todo MAP SECTION
-                                    SizedBox(width: screenWidth * 0.0133),
+                                  //Driver
+                                  DriversView(),
+                                ],
+                              ):Column(
+                                children: [
+                                  BookingFormWidget(),
+                                  Row(
+                                    children: [
+                                      /// todo MAP SECTION
+                                      MapViewWidget(),
+                                      /// todo MAP SECTION
+                                      SizedBox(width: screenWidth * 0.0133),
 
-                                    //Driver
-                                    DriversView(),
-                                  ],
-                                )
-                              ],
+                                      //Driver
+                                      DriversView(),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              // color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: Colors.grey.shade300),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: BookingTable(),
-                            )),
-                      ],
-                    ),
-                  ),
-                  // SizedBox(height: 12),
-                  Obx(() {
-                    if (dashboardController.suggestions.isEmpty) return SizedBox();
-                    final GlobalKey<State<StatefulWidget>>? activeKey =
-                        dashboardController.activeFieldKey.value;
-                    final RenderBox? fieldBox = activeKey?.currentContext
-                        ?.findRenderObject() as RenderBox?;
-                    final RenderBox? stackBox =
-                    dashboardController.stackKey.currentContext?.findRenderObject()
-                    as RenderBox?;
-
-                    double top = 0.0;
-                    double left = 0.0;
-                    double width = screenWidth;
-
-                    if (fieldBox != null && stackBox != null) {
-                      final Offset localOffset = fieldBox
-                          .localToGlobal(Offset.zero, ancestor: stackBox);
-                      final double fieldHeight = fieldBox.size.height;
-                      width = fieldBox.size.width;
-                      top = localOffset.dy + fieldHeight;
-                      left = localOffset.dx;
-                    }
-
-                    return Positioned(
-                      top: top,
-                      left: left,
-                      width: width,
-                      child: Container(
-                        height: screenHeight * 0.4,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFEFF0F2),
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 5,
-                              offset: Offset(0, 2),
-                            )
-                          ],
-                        ),
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: dashboardController.suggestions
-                              .asMap()
-                              .entries
-                              .map((entry) {
-                            int index = entry.key;
-                            String suggestion = entry.value;
-                            bool isHighlighted =
-                                index == dashboardController.highlightedIndex.value;
-                            return Container(
-                              color: isHighlighted ? Color(0xffA0DCFF) : null,
-                              child: ListTile(
-                                dense: true,
-                                visualDensity: VisualDensity.compact,
-                                title: Text(suggestion,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: isHighlighted
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                      color: isHighlighted
-                                          ? Colors.blue
-                                          : Colors.black,
-                                    )),
-                                onTap: () {
-                                  dashboardController.selectSuggestion(suggestion);
-                                },
+                          Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                // color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.grey.shade300),
                               ),
-                            );
-                          }).toList(),
-                        ),
+                              child: Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: BookingTable(),
+                              )),
+                        ],
                       ),
-                    );
-                  }),
-                ],
-              ),
-            ],
+                    ),
+                    // SizedBox(height: 12),
+                    Obx(() {
+                      if (dashboardController.suggestions.isEmpty) return SizedBox();
+                      final GlobalKey<State<StatefulWidget>>? activeKey =
+                          dashboardController.activeFieldKey.value;
+                      final RenderBox? fieldBox = activeKey?.currentContext
+                          ?.findRenderObject() as RenderBox?;
+                      final RenderBox? stackBox =
+                      dashboardController.stackKey.currentContext?.findRenderObject()
+                      as RenderBox?;
+
+                      double top = 0.0;
+                      double left = 0.0;
+                      double width = screenWidth;
+
+                      if (fieldBox != null && stackBox != null) {
+                        final Offset localOffset = fieldBox
+                            .localToGlobal(Offset.zero, ancestor: stackBox);
+                        final double fieldHeight = fieldBox.size.height;
+                        width = fieldBox.size.width;
+                        top = localOffset.dy + fieldHeight;
+                        left = localOffset.dx;
+                      }
+
+                      return Positioned(
+                        top: top,
+                        left: left,
+                        width: width,
+                        child: Container(
+                          height: screenHeight * 0.4,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFEFF0F2),
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 5,
+                                offset: Offset(0, 2),
+                              )
+                            ],
+                          ),
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: dashboardController.suggestions
+                                .asMap()
+                                .entries
+                                .map((entry) {
+                              int index = entry.key;
+                              String suggestion = entry.value;
+                              bool isHighlighted =
+                                  index == dashboardController.highlightedIndex.value;
+                              return Container(
+                                color: isHighlighted ? Color(0xffA0DCFF) : null,
+                                child: ListTile(
+                                  dense: true,
+                                  visualDensity: VisualDensity.compact,
+                                  title: Text(suggestion,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: isHighlighted
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                        color: isHighlighted
+                                            ? Colors.blue
+                                            : Colors.black,
+                                      )),
+                                  onTap: () {
+                                    dashboardController.selectSuggestion(suggestion);
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       }
