@@ -78,10 +78,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   final fareCtl = TextEditingController();
   final accCtl = TextEditingController();
 
-  // Dropdown selections
-  String? jourValue;   // O/W, R/N, W/R
-  String? drvValue;    // driver list
-  String? payValue;    // Cash, Credit Card, ...
 
   // FocusNodes for keyboard-activatable non-text widgets
   final FocusNode jourFN = FocusNode();
@@ -246,7 +242,11 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               CustomDropdownButton(
                                 itemList: ["O/W", "R/N", "W/R"],
                                 hintText: "DEMO COMPANY",
-                                selectedDropDownValue: jourValue,
+                                selectedDropDownValue: controller.jourValue,
+                                onSelected: (v){
+                                  controller.jourValue = v;
+                                  controller.update();
+                                },
                               ),
                             ),
                           ),
@@ -286,7 +286,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
               "27 RICHARD HARDWICK",
               "28 LANRE OKERJO",],
               hintText: "DRIVER",
-              selectedDropDownValue: drvValue,
+              selectedDropDownValue: controller.drvValue,
               ),
                             ),
                           ),
@@ -361,7 +361,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               child: CustomDropdownButton(
                                 itemList: ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"],
                                 hintText: "CASH",
-                                selectedDropDownValue: payValue,
+                                selectedDropDownValue: controller.payValue,
                               ),
                             ),
                           ),

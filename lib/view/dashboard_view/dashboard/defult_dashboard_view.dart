@@ -37,7 +37,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-
     return GetBuilder<DashboardController>(
       builder: (dashboardController) {
         return RawKeyboardListener(
@@ -222,7 +221,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                             : Colors.black,
                                       )),
                                   onTap: () {
-                                    dashboardController.selectSuggestion(suggestion);
+                                    // dashboardController.selectSuggestion(suggestion);
                                   },
                                 ),
                               );

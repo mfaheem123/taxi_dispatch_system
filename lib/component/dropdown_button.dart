@@ -1,8 +1,6 @@
-
-
-
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -47,12 +45,34 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
     super.dispose();
   }
 
+  bool _isDropdownOpen = false;
+  int _highlightedIndex = 0;
+
   void _openDropdownByKeyboard() {
-    // DropdownButton2 automatically opens when button is tapped
-    // So we simulate a tap using GestureDetector's callback
-    _dropdownKey.currentContext?.findRenderObject()?.sendSemanticsEvent(
-      TapSemanticEvent(),
-    );
+    if (!_isDropdownOpen) {
+      final RenderBox? renderBox =
+          _dropdownKey.currentContext?.findRenderObject() as RenderBox?;
+      if (renderBox != null) {
+        final Offset position =
+            renderBox.localToGlobal(renderBox.size.center(Offset.zero));
+        GestureBinding.instance.handlePointerEvent(
+          PointerDownEvent(position: position),
+        );
+        GestureBinding.instance.handlePointerEvent(
+          PointerUpEvent(position: position),
+        );
+      }
+    }
+  }
+
+  void _selectHighlightedItem() {
+    if (widget.itemList.isNotEmpty) {
+      final value = widget.itemList[_highlightedIndex];
+      setState(() {
+        widget.selectedDropDownValue = value;
+      });
+      widget.onSelected?.call(value);
+    }
   }
 
   final GlobalKey _dropdownKey = GlobalKey();
@@ -61,15 +81,33 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
   Widget build(BuildContext context) {
     return RawKeyboardListener(
       focusNode: _focusNode,
-      onKey: (event) {
-        if (event is RawKeyDownEvent &&
-            event.logicalKey == LogicalKeyboardKey.enter) {
-          _openDropdownByKeyboard();
+      onKey: (event) async {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.enter) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            if (!_isDropdownOpen) {
+              _openDropdownByKeyboard();
+            } else {
+              _selectHighlightedItem();
+            }
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            setState(() {
+              _highlightedIndex =
+                  (_highlightedIndex + 1) % widget.itemList.length;
+            });
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+            await Future.delayed(const Duration(milliseconds: 50));
+            setState(() {
+              _highlightedIndex =
+                  (_highlightedIndex - 1 + widget.itemList.length) %
+                      widget.itemList.length;
+            });
+          }
         }
       },
       child: Container(
-        padding:
-        const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
           border: Border.all(
             color: _isFocused ? Colors.blue : Colors.transparent,
@@ -78,6 +116,16 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
           borderRadius: BorderRadius.circular(6),
         ),
         child: DropdownButton2<String>(
+          onMenuStateChange: (isOpen) {
+            setState(() {
+              _isDropdownOpen = isOpen;
+            });
+            if (isOpen) {
+              _focusNode.requestFocus();
+            } else {
+              _focusNode.unfocus();
+            }
+          },
           key: _dropdownKey,
           value: widget.selectedDropDownValue,
           underline: const SizedBox(),
@@ -94,15 +142,15 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
           ),
           items: widget.itemList
               .map((item) => DropdownMenuItem<String>(
-            value: item,
-            child: Text(
-              item,
-              style: mozillaTextRegularText(
-                fontSize: 13,
-                color: DynamicColors.textClr,
-              ),
-            ),
-          ))
+                    value: item,
+                    child: Text(
+                      item,
+                      style: mozillaTextRegularText(
+                        fontSize: 13,
+                        color: DynamicColors.textClr,
+                      ),
+                    ),
+                  ))
               .toList(),
           onChanged: (value) {
             setState(() {
@@ -125,4 +173,3 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
     );
   }
 }
-

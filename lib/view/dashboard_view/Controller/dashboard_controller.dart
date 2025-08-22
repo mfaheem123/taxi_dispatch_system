@@ -17,6 +17,11 @@ class DashboardController extends GetxController {
   // Start with shortcut mode that allows navigation; set to "alert" only when showing a modal
   RxString shortCutKeyValue = 'shortCutKey'.obs;
 
+  // Dropdown selections
+  String? jourValue;   // O/W, R/N, W/R
+  String? drvValue;    // driver list
+  String? payValue;    // Cash, Credit Card, ...
+
   ///bool
 
   RxBool isHovered = false.obs;
@@ -101,8 +106,8 @@ class DashboardController extends GetxController {
 
   final PickupController = TextEditingController();
   final DropoffController = TextEditingController();
-  final ViaLocation1Controller = TextEditingController();
-  final ViaLocation2Controller = TextEditingController();
+  final viaLocation1Controller = TextEditingController();
+  final viaLocation2Controller = TextEditingController();
 
   final allLocations = [
     'Karachi',
@@ -138,12 +143,12 @@ class DashboardController extends GetxController {
       DropoffController.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
-      ViaLocation1Controller.text = value;
-      ViaLocation1Controller.selection =
+      viaLocation1Controller.text = value;
+      viaLocation1Controller.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via2FieldKey) {
-      ViaLocation2Controller.text = value;
-      ViaLocation2Controller.selection =
+      viaLocation2Controller.text = value;
+      viaLocation2Controller.selection =
           TextSelection.collapsed(offset: value.length);
     }
 
@@ -173,19 +178,19 @@ class DashboardController extends GetxController {
       }
     });
 
-    ViaLocation1Controller.addListener(() {
-      if (ViaLocation1Controller.selection.baseOffset != -1) {
+    viaLocation1Controller.addListener(() {
+      if (viaLocation1Controller.selection.baseOffset != -1) {
         activeFieldKey.value = via1FieldKey;
-        inputText.value = ViaLocation1Controller.text;
-        onInputChanged(ViaLocation1Controller.text);
+        inputText.value = viaLocation1Controller.text;
+        onInputChanged(viaLocation1Controller.text);
       }
     });
 
-    ViaLocation2Controller.addListener(() {
-      if (ViaLocation2Controller.selection.baseOffset != -1) {
+    viaLocation2Controller.addListener(() {
+      if (viaLocation2Controller.selection.baseOffset != -1) {
         activeFieldKey.value = via2FieldKey;
-        inputText.value = ViaLocation2Controller.text;
-        onInputChanged(ViaLocation2Controller.text);
+        inputText.value = viaLocation2Controller.text;
+        onInputChanged(viaLocation2Controller.text);
       }
     });
   }
@@ -203,8 +208,8 @@ class DashboardController extends GetxController {
 
     PickupController.dispose();
     DropoffController.dispose();
-    ViaLocation1Controller.dispose();
-    ViaLocation2Controller.dispose();
+    viaLocation1Controller.dispose();
+    viaLocation2Controller.dispose();
     referenceNumberController.dispose();
     dateController.dispose();
 

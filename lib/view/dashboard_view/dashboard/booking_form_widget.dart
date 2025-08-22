@@ -1,30 +1,18 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:popup_menu_plus/popup_menu_plus.dart';
-import 'package:table_calendar/table_calendar.dart';
-
-import '../../../component/calender.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
-import '../widgets/time_picker_widget.dart';
 import '../widgets/user_info_widget.dart';
-import '../widgets/via_location.dart';
-import 'focusable_text_button.dart';
 import 'form_short_cut_key.dart';
 
-import 'package:table_calendar/table_calendar.dart';
 
 class BookingFormWidget extends StatefulWidget {
   BookingFormWidget({super.key});
@@ -81,7 +69,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<DashboardController>(builder: (controller) {
+    return GetBuilder<DashboardController>(
+        builder: (controller) {
       return Container(
           width: width >= 1900 ? screenWidth * 0.45: screenWidth,
           decoration: BoxDecoration(
@@ -100,197 +89,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               SizedBox(
                 height: screenHeight * 0.01,
               ),
-              if (dashboardController.selectedJourneyType ==
-                  'Two Way') ...[
-                SizedBox(height: screenHeight * 0.02),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      flex: 3,
-                      fit: FlexFit.loose,
-                      child: Column(
-                        children: [
-                          RawKeyboardListener(
-                            focusNode: controller.via1KeyboardFocusNode,
-                            onKey: (event) {
-                              if (event is RawKeyDownEvent) {
-                                if (event.logicalKey ==
-                                    LogicalKeyboardKey.arrowDown) {
-                                  if (controller
-                                      .highlightedIndex.value <
-                                      controller.suggestions.length -
-                                          1) {
-                                    controller.highlightedIndex.value++;
-                                  }
-                                } else if (event.logicalKey ==
-                                    LogicalKeyboardKey.arrowUp) {
-                                  if (controller
-                                      .highlightedIndex.value >
-                                      0) {
-                                    controller.highlightedIndex.value--;
-                                  }
-                                } else if (event.logicalKey ==
-                                    LogicalKeyboardKey.enter) {
-                                  final selected =
-                                  controller.suggestions[
-                                  controller
-                                      .highlightedIndex.value];
-                                  controller.selectSuggestion(selected);
-                                }
-                              }
-                            },
-                            child: Focus(
-                              focusNode: controller.via1FocusNode,
-                              onFocusChange: (hasFocus) {
-                                if (hasFocus) {
-                                  controller.activeFieldKey.value =
-                                      controller.via1FieldKey;
-                                }
-                              },
-                              child: SizedBox(
-                                height: screenHeight * 0.05,
-                                child: TextFormField(
-                                  key: controller.via1FieldKey,
-                                  controller:
-                                  controller.ViaLocation1Controller,
-                                  focusNode:
-                                  controller.via1TextFieldFocusNode,
-                                  onChanged: controller.onInputChanged,
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 1, vertical: 10),
-                                    filled: true,
-                                    fillColor: Color(0xFFEFF0F2),
-                                    prefixIcon: Icon(Icons.alt_route,
-                                        color: Color(0xFF43489A)),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        controller
-                                            .ViaLocation1Controller
-                                            .clear();
-                                        controller.suggestions.clear();
-                                      },
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xFF575797),
-                                          size: 16),
-                                    ),
-                                    labelText: 'Via Location 1',
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(5),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: screenHeight * 0.01),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Flexible(
-                      flex: 3,
-                      fit: FlexFit.loose,
-                      child: Column(
-                        children: [
-                          RawKeyboardListener(
-                            focusNode: controller.via2KeyboardFocusNode,
-                            onKey: (event) {
-                              if (event is RawKeyDownEvent) {
-                                if (event.logicalKey ==
-                                    LogicalKeyboardKey.arrowDown) {
-                                  if (controller
-                                      .highlightedIndex.value <
-                                      controller.suggestions.length -
-                                          1) {
-                                    controller.highlightedIndex.value++;
-                                  }
-                                } else if (event.logicalKey ==
-                                    LogicalKeyboardKey.arrowUp) {
-                                  if (controller
-                                      .highlightedIndex.value >
-                                      0) {
-                                    controller.highlightedIndex.value--;
-                                  }
-                                } else if (event.logicalKey ==
-                                    LogicalKeyboardKey.enter) {
-                                  final selected =
-                                  controller.suggestions[
-                                  controller
-                                      .highlightedIndex.value];
-                                  controller.selectSuggestion(selected);
-                                }
-                              }
-                            },
-                            child: Focus(
-                              focusNode: controller.via2FocusNode,
-                              onFocusChange: (hasFocus) {
-                                if (hasFocus) {
-                                  controller.activeFieldKey.value =
-                                      controller.via2FieldKey;
-                                }
-                              },
-                              child: SizedBox(
-                                height: screenHeight * 0.05,
-                                child: TextFormField(
-                                  key: controller.via2FieldKey,
-                                  controller:
-                                  controller.ViaLocation2Controller,
-                                  focusNode:
-                                  controller.via2TextFieldFocusNode,
-                                  onChanged: controller.onInputChanged,
-                                  decoration: InputDecoration(
-                                    contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 1, vertical: 10),
-                                    filled: true,
-                                    fillColor: Color(0xFFEFF0F2),
-                                    prefixIcon: Icon(Icons.alt_route,
-                                        color: Color(0xFF43489A)),
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        controller
-                                            .ViaLocation2Controller
-                                            .clear();
-                                        controller.suggestions.clear();
-                                      },
-                                      child: Icon(Icons.cancel,
-                                          color: Color(0xFF575797),
-                                          size: 16),
-                                    ),
-                                    labelText: 'Via Location 2',
-                                    labelStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(5),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+
               ///todo user info widget
               UserInfoWidget(),
               ///todo user info widget
