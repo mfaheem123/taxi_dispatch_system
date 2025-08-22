@@ -255,7 +255,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 }
                               },
                               child: CustomTextField(
-                                key: controller.dropoffFieldKey,
+                                key: controller.dropOffFieldKey,
                                 controller: controller.DropoffController,
                                 focusNode:
                                 controller.dropoffTextFieldFocusNode,
