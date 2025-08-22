@@ -40,4 +40,7 @@ class AppText{
   static get to => "To";
   static get drivers => "Drivers";
   static get welcomeText => "WELCOME TO YOUR DASHBOARD...!";
+  static get restrictDrivers => "RESTRICT DRIVERS";
+  static get selectDriver => "Select Driver";
+  static get childSeat => "CHILD SEAT(s)";
 }

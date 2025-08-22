@@ -29,6 +29,15 @@ void showShortcutDialog(BuildContext context,{
     builder: (BuildContext context) {
       return AlertDialog(
         scrollable: true,
+        // padding: EdgeInsets.all(20),
+        // width: Get.width/3,
+        // decoration: BoxDecoration(
+        //     color: DynamicColors.whiteClr,
+        //     borderRadius: BorderRadius.circular(12)
+        // ),
+
+        backgroundColor: DynamicColors.whiteClr,
+        contentPadding: EdgeInsets.all(20),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

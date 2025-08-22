@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/child_seats_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
@@ -5,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/restrict_drivers_alert.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
 import '../widgets/user_info_widget.dart';
+import '../widgets/via_location.dart';
+import 'F3_alert.dart';
 import 'form_short_cut_key.dart';
 
 
@@ -492,27 +496,40 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
               SizedBox(
                 height: screenHeight * 0.01,
               ),
-              Align(
-                alignment: Alignment.centerRight,
+              FocusTraversalGroup(
+                policy: OrderedTraversalPolicy(),
                 child: Container(
-                  height: 30,
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       _buildFocusableIcon(
                         icon: Icons.person,
                         focusNode: _focusNodes[0],
-                        onPressed: () => print("Person clicked"),
+                        onPressed: (){
+                          showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  RestrictDriversAlert());
+                        },
                       ),
                       _buildFocusableIcon(
                         icon: Icons.shopping_cart_checkout_outlined,
                         focusNode: _focusNodes[1],
-                        onPressed: () => print("Cart clicked"),
+                        onPressed: () {
+
+                          showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  ChildSeatsAlert(),
+                          );
+                        },
                       ),
                       _buildFocusableIcon(
                         icon: Icons.attach_money,
@@ -655,32 +672,41 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
     required VoidCallback onPressed,
     required FocusNode focusNode,
   }) {
-    bool isFocused = focusNode.hasFocus;
-
-    return RawKeyboardListener(
+    return Focus(
       focusNode: focusNode,
-      onKey: (event) {
+      onKey: (node, event) {
         if (event is RawKeyDownEvent &&
-            event.logicalKey == LogicalKeyboardKey.enter) {
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
           onPressed();
+          return KeyEventResult.handled;
         }
+        return KeyEventResult.ignored;
       },
       child: GestureDetector(
         onTap: onPressed,
-        child: AnimatedScale(
-          scale: isFocused ? 1.3 : 1.0, // bigger zoom
-          duration: const Duration(milliseconds: 150),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: isFocused ? Colors.orange.withOpacity(0.2) : Colors.transparent, // highlight
-              border: isFocused
-                  ? Border.all(color: Colors.orange, width: 2)
-                  : null,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Icon(icon, size: 20),
-          ),
+        child: Builder(
+          builder: (context) {
+            final isFocused = Focus.of(context).hasFocus; // 👈 direct focus check
+            return AnimatedScale(
+              scale: isFocused ? 1.2 : 1.0,
+              duration: const Duration(milliseconds: 150),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: isFocused
+                      ? DynamicColors.primaryClr.withOpacity(0.2)
+                      : Colors.transparent,
+                  // border: isFocused
+                  //     ? Border.all(color: Colors.orange, width: 2)
+                  //     : null,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, size: 20),
+              ),
+            );
+          },
         ),
       ),
     );
