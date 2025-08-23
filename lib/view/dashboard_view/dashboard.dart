@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
+import '../locations_view/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
@@ -406,13 +407,14 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   }
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
+    print(selectedTexts);
     if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
       case 'LIST OF BOOKINGS':
         return BookingList();
-      case 'Option 2':
-        return Text("text 2");
+      case 'LOCALIZATION':
+        return LocalizationScreen();
       case 'Option 3':
         return Text("text 3");
       default:
