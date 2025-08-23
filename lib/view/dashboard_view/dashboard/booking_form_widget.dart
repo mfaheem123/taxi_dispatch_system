@@ -1,12 +1,14 @@
-import 'package:dashboard_new1/component/child_seats_alert.dart';
+import 'package:dashboard_new1/alert/child_seats_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../alert/extra_fares_alert.dart';
+import '../../../alert/extra_info_alert.dart';
 import '../../../component/dropdown_button.dart';
-import '../../../component/restrict_drivers_alert.dart';
+import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../Controller/dashboard_controller.dart';
@@ -523,7 +525,6 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                         icon: Icons.shopping_cart_checkout_outlined,
                         focusNode: _focusNodes[1],
                         onPressed: () {
-
                           showDialog(
                               context: context,
                               builder: (_) =>
@@ -534,12 +535,24 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       _buildFocusableIcon(
                         icon: Icons.attach_money,
                         focusNode: _focusNodes[2],
-                        onPressed: () => print("Money clicked"),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) =>
+                                ExtraFaresAlert(),
+                          );
+                        },
                       ),
                       _buildFocusableIcon(
                         icon: Icons.note_add_sharp,
                         focusNode: _focusNodes[3],
-                        onPressed: () => print("Note clicked"),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) =>
+                                ExtraInfoAlert(),
+                          );
+                        },
                       ),
                     ],
                   ),

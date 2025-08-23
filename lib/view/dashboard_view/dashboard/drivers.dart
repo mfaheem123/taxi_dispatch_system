@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../alert/child_seats_alert.dart';
+import '../../../alert/send_email_alert.dart';
 import '../../../component/textStyle.dart';
 import '../Controller/dashboard_controller.dart';
 
@@ -146,6 +148,19 @@ class _DriversViewState extends State<DriversView> {
 
                           return GestureDetector(
                             onTap: () {
+                              if(index == 3){
+                                showDialog(
+                                  context: context,
+                                  builder: (_) =>
+                                      SendEmailAlert(),
+                                );
+                              }else if(index == 4){
+                                showDialog(
+                                  context: context,
+                                  builder: (_) =>
+                                      SendMessageAlert(),
+                                );
+                              }
                               debugPrint("Clicked on header icon index $index");
                             },
                             child: Padding(

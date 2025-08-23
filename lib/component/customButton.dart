@@ -18,7 +18,8 @@ class CustomButton extends StatefulWidget {
     this.style,
     this.verticalPadding,
     this.btnColor,
-    this.key
+    this.key,
+    this.widget,
   });
 
   final GestureTapCallback? onTap;
@@ -30,6 +31,7 @@ class CustomButton extends StatefulWidget {
   final TextStyle? style;
   final Color? btnColor;
   Key? key;
+  Widget? widget;
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -76,7 +78,7 @@ class _CustomButtonState extends State<CustomButton> {
           height:widget.height?? 45,
           child: AnimatedScale(
             scale: _isFocused ? 1.1 : 1.0, // zoom when focused
-            duration: const Duration(milliseconds: 150),
+            duration: Duration(milliseconds: 150),
             child: Container(
               padding: EdgeInsets.symmetric(vertical: widget.verticalPadding??13),
               decoration: BoxDecoration(
@@ -84,7 +86,7 @@ class _CustomButtonState extends State<CustomButton> {
                 borderRadius: BorderRadius.circular(widget.borderRadius??20),
               ),
               child: Center(
-                child: Text( widget.btnText??AppText.login,
+                child: widget.widget??Text( widget.btnText??AppText.login,
                   style:widget.style?? mozillaTextSemiBoldText(
                       fontSize: 20,
                       color: DynamicColors.whiteClr,

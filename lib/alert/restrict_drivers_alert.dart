@@ -11,8 +11,8 @@ import 'package:get/get.dart';
 import 'package:popover/popover.dart';
 
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
-import 'color.dart';
-import 'keyboard_dropdown_widget.dart';
+import '../component/color.dart';
+import '../component/keyboard_dropdown_widget.dart';
 
 class RestrictDriversAlert extends StatelessWidget {
   RestrictDriversAlert({super.key});

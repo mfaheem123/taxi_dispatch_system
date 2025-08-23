@@ -43,4 +43,27 @@ class AppText{
   static get restrictDrivers => "RESTRICT DRIVERS";
   static get selectDriver => "Select Driver";
   static get childSeat => "CHILD SEAT(s)";
+  static get noOfChildren => "NO OF CHILDREN";
+  static get age => "AGE";
+  static get actions => "ACTIONS";
+  static get extraFears => "EXTRA FARES";
+  static get specialRequirements => "SPECIAL REQUIREMENTS";
+  static get controllerNotes => "CONTROLLER NOTES";
+  static get sendEmail => "SEND EMAIL";
+  static get emailTo => "EMAIL TO";
+  static get nameOrMobil => "NAME OR MOBIL";
+  static get subject => "SUBJECT";
+  static get typeYourEmail => "TYPE YOUR EMAIL";
+  static get save => "SAVE";
+  static get cancel => "CANCEL";
+  static get sendMessage => "SEND MESSAGE";
+  static get usernameMobile => "USERNAME OR MOBILE";
+  static get smsTo => "SMS TO";
+  static get typeYourMessage => "TYPE YOUR MESSAGE";
+  static get send => "SEND";
+  static get dispatchBooking => "DISPATCH BOOKING";
+  static get id => "ID";
+  static get subsidiary => "SUBSIDIARY";
+  static get status => "STATUS";
+  static get distance => "DISTANCE";
 }

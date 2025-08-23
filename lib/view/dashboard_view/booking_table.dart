@@ -6,6 +6,7 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
@@ -336,10 +337,10 @@ class _TableScreenState extends State<TableScreen> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          showShortcutDialog(
-                            context,
-                            title: "testing",
-                            contentWidget: Center(child: Text("Testing"),),
+                          showDialog(
+                            context: context,
+                            builder: (_) =>
+                                DispatchBookingAlert(),
                           );
                         },
                         child: ImageIcon(AssetImage(Images.fowardIcon),

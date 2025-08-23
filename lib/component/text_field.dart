@@ -26,6 +26,9 @@ class CustomTextField extends StatelessWidget {
     this.onSubmitted,
     this.textInputAction,
     this.onTap,
+    this.borderColor,
+    this.maxLines = 1,
+    this.height,
   });
 
   String? labelText;
@@ -43,12 +46,15 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final TextInputAction? textInputAction;
   final GestureTapCallback? onTap;
+  Color? borderColor;
+  final int? maxLines;
+  double? height;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
           width: Get.width/2.5,
-        height: 30,
+        height: height?? 30,
           child: TextField(
             controller: controller,
             focusNode: focusNode,
@@ -66,6 +72,8 @@ class CustomTextField extends StatelessWidget {
                 fontWeight: FontWeight.w800
             ),
             inputFormatters: inputFormatters,
+            maxLines: maxLines,
+            minLines: maxLines,
             decoration: InputDecoration(
               prefixIcon: prefixIcon,
               hintText: hintText,
@@ -82,11 +90,11 @@ class CustomTextField extends StatelessWidget {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius??20),
-                borderSide: BorderSide(color: DynamicColors.primaryClr),
+                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius??20),
-                borderSide: BorderSide(color: DynamicColors.primaryClr, width: 2),
+                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: 2),
               ),
             ),
           )

@@ -56,6 +56,30 @@ class DashboardController extends GetxController {
 
   ///Todo booking form data
 
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
+
+  final noOfChildren = TextEditingController();
+  final childAge = TextEditingController();
+  final partingChargesController = TextEditingController();
+  final congestionChargesController = TextEditingController();
+  final meetGreetController = TextEditingController();
+  final waitingChargesController = TextEditingController();
+  final extraDropChargesController = TextEditingController();
+  final creditCardChargesController = TextEditingController();
+  final companyPriceController = TextEditingController();
+  final returnCompanyPriceController = TextEditingController();
+  final controllerNoteController = TextEditingController();
+  final sendEmailController = TextEditingController();
+  final emailToController = TextEditingController();
+  final mobileNoController = TextEditingController();
+  final subjectController = TextEditingController();
+  final typeEmailController = TextEditingController();
+  final smsToController = TextEditingController();
+  final typeYourMessageController = TextEditingController();
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
   var selectedBookingTab  = 'TODAY BOOKINGS'.obs;
 
   RxString selectedTab = 'MAPS'.obs;
