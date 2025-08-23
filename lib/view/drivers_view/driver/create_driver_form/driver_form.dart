@@ -1,7 +1,9 @@
+import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/personal_info.dart';
 import 'package:flutter/material.dart';
-import '../../../Model/driver_model.dart';
-import '../../../component/calender.dart';
-import '../Controller/driver_controller.dart';
+import '../../../../Model/driver_model.dart';
+import '../../../../component/calender.dart';
+import '../../Controller/driver_controller.dart';
 
 
 class DriverForm extends StatefulWidget {
@@ -18,112 +20,87 @@ class _DriverFormState extends State<DriverForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          "Driver",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-        ),
-        backgroundColor: Colors.grey[200],
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _buildActionButton("Shifts", Colors.green),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _buildActionButton("Notes", Colors.green),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Upload Image
-                  Expanded(flex: 2, child: _buildUploadCard()),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(12),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Upload Image
+                Expanded(
+                    flex: 2,
+                    child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: Colors.grey.shade400, width: 1),
+                  ),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Container(
+                      height: 445,
+                      width: double.infinity,
+                      // color: Colors.grey[200],
+                      alignment: Alignment.center,
+                      child: Text(
+                        AppText.uploadImage,
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                )
+                ),
 
-                  const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-                  // Personal Info
-                  Expanded(flex: 5, child: _buildPersonalCard()),
+                // Personal Info
+                Expanded(flex: 5, child: DriverPersonalInfo()),
 
-                  const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-                  // Vehicle Info
-                  Expanded(flex: 5, child: _buildVehicleCard()),
-                ],
-              ),
-              const SizedBox(height: 20),
+                // Vehicle Info
+                Expanded(flex: 5, child: _buildVehicleCard()),
+              ],
+            ),
+            const SizedBox(height: 20),
 
-              // TABLES SECTION
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // LEFT SIDE
-                  Expanded(flex: 7, child: _buildDocumentsTable()),
+            // TABLES SECTION
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // LEFT SIDE
+                Expanded(flex: 7, child: _buildDocumentsTable()),
 
-                  const SizedBox(width: 12),
+                const SizedBox(width: 12),
 
-                  // RIGHT SIDE
-                  Expanded(flex: 5, child: _buildValidityTable()),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildUploadCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade400, width: 1),
-      ),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Container(
-          height: 445,
-          width: double.infinity,
-          // color: Colors.grey[200],
-          alignment: Alignment.center,
-          child: const Text(
-            "UPLOAD IMAGE",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+                // RIGHT SIDE
+                Expanded(flex: 5, child: _buildValidityTable()),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
+
 
   // Personal Info Card
   Widget _buildPersonalCard() {
     return _buildCard(
       "Personal Information",
       [
-        Row(
+        DriverPersonalInfo(),
+       /* Row(
           children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: driver.hasPDA,
-                    onChanged: (val) => setState(() => driver.hasPDA = val!),
-                  ),
-                  const Text("Has PDA"),
-                ],
-              ),
+            Checkbox(
+              value: driver.hasPDA,
+              onChanged: (val) => setState(() => driver.hasPDA = val!),
             ),
+            const Text("Has PDA"),
             Expanded(
               child: Row(
                 children: [
@@ -156,9 +133,10 @@ class _DriverFormState extends State<DriverForm> {
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 8),
-        Row(
+        ),*/
+
+        // const SizedBox(height: 8),
+       /* Row(
           children: [
             Expanded(
               child: _textField("Username", (val) => driver.username = val),
@@ -187,8 +165,8 @@ class _DriverFormState extends State<DriverForm> {
             ),
 
           ],
-        ),
-        const SizedBox(height: 8),
+        ),*/
+ /*       const SizedBox(height: 8),
 
         Row(
           children: [
@@ -205,8 +183,8 @@ class _DriverFormState extends State<DriverForm> {
             Expanded(child: _textField("NI", (val) => driver.ni = val)),
           ],
         ),
-        const SizedBox(height: 8),
-        Row(
+        const SizedBox(height: 8),*/
+       /* Row(
           children: [
             Expanded(
               child: _dropdownField("Driver Type", [
@@ -227,9 +205,9 @@ class _DriverFormState extends State<DriverForm> {
               child: _textField("Balance", (val) => driver.balance = val),
             ),
           ],
-        ),
-        const SizedBox(height: 8),
-        Row(
+        ),*/
+        // const SizedBox(height: 8),
+        /*Row(
           children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.2,
@@ -237,7 +215,7 @@ class _DriverFormState extends State<DriverForm> {
             ),
             const Spacer(),
           ],
-        ),
+        ),*/
       ],
       footer: Container(
         height: kToolbarHeight,

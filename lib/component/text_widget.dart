@@ -66,4 +66,16 @@ class AppText{
   static get subsidiary => "SUBSIDIARY";
   static get status => "STATUS";
   static get distance => "DISTANCE";
+  static get uploadImage => "UPLOAD IMAGE";
+  static get hasPDA => "Has PDA";
+  static get rentPaid => "Rent Paid";
+  static get personalInformation => "Personal Information";
+  static get userName => "Username";
+  static get fullName => "Full Name";
+  static get dob => "DOB";
+  static get nl => "Nl";
+  static get commission => "Commission";
+  static get rentLimit => "Rent Limit";
+  static get balance => "Balance";
+  static get address => "Address";
 }

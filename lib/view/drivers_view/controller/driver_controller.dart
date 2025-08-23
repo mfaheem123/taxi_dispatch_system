@@ -1,9 +1,37 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../../../Model/driver_model.dart';
 
 
 class DriverController extends GetxController {
+
+  /// todo create driver form functionality
+
+  /// RxBool variable
+  RxBool hasPDA = false.obs;
+  RxBool rentPaid = false.obs;
+  RxBool isActive = false.obs;
+
+
+  /// text editing controller
+  final driverUserNameController = TextEditingController();
+  final driverPasswordController = TextEditingController();
+  final driverFullNameController = TextEditingController();
+  final driverEmailController = TextEditingController();
+  final driverMobileController = TextEditingController();
+  final driverTelController = TextEditingController();
+  final driverNLController = TextEditingController();
+  final driverCommissionController = TextEditingController();
+  final driverRendLimitController = TextEditingController();
+  final driverBalanceController = TextEditingController();
+  final driverAddressController = TextEditingController();
+
+
+  /// todo create driver form functionality
+
+
+
   var driver = Driver().obs;
   var documents = <Map<String, String>>[].obs;
   var validities = <Map<String, String>>[].obs;

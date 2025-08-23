@@ -133,7 +133,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                       children: [
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(1),
-                          child: _labeledTextField(context, isMobile, AppText.name, nameCtl,
+                          child: labeledTextField(context, isMobile, AppText.name, nameCtl,
                               width: fieldWidth,
                               textInputAction: TextInputAction.next),
                         ),
@@ -141,7 +141,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(2),
-                          child: _labeledTextField(context, isMobile, AppText.email, emailCtl,
+                          child: labeledTextField(context, isMobile, AppText.email, emailCtl,
                               width: fieldWidth,
                               textInputAction: TextInputAction.next),
                         ),
@@ -149,7 +149,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(3),
-                          child: _labeledTextField(context, isMobile, AppText.mobile, mobileCtl,
+                          child: labeledTextField(context, isMobile, AppText.mobile, mobileCtl,
                               width: fieldWidth,
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.phone,
@@ -159,7 +159,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // _gap(isMobile),
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(4),
-                          child: _labeledTextField(context, isMobile, AppText.tel, telCtl,
+                          child: labeledTextField(context, isMobile, AppText.tel, telCtl,
                               width: fieldWidth,
                               textInputAction: TextInputAction.next,
                               keyboardType: TextInputType.phone,
@@ -182,7 +182,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (5) Date
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(5),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.date,
@@ -193,7 +193,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (6) Time
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(6),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.time,
@@ -204,7 +204,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (7) Lead (mins)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(7),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.lead,
@@ -226,7 +226,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (8) Journey dropdown (O/W, R/N, W/R)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(8),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.jour,
@@ -268,7 +268,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (9) Driver dropdown
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(9),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.drv,
@@ -281,7 +281,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                               ),
                               child:
               CustomDropdownButton(
-              itemList: [          "25 GEORGE HAMPTON",
+              itemList: ["25 GEORGE HAMPTON",
               "26 PAUL DOUBLEDAY",
               "27 RICHARD HARDWICK",
               "28 LANRE OKERJO",],
@@ -295,7 +295,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (10) Fare (Slugg)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(10),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.fare,
@@ -321,7 +321,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (11) Account
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(11),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.acc,
@@ -347,7 +347,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                         // (12) Pay dropdown
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(12),
-                          child: _labeledField(
+                          child: labeledField(
                             context: context,
                             isMobile: isMobile,
                             label: AppText.pay,
@@ -405,71 +405,116 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
   }
 
   // ===== Helpers to keep your look & feel the same =====
-  Widget _labeledTextField(
-      BuildContext context,
-      bool isMobile,
-      String label,
-      TextEditingController controller, {
-        required double width,
-        TextInputType? keyboardType,
-        bool formatDigitsOnly = false,
-        TextInputAction textInputAction = TextInputAction.next,
-      }) {
-    return SizedBox(
-      height: 30,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-          const SizedBox(width: 12),
-          if (isMobile)
-            Expanded(
-              child: CustomTextField(
-                controller: controller,
-                borderRadius: 4,
-                keyboardType: keyboardType,
-                inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
-                textInputAction: textInputAction,
-                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-              ),
-            )
-          else
-            SizedBox(
-              width: width,
-              child: CustomTextField(
-                controller: controller,
-                borderRadius: 4,
-                keyboardType: keyboardType,
-                inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
-                textInputAction: textInputAction,
-                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 
-  Widget _labeledField({
-    required BuildContext context,
-    required bool isMobile,
-    required String label,
-    required Widget child,
-    required double width,
-  }) {
-    return SizedBox(
-      height: 30,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-          const SizedBox(width: 10),
-          if (isMobile)
-            Expanded(child: child)
-          else
-            SizedBox(width: width, child: child),
-        ],
-      ),
-    );
-  }
+}
+
+
+Widget labeledField({
+  required BuildContext context,
+  required bool isMobile,
+  required String label,
+  required Widget child,
+  required double width,
+  bool column = false,
+}) {
+  return SizedBox(
+    height: column == true ? null : 30,
+    child: column == true? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        const SizedBox(width: 10),
+        if (isMobile)
+          Expanded(child: child)
+        else
+          SizedBox(width: width, child: child),
+      ],
+    ): Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        const SizedBox(width: 10),
+        if (isMobile)
+          Expanded(child: child)
+        else
+          SizedBox(width: width, child: child),
+      ],
+    ),
+  );
+}
+
+
+Widget labeledTextField(
+    BuildContext context,
+    bool isMobile,
+    String label,
+    TextEditingController controller, {
+      required double width,
+      TextInputType? keyboardType,
+      bool formatDigitsOnly = false,
+      TextInputAction textInputAction = TextInputAction.next,
+      bool column = false,
+      Widget? child,
+    }) {
+  return SizedBox(
+    height:column ==true? null:30,
+    child: column ==true? Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        const SizedBox(height: 5),
+        if (isMobile)
+          Expanded(
+            child: CustomTextField(
+              controller: controller,
+              borderRadius: 4,
+              keyboardType: keyboardType,
+              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              textInputAction: textInputAction,
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            ),
+          )
+        else
+          SizedBox(
+            width: width,
+            child: CustomTextField(
+              controller: controller,
+              borderRadius: 4,
+              keyboardType: keyboardType,
+              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              textInputAction: textInputAction,
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            ),
+          ),
+    ]): Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        const SizedBox(width: 12),
+        if (isMobile)
+          Expanded(
+            child: CustomTextField(
+              controller: controller,
+              borderRadius: 4,
+              keyboardType: keyboardType,
+              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              textInputAction: textInputAction,
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            ),
+          )
+        else
+          SizedBox(
+            width: width,
+            child: CustomTextField(
+              controller: controller,
+              borderRadius: 4,
+              keyboardType: keyboardType,
+              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              textInputAction: textInputAction,
+              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            ),
+          ),
+      ],
+    ),
+  );
 }

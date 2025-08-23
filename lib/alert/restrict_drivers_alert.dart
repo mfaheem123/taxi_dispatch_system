@@ -214,9 +214,10 @@ class RestrictDriversAlert extends StatelessWidget {
 
 
 class RestrictedDrivers extends StatefulWidget {
-  RestrictedDrivers({super.key, this.driversList});
+  RestrictedDrivers({super.key, this.driversList,this.border});
 
   final List<String>? driversList;
+  final BoxBorder? border;
 
   @override
   State<RestrictedDrivers> createState() => _RestrictedDriversState();
@@ -280,7 +281,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
       onPop: () => debugPrint("Popover closed"),
       direction: PopoverDirection.bottom,
       width: 300,
-      height: (items.length * 40).toDouble(),
+      height: (items.length * 56).toDouble(),
       arrowHeight: 10,
       arrowWidth: 20,
     );
@@ -307,7 +308,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
           width: MediaQuery.of(context).size.width / 6,
           padding: const EdgeInsets.only(top: 6, bottom: 6, left: 3),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
+            border: widget.border ?? Border.all(color: Colors.grey),
             // borderRadius: BorderRadius.circular(8),
           ),
           child: Text(

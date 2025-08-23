@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
+import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../locations_view/location/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
@@ -408,15 +409,16 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return ByDefaultDashboard();
+    if (selectedTexts.isEmpty) return DriverForm();
+    // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
       case 'LIST OF BOOKINGS':
         return BookingList();
       case 'LOCALIZATION':
         return LocalizationScreen();
-      case 'Option 3':
-        return Text("text 3");
+      case 'CREATE DRIVER':
+        return DriverForm();
       default:
         return ByDefaultDashboard();
     }
