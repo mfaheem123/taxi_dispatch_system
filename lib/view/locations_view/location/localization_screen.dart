@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'lacations_controller.dart';
+import '../controller/lacations_controller.dart';
 
 class LocalizationScreen extends StatelessWidget {
   LocalizationScreen({super.key});

@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
-import '../locations_view/localization_screen.dart';
+import '../locations_view/location/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
