@@ -4,8 +4,10 @@
 
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
@@ -45,11 +47,14 @@ class DriverPersonalInfo extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   // Header
-                  Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Text(
-                      AppText.personalInformation,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Text(
+                        AppText.personalInformation,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   Divider(height: 1),
@@ -59,12 +64,22 @@ class DriverPersonalInfo extends StatelessWidget {
                  children: [
                    Row(
              children: [
-               Checkbox(
-                 value: controller.hasPDA.value,
-                 onChanged: (val) {
-                   controller.hasPDA.value = val!;
-                   controller.update();
+               Focus(
+                 onKey: (node, event) {
+                   if (event.logicalKey == LogicalKeyboardKey.space) {
+                     controller.hasPDA.value = !controller.hasPDA.value;
+                     controller.update();
+                     return KeyEventResult.handled;
+                   }
+                   return KeyEventResult.ignored;
                  },
+                 child: Checkbox(
+                   value: controller.hasPDA.value,
+                   onChanged: (val) {
+                     controller.hasPDA.value = val!;
+                     controller.update();
+                   },
+                 ),
                ),
                Text(AppText.hasPDA),
              ],
@@ -289,31 +304,39 @@ class DriverPersonalInfo extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 12),
-                  FocusTraversalOrder(
-                    order: const NumericFocusOrder(11),
-                    child: labeledTextField(context,
-                        isMobile,
-                        AppText.address,
-                        controller.driverAddressController,
-                        width: fieldWidth,
-                        column: true,
-                        textInputAction: TextInputAction.next,
-                        keyboardType: TextInputType.phone,
-                        formatDigitsOnly: false),
-                  ),
-
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: CustomButton(
-                    verticalPadding: 0.0,
-                      width: fieldWidth*2,
-                      borderRadius: 4,
-                      height: 35,
-
-                      btnColor: DynamicColors.primaryClr,
-                      btnText: AppText.save,
+                    padding: EdgeInsets.symmetric(horizontal: 23),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FocusTraversalOrder(
+                          order: const NumericFocusOrder(11),
+                          child: labeledTextField(context,
+                              isMobile,
+                              AppText.address,
+                              controller.driverAddressController,
+                              width: fieldWidth,
+                              column: true,
+                              textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.phone,
+                              formatDigitsOnly: false),
+                        ),
+                        CustomButton(
+                          verticalPadding: 0.0,
+                          width: fieldWidth*2,
+                          borderRadius: 4,
+                          height: 35,
+                        style: mozillaTextSemiBoldText(
+                          fontSize: 16,
+                          color: DynamicColors.whiteClr
+                        ),
+                          btnColor: DynamicColors.primaryClr,
+                          btnText: AppText.save,
+                        )
+                      ],
                     ),
-                  )
+                  ),
+                  SizedBox(height: 12),
                 ],
               ),
             );

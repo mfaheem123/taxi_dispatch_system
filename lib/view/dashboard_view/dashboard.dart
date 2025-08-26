@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
+import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../locations_view/location/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
@@ -58,18 +59,18 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
       if(event.logicalKey.keyLabel == "F#"){
-        dashBoardCntrl.shortCutKeyValue.value = "alert";
+        shortCutKeyValue.value = "alert";
       }
       if(event.logicalKey.keyLabel == "Escape" &&
-          dashBoardCntrl.shortCutKeyValue.value == "alert"){
-        dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+          shortCutKeyValue.value == "alert"){
+        shortCutKeyValue.value = "shortCutKey";
       }
       else if(event.logicalKey.keyLabel == "F2"){
         final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
         html.window.open(newTabUrl, '_blank');
       }
       }
-    if (event is RawKeyDownEvent && dashBoardCntrl.shortCutKeyValue.value == "shortCutKey") {
+    if (event is RawKeyDownEvent && shortCutKeyValue.value == "shortCutKey") {
       if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
         setState(() {
           dashBoardCntrl.selectedIndex = (dashBoardCntrl.selectedIndex + 1) % menus.length;
@@ -207,7 +208,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                   child: InkWell(
                                     onTap: () {
                                       setState(() {
-                                        dashBoardCntrl.shortCutKeyValue.value = 'shortCutKey';
+                                        shortCutKeyValue.value = 'shortCutKey';
                                         if (dashBoardCntrl.selectedIndex == i) {
                                           dashBoardCntrl.isDropdownOpen = !dashBoardCntrl.isDropdownOpen;
                                         } else {
@@ -409,7 +410,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverForm();
+    if (selectedTexts.isEmpty) return DriverListScreen();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -419,6 +420,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return LocalizationScreen();
       case 'CREATE DRIVER':
         return DriverForm();
+      case 'LIST OF DRIVERS':
+        return DriverListScreen();
       default:
         return ByDefaultDashboard();
     }

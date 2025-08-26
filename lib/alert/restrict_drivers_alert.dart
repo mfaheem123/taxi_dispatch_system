@@ -34,7 +34,7 @@ class RestrictDriversAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    dashBoardCntrl.shortCutKeyValue.value = "alert";
+    shortCutKeyValue.value = "alert";
     return Dialog(
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,

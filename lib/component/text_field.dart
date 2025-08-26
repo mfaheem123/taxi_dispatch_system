@@ -64,7 +64,8 @@ class CustomTextField extends StatelessWidget {
             textInputAction: textInputAction,
             onTap: onTap??
                     () {
-                  Get.find<DashboardController>().shortCutKeyValue.value = "formKey";
+                  // Get.find<DashboardController>().
+                  shortCutKeyValue.value = "formKey";
                 },
             style: hintStyle?? mozillaTextSemiBoldText(
                 context: context,

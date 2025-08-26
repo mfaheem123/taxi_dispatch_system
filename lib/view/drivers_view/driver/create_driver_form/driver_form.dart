@@ -1,10 +1,10 @@
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/personal_info.dart';
+import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/vehicle_information.dart';
 import 'package:flutter/material.dart';
-import '../../../../Model/driver_model.dart';
-import '../../../../component/calender.dart';
-import '../../Controller/driver_controller.dart';
-
+import 'package:get/get.dart';
+import '../../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../controller/driver_controller.dart';
 
 class DriverForm extends StatefulWidget {
   const DriverForm({Key? key}) : super(key: key);
@@ -15,424 +15,140 @@ class DriverForm extends StatefulWidget {
 
 class _DriverFormState extends State<DriverForm> {
   final _formKey = GlobalKey<FormState>();
-  final DriverController controller = DriverController();
-  final Driver driver = Driver();
+  final DriverController controller = Get.put(DriverController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    shortCutKeyValue.value = "driverValue";
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(12),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Upload Image
-                Expanded(
-                    flex: 2,
-                    child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: Colors.grey.shade400, width: 1),
-                  ),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
-                    child: Container(
-                      height: 445,
-                      width: double.infinity,
-                      // color: Colors.grey[200],
-                      alignment: Alignment.center,
-                      child: Text(
-                        AppText.uploadImage,
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(), // ensures NumericFocusOrder works globally
+
+      child: GetBuilder<DriverController>(
+        builder: (controller) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  width < 1920 ? Column(
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          controller.pickImage(singleImg: "profileImg");
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.grey.shade400, width: 1),
+                          ),
+                          margin: EdgeInsets.only(bottom: 12),
+                          child: Padding(
+                            padding:  controller.profileImg != null? EdgeInsets.zero: EdgeInsets.all(14),
+                            child: Container(
+                              height: 345,
+                              width: double.infinity,
+                              // color: Colors.grey[200],
+                              alignment: Alignment.center,
+                              child: controller.profileImg != null?  Image.memory(controller.profileImg!.bytes,fit: BoxFit.fill,
+                            ): Text(
+                                AppText.uploadImage,
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      DriverPersonalInfo(),
+                      const SizedBox(height: 12),
+                      VehicleInformation(),
+                    ],
+                  ):
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Upload Image
+                      Expanded(
+                          flex: 2,
+                          child: GestureDetector(
+                            onTap: (){
+                              controller.pickImage(singleImg: "profileImg");
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: Colors.grey.shade400, width: 1),
+                              ),
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: Padding(
+                                padding: const EdgeInsets.all(14),
+                                child: Container(
+                                  height: 345,
+                                  width: double.infinity,
+                                  // color: Colors.grey[200],
+                                  alignment: Alignment.center,
+                                  child:
+                                  controller.profileImg != null?  Image.memory(controller.profileImg!.bytes,fit: BoxFit.fill,
+                                  ):
+                                  Text(
+                                    AppText.uploadImage,
+                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                      ),
+      
+                      const SizedBox(width: 12),
+      
+                      // Personal Info
+                      Expanded(flex: 5, child: DriverPersonalInfo()),
+      
+                      const SizedBox(width: 12),
+      
+                      // Vehicle Info
+                      Expanded(flex: 5, child: VehicleInformation()),
+                    ],
                   ),
-                )
-                ),
-
-                const SizedBox(width: 12),
-
-                // Personal Info
-                Expanded(flex: 5, child: DriverPersonalInfo()),
-
-                const SizedBox(width: 12),
-
-                // Vehicle Info
-                Expanded(flex: 5, child: _buildVehicleCard()),
-              ],
+                  const SizedBox(height: 20),
+      
+                  // TABLES SECTION
+                  width < 1920 ? Column(
+                    children: [
+                      _buildDocumentsTable(),
+                      const SizedBox(height: 12),
+                      _buildValidityTable(),
+                    ],
+                  ): Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // LEFT SIDE
+                      Expanded(flex: 7, child: _buildDocumentsTable()),
+                      const SizedBox(width: 12),
+                      // RIGHT SIDE
+                      Expanded(flex: 5, child: _buildValidityTable()),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-
-            // TABLES SECTION
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // LEFT SIDE
-                Expanded(flex: 7, child: _buildDocumentsTable()),
-
-                const SizedBox(width: 12),
-
-                // RIGHT SIDE
-                Expanded(flex: 5, child: _buildValidityTable()),
-              ],
-            ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }
 
-
-  // Personal Info Card
-  Widget _buildPersonalCard() {
-    return _buildCard(
-      "Personal Information",
-      [
-        DriverPersonalInfo(),
-       /* Row(
-          children: [
-            Checkbox(
-              value: driver.hasPDA,
-              onChanged: (val) => setState(() => driver.hasPDA = val!),
-            ),
-            const Text("Has PDA"),
-            Expanded(
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: driver.rentPaid,
-                    onChanged: (val) => setState(() => driver.rentPaid = val!),
-                  ),
-                  const Text("Rent Paid"),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: driver.isActive,
-                    onChanged: (val) => setState(() => driver.isActive = val!),
-                  ),
-                  const Text("Active"),
-                ],
-              ),
-            ),
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: "Company"),
-                items: ["Demo Company", "Other Company"]
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (val) {},
-              ),
-            ),
-          ],
-        ),*/
-
-        // const SizedBox(height: 8),
-       /* Row(
-          children: [
-            Expanded(
-              child: _textField("Username", (val) => driver.username = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Password", (val) => driver.password = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Full Name", (val) => driver.fullName = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "DOB",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  CalendarDropdown(),
-                ],
-              ),
-            ),
-
-          ],
-        ),*/
- /*       const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(child: _textField("Email", (val) => driver.email = val)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Mobile #", (val) => driver.mobile = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Telephone #", (val) => driver.telephone = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: _textField("NI", (val) => driver.ni = val)),
-          ],
-        ),
-        const SizedBox(height: 8),*/
-       /* Row(
-          children: [
-            Expanded(
-              child: _dropdownField("Driver Type", [
-                "Commission",
-                "Owner Driver",
-              ], (val) => driver.driverType = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Commission", (val) => driver.commission = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Rent Limit", (val) => driver.rentLimit = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _textField("Balance", (val) => driver.balance = val),
-            ),
-          ],
-        ),*/
-        // const SizedBox(height: 8),
-        /*Row(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.2,
-              child: _textField("Address", (val) => driver.address = val),
-            ),
-            const Spacer(),
-          ],
-        ),*/
-      ],
-      footer: Container(
-        height: kToolbarHeight,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(6),
-            bottomRight: Radius.circular(6),
-          ),
-        ),
-        child: Center(
-          child: SizedBox(
-            width: 200,
-            height: 40,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              onPressed: () {
-                _formKey.currentState?.save();
-                controller.update(driver as List<Object>?);
-                controller.saveDriver();
-              },
-              child: const Text(
-                "SAVE",
-                style: TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Vehicle Info Card
-  Widget _buildVehicleCard() {
-    return _buildCard(
-      "Vehicle Information",
-      [
-        Row(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Checkbox(value: false, onChanged: (val) {}),
-                  const Text("Use Company Vehicle"),
-                ],
-              ),
-            ),
-            Expanded(
-              child: DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: "Select Company Vehicle",
-                ),
-                items: ["Company Car 1", "Company Car 2"]
-                    .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                    .toList(),
-                onChanged: (val) {},
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Start Date",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  CalendarDropdown(),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "End Date",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  CalendarDropdown(),
-                ],
-              ),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(
-              child: _textField("Vehicle #", (val) => driver.vehicleNo = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: _textField("Make", (val) => driver.make = val)),
-            const SizedBox(width: 10),
-            Expanded(child: _textField("Model", (val) => driver.model = val)),
-            const SizedBox(width: 10),
-            Expanded(child: _textField("Color", (val) => driver.color = val)),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(
-              child: _dropdownField("Vehicle Type", [
-                "Saloon",
-                "SUV",
-                "Van",
-              ], (val) => driver.vehicleType = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(child: _textField("Owner", (val) => driver.owner = val)),
-          ],
-        ),
-        const SizedBox(height: 8),
-
-        Row(
-          children: [
-            Expanded(
-              child: _textField("Log Book #", (val) => driver.logBook = val),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Log Book Document",
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 5),
-                  Container(
-                    height: 40,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      children: [
-                        // Choose File
-                        Container(
-                          height: double.infinity,
-                          color: Colors.grey[300],
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            "Choose File",
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-                        const Expanded(
-                          child: Text(
-                            "NO FILE CHOSEN",
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.black54,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            height: double.infinity,
-                            color: Colors.red,
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: const Icon(
-                              Icons.delete,
-                              color: Colors.white,
-                              size: 18,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-      footer: Container(
-        height: kToolbarHeight,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(6),
-            bottomRight: Radius.circular(6),
-          ),
-        ),
-      ),
-    );
-  }
 
   // LEFT TABLE
   Widget _buildDocumentsTable() {

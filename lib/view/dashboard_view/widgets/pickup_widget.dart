@@ -125,7 +125,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                     color: Colors.red,size: 20,),
                                 textInputAction: TextInputAction.next,
                                 onTap: (){
-                                  controller.shortCutKeyValue.value = "formKey";
+                                  shortCutKeyValue.value = "formKey";
                                 },
                                 onSubmitted: (_) =>
                                     FocusScope.of(context).nextFocus(),
@@ -401,7 +401,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                       color: Colors.red,size: 20,),
                                   textInputAction: TextInputAction.next,
                                   onTap: (){
-                                    controller.shortCutKeyValue.value = "formKey";
+                                    shortCutKeyValue.value = "formKey";
                                   },
                                   onSubmitted: (_) =>
                                       FocusScope.of(context).nextFocus(),

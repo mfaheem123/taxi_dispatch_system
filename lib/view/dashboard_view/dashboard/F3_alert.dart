@@ -22,7 +22,7 @@ void showShortcutDialog(BuildContext context,{
   required Widget contentWidget,
 }) {
   final dashBoardCntrl = Get.find<DashboardController>();
-  dashBoardCntrl.shortCutKeyValue.value = "alert";
+  shortCutKeyValue.value = "alert";
 
   showDialog(
     context: context,
@@ -51,7 +51,7 @@ void showShortcutDialog(BuildContext context,{
             ),
             GestureDetector(
               onTap: () {
-                dashBoardCntrl.shortCutKeyValue.value = "arrow";
+                shortCutKeyValue.value = "arrow";
                 Get.back();
               },
               child: const Icon(Icons.close),
@@ -62,7 +62,7 @@ void showShortcutDialog(BuildContext context,{
       );
     },
   ).then((result) {
-    dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+    shortCutKeyValue.value = "shortCutKey";
     print("Alert closed");
     print("Close reason: $result");
   });

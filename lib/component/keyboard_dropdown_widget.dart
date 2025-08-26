@@ -49,11 +49,11 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
       print("Pressed key: ${event.logicalKey}");
       print("Key label: ${event.logicalKey.keyLabel}");
       if(event.logicalKey.keyLabel == "F3"){
-        dashBoardCntrl.shortCutKeyValue.value = "alert";
+        shortCutKeyValue.value = "alert";
       }
       if(event.logicalKey.keyLabel == "Escape" &&
-          dashBoardCntrl.shortCutKeyValue.value == "alert"){
-        dashBoardCntrl.shortCutKeyValue.value = "shortCutKey";
+          shortCutKeyValue.value == "alert"){
+        shortCutKeyValue.value = "shortCutKey";
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         setState(() {

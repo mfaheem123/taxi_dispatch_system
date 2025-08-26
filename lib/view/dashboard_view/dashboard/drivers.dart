@@ -59,10 +59,10 @@ class _DriversViewState extends State<DriversView> {
         return RawKeyboardListener(
           focusNode: _focusNode,
           onKey: (event) {
-            // if(controller.shortCutKeyValue.value == ""){
+            // if(shortCutKeyValue.value == ""){
               if (event is RawKeyDownEvent) {
-                controller.shortCutKeyValue.value = "driverIconSelect";
-                if(controller.shortCutKeyValue.value == "driverIconSelect"){
+                shortCutKeyValue.value = "driverIconSelect";
+                if(shortCutKeyValue.value == "driverIconSelect"){
                   if (event.logicalKey == LogicalKeyboardKey.tab) {
                     // Tab dabane se Header <-> Driver list toggle ho jaye
                     setState(() {

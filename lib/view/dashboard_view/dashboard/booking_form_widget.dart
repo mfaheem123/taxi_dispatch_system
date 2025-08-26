@@ -664,7 +664,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             fontWeight: FontWeight.w800,
                           ),
                           onTap: () {
-                            controller.shortCutKeyValue.value ="shortCutKey";
+                            shortCutKeyValue.value ="shortCutKey";
                             controller.update();
                           },
                           btnText: "SAVE [HOME]",

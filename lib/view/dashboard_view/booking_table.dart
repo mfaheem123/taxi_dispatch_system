@@ -200,8 +200,8 @@ class _TableScreenState extends State<TableScreen> {
   }
 
   void _handleKey(RawKeyEvent event, int row, int col) {
-    print(dashBoardCntrl.shortCutKeyValue.value);
-    if (dashBoardCntrl.shortCutKeyValue.value == "tableSelected") {
+    print(shortCutKeyValue.value);
+    if (shortCutKeyValue.value == "tableSelected") {
       if (event is RawKeyDownEvent) {
         final key = event.logicalKey;
 
@@ -419,7 +419,7 @@ class _TableScreenState extends State<TableScreen> {
             height: 28,
             child: TextField(
               onTap: () {
-                dashBoardCntrl.shortCutKeyValue.value = "tableSelected";
+                shortCutKeyValue.value = "tableSelected";
               },
               style: mozillaTextRegularText(
                   fontWeight: FontWeight.w800, fontSize: 12),

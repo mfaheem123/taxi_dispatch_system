@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
 
-
+RxString shortCutKeyValue = 'shortCutKey'.obs;
 class DashboardController extends GetxController {
 
   ///Todo booking form data
@@ -15,7 +15,7 @@ class DashboardController extends GetxController {
   String selectedPaymentMethod = 'Cash';
   String selectedDriver = 'Select Driver';
   // Start with shortcut mode that allows navigation; set to "alert" only when showing a modal
-  RxString shortCutKeyValue = 'shortCutKey'.obs;
+
 
   // Dropdown selections
   String? jourValue;   // O/W, R/N, W/R

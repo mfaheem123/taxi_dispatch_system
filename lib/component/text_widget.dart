@@ -78,4 +78,12 @@ class AppText{
   static get rentLimit => "Rent Limit";
   static get balance => "Balance";
   static get address => "Address";
+  static get vehicleInformation => "Vehicle Information";
+  static get usedCompanyVehicle => "Use Company Vehicle";
+  static get startDate => "Start Date";
+  static get endDate => "End Date";
+  static get color => "Color";
+  static get owner => "Owner";
+  static get logBook => "Log Book";
+  static get inactive => "INACTIVE";
 }

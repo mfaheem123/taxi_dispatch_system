@@ -27,7 +27,7 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    dashBoardCntrl.shortCutKeyValue.value = "alert";
+    shortCutKeyValue.value = "alert";
   }
 
   List<String> sendEmailRoleList = [

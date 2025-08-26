@@ -24,7 +24,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    dashBoardCntrl.shortCutKeyValue.value = "alert";
+    shortCutKeyValue.value = "alert";
   }
 
   @override
