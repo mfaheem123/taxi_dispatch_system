@@ -455,6 +455,7 @@ Widget labeledTextField(
       TextInputAction textInputAction = TextInputAction.next,
       bool column = false,
       Widget? child,
+      String? hintTex,
     }) {
   return SizedBox(
     height:column ==true? null:30,
@@ -468,6 +469,7 @@ Widget labeledTextField(
             child: CustomTextField(
               controller: controller,
               borderRadius: 4,
+              hintText: hintTex,
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
               textInputAction: textInputAction,

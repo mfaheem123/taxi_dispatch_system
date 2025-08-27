@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
+import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
+import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../locations_view/location/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
@@ -218,7 +220,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                       });
                                     },
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
                                       decoration: BoxDecoration(
                                         color: dashBoardCntrl.selectedIndex == i ? Colors.white24 : Colors.transparent,
                                         borderRadius: BorderRadius.circular(20),
@@ -370,15 +372,20 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                           ),
                           child: ListView.builder(
                             shrinkWrap: true,
+                            padding: EdgeInsets.zero,
                             itemCount: menus[dashBoardCntrl.selectedIndex].subItems.length,
                             itemBuilder: (context, j) {
                               return Container(
                                 color: dashBoardCntrl.dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
                                 child: ListTile(
+                                  dense: true, // reduces vertical height
+                                  visualDensity: VisualDensity(horizontal: 0, vertical: -4), // fine-tune vertical padding
+                                  contentPadding: EdgeInsets.only(left: 4),
                                   title: Text(
                                     menus[dashBoardCntrl.selectedIndex].subItems[j],
                                     style: TextStyle(
                                       color: dashBoardCntrl.dropdownIndex == j ? Colors.white : Colors.black,
+                                      fontSize: 12
                                     ),
                                   ),
                                   onTap: () {
@@ -410,7 +417,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverListScreen();
+    if (selectedTexts.isEmpty) return DriverAppFeatureScreen();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -422,6 +429,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return DriverForm();
       case 'LIST OF DRIVERS':
         return DriverListScreen();
+      case 'LIST OF LOGGED IN DRIVERS':
+        return LoginDriversScreen();
+      case 'DRIVER APP FEATURES':
+        return DriverAppFeatureScreen();
       default:
         return ByDefaultDashboard();
     }
@@ -436,7 +447,7 @@ final List<MenuItemData> menus = [
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
-  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "LIST OF LOGGED IN DRIVERS", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION"]),
+  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "LIST OF LOGGED IN DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("USERS", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),

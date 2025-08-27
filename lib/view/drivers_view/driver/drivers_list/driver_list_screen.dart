@@ -145,7 +145,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                       buildHeaderWithSearch(title: "LICENSE EXPIRY"),
                       buildHeaderWithSearch(title: "MOBILE #"),
                       buildHeaderWithSearch(title: "SUBSIDIARY"),
-                      buildHeaderWithSearch(title: "ACTIONS"),
+                      buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                     ],
                       rows: List.generate(totalRows, (index) {
                         bool isSelected = index == selectedRowIndex;
@@ -196,7 +196,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
             ),
           );
         }
-      ), // ensures NumericFocusOrder works globally
+      ),
     );
   }
 }

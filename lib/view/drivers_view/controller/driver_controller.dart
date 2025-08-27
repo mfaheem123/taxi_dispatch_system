@@ -78,12 +78,54 @@ class DriverController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
 
   /// RxBool variable
   RxBool activeDrivers = false.obs;
+  RxBool loggedOut = false.obs;
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
+
+  /// RxBool variable
+  RxBool selectAllDrivers = false.obs;
+  RxBool showCustomerValue = false.obs;
+  RxBool enableCustomerValue = false.obs;
+  RxBool enableFlagDownValue = false.obs;
+  RxBool showAccountFareValue = false.obs;
+  RxBool hideBreakValue = false.obs;
+  RxBool hideDeclineValue = false.obs;
+  RxBool hideRecoverValue = false.obs;
+  RxBool hideNoPickUpValue = false.obs;
+  RxBool hidePickUpValue = false.obs;
+  RxBool hideDropOffValue = false.obs;
+  RxBool fareMeterValue = false.obs;
+  RxBool diableFareMeterValue = false.obs;
+  RxBool fareMeterWaitingValue = false.obs;
+  RxBool payByCardValue = false.obs;
+  RxBool waitingAfterArrivalValue = false.obs;
+  RxBool disablePanicButtonValue = false.obs;
+  RxBool showCompleteJobValue = false.obs;
+  RxBool showNavigationValue = false.obs;
+  RxBool showSwipeArriveValue = false.obs;
+  RxBool shawFareValue = false.obs;
+  RxBool hasCompanyCarValue = false.obs;
+  RxBool hidePaymentTypeValue = false.obs;
+  RxBool enableTollChargesValue = false.obs;
+
+  /// TextEditingControllers
+  final bookingTimerController = TextEditingController();
+  final imeController = TextEditingController();
+  final modelController = TextEditingController();
+  final makeController = TextEditingController();
+  final simNetworkController = TextEditingController();
+  final simNumberController = TextEditingController();
+  final networkProviderController = TextEditingController();
+  final dataAllowanceController = TextEditingController();
+  final pdaDepositController = TextEditingController();
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 
 }
 

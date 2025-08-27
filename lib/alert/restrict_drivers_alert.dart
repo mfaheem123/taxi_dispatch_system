@@ -214,10 +214,11 @@ class RestrictDriversAlert extends StatelessWidget {
 
 
 class RestrictedDrivers extends StatefulWidget {
-  RestrictedDrivers({super.key, this.driversList,this.border});
+  RestrictedDrivers({super.key, this.driversList,this.titleText,this.border});
 
   final List<String>? driversList;
   final BoxBorder? border;
+  String? titleText;
 
   @override
   State<RestrictedDrivers> createState() => _RestrictedDriversState();
@@ -312,7 +313,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
             // borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
-            AppText.selectDriver,
+            widget.titleText??AppText.selectDriver,
             style: mozillaTextRegularText( fontSize: 13, ),
           ),
         ),
