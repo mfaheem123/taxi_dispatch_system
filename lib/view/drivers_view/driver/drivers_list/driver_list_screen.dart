@@ -5,16 +5,53 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
 
-class DriverListScreen extends StatelessWidget {
+class DriverListScreen extends StatefulWidget {
   DriverListScreen({super.key});
+
+  @override
+  State<DriverListScreen> createState() => _DriverListScreenState();
+}
+
+class _DriverListScreenState extends State<DriverListScreen> {
+  int selectedRowIndex = 0; // currently selected row
+  final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
 
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
       : Get.put(DriverController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    shortCutKeyValue.value = "driversList";
+  }
+
+  void _handleKey(RawKeyEvent event) {
+    if (event is RawKeyDownEvent) {
+      if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+        setState(() {
+          selectedRowIndex =
+              (selectedRowIndex + 1) % totalRows; // move down
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+        setState(() {
+          selectedRowIndex =
+              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+        // Enter dabane par row ke action button ka kaam
+        debugPrint("Row $selectedRowIndex Enter Pressed (Search/Delete)");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +59,10 @@ class DriverListScreen extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    return FocusTraversalGroup(
-      policy: OrderedTraversalPolicy(),
+    return RawKeyboardListener(
+      autofocus: true,
+      focusNode: FocusNode(),
+      onKey: _handleKey,
       child: GetBuilder<DriverController>(
           builder: (controller) {
           return SingleChildScrollView(
@@ -74,94 +113,84 @@ class DriverListScreen extends StatelessWidget {
                     )
                   ],
                 ),
-                DataTable(
-                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                  dataRowMinHeight: 48,
-                  dataRowMaxHeight: 56,
-                  headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black,
+                SizedBox(
+                  height: 12,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: DataTable(
+                    headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                    dataRowMinHeight: 48,
+                    dataRowMaxHeight: 56,
+                    headingTextStyle: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13,
+                    ),
+                    dataTextStyle: TextStyle(
+                      fontSize: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                    ),
+                    columns: [
+                      buildHeaderWithSearch(title: "USERNAME"),
+                      buildHeaderWithSearch(title: "NAME"),
+                      buildHeaderWithSearch(title: "VEHICLE"),
+                      buildHeaderWithSearch(title: "VEHICLE EXPIRY"),
+                      buildHeaderWithSearch(title: "DRIVER EXPIRY"),
+                      buildHeaderWithSearch(title: "MOT EXPIRY"),
+                      buildHeaderWithSearch(title: "MOT2 EXPIRY"),
+                      buildHeaderWithSearch(title: "INSURANCE EXPIRY"),
+                      buildHeaderWithSearch(title: "LICENSE EXPIRY"),
+                      buildHeaderWithSearch(title: "MOBILE #"),
+                      buildHeaderWithSearch(title: "SUBSIDIARY"),
+                      buildHeaderWithSearch(title: "ACTIONS"),
+                    ],
+                      rows: List.generate(totalRows, (index) {
+                        bool isSelected = index == selectedRowIndex;
+                        return DataRow(
+                          cells: [
+                            const DataCell(Text("20/10/2025")),
+                            const DataCell(Text("#PHC VEHICLE")),
+                            const DataCell(Text("PHC VEHICLE")),
+                            const DataCell(Text("20/10/2025")),
+                            const DataCell(Text("#PHC VEHICLE")),
+                            const DataCell(Text("PHC VEHICLE")),
+                            const DataCell(Text("20/10/2025")),
+                            const DataCell(Text("#PHC VEHICLE")),
+                            const DataCell(Text("20/10/2025")),
+                            const DataCell(Text("#PHC VEHICLE")),
+                            const DataCell(Text("PHC VEHICLE")),
+                            DataCell(
+                              Row(
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.search,
+                                      size: 28,
+                                    ),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.delete_forever,
+                                      size: 28,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      })
                   ),
-                  columns: const [
-                    DataColumn(label: Text("USERNAME")),
-                    DataColumn(label: Text("NAME")),
-                    DataColumn(label: Text("VEHICLE #")),
-                    DataColumn(label: Text("VEHICLE")),
-                    DataColumn(label: Text("VEHICLE\nEXPIRY")),
-                    DataColumn(label: Text("DRIVER\nEXPIRY")),
-                    DataColumn(label: Text("MOT\nEXPIRY")),
-                    DataColumn(label: Text("MOT2\nEXPIRY")),
-                    DataColumn(label: Text("INSURANCE\nEXPIRY")),
-                    DataColumn(label: Text("LICENSE\nEXPIRY")),
-                    DataColumn(label: Text("MOBILE #")),
-                    DataColumn(label: Text("SUBSIDIARY")),
-                    DataColumn(label: Text("ACTIONS")),
-                  ],
-                  rows: [
-                    DataRow(
-                      cells: [
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        DataCell(
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.transparent,), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Row(
-                              children: [
-                                Icon(Icons.search),
-                                Text("|"),
-                                Icon(Icons.delete_forever),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    DataRow(
-                      cells: [
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        DataCell(
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: Colors.transparent,), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Row(
-                              children: [
-                                Icon(Icons.search),
-                                Text("|"),
-                                Icon(Icons.delete_forever),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 )
               ],
             ),

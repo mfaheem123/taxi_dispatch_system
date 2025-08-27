@@ -244,21 +244,21 @@ class _TableScreenState extends State<TableScreen> {
       horizontalMargin: 10,
       headingRowHeight: 70,
       columns: [
-        _buildHeaderWithSearch("TYPE"),
-        _buildHeaderWithSearch("REF #"),
-        _buildHeaderWithSearch("DATETIME"),
-        _buildHeaderWithSearch("CUS"),
-        _buildHeaderWithSearch("PICKUP"),
-        _buildHeaderWithSearch("DROPOFF"),
-        _buildHeaderWithSearch("ACC"),
-        _buildHeaderWithSearch("DRV"),
-        _buildHeaderWithSearch("VEH"),
-        _buildHeaderWithSearch("NOTE"),
-        _buildHeaderWithSearch("FARE"),
-        _buildHeaderWithSearch("STATUS"),
-        _buildHeaderWithSearch("J/T"),
-        _buildHeaderWithSearch("P/T"),
-        _buildHeaderWithSearch("ACC"),
+        buildHeaderWithSearch(title: "TYPE"),
+        buildHeaderWithSearch(title: "REF #"),
+        buildHeaderWithSearch(title: "DATETIME"),
+        buildHeaderWithSearch(title: "CUS"),
+        buildHeaderWithSearch(title: "PICKUP"),
+        buildHeaderWithSearch(title: "DROPOFF"),
+        buildHeaderWithSearch(title: "ACC"),
+        buildHeaderWithSearch(title: "DRV"),
+        buildHeaderWithSearch(title: "VEH"),
+        buildHeaderWithSearch(title: "NOTE"),
+        buildHeaderWithSearch(title: "FARE"),
+        buildHeaderWithSearch(title: "STATUS"),
+        buildHeaderWithSearch(title: "J/T"),
+        buildHeaderWithSearch(title: "P/T"),
+        buildHeaderWithSearch(title: "ACC"),
       ],
       rows: List<DataRow>.generate(
         rowCount,
@@ -404,42 +404,42 @@ class _TableScreenState extends State<TableScreen> {
       ),
     );
   }
+}
 
-  DataColumn _buildHeaderWithSearch(String title) {
-    return DataColumn(
-      label: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 4),
-          title == "TYPE"
-              ? SizedBox.shrink()
-              : SizedBox(
-            width: 100,
-            height: 28,
-            child: TextField(
-              onTap: () {
-                shortCutKeyValue.value = "tableSelected";
-              },
-              style: mozillaTextRegularText(
-                  fontWeight: FontWeight.w800, fontSize: 12),
-              decoration: InputDecoration(
-                hintText: "Search",
-                hintStyle: mozillaTextRegularText(
-                    fontWeight: FontWeight.w800,
-                    color: DynamicColors.textClr.withOpacity(0.8),
-                    fontSize: 12),
-                contentPadding:
-                EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
+DataColumn buildHeaderWithSearch({String? title}) {
+  return DataColumn(
+    label: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(title!, style: TextStyle(fontWeight: FontWeight.bold)),
+        SizedBox(height: 4),
+        title == "TYPE"
+            ? SizedBox.shrink()
+            : SizedBox(
+          width: 100,
+          height: 28,
+          child: TextField(
+            onTap: () {
+              shortCutKeyValue.value = "tableSelected";
+            },
+            style: mozillaTextRegularText(
+                fontWeight: FontWeight.w800, fontSize: 12),
+            decoration: InputDecoration(
+              hintText: "Search",
+              hintStyle: mozillaTextRegularText(
+                  fontWeight: FontWeight.w800,
+                  color: DynamicColors.textClr.withOpacity(0.8),
+                  fontSize: 12),
+              contentPadding:
+              EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: BorderSide(color: Colors.grey),
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

@@ -21,7 +21,7 @@ class _DriverFormState extends State<DriverForm> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "driverValue";
+    shortCutKeyValue.value = "createDriver";
   }
 
   @override
