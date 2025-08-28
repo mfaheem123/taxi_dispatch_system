@@ -46,9 +46,7 @@ class AppVersionWidget extends StatelessWidget {
                             border: Border.all(color: DynamicColors.textClr)
                         ),
                         child: Text(AppText.appVersion,
-                            style: mozillaTextSemiBoldText(
-                                fontSize: 16
-                            )
+                            style: titleDesign(),
                         ),
                       ),
                       Wrap(
@@ -241,9 +239,13 @@ class AppVersionWidget extends StatelessWidget {
                           SizedBox(
                             height: 10,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15.0),
-                            child: labeledTextField(
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            labeledTextField(
                                 context, false, AppText.bookingTimer,
                                 controller.bookingTimerController,
                                 width: Get.width/10,
@@ -252,8 +254,24 @@ class AppVersionWidget extends StatelessWidget {
                                 hintTex: AppText.bookingTimer,
                                 textInputAction: TextInputAction.next
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: labeledTextField(
+                                  context, false, AppText.breakTimer,
+                                  controller.breakController,
+                                  width: Get.width/10,
+                                  column: true,
+                                  formatDigitsOnly: false,
+                                  hintTex: AppText.bookingTimer,
+                                  textInputAction: TextInputAction.next
+                              ),
+                            ),
+
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -480,13 +498,29 @@ class AppVersionWidget extends StatelessWidget {
                         height: 10,
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 15.0),
-                        child: labeledTextField(
-                          context, false, AppText.bookingTimer, controller.bookingTimerController,
-                            width: Get.width/10,
-                            column: true,
-                            hintTex: AppText.bookingTimer,
-                          textInputAction: TextInputAction.next
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          children: [
+                            labeledTextField(
+                              context, false, AppText.bookingTimer, controller.bookingTimerController,
+                                width: Get.width/10,
+                                column: true,
+                                hintTex: AppText.bookingTimer,
+                              textInputAction: TextInputAction.next
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            labeledTextField(
+                                context, false, AppText.breakTimer,
+                                controller.breakController,
+                                width: Get.width/10,
+                                column: true,
+                                formatDigitsOnly: false,
+                                hintTex: AppText.bookingTimer,
+                                textInputAction: TextInputAction.next
+                            ),
+                          ],
                         ),
                       ),
                       SizedBox(

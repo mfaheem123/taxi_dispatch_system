@@ -116,10 +116,21 @@ class AppText{
   static get hidePaymentType => "Hide payment type";
   static get enableTollCharges => "Enable toll charges";
   static get bookingTimer => "BOOKING TIMER";
-  static get ime => "IME";
+  static get breakTimer => "BREAK TIMER";
+  static get ime => "IMEI";
   static get simNetwork => "SIM Network";
   static get simNumber => "SIM Number";
   static get networkProvider => "Network Provider";
   static get dataAllowance => "Data Allowance";
   static get pdaDeposit => "PDA Deposit";
+  static get comments => "Comments";
+  static get driverCommission => "DRIVER COMMISSION";
+  static get transactionDate => "TRANSACTION DATE";
+  static get pdaRent => "PDA RENT/WEEK";
+  static get pt => "P/T";
+  static get cash => "CASH";
+  static get creditCard => "CREDIT CARD";
+  static get account => "ACCOUNT";
+  static get creditCardPaid => "CREDIT CARD PAID";
+  static get filter => "FILTER";
 }

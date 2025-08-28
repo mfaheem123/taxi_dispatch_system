@@ -8,6 +8,7 @@ import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
+import '../drivers_view/driver/driver_commission/driver_commission.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../locations_view/location/localization_screen.dart';
@@ -417,7 +418,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverAppFeatureScreen();
+    if (selectedTexts.isEmpty) return DriverCommission();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -433,6 +434,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return LoginDriversScreen();
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
+      case 'CREATE DRIVER COMMISSION':
+        return DriverCommission();
       default:
         return ByDefaultDashboard();
     }

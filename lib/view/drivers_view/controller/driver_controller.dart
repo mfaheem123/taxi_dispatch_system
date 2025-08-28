@@ -124,8 +124,23 @@ class DriverController extends GetxController {
   final networkProviderController = TextEditingController();
   final dataAllowanceController = TextEditingController();
   final pdaDepositController = TextEditingController();
+  final commentsController = TextEditingController();
+  final breakController = TextEditingController();
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
+
+  /// TextEditingControllers
+  final commissionController = TextEditingController();
+  final pdaRentController = TextEditingController();
+  /// RxBool variable
+  RxBool ptValue = false.obs;
+  RxBool cashValue = false.obs;
+  RxBool creditCardValue = false.obs;
+  RxBool accountValue = false.obs;
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
 
 }
 

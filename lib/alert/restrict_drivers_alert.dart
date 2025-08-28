@@ -310,7 +310,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
           padding: const EdgeInsets.only(top: 6, bottom: 6, left: 3),
           decoration: BoxDecoration(
             border: widget.border ?? Border.all(color: Colors.grey),
-            // borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
             widget.titleText??AppText.selectDriver,

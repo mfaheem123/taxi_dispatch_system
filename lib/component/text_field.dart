@@ -27,8 +27,11 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction,
     this.onTap,
     this.borderColor,
+    this.fillColor,
     this.maxLines = 1,
     this.height,
+    this.width,
+    this.columnText = false,
   });
 
   String? labelText;
@@ -49,57 +52,68 @@ class CustomTextField extends StatelessWidget {
   Color? borderColor;
   final int? maxLines;
   double? height;
+  double? width;
+  Color? fillColor;
+  bool columnText = false;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-          width: Get.width/2.5,
-        height: height?? 30,
-          child: TextField(
-            controller: controller,
-            focusNode: focusNode,
-            onChanged: onChanged,
-            keyboardType: keyboardType,
-            onSubmitted: onSubmitted,
-            textInputAction: textInputAction,
-            onTap: onTap??
-                    () {
-                  // Get.find<DashboardController>().
-                  shortCutKeyValue.value = "formKey";
-                },
-            style: hintStyle?? mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-            ),
-            inputFormatters: inputFormatters,
-            maxLines: maxLines,
-            minLines: maxLines,
-            decoration: InputDecoration(
-              prefixIcon: prefixIcon,
-              hintText: hintText,
-              hintStyle: hintStyle?? mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-              ),
-              labelText: labelText,
-              suffixIcon: suffixIcon,
-              contentPadding: contentPadding?? EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius??20), // Rounded corners
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius??20),
-                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(borderRadius??20),
-                borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: 2),
-              ),
-            ),
-          )
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        columnText?Text(hintText!, style: mozillaTextSemiBoldText(context: context, fontSize: 13)):SizedBox.shrink(),
+        SizedBox(
+              width: width?? Get.width/2.5,
+            height: height?? 30,
+              child: TextField(
+                controller: controller,
+                focusNode: focusNode,
+                onChanged: onChanged,
+                keyboardType: keyboardType,
+                onSubmitted: onSubmitted,
+                textInputAction: textInputAction,
+                onTap: onTap??
+                        () {
+                      // Get.find<DashboardController>().
+                      shortCutKeyValue.value = "formKey";
+                    },
+                style: hintStyle?? mozillaTextSemiBoldText(
+                    context: context,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800
+                ),
+                inputFormatters: inputFormatters,
+                maxLines: maxLines,
+                minLines: maxLines,
+                decoration: InputDecoration(
+                  prefixIcon: prefixIcon,
+                  hintText: hintText,
+                  fillColor: fillColor,
+                  filled: fillColor != null?true: false,
+                  hintStyle: hintStyle?? mozillaTextSemiBoldText(
+                    context: context,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800
+                  ),
+                  labelText: labelText,
+                  suffixIcon: suffixIcon,
+                  contentPadding: contentPadding?? EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(borderRadius??20), // Rounded corners
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(borderRadius??20),
+                    borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(borderRadius??20),
+                    borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: 2),
+                  ),
+                ),
+              )
 
-      );
+          ),
+      ],
+    );
   }
 }

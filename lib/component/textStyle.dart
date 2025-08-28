@@ -82,3 +82,9 @@ TextStyle mozillaTextRegularText({
     fontFamily: "MozillaText-Regular"
   );
 }
+
+TextStyle titleDesign(){
+  return mozillaTextSemiBoldText(
+  fontSize: 16
+  );
+}
