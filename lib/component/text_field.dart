@@ -27,6 +27,7 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction,
     this.onTap,
     this.borderColor,
+    this.fillColor,
     this.maxLines = 1,
     this.height,
     this.width,
@@ -51,6 +52,7 @@ class CustomTextField extends StatelessWidget {
   final int? maxLines;
   double? height;
   double? width;
+  Color? fillColor;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +82,8 @@ class CustomTextField extends StatelessWidget {
             decoration: InputDecoration(
               prefixIcon: prefixIcon,
               hintText: hintText,
+              fillColor: fillColor,
+              filled: true,
               hintStyle: hintStyle?? mozillaTextSemiBoldText(
                 context: context,
                 fontSize: 10,
