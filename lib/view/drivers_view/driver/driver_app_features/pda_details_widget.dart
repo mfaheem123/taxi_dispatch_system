@@ -342,9 +342,7 @@ class PdaDetailsWidget extends StatelessWidget {
 Widget textFieldsWidget(BuildContext context,
     TextEditingController controller,{
   label,
-      width,
-
-}
+      width}
     ) {
   return SizedBox(
     width: width < 1920 ? Get.width : Get.width/9,
