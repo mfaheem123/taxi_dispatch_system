@@ -122,4 +122,5 @@ class AppText{
   static get networkProvider => "Network Provider";
   static get dataAllowance => "Data Allowance";
   static get pdaDeposit => "PDA Deposit";
+  static get comments => "Comments";
 }

@@ -176,11 +176,23 @@ class PdaDetailsWidget extends StatelessWidget {
                                   width: width,
                                 ),
                               ),
+                              const SizedBox(width: 12),
+                              FocusTraversalOrder(
+                                order: const NumericFocusOrder(8),
+                                child:
+                                textFieldsWidget(
+                                  context,
+                                  controller.commentsController,
+                                  label: AppText.comments,
+                                  width: width,
+                                ),
+                              ),
                               // _gap(isMobile),
                             ],
                           ),
                         ),
                       ),
+
                       SizedBox(height: screenHeight * 0.019),
                     ],
                   ),
@@ -222,8 +234,7 @@ class PdaDetailsWidget extends StatelessWidget {
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(1),
                             child: textFieldsWidget(
-                              context,
-                              controller.imeController,
+                              context, controller.imeController,
                               label: AppText.ime,
                               width: width,
                             ),
@@ -323,6 +334,19 @@ class PdaDetailsWidget extends StatelessWidget {
                               width: width,
                             ),
                           ),
+                          const SizedBox(width: 12),
+                          // _gap(isMobile),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(8),
+                            child:
+                            textFieldsWidget(
+                              context,
+                              controller.commentsController,
+                              label: AppText.comments,
+                              width: width,
+                            ),
+                          ),
+
                           // _gap(isMobile),
                         ],
                       ),
@@ -341,9 +365,7 @@ class PdaDetailsWidget extends StatelessWidget {
 
 Widget textFieldsWidget(BuildContext context,
     TextEditingController controller,{
-  label,
-      width,
-
+  label, width,
 }
     ) {
   return SizedBox(
@@ -355,6 +377,7 @@ Widget textFieldsWidget(BuildContext context,
         children: [
           Text(label??AppText.make, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
           CustomTextField(
+            width: width < 1920 ? Get.width : Get.width/9,
             borderRadius: 4,
             controller: controller,
             textInputAction: TextInputAction.next,

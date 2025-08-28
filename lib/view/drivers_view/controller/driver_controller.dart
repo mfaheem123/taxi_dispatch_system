@@ -124,6 +124,7 @@ class DriverController extends GetxController {
   final networkProviderController = TextEditingController();
   final dataAllowanceController = TextEditingController();
   final pdaDepositController = TextEditingController();
+  final commentsController = TextEditingController();
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 

@@ -29,6 +29,7 @@ class CustomTextField extends StatelessWidget {
     this.borderColor,
     this.maxLines = 1,
     this.height,
+    this.width,
   });
 
   String? labelText;
@@ -49,11 +50,12 @@ class CustomTextField extends StatelessWidget {
   Color? borderColor;
   final int? maxLines;
   double? height;
+  double? width;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-          width: Get.width/2.5,
+          width: width?? Get.width/2.5,
         height: height?? 30,
           child: TextField(
             controller: controller,
