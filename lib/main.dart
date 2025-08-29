@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
           behavior: MyBehavior(),
           child: EasyLoading.init(builder: BotToastInit())(context, child),
         );
+        // return child;
         return child;
       },
       navigatorObservers: [BotToastNavigatorObserver()],

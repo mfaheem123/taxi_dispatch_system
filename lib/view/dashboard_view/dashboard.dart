@@ -30,7 +30,7 @@ class DashBoarScreen extends StatefulWidget {
 class _DashBoarScreenState extends State<DashBoarScreen> {
   final dashBoardCntrl = Get.find<DashboardController>();
   // final DashboardController locationCtrl = Get.put(DashboardController());
-  List<String> selectedTexts = [];
+  List<SelectedMenu> selectedTexts = [];
 
 
   
@@ -105,7 +105,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           widget.onSelect?.call(selectedItem);
           setState(() {
             selectedTexts.remove(selectedItem);
-            selectedTexts.add(selectedItem);
+            selectedTexts.add(SelectedMenu(title: selectedItem,selectedItem: true));
             dashBoardCntrl.isDropdownOpen = false;
           });
         } else {
@@ -326,7 +326,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(text, style: TextStyle(fontSize: 16)),
+                                          Text(text.title!, style: TextStyle(fontSize: 16)),
                                           SizedBox(width: 5),
                                           GestureDetector(
                                             onTap: () {
@@ -394,7 +394,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                     widget.onSelect?.call(selectedItem);
                                     setState(() {
                                       selectedTexts.remove(selectedItem);
-                                      selectedTexts.add(selectedItem);
+                                      selectedTexts.add(SelectedMenu(
+                                        title: selectedItem,
+                                        selectedItem: true,
+                                      ));
                                       dashBoardCntrl.dropdownIndex = j;
                                       dashBoardCntrl.isDropdownOpen = false;
                                     });
@@ -440,8 +443,6 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return ByDefaultDashboard();
     }
   }
-
-
 }
 
 
@@ -458,3 +459,6 @@ final List<MenuItemData> menus = [
   MenuItemData("REPORTS", Icons.receipt_long, ["DRIVER", "BOOKINGS", "CALL", "INCOME", "PCO"]),
   MenuItemData("SETTINGS", Icons.settings, ["COMPANY INFORMATION", "COMPANY CONFIGURATION", "DOCUMENT NUMBER", "TEMPLATE SETTINGS", "BOOKING CLEARING UTILITY", "LOCATION TYPE SHORTCUTS", "VOIP SETTINGS", "GENERAL SMS CONFIG", "SMS SETTINGS", "CHAT WITH DRIVER AND PASSENGER", "PERMISSION SETTINGS"]),
 ];
+
+
+
