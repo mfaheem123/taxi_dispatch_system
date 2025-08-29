@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
+import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -417,7 +418,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverAppFeatureScreen();
+    if (selectedTexts.isEmpty) return CreateVehicle();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -433,6 +434,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return LoginDriversScreen();
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
+      case 'CREATE VEHICLE TYPE':
+        return CreateVehicle();
       default:
         return ByDefaultDashboard();
     }

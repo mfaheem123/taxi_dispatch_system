@@ -6,6 +6,7 @@ abstract class Routes {
   static const dashBoarScreen = _Paths.dashBoarScreen;
   static const createBooking = _Paths.createBooking;
   static const viewDriversMap = _Paths.viewDriversMap;
+  static const createVehicle = _Paths.createVehicle;
 }
 
 abstract class _Paths {
@@ -13,4 +14,5 @@ abstract class _Paths {
   static const dashBoarScreen = '/DashBoarScreen';
   static const createBooking = '/CreateBooking';
   static const viewDriversMap = '/ViewDriversMap';
+  static const createVehicle = '/ViewDriversMap';
 }

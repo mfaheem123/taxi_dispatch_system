@@ -1,5 +1,6 @@
 
 
+import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
 import 'package:get/get.dart';
 import '../view/auth/login_screen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
@@ -31,6 +32,10 @@ class AppPages {
     GetPage(
       name: _Paths.viewDriversMap,
       page: () => ViewDriversMap(),
+    ),
+    GetPage(
+      name: _Paths.createVehicle,
+      page: () => CreateVehicle(),
     ),
   ];
 }
