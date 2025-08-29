@@ -133,4 +133,22 @@ class AppText{
   static get account => "ACCOUNT";
   static get creditCardPaid => "CREDIT CARD PAID";
   static get filter => "FILTER";
+  static get total => "TOTAL";
+  static get cashTotal => "CASH TOTAL:";
+  static get owed => "OWED:";
+  static get oldBalance => "OLD BALANCE:";
+  static get newBalance => "NEW BALANCE:";
+  static get accountWCmm => "ACCOUNT W-COMM:";
+  static get accountWOCmm => "ACCOUNT WO-COMM:";
+  static get parkingCongestion => "PARKING/CONGESTION TOTAL:";
+  static get totalCommission => "COMMISSION TOTAL:";
+  static get bulkDriverCommission => "BULK DRIVER COMMISSION";
+  static get duration => "DURATION";
+  static get sub => "SUBS";
+  static get getBooking => "GET BOOKINGS";
+  static get clear => "CLEAR";
+  static get generate => "GENERATE";
+  static get info => "INFO";
+  static get generateSendPdf => "GENERATE & SEND PDF";
+  static get emailSubject => "EMAIL SUBJECT";
 }

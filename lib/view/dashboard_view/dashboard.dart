@@ -6,9 +6,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/driver_commission/driver_commission.dart';
+import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../locations_view/location/localization_screen.dart';
@@ -30,7 +32,7 @@ class DashBoarScreen extends StatefulWidget {
 class _DashBoarScreenState extends State<DashBoarScreen> {
   final dashBoardCntrl = Get.find<DashboardController>();
   // final DashboardController locationCtrl = Get.put(DashboardController());
-  List<SelectedMenu> selectedTexts = [];
+  List<String> selectedTexts = [];
 
 
   
@@ -105,7 +107,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           widget.onSelect?.call(selectedItem);
           setState(() {
             selectedTexts.remove(selectedItem);
-            selectedTexts.add(SelectedMenu(title: selectedItem,selectedItem: true));
+            selectedTexts.add(selectedItem);
             dashBoardCntrl.isDropdownOpen = false;
           });
         } else {
@@ -316,7 +318,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
                                   // Dynamic selected tabs
                                   ...selectedTexts.map((text) {
-                                    return Container(
+                                    return Container (
                                       padding:
                                       EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                       decoration: BoxDecoration(
@@ -326,7 +328,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(text.title!, style: TextStyle(fontSize: 16)),
+                                          Text(text, style: TextStyle(fontSize: 16)),
                                           SizedBox(width: 5),
                                           GestureDetector(
                                             onTap: () {
@@ -394,10 +396,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                     widget.onSelect?.call(selectedItem);
                                     setState(() {
                                       selectedTexts.remove(selectedItem);
-                                      selectedTexts.add(SelectedMenu(
-                                        title: selectedItem,
-                                        selectedItem: true,
-                                      ));
+                                      selectedTexts.add(selectedItem);
                                       dashBoardCntrl.dropdownIndex = j;
                                       dashBoardCntrl.isDropdownOpen = false;
                                     });
@@ -421,7 +420,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverCommission();
+    if (selectedTexts.isEmpty) return BulkDriverCommission();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -438,7 +437,11 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
       case 'CREATE DRIVER COMMISSION':
+        return ListDriverCommission();
+      case 'DRIVER COMMISSIONS':
         return DriverCommission();
+      case 'BULK DRIVER COMMISSION':
+        return BulkDriverCommission();
       default:
         return ByDefaultDashboard();
     }
@@ -451,7 +454,7 @@ final List<MenuItemData> menus = [
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
-  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "LIST OF LOGGED IN DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION"]),
+  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("USERS", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),

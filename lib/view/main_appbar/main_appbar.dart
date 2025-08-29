@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../component/color.dart';
 import '../../tabbarview.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
@@ -103,6 +104,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  List<SelectedMenu> selectedTexts = [];
+
   late final List<NestedMenuItem> hoverMenu;
   @override
   void initState() {
@@ -123,28 +127,30 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: DynamicColors.whiteClr,
         body: SingleChildScrollView(
           child: Column(
             children: [
               NestedMenuBar(
+
                 menuBarPadding: 0.0,
                 menus: hoverMenu,
                 popUpMenuItemBorderRadius: 8,
                 menuBarDecoration: BoxDecoration(
-                  color: Colors.black,
+                  color: DynamicColors.primaryClr,
                 ),
                 menuBarItemHoverColor: Colors.white,
-                menuBarItemColor: Colors.grey,
+                menuBarItemColor: Colors.white,
                 popUpDecoration: BoxDecoration(
-                  color: Colors.black,
-                  border: Border.all(color: Colors.grey,width: 2),
+                  color: Colors.white,
+                  // border: Border.all(color: Colors.grey,width: 2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 popUpPadding: 3,
-                popUpMenuItemHoverForegroundColor:  Colors.white,
-                popUpMenuItemForegroundColor: Colors.grey,
-                popUpMenuItemBackgroundColor: Colors.black,
-                popUpMenuItemHoverBackgroundColor: Colors.grey,
+                popUpMenuItemHoverForegroundColor: Colors.white,
+                popUpMenuItemForegroundColor: Colors.black,
+                popUpMenuItemBackgroundColor: Colors.white,
+                popUpMenuItemHoverBackgroundColor: Colors.black,
               ),
               Text("Content goes here")
             ],
@@ -154,34 +160,71 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<NestedMenuItem> _makeMenus(BuildContext context) {
+    DashboardController controller = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : Get.put(DashboardController());
     return [
+      NestedMenuItem(
+          title: "NEXUS",
+      ),
       NestedMenuItem(
           title: "BOOKINGS",
           children: [
-            NestedMenuItem(title: "CREATE BOOKINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF BOOKINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF WEB BOOKINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF APP BOOKINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF MULTI BOOKINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF TRASH BOOKINGS",onTap: () => message(context, "DevOps"),),
-            // NestedMenuItem(title: "App Development",onTap: () => message(context, "App Development"),
-            //     children: [
-            //       NestedMenuItem(title: "Mobile App Development",
-            //         onTap: () => message(context, "Mobile App Development"),
-            //         children: [
-            //           NestedMenuItem(title: "Native App Development",onTap: () => message(context, "Native App Development"),
-            //               children: [
-            //                 NestedMenuItem(title: "Android App Development",onTap: () => message(context, "Android App Development"),),
-            //                 NestedMenuItem(title: "iOS App Development",onTap: () => message(context, "iOS App Development"),),]),
-            //           NestedMenuItem(title: "Cross Platform Development",onTap: () => message(context, "Cross Platform Development"),
-            //             children: [
-            //               NestedMenuItem(title: "Flutter App Development",onTap: () => message(context, "Flutter App Development"),),
-            //               NestedMenuItem(title: "React Native App Development",onTap: () => message(context, "React Native App Development"),),],),],),
-            //       NestedMenuItem(title: "Web App Development",onTap: () => message(context, "Web App Development"),),
-            //     ]
-            // ),
+            NestedMenuItem(title: "CREATE BOOKINGS",
+              onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "CREATE BOOKINGS",
+                selectedItem: true,
+              ));
+            },),
+            NestedMenuItem(title: "LIST OF BOOKINGS",onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "LIST OF BOOKINGS",
+                selectedItem: true,
+              ));
+            }),
+            NestedMenuItem(title: "LIST OF WEB BOOKINGS",onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "LIST OF WEB BOOKINGS",
+                selectedItem: true,
+              ));
+            }),
+            NestedMenuItem(title: "LIST OF APP BOOKINGS",onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "LIST OF APP BOOKINGS",
+                selectedItem: true,
+              ));
+            }),
+            NestedMenuItem(title: "LIST OF MULTI BOOKINGS",onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "LIST OF MULTI BOOKINGS",
+                selectedItem: true,
+              ));
+            }),
+            NestedMenuItem(title: "LIST OF TRASH BOOKINGS",onTap: () {
+              selectedTexts.add(SelectedMenu(
+                title: "LIST OF TRASH BOOKINGS",
+                selectedItem: true,
+              ));
+            }),
           ]
       ),
+     /* NestedMenuItem(title: "App Development",onTap: () => message(context, "App Development"),
+          children: [
+            NestedMenuItem(title: "Mobile App Development",
+              onTap: () => message(context, "Mobile App Development"),
+              children: [
+                NestedMenuItem(title: "Native App Development",onTap: () => message(context, "Native App Development"),
+                    children: [
+                      NestedMenuItem(title: "Android App Development",onTap: () => message(context, "Android App Development"),),
+                      NestedMenuItem(title: "iOS App Development",onTap: () => message(context, "iOS App Development"),),]),
+                NestedMenuItem(title: "Cross Platform Development",onTap: () => message(context, "Cross Platform Development"),
+                  children: [
+                    NestedMenuItem(title: "Flutter App Development",onTap: () => message(context, "Flutter App Development"),),
+                    NestedMenuItem(title: "React Native App Development",onTap: () => message(context, "React Native App Development"),),],),],),
+            NestedMenuItem(title: "Web App Development",onTap: () => message(context, "Web App Development"),),
+          ]
+      ),*/
       NestedMenuItem(
           title: "CUSTOMERS",
           children: [
