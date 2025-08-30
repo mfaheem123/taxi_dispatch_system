@@ -151,4 +151,19 @@ class AppText{
   static get info => "INFO";
   static get generateSendPdf => "GENERATE & SEND PDF";
   static get emailSubject => "EMAIL SUBJECT";
+  static get driverCommissionPay => "DRIVER COMMISSION PAY";
+  static get driver => "DRIVER";
+  static get commissionDue => "COMMISSION DUE";
+  static get amount => "AMOUNT";
+  static get description => "DESCRIPTION";
+  static get credit => "CREDIT";
+  static get debit => "DEBIT";
+  static get driverRent => "DRIVER RENT";
+  static get rentWeek => "RENT/WEEK";
+  static get bulkDriverRent => "BULK DRIVER RENT";
+  static get driverRentPay => "DRIVER RENT PAY";
+  static get driverSinBinSetting => "DRIVER SIN BIN SETTINGS";
+  static get recoverJob => "RECOVER JOB (MINS)";
+  static get rejectJob => "REJECT JOB (MINS)";
+  static get ignoreJob => "IGNORE JOB (MINS)";
 }

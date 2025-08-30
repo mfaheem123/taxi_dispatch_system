@@ -170,7 +170,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                       side: BorderSide(color: Colors.transparent,), // border color & thickness
                                     ),
                                     onPressed: () {},
-                                    child: Icon(Icons.search,
+                                    child: Icon(Icons.edit_calendar,
                                       size: 28,
                                     ),
                                   ),
@@ -182,6 +182,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                     onPressed: () {},
                                     child: Icon(Icons.delete_forever,
                                       size: 28,
+                                      color: DynamicColors.redClr,
                                     ),
                                   ),
                                 ],

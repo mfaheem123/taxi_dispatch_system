@@ -7,10 +7,16 @@ import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/driver_commission/driver_commission.dart';
+import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
+import '../drivers_view/driver/driver_commission/driver_rent.dart';
 import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
+import '../drivers_view/driver/driver_commission_pay/driver_commission_pay.dart';
+import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
+import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../locations_view/location/localization_screen.dart';
@@ -420,7 +426,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return BulkDriverCommission();
+    if (selectedTexts.isEmpty) return DriverSinBinSetting();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -432,7 +438,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return DriverForm();
       case 'LIST OF DRIVERS':
         return DriverListScreen();
-      case 'LIST OF LOGGED IN DRIVERS':
+      case 'LIST OF LOGGED IN/OUT DRIVERS':
         return LoginDriversScreen();
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
@@ -442,6 +448,18 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return DriverCommission();
       case 'BULK DRIVER COMMISSION':
         return BulkDriverCommission();
+      case 'DRIVER COMMISSION PAY':
+        return DriverCommissionPay();
+      case 'CREATE DRIVER RENT':
+        return CreateDriverRent();
+      case 'DRIVER RENT':
+        return DriverRent();
+      case 'BULK DRIVER RENT':
+        return BulkDriverRent();
+      case 'DRIVER RENT PAY':
+        return DriverRentPay();
+      case 'DRIVER SIN BIN SETTINGS':
+        return DriverSinBinSetting();
       default:
         return ByDefaultDashboard();
     }
@@ -454,7 +472,7 @@ final List<MenuItemData> menus = [
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
-  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION"]),
+  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED IN/OUT DRIVERS", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("USERS", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),

@@ -1,15 +1,12 @@
 
 
-
-
-import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/color.dart';
+import '../../../../component/customButton.dart';
 import '../../../../component/textStyle.dart';
-import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -17,14 +14,14 @@ import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/driver_controller.dart';
 
-class BulkDriverCommission extends StatefulWidget {
-  const BulkDriverCommission({super.key});
+class BulkDriverRent extends StatefulWidget {
+  const BulkDriverRent({super.key});
 
   @override
-  State<BulkDriverCommission> createState() => _BulkDriverCommissionState();
+  State<BulkDriverRent> createState() => _BulkDriverRentState();
 }
 
-class _BulkDriverCommissionState extends State<BulkDriverCommission> {
+class _BulkDriverRentState extends State<BulkDriverRent> {
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
       : Get.put(DriverController());
@@ -32,7 +29,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
   @override
   void initState() {
     super.initState();
-    shortCutKeyValue.value = "driversBulkCommission";
+    shortCutKeyValue.value = "bulkDriverRent";
   }
 
   int selectedRowIndex = 0; // currently selected row
@@ -59,7 +56,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
-                Text(AppText.bulkDriverCommission, style: titleDesign()),
+                Text(AppText.bulkDriverRent, style: titleDesign()),
                 const SizedBox(height: 15),
 
                 /// Responsive Box
@@ -564,4 +561,3 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
     });
   }
 }
-

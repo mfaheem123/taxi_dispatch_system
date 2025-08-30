@@ -150,7 +150,18 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        QuotationWidget(),
+                      DynamicSwitch(
+                      controller: controller.switchController,
+                        activeColor: DynamicColors.primaryClr,
+                        inactiveColor: Colors.grey,
+                      focusScale: 1.5,
+                      onToggle: () {
+                        print("Switch toggled: ${controller.switchController.value}");
+                      },
+              ),
+                        // QuotationWidget(
+                        //   controller
+                        // ),
                         SizedBox(width: 10),
                         Text(
                           AppText.quotation,
