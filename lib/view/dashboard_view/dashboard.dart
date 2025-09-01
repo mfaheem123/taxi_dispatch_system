@@ -138,6 +138,67 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       focusNode: dashBoardCntrl.focusNode,
       autofocus: true,
       onKey: (RawKeyEvent event) {
+        if (FocusManager.instance.primaryFocus is EditableTextState) {
+          // ✅ Let the textfield work normally
+          return;
+        }
+
+        if (event is RawKeyDownEvent) {
+          final key = event.logicalKey;
+          print('Pressed key: ${key.debugName}');
+
+          // Example: block only function keys (F1–F12)
+          if (key.debugName?.startsWith("F") == true) {
+            // prevent default browser action only for shortcuts
+            html.window.onKeyDown.listen((html.KeyboardEvent e) {
+              e.preventDefault();
+            });
+          }
+
+          if (key.debugName == "F3") {
+            showShortcutDialog(
+              context,
+              title: AppText.driverInfo,
+              contentWidget: F3AlertWidget(),
+            );
+          } else if (key.debugName == "F4") {
+            showShortcutDialog(
+              context,
+              title: AppText.driverEarning,
+              contentWidget: F4AlertWidget(),
+            );
+          } else if (key.debugName == "F8") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F8"),
+            );
+          } else if (key.debugName == "F9") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F9"),
+            );
+          } else if (key.debugName == "F6") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F6"),
+            );
+          } else if (key.debugName == "F1") {
+            showShortcutDialog(
+              context,
+              title: AppText.comingSoon,
+              contentWidget: ComingSoonWidget(shotCutKey: "F1"),
+            );
+          }
+        }
+      },
+   /*   onKey: (RawKeyEvent event) {
+        if (FocusManager.instance.primaryFocus is EditableTextState) {
+          // ✅ Don't handle shortcuts when typing in a TextField
+          return;
+        }
         html.window.onKeyDown.listen((html.KeyboardEvent e) {
           e.preventDefault();
         });
@@ -145,8 +206,6 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           final key = event.logicalKey;
           print('Pressed key: ${key.debugName}');
           print('Key code: ${event.data}');
-
-
 
           // F3
           if (key.debugName == "F3") {
@@ -187,7 +246,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
             );
           }
         }
-      },
+      },*/
       child: Scaffold(
         backgroundColor: Color(0xFFEEF0F3),
         body: SafeArea(
@@ -426,8 +485,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return DriverSinBinSetting();
-    // if (selectedTexts.isEmpty) return ByDefaultDashboard();
+    // if (selectedTexts.isEmpty) return DriverSinBinSetting();
+    if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
       case 'LIST OF BOOKINGS':

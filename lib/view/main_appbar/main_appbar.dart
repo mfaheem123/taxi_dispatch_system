@@ -9,6 +9,12 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 
+import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
+import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
+import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
+import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
+import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+
 class MainAppBar extends StatelessWidget {
   MainAppBar({super.key});
 
@@ -120,42 +126,38 @@ class _MyHomePageState extends State<MyHomePage> {
     final snackBar = SnackBar(
       content: Text(text),
     );
-
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  Widget? _currentPage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DynamicColors.whiteClr,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              NestedMenuBar(
-
-                menuBarPadding: 0.0,
-                menus: hoverMenu,
-                popUpMenuItemBorderRadius: 8,
-                menuBarDecoration: BoxDecoration(
-                  color: DynamicColors.primaryClr,
-                ),
-                menuBarItemHoverColor: Colors.white,
-                menuBarItemColor: Colors.white,
-                popUpDecoration: BoxDecoration(
-                  color: Colors.white,
-                  // border: Border.all(color: Colors.grey,width: 2),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                popUpPadding: 3,
-                popUpMenuItemHoverForegroundColor: Colors.white,
-                popUpMenuItemForegroundColor: Colors.black,
-                popUpMenuItemBackgroundColor: Colors.white,
-                popUpMenuItemHoverBackgroundColor: Colors.black,
+        appBar: PreferredSize(preferredSize: Size.fromHeight(kToolbarHeight*2),
+            child: NestedMenuBar(
+              menuBarPadding: 0.0,
+              menus: hoverMenu,
+              popUpMenuItemBorderRadius: 8,
+              menuBarDecoration: BoxDecoration(
+                color: DynamicColors.primaryClr,
               ),
-              Text("Content goes here")
-            ],
-          ),
-        )
+              menuBarItemHoverColor: Colors.white,
+              menuBarItemColor: Colors.white,
+              popUpDecoration: BoxDecoration(
+                color: Colors.white,
+                // border: Border.all(color: Colors.grey,width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              popUpPadding: 3,
+              popUpMenuItemHoverForegroundColor: Colors.white,
+              popUpMenuItemForegroundColor: Colors.black,
+              popUpMenuItemBackgroundColor: Colors.white,
+              popUpMenuItemHoverBackgroundColor: Colors.black,
+            )),
+      body: _currentPage ?? Center(child: Text("Please select a menu item")),
+
     );
   }
 
@@ -258,13 +260,36 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(
           title: "DRIVERS",
           children: [
-            NestedMenuItem(title: "CREATE DRIVER",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF DRIVERS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF INACTIVE DRIVERS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF LOGGED IN DRIVERS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "DRIVER APP FEATURES",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "LIST OF LOGGED OUT DRIVERS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "CREATE DRIVER COMMISSION",onTap: () => message(context, "DevOps"),),
+            NestedMenuItem(title: "CREATE DRIVER",onTap: () {
+              setState(() {
+                _currentPage = CreateDriverRent();
+              });
+            },),
+            NestedMenuItem(title: "LIST OF DRIVERS",onTap: () {
+              setState(() {
+                _currentPage = DriverListScreen();
+              });
+            }),
+            NestedMenuItem(title: "LIST OF INACTIVE DRIVERS",onTap: () {
+              setState(() {
+                _currentPage = LoginDriversScreen();
+              });
+            }),
+            NestedMenuItem(title: "LIST OF LOGGED IN DRIVERS",onTap: () {
+              setState(() {
+                _currentPage = LoginDriversScreen();
+              });
+            }),
+            NestedMenuItem(title: "DRIVER APP FEATURES",onTap: () {
+              setState(() {
+                _currentPage = DriverAppFeatureScreen();
+              });
+            }),
+            NestedMenuItem(title: "CREATE DRIVER COMMISSION",onTap: () {
+              setState(() {
+                _currentPage = ListDriverCommission();
+              });
+            }),
             NestedMenuItem(title: "LIST OF DRIVER COMMISSION",onTap: () => message(context, "DevOps"),),
           ]
       ),
@@ -331,5 +356,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     ];
   }
-
 }
