@@ -166,4 +166,7 @@ class AppText{
   static get recoverJob => "RECOVER JOB (MINS)";
   static get rejectJob => "REJECT JOB (MINS)";
   static get ignoreJob => "IGNORE JOB (MINS)";
+  static get plotFare => "PLOT FARE";
+  static get fromPlot => "FROM PLOT";
+  static get toPlot => "TO PLOT";
 }

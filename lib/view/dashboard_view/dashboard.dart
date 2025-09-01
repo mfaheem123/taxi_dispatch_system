@@ -19,6 +19,8 @@ import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
 import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
+import '../fare_view/plot_fare/plot_fare.dart';
 import '../locations_view/location/localization_screen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
@@ -485,7 +487,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    // if (selectedTexts.isEmpty) return DriverSinBinSetting();
+    // if (selectedTexts.isEmpty) return PlotFare();
     if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -519,6 +521,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return DriverRentPay();
       case 'DRIVER SIN BIN SETTINGS':
         return DriverSinBinSetting();
+      case 'CREATE FARE SETTINGS':
+        return PlotFare();
+      case 'CREATE FIXED FARE SETTINGS':
+        return CreateFixedFareSetting();
       default:
         return ByDefaultDashboard();
     }
