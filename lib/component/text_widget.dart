@@ -169,4 +169,14 @@ class AppText{
   static get plotFare => "PLOT FARE";
   static get fromPlot => "FROM PLOT";
   static get toPlot => "TO PLOT";
+  static get fareConfiguration => "FARE CONFIGURATION";
+  static get fromDay => "FROM DAY";
+  static get today => "TO DAY";
+  static get fromTime => "FROM TIME";
+  static get toTime => "TO TIME";
+  static get startingFare => "STARTING FARES";
+  static get startingMiles => "STARTING MILES";
+  static get fareByVehicle => "FARE BY VEHICLE";
+  static get operator => "OPERATOR";
+  static get value => "VALUE";
 }

@@ -406,7 +406,7 @@ class _TableScreenState extends State<TableScreen> {
   }
 }
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget}) {
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight}) {
   return DataColumn(
     label: widget?? Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -417,7 +417,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
             ? SizedBox.shrink()
             : SizedBox(
           width: 100,
-          height: 28,
+          height: textFieldHeight??28,
           child: TextField(
             onTap: () {
               shortCutKeyValue.value = "tableSelected";
