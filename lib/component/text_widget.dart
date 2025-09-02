@@ -179,4 +179,11 @@ class AppText{
   static get fareByVehicle => "FARE BY VEHICLE";
   static get operator => "OPERATOR";
   static get value => "VALUE";
+  static get fixedFare => "FIXED FARE";
+  static get fromLocationType => "FROM LOCATION TYPE";
+  static get toLocationType => "TO LOCATION TYPE";
+  static get airportCharges => "AIRPORT CHARGES";
+  static get fareIncrement => "FARE INCREMENT";
+  static get fixeFare => "FIXE FARE";
+  static get mileage => "MILEAGE";
 }
