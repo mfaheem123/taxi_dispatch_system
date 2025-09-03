@@ -194,4 +194,5 @@ class AppText{
   static get postCode => "POSTCODE";
   static get extraDropOff => "EXTRA DROPOFF";
   static get congestion => "CONGESTION";
+  static get fareMeterConfiguration => "FARE METER CONFIGURATIONS";
 }

@@ -10,6 +10,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/controller.dart';
@@ -272,6 +273,89 @@ class _FareChargesState extends State<FareCharges> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                SizedBox(
+                  width: Get.width,
+                  child: DataTable(
+                      headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                      dataRowMinHeight: 48,
+                      dataRowMaxHeight: 56,
+                      headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                      ),
+                      dataTextStyle: TextStyle(
+                        fontSize: 10,
+                      ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                      ),
+                      columns: [
+                        buildHeaderWithSearch(title: "TYPE"),
+                        buildHeaderWithSearch(title: "CONDITION"),
+                        buildHeaderWithSearch(title: "POSTCODE"),
+                        buildHeaderWithSearch(title: "FARE"),
+                        buildHeaderWithSearch(title: "PC"),
+                        buildHeaderWithSearch(title: "EDC"),
+                        buildHeaderWithSearch(title: "CC"),
+                        buildHeaderWithSearch(title: "DURATION"),
+                        buildHeaderWithSearch(title: "DAY"),
+                        buildHeaderWithSearch(title: "FROM"),
+                        buildHeaderWithSearch(title: "TO"),
+                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                      ],
+                      rows: List.generate(totalRows, (index) {
+                        bool isSelected = index == selectedRowIndex;
+                        return DataRow(
+                          cells: [
+                            const DataCell(Text("SALOON")),
+                            const DataCell(Text("NW7")),
+                            const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                            const DataCell(Text("£55.00")),
+                            const DataCell(Text("SALOON")),
+                            const DataCell(Text("NW7")),
+                            const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                            const DataCell(Text("£55.00")),
+                            const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                            const DataCell(Text("£55.00")),
+                            const DataCell(Text("£55.00")),
+                            DataCell(
+                              Row(
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.search,
+                                      size: 28,
+                                      color: DynamicColors.primaryClr,
+                                    ),
+                                  ),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.clear,
+                                      size: 28,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      })
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
               ],
             );

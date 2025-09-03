@@ -24,6 +24,7 @@ import '../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
 import '../fare_view/fare_charges/fare_charges.dart';
 import '../fare_view/fare_configuration_day/fare_configuration_day.dart';
 import '../fare_view/fare_increment/fare_increment.dart';
+import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
 import '../locations_view/location/localization_screen.dart';
@@ -492,7 +493,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
-    if (selectedTexts.isEmpty) return FareCharges();
+    if (selectedTexts.isEmpty) return FareMeter();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
     switch (selectedTexts.last) {
@@ -540,6 +541,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return FareIncrement();
       case 'SUR CHARGES':
         return FareCharges();
+      case 'FARE METER':
+        return FareMeter();
       default:
         return ByDefaultDashboard();
     }
@@ -550,7 +553,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 final List<MenuItemData> menus = [
   MenuItemData("BOOKINGS", Icons.book_online, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
-  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTING", "CREATE PLOT FARE", "Fare Configuration Normal Day", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
+  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTING", "CREATE PLOT FARE", "Fare Configuration Normal Day", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
   MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED IN/OUT DRIVERS", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
