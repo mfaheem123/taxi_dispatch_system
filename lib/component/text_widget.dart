@@ -186,4 +186,12 @@ class AppText{
   static get fareIncrement => "FARE INCREMENT";
   static get fixeFare => "FIXE FARE";
   static get mileage => "MILEAGE";
+  static get surCharges => "SURCHARGES";
+  static get surChargesType => "SURCHARGES TYPE";
+  static get timeLine => "TIMELINE";
+  static get applyCondition => "APPLY CONDITION";
+  static get parking => "PARKING";
+  static get postCode => "POSTCODE";
+  static get extraDropOff => "EXTRA DROPOFF";
+  static get congestion => "CONGESTION";
 }
