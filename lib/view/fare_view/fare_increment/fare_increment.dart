@@ -105,6 +105,7 @@ class _FareIncrementState extends State<FareIncrement> {
                               width: fieldWidth,
                               height: 35,
                               padding: 0.0,
+
                               border: Border.all(
                                 color: Colors.grey,
                               ),
@@ -185,85 +186,82 @@ class _FareIncrementState extends State<FareIncrement> {
             ),
             SizedBox(
               width: Get.width,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                  dataRowMinHeight: 48,
-                  dataRowMaxHeight: 56,
-                  headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
-                  ),
-                  dataTextStyle: const TextStyle(
-                    fontSize: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: DynamicColors.textClr.withOpacity(0.5),
-                    ),
-                  ),
-                  columns: [
-                    buildHeaderWithSearch(title: "FROM"),
-                    buildHeaderWithSearch(title: "TO"),
-                    buildHeaderWithSearch(title: "OPERATOR"),
-                    buildHeaderWithSearch(title: "VALUE"),
-                    buildHeaderWithSearch(title: "FIX FARE"),
-                    buildHeaderWithSearch(title: "MILEAGE"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
-                  ],
-                  rows: List.generate(totalRows, (index) {
-                    bool isSelected = index == selectedRowIndex;
-                    return DataRow(
-                      cells: [
-                        const DataCell(Text("SALOON")),
-                        const DataCell(Text("NW7")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        DataCell(
-                          Row(
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  side: BorderSide.none,
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.search,
-                                  size: 28,
-                                  color: DynamicColors.primaryClr,
-                                ),
-                              ),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                  side: BorderSide.none,
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.clear,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
+              child: DataTable(
+                headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                dataRowMinHeight: 48,
+                dataRowMaxHeight: 56,
+                headingTextStyle: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 13,
                 ),
+                dataTextStyle: const TextStyle(
+                  fontSize: 10,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: DynamicColors.textClr.withOpacity(0.5),
+                  ),
+                ),
+                columns: [
+                  buildHeaderWithSearch(title: "FROM"),
+                  buildHeaderWithSearch(title: "TO"),
+                  buildHeaderWithSearch(title: "OPERATOR"),
+                  buildHeaderWithSearch(title: "VALUE"),
+                  buildHeaderWithSearch(title: "FIX FARE"),
+                  buildHeaderWithSearch(title: "MILEAGE"),
+                  buildHeaderWithSearch(
+                      title: "ACTIONS", removeSearching: true),
+                ],
+                rows: List.generate(totalRows, (index) {
+                  bool isSelected = index == selectedRowIndex;
+                  return DataRow(
+                    cells: [
+                      const DataCell(Text("SALOON")),
+                      const DataCell(Text("NW7")),
+                      const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                      const DataCell(Text("£55.00")),
+                      const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                      const DataCell(Text("£55.00")),
+                      DataCell(
+                        Row(
+                          children: [
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                side: BorderSide.none,
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.search,
+                                size: 28,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            ),
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                                side: BorderSide.none,
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.clear,
+                                size: 28,
+                                color: DynamicColors.redClr,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
             )
           ],

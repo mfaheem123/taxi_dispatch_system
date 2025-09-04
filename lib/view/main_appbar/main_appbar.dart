@@ -14,6 +14,14 @@ import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
 import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+import '../fare_view/airport_charges/airport_charges.dart';
+import '../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
+import '../fare_view/fare_charges/fare_charges.dart';
+import '../fare_view/fare_configuration_day/fare_configuration_day.dart';
+import '../fare_view/fare_increment/fare_increment.dart';
+import '../fare_view/fare_meter/fare_meter.dart';
+import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
+import '../fare_view/plot_fare/plot_fare.dart';
 
 class MainAppBar extends StatelessWidget {
   MainAppBar({super.key});
@@ -241,9 +249,46 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(
           title: "FARES",
           children: [
-            NestedMenuItem(title: "CREATE FARE SETTINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "CREATE FIXED FARE SETTINGS",onTap: () => message(context, "DevOps"),),
-            NestedMenuItem(title: "CREATE FARE BY VEHICLE SETTINGS",onTap: () => message(context, "DevOps"),),
+            NestedMenuItem(title: "CREATE FARE SETTINGS",onTap: () {
+              setState(() {
+                _currentPage = FareConfigurationDay();
+              });
+            }),
+            NestedMenuItem(title: "CREATE FIXED FARE SETTINGS",onTap: () {
+              setState(() {
+                _currentPage = CreateFixedFareSetting();
+              });
+            }),
+            NestedMenuItem(title: "CREATE PLOT FARE",onTap: () {
+              setState(() {
+                _currentPage = PlotFare();
+              });
+            },),
+            NestedMenuItem(title: "CREATE FARE BY VEHICLE SETTINGS",onTap: () {
+              setState(() {
+                _currentPage = FareByVehicle();
+              });
+            }),
+            NestedMenuItem(title: "AIRPORT CHARGES",onTap: () {
+              setState(() {
+                _currentPage = AirportCharges();
+              });
+            },),
+            NestedMenuItem(title: "FARE INCREMENT",onTap: () {
+              setState(() {
+                _currentPage = FareIncrement();
+              });
+            },),
+            NestedMenuItem(title: "SUR CHARGES",onTap: () {
+              setState(() {
+                _currentPage = FareCharges();
+              });
+            },),
+            NestedMenuItem(title: "FARE METER",onTap: () {
+              setState(() {
+                _currentPage = FareMeter();
+              });
+            },),
           ]
       ),
       NestedMenuItem(
@@ -260,11 +305,24 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(
           title: "DRIVERS",
           children: [
-            NestedMenuItem(title: "CREATE DRIVER",onTap: () {
+            NestedMenuItem(title: "CREATE DRIVER",/*onTap: () {
               setState(() {
                 _currentPage = CreateDriverRent();
               });
-            },),
+            },*/
+    children: [
+    NestedMenuItem(title: "ADD DRIVER",onTap: () {
+      setState(() {
+        _currentPage = CreateDriverRent();
+      });
+    },),
+    NestedMenuItem(title: "DRIVERS",onTap: () {
+      setState(() {
+        _currentPage = DriverListScreen();
+      });
+    },),
+    ],
+            ),
             NestedMenuItem(title: "LIST OF DRIVERS",onTap: () {
               setState(() {
                 _currentPage = DriverListScreen();

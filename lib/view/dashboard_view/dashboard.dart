@@ -207,59 +207,6 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           }
         }
       },
-   /*   onKey: (RawKeyEvent event) {
-        if (FocusManager.instance.primaryFocus is EditableTextState) {
-          // ✅ Don't handle shortcuts when typing in a TextField
-          return;
-        }
-        html.window.onKeyDown.listen((html.KeyboardEvent e) {
-          e.preventDefault();
-        });
-        if (event is RawKeyDownEvent) {
-          final key = event.logicalKey;
-          print('Pressed key: ${key.debugName}');
-          print('Key code: ${event.data}');
-
-          // F3
-          if (key.debugName == "F3") {
-            showShortcutDialog(
-              context,
-              title: AppText.driverInfo,
-              contentWidget: F3AlertWidget(),
-            );
-          }else if (key.debugName == "F4") {
-            showShortcutDialog(
-              context,
-              title: AppText.driverEarning,
-              contentWidget: F4AlertWidget(),
-            );
-          }else if (key.debugName == "F8") {
-            showShortcutDialog(
-              context,
-              title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F8",),
-            );
-          }else if (key.debugName == "F9") {
-            showShortcutDialog(
-              context,
-              title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F9",),
-            );
-          }else if (key.debugName == "F6") {
-            showShortcutDialog(
-              context,
-              title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F6",),
-            );
-          }else if (key.debugName == "F1") {
-            showShortcutDialog(
-              context,
-              title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F1",),
-            );
-          }
-        }
-      },*/
       child: Scaffold(
         backgroundColor: Color(0xFFEEF0F3),
         body: SafeArea(
@@ -419,7 +366,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  selectedTexts.remove(text);
+                                                  if(selectedTexts.last.title == text.title && selectedTexts.length>1){
+                                                    selectedTexts.remove(text);
+                                                    selectedTexts.last.selectedItem = true;
+                                                  }else{
+                                                    selectedTexts.remove(text);
+                                                  }
+
                                                 });
                                               },
                                               child: Icon(
@@ -512,7 +465,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
     final selectedItems = selectedTexts.where((e) => e.selectedItem == true).toList();
 
-    if (selectedItems.isEmpty) return ByDefaultDashboard();
+    if (selectedItems.isEmpty) return FareMeter();
+    // if (selectedItems.isEmpty) return ByDefaultDashboard();
 
     final lastSelected = selectedItems.last; // 👈 sirf last true item
 
@@ -573,7 +527,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       case 'CREATE FIXED FARE SETTINGS':
         child = CreateFixedFareSetting();
         break;
-      case 'Fare Configuration Normal Day':
+      case 'CREATE FARE SETTINGS':
         child = FareConfigurationDay();
         break;
       case 'CREATE FARE BY VEHICLE SETTINGS':
@@ -606,70 +560,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       child: child,
     );
   }
-
-/*  Widget getSelectedWidget({GestureTapCallback? onTap}) {
-    print(selectedTexts);
-    if (selectedTexts.isEmpty) return FareMeter();
-    // if (selectedTexts.isEmpty) return ByDefaultDashboard();
-
-    switch (selectedTexts.last.title) {
-      case 'LIST OF BOOKINGS':
-        return BookingList();
-      case 'LOCALIZATION':
-        return LocalizationScreen();
-      case 'CREATE DRIVER':
-        return DriverForm();
-      case 'LIST OF DRIVERS':
-        return DriverListScreen();
-      case 'LIST OF LOGGED IN/OUT DRIVERS':
-        return LoginDriversScreen();
-      case 'DRIVER APP FEATURES':
-        return DriverAppFeatureScreen();
-      case 'CREATE DRIVER COMMISSION':
-        return ListDriverCommission();
-      case 'DRIVER COMMISSIONS':
-        return DriverCommission();
-      case 'BULK DRIVER COMMISSION':
-        return BulkDriverCommission();
-      case 'DRIVER COMMISSION PAY':
-        return DriverCommissionPay();
-      case 'CREATE DRIVER RENT':
-        return CreateDriverRent();
-      case 'DRIVER RENT':
-        return DriverRent();
-      case 'BULK DRIVER RENT':
-        return BulkDriverRent();
-      case 'DRIVER RENT PAY':
-        return DriverRentPay();
-      case 'DRIVER SIN BIN SETTINGS':
-        return DriverSinBinSetting();
-      case 'CREATE PLOT FARE':
-        return PlotFare();
-      case 'CREATE FIXED FARE SETTINGS':
-        return CreateFixedFareSetting();
-      case 'Fare Configuration Normal Day':
-        return FareConfigurationDay();
-      case 'CREATE FARE BY VEHICLE SETTINGS':
-        return FareByVehicle();
-      case 'AIRPORT CHARGES':
-        return AirportCharges();
-      case 'FARE INCREMENT':
-        return FareIncrement();
-      case 'SUR CHARGES':
-        return FareCharges();
-      case 'FARE METER':
-        return FareMeter();
-      default:
-        return ByDefaultDashboard();
-    }
-  }*/
 }
 
 
 final List<MenuItemData> menus = [
   MenuItemData("BOOKINGS", Icons.book_online, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
-  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTING", "CREATE PLOT FARE", "Fare Configuration Normal Day", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
+  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE PLOT FARE", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
   MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED IN/OUT DRIVERS", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),

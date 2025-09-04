@@ -408,40 +408,42 @@ class _TableScreenState extends State<TableScreen> {
 
 DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize}) {
   return DataColumn(
-    label: widget?? Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
-        fontSize: fontSize ?? 14
-        )),
-        SizedBox(height: 4),
-        title == "TYPE" || removeSearching == true
-            ? SizedBox.shrink()
-            : SizedBox(
-          width: 100,
-          height: textFieldHeight??28,
-          child: TextField(
-            onTap: () {
-              shortCutKeyValue.value = "tableSelected";
-            },
-            style: mozillaTextRegularText(
-                fontWeight: FontWeight.w800, fontSize: 12),
-            decoration: InputDecoration(
-              hintText: "Search",
-              hintStyle: mozillaTextRegularText(
-                  fontWeight: FontWeight.w800,
-                  color: DynamicColors.textClr.withOpacity(0.8),
-                  fontSize: 12),
-              contentPadding:
-              EdgeInsets.symmetric(horizontal: 6, vertical: 0),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-                borderSide: BorderSide(color: Colors.grey),
+    label: Expanded(
+      child: widget?? Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
+          fontSize: fontSize ?? 14
+          )),
+          SizedBox(height: 4),
+          title == "TYPE" || removeSearching == true
+              ? SizedBox.shrink()
+              : SizedBox(
+            width: 100,
+            height: textFieldHeight??28,
+            child: TextField(
+              onTap: () {
+                shortCutKeyValue.value = "tableSelected";
+              },
+              style: mozillaTextRegularText(
+                  fontWeight: FontWeight.w800, fontSize: 12),
+              decoration: InputDecoration(
+                hintText: "Search",
+                hintStyle: mozillaTextRegularText(
+                    fontWeight: FontWeight.w800,
+                    color: DynamicColors.textClr.withOpacity(0.8),
+                    fontSize: 12),
+                contentPadding:
+                EdgeInsets.symmetric(horizontal: 6, vertical: 0),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(4),
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

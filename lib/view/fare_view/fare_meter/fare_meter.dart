@@ -1,6 +1,3 @@
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,14 +19,13 @@ class FareMeter extends StatefulWidget {
 }
 
 class _FareMeterState extends State<FareMeter> {
-
   FareController controller = Get.isRegistered<FareController>()
       ? Get.find<FareController>()
       : Get.put(FareController());
 
   int selectedRowIndex = 0; // currently selected row
   final int totalRows =
-  50; // total rows (dynamic list ke hisaab se change hoga)
+      50; // total rows (dynamic list ke hisaab se change hoga)
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -37,7 +33,6 @@ class _FareMeterState extends State<FareMeter> {
     super.initState();
     shortCutKeyValue.value = "fareMeter";
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -51,155 +46,234 @@ class _FareMeterState extends State<FareMeter> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
+                ? maxWidth / 2
+                : maxWidth / 4;
 
-            return Column(
-              children: [
-                Container(
-                  width: Get.width,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                  color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text(AppText.fareMeterConfiguration, style: titleDesign()),
-                ),
-                SizedBox(
-                  width: Get.width,
-                  child: DataTable(
-                    headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                    dataRowMinHeight: 48,
-                    dataRowMaxHeight: 56,
-                    horizontalMargin: 0.0,
-                    columnSpacing: 0.0,
-                    border: TableBorder.all( // 👈 vertical aur horizontal dono lines
-                      color: Colors.grey,
-                      width: 0.5,
+        return Column(
+          children: [
+            Container(
+              width: Get.width,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              color: DynamicColors.gryClr.withOpacity(0.5),
+              child: Text(AppText.fareMeterConfiguration, style: titleDesign()),
+            ),
+            Scrollbar(
+              controller: _scrollController,
+              thumbVisibility: true, // 👈 hamesha visible
+              trackVisibility: true,
+              interactive: true,
+              child: SingleChildScrollView(
+                controller: _scrollController, // 👈 yahan bhi same controller
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                  dataRowMinHeight: 48,
+                  dataRowMaxHeight: 56,
+                  columnSpacing: 30.0,
+                  border: TableBorder.all(
+                    color: Colors.grey,
+                    width: 0.5,
+                  ),
+                  headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                  dataTextStyle: const TextStyle(
+                    fontSize: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: DynamicColors.textClr.withOpacity(0.5),
                     ),
-                    headingTextStyle: const TextStyle(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 13,
-                    ),
-                    dataTextStyle: const TextStyle(
-                      fontSize: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: DynamicColors.textClr.withOpacity(0.5),
-                      ),
-                    ),
-                    columns: [
-                      buildHeaderWithSearch(title: " VEHICLES ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " METERED ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " AUTO WAIT ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " ACTIVATE WAITING ON SPEED ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " INITIATE WAITING AFTER ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " SUSPEND WAITING ON SPEED ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " WAITING CHAREGES/INTERVAL ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(title: " INTERVALS ", removeSearching: true,fontSize: 13),
-                      buildHeaderWithSearch(
-                          title: " ACTIONS ", removeSearching: true,fontSize: 13),
-                    ],
-                    rows: List.generate(totalRows, (index) {
-                      bool isSelected = index == selectedRowIndex;
-                      return DataRow(
-                        cells: [
-                          const DataCell(Text("SALOON")),
-                          DataCell(DynamicSwitch(
+                  ),
+                  columns: [
+                    buildHeaderWithSearch(
+                        title: " VEHICLES ", removeSearching: true, fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " METERED ", removeSearching: true, fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " AUTO WAIT ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " ACTIVATE WAITING ON SPEED ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " INITIATE WAITING AFTER ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " SUSPEND WAITING ON SPEED ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " WAITING CHAREGES/INTERVAL ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " INTERVALS ",
+                        removeSearching: true,
+                        fontSize: 13),
+                    buildHeaderWithSearch(
+                        title: " ACTIONS ", removeSearching: true, fontSize: 13),
+                  ],
+                  rows: List.generate(totalRows, (index) {
+                    return DataRow(
+                      cells: [
+                        const DataCell(Center(child: Text("SALOON"))),
+                        DataCell(Center(
+                          child: DynamicSwitch(
                             controller: controller.meteredSwitch,
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: Colors.grey,
                             focusScale: 1.5,
                             onToggle: () {
-                              print("Switch toggled: ${controller.meteredSwitch.value}");
+                              print(
+                                  "Switch toggled: ${controller.meteredSwitch.value}");
                             },
-                          ),),
-                          DataCell(DynamicSwitch(
+                          ),
+                        )),
+                        DataCell(Center(
+                          child: DynamicSwitch(
                             controller: controller.autoWaitSwitch,
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: Colors.grey,
                             focusScale: 1.5,
                             onToggle: () {
-                              print("Switch toggled: ${controller.autoWaitSwitch.value}");
+                              print(
+                                  "Switch toggled: ${controller.autoWaitSwitch.value}");
                             },
                           ),
+                        )),
+                        DataCell(Center(
+                          child:  customRow(
+                            icons: Icons.speed,
+                            controller.activeWaitingController,
+                            width: fieldWidth / 3.9,
+                            unitText: "MPH",
                           ),
-                          DataCell(
-                            CustomTextField(
+                        )),
+                        DataCell(Center(
+                          child:
+                          customRow(
+                            icons: Icons.alarm,
+                            controller.activeWaitingController,
+                            width: fieldWidth / 3.9,
+                            unitText: "SECS",
+                          ),
+                        )),
+                        DataCell(Center(
+                          child: customRow(
+                            icons: Icons.speed,
+                            controller.activeWaitingController,
+                            width: fieldWidth / 3.9,
+                            unitText: "MPH",
+                          ),
+                        )),
+                        DataCell(Center(
+                          child: CustomButton(
+                            width: fieldWidth / 1.9,
+                            onTap: (){
+                              print("object");
+                            },
+                            height: 30,
+                            verticalPadding: 0.0,
+                            btnText: "WAITING CONFIGURATION",
+                            style: mozillaTextRegularText(
+                              fontSize: 10,
+                              color: DynamicColors.whiteClr,
+                            ),
                             borderRadius: 4,
-                            controller: controller.activeWaitingController,
-                              width: fieldWidth / 1.9,
-                            hintText: "",
-                            columnText: true,
-                            ),
                           ),
-                          DataCell(
-                            CustomTextField(
+                        )),
+                        DataCell(Center(
+                          child: customRow(
+                            icons: Icons.alarm,
+                            controller.activeWaitingController,
+                            width: fieldWidth / 3.9,
+                            unitText: "SEC",
+                          ),
+                        )),
+                        DataCell(Center(
+                          child: CustomButton(
+                            width: 60,
+                            onTap: (){
+                              print("object");
+                            },
+                            height: 30,
+                            verticalPadding: 0.0,
+                            btnText: AppText.save,
+                            style: mozillaTextSemiBoldText(
+                              fontSize: 12,
+                              color: DynamicColors.whiteClr,
+                            ),
                             borderRadius: 4,
-                            controller: controller.activeWaitingController,
-                              width: fieldWidth / 1.9,
-                            hintText: "",
-                            columnText: true,
-                            ),
                           ),
-                          DataCell(
-                            CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.activeWaitingController,
-                              width: fieldWidth / 1.9,
-                            hintText: "",
-                            columnText: true,
-                            ),
-                          ),
-                          DataCell(
-                            CustomButton(
-                              width: fieldWidth / 1.9,
-                              height: 30,
-                              verticalPadding: 0.0,
-                              btnText: "WAITING CONFIGURATION",
-                              style: mozillaTextRegularText(
-                                fontSize: 10,
-                                color: DynamicColors.whiteClr
-                              ),
-                              borderRadius: 4,
-                            ),
-                          ),
-                          DataCell(
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.activeWaitingController,
-                              width: fieldWidth / 2.9,
-                              hintText: "",
-                              columnText: true,
-                            ),
-                          ),
-                          DataCell(
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                                  side: BorderSide.none,
-                                ),
-                                onPressed: () {},
-                                child: Text(AppText.save,
-                                style: mozillaTextSemiBoldText(
-                                  fontSize: 12,
-                                  color: DynamicColors.whiteClr
-                                ),
-                                )
-                              ),
-                          ),
-                        ],
-                      );
-                    }),
-                  ),
-                )
-              ],
-            );
-          }
+                        )),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+            ),
+          ],
         );
-      }
+      });
+    });
+  }
+
+  Widget customRow(TextEditingController controller,{
+  double? width,
+  String? unitText,
+    IconData? icons,
+  double borderRadius = 4,}){
+    return Row(
+      children: [
+        Container(
+          height: 30,
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 3),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: DynamicColors.primaryClr),
+              right: BorderSide.none,
+              bottom: BorderSide(color: DynamicColors.primaryClr),
+              left: BorderSide(color: DynamicColors.primaryClr), // left border hataya
+            ),
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: Center(
+            child: Icon(icons, size: 20,),
+          ),
+        ),
+        CustomTextField(
+          borderRadius: 0,
+          controller: controller,
+          width: width,
+          hintText: "",
+          columnText: true,
+        ),
+        Container(
+          height: 30,
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 3),
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(color: DynamicColors.primaryClr),
+              right: BorderSide(color: DynamicColors.primaryClr),
+              bottom: BorderSide(color: DynamicColors.primaryClr),
+              left: BorderSide.none, // left border hataya
+            ),
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          child: Center(
+            child: Text(unitText!),
+          ),
+        ),
+      ],
     );
   }
+
 }
