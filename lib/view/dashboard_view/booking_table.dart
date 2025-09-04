@@ -406,12 +406,14 @@ class _TableScreenState extends State<TableScreen> {
   }
 }
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight}) {
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize}) {
   return DataColumn(
     label: widget?? Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(title!, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
+        fontSize: fontSize ?? 14
+        )),
         SizedBox(height: 4),
         title == "TYPE" || removeSearching == true
             ? SizedBox.shrink()

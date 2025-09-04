@@ -46,7 +46,8 @@ class DashBoarScreen extends StatefulWidget {
 class _DashBoarScreenState extends State<DashBoarScreen> {
   final dashBoardCntrl = Get.find<DashboardController>();
   // final DashboardController locationCtrl = Get.put(DashboardController());
-  List<String> selectedTexts = [];
+  List<SelectedDropdown> selectedTexts = [];
+  // List<String> selectedTexts = [];
 
 
   
@@ -120,8 +121,12 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           String selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[dashBoardCntrl.dropdownIndex];
           widget.onSelect?.call(selectedItem);
           setState(() {
-            selectedTexts.remove(selectedItem);
-            selectedTexts.add(selectedItem);
+            for (var action in selectedTexts) {
+              action.selectedItem = false;
+            }
+            selectedTexts.add(SelectedDropdown(selectedItem: true,title: selectedItem));
+            // selectedTexts.remove(selectedItem);
+            // selectedTexts.add(selectedItem);
             dashBoardCntrl.isDropdownOpen = false;
           });
         } else {
@@ -391,30 +396,39 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
                                   // Dynamic selected tabs
                                   ...selectedTexts.map((text) {
-                                    return Container (
-                                      padding:
-                                      EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(text, style: TextStyle(fontSize: 16)),
-                                          SizedBox(width: 5),
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                selectedTexts.remove(text);
-                                              });
-                                            },
-                                            child: Icon(
-                                              Icons.cancel,
-                                              color: Color(0xFF43489A),
+                                    return GestureDetector(
+                                      onTap: (){
+                                        for (var action in selectedTexts) {
+                                          action.selectedItem = false;
+                                        }
+                                        text.selectedItem = true;
+                                        controller.update();
+                                      },
+                                      child: Container(
+                                        padding:
+                                        EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: text.selectedItem== false?DynamicColors.gryClr :DynamicColors.whiteClr,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(text.title!, style: TextStyle(fontSize: 16)),
+                                            SizedBox(width: 5),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  selectedTexts.remove(text);
+                                                });
+                                              },
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Color(0xFF43489A),
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }).toList(),
@@ -450,27 +464,30 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                             shrinkWrap: true,
                             padding: EdgeInsets.zero,
                             itemCount: menus[dashBoardCntrl.selectedIndex].subItems.length,
-                            itemBuilder: (context, j) {
+                            itemBuilder: (context, index) {
                               return Container(
-                                color: dashBoardCntrl.dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
+                                color: dashBoardCntrl.dropdownIndex == index ? Colors.blueAccent : Colors.transparent,
                                 child: ListTile(
                                   dense: true, // reduces vertical height
                                   visualDensity: VisualDensity(horizontal: 0, vertical: -4), // fine-tune vertical padding
                                   contentPadding: EdgeInsets.only(left: 4),
                                   title: Text(
-                                    menus[dashBoardCntrl.selectedIndex].subItems[j],
+                                    menus[dashBoardCntrl.selectedIndex].subItems[index],
                                     style: TextStyle(
-                                      color: dashBoardCntrl.dropdownIndex == j ? Colors.white : Colors.black,
+                                      color: dashBoardCntrl.dropdownIndex == index ? Colors.white : Colors.black,
                                       fontSize: 12
                                     ),
                                   ),
                                   onTap: () {
-                                    final selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[j];
+                                    final selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[index];
                                     widget.onSelect?.call(selectedItem);
                                     setState(() {
+                                      for (var action in selectedTexts) {
+                                        action.selectedItem = false;
+                                      }
                                       selectedTexts.remove(selectedItem);
-                                      selectedTexts.add(selectedItem);
-                                      dashBoardCntrl.dropdownIndex = j;
+                                      selectedTexts.add(SelectedDropdown(title: selectedItem,selectedItem: true));
+                                      dashBoardCntrl.dropdownIndex = index;
                                       dashBoardCntrl.isDropdownOpen = false;
                                     });
                                   },
@@ -492,11 +509,110 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   }
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
+
+    final selectedItems = selectedTexts.where((e) => e.selectedItem == true).toList();
+
+    if (selectedItems.isEmpty) return ByDefaultDashboard();
+
+    final lastSelected = selectedItems.last; // 👈 sirf last true item
+
+    print(lastSelected.title);
+    if (selectedTexts.isEmpty) return FareMeter();
+
+    late Widget child;
+
+    switch (lastSelected.title) {
+      case 'LIST OF BOOKINGS':
+        child = BookingList();
+        break;
+      case 'LOCALIZATION':
+        child = LocalizationScreen();
+        break;
+      case 'CREATE DRIVER':
+        child = DriverForm();
+        break;
+      case 'LIST OF DRIVERS':
+        child = DriverListScreen();
+        break;
+      case 'LIST OF LOGGED IN/OUT DRIVERS':
+        child = LoginDriversScreen();
+        break;
+      case 'DRIVER APP FEATURES':
+        child = DriverAppFeatureScreen();
+        break;
+      case 'CREATE DRIVER COMMISSION':
+        child = ListDriverCommission();
+        break;
+      case 'DRIVER COMMISSIONS':
+        child = DriverCommission();
+        break;
+      case 'BULK DRIVER COMMISSION':
+        child = BulkDriverCommission();
+        break;
+      case 'DRIVER COMMISSION PAY':
+        child = DriverCommissionPay();
+        break;
+      case 'CREATE DRIVER RENT':
+        child = CreateDriverRent();
+        break;
+      case 'DRIVER RENT':
+        child = DriverRent();
+        break;
+      case 'BULK DRIVER RENT':
+        child = BulkDriverRent();
+        break;
+      case 'DRIVER RENT PAY':
+        child = DriverRentPay();
+        break;
+      case 'DRIVER SIN BIN SETTINGS':
+        child = DriverSinBinSetting();
+        break;
+      case 'CREATE PLOT FARE':
+        child = PlotFare();
+        break;
+      case 'CREATE FIXED FARE SETTINGS':
+        child = CreateFixedFareSetting();
+        break;
+      case 'Fare Configuration Normal Day':
+        child = FareConfigurationDay();
+        break;
+      case 'CREATE FARE BY VEHICLE SETTINGS':
+        child = FareByVehicle();
+        break;
+      case 'AIRPORT CHARGES':
+        child = AirportCharges();
+        break;
+      case 'FARE INCREMENT':
+        child = FareIncrement();
+        break;
+      case 'SUR CHARGES':
+        child = FareCharges();
+        break;
+      case 'FARE METER':
+        child = FareMeter();
+        break;
+      default:
+        child = ByDefaultDashboard();
+    }
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300), // 👈 smooth transition time
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition( // 👈 fade effect
+          opacity: animation,
+          child: child,
+        );
+      },
+      child: child,
+    );
+  }
+
+/*  Widget getSelectedWidget({GestureTapCallback? onTap}) {
     print(selectedTexts);
     if (selectedTexts.isEmpty) return FareMeter();
     // if (selectedTexts.isEmpty) return ByDefaultDashboard();
 
-    switch (selectedTexts.last) {
+    switch (selectedTexts.last.title) {
       case 'LIST OF BOOKINGS':
         return BookingList();
       case 'LOCALIZATION':
@@ -546,7 +662,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       default:
         return ByDefaultDashboard();
     }
-  }
+  }*/
 }
 
 

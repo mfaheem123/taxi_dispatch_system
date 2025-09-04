@@ -390,3 +390,10 @@ class SelectedMenu {
   SelectedMenu({this.title,this.selectedItem = false});
 }
 
+
+class SelectedDropdown {
+  String? title;
+  String? category;
+  bool selectedItem = false;
+  SelectedDropdown({this.title,this.selectedItem = false, this.category});
+}
