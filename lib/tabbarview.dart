@@ -384,11 +384,11 @@ class MenuItemData {
 }
 
 
-class SelectedMenu {
-  String? title;
-  bool selectedItem = false;
-  SelectedMenu({this.title,this.selectedItem = false});
-}
+// class SelectedMenu {
+//   String? title;
+//   bool selectedItem = false;
+//   SelectedMenu({this.title,this.selectedItem = false});
+// }
 
 
 class SelectedDropdown {

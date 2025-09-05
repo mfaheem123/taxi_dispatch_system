@@ -63,366 +63,368 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
             ? 250 // medium size on laptop
             : 330; // larger on LCD
         print(fieldWidth);
-        return Column(
-          children: [
-            Container(
-              width: Get.width,
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                  border: Border.all(color: DynamicColors.gryClr)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 20, horizontal: 15),
-                    child: Text(
-                      AppText.driverRent,
-                      style: titleDesign(),
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                width: Get.width,
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                    border: Border.all(color: DynamicColors.gryClr)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 15),
+                      child: Text(
+                        AppText.driverRent,
+                        style: titleDesign(),
+                      ),
                     ),
-                  ),
-                  Divider(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(
-                          width: fieldWidth,
-                          // height: 30,
-                          child: Column(
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(
+                            width: fieldWidth,
+                            // height: 30,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.drivers,
+                                    style: mozillaTextSemiBoldText(
+                                        context: context, fontSize: 13)),
+                                RestrictedDrivers(
+                                  titleText: "SELECT DRIVER",
+                                  driversList: [
+                                    "25 GEORGE HAMPTON",
+                                    "26 PAUL DOUBLEDAY",
+                                    "27 RICHARD HARDWICK",
+                                    "28 LANRE OKERJO",
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(AppText.drivers,
+                              Text(AppText.transactionDate,
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
-                              RestrictedDrivers(
-                                titleText: "SELECT DRIVER",
-                                driversList: [
-                                  "25 GEORGE HAMPTON",
-                                  "26 PAUL DOUBLEDAY",
-                                  "27 RICHARD HARDWICK",
-                                  "28 LANRE OKERJO",
-                                ],
+                              SizedBox(
+                                width: fieldWidth,
+                                height: 30,
+                                child: KeyboardDatePicker(),
                               ),
                             ],
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(AppText.transactionDate,
-                                style: mozillaTextSemiBoldText(
-                                    context: context, fontSize: 13)),
-                            SizedBox(
-                              width: fieldWidth,
-                              height: 30,
-                              child: KeyboardDatePicker(),
-                            ),
-                          ],
-                        ),
-                        CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.commissionController,
-                          width: fieldWidth,
-                          hintText: AppText.rentWeek,
-                          columnText: true,
-                        ),
-                        CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.pdaRentController,
-                          width: fieldWidth,
-                          hintText: AppText.pdaRent,
-                          columnText: true,
-                        ),
-                      ],
+                          CustomTextField(
+                            borderRadius: 4,
+                            controller: controller.commissionController,
+                            width: fieldWidth,
+                            hintText: AppText.rentWeek,
+                            columnText: true,
+                          ),
+                          CustomTextField(
+                            borderRadius: 4,
+                            controller: controller.pdaRentController,
+                            width: fieldWidth,
+                            hintText: AppText.pdaRent,
+                            columnText: true,
+                          ),
+                        ],
+                      ),
                     ),
+                    SizedBox(
+                      height: 15,
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.start,
+                runAlignment: WrapAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.from,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
                   ),
                   SizedBox(
-                    height: 15,
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.start,
-              runAlignment: WrapAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.from,
+                    width: fieldWidth / 1.2,
+                    height: 30,
+                    child: KeyboardDatePicker(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.to,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  SizedBox(
+                    width: fieldWidth / 1.2,
+                    height: 30,
+                    child: KeyboardDatePicker(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.pt,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  Checkbox(
+                      value: controller.ptValue.value,
+                      onChanged: (v) {
+                        controller.ptValue.value = v!;
+                        controller.update();
+                      }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.cash,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  Checkbox(
+                      value: controller.cashValue.value,
+                      onChanged: (v) {
+                        controller.cashValue.value = v!;
+                        controller.update();
+                      }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.creditCard,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  Checkbox(
+                      value: controller.creditCardValue.value,
+                      onChanged: (v) {
+                        controller.creditCardValue.value = v!;
+                        controller.update();
+                      }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.account,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  Checkbox(
+                      value: controller.accountValue.value,
+                      onChanged: (v) {
+                        controller.accountValue.value = v!;
+                        controller.update();
+                      }),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: Text(AppText.creditCardPaid,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 13,
+                            color: DynamicColors.gryClr)),
+                  ),
+                  SizedBox(
+                    width: 50,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: CustomButton(
+                      height: 30,
+                      borderRadius: 6,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      btnText: AppText.filter,
+                      btnColor: DynamicColors.primaryClr,
                       style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                SizedBox(
-                  width: fieldWidth / 1.2,
-                  height: 30,
-                  child: KeyboardDatePicker(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.to,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                SizedBox(
-                  width: fieldWidth / 1.2,
-                  height: 30,
-                  child: KeyboardDatePicker(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.pt,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                Checkbox(
-                    value: controller.ptValue.value,
-                    onChanged: (v) {
-                      controller.ptValue.value = v!;
-                      controller.update();
-                    }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.cash,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                Checkbox(
-                    value: controller.cashValue.value,
-                    onChanged: (v) {
-                      controller.cashValue.value = v!;
-                      controller.update();
-                    }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.creditCard,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                Checkbox(
-                    value: controller.creditCardValue.value,
-                    onChanged: (v) {
-                      controller.creditCardValue.value = v!;
-                      controller.update();
-                    }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.account,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                Checkbox(
-                    value: controller.accountValue.value,
-                    onChanged: (v) {
-                      controller.accountValue.value = v!;
-                      controller.update();
-                    }),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Text(AppText.creditCardPaid,
-                      style: mozillaTextSemiBoldText(
-                          context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
-                ),
-                SizedBox(
-                  width: 50,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: CustomButton(
+                          fontSize: 13, color: DynamicColors.whiteClr),
+                    ),
+                  ),
+                  CustomButton(
                     height: 30,
                     borderRadius: 6,
                     width: 80,
                     verticalPadding: 0.0,
-                    btnText: AppText.filter,
+                    btnText: AppText.save,
                     btnColor: DynamicColors.primaryClr,
                     style: mozillaTextSemiBoldText(
                         fontSize: 13, color: DynamicColors.whiteClr),
                   ),
-                ),
-                CustomButton(
-                  height: 30,
-                  borderRadius: 6,
-                  width: 80,
-                  verticalPadding: 0.0,
-                  btnText: AppText.save,
-                  btnColor: DynamicColors.primaryClr,
-                  style: mozillaTextSemiBoldText(
-                      fontSize: 13, color: DynamicColors.whiteClr),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            DataTable(
-                headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                dataRowMinHeight: 48,
-                dataRowMaxHeight: 56,
-                horizontalMargin: 0.0,
-                checkboxHorizontalMargin: 0.0,
-                showCheckboxColumn: true,
-                columnSpacing: 5,
-                headingTextStyle: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13,
-                ),
-                dataTextStyle: TextStyle(
-                  fontSize: 10,
-                ),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                        color: DynamicColors.textClr.withOpacity(0.5))),
-                columns: [
-                  buildHeaderWithSearch(
-                      widget: Checkbox(
-                          value: controller.selectAllDrivers.value,
-                          onChanged: (v) {
-                            controller.selectAllDrivers.value = v!;
-                            controller.update();
-                          })),
-                  buildHeaderWithSearch(title: "COMM"),
-                  buildHeaderWithSearch(title: "REF#"),
-                  buildHeaderWithSearch(title: "DATETIME"),
-                  buildHeaderWithSearch(title: "PICKUP"),
-                  buildHeaderWithSearch(title: "DROPOFF"),
-                  buildHeaderWithSearch(title: "VEH"),
-                  buildHeaderWithSearch(title: "ACC"),
-                  buildHeaderWithSearch(title: "J/T"),
-                  buildHeaderWithSearch(title: "P/T"),
-                  buildHeaderWithSearch(title: "FARE"),
-                  buildHeaderWithSearch(title: "PC"),
-                  buildHeaderWithSearch(title: "WC"),
-                  buildHeaderWithSearch(title: "EDC"),
-                  buildHeaderWithSearch(title: "CC"),
-                  buildHeaderWithSearch(title: "W/COMM"),
-                  buildHeaderWithSearch(title: "COMM"),
-                  buildHeaderWithSearch(title: "TOTAL"),
-                  buildHeaderWithSearch(title: "ACTIONS"),
                 ],
-                rows: List.generate(totalRows, (index) {
-                  bool isSelected = index == selectedRowIndex;
-                  return DataRow(
-                    cells: [
-                      DataCell(Checkbox(
-                          value: controller.selectAllDrivers.value,
-                          onChanged: (v) {
-                            controller.selectAllDrivers.value = v!;
-                            controller.update();
-                          })),
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("20/10/2025")),
-                    ],
-                  );
-                })),
-            SizedBox(
-              height: 30,
-            ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Text(AppText.total,
-                  style: mozillaTextSemiBoldText(
-                      fontSize: 25,
-                      color: DynamicColors.textClr.withOpacity(0.8),
-                      fontWeight: FontWeight.w800
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              DataTable(
+                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                  dataRowMinHeight: 48,
+                  dataRowMaxHeight: 56,
+                  horizontalMargin: 0.0,
+                  checkboxHorizontalMargin: 0.0,
+                  showCheckboxColumn: true,
+                  columnSpacing: 5,
+                  headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                  dataTextStyle: TextStyle(
+                    fontSize: 10,
+                  ),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                          color: DynamicColors.textClr.withOpacity(0.5))),
+                  columns: [
+                    buildHeaderWithSearch(
+                        widget: Checkbox(
+                            value: controller.selectAllDrivers.value,
+                            onChanged: (v) {
+                              controller.selectAllDrivers.value = v!;
+                              controller.update();
+                            })),
+                    buildHeaderWithSearch(title: "COMM"),
+                    buildHeaderWithSearch(title: "REF#"),
+                    buildHeaderWithSearch(title: "DATETIME"),
+                    buildHeaderWithSearch(title: "PICKUP"),
+                    buildHeaderWithSearch(title: "DROPOFF"),
+                    buildHeaderWithSearch(title: "VEH"),
+                    buildHeaderWithSearch(title: "ACC"),
+                    buildHeaderWithSearch(title: "J/T"),
+                    buildHeaderWithSearch(title: "P/T"),
+                    buildHeaderWithSearch(title: "FARE"),
+                    buildHeaderWithSearch(title: "PC"),
+                    buildHeaderWithSearch(title: "WC"),
+                    buildHeaderWithSearch(title: "EDC"),
+                    buildHeaderWithSearch(title: "CC"),
+                    buildHeaderWithSearch(title: "W/COMM"),
+                    buildHeaderWithSearch(title: "COMM"),
+                    buildHeaderWithSearch(title: "TOTAL"),
+                    buildHeaderWithSearch(title: "ACTIONS"),
+                  ],
+                  rows: List.generate(totalRows, (index) {
+                    bool isSelected = index == selectedRowIndex;
+                    return DataRow(
+                      cells: [
+                        DataCell(Checkbox(
+                            value: controller.selectAllDrivers.value,
+                            onChanged: (v) {
+                              controller.selectAllDrivers.value = v!;
+                              controller.update();
+                            })),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("20/10/2025")),
+                      ],
+                    );
+                  })),
+              SizedBox(
+                height: 30,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  child: Text(AppText.total,
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 25,
+                        color: DynamicColors.textClr.withOpacity(0.8),
+                        fontWeight: FontWeight.w800
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            Row(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    customWidget(),
-                    customWidget(
-                        title: AppText.total+":",
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.owed,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.owed,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.oldBalance,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.newBalance,
-                        value: "0"
-                    ),
-                  ],
-                ),
-                SizedBox(width: 80,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    customWidget(),
-                    customWidget(
-                        title: AppText.accountWCmm,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.accountWOCmm,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.parkingCongestion,
-                        value: "0"
-                    ),
-                    customWidget(
-                        title: AppText.totalCommission,
-                        value: "0"
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
+              SizedBox(
+                height: 30,
+              ),
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      customWidget(),
+                      customWidget(
+                          title: AppText.total+":",
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.owed,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.owed,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.oldBalance,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.newBalance,
+                          value: "0"
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 80,),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      customWidget(),
+                      customWidget(
+                          title: AppText.accountWCmm,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.accountWOCmm,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.parkingCongestion,
+                          value: "0"
+                      ),
+                      customWidget(
+                          title: AppText.totalCommission,
+                          value: "0"
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            ],
+          ),
         );
       });
     });

@@ -3,9 +3,17 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
+import '../../../tabbarview.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 class DashboardController extends GetxController {
+
+  ///Todo menu bar functionality
+
+  List<SelectedDropdown> selectedMenuItems = [];
+
+  ///Todo menu bar functionality
+
 
   ///Todo booking form data
   /// String
