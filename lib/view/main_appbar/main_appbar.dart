@@ -7,9 +7,17 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 
+import '../dashboard_view/dashboard/defult_dashboard_view.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
+import '../drivers_view/driver/driver_commission/driver_commission.dart';
+import '../drivers_view/driver/driver_commission/driver_rent.dart';
 import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
+import '../drivers_view/driver/driver_commission_pay/driver_commission_pay.dart';
+import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
+import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../fare_view/airport_charges/airport_charges.dart';
@@ -216,92 +224,125 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: DynamicColors.whiteClr,
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(kToolbarHeight * 2.3),
-          child: GetBuilder<DashboardController>(
-            builder: (controller) {
-              return Column(
-                children: [
-                  NestedMenuBar(
-                    menuBarPadding: 0.0,
-                    menus: hoverMenu,
-                    popUpMenuItemBorderRadius: 8,
-                    menuBarDecoration: BoxDecoration(
-                      color: DynamicColors.primaryClr,
-                    ),
-                    menuBarItemHoverColor: Colors.white,
-                    menuBarItemColor: Colors.white,
-                    popUpDecoration: BoxDecoration(
-                      color: Colors.white,
-                      // border: Border.all(color: Colors.grey,width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    popUpPadding: 3,
-                    popUpMenuItemHoverForegroundColor: Colors.white,
-                    popUpMenuItemForegroundColor: Colors.black,
-                    popUpMenuItemBackgroundColor: Colors.white,
-                    popUpMenuItemHoverBackgroundColor: Colors.black,
-                  ),
-                  SizedBox(
-                    height: 40, // adjust for 2 rows
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 6,
-                        children: controller.selectedMenuItems.map((item) {
-                          return GestureDetector(
-                            onTap: (){
-                              int index = controller.selectedMenuItems.indexWhere((element) => element.selectedItem == true);
-                              if (index != -1) {
-                                controller.selectedMenuItems[index].selectedItem = false;
-                              }
-                              item.selectedItem = true;
-                              controller.update();
-                            },
-                            child: Chip(
-                              label: Text(
-                                item.title!,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: DynamicColors.textClr,
-                                ),
-                              ),
-                              backgroundColor: item.selectedItem == true
-                                  ? DynamicColors.whiteClr
-                                  : DynamicColors.gryClr,
-                              deleteIcon: Icon(
-                                Icons.close,
-                                color: DynamicColors.textClr,
-                                size: 18,
-                              ),
-                              onDeleted: () {
-                                if(item.selectedItem == true){
-                                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                                  if (index != -1) {
-                                    controller.selectedMenuItems[index].selectedItem = false;
-                                  }
-                                  controller.selectedMenuItems.remove(item);
-                                  controller.selectedMenuItems.last.selectedItem = true;
-                                }else{
-                                  controller.selectedMenuItems.remove(item);
-                                }
-
-                                controller.update(); // if using GetX
-                              },
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            }
+          child: NestedMenuBar(
+            menuBarPadding: 0.0,
+            menus: hoverMenu,
+            popUpMenuItemBorderRadius: 8,
+            menuBarDecoration: BoxDecoration(
+              color: DynamicColors.primaryClr,
+            ),
+            menuBarItemHoverColor: Colors.white,
+            menuBarItemColor: Colors.white,
+            popUpDecoration: BoxDecoration(
+              color: Colors.white,
+              // border: Border.all(color: Colors.grey,width: 2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            popUpPadding: 3,
+            popUpMenuItemHoverForegroundColor: Colors.white,
+            popUpMenuItemForegroundColor: Colors.black,
+            popUpMenuItemBackgroundColor: Colors.white,
+            popUpMenuItemHoverBackgroundColor: Colors.black,
           ),
       ),
-      body: _currentPage ?? Center(child: Text("Please select a menu item")),
+      body: GetBuilder<DashboardController>(
+          builder: (controller) {
+            return SingleChildScrollView(
+              child: Column(
+              children: [
+                Container(
+                  width: Get.width,
+                  padding: EdgeInsets.symmetric(vertical: 6,horizontal: 8),
+                  color: Colors.grey.shade300,
+                  child: Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                    children:
+                    [
+                      GestureDetector(
+                        onTap: (){
+                          int index = controller.selectedMenuItems.indexWhere((element) => element.selectedItem == true);
+                          if (index != -1) {
+                            controller.selectedMenuItems[index].selectedItem = false;
+                          }
+                          _currentPage = ByDefaultDashboard();
+                          controller.update();
+                        },
+                        child: Container(
+                          padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: DynamicColors.primaryClr,
+                            border: Border.all(color: DynamicColors.textClr),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                            Icons.home,
+                            color: DynamicColors.whiteClr,
+                          ),
+                        ),
+                      ),
+                      ...controller.selectedMenuItems.map((item) {
+                        return GestureDetector(
+                          onTap: (){
+                            int index = controller.selectedMenuItems.indexWhere((element) => element.selectedItem == true);
+                            if (index != -1) {
+                              controller.selectedMenuItems[index].selectedItem = false;
+                            }
+                            item.selectedItem = true;
+                            if(item.category != null){
+                              _currentPage = item.category;
+                            }
+                            controller.update();
+                          },
+                          child: Chip(
+                            label: Text(
+                              item.title!,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: DynamicColors.textClr,
+                              ),
+                            ),
+                            backgroundColor: item.selectedItem == true
+                                ? DynamicColors.whiteClr
+                                : DynamicColors.gryClr,
+                            deleteIcon: Icon(
+                              Icons.close,
+                              color: DynamicColors.textClr,
+                              size: 18,
+                            ),
+                            onDeleted: () {
+                              if(item.selectedItem == true && controller.selectedMenuItems.length >1){
+                                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                                if (index != -1) {
+                                  controller.selectedMenuItems[index].selectedItem = false;
+                                }
+                                controller.selectedMenuItems.remove(item);
+                                controller.selectedMenuItems.last.selectedItem = true;
+                              }else{
+                                controller.selectedMenuItems.remove(item);
+                                _currentPage = ByDefaultDashboard();
+                              }
+
+                              controller.update(); // if using GetX
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ]
+
+
+                  ),
+                ),
+                _currentPage ?? ByDefaultDashboard(),
+              ],
+                        ),
+            );
+        }
+      ),
     );
   }
 
@@ -447,6 +488,15 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE SETTINGS",
             onTap: () {
               setState(() {
+                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                controller.selectedMenuItems.add(SelectedDropdown(
+                  title: "CREATE FARE SETTINGS",
+                  selectedItem: true,
+                  category: FareConfigurationDay()
+                ));
                 _currentPage = FareConfigurationDay();
               });
             }),
@@ -454,6 +504,15 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FIXED FARE SETTINGS",
             onTap: () {
               setState(() {
+                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                controller.selectedMenuItems.add(SelectedDropdown(
+                  title: "CREATE FIXED FARE SETTINGS",
+                  selectedItem: true,
+                    category: CreateFixedFareSetting()
+                ));
                 _currentPage = CreateFixedFareSetting();
               });
             }),
@@ -461,6 +520,15 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE PLOT FARE",
           onTap: () {
             setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                title: "CREATE PLOT FARE",
+                selectedItem: true,
+                category: PlotFare()
+              ));
               _currentPage = PlotFare();
             });
           },
@@ -469,6 +537,15 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE BY VEHICLE SETTINGS",
             onTap: () {
               setState(() {
+                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                controller.selectedMenuItems.add(SelectedDropdown(
+                  title: "CREATE FARE BY VEHICLE SETTINGS",
+                  selectedItem: true,
+                  category: FareByVehicle()
+                ));
                 _currentPage = FareByVehicle();
               });
             }),
@@ -476,6 +553,15 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "AIRPORT CHARGES",
           onTap: () {
             setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                title: "AIRPORT CHARGES",
+                selectedItem: true,
+                category: AirportCharges()
+              ));
               _currentPage = AirportCharges();
             });
           },
@@ -484,6 +570,15 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE INCREMENT",
           onTap: () {
             setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                title: "FARE INCREMENT",
+                selectedItem: true,
+                category: FareIncrement()
+              ));
               _currentPage = FareIncrement();
             });
           },
@@ -492,6 +587,15 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "SUR CHARGES",
           onTap: () {
             setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                title: "SUR CHARGES",
+                selectedItem: true,
+                category: FareCharges()
+              ));
               _currentPage = FareCharges();
             });
           },
@@ -500,6 +604,15 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE METER",
           onTap: () {
             setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                title: "FARE METER",
+                selectedItem: true,
+                category: FareMeter()
+              ));
               _currentPage = FareMeter();
             });
           },
@@ -533,7 +646,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ]),
       NestedMenuItem(title: "DRIVERS", children: [
         NestedMenuItem(
-          title: "CREATE DRIVER",
+          title: "DRIVER",
           /*onTap: () {
               setState(() {
                 _currentPage = CreateDriverRent();
@@ -544,6 +657,15 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "ADD DRIVER",
               onTap: () {
                 setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                     controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "ADD DRIVER",
+                         selectedItem: true,
+                         category: CreateDriverRent()
+                     ));
                   _currentPage = CreateDriverRent();
                 });
               },
@@ -552,52 +674,227 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVERS",
               onTap: () {
                 setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                     controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "DRIVERS",
+                         selectedItem: true,
+                         category: DriverListScreen()
+                     ));
                   _currentPage = DriverListScreen();
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "LIST OF LOGGED IN/OUT DRIVERS",
+              onTap: () {
+                setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                     controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "LIST OF LOGGED IN/OUT DRIVERS",
+                         selectedItem: true,
+                         category: LoginDriversScreen()
+                     ));
+                  _currentPage = LoginDriversScreen();
                 });
               },
             ),
           ],
         ),
+
         NestedMenuItem(
-            title: "LIST OF DRIVERS",
-            onTap: () {
-              setState(() {
-                _currentPage = DriverListScreen();
-              });
-            }),
+            title: "DRIVER COMMISSION",
+          children: [
+            NestedMenuItem(
+              title: "CREATE DRIVER COMMISSION",
+              onTap: () {
+                setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                     controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "CREATE DRIVER COMMISSION",
+                         selectedItem: true,
+                         category: ListDriverCommission()
+                     ));
+                  _currentPage = ListDriverCommission();
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "DRIVER COMMISSIONS",
+              onTap: () {
+                setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                     controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "DRIVER COMMISSIONS",
+                         selectedItem: true,
+                         category: DriverCommission()
+                     ));
+                  _currentPage = DriverCommission();
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "BULK DRIVER COMMISSION",
+              onTap: () {
+                setState(() {
+                     int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                controller.selectedMenuItems.add(SelectedDropdown(
+                         title: "BULK DRIVER COMMISSION",
+                         selectedItem: true,
+                         category: BulkDriverCommission()
+                     ));
+                  _currentPage = BulkDriverCommission();
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "DRIVER COMMISSION PAY",
+              onTap: () {
+                setState(() {
+                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                  if (index != -1) {
+                    controller.selectedMenuItems[index].selectedItem = false;
+                  }
+                  controller.selectedMenuItems.add(SelectedDropdown(
+                      title: "DRIVER COMMISSION PAY",
+                      selectedItem: true,
+                      category: DriverCommissionPay()
+                  ));
+                  _currentPage = DriverCommissionPay();
+                });
+              },
+            ),
+          ],
+        ),
+
         NestedMenuItem(
-            title: "LIST OF INACTIVE DRIVERS",
-            onTap: () {
-              setState(() {
-                _currentPage = LoginDriversScreen();
-              });
-            }),
+            title: "DRIVER RENT",
+            // onTap: () {
+            //   setState(() {
+            //     _currentPage = DriverListScreen();
+            //   });
+            // },
+          children: [
+          NestedMenuItem(
+          title: "CREATE DRIVER RENT",
+          onTap: () {
+            setState(() {
+                 int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                 controller.selectedMenuItems.add(SelectedDropdown(
+                     title: "CREATE DRIVER RENT",
+                     selectedItem: true,
+                     category: CreateDriverRent()
+                 ));
+              _currentPage = CreateDriverRent();
+            });
+          },
+        ),
         NestedMenuItem(
-            title: "LIST OF LOGGED IN DRIVERS",
-            onTap: () {
-              setState(() {
-                _currentPage = LoginDriversScreen();
-              });
-            }),
+          title: "DRIVER RENT",
+          onTap: () {
+            setState(() {
+                 int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                 controller.selectedMenuItems.add(SelectedDropdown(
+                     title: "DRIVER RENT",
+                     selectedItem: true,
+                     category: DriverRent()
+                 ));
+              _currentPage = DriverRent();
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "BULK DRIVER RENT",
+          onTap: () {
+            setState(() {
+                 int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                 controller.selectedMenuItems.add(SelectedDropdown(
+                     title: "BULK DRIVER RENT",
+                     selectedItem: true,
+                     category: BulkDriverRent()
+                 ));
+              _currentPage = BulkDriverRent();
+            });
+          },
+        ),
+        NestedMenuItem(
+          title: "DRIVER RENT PAY",
+          onTap: () {
+            setState(() {
+              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+              if (index != -1) {
+                controller.selectedMenuItems[index].selectedItem = false;
+              }
+              controller.selectedMenuItems.add(SelectedDropdown(
+                  title: "DRIVER RENT PAY",
+                  selectedItem: true,
+                  category: DriverRentPay()
+              ));
+              _currentPage = DriverRentPay();
+            });
+          },
+        ),
+      ],
+            ),
         NestedMenuItem(
             title: "DRIVER APP FEATURES",
             onTap: () {
               setState(() {
+                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+
+                controller.selectedMenuItems.add(SelectedDropdown(
+                    title: "DRIVER APP FEATURES",
+                    selectedItem: true,
+                    category: DriverAppFeatureScreen()
+                ));
                 _currentPage = DriverAppFeatureScreen();
               });
             }),
         NestedMenuItem(
-            title: "CREATE DRIVER COMMISSION",
+            title: "DRIVER SIN BIN SETTINGS",
             onTap: () {
               setState(() {
-                _currentPage = ListDriverCommission();
+                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+                if (index != -1) {
+                  controller.selectedMenuItems[index].selectedItem = false;
+                }
+                controller.selectedMenuItems.add(SelectedDropdown(
+                    title: "DRIVER SIN BIN SETTINGS",
+                    selectedItem: true,
+                    category: DriverSinBinSetting()
+                ));
+                _currentPage = DriverSinBinSetting();
               });
             }),
-        NestedMenuItem(
-          title: "LIST OF DRIVER COMMISSION",
-          onTap: () => message(context, "DevOps"),
-        ),
       ]),
+
+
       NestedMenuItem(title: "ACCOUNTS", children: [
         NestedMenuItem(
           title: "CREATE ACCOUNT",
@@ -642,27 +939,20 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () => message(context, "DevOps"),
         ),
       ]),
-      NestedMenuItem(title: "USERS", children: [
+      NestedMenuItem(title: "ADMINISTRATIONS", children: [
         NestedMenuItem(
-          title: "CREATE USER",
+          title: "USERS",
           onTap: () => message(context, "DevOps"),
+          children: [
+
+            NestedMenuItem(
+              title: "USER 1",
+              onTap: () => message(context, "DevOps"),
+            ),
+          ]
         ),
         NestedMenuItem(
-          title: "LIST OF USER",
-          onTap: () => message(context, "DevOps"),
-        ),
-        NestedMenuItem(
-          title: "AUTHORIZATION",
-          onTap: () => message(context, "DevOps"),
-        ),
-      ]),
-      NestedMenuItem(title: "SUBSIDIARY", children: [
-        NestedMenuItem(
-          title: "CREATE SUBSIDIARY",
-          onTap: () => message(context, "DevOps"),
-        ),
-        NestedMenuItem(
-          title: "LIST OF SUBSIDIARIES",
+          title: "SUBSIDIARY",
           onTap: () => message(context, "DevOps"),
         ),
       ]),

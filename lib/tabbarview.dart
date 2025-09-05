@@ -393,7 +393,7 @@ class MenuItemData {
 
 class SelectedDropdown {
   String? title;
-  String? category;
+  var category;
   bool selectedItem = false;
   SelectedDropdown({this.title,this.selectedItem = false, this.category});
 }
