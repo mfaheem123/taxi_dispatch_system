@@ -8,14 +8,21 @@ import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
+import '../view/main_appbar/main_appbar.dart';
 part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
 
-  static const initial = Routes.ResponsivePassengerScreen;
+
+  static const initial = Routes.loginScreen;
+  // static const initial = Routes.myHomePage;
 
   static final routes = [
+    GetPage(
+      name: _Paths.myHomePage,
+      page: () => MyHomePage(),
+    ),
     GetPage(
       name: _Paths.loginScreen,
       page: () => LoginScreen(),

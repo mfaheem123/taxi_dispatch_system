@@ -125,8 +125,51 @@ class DriverController extends GetxController {
   final dataAllowanceController = TextEditingController();
   final pdaDepositController = TextEditingController();
   final commentsController = TextEditingController();
+  final breakController = TextEditingController();
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
+
+  /// TextEditingControllers
+  final commissionController = TextEditingController();
+  final pdaRentController = TextEditingController();
+  /// RxBool variable
+  RxBool ptValue = false.obs;
+  RxBool cashValue = false.obs;
+  RxBool creditCardValue = false.obs;
+  RxBool accountValue = false.obs;
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
+  /// TextEditingControllers
+  final emailSubjectController = TextEditingController();
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
+
+  /// RxBool variable
+  final creditValue = ValueNotifier<bool>(false);
+  final debitValue = ValueNotifier<bool>(false);
+
+  /// TextEditingControllers
+  final commissionDueController = TextEditingController();
+  final amountController = TextEditingController();
+  final descriptionController = TextEditingController();
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
+
+  /// TextEditingControllers
+  final recoverJobController = TextEditingController();
+  final rejectJobController = TextEditingController();
+  final ignoreJobController = TextEditingController();
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
 
 }
 

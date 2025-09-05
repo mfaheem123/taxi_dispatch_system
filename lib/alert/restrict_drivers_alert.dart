@@ -214,11 +214,14 @@ class RestrictDriversAlert extends StatelessWidget {
 
 
 class RestrictedDrivers extends StatefulWidget {
-  RestrictedDrivers({super.key, this.driversList,this.titleText,this.border});
+  RestrictedDrivers({super.key, this.driversList,this.titleText,this.border,this.width,this.height,this.padding});
 
   final List<String>? driversList;
   final BoxBorder? border;
   String? titleText;
+  double? width;
+  double? height;
+  double? padding;
 
   @override
   State<RestrictedDrivers> createState() => _RestrictedDriversState();
@@ -282,7 +285,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
       onPop: () => debugPrint("Popover closed"),
       direction: PopoverDirection.bottom,
       width: 300,
-      height: (items.length * 56).toDouble(),
+      // height: (items.length * 56).toDouble(),
       arrowHeight: 10,
       arrowWidth: 20,
     );
@@ -306,15 +309,22 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
         onTap: () =>
             _showPopover(context, widget.driversList ?? []),
         child: Container(
-          width: MediaQuery.of(context).size.width / 6,
-          padding: const EdgeInsets.only(top: 6, bottom: 6, left: 3),
+          width: widget.width?? MediaQuery.of(context).size.width / 6,
+          height: widget.height,
+          padding: EdgeInsets.only(top: 2, bottom: 2, left: 3),
           decoration: BoxDecoration(
             border: widget.border ?? Border.all(color: Colors.grey),
-            // borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(4),
           ),
-          child: Text(
-            widget.titleText??AppText.selectDriver,
-            style: mozillaTextRegularText( fontSize: 13, ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.titleText??AppText.selectDriver,
+                style: mozillaTextRegularText( fontSize: 12, ),
+              ),
+              Icon(Icons.arrow_drop_down)
+            ],
           ),
         ),
       ),

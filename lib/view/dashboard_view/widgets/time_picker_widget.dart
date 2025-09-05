@@ -206,12 +206,14 @@ class KeyboardDatePicker extends StatefulWidget {
   final DateTime initialDate;
   final void Function(DateTime)? onChanged;
   final void Function(DateTime)? onSubmitted; // optional enter press
+  Color? borderClr;
 
   KeyboardDatePicker({
     Key? key,
     DateTime? initialDate,
     this.onChanged,
     this.onSubmitted,
+    this.borderClr,
   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
         super(key: key);
 
@@ -471,46 +473,55 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
       autofocus: true,
       onKey: _onRawKey,
       child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: DynamicColors.primaryClr),
+          border: Border.all(color: widget.borderClr?? DynamicColors.primaryClr),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           // mainAxisSize: MainAxisSize.min,
           children: [
-            _partBox(dayText, activePart == 0, onTap: () {
-              setState(() {
-                activePart = 0;
-                _focusNode.requestFocus();
-              });
-            }),
+            Row(
+              children: [
 
-            Text('/', style: mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-            ),),
+                _partBox(dayText, activePart == 0, onTap: () {
+                  setState(() {
+                    activePart = 0;
+                    _focusNode.requestFocus();
+                  });
+                }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text('/', style: mozillaTextSemiBoldText(
+                      context: context,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800
+                  ),),
+                ),
+                _partBox(monthText, activePart == 1, onTap: () {
+                  setState(() {
+                    activePart = 1;
+                    _focusNode.requestFocus();
+                  });
+                }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text('/', style: mozillaTextSemiBoldText(
+                      context: context,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800
+                  ),),
+                ),
 
-            _partBox(monthText, activePart == 1, onTap: () {
-              setState(() {
-                activePart = 1;
-                _focusNode.requestFocus();
-              });
-            }),
-
-            Text('/', style: mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-            ),),
-
-            _partBox(yearText, activePart == 2, onTap: () {
-              setState(() {
-                activePart = 2;
-                _focusNode.requestFocus();
-              });
-            }),
+                _partBox(yearText, activePart == 2, onTap: () {
+                  setState(() {
+                    activePart = 2;
+                    _focusNode.requestFocus();
+                  });
+                }),
+              ],
+            ),
             Icon(Icons.calendar_month,
             size: 20,
             )

@@ -12,10 +12,27 @@ import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../User/user_listScreen.dart';
 import '../accounts/list_of_accountScreen.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
+import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
+import '../drivers_view/driver/driver_commission/driver_commission.dart';
+import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
+import '../drivers_view/driver/driver_commission/driver_rent.dart';
+import '../drivers_view/driver/driver_commission/list_driver_commission.dart';
+import '../drivers_view/driver/driver_commission_pay/driver_commission_pay.dart';
+import '../drivers_view/driver/driver_rent_pay/driver_rent_pay.dart';
+import '../drivers_view/driver/driver_sin_bin_setting/driver_sin_bin_setting.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
+import '../fare_view/airport_charges/airport_charges.dart';
+import '../fare_view/fare_by_vehicle/fare_by_vehicle.dart';
+import '../fare_view/fare_charges/fare_charges.dart';
+import '../fare_view/fare_configuration_day/fare_configuration_day.dart';
+import '../fare_view/fare_increment/fare_increment.dart';
+import '../fare_view/fare_meter/fare_meter.dart';
+import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
+import '../fare_view/plot_fare/plot_fare.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
@@ -42,7 +59,8 @@ class DashBoarScreen extends StatefulWidget {
 class _DashBoarScreenState extends State<DashBoarScreen> {
   final dashBoardCntrl = Get.find<DashboardController>();
   // final DashboardController locationCtrl = Get.put(DashboardController());
-  List<String> selectedTexts = [];
+  List<SelectedDropdown> selectedTexts = [];
+  // List<String> selectedTexts = [];
 
 
 
@@ -131,8 +149,12 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           String selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[dashBoardCntrl.dropdownIndex];
           widget.onSelect?.call(selectedItem);
           setState(() {
-            selectedTexts.remove(selectedItem);
-            selectedTexts.add(selectedItem);
+            for (var action in selectedTexts) {
+              action.selectedItem = false;
+            }
+            selectedTexts.add(SelectedDropdown(selectedItem: true,title: selectedItem));
+            // selectedTexts.remove(selectedItem);
+            // selectedTexts.add(selectedItem);
             dashBoardCntrl.isDropdownOpen = false;
           });
         }
@@ -163,18 +185,22 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       focusNode: dashBoardCntrl.focusNode,
       autofocus: true,
       onKey: (RawKeyEvent event) {
-        html.window.onKeyDown.listen((html.KeyboardEvent e) {
-          e.preventDefault();
-        });
+        if (FocusManager.instance.primaryFocus is EditableTextState) {
+          // ✅ Let the textfield work normally
+          return;
+        }
 
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
           print('Pressed key: ${key.debugName}');
-          print('Key code: ${event.data}');
 
-
-
-          // F3
+          // Example: block only function keys (F1–F12)
+          if (key.debugName?.startsWith("F") == true) {
+            // prevent default browser action only for shortcuts
+            html.window.onKeyDown.listen((html.KeyboardEvent e) {
+              e.preventDefault();
+            });
+          }
 
           if (key.debugName == "F3") {
             showShortcutDialog(
@@ -182,50 +208,39 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
               title: AppText.driverInfo,
               contentWidget: F3AlertWidget(),
             );
-
-          }
-          else if (key.debugName == "F4") {
+          } else if (key.debugName == "F4") {
             showShortcutDialog(
               context,
               title: AppText.driverEarning,
               contentWidget: F4AlertWidget(),
             );
-
-          }
-          else if (key.debugName == "F8") {
+          } else if (key.debugName == "F8") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F8",),
+              contentWidget: ComingSoonWidget(shotCutKey: "F8"),
             );
-
-          }
-          else if (key.debugName == "F9") {
+          } else if (key.debugName == "F9") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F9",),
+              contentWidget: ComingSoonWidget(shotCutKey: "F9"),
             );
-
-          }
-          else if (key.debugName == "F6") {
+          } else if (key.debugName == "F6") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F6",),
+              contentWidget: ComingSoonWidget(shotCutKey: "F6"),
             );
-
-          }
-          else if (key.debugName == "F1") {
+          } else if (key.debugName == "F1") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F1",),
+              contentWidget: ComingSoonWidget(shotCutKey: "F1"),
             );
           }
         }
       },
-
       child: Scaffold(
         backgroundColor: Color(0xFFEEF0F3),
         body: SafeArea(
@@ -372,30 +387,45 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
                                   // Dynamic selected tabs
                                   ...selectedTexts.map((text) {
-                                    return Container(
-                                      padding:
-                                      EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(text, style: TextStyle(fontSize: 16)),
-                                          SizedBox(width: 5),
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                selectedTexts.remove(text);
-                                              });
-                                            },
-                                            child: Icon(
-                                              Icons.cancel,
-                                              color: Color(0xFF43489A),
+                                    return GestureDetector(
+                                      onTap: (){
+                                        for (var action in selectedTexts) {
+                                          action.selectedItem = false;
+                                        }
+                                        text.selectedItem = true;
+                                        controller.update();
+                                      },
+                                      child: Container(
+                                        padding:
+                                        EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                        decoration: BoxDecoration(
+                                          color: text.selectedItem== false?DynamicColors.gryClr :DynamicColors.whiteClr,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(text.title!, style: TextStyle(fontSize: 16)),
+                                            SizedBox(width: 5),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  if(selectedTexts.last.title == text.title && selectedTexts.length>1){
+                                                    selectedTexts.remove(text);
+                                                    selectedTexts.last.selectedItem = true;
+                                                  }else{
+                                                    selectedTexts.remove(text);
+                                                  }
+
+                                                });
+                                              },
+                                              child: Icon(
+                                                Icons.cancel,
+                                                color: Color(0xFF43489A),
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     );
                                   }).toList(),
@@ -432,27 +462,30 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                             shrinkWrap: true,
                             padding: EdgeInsets.zero,
                             itemCount: menus[dashBoardCntrl.selectedIndex].subItems.length,
-                            itemBuilder: (context, j) {
+                            itemBuilder: (context, index) {
                               return Container(
-                                color: dashBoardCntrl.dropdownIndex == j ? Colors.blueAccent : Colors.transparent,
+                                color: dashBoardCntrl.dropdownIndex == index ? Colors.blueAccent : Colors.transparent,
                                 child: ListTile(
                                   dense: true, // reduces vertical height
                                   visualDensity: VisualDensity(horizontal: 0, vertical: -4), // fine-tune vertical padding
                                   contentPadding: EdgeInsets.only(left: 4),
                                   title: Text(
-                                    menus[dashBoardCntrl.selectedIndex].subItems[j],
+                                    menus[dashBoardCntrl.selectedIndex].subItems[index],
                                     style: TextStyle(
-                                      color: dashBoardCntrl.dropdownIndex == j ? Colors.white : Colors.black,
+                                      color: dashBoardCntrl.dropdownIndex == index ? Colors.white : Colors.black,
                                       fontSize: 12
                                     ),
                                   ),
                                   onTap: () {
-                                    final selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[j];
+                                    final selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[index];
                                     widget.onSelect?.call(selectedItem);
                                     setState(() {
+                                      for (var action in selectedTexts) {
+                                        action.selectedItem = false;
+                                      }
                                       selectedTexts.remove(selectedItem);
-                                      selectedTexts.add(selectedItem);
-                                      dashBoardCntrl.dropdownIndex = j;
+                                      selectedTexts.add(SelectedDropdown(title: selectedItem,selectedItem: true));
+                                      dashBoardCntrl.dropdownIndex = index;
                                       dashBoardCntrl.isDropdownOpen = false;
                                     });
                                   },
@@ -474,13 +507,22 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   }
 
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
-    print(selectedTexts);
-    if (selectedTexts.isEmpty) return CreateVehicle();
-    // if (selectedTexts.isEmpty) return ByDefaultDashboard();
+    final selectedItems = selectedTexts.where((e) => e.selectedItem == true).toList();
 
-    switch (selectedTexts.last) {
+    if (selectedItems.isEmpty) return FareMeter();
+    // if (selectedItems.isEmpty) return ByDefaultDashboard();
+
+    final lastSelected = selectedItems.last; // 👈 sirf last true item
+
+    print(lastSelected.title);
+    if (selectedTexts.isEmpty) return FareMeter();
+
+    late Widget child;
+
+    switch (lastSelected.title) {
       case 'LIST OF BOOKINGS':
-        return BookingList();
+        child = BookingList();
+        break;
       case 'LOCALIZATION':
         return LocalizationScreen();
         case 'CREATE LOCATIONS':
@@ -495,12 +537,16 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return ManagePostcodes();
         case 'LIST OF LOCATIONS':
         return LocationListScreen();
+
       case 'CREATE DRIVER':
-        return DriverForm();
+        child = DriverForm();
+        break;
       case 'LIST OF DRIVERS':
-        return DriverListScreen();
-      case 'LIST OF LOGGED IN DRIVERS':
-        return LoginDriversScreen();
+        child = DriverListScreen();
+        break;
+      case 'LIST OF LOGGED IN/OUT DRIVERS':
+        child = LoginDriversScreen();
+        break;
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
       case 'CREATE VEHICLE TYPE':
@@ -515,21 +561,83 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return ListOfAccountscreen();
         case 'CREATE CUSTOMER INVOICE':
         return CustomerPreInvoice();
+        child = DriverAppFeatureScreen();
+        break;
+      case 'CREATE DRIVER COMMISSION':
+        child = ListDriverCommission();
+        break;
+      case 'DRIVER COMMISSIONS':
+        child = DriverCommission();
+        break;
+      case 'BULK DRIVER COMMISSION':
+        child = BulkDriverCommission();
+        break;
+      case 'DRIVER COMMISSION PAY':
+        child = DriverCommissionPay();
+        break;
+      case 'CREATE DRIVER RENT':
+        child = CreateDriverRent();
+        break;
+      case 'DRIVER RENT':
+        child = DriverRent();
+        break;
+      case 'BULK DRIVER RENT':
+        child = BulkDriverRent();
+        break;
+      case 'DRIVER RENT PAY':
+        child = DriverRentPay();
+        break;
+      case 'DRIVER SIN BIN SETTINGS':
+        child = DriverSinBinSetting();
+        break;
+      case 'CREATE PLOT FARE':
+        child = PlotFare();
+        break;
+      case 'CREATE FIXED FARE SETTINGS':
+        child = CreateFixedFareSetting();
+        break;
+      case 'CREATE FARE SETTINGS':
+        child = FareConfigurationDay();
+        break;
+      case 'CREATE FARE BY VEHICLE SETTINGS':
+        child = FareByVehicle();
+        break;
+      case 'AIRPORT CHARGES':
+        child = AirportCharges();
+        break;
+      case 'FARE INCREMENT':
+        child = FareIncrement();
+        break;
+      case 'SUR CHARGES':
+        child = FareCharges();
+        break;
+      case 'FARE METER':
+        child = FareMeter();
+        break;
       default:
-        return ByDefaultDashboard();
+        child = ByDefaultDashboard();
     }
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300), // 👈 smooth transition time
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition( // 👈 fade effect
+          opacity: animation,
+          child: child,
+        );
+      },
+      child: child,
+    );
   }
-
-
 }
 
 
 final List<MenuItemData> menus = [
   MenuItemData("BOOKINGS", Icons.book_online, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
   MenuItemData("CUSTOMERS", Icons.headset_mic, ["CREATE BOOKINGS", "LIST OF BOOKINGS", "LIST OF WEB BOOKINGS", "LIST OF APP BOOKINGS", "LIST OF MULTI BOOKINGS", "LIST OF TRASH BOOKINGS"]),
-  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE FARE BY VEHICLE SETTINGS"]),
+  MenuItemData("FARES", Icons.wallet_outlined, ["CREATE FARE SETTINGS", "CREATE FIXED FARE SETTINGS", "CREATE PLOT FARE", "CREATE FARE BY VEHICLE SETTINGS", "AIRPORT CHARGES", "FARE INCREMENT", "SUR CHARGES", "FARE METER"]),
   MenuItemData("LOCATIONS", Icons.location_pin, ["CREATE LOCATIONS", "LIST OF LOCATIONS", "CREATE ZONE", "LIST OF ZONES", "LOCALIZATION", "PLOTTING"]),
-  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "LIST OF LOGGED IN DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION"]),
+  MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED IN/OUT DRIVERS", "CREATE DRIVER COMMISSION", "CREATE DRIVER RENT", "DRIVER COMMISSIONS", "BULK DRIVER COMMISSION","DRIVER COMMISSION PAY","DRIVER RENT", "BULK DRIVER RENT","DRIVER RENT PAY", "DRIVER SIN BIN SETTINGS"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
   MenuItemData("INVOICE", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),
@@ -537,3 +645,6 @@ final List<MenuItemData> menus = [
   MenuItemData("REPORTS", Icons.receipt_long, ["DRIVER", "BOOKINGS", "CALL", "INCOME", "PCO"]),
   MenuItemData("SETTINGS", Icons.settings, ["COMPANY INFORMATION", "COMPANY CONFIGURATION", "DOCUMENT NUMBER", "TEMPLATE SETTINGS", "BOOKING CLEARING UTILITY", "LOCATION TYPE SHORTCUTS", "VOIP SETTINGS", "GENERAL SMS CONFIG", "SMS SETTINGS", "CHAT WITH DRIVER AND PASSENGER", "PERMISSION SETTINGS"]),
 ];
+
+
+

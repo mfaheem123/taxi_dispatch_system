@@ -8,21 +8,42 @@ import 'package:flutter/services.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:get/get.dart';
 
-class QuotationWidget extends StatefulWidget {
-  const QuotationWidget({super.key});
+
+
+class DynamicSwitch extends StatefulWidget {
+  final ValueNotifier<bool> controller;
+  final Color activeColor;
+  final Color inactiveColor;
+  final double width;
+  final double height;
+  final double focusScale;
+  final BorderRadius borderRadius;
+  final VoidCallback? onToggle;
+
+  DynamicSwitch({
+    super.key,
+    required this.controller,
+    this.activeColor = Colors.blue,
+    this.inactiveColor = Colors.grey,
+    this.width = 40,
+    this.height = 20,
+    this.focusScale = 1.3,
+    this.borderRadius = const BorderRadius.all(Radius.circular(15)),
+    this.onToggle,
+  });
 
   @override
-  State<QuotationWidget> createState() => _QuotationWidgetState();
+  State<DynamicSwitch> createState() => _DynamicSwitchState();
 }
 
-class _QuotationWidgetState extends State<QuotationWidget> {
+class _DynamicSwitchState extends State<DynamicSwitch> {
   final FocusNode switchFocus = FocusNode();
 
   @override
   void initState() {
     super.initState();
     switchFocus.addListener(() {
-      setState(() {}); // jab focus aye/jae to rebuild hoga
+      setState(() {}); // rebuild on focus change
     });
   }
 
@@ -32,42 +53,38 @@ class _QuotationWidgetState extends State<QuotationWidget> {
     super.dispose();
   }
 
+  void _toggle() {
+    widget.controller.value = !widget.controller.value;
+    if (widget.onToggle != null) widget.onToggle!();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<DashboardController>(
-      builder: (controller) {
-        return RawKeyboardListener(
-          focusNode: switchFocus,
-          onKey: (event) {
-            if (event is RawKeyDownEvent &&
-                (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.space)) {
-              controller.switchController.value =
-              !controller.switchController.value; // toggle
-            }
-          },
-          child: GestureDetector(
-            onTap: () {
-              // Mouse click se bhi toggle
-              controller.switchController.value =
-              !controller.switchController.value;
-            },
-            child: AnimatedScale(
-              scale: switchFocus.hasFocus ? 1.4 : 1.0, // zoom when focused
-              duration: const Duration(milliseconds: 200),
-              child: AdvancedSwitch(
-                controller: controller.switchController,
-                activeColor: DynamicColors.primaryClr,
-                inactiveColor: Colors.grey,
-                borderRadius: BorderRadius.circular(15),
-                width: 30,
-                height: 15,
-                onChanged: (v) {},
-              ),
-            ),
-          ),
-        );
+    return RawKeyboardListener(
+      focusNode: switchFocus,
+      onKey: (event) {
+        if (event is RawKeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.enter ||
+                event.logicalKey == LogicalKeyboardKey.space)) {
+          _toggle();
+        }
       },
+      child: GestureDetector(
+        onTap: _toggle,
+        child: AnimatedScale(
+          scale: switchFocus.hasFocus ? widget.focusScale : 1.0,
+          duration: Duration(milliseconds: 200),
+          child: AdvancedSwitch(
+            controller: widget.controller,
+            activeColor: widget.activeColor,
+            inactiveColor: widget.inactiveColor,
+            borderRadius: widget.borderRadius,
+            width: 30,
+            height: 15,
+            onChanged: (_) {}, // handled by ValueNotifier + _toggle
+          ),
+        ),
+      ),
     );
   }
 }

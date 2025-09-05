@@ -384,3 +384,16 @@ class MenuItemData {
 }
 
 
+// class SelectedMenu {
+//   String? title;
+//   bool selectedItem = false;
+//   SelectedMenu({this.title,this.selectedItem = false});
+// }
+
+
+class SelectedDropdown {
+  String? title;
+  var category;
+  bool selectedItem = false;
+  SelectedDropdown({this.title,this.selectedItem = false, this.category});
+}

@@ -205,7 +205,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           SizedBox(
-                            width: Get.width/6,
+                            width: Get.width/4,
                             height: 60,
                             child: ListView.builder(
                                 itemCount: controller.imageList.length,
