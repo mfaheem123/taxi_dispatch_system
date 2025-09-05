@@ -97,6 +97,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     SizedBox(
                       width: 60,
                     ),
+
                     Container(
                       decoration: BoxDecoration(
                         color: DynamicColors.primaryClr,
@@ -113,6 +114,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     )
                   ],
                 ),
+
                 SizedBox(
                   height: 12,
                 ),

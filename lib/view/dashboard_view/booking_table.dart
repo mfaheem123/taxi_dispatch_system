@@ -60,6 +60,7 @@ class _BookingTableState extends State<BookingTable> {
                                 controller.update();
                               },
                             ):
+
                             SizedBox(
                               width: 150,
                               child: Container(color: DynamicColors.secondaryClr,
@@ -106,6 +107,7 @@ class _BookingTableState extends State<BookingTable> {
                         },
                       ),
                     ),
+
                     Align(
                       alignment: Alignment.centerRight,
                       child: CustomButton(
@@ -125,6 +127,7 @@ class _BookingTableState extends State<BookingTable> {
                 ),
               ),
               // _buildTabs(),
+
               const SizedBox(height: 10),
 
 
@@ -209,22 +212,30 @@ class _TableScreenState extends State<TableScreen> {
           setState(() {
             selectedRows[row] = !selectedRows[row];
           });
-        } else if (key == LogicalKeyboardKey.arrowDown) {
+
+        }
+        else if (key == LogicalKeyboardKey.arrowDown) {
           setState(() {
             currentRowIndex = (row + 1) % rowCount;
             rowCellFocusNodes[currentRowIndex][col].requestFocus();
           });
-        } else if (key == LogicalKeyboardKey.arrowUp) {
+
+        }
+        else if (key == LogicalKeyboardKey.arrowUp) {
           setState(() {
             currentRowIndex = (row - 1 + rowCount) % rowCount;
             rowCellFocusNodes[currentRowIndex][col].requestFocus();
           });
-        } else if (key == LogicalKeyboardKey.arrowRight) {
+
+        }
+        else if (key == LogicalKeyboardKey.arrowRight) {
           setState(() {
             currentColIndex = (col + 1) % rowCellFocusNodes[row].length;
             rowCellFocusNodes[row][currentColIndex].requestFocus();
           });
-        } else if (key == LogicalKeyboardKey.arrowLeft) {
+
+        }
+        else if (key == LogicalKeyboardKey.arrowLeft) {
           setState(() {
             currentColIndex = (col - 1 + rowCellFocusNodes[row].length) %
                 rowCellFocusNodes[row].length;
@@ -275,11 +286,15 @@ class _TableScreenState extends State<TableScreen> {
                 if (colIndex == 0) {
                   child = Icon(
                       Icons.laptop_chromebook_outlined, color: Colors.blue);
-                } else if (colIndex == 1) {
+                }
+                else if (colIndex == 1)
+                {
                   child = Text("BCB74867",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 2) {
+                }
+                else if (colIndex == 2)
+                {
                   child = Text("02-05-25 23:36",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
@@ -287,63 +302,82 @@ class _TableScreenState extends State<TableScreen> {
                   child = Text("NADEEM",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 4) {
+                }
+                else if (colIndex == 4) {
                   child = Text(
                     "FLAT 10 BLANDFORD COURT ...",
                     maxLines: 1,
                     style: mozillaTextRegularText(
                         fontWeight: FontWeight.w800, fontSize: 12),
                   );
-                } else if (colIndex == 5) {
+                }
+                else if (colIndex == 5) {
                   child = Text("65 JEDBURGH ROAD, LONDON",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 6) {
+                }
+                else if (colIndex == 6) {
                   child = Text("DRV",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 7) {
+                }
+                else if (colIndex == 7) {
                   child = Text("CAPITA BUSI ...",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 8) {
+                }
+                else if (colIndex == 8) {
                   child = Text("SALOON",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 9) {
+                }
+                else if (colIndex == 9) {
                   child = Text("Lorem ipsum dolor sit amet...",
                       maxLines: 1,
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 10) {
+                }
+                else if (colIndex == 10) {
                   child = Text("£ 14.00",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 11) {
+                }
+                else if (colIndex == 11) {
                   child = Text("WAITING",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 12) {
+                }
+                else if (colIndex == 12)
+                {
                   child = Text("o/w",
                       style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 13) {
+                }
+                else if (colIndex == 13)
+                {
                   child = Text("CASH",
                       style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12
+                      ));
                 } else {
                   // last cell with icons
                   child = Row(
+
                     children: [
+
                       GestureDetector(
-                        onTap: (){
+
+                        onTap: ()
+                        {
                           showDialog(
                             context: context,
                             builder: (_) =>
                                 DispatchBookingAlert(),
                           );
                         },
-                        child: ImageIcon(AssetImage(Images.fowardIcon),
+                        child: ImageIcon(
+                            AssetImage(Images.fowardIcon),
                             color: Colors.green, size: 20),
                       ),
                       Padding(
@@ -406,7 +440,7 @@ class _TableScreenState extends State<TableScreen> {
   }
 }
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget}) {
+DataColumn  buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget}) {
   return DataColumn(
     label: widget?? Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -420,7 +454,9 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
           height: 28,
           child: TextField(
             onTap: () {
+
               shortCutKeyValue.value = "tableSelected";
+
             },
             style: mozillaTextRegularText(
                 fontWeight: FontWeight.w800, fontSize: 12),

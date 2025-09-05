@@ -203,8 +203,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 .map((entry) {
                               int index = entry.key;
                               String suggestion = entry.value;
-                              bool isHighlighted =
-                                  index == dashboardController.highlightedIndex.value;
+                              bool isHighlighted = index == dashboardController.highlightedIndex.value;
                               return Container(
                                 color: isHighlighted ? Color(0xffA0DCFF) : null,
                                 child: ListTile(

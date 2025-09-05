@@ -1,17 +1,29 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
+import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
+import 'package:dashboard_new1/view/User/create_userScreen.dart';
+import 'package:dashboard_new1/view/locations_view/location/zone_listScreen.dart';
 import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
+import '../User/user_listScreen.dart';
+import '../accounts/list_of_accountScreen.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/drivers_list/driver_list_screen.dart';
 import '../drivers_view/driver/login_drivers/login_drivers_screen.dart';
 import '../locations_view/location/localization_screen.dart';
+import '../locations_view/location/location_formScreen.dart';
+import '../locations_view/location/location_listScreen.dart';
+import '../locations_view/location/plotting_Screen.dart';
+import '../locations_view/location/zone_screen.dart';
+import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
+import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
+import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
@@ -33,7 +45,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   List<String> selectedTexts = [];
 
 
-  
+
   late final List<GlobalKey> menuKeys;
 
   @override
@@ -45,12 +57,14 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   }
 
   @override
-  void dispose() {
+  void dispose()
+  {
     RawKeyboard.instance.removeListener(_handleKey);
     super.dispose();
   }
 
-  double _getMenuX(int index) {
+  double _getMenuX(int index)
+  {
     final renderBox = menuKeys[index].currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       final offset = renderBox.localToGlobal(Offset.zero);
@@ -59,8 +73,10 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
     return 0;
   }
 
-  void _handleKey(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
+  void _handleKey(RawKeyEvent event)
+  {
+    if (event is RawKeyDownEvent)
+    {
       if(event.logicalKey.keyLabel == "F#"){
         shortCutKeyValue.value = "alert";
       }
@@ -73,16 +89,20 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         html.window.open(newTabUrl, '_blank');
       }
       }
-    if (event is RawKeyDownEvent && shortCutKeyValue.value == "shortCutKey") {
-      if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+    if (event is RawKeyDownEvent && shortCutKeyValue.value == "shortCutKey")
+    {
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight)
+      {
         setState(() {
           dashBoardCntrl.selectedIndex = (dashBoardCntrl.selectedIndex + 1) % menus.length;
         });
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft)
+      {
         setState(() {
           dashBoardCntrl.selectedIndex = (dashBoardCntrl.selectedIndex - 1 + menus.length) % menus.length;
         });
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown)
+      {
         if (dashBoardCntrl.isDropdownOpen) {
           setState(() {
             dashBoardCntrl.dropdownIndex = (dashBoardCntrl.dropdownIndex + 1) % menus[dashBoardCntrl.selectedIndex].subItems.length;
@@ -92,14 +112,21 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
             dashBoardCntrl.isDropdownOpen = true;
           });
         }
-      } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      }
+
+      else if (event.logicalKey == LogicalKeyboardKey.arrowUp)
+
+      {
         if (dashBoardCntrl.isDropdownOpen) {
           setState(() {
             dashBoardCntrl.dropdownIndex = (dashBoardCntrl.dropdownIndex - 1 + menus[dashBoardCntrl.selectedIndex].subItems.length) %
                 menus[dashBoardCntrl.selectedIndex].subItems.length;
           });
         }
-      } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+
+      }
+
+      else if (event.logicalKey == LogicalKeyboardKey.enter) {
         if (dashBoardCntrl.isDropdownOpen) {
           String selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[dashBoardCntrl.dropdownIndex];
           widget.onSelect?.call(selectedItem);
@@ -108,16 +135,22 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
             selectedTexts.add(selectedItem);
             dashBoardCntrl.isDropdownOpen = false;
           });
-        } else {
+        }
+
+        else
+        {
           setState(() {
             dashBoardCntrl.isDropdownOpen = true;
           });
         }
-      } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+
+      }
+      else if (event.logicalKey == LogicalKeyboardKey.escape)
+      {
         setState(() {
           dashBoardCntrl.isDropdownOpen = false;
         });
-      }
+      } 
     }
   }
 
@@ -133,6 +166,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         html.window.onKeyDown.listen((html.KeyboardEvent e) {
           e.preventDefault();
         });
+
         if (event is RawKeyDownEvent) {
           final key = event.logicalKey;
           print('Pressed key: ${key.debugName}');
@@ -141,37 +175,48 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
 
 
           // F3
+
           if (key.debugName == "F3") {
             showShortcutDialog(
               context,
               title: AppText.driverInfo,
               contentWidget: F3AlertWidget(),
             );
-          }else if (key.debugName == "F4") {
+
+          }
+          else if (key.debugName == "F4") {
             showShortcutDialog(
               context,
               title: AppText.driverEarning,
               contentWidget: F4AlertWidget(),
             );
-          }else if (key.debugName == "F8") {
+
+          }
+          else if (key.debugName == "F8") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
               contentWidget: ComingSoonWidget(shotCutKey: "F8",),
             );
-          }else if (key.debugName == "F9") {
+
+          }
+          else if (key.debugName == "F9") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
               contentWidget: ComingSoonWidget(shotCutKey: "F9",),
             );
-          }else if (key.debugName == "F6") {
+
+          }
+          else if (key.debugName == "F6") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
               contentWidget: ComingSoonWidget(shotCutKey: "F6",),
             );
-          }else if (key.debugName == "F1") {
+
+          }
+          else if (key.debugName == "F1") {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
@@ -180,6 +225,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
           }
         }
       },
+
       child: Scaffold(
         backgroundColor: Color(0xFFEEF0F3),
         body: SafeArea(
@@ -203,7 +249,9 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                 "NEXUS",
                                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24),
                               ),
+
                               const SizedBox(width: 20),
+
                               for (int i = 0; i < menus.length; i++)
                                 Padding(
                                   key: menuKeys[i],
@@ -220,6 +268,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                         }
                                       });
                                     },
+
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 3),
                                       decoration: BoxDecoration(
@@ -239,9 +288,11 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                     ),
                                   ),
                                 ),
+
                               SizedBox(
                                 width: MediaQuery.of(context).size.width/7.3,
                               ),
+
                               GestureDetector(
                                 onTap: (){
                                   controller.selectionMenuBtn.value = 0;
@@ -255,6 +306,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                       color: controller.selectionMenuBtn.value==0? DynamicColors.whiteClr:Colors.cyanAccent.shade400),
                                 ),
                               ),
+
                               SizedBox(width: 15),
 
                               GestureDetector(
@@ -269,7 +321,9 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                         size: 20,
                                         color: controller.selectionMenuBtn.value==1? DynamicColors.whiteClr:Colors.cyanAccent.shade400),),
                               ),
+
                               SizedBox(width: 15),
+
                               GestureDetector(
                                 onTap: (){
                                   controller.selectionMenuBtn.value = 2;
@@ -282,11 +336,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                         size: 20,
                                         color: controller.selectionMenuBtn.value==2? DynamicColors.redClr:Colors.cyanAccent.shade400),),
                               ),
+
                               SizedBox(width: 15),
                             ],
                           ),
                         ),
                       ),
+
                       Expanded(
                         child: SingleChildScrollView(
                           child: Column(
@@ -356,6 +412,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                   );
                 }
               ),
+
               // 🔽 Dropdown - Show only if open
               if (dashBoardCntrl.isDropdownOpen && dashBoardCntrl.selectedIndex != null)
                 Positioned(
@@ -426,6 +483,18 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return BookingList();
       case 'LOCALIZATION':
         return LocalizationScreen();
+        case 'CREATE LOCATIONS':
+        return LocationForm();
+      case 'CREATE USER':
+        return CreateUserscreen();
+        case 'LIST OF USER':
+        return UserListscreen();
+        case 'LIST OF ZONES':
+        return ZoneListScreen();
+        case 'PLOTTING':
+        return ManagePostcodes();
+        case 'LIST OF LOCATIONS':
+        return LocationListScreen();
       case 'CREATE DRIVER':
         return DriverForm();
       case 'LIST OF DRIVERS':
@@ -436,6 +505,16 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         return DriverAppFeatureScreen();
       case 'CREATE VEHICLE TYPE':
         return CreateVehicle();
+        case 'LIST OF VEHICLE TYPES':
+        return VehicleTypeListScreen();
+        case 'LIST OF COMPANY VEHICLE':
+        return CompanyVehiclesScreen();
+        case 'CREATE COMPANY VEHICLE':
+        return CompanyVehicleForm();
+        case 'LIST OF ACCOUNTS':
+        return ListOfAccountscreen();
+        case 'CREATE CUSTOMER INVOICE':
+        return CustomerPreInvoice();
       default:
         return ByDefaultDashboard();
     }
@@ -453,8 +532,8 @@ final List<MenuItemData> menus = [
   MenuItemData("DRIVERS", Icons.person, ["CREATE DRIVER", "LIST OF DRIVERS", "LIST OF INACTIVE DRIVERS", "LIST OF LOGGED IN DRIVERS", "DRIVER APP FEATURES", "LIST OF LOGGED OUT DRIVERS", "CREATE DRIVER COMMISSION", "LIST OF DRIVER COMMISSION"]),
   MenuItemData("ACCOUNTS", Icons.account_circle, ["CREATE ACCOUNT", "LIST OF ACCOUNTS", "CREATE CUSTOMER INVOICE", "LIST OF CUSTOMER INVOICES", "CREATE ACCOUNT INVOICE", "LIST OF ACCOUNT INVOICES"]),
   MenuItemData("VEHICLES", Icons.directions_car, ["CREATE VEHICLE TYPE", "LIST OF VEHICLE TYPES", "CREATE COMPANY VEHICLE", "LIST OF COMPANY VEHICLE"]),
-  MenuItemData("USERS", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),
-  MenuItemData("SUBSIDIARY", Icons.supervised_user_circle, ["CREATE SUBSIDIARY", "LIST OF SUBSIDIARIES"]),
+  MenuItemData("INVOICE", Icons.supervised_user_circle, ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),
+  MenuItemData("ADMINSTRATION", Icons.supervised_user_circle, ["CREATE SUBSIDIARY", "LIST OF SUBSIDIARIES"]),
   MenuItemData("REPORTS", Icons.receipt_long, ["DRIVER", "BOOKINGS", "CALL", "INCOME", "PCO"]),
   MenuItemData("SETTINGS", Icons.settings, ["COMPANY INFORMATION", "COMPANY CONFIGURATION", "DOCUMENT NUMBER", "TEMPLATE SETTINGS", "BOOKING CLEARING UTILITY", "LOCATION TYPE SHORTCUTS", "VOIP SETTINGS", "GENERAL SMS CONFIG", "SMS SETTINGS", "CHAT WITH DRIVER AND PASSENGER", "PERMISSION SETTINGS"]),
 ];

@@ -1,41 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../component/text_widget.dart';
-import '../../drivers_view/driver/driver_app_features/pda_details_widget.dart';
-
-class CreateVehicle extends StatefulWidget {
-  const CreateVehicle({super.key});
-
-  @override
-  State<CreateVehicle> createState() => _CreateVehicleState();
-}
-
-class _CreateVehicleState extends State<CreateVehicle> {
-  // ✅ Controllers for each field
-  final TextEditingController vehicleTypeCtrl = TextEditingController();
-  final TextEditingController passengersCtrl = TextEditingController();
-  final TextEditingController luggagesCtrl = TextEditingController();
-  final TextEditingController handLuggagesCtrl = TextEditingController();
-  final TextEditingController minFaresCtrl = TextEditingController();
-  final TextEditingController bgColorCtrl = TextEditingController();
-  final TextEditingController fgColorCtrl = TextEditingController();
-  final TextEditingController driverWaitingCtrl = TextEditingController();
-  final TextEditingController accountWaitingCtrl = TextEditingController();
-
-  @override
-  void dispose() {
-    // ✅ Dispose controllers
-    vehicleTypeCtrl.dispose();
-    passengersCtrl.dispose();
-    luggagesCtrl.dispose();
-    handLuggagesCtrl.dispose();
-    minFaresCtrl.dispose();
-    bgColorCtrl.dispose();
-    fgColorCtrl.dispose();
-    driverWaitingCtrl.dispose();
-    accountWaitingCtrl.dispose();
-    super.dispose();
-  }
+class CreateVehicle extends StatelessWidget {
+  CreateVehicle({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,11 +22,14 @@ class _CreateVehicleState extends State<CreateVehicle> {
               _buildFormBox(screenHeight),
             ],
           )
+
               : Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Image box fix with Flexible
               Flexible(flex: 1, child: _buildImageBox(isMobile)),
               const SizedBox(width: 20),
+              // Form box fix with Flexible
               Flexible(flex: 3, child: _buildFormBox(screenHeight)),
             ],
           ),
@@ -68,6 +37,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
       },
     );
   }
+
 
   Widget _buildImageBox(bool isMobile) {
     return Container(
@@ -89,6 +59,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
       ),
     );
   }
+
 
   Widget _buildFormBox(double screenHeight) {
     return Container(
@@ -112,63 +83,73 @@ class _CreateVehicleState extends State<CreateVehicle> {
             ),
           ),
 
-           SizedBox(height: 16),
+          const SizedBox(height: 16),
 
-          Wrap(
-            runSpacing: 12,
-            spacing: 12,
-            children: [
-              _buildTextField("Vehicle Type", vehicleTypeCtrl),
-              _buildTextField("Passengers", passengersCtrl),
-              _buildTextField("Luggages", luggagesCtrl),
-              _buildTextField("Hand Luggages", handLuggagesCtrl),
-              _buildCheckBox("Default Vehicle"),
-              _buildCheckBox("Minimum Miles"),
-              _buildTextField("Minimum Fares", minFaresCtrl),
-              _buildTextField("Background Color", bgColorCtrl),
-              _buildTextField("Foreground Color", fgColorCtrl),
-              _buildTextField("Driver Waiting Charges / 10s", driverWaitingCtrl),
-              _buildTextField("Account Waiting Charges / 10s", accountWaitingCtrl),
-            ],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Wrap(
+              runSpacing: 12,
+              spacing: 12,
+              children: [
+                _buildTextField("Vehicle Type"),
+                _buildTextField("Passengers"),
+                _buildTextField("Luggages"),
+                _buildTextField("Hand Luggages"),
+
+                _buildCheckBox("Default Vehicle"),
+                _buildCheckBox("Minimum Miles"),
+                _buildTextField("Minimum Fares"),
+                _buildTextField("Background Color"),
+                _buildTextField("Foreground Color"),
+                _buildTextField("Driver Waiting Charges / 10s"),
+                _buildTextField("Account Waiting Charges / 10s"),
+              ],
+            ),
           ),
 
           const SizedBox(height: 20),
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                padding:
-                const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+
+          Container(
+            height: screenHeight / 20,
+            width: double.infinity,
+            color: Colors.grey.withOpacity(0.3),
+            child:  Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+                ),
+                onPressed: () {},
+                child: const Text(
+                  "SAVE",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
-              onPressed: () {
-                // ✅ Example: print values
-                print("Vehicle Type: ${vehicleTypeCtrl.text}");
-                print("Passengers: ${passengersCtrl.text}");
-              },
-              child: const Text(
-                "SAVE",
-                style: TextStyle(fontSize: 16, color: Colors.white),
-              ),
-            ),
-          )
+            )
+          ),
+
+
         ],
       ),
     );
   }
 
-  // ✅ TextField with controller
-  Widget _buildTextField(String label, TextEditingController controller) {
+
+  static Widget _buildTextField(String label) {
     return SizedBox(
       width: 220,
       height: 40,
-      child: textFieldsWidget(
-          context,
-          controller,
-          label: AppText.commission,
-          width: 200,
-          ),
+      child: TextField(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          isDense: true,
+        ),
+      ),
     );
   }
+
 
   static Widget _buildCheckBox(String label) {
     return Row(

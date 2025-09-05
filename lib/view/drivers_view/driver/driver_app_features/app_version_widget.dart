@@ -51,6 +51,7 @@ class AppVersionWidget extends StatelessWidget {
                             )
                         ),
                       ),
+
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [

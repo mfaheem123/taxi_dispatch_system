@@ -85,6 +85,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
           ),
+
           // ✅ Gradient Overlay for readability
           Container(
             width: width,
@@ -119,6 +120,7 @@ class LoginScreen extends StatelessWidget {
                       )
                     ],
                   ),
+
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -130,6 +132,7 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(height: 30),
 
                       // Username
@@ -149,6 +152,8 @@ class LoginScreen extends StatelessWidget {
                         // obscureText: true,
                         prefixIcon: const Icon(Icons.lock),
                       ),
+
+
 
                       const SizedBox(height: 15),
 

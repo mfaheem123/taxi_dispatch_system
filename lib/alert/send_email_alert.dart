@@ -253,6 +253,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                 ),
               ],
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: CustomTextField(
@@ -261,6 +262,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                   controller: dashBoardCntrl.smsToController
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: CustomTextField(
@@ -272,6 +274,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                   controller: dashBoardCntrl.typeYourMessageController
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: CustomButton(
