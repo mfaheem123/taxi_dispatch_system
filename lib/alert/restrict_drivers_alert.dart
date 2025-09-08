@@ -299,7 +299,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
         if (event is RawKeyDownEvent) {
           if (event.logicalKey == LogicalKeyboardKey.enter ||
               event.logicalKey == LogicalKeyboardKey.space) {
-            _showPopover(context, widget.driversList ?? []);
+            _showPopover(context, widget. driversList ?? []);
             return KeyEventResult.handled;
           }
         }

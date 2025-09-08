@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../alert/restrict_drivers_alert.dart';
 import '../../component/dropdown_button.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -119,16 +120,15 @@ class _CreateBookingState extends State<CreateBooking> {
                               AppText.booking,
                               style: mozillaTextSemiBoldText(fontSize: 17),
                             ),
-                            Container(
+
+                            RestrictedDrivers(
+                              width: notesWidth,
                               height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(7),
-                                color: DynamicColors.whiteClr
-                              ),// ✅ same as your text field height
-                              child: CustomDropdownButton(
-                                itemList: ['DEMO COMPANY'],
-                                hintText: "DEMO COMPANY",
-                              ),
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                'DEMO COMPANY 01', 'DEMO COMPANY 02'
+                              ],
                             ),
                           ],
                         ),

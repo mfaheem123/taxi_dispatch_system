@@ -166,7 +166,8 @@ class LoginScreen extends StatelessWidget {
                         height: 55,
                         // text: "Login",
                         onTap: () {
-                          Get.offAllNamed(Routes.dashBoarScreen);
+                          Get.offAllNamed(Routes.myHomePage);
+                          // Get.offAllNamed(Routes.dashBoarScreen);
                         },
                       ),
 

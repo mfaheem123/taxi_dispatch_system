@@ -28,6 +28,11 @@ import '../fare_view/fare_increment/fare_increment.dart';
 import '../fare_view/fare_meter/fare_meter.dart';
 import '../fare_view/plot_fare/create_fixed_fare_setting.dart';
 import '../fare_view/plot_fare/plot_fare.dart';
+import '../locations_view/location/localization_screen.dart';
+import '../locations_view/location/location_formScreen.dart';
+import '../locations_view/location/location_listScreen.dart';
+import '../locations_view/location/plotting_Screen.dart';
+import '../locations_view/location/zone_listScreen.dart';
 
 class MainAppBar extends StatelessWidget {
   MainAppBar({super.key});
@@ -488,48 +493,24 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE SETTINGS",
             onTap: () {
               setState(() {
-                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                if (index != -1) {
-                  controller.selectedMenuItems[index].selectedItem = false;
-                }
-                controller.selectedMenuItems.add(SelectedDropdown(
-                    title: "CREATE FARE SETTINGS",
-                    selectedItem: true,
-                    category: FareConfigurationDay()
-                ));
                 _currentPage = FareConfigurationDay();
+                controller.menuBarRefresh(title: "CREATE FARE SETTINGS", pageName: FareConfigurationDay());
               });
             }),
         NestedMenuItem(
             title: "CREATE FIXED FARE SETTINGS",
             onTap: () {
               setState(() {
-                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                if (index != -1) {
-                  controller.selectedMenuItems[index].selectedItem = false;
-                }
-                controller.selectedMenuItems.add(SelectedDropdown(
-                    title: "CREATE FIXED FARE SETTINGS",
-                    selectedItem: true,
-                    category: CreateFixedFareSetting()
-                ));
                 _currentPage = CreateFixedFareSetting();
+                controller.menuBarRefresh(title: "CREATE FIXED FARE SETTINGS", pageName: CreateFixedFareSetting());
               });
             }),
         NestedMenuItem(
           title: "CREATE PLOT FARE",
           onTap: () {
             setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                  title: "CREATE PLOT FARE",
-                  selectedItem: true,
-                  category: PlotFare()
-              ));
               _currentPage = PlotFare();
+              controller.menuBarRefresh(title: "CREATE PLOT FARE", pageName: PlotFare());
             });
           },
         ),
@@ -537,32 +518,16 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE BY VEHICLE SETTINGS",
             onTap: () {
               setState(() {
-                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                if (index != -1) {
-                  controller.selectedMenuItems[index].selectedItem = false;
-                }
-                controller.selectedMenuItems.add(SelectedDropdown(
-                    title: "CREATE FARE BY VEHICLE SETTINGS",
-                    selectedItem: true,
-                    category: FareByVehicle()
-                ));
                 _currentPage = FareByVehicle();
+                controller.menuBarRefresh(title: "CREATE FARE BY VEHICLE SETTINGS", pageName: FareByVehicle());
               });
             }),
         NestedMenuItem(
           title: "AIRPORT CHARGES",
           onTap: () {
             setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                  title: "AIRPORT CHARGES",
-                  selectedItem: true,
-                  category: AirportCharges()
-              ));
               _currentPage = AirportCharges();
+              controller.menuBarRefresh(title: "AIRPORT CHARGES", pageName: AirportCharges());
             });
           },
         ),
@@ -570,16 +535,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE INCREMENT",
           onTap: () {
             setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                  title: "FARE INCREMENT",
-                  selectedItem: true,
-                  category: FareIncrement()
-              ));
               _currentPage = FareIncrement();
+              controller.menuBarRefresh(title: "FARE INCREMENT", pageName: FareIncrement());
             });
           },
         ),
@@ -587,16 +544,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "SUR CHARGES",
           onTap: () {
             setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                  title: "SUR CHARGES",
-                  selectedItem: true,
-                  category: FareCharges()
-              ));
               _currentPage = FareCharges();
+              controller.menuBarRefresh(title: "SUR CHARGES", pageName: FareCharges());
             });
           },
         ),
@@ -604,16 +553,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE METER",
           onTap: () {
             setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                  title: "FARE METER",
-                  selectedItem: true,
-                  category: FareMeter()
-              ));
               _currentPage = FareMeter();
+              controller.menuBarRefresh(title: "FARE METER", pageName: FareMeter());
             });
           },
         ),
@@ -621,27 +562,57 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(title: "LOCATIONS", children: [
         NestedMenuItem(
           title: "CREATE LOCATIONS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = LocationForm();
+              controller.menuBarRefresh(title: "CREATE LOCATIONS", pageName: LocationForm());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LIST OF LOCATIONS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = LocationListScreen();
+              controller.menuBarRefresh(title: "LIST OF LOCATIONS", pageName: LocationListScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "CREATE ZONE",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = LocationListScreen();
+              controller.menuBarRefresh(title: "CREATE ZONE", pageName: LocationListScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LIST OF ZONES",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = ZoneListScreen();
+              controller.menuBarRefresh(title: "LIST OF ZONES", pageName: ZoneListScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LOCALIZATION",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = LocalizationScreen();
+              controller.menuBarRefresh(title: "LOCALIZATION", pageName: LocalizationScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "PLOTTING",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = ManagePostcodes();
+              controller.menuBarRefresh(title: "PLOTTING", pageName: ManagePostcodes());
+            });
+          },
         ),
       ]),
       NestedMenuItem(title: "DRIVERS", children: [
@@ -657,16 +628,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "ADD DRIVER",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "ADD DRIVER",
-                      selectedItem: true,
-                      category: CreateDriverRent()
-                  ));
                   _currentPage = CreateDriverRent();
+                  controller.menuBarRefresh(title: "ADD DRIVER", pageName: CreateDriverRent());
                 });
               },
             ),
@@ -674,16 +637,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVERS",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "DRIVERS",
-                      selectedItem: true,
-                      category: DriverListScreen()
-                  ));
                   _currentPage = DriverListScreen();
+                  controller.menuBarRefresh(title: "DRIVERS", pageName: DriverListScreen());
                 });
               },
             ),
@@ -691,16 +646,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "LIST OF LOGGED IN/OUT DRIVERS",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "LIST OF LOGGED IN/OUT DRIVERS",
-                      selectedItem: true,
-                      category: LoginDriversScreen()
-                  ));
                   _currentPage = LoginDriversScreen();
+                  controller.menuBarRefresh(title: "LIST OF LOGGED IN/OUT DRIVERS", pageName: LoginDriversScreen());
                 });
               },
             ),
@@ -714,16 +661,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "CREATE DRIVER COMMISSION",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "CREATE DRIVER COMMISSION",
-                      selectedItem: true,
-                      category: ListDriverCommission()
-                  ));
                   _currentPage = ListDriverCommission();
+                  controller.menuBarRefresh(title: "CREATE DRIVER COMMISSION", pageName: ListDriverCommission());
                 });
               },
             ),
@@ -731,16 +670,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER COMMISSIONS",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "DRIVER COMMISSIONS",
-                      selectedItem: true,
-                      category: DriverCommission()
-                  ));
                   _currentPage = DriverCommission();
+                  controller.menuBarRefresh(title: "DRIVER COMMISSIONS", pageName: DriverCommission());
                 });
               },
             ),
@@ -748,16 +679,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "BULK DRIVER COMMISSION",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "BULK DRIVER COMMISSION",
-                      selectedItem: true,
-                      category: BulkDriverCommission()
-                  ));
                   _currentPage = BulkDriverCommission();
+                  controller.menuBarRefresh(title: "BULK DRIVER COMMISSION", pageName: BulkDriverCommission());
                 });
               },
             ),
@@ -765,16 +688,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER COMMISSION PAY",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "DRIVER COMMISSION PAY",
-                      selectedItem: true,
-                      category: DriverCommissionPay()
-                  ));
                   _currentPage = DriverCommissionPay();
+                  controller.menuBarRefresh(title: "DRIVER COMMISSION PAY", pageName: DriverCommissionPay());
                 });
               },
             ),
@@ -783,26 +698,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
         NestedMenuItem(
           title: "DRIVER RENT",
-          // onTap: () {
-          //   setState(() {
-          //     _currentPage = DriverListScreen();
-          //   });
-          // },
           children: [
             NestedMenuItem(
               title: "CREATE DRIVER RENT",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "CREATE DRIVER RENT",
-                      selectedItem: true,
-                      category: CreateDriverRent()
-                  ));
                   _currentPage = CreateDriverRent();
+                  controller.menuBarRefresh(title: "CREATE DRIVER RENT", pageName: CreateDriverRent());
                 });
               },
             ),
@@ -810,16 +712,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER RENT",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "DRIVER RENT",
-                      selectedItem: true,
-                      category: DriverRent()
-                  ));
                   _currentPage = DriverRent();
+                  controller.menuBarRefresh(title: "DRIVER RENT", pageName: DriverRent());
                 });
               },
             ),
@@ -827,16 +721,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "BULK DRIVER RENT",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "BULK DRIVER RENT",
-                      selectedItem: true,
-                      category: BulkDriverRent()
-                  ));
                   _currentPage = BulkDriverRent();
+                  controller.menuBarRefresh(title: "BULK DRIVER RENT", pageName: BulkDriverRent());
                 });
               },
             ),
@@ -844,16 +730,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER RENT PAY",
               onTap: () {
                 setState(() {
-                  int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                  if (index != -1) {
-                    controller.selectedMenuItems[index].selectedItem = false;
-                  }
-                  controller.selectedMenuItems.add(SelectedDropdown(
-                      title: "DRIVER RENT PAY",
-                      selectedItem: true,
-                      category: DriverRentPay()
-                  ));
                   _currentPage = DriverRentPay();
+                  controller.menuBarRefresh(title: "DRIVER RENT PAY", pageName: DriverRentPay());
                 });
               },
             ),
@@ -863,33 +741,16 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "DRIVER APP FEATURES",
             onTap: () {
               setState(() {
-                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                if (index != -1) {
-                  controller.selectedMenuItems[index].selectedItem = false;
-                }
-
-                controller.selectedMenuItems.add(SelectedDropdown(
-                    title: "DRIVER APP FEATURES",
-                    selectedItem: true,
-                    category: DriverAppFeatureScreen()
-                ));
                 _currentPage = DriverAppFeatureScreen();
+                controller.menuBarRefresh(title: "DRIVER APP FEATURES", pageName: DriverAppFeatureScreen());
               });
             }),
         NestedMenuItem(
             title: "DRIVER SIN BIN SETTINGS",
             onTap: () {
               setState(() {
-                int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-                if (index != -1) {
-                  controller.selectedMenuItems[index].selectedItem = false;
-                }
-                controller.selectedMenuItems.add(SelectedDropdown(
-                    title: "DRIVER SIN BIN SETTINGS",
-                    selectedItem: true,
-                    category: DriverSinBinSetting()
-                ));
                 _currentPage = DriverSinBinSetting();
+                controller.menuBarRefresh(title: "DRIVER SIN BIN SETTINGS", pageName: DriverSinBinSetting());
               });
             }),
       ]),

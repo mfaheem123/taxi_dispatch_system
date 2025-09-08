@@ -6,9 +6,10 @@ import 'package:get/get.dart';
 import 'dart:html' as html;
 
 void main() {
-  // disableInspect();
+  WidgetsFlutterBinding.ensureInitialized();
+  disableInspect();
   html.document.documentElement?.requestFullscreen();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
