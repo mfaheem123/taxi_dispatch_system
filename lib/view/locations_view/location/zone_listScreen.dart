@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
+import '../controller/lacations_controller.dart';
 
 class ZoneListScreen extends StatefulWidget {
   ZoneListScreen({super.key});
@@ -22,9 +23,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
 
-  DriverController controller = Get.isRegistered<DriverController>()
-      ? Get.find<DriverController>()
-      : Get.put(DriverController());
+  LocationController controller = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>()
+      : Get.put(LocationController());
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(
+      child: GetBuilder<LocationController>(
           builder: (controller) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
@@ -70,34 +71,12 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                 children: [
                   Row(
                     children: [
-                      Text("Zone"+" (7)",
+                      Text("Zones",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17
                         ),
                       ),
-                      SizedBox(
-                        width: 20,
-                      ),
-
-
-                      SizedBox(
-                        width: 60,
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: DynamicColors.primaryClr,
-                            borderRadius: BorderRadius.circular(8)
-                        ),
-                        child: IconButton(
-                            padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                            onPressed: (){
-
-                            }, icon: Icon(Icons.refresh,
-                          color: DynamicColors.whiteClr,
-                          size: 25,
-                        )),
-                      )
                     ],
                   ),
                   SizedBox(
@@ -121,12 +100,10 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                             border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
                         ),
                         columns: [
-                          buildHeaderWithSearch(title: "Name"),
-                          buildHeaderWithSearch(title: "PostCode"),
-                          buildHeaderWithSearch(title: "ShortCuts"),
-                          buildHeaderWithSearch(title: "Address"),
-                          buildHeaderWithSearch(title: "Location Type"),
-                          buildHeaderWithSearch(title: "Zone"),
+                          buildHeaderWithSearch(title: "NAME"),
+                          buildHeaderWithSearch(title: "SHORT NAME"),
+                          buildHeaderWithSearch(title: "TYPES"),
+                          buildHeaderWithSearch(title: "CATEGORY"),
 
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
@@ -138,8 +115,6 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                               const DataCell(Text("W3BHN")),
                               const DataCell(Text("RA")),
                               const DataCell(Text("Action Town Tube Station W3BHN")),
-                              const DataCell(Text("Railway Statiion")),
-                              const DataCell(Text("2.00 mi")),
 
                               DataCell(
                                 Row(
@@ -149,7 +124,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                         side: BorderSide(color: Colors.transparent,), // border color & thickness
                                       ),
                                       onPressed: () {},
-                                      child: Icon(Icons.search,
+                                      child: Icon(Icons.edit_calendar,
                                         size: 28,
                                       ),
                                     ),

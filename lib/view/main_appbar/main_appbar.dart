@@ -33,6 +33,7 @@ import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
 import '../locations_view/location/plotting_Screen.dart';
 import '../locations_view/location/zone_listScreen.dart';
+import '../locations_view/location/zone_screen.dart';
 
 class MainAppBar extends StatelessWidget {
   MainAppBar({super.key});
@@ -582,8 +583,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE ZONE",
           onTap: () {
             setState(() {
-              _currentPage = LocationListScreen();
-              controller.menuBarRefresh(title: "CREATE ZONE", pageName: LocationListScreen());
+              _currentPage = ZoneScreen();
+              controller.menuBarRefresh(title: "CREATE ZONE", pageName: ZoneScreen());
             });
           },
         ),
@@ -605,7 +606,7 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-        NestedMenuItem(
+  /*      NestedMenuItem(
           title: "PLOTTING",
           onTap: () {
             setState(() {
@@ -613,7 +614,7 @@ class _MyHomePageState extends State<MyHomePage> {
               controller.menuBarRefresh(title: "PLOTTING", pageName: ManagePostcodes());
             });
           },
-        ),
+        ),*/
       ]),
       NestedMenuItem(title: "DRIVERS", children: [
         NestedMenuItem(

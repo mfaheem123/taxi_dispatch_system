@@ -195,4 +195,5 @@ class AppText{
   static get extraDropOff => "EXTRA DROPOFF";
   static get congestion => "CONGESTION";
   static get fareMeterConfiguration => "FARE METER CONFIGURATIONS";
+  static get blackList => "BLACKLIST";
 }
