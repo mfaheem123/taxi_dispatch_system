@@ -10,21 +10,22 @@ import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../drivers_view/controller/driver_controller.dart';
+import 'controller/account_controller.dart';
 
-class ListOfAccountscreen extends StatefulWidget {
-  ListOfAccountscreen({super.key});
+class ListOfAccountScreen extends StatefulWidget {
+  ListOfAccountScreen({super.key});
 
   @override
-  State<ListOfAccountscreen> createState() => _ListOfAccountscreenState();
+  State<ListOfAccountScreen> createState() => _ListOfAccountScreenState();
 }
 
-class _ListOfAccountscreenState extends State<ListOfAccountscreen> {
+class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
 
-  DriverController controller = Get.isRegistered<DriverController>()
-      ? Get.find<DriverController>()
-      : Get.put(DriverController());
+  AccountController controller = Get.isRegistered<AccountController>()
+      ? Get.find<AccountController>()
+      : Get.put(AccountController());
 
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _ListOfAccountscreenState extends State<ListOfAccountscreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(
+      child: GetBuilder<AccountController>(
           builder: (controller) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
@@ -70,7 +71,7 @@ class _ListOfAccountscreenState extends State<ListOfAccountscreen> {
                 children: [
                   Row(
                     children: [
-                      Text("ACCOUNTS"+" (7)",
+                      Text("ACCOUNTS (7)",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17
@@ -124,6 +125,7 @@ class _ListOfAccountscreenState extends State<ListOfAccountscreen> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
+                        columnSpacing: 20,
                         headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                         dataRowMinHeight: 48,
                         dataRowMaxHeight: 56,

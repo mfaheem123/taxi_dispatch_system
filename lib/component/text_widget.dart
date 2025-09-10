@@ -196,4 +196,8 @@ class AppText{
   static get congestion => "CONGESTION";
   static get fareMeterConfiguration => "FARE METER CONFIGURATIONS";
   static get blackList => "BLACKLIST";
+  static get customerInvoice => "CUSTOMER INVOICE";
+  static get invoiceDate => "INVOICE DATE";
+  static get invoiceDueDate => "INVOICE DUE DATE";
+  static get invoice => "INVOICE";
 }

@@ -7,7 +7,7 @@ import 'dart:html' as html;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  disableInspect();
+  // disableInspect();
   html.document.documentElement?.requestFullscreen();
   runApp(MyApp());
 }

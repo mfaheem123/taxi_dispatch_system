@@ -1,7 +1,12 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class CreateUserscreen extends StatelessWidget {
-  CreateUserscreen({super.key});
+class CreateUserScreen extends StatelessWidget {
+  CreateUserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,14 +80,14 @@ class CreateUserscreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: screenHeight / 20,
+            // height: screenHeight / 20,
             width: double.infinity,
             color: Colors.grey.withOpacity(0.3),
             child:  Padding(
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
               child: Text(
                 "USER",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: DynamicColors.textClr),
               ),
             ),
           ),
@@ -91,7 +96,7 @@ class CreateUserscreen extends StatelessWidget {
             padding:  EdgeInsets.all(16.0),
             child: Wrap(
               runSpacing: 16,
-              spacing: 16,
+              spacing: 20,
               children: [
                 _buildTextField("USERNAME"),
                 _buildTextField("EMAIL"),
@@ -115,23 +120,18 @@ class CreateUserscreen extends StatelessWidget {
            SizedBox(height: 20),
 
           Container(
-            height: screenHeight / 20,
+            // height: screenHeight / 20,
             width: double.infinity,
             color: Colors.grey.withOpacity(0.3),
-            child: Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding:
-                   EdgeInsets.symmetric(horizontal: 120, vertical: 14),
-                ),
-
-                onPressed: () {},
-                child:  Text(
-                  "SAVE",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
+            padding:
+            EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+            child: CustomButton(
+              height: 30,
+              width: Get.width/3,
+              verticalPadding: 0.0,
+              borderRadius: 4,
+              style: mozillaTextSemiBoldText(fontSize: 12,color: DynamicColors.whiteClr),
+              btnText: AppText.save,
             ),
           ),
         ],
@@ -141,10 +141,13 @@ class CreateUserscreen extends StatelessWidget {
 
   static Widget _buildTextField(String label) {
     return SizedBox(
-      width: 300,
+      width: Get.width/4,
+      height: 30,
       child: TextField(
+        style: mozillaTextRegularText(fontSize: 10,),
         decoration: InputDecoration(
-          labelText: label,
+          hintText: label,
+          hintStyle: mozillaTextRegularText(fontSize: 10,),
           border:  OutlineInputBorder(),
           isDense: true,
           contentPadding:  EdgeInsets.all(12),
@@ -155,11 +158,14 @@ class CreateUserscreen extends StatelessWidget {
 
   static Widget _buildPasswordField(String label) {
     return SizedBox(
-      width: 300,
+      width: Get.width/4,
+      height: 30,
       child: TextField(
         obscureText: true,
+        style: mozillaTextRegularText(fontSize: 10,),
         decoration: InputDecoration(
-          labelText: label,
+          hintText: label,
+          hintStyle: mozillaTextRegularText(fontSize: 10,),
           border:  OutlineInputBorder(),
           isDense: true,
           contentPadding:  EdgeInsets.all(12),
@@ -170,20 +176,27 @@ class CreateUserscreen extends StatelessWidget {
 
   static Widget _buildDropdownField(String label, List<String> items) {
     return SizedBox(
-      width: 300,
+      width: Get.width/4,
+      height: 30,
       child: InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
+          hint: Text(label),
+          hintStyle: mozillaTextRegularText(fontSize: 10,),
           border:  OutlineInputBorder(),
-          contentPadding:  EdgeInsets.all(12),
+          contentPadding: EdgeInsets.all(12),
         ),
         child: DropdownButtonHideUnderline(
           child: DropdownButton<String>(
             value: items.first,
+            isDense: true,              // ✅ removes vertical padding
+            isExpanded: true,           // ✅ makes text align properly
+            icon: const Icon(Icons.arrow_drop_down, size: 16), // smaller icon
             items: items.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value),
+                child: Text(value,
+                  style: mozillaTextRegularText(fontSize: 10,),
+                ),
               );
             }).toList(),
             onChanged: (_) {},

@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../tabbarview.dart';
+import '../accounts/Invoice/invoice_list.dart';
+import '../accounts/list_of_accountScreen.dart';
+import '../administration/User/create_userScreen.dart';
+import '../administration/User/user_listScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
 import 'package:nested_menu_bar/nested_menu_bar.dart';
@@ -764,7 +768,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "LIST OF ACCOUNTS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = ListOfAccountScreen();
+              controller.menuBarRefresh(title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "CREATE CUSTOMER INVOICE",
@@ -772,7 +781,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "LIST OF CUSTOMER INVOICES",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = InvoiceList();
+              controller.menuBarRefresh(title: "LIST OF ACCOUNTS", pageName: InvoiceList());
+            });
+          },
         ),
         NestedMenuItem(
           title: "CREATE ACCOUNT INVOICE",
@@ -804,11 +818,35 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(title: "ADMINISTRATIONS", children: [
         NestedMenuItem(
             title: "USERS",
-            onTap: () => message(context, "DevOps"),
             children: [
-
               NestedMenuItem(
-                title: "USER 1",
+                title: "CREATE USER",
+                onTap: () {
+                  setState(() {
+                    _currentPage = CreateUserScreen();
+                    controller.menuBarRefresh(title: "CREATE USER", pageName: CreateUserScreen());
+                  });
+                },
+              ),
+              NestedMenuItem(
+                title: "USERS",
+                onTap: () {
+                  setState(() {
+                    _currentPage = UserListscreen();
+                    controller.menuBarRefresh(title: "CREATE USER", pageName: UserListscreen());
+                  });
+                },
+              ),
+              NestedMenuItem(
+                title: "CREATE SUBSIDIARY",
+                onTap: () => message(context, "DevOps"),
+              ),
+              NestedMenuItem(
+                title: "SUBSIDIARIES",
+                onTap: () => message(context, "DevOps"),
+              ),
+              NestedMenuItem(
+                title: "AUTHORIZATION",
                 onTap: () => message(context, "DevOps"),
               ),
             ]
