@@ -124,73 +124,75 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
 
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                        columnSpacing: 20,
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          buildHeaderWithSearch(title: "NAME"),
-                          buildHeaderWithSearch(title: "ACCOUNT TYPE"),
-                          buildHeaderWithSearch(title: "ADDRESS"),
-                          buildHeaderWithSearch(title: "EMAIL"),
-                          buildHeaderWithSearch(title: "MOBILE"),
-                          buildHeaderWithSearch(title: "TELEPHONE"),
-                          buildHeaderWithSearch(title: "CONTACT NAME"),
-                          buildHeaderWithSearch(title: "SUBSIDIARY"),
-                          buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("Saloon")),
-                              const DataCell(Text("4")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("£ 7.00")),
-                              const DataCell(Text("2.00 mi")),
-                              const DataCell(Text("2.00 mi")),
-                              const DataCell(Text("2.00 mi")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
+                    child: SizedBox(width: Get.width,
+                      child: DataTable(
+                          columnSpacing: 20,
+                          headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                          dataRowMinHeight: 48,
+                          dataRowMaxHeight: 56,
+                          headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+                          dataTextStyle: TextStyle(
+                            fontSize: 10,
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                          ),
+                          columns: [
+                            buildHeaderWithSearch(title: "NAME"),
+                            buildHeaderWithSearch(title: "ACCOUNT TYPE"),
+                            buildHeaderWithSearch(title: "ADDRESS"),
+                            buildHeaderWithSearch(title: "EMAIL"),
+                            buildHeaderWithSearch(title: "MOBILE"),
+                            buildHeaderWithSearch(title: "TELEPHONE"),
+                            buildHeaderWithSearch(title: "CONTACT NAME"),
+                            buildHeaderWithSearch(title: "SUBSIDIARY"),
+                            buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                          ],
+                          rows: List.generate(totalRows, (index) {
+                            bool isSelected = index == selectedRowIndex;
+                            return DataRow(
+                              cells: [
+                                const DataCell(Text("Saloon")),
+                                const DataCell(Text("4")),
+                                const DataCell(Text("2")),
+                                const DataCell(Text("2")),
+                                const DataCell(Text("£ 7.00")),
+                                const DataCell(Text("2.00 mi")),
+                                const DataCell(Text("2.00 mi")),
+                                const DataCell(Text("2.00 mi")),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                        ),
+                                        onPressed: () {},
+                                        child: Icon(Icons.search,
+                                          size: 28,
+                                        ),
                                       ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.search,
-                                        size: 28,
+                                      Text("|"),
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                        ),
+                                        onPressed: () {},
+                                        child: Icon(Icons.delete_forever,
+                                          size: 28,
+                                        ),
                                       ),
-                                    ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        })
+                              ],
+                            );
+                          })
+                      ),
                     ),
                   )
                 ],

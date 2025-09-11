@@ -348,8 +348,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? AccountView(),
-                  // _currentPage ?? ByDefaultDashboard(),
+                  _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -766,7 +765,12 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(title: "ACCOUNTS", children: [
         NestedMenuItem(
           title: "CREATE ACCOUNT",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = AccountView();
+              controller.menuBarRefresh(title: "LIST OF ACCOUNTS", pageName: AccountView());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LIST OF ACCOUNTS",
