@@ -200,4 +200,11 @@ class AppText{
   static get invoiceDate => "INVOICE DATE";
   static get invoiceDueDate => "INVOICE DUE DATE";
   static get invoice => "INVOICE";
+  static get feeSection => "FEES SECTION";
+  static get webLogin => "WEB LOGINS";
+  static get department => "DEPARTMENTS";
+  static get contact => "CONTACTS";
+  static get companyAddress => "COMPANY ADDRESSES";
+  static get code => "CODE";
+  static get accountType => "ACCOUNT TYPE";
 }

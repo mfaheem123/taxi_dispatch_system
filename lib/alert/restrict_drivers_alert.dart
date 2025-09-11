@@ -319,9 +319,14 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.titleText??AppText.selectDriver,
-                style: mozillaTextRegularText( fontSize: 12, ),
+              SizedBox(
+                width: widget.width!/1.3,
+                child: Text(
+                  widget.titleText??AppText.selectDriver,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: mozillaTextRegularText(fontSize: 12, ),
+                ),
               ),
               Icon(Icons.arrow_drop_down)
             ],

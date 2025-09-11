@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../tabbarview.dart';
 import '../accounts/Invoice/invoice_list.dart';
+import '../accounts/account/account_view.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
@@ -347,7 +348,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? ByDefaultDashboard(),
+                  _currentPage ?? AccountView(),
+                  // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );

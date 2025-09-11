@@ -78,7 +78,7 @@ class _CustomerInvoiceListState extends State<CustomerInvoiceList> {
                   Row(
                     children: [
 
-                      Text("USER"+" (7)",
+                      Text("USER (7)",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17
