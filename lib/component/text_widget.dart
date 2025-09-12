@@ -235,4 +235,7 @@ class AppText{
   static get clearJobSms => "CLEAR JOB SMS";
   static get agentCommission => "AGENT COMMISSION";
   static get agentCommissionType => "AGENT COMMISSION TYPE";
+  static get templateSettings => "TEMPLATE SETTINGS";
+  static get templateSelection => "TEMPLATE SELECTION";
+  static get tags => "TAGS";
 }

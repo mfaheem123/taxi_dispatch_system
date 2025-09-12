@@ -70,7 +70,7 @@ class _CreateEscoptState extends State<CreateEscopt> {
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: DynamicColors.gryClr)
                   ),
-                    // child: Text(data),
+                    child: Text(AppText.uploadImage),
                 ),
               ],
             );

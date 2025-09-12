@@ -1,16 +1,13 @@
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
-
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
-import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/account_controller.dart';
 
 class AccountView extends StatefulWidget {

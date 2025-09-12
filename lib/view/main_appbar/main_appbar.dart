@@ -5,6 +5,7 @@ import '../../component/color.dart';
 import '../../tabbarview.dart';
 import '../accounts/Invoice/invoice_list.dart';
 import '../accounts/account/account_view.dart';
+import '../accounts/account/create_escopt.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
@@ -39,6 +40,7 @@ import '../locations_view/location/location_listScreen.dart';
 import '../locations_view/location/plotting_Screen.dart';
 import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
+import '../setting/template_settings.dart';
 
 class MainAppBar extends StatelessWidget {
   MainAppBar({super.key});
@@ -348,7 +350,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? ByDefaultDashboard(),
+                  _currentPage ?? TemplateSettings(),
+                  // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -358,7 +361,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<NestedMenuItem> _makeMenus(BuildContext context) {
-
     return [
       NestedMenuItem(
         title: "NEXUS",
@@ -761,7 +763,6 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
       ]),
 
-
       NestedMenuItem(title: "ACCOUNTS", children: [
         NestedMenuItem(
           title: "CREATE ACCOUNT",
@@ -779,6 +780,13 @@ class _MyHomePageState extends State<MyHomePage> {
               _currentPage = ListOfAccountScreen();
               controller.menuBarRefresh(title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
             });
+          },
+        ),
+        NestedMenuItem(
+          title: "ESCORT",
+          onTap: () {
+            _currentPage = CreateEscopt();
+            controller.menuBarRefresh(title: "ESCORT", pageName: CreateEscopt());
           },
         ),
         NestedMenuItem(
