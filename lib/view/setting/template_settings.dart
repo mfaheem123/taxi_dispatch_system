@@ -44,10 +44,51 @@ class _TemplateSettingsState extends State<TemplateSettings> {
   DropdownModel? selectedTag;
 
   List<DropdownModel> templateList = [
-    DropdownModel(id:1, name: "VIAPOINTS"),
-    DropdownModel(id:2, name: "CUSTOMER"),
-    DropdownModel(id:3, name: "CUSTOMER EMAIL"),
+    DropdownModel(id:1, name: "REFERNCE NUMBER"),
+    DropdownModel(id:2, name: "PICKUP DOOR NUMBER"),
+    DropdownModel(id:3, name: "DROPOFF DOOR NUMBER"),
+    DropdownModel(id:4, name: "PICKUP POINT"),
+    DropdownModel(id:4, name: "DROPOFF POINT"),
+    DropdownModel(id:4, name: "VIAPOINTS"),
+    DropdownModel(id:4, name: "CUSTOMER"),
+    DropdownModel(id:4, name: "CUSTOMER EMAIL"),
     DropdownModel(id:4, name: "CUSTOMER MOBILE"),
+    DropdownModel(id:4, name: "CUSTOMER TELEPHONE"),
+    DropdownModel(id:4, name: "DATETIME"),
+    DropdownModel(id:4, name: "DATE"),
+    DropdownModel(id:4, name: "TIME"),
+    DropdownModel(id:4, name: "JOURNEY TYPE"),
+    DropdownModel(id:4, name: "ACCOUNT"),
+    DropdownModel(id:4, name: "VEHICLE TYPE"),
+    DropdownModel(id:4, name: "VEHICLE MAKE"),
+    DropdownModel(id:4, name: "VEHICLE MODEL"),
+    DropdownModel(id:4, name: "VEHICLE COLOR"),
+    DropdownModel(id:4, name: "VEHICLE NUMBER"),
+    DropdownModel(id:4, name: "DRIVER NAME"),
+    DropdownModel(id:4, name: "PASSENGERS"),
+    DropdownModel(id:4, name: "CHILD SEATS"),
+    DropdownModel(id:4, name: "LUGGAGES"),
+    DropdownModel(id:4, name: "HAND LUGGAGES"),
+    DropdownModel(id:4, name: "NOTES"),
+    DropdownModel(id:4, name: "PAYMENT TYPE"),
+    DropdownModel(id:4, name: "FARES"),
+    DropdownModel(id:4, name: "COMPANY CHARGES"),
+    DropdownModel(id:4, name: "PARKING CHARGES"),
+    DropdownModel(id:4, name: "CONGESTION CHARGES"),
+    DropdownModel(id:4, name: "MEET & GREET CHARGES"),
+    DropdownModel(id:4, name: "WAITING CHARGES"),
+    DropdownModel(id:4, name: "EXTRA DROPOFF CHARGES"),
+    DropdownModel(id:4, name: "CREDIT CARD CHARGES"),
+    DropdownModel(id:4, name: "T/FARES"),
+    DropdownModel(id:4, name: "RETURN FARES"),
+    DropdownModel(id:4, name: "MILES"),
+    DropdownModel(id:4, name: "COMPANY NAME"),
+    DropdownModel(id:4, name: "COMPANY TELEPHONE NUMBER"),
+    DropdownModel(id:4, name: "COMPANY EMAIL"),
+    DropdownModel(id:4, name: "COMPANY ADDRESS"),
+    DropdownModel(id:4, name: "FLIGHT NUMBER"),
+    DropdownModel(id:4, name: "ARRIVING FROM"),
+
   ];
 
   @override
@@ -92,7 +133,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                     runSpacing: 10,
                     children: [
                       Container(
-                        width: fieldWidth*2.5,
+                        // width: fieldWidth*2.5,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: DynamicColors.textClr)
@@ -125,7 +166,27 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   controller.update();
                                 },
                               ),
-                              CustomDropdownField<String>(
+                              CustomDropdownField<DropdownModel>(
+                                label: "Select User",
+                                items: selectTemplateList,
+                                value: selectedTemplateValue,
+                                itemLabel: (templateList) => templateList.name!, // show name
+                                onChanged: (val) {
+                                  controller.templateTitleController.clear();
+                                  selectedTemplateValue = val;
+                                  controller.insertTagValue(value: val?.templateValue,temFormate: true);
+                                  print("Selected User ID: ${val?.id}");
+                                },
+                              ),
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.emailController,
+                                width: fieldWidth/1.5,
+                                hintText: AppText.email,
+                                // columnText: true,
+                                height: 30,
+                              ),
+                              /*CustomDropdownField<String>(
                                 width: fieldWidth/1.5,
                                 label: "SELECT TEMPLATE", items:[
                                 "DRIVER DISPATCH",
@@ -140,9 +201,17 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   controller.selectedTemplate = val;
                                   controller.update();
                                 },
-                              ),
-                              SizedBox(
-                                width: 15,
+                              ),*/
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                child: CustomButton(
+                                  width: fieldWidth/2.5,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  verticalPadding: 0.0,
+                                  fontSize: 11,
+                                  btnText: AppText.save,
+                                ),
                               ),
                               CustomButton(
                                 width: fieldWidth/2.5,
@@ -150,8 +219,8 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 borderRadius: 4,
                                 verticalPadding: 0.0,
                                 fontSize: 11,
-                                btnText: AppText.save,
-                              )
+                                btnText: AppText.update,
+                              ),
                             ],
                           ),
                         ),
@@ -172,16 +241,19 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 color: DynamicColors.gryClr.withOpacity(0.5),
                                 child: Text(AppText.tags, style: titleDesign()),
                               ),
-                              CustomDropdownField<DropdownModel>(
-                                label: "Select User",
-                                items: templateList,
-                                value: selectedTag,
-                                itemLabel: (templateList) => templateList.name!, // show name
-                                onChanged: (val) {
-                                  selectedTag = val;
-                                  controller.insertTagValue(value: val?.name);
-                                  print("Selected User ID: ${val?.id}");
-                                },
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12.0,vertical: 8),
+                                child: CustomDropdownField<DropdownModel>(
+                                  label: "Select User",
+                                  items: templateList,
+                                  value: selectedTag,
+                                  itemLabel: (templateList) => templateList.name!, // show name
+                                  onChanged: (val) {
+                                    selectedTag = val;
+                                    controller.insertTagValue(value: val?.name);
+                                    print("Selected User ID: ${val?.id}");
+                                  },
+                                ),
                               ),
                        /*       CustomButton(
                                 width: fieldWidth/2.5,
@@ -195,8 +267,12 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                           )
                         ),
                       ),
-                      SizedBox(
+                      Container(
                           width: fieldWidth*2.4,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: DynamicColors.textClr)
+                          ),
                           // height: 300,
                           child: HtmlEditor(
                             controller: controller.templateTitleController,
@@ -205,6 +281,8 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               shouldEnsureVisible: true,
                               //initialText: "<p>text content initial, if any</p>",
                             ),
+
+
                             htmlToolbarOptions: HtmlToolbarOptions(
                               toolbarPosition: ToolbarPosition.aboveEditor, //by default
                               toolbarType: ToolbarType.nativeScrollable, //by default
@@ -225,13 +303,64 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 print(url);
                                 return true;
                               },
-                              mediaUploadInterceptor:
-                                  (PlatformFile file, InsertFileType type) async {
-                                print(file.name); //filename
-                                print(file.size); //size in bytes
-                                print(file.extension); //file extension (eg jpeg or mp4)
-                                return true;
-                              },
+                              defaultToolbarButtons: [
+                                StyleButtons(
+                                  style: false,
+                                ),
+                                FontButtons(
+                                  bold: true,
+                                  italic: true,
+                                  underline: true,
+                                  subscript: false,
+                                  strikethrough: false,
+                                  superscript: false,
+                                ),
+                                ColorButtons(
+                                  highlightColor: true,
+                                  foregroundColor: false
+                                ),
+                                FontSettingButtons(
+                                  fontName: false,
+                                  fontSize: false,
+                                  fontSizeUnit: false
+                                ),
+                                ParagraphButtons(
+                                  alignCenter: true,
+                                  alignJustify: true,
+                                  alignLeft: true,
+                                  alignRight: true,
+                                  caseConverter: false,
+                                  decreaseIndent: false,
+                                  increaseIndent: false,
+                                  lineHeight: false,
+                                  textDirection: false
+                                ),
+                                StyleButtons(style: false),
+                                const FontSettingButtons(
+                                    fontSize: false,
+                                    fontName: false,
+                                    fontSizeUnit: false,
+                                ), // optional (font size, color)
+                                const ListButtons(listStyles: false), // disable list buttons
+                                const InsertButtons(
+                                    audio: false,
+                                    video: false,
+                                    table: false,
+                                    hr: false,
+                                    link: false,
+                                    otherFile: false,
+                                    picture: false
+                                ),
+                                const OtherButtons(
+                                  codeview: false,
+                                  help: false,
+                                  copy: false,
+                                  paste: false,
+                                  fullscreen: false,
+                                  redo: false,
+                                  undo: false,
+                                ),
+                              ],
                             ),
                             otherOptions: OtherOptions(height: 300),
                             callbacks: Callbacks(onBeforeCommand: (String? currentHtml) {
@@ -322,4 +451,19 @@ class _TemplateSettingsState extends State<TemplateSettings> {
       }
     );
   }
+
+  DropdownModel? selectedTemplateValue;
+
+  List<DropdownModel> selectTemplateList = [
+    DropdownModel(id:1, name: "DRIVER DISPATCH", templateValue: "{{payment_type}} booking | {{reference_number}}customer: {{customer}}mobile: {{customer_mobile}}ph: {{customer_telephone}}{{pickup_door_number}}pickup: {{pickup}}{{viapoints}}{{dropoff_door_number}}dropoff: {{dropoff}}{{flight_number}}{{arriving_from}}pickup date: {{date}}pickup time: {{time}}fares: {{fares}} gbpVEHICLE: {{vehicle_type}}payment type: {{payment_type}}{{special_instructions}}{{company_name}}* reply to these messages are not monitored"),
+    DropdownModel(id:2, name: "CUSTOMER DISPATCH", templateValue: "thank you for booking with {{company_name}} ({{company_telephone}})vehicle: {{vehicle_type}}colour: {{vehicle_color}}make: {{vehicle_make}}model: {{vehicle_model}}reg #: {{vehicle_number}}driver {{driver_name}} will be there with you shortlyfares: {{fares}} gbpmail us on {{company_email}}call us on {{company_telephone}}plus car park/DROP OFF for airport TRANSFERS onlyplease do not replyreply to these messages are not monitored"),
+    DropdownModel(id:3, name: "NORMAL ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
+    DropdownModel(id:4, name: "AIRPORT ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
+    DropdownModel(id:5, name: "BOOKING CONFIRMATION SMS", templateValue: "DO NOT REPLY.Your car has been booked, From {{pickup_door_number}} {{pickup}} {{viapoints}} {{dropoff_door_number}} {{dropoff}} For {{customer}} at {{date}} {{time}} Fare: {{fares}} GBP TOtal Fare: {{total_fares}} gbp. Thank you for booking with {{company_name}} {{company_telephone}}.Reply to these messages are not monitored."),
+    DropdownModel(id:6, name: "BOOKING CANCEL SMS", templateValue: "DO NOT REPLY.Your booking has been canceled. However, if you still require the taxi, please call the office direct on {{company_telephone}}.Thank you"),
+    DropdownModel(id:6, name: "BOOKING COMPLETE SMS", templateValue: "DO NOT REPLY.Thank you for booking with {{company_name}} ({{company_telephone}}). We hope to serve your again with our best services.Kindly send us your feedback via Call or email on {{company_email}}{{company_telephone}}Reply to these messages are not monitored."),
+    DropdownModel(id:6, name: "MULTIBOOKING CONFIRMATION MESSAGE", templateValue: "do not replyyour car has booked from {{pickup}} to {{dropoff}} for {{customer}} from {{from}} to {{to}}, you need to pay {{fares}} gbp each.thank you for booking with {{company_name}}. for query call us on {{company_telephone}}* reply to these messages are not monitored"),
+    DropdownModel(id:6, name: "BOOKING QUOTATION SMS", templateValue: "DO NOT REPLYBOOKING QUOTATIONThank you for your inquiry about booking information with {{company_name}}Journey details; {{reference_number}}Pickup {{date}} {{time}}From: {{pickup}}To:{{dropoff}}fare: {{total_fares}}\"Please call us at {{company_telephone}} for confirmation or to make any amendments.\"* reply to these messages are not monitored"),
+  ];
+
 }

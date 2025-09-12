@@ -238,4 +238,5 @@ class AppText{
   static get templateSettings => "TEMPLATE SETTINGS";
   static get templateSelection => "TEMPLATE SELECTION";
   static get tags => "TAGS";
+  static get update => "update";
 }

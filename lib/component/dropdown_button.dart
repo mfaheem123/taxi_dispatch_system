@@ -30,6 +30,7 @@ class CustomDropdownField<T> extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           hintText: label,
+          fillColor: Colors.transparent,
           hintStyle: mozillaTextRegularText(fontSize: 10),
           border: const OutlineInputBorder(),
           contentPadding: const EdgeInsets.all(12),
@@ -39,6 +40,7 @@ class CustomDropdownField<T> extends StatelessWidget {
             value: value,
             isDense: true,
             isExpanded: true,
+              alignment: Alignment.bottomCenter,
             icon: const Icon(Icons.arrow_drop_down, size: 16),
             items: items.map((T val) {
               return DropdownMenuItem<T>(
@@ -50,6 +52,7 @@ class CustomDropdownField<T> extends StatelessWidget {
               );
             }).toList(),
             onChanged: onChanged,
+
           ),
         ),
       ),
@@ -61,6 +64,7 @@ class CustomDropdownField<T> extends StatelessWidget {
 class DropdownModel {
   int? id;
   String? name;
+  String? templateValue;
 
-  DropdownModel({this.id, this.name});
+  DropdownModel({this.id, this.name, this.templateValue});
 }
