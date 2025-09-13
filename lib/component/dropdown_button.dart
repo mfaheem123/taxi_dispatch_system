@@ -10,13 +10,15 @@ class CustomDropdownField<T> extends StatelessWidget {
   final T? value;
   final String Function(T) itemLabel; // 👈 how to display text
   final Function(T?) onChanged;
+  String? text;
 
-  const CustomDropdownField({
+  CustomDropdownField({
     super.key,
     this.label,
     required this.items,
     this.width,
     this.height,
+    this.text,
     this.value,
     required this.itemLabel,
     required this.onChanged,
@@ -24,38 +26,44 @@ class CustomDropdownField<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: width ?? Get.width / 4,
-      height: height ?? 30,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          hintText: label,
-          fillColor: Colors.transparent,
-          hintStyle: mozillaTextRegularText(fontSize: 10),
-          border: const OutlineInputBorder(),
-          contentPadding: const EdgeInsets.all(12),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<T>(
-            value: value,
-            isDense: true,
-            isExpanded: true,
-              alignment: Alignment.bottomCenter,
-            icon: const Icon(Icons.arrow_drop_down, size: 16),
-            items: items.map((T val) {
-              return DropdownMenuItem<T>(
-                value: val,
-                child: Text(
-                  itemLabel(val), // ✅ how we display dynamic object
-                  style: mozillaTextRegularText(fontSize: 10),
-                ),
-              );
-            }).toList(),
-            onChanged: onChanged,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        text != null?Text(text!, style: mozillaTextSemiBoldText(context: context, fontSize: 13)):SizedBox.shrink(),
+        SizedBox(
+          width: width ?? Get.width / 4,
+          height: height ?? 30,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              hintText: label,
+              fillColor: Colors.transparent,
+              hintStyle: mozillaTextRegularText(fontSize: 10),
+              border: const OutlineInputBorder(),
+              contentPadding: const EdgeInsets.all(12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<T>(
+                value: value,
+                isDense: true,
+                isExpanded: true,
+                  alignment: Alignment.bottomCenter,
+                icon: const Icon(Icons.arrow_drop_down, size: 16),
+                items: items.map((T val) {
+                  return DropdownMenuItem<T>(
+                    value: val,
+                    child: Text(
+                      itemLabel(val), // ✅ how we display dynamic object
+                      style: mozillaTextRegularText(fontSize: 10),
+                    ),
+                  );
+                }).toList(),
+                onChanged: onChanged,
 
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

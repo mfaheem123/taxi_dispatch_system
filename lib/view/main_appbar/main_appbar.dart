@@ -9,6 +9,12 @@ import '../accounts/account/create_escopt.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
+import '../customer/add_customerScreen.dart';
+import '../customer/complaints.dart';
+import '../customer/create_complaint.dart';
+import '../customer/create_lost_propertyScreen.dart';
+import '../customer/customers_screen.dart';
+import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
 import 'package:nested_menu_bar/nested_menu_bar.dart';
@@ -350,8 +356,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? TemplateSettings(),
-                  // _currentPage ?? ByDefaultDashboard(),
+                  // _currentPage ?? ComplaintsView(),
+                  _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -472,28 +478,59 @@ class _MyHomePageState extends State<MyHomePage> {
       ),*/
       NestedMenuItem(title: "CUSTOMERS", children: [
         NestedMenuItem(
-          title: "CREATE BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "ADD CUSTOMER",
+          onTap: () {
+            setState(() {
+              _currentPage = CustomerFormScreen();
+              controller.menuBarRefresh(title: "ADD CUSTOMER", pageName: CustomerFormScreen());
+            });
+          },
         ),
         NestedMenuItem(
-          title: "LIST OF BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "CUSTOMERS",
+          onTap: () {
+            setState(() {
+              _currentPage = CustomersScreen();
+              controller.menuBarRefresh(title: "CUSTOMERS", pageName: CustomersScreen());
+            });
+          },
         ),
         NestedMenuItem(
-          title: "LIST OF WEB BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "CREATE LOST PROPERTY",
+          onTap: () {
+            setState(() {
+              _currentPage = LostPropertyScreen();
+              controller.menuBarRefresh(title: "CREATE LOST PROPERTY", pageName: LostPropertyScreen());
+            });
+          },
         ),
         NestedMenuItem(
-          title: "LIST OF APP BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "LOST PROPERTY",
+          onTap: () {
+            setState(() {
+              _currentPage = LostProperty();
+              controller.menuBarRefresh(title: "LOST PROPERTY", pageName: LostProperty());
+            });
+          },
         ),
         NestedMenuItem(
-          title: "LIST OF MULTI BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "CREATE COMPLAINT",
+          onTap: () {
+            setState(() {
+              _currentPage = CreateComplaint();
+              controller.menuBarRefresh(title: "CREATE COMPLAINT", pageName: CreateComplaint());
+            });
+          },
         ),
         NestedMenuItem(
-          title: "LIST OF TRASH BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          title: "COMPLAINTS",
+          onTap: () {
+
+            setState(() {
+              _currentPage = ComplaintsView();
+              controller.menuBarRefresh(title: "COMPLAINTS", pageName: ComplaintsView());
+            });
+          },
         ),
       ]),
       NestedMenuItem(title: "FARES", children: [

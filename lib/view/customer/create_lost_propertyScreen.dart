@@ -1,206 +1,309 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class LostPropertyScreen extends StatelessWidget {
+import '../../component/textStyle.dart';
+import '../../component/text_field.dart';
+import '../../component/text_widget.dart';
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/booking_table.dart';
+import '../dashboard_view/widgets/time_picker_widget.dart';
+import '../dashboard_view/widgets/user_info_widget.dart';
+import 'controller/customer_controller.dart';
+
+class LostPropertyScreen extends StatefulWidget {
   const LostPropertyScreen({super.key});
 
   @override
+  State<LostPropertyScreen> createState() => _LostPropertyScreenState();
+
+}
+
+class _LostPropertyScreenState extends State<LostPropertyScreen> {
+
+  CustomerController controller = Get.isRegistered<CustomerController>()
+      ? Get.find<CustomerController>()
+      : Get.put(CustomerController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    shortCutKeyValue.value = "lostPropertyScreen";
+  }
+
+  int selectedRowIndex = 0; // currently selected row
+  final int totalRows = 1;  // total rows (dynamic list ke hisaab se change hoga)
+
+  @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    double width = WidgetsBinding
+        .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return Container(
+    return GetBuilder<CustomerController>(
+        builder: (controller) {
 
-      color: Colors.grey[200],
-      alignment: Alignment.topCenter,
+          return LayoutBuilder(builder: (context, constraints) {
+            final double maxWidth = constraints.maxWidth;
+            final bool isMobile = maxWidth < 600;
+            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-      child: SingleChildScrollView(
-        child: Container(
-          constraints: const BoxConstraints(maxWidth: 1200),
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.shade300),
-          ),
+            // Instead of fixed width, we calculate flexible field widths
+            final double fieldWidth = isMobile
+                ? maxWidth // full width
+                : isTablet
+                ? maxWidth / 2
+                : maxWidth / 4;
 
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-
-              // LOST PROPERTY + CUSTOMER
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: _buildLostPropertySection()),
-                  Expanded(child: _buildCustomerSection()),
-                ],
-              ),
-
-              // REF TABLE HEADER
-              Container(
-                color: Colors.grey.shade100,
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: const [
-                    Expanded(child: Text("REF #", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text("DATETIME", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text("VEHICLE", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text("PICKUP", style: TextStyle(fontWeight: FontWeight.bold))),
-                    Expanded(child: Text("DROPOFF", style: TextStyle(fontWeight: FontWeight.bold))),
-                  ],
-                ),
-              ),
-
-              // ENQUIRY HEADER
-              Container(
-                color: Colors.grey.shade100,
-                padding: const EdgeInsets.all(12),
-                child: const Text(
-                  "ENQUIRY",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-
-              // ENQUIRY BODY
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
+            return Column(
+              children: [
+                Wrap(
                   children: [
-
-                    _buildTextField("CHECKED BY"),
-
-                    const SizedBox(height: 16),
-
-                    Row(
-                      children: [
-                        Expanded(child: _buildMultilineTextField("ENQUIRY")),
-                        const SizedBox(width: 16),
-                        Expanded(child: _buildMultilineTextField("RESULT")),
-                      ],
+                    Container(
+                      width: fieldWidth*2.0,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: DynamicColors.gryClr)
+                      ),
+                      child: Wrap(
+                        runSpacing: 18,
+                        spacing: fieldWidth/2,
+                        children: [
+                          Container(
+                            color: Colors.grey.shade100,
+                            padding: const EdgeInsets.all(12),
+                            child: Center(child: Text(AppText.lostProperty, style: titleDesign())),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.reportDate,
+                              width: fieldWidth/1.5,
+                              column: true,
+                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.foundDate,
+                              width: fieldWidth/1.5,
+                              column: true,
+                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.detailOfPropertyController,
+                              width: fieldWidth/1.5,
+                              hintText: AppText.detailOfProperty,
+                              columnText: true,
+                              contentPadding: EdgeInsets.only(left: 10,top: 20),
+                              maxLines: 6,
+                              height: 100,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.methodOfDespositionController,
+                              width: fieldWidth/1.5,
+                              hintText: AppText.methodOfDesposition,
+                              columnText: true,
+                              contentPadding: EdgeInsets.only(left: 10,top: 20),
+                              maxLines: 6,
+                              height: 100,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                    Container(
+                      width: fieldWidth*2.0,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: DynamicColors.gryClr)
+                      ),
+                      child: Wrap(
+                        runSpacing: 18,
+                        spacing: fieldWidth/2,
+                        children: [
+                          Container(
+                            color: Colors.grey.shade100,
+                            padding: const EdgeInsets.all(12),
+                            child: Center(child: Text(AppText.customer, style: titleDesign())),
+                          ),
 
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.nameController,
+                              width: fieldWidth/1.5,
+                              hintText: AppText.name,
+                              columnText: true,
+                              suffixIcon: Icon(Icons.search),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.mobileController,
+                              width: fieldWidth/1.5,
+                              hintText: AppText.mobileNo,
+                              columnText: true,
+                              suffixIcon: Icon(Icons.search),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.address1Controller,
+                              width: fieldWidth/1.5,
+                              hintText: AppText.address,
+                              columnText: true,
+                              contentPadding: EdgeInsets.only(left: 10,top: 20),
+                              maxLines: 6,
+                              height: 100,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-
-              // SAVE BUTTON
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Center(
+                SizedBox(
+                  height: 10,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: 250,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "SAVE",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
+                    width: Get.width,
+                    child: DataTable(
+                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                        dataRowMinHeight: 48,
+                        dataRowMaxHeight: 56,
+                        headingTextStyle: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                        dataTextStyle: TextStyle(
+                          fontSize: 10,
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                        ),
+
+                        columns: [
+                          buildHeaderWithSearch(title: "REF #",removeSearching: true),
+                          buildHeaderWithSearch(title: "DATETIME",removeSearching: true),
+                          buildHeaderWithSearch(title: "VEHICLE",removeSearching: true),
+                          buildHeaderWithSearch(title: "PICKUP",removeSearching: true),
+                          buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
+                        ],
+                        rows: List.generate(totalRows, (index) {
+                          bool isSelected = index == selectedRowIndex;
+                          return DataRow(
+                            cells: [
+                              const DataCell(Text("BCB75029")),
+                              const DataCell(Text("07-08-25 06:07")),
+                              const DataCell(Text("SALOON")),
+                              const DataCell(Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP")),
+                              const DataCell(Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB")),
+                            ],
+                          );
+                        })
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  color: Colors.grey.shade100,
+                  padding: const EdgeInsets.all(12),
+                  child: Center(child: Text(AppText.enquiry, style: titleDesign())),
+                ),
+                Container(
+                  width: fieldWidth*2.0,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: DynamicColors.gryClr)
+                  ),
+                  child: Wrap(
+                    runSpacing: 18,
+                    spacing: fieldWidth/2,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 10),
+                        child: CustomTextField(
+                          borderRadius: 4,
+                          controller: controller.checkedByController,
+                          width: fieldWidth,
+                          hintText: AppText.checkedBy,
+                          columnText: true,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomTextField(
+                          borderRadius: 4,
+                          controller: controller.enquiryController,
+                          width: fieldWidth/1.5,
+                          hintText: AppText.enquiry,
+                          columnText: true,
+                          contentPadding: EdgeInsets.only(left: 10,top: 20),
+                          maxLines: 6,
+                          height: 100,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomTextField(
+                          borderRadius: 4,
+                          controller: controller.resultController,
+                          width: fieldWidth/1.5,
+                          hintText: AppText.result,
+                          columnText: true,
+                          contentPadding: EdgeInsets.only(left: 10,top: 20),
+                          maxLines: 6,
+                          height: 100,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                CustomButton(
+                  borderRadius: 4,
+                  verticalPadding: 0.0,
+                  fontSize: 11,
+                  height: 30,
+                  btnText: AppText.save,
+                ),
 
-  // LOST PROPERTY SECTION
-  Widget _buildLostPropertySection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          color: Colors.grey.shade100,
-          padding: const EdgeInsets.all(12),
-          child: const Text(
-            "LOST PROPERTY",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(child: _buildTextField("REPORT DATE")),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildTextField("FOUND/LOST DATE")),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _buildMultilineTextField("DETAILS OF PROPERTY")),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildMultilineTextField("METHOD OF DISPOSITION")),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // CUSTOMER SECTION
-  Widget _buildCustomerSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          color: Colors.grey.shade100,
-          padding: const EdgeInsets.all(12),
-          child: const Text(
-            "CUSTOMER",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(child: _buildTextField("NAME")),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildTextField("MOBILE")),
-                ],
-              ),
-              const SizedBox(height: 16),
-              _buildMultilineTextField("ADDRESS"),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  // COMMON TEXTFIELDS
-  static Widget _buildTextField(String label) {
-    return TextField(
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        isDense: true,
-      ),
-    );
-  }
-
-  static Widget _buildMultilineTextField(String label) {
-    return TextField(
-      maxLines: 3,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-      ),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            );
+          }
+          );
+        }
     );
   }
 }

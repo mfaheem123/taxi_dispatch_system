@@ -334,7 +334,7 @@ class TableSelectClass{
 }
 
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize}) {
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget}) {
   return DataColumn(
     label: Expanded(
       child: widget?? Column(
@@ -346,7 +346,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
           SizedBox(height: 4),
           title == "TYPE" || removeSearching == true
               ? SizedBox.shrink()
-              : SizedBox(
+              : customWidget ?? SizedBox(
             width: 100,
             height: textFieldHeight??28,
             child: TextField(
