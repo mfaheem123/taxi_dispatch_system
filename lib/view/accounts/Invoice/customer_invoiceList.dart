@@ -5,24 +5,25 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/booking_table.dart';
-import '../drivers_view/controller/driver_controller.dart';
 
-class CustomerInvoicelist extends StatefulWidget {
-  CustomerInvoicelist({super.key});
+import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../dashboard_view/booking_table.dart';
+import '../controller/account_controller.dart';
+
+class CustomerInvoiceList extends StatefulWidget {
+  CustomerInvoiceList({super.key});
 
   @override
-  State<CustomerInvoicelist> createState() => _CustomerInvoicelistState();
+  State<CustomerInvoiceList> createState() => _CustomerInvoiceListState();
 }
 
-class _CustomerInvoicelistState extends State<CustomerInvoicelist> {
+class _CustomerInvoiceListState extends State<CustomerInvoiceList> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
 
-  DriverController controller = Get.isRegistered<DriverController>()
-      ? Get.find<DriverController>()
-      : Get.put(DriverController());
+  AccountController controller = Get.isRegistered<AccountController>()
+      ? Get.find<AccountController>()
+      : Get.put(AccountController());
 
   @override
   void initState() {
@@ -68,7 +69,7 @@ class _CustomerInvoicelistState extends State<CustomerInvoicelist> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(
+      child: GetBuilder<AccountController>(
           builder: (controller) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
@@ -77,7 +78,7 @@ class _CustomerInvoicelistState extends State<CustomerInvoicelist> {
                   Row(
                     children: [
 
-                      Text("USER"+" (7)",
+                      Text("USER (7)",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17

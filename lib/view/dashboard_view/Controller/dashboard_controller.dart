@@ -12,6 +12,24 @@ class DashboardController extends GetxController {
 
   List<SelectedDropdown> selectedMenuItems = [];
 
+  ///refresh function for menu bar
+  menuBarRefresh({title,pageName}){
+    // if(selectedMenuItems.length < 3){
+      int index = selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+      if (index != -1) {
+        selectedMenuItems[index].selectedItem = false;
+      }
+      selectedMenuItems.add(SelectedDropdown(
+          title: title,
+          selectedItem: true,
+          category: pageName
+      ));
+    // }else{
+    //   Get.snackbar("", "You can select maximum 4 menu items",);
+    // }
+    update();
+  }
+
   ///Todo menu bar functionality
 
 

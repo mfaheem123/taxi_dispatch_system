@@ -18,6 +18,9 @@ class BookingTable extends StatefulWidget {
 
 class _BookingTableState extends State<BookingTable> {
 
+  int selectedRowIndex = 0; // currently selected row
+  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(
@@ -132,10 +135,169 @@ class _BookingTableState extends State<BookingTable> {
 
 
               SizedBox(
-                // height: Get.height/1.6,
-                width: double.infinity,
-                child: TableScreen(),
-        ),
+                width: Get.width,
+                child: DataTable(
+                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                  columnSpacing: 12, // 👈 default 56 hota hai, isko chhota kardo
+                  dataRowMinHeight: 40,
+                  dataRowMaxHeight: 48,
+                  headingTextStyle: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                  dataTextStyle: const TextStyle(
+                    fontSize: 10,
+                  ),
+                  border: TableBorder(
+                    horizontalInside: BorderSide(
+                      width: 0.5,
+                      color: Colors.grey.shade400,
+                    ),
+                    verticalInside: BorderSide(
+                      width: 0.5,
+                      color: Colors.grey.shade400, // 👈 vertical lines added
+                    ),
+                    borderRadius: BorderRadius.circular(4),
+                    top: BorderSide(
+                      width: 1,
+                      color: DynamicColors.textClr.withOpacity(0.5),
+                    ),
+                    left: BorderSide(
+                      width: 1,
+                      color: DynamicColors.textClr.withOpacity(0.5),
+                    ),
+                    right: BorderSide(
+                      width: 1,
+                      color: DynamicColors.textClr.withOpacity(0.5),
+                    ),
+                    bottom: BorderSide(
+                      width: 1,
+                      color: DynamicColors.textClr.withOpacity(0.5),
+                    ),
+                  ),
+                  /*decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: DynamicColors.textClr.withOpacity(0.5),
+                    ),
+                  ),*/
+                  columns: [
+                    buildHeaderWithSearch(widget: Checkbox(value: false, onChanged: (v){
+
+                    })),
+                    buildHeaderWithSearch(title: "TYPE"),
+                    buildHeaderWithSearch(title: "REF #"),
+                    buildHeaderWithSearch(title: "DATETIME"),
+                    buildHeaderWithSearch(title: "CUS"),
+                    buildHeaderWithSearch(title: "PICKUP"),
+                    buildHeaderWithSearch(title: "DROPOFF"),
+                    buildHeaderWithSearch(title: "ACC"),
+                    buildHeaderWithSearch(title: "DRV"),
+                    buildHeaderWithSearch(title: "VEH"),
+                    buildHeaderWithSearch(title: "NOTE"),
+                    buildHeaderWithSearch(title: "FARE"),
+                    buildHeaderWithSearch(title: "STATUS"),
+                    buildHeaderWithSearch(title: "J/T"),
+                    buildHeaderWithSearch(title: "P/T"),
+                    buildHeaderWithSearch(title: "ACC"),
+                  ],
+                  rows: List.generate(totalRows, (index) {
+                    bool isSelected = index == selectedRowIndex;
+                    return DataRow(
+                      cells: [
+                        DataCell(Checkbox(
+                          value: isSelected,
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRowIndex = value! ? index : -1;
+                            });
+                          },
+                        )),
+                        DataCell(Icon(Icons.laptop_chromebook_outlined, color: Colors.blue)),
+                        DataCell(Text("BCB74867")),
+                        DataCell(Text("02-05-25 23:36")),
+                        DataCell(Text("NADEEM")),
+                        DataCell(Text("FLAT 10 BLANDFORD COURT ...")),
+                        DataCell(Text("65 JEDBURGH ROAD, LONDON")),
+                        DataCell(Text("DRV")),
+                        DataCell(Text("CAPITA BUSI ...")),
+                        DataCell(Text("SALOON")),
+                        DataCell(Text("Lorem ipsum dolor sit amet...")),
+                        DataCell(Text("£ 14.00")),
+                        DataCell(Text("WAITING")),
+                        DataCell(Text("o/w")),
+                        DataCell(Text("CASH")),
+                        DataCell(
+                          Row(
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                                  side: BorderSide.none,
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        DispatchBookingAlert(),
+                                  );
+                                },
+                                child: ImageIcon(
+                                    AssetImage(Images.fowardIcon),
+                                    color: Colors.green, size: 20),
+                              ),
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                                  child: Text("|")),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                                  side: BorderSide.none,
+                                ),
+                                onPressed: () {
+                                  showShortcutDialog(
+                                    context,
+                                    title: "testing",
+                                    contentWidget: Center(child: Text("Testing"),),
+                                  );
+                                },
+                                child: Icon(Icons.delete_forever, color: Colors.green, size: 20),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                                child: Text("|"),
+                              ),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                                  side: BorderSide.none,
+                                ),
+                                onPressed: () {
+                                  showShortcutDialog(
+                                    context,
+                                    title: "testing",
+                                    contentWidget: Center(child: Text("Testing"),),
+                                  );
+                                },
+                                child: Icon(Icons.more_horiz, color: Colors.green, size: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ),
+              )
             ],
           ),
         );
@@ -172,274 +334,6 @@ class TableSelectClass{
 }
 
 
-class TableScreen extends StatefulWidget {
-  @override
-  State<TableScreen> createState() => _TableScreenState();
-}
-
-class _TableScreenState extends State<TableScreen> {
-  final int rowCount = 20; // total rows
-  late List<bool> selectedRows;
-  late List<List<FocusNode>> rowCellFocusNodes; // har row ke har cell ka focus
-  int currentRowIndex = 0;
-  int currentColIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-
-    selectedRows = List.generate(rowCount, (index) => false);
-
-    /// har row ke liye cells ke focusNodes bnao
-    rowCellFocusNodes = List.generate(
-      rowCount,
-          (row) => List.generate(15, (col) => FocusNode()), // 15 columns
-    );
-
-    // Default: first row first column focus
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      rowCellFocusNodes[0][0].requestFocus();
-    });
-  }
-
-  void _handleKey(RawKeyEvent event, int row, int col) {
-    print(shortCutKeyValue.value);
-    if (shortCutKeyValue.value == "tableSelected") {
-      if (event is RawKeyDownEvent) {
-        final key = event.logicalKey;
-
-        if (key == LogicalKeyboardKey.enter) {
-          setState(() {
-            selectedRows[row] = !selectedRows[row];
-          });
-
-        }
-        else if (key == LogicalKeyboardKey.arrowDown) {
-          setState(() {
-            currentRowIndex = (row + 1) % rowCount;
-            rowCellFocusNodes[currentRowIndex][col].requestFocus();
-          });
-
-        }
-        else if (key == LogicalKeyboardKey.arrowUp) {
-          setState(() {
-            currentRowIndex = (row - 1 + rowCount) % rowCount;
-            rowCellFocusNodes[currentRowIndex][col].requestFocus();
-          });
-
-        }
-        else if (key == LogicalKeyboardKey.arrowRight) {
-          setState(() {
-            currentColIndex = (col + 1) % rowCellFocusNodes[row].length;
-            rowCellFocusNodes[row][currentColIndex].requestFocus();
-          });
-
-        }
-        else if (key == LogicalKeyboardKey.arrowLeft) {
-          setState(() {
-            currentColIndex = (col - 1 + rowCellFocusNodes[row].length) %
-                rowCellFocusNodes[row].length;
-            rowCellFocusNodes[row][currentColIndex].requestFocus();
-          });
-        }
-      }
-    }
-  }
-
-  final dashBoardCntrl = Get.find<DashboardController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return DataTable(
-      columnSpacing: 20,
-      horizontalMargin: 10,
-      headingRowHeight: 70,
-      columns: [
-        buildHeaderWithSearch(title: "TYPE"),
-        buildHeaderWithSearch(title: "REF #"),
-        buildHeaderWithSearch(title: "DATETIME"),
-        buildHeaderWithSearch(title: "CUS"),
-        buildHeaderWithSearch(title: "PICKUP"),
-        buildHeaderWithSearch(title: "DROPOFF"),
-        buildHeaderWithSearch(title: "ACC"),
-        buildHeaderWithSearch(title: "DRV"),
-        buildHeaderWithSearch(title: "VEH"),
-        buildHeaderWithSearch(title: "NOTE"),
-        buildHeaderWithSearch(title: "FARE"),
-        buildHeaderWithSearch(title: "STATUS"),
-        buildHeaderWithSearch(title: "J/T"),
-        buildHeaderWithSearch(title: "P/T"),
-        buildHeaderWithSearch(title: "ACC"),
-      ],
-      rows: List<DataRow>.generate(
-        rowCount,
-            (rowIndex) =>
-            DataRow(
-              selected: selectedRows[rowIndex],
-              onSelectChanged: (value) {
-                setState(() {
-                  selectedRows[rowIndex] = value ?? false;
-                });
-              },
-              cells: List<DataCell>.generate(15, (colIndex) {
-                Widget child;
-                if (colIndex == 0) {
-                  child = Icon(
-                      Icons.laptop_chromebook_outlined, color: Colors.blue);
-                }
-                else if (colIndex == 1)
-                {
-                  child = Text("BCB74867",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 2)
-                {
-                  child = Text("02-05-25 23:36",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                } else if (colIndex == 3) {
-                  child = Text("NADEEM",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 4) {
-                  child = Text(
-                    "FLAT 10 BLANDFORD COURT ...",
-                    maxLines: 1,
-                    style: mozillaTextRegularText(
-                        fontWeight: FontWeight.w800, fontSize: 12),
-                  );
-                }
-                else if (colIndex == 5) {
-                  child = Text("65 JEDBURGH ROAD, LONDON",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 6) {
-                  child = Text("DRV",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 7) {
-                  child = Text("CAPITA BUSI ...",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 8) {
-                  child = Text("SALOON",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 9) {
-                  child = Text("Lorem ipsum dolor sit amet...",
-                      maxLines: 1,
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 10) {
-                  child = Text("£ 14.00",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 11) {
-                  child = Text("WAITING",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 12)
-                {
-                  child = Text("o/w",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800, fontSize: 12));
-                }
-                else if (colIndex == 13)
-                {
-                  child = Text("CASH",
-                      style: mozillaTextRegularText(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12
-                      ));
-                } else {
-                  // last cell with icons
-                  child = Row(
-
-                    children: [
-
-                      GestureDetector(
-
-                        onTap: ()
-                        {
-                          showDialog(
-                            context: context,
-                            builder: (_) =>
-                                DispatchBookingAlert(),
-                          );
-                        },
-                        child: ImageIcon(
-                            AssetImage(Images.fowardIcon),
-                            color: Colors.green, size: 20),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                          child: Text("|")),
-                      GestureDetector(
-                        onTap: (){
-                          showShortcutDialog(
-                            context,
-                            title: "testing",
-                            contentWidget: Center(child: Text("Testing"),),
-                          );
-                        },
-                        child: Icon(Icons.edit_calendar_rounded,
-                            color: Colors.red, size: 20),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                          child: Text("|")),
-                      GestureDetector(
-                          onTap: (){
-                            showShortcutDialog(
-                              context,
-                              title: "testing",
-                              contentWidget: Center(child: Text("Testing"),),
-                            );
-                          },
-                          child: Icon(Icons.delete_forever, color: Colors.green, size: 20)),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                        child: Text("|"),
-                      ),
-                      GestureDetector(
-                          onTap: (){
-                            showShortcutDialog(
-                              context,
-                              title: "testing",
-                              contentWidget: Center(child: Text("Testing"),),
-                            );
-                          },
-                          child: Icon(Icons.more_horiz, color: Colors.green, size: 20)),
-                    ],
-                  );
-                }
-
-                return DataCell(
-                  Focus(
-                    focusNode: rowCellFocusNodes[rowIndex][colIndex],
-                    onKey: (node, event) {
-                      _handleKey(event, rowIndex, colIndex);
-                      return KeyEventResult.handled;
-                    },
-                    child: child,
-                  ),
-                );
-              }),
-            ),
-      ),
-    );
-  }
-}
-
 DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize}) {
   return DataColumn(
     label: Expanded(
@@ -447,7 +341,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
-              fontSize: fontSize ?? 14
+              fontSize: fontSize ?? 13
           )),
           SizedBox(height: 4),
           title == "TYPE" || removeSearching == true

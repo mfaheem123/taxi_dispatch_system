@@ -97,6 +97,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
                               RestrictedDrivers(
+                                width: fieldWidth/2.5,
+                                // height: 35,
+                                padding: 0.0,
+                                border: Border.all(
+                                  color: Colors.grey,
+                                ),
                                 titleText: "SELECT DRIVER",
                                 driversList: [
                                   "25 GEORGE HAMPTON",

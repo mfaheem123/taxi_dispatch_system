@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
+import '../controller/lacations_controller.dart';
 
 class LocationListScreen extends StatefulWidget {
   LocationListScreen({super.key});
@@ -22,15 +23,15 @@ class _LocationListScreenState extends State<LocationListScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
 
-  DriverController controller = Get.isRegistered<DriverController>()
-      ? Get.find<DriverController>()
-      : Get.put(DriverController());
+  LocationController controller = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>()
+      : Get.put(LocationController());
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "driversList";
+    shortCutKeyValue.value = "locationListScreen";
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -62,7 +63,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(
+      child: GetBuilder<LocationController>(
           builder: (controller) {
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
@@ -76,7 +77,14 @@ class _LocationListScreenState extends State<LocationListScreen> {
                             fontSize: 17
                         ),
                       ),
-
+                      Checkbox(
+                          value: controller.blackList.value, onChanged: (v){
+                          controller.blackList.value = v!;
+                          controller.update();
+                      }),
+                      Text(AppText.blackList,
+                      style: mozillaTextRegularText(color: DynamicColors.redClr),
+                      ),
                       SizedBox(
                         width: 20,
                       ),
@@ -148,7 +156,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                         side: BorderSide(color: Colors.transparent,), // border color & thickness
                                       ),
                                       onPressed: () {},
-                                      child: Icon(Icons.search,
+                                      child: Icon(Icons.edit_calendar,
                                         size: 28,
                                       ),
                                     ),

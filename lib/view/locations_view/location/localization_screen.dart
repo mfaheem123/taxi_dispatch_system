@@ -8,7 +8,9 @@ import '../controller/lacations_controller.dart';
 class LocalizationScreen extends StatelessWidget {
   LocalizationScreen({super.key});
 
-  LocationController controller = Get.put(LocationController());
+  LocationController controller = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>()
+      : Get.put(LocationController());
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class LocalizationScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   const Text(
@@ -53,7 +56,6 @@ class LocalizationScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             // Table
             GetBuilder<LocationController>(
                 builder: (controller){
@@ -79,7 +81,7 @@ class LocalizationScreen extends StatelessWidget {
                             1: FlexColumnWidth(1),
                           },
                           children: [
-                            const TableRow(
+                            TableRow(
                               decoration:
                               BoxDecoration(color: Color(0xFFE0E0E0)),
                               children: [

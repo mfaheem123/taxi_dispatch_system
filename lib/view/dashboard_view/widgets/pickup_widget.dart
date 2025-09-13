@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
@@ -153,9 +154,22 @@ class _PickupWidgetState extends State<PickupWidget> {
                         SizedBox(
                             width: isMobile ? 0 : 10,
                             height: isMobile ? 10 : 0),
-
                         // (2) Select plot button
                         FocusTraversalOrder(
+                          order: const NumericFocusOrder(2),
+                          child: RestrictedDrivers(
+                            width: notesWidth,
+                            height: 30,
+                            padding: 0.0,
+                            titleText: "SELECT PLOT",
+                            driversList: [
+                              "BASE NE7", "WILLESDEN"
+                            ],
+                          ),
+                        ),
+
+
+                       /* FocusTraversalOrder(
                           order: const NumericFocusOrder(2),
                           child: KbdActivatable(
                             focusNode: plot1FN,
@@ -179,7 +193,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                               ),
                             ),
                           ),
-                        ),
+                        ),*/
 
                         SizedBox(
                             width: isMobile ? 0 : 10,
@@ -294,25 +308,14 @@ class _PickupWidgetState extends State<PickupWidget> {
                         // (5) Select plot button
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(5),
-                          child: KbdActivatable(
-                            focusNode: plot2FN,
-                            onActivate: () {
-                              // open second dropdown
-                            },
-                            child: Container(
-                              width: notesWidth,
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                    color: DynamicColors.primaryClr,
-                                    width: 1.2),
-                              ),
-                              child: CustomDropdownButton(
-                                itemList: const ["BASE NE7", "WILLESDEN"],
-                                hintText: "SELECT PLOT",
-                              ),
-                            ),
+                          child: RestrictedDrivers(
+                            width: notesWidth,
+                            height: 30,
+                            padding: 0.0,
+                            titleText: "SELECT PLOT",
+                            driversList: [
+                              "BASE NE7", "WILLESDEN"
+                            ],
                           ),
                         ),
 
@@ -433,27 +436,14 @@ class _PickupWidgetState extends State<PickupWidget> {
                           // (2) Select plot button
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(2),
-                            child: KbdActivatable(
-                              focusNode: plot1FN,
-                              onActivate: () {
-                                // open first dropdown
-                              },
-                              child: Container(
-                                width: notesWidth,
-                                height: 30,
-                                // padding:
-                                // const EdgeInsets.symmetric(horizontal: 12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      color: DynamicColors.primaryClr,
-                                      width: 1.2),
-                                ),
-                                child: CustomDropdownButton(
-                                  itemList: const ["BASE NE7", "WILLESDEN"],
-                                  hintText: "SELECT PLOT",
-                                ),
-                              ),
+                            child: RestrictedDrivers(
+                              width: notesWidth,
+                              height: 30,
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                "BASE NE7", "WILLESDEN"
+                              ],
                             ),
                           ),
 
@@ -565,30 +555,17 @@ class _PickupWidgetState extends State<PickupWidget> {
                           SizedBox(
                               width: isMobile ? 0 : 10,
                               height: isMobile ? 10 : 0),
-
                           // (5) Select plot button
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(5),
-                            child: KbdActivatable(
-                              focusNode: notes2FN,
-                              onActivate: () {
-                                // open second dropdown
-                              },
-                              child: Container(
-                                width: notesWidth,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
-                                  border: Border.all(
-                                      color: DynamicColors.primaryClr,
-                                      width: 1.2),
-                                ),
-                                child: CustomDropdownButton(
-                                  itemList: const ["BASE NE7", "WILLESDEN"],
-                                  hintText: "SELECT PLOT",
-
-                                ),
-                              ),
+                            child: RestrictedDrivers(
+                              width: notesWidth,
+                              height: 30,
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                "BASE NE7", "WILLESDEN"
+                              ],
                             ),
                           ),
 

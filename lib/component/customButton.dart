@@ -20,11 +20,13 @@ class CustomButton extends StatefulWidget {
     this.btnColor,
     this.key,
     this.widget,
+    this.fontSize,
   });
 
   final GestureTapCallback? onTap;
   double? width;
   double? height;
+  double? fontSize;
   double? borderRadius;
   double? verticalPadding;
   String? btnText;
@@ -88,7 +90,7 @@ class _CustomButtonState extends State<CustomButton> {
               child: Center(
                 child: widget.widget??Text( widget.btnText??AppText.login,
                   style:widget.style?? mozillaTextSemiBoldText(
-                      fontSize: 20,
+                      fontSize: widget.fontSize?? 20,
                       color: DynamicColors.whiteClr,
                       fontWeight: FontWeight.w700),
                 ),

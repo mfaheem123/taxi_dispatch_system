@@ -1,7 +1,14 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class CreateUserscreen extends StatelessWidget {
-  CreateUserscreen({super.key});
+import '../../../component/dropdown_button.dart';
+
+class CreateUserScreen extends StatelessWidget {
+  CreateUserScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,25 +20,25 @@ class CreateUserscreen extends StatelessWidget {
         bool isMobile = constraints.maxWidth < 800;
 
         return SingleChildScrollView(
-          padding:  EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: isMobile
               ? Column(
-            children: [
-              _buildImageBox(isMobile),
-               SizedBox(height: 20),
-              _buildFormBox(screenHeight),
-            ],
-          )
+                  children: [
+                    _buildImageBox(isMobile),
+                    SizedBox(height: 20),
+                    _buildFormBox(screenHeight),
+                  ],
+                )
               : Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image box fix with Flexible
-              Flexible(flex: 1, child: _buildImageBox(isMobile)),
-               SizedBox(width: 20),
-              // Form box fix with Flexible
-              Flexible(flex: 3, child: _buildFormBox(screenHeight)),
-            ],
-          ),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Image box fix with Flexible
+                    Flexible(flex: 1, child: _buildImageBox(isMobile)),
+                    SizedBox(width: 20),
+                    // Form box fix with Flexible
+                    Flexible(flex: 3, child: _buildFormBox(screenHeight)),
+                  ],
+                ),
         );
       },
     );
@@ -40,12 +47,12 @@ class CreateUserscreen extends StatelessWidget {
   Widget _buildImageBox(bool isMobile) {
     return Container(
       height: isMobile ? 200 : 400,
-      margin:  EdgeInsets.all(8),
+      margin: EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey),
       ),
-      child:  Center(
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -66,6 +73,7 @@ class CreateUserscreen extends StatelessWidget {
   }
 
   Widget _buildFormBox(double screenHeight) {
+    String? selectedValue;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -75,23 +83,26 @@ class CreateUserscreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: screenHeight / 20,
+            // height: screenHeight / 20,
             width: double.infinity,
             color: Colors.grey.withOpacity(0.3),
-            child:  Padding(
+            child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
               child: Text(
                 "USER",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: DynamicColors.textClr),
               ),
             ),
           ),
-           SizedBox(height: 16),
+          SizedBox(height: 16),
           Padding(
-            padding:  EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.0),
             child: Wrap(
               runSpacing: 16,
-              spacing: 16,
+              spacing: 20,
               children: [
                 _buildTextField("USERNAME"),
                 _buildTextField("EMAIL"),
@@ -99,7 +110,15 @@ class CreateUserscreen extends StatelessWidget {
                 _buildPasswordField("CONFIRM PASSWORD"),
                 _buildTextField("PHONE"),
                 _buildTextField("FAX"),
-                _buildDropdownField("ROLI", ["SELECT ROLI"]),
+                CustomDropdownField<String>(
+                  label: "ROLI",
+                  items: ["SELECT ROLI"],
+                  value: selectedValue,
+                  itemLabel: (val) => val, // just show the string
+                  onChanged: (val) {
+                    selectedValue = val;
+                  },
+                ),
                 _buildTextField("SURBIONARY"),
                 _buildTextField("DIDIC COMPANY"),
                 _buildCheckBox("ACTIVE"),
@@ -111,27 +130,20 @@ class CreateUserscreen extends StatelessWidget {
               ],
             ),
           ),
-
-           SizedBox(height: 20),
-
+          SizedBox(height: 20),
           Container(
-            height: screenHeight / 20,
+            // height: screenHeight / 20,
             width: double.infinity,
             color: Colors.grey.withOpacity(0.3),
-            child: Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding:
-                   EdgeInsets.symmetric(horizontal: 120, vertical: 14),
-                ),
-
-                onPressed: () {},
-                child:  Text(
-                  "SAVE",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
+            padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+            child: CustomButton(
+              height: 30,
+              width: Get.width / 3,
+              verticalPadding: 0.0,
+              borderRadius: 4,
+              style: mozillaTextSemiBoldText(
+                  fontSize: 12, color: DynamicColors.whiteClr),
+              btnText: AppText.save,
             ),
           ),
         ],
@@ -141,13 +153,20 @@ class CreateUserscreen extends StatelessWidget {
 
   static Widget _buildTextField(String label) {
     return SizedBox(
-      width: 300,
+      width: Get.width / 4,
+      height: 30,
       child: TextField(
+        style: mozillaTextRegularText(
+          fontSize: 10,
+        ),
         decoration: InputDecoration(
-          labelText: label,
-          border:  OutlineInputBorder(),
+          hintText: label,
+          hintStyle: mozillaTextRegularText(
+            fontSize: 10,
+          ),
+          border: OutlineInputBorder(),
           isDense: true,
-          contentPadding:  EdgeInsets.all(12),
+          contentPadding: EdgeInsets.all(12),
         ),
       ),
     );
@@ -155,39 +174,21 @@ class CreateUserscreen extends StatelessWidget {
 
   static Widget _buildPasswordField(String label) {
     return SizedBox(
-      width: 300,
+      width: Get.width / 4,
+      height: 30,
       child: TextField(
         obscureText: true,
-        decoration: InputDecoration(
-          labelText: label,
-          border:  OutlineInputBorder(),
-          isDense: true,
-          contentPadding:  EdgeInsets.all(12),
+        style: mozillaTextRegularText(
+          fontSize: 10,
         ),
-      ),
-    );
-  }
-
-  static Widget _buildDropdownField(String label, List<String> items) {
-    return SizedBox(
-      width: 300,
-      child: InputDecorator(
         decoration: InputDecoration(
-          labelText: label,
-          border:  OutlineInputBorder(),
-          contentPadding:  EdgeInsets.all(12),
-        ),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: items.first,
-            items: items.map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (_) {},
+          hintText: label,
+          hintStyle: mozillaTextRegularText(
+            fontSize: 10,
           ),
+          border: OutlineInputBorder(),
+          isDense: true,
+          contentPadding: EdgeInsets.all(12),
         ),
       ),
     );
@@ -205,3 +206,4 @@ class CreateUserscreen extends StatelessWidget {
     );
   }
 }
+

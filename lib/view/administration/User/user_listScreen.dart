@@ -7,9 +7,9 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/booking_table.dart';
-import '../drivers_view/controller/driver_controller.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../dashboard_view/booking_table.dart';
+import '../../drivers_view/controller/driver_controller.dart';
 
 class UserListscreen extends StatefulWidget {
   UserListscreen({super.key});
@@ -69,7 +69,7 @@ class _UserListscreenState extends State<UserListscreen> {
                 children: [
                   Row(
                     children: [
-                      Text("USER"+" (7)",
+                      Text("USER (7)",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17
@@ -173,7 +173,7 @@ class _UserListscreenState extends State<UserListscreen> {
                                         side: BorderSide(color: Colors.transparent,), // border color & thickness
                                       ),
                                       onPressed: () {},
-                                      child: Icon(Icons.search,
+                                      child: Icon(Icons.edit_calendar,
                                         size: 28,
                                       ),
                                     ),

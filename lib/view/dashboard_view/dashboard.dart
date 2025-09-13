@@ -1,8 +1,8 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
-import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
-import 'package:dashboard_new1/view/User/create_userScreen.dart';
+// import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
+// import 'package:dashboard_new1/view/User/create_userScreen.dart';
 import 'package:dashboard_new1/view/accounts/create_escorteScreen.dart';
 import 'package:dashboard_new1/view/booking_view/create_bookingScreen.dart';
 import 'package:dashboard_new1/view/customer/create_complaintsScreen.dart';
@@ -12,12 +12,13 @@ import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.d
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
-import '../User/user_listScreen.dart';
+import '../accounts/Invoice/create_accountinvoice.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../booking_view/complete_bookingview.dart';
 import '../customer/add_customerScreen.dart';
+import '../administration/User/create_userScreen.dart';
+import '../administration/User/user_listScreen.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -535,7 +536,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         case 'CREATE LOCATIONS':
         return LocationForm();
       case 'CREATE USER':
-        return CreateUserscreen();
+        return CreateUserScreen();
         case 'LIST OF USER':
         return UserListscreen();
         case 'LIST OF ZONES':
@@ -565,7 +566,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         case 'CREATE COMPANY VEHICLE':
         return CompanyVehicleForm();
         case 'LIST OF ACCOUNTS':
-        return ListOfAccountscreen();
+        return ListOfAccountScreen();
         case 'CREATE CUSTOMER INVOICE':
         return CustomerPreInvoice();
         child = DriverAppFeatureScreen();

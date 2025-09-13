@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/calender.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart';
@@ -223,32 +224,18 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             ),
                           ),
                         ),
+
                         // (8) Journey dropdown (O/W, R/N, W/R)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(8),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.jour,
+                          child: RestrictedDrivers(
                             width: fieldWidth,
-                            child: Container(
-                              height: 30,
-
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: DynamicColors.primaryClr),
-                              ),
-                              child:
-                              CustomDropdownButton(
-                                itemList: ["O/W", "R/N", "W/R"],
-                                hintText: "DEMO COMPANY",
-                                selectedDropDownValue: controller.jourValue,
-                                onSelected: (v){
-                                  controller.jourValue = v;
-                                  controller.update();
-                                },
-                              ),
-                            ),
+                            height: 30,
+                            padding: 0.0,
+                            titleText: "SELECT PLOT",
+                            driversList: [
+                              'DEMO COMPANY 01', 'DEMO COMPANY 02'
+                            ],
                           ),
                         ),
                       ],
@@ -279,15 +266,19 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                 borderRadius: BorderRadius.circular(6),
                                 border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                               ),
-                              child:
-              CustomDropdownButton(
-              itemList: ["25 GEORGE HAMPTON",
-              "26 PAUL DOUBLEDAY",
-              "27 RICHARD HARDWICK",
-              "28 LANRE OKERJO",],
-              hintText: "DRIVER",
-              selectedDropDownValue: controller.drvValue,
-              ),
+                              child: // (8) Journey dropdown (O/W, R/N, W/R)
+                              RestrictedDrivers(
+                                width: fieldWidth,
+                                height: 30,
+                                padding: 0.0,
+                                titleText: controller.drvValue,
+                                driversList: [
+                                  "25 GEORGE HAMPTON",
+                                  "26 PAUL DOUBLEDAY",
+                                  "27 RICHARD HARDWICK",
+                                  "28 LANRE OKERJO",
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -358,10 +349,15 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                                 borderRadius: BorderRadius.circular(4),
                                 border: Border.all(color: DynamicColors.primaryClr),
                               ),
-                              child: CustomDropdownButton(
-                                itemList: ["CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"],
-                                hintText: "CASH",
-                                selectedDropDownValue: controller.payValue,
+                              child:
+                              RestrictedDrivers(
+                                width: fieldWidth,
+                                height: 30,
+                                padding: 0.0,
+                                titleText: controller.payValue,
+                                driversList: [
+                                  "CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"
+                                ],
                               ),
                             ),
                           ),

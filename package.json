@@ -1,0 +1,7 @@
+{
+  "name": "my_flutter_project",
+  "version": "1.0.0",
+  "scripts": {
+    "flutter-web": "flutter run -d chrome --web-browser-flag=--start-maximized"
+  }
+}
