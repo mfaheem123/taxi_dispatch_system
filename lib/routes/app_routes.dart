@@ -9,6 +9,8 @@ abstract class Routes {
   static const viewDriversMap = _Paths.viewDriversMap;
   static const createVehicle = _Paths.createVehicle;
   static const ResponsivePassengerScreen = _Paths.ResponsivePassengerScreen;
+  static const CompleteBookingsScreen = _Paths.CompleteBookingsScreen;
+  static const CustomerFormScreen = _Paths.CustomerFormScreen;
 }
 
 abstract class _Paths {
@@ -19,4 +21,6 @@ abstract class _Paths {
   static const viewDriversMap = '/ViewDriversMap';
   static const createVehicle = '/ViewDriversMap';
   static const ResponsivePassengerScreen = '/ResponsivePassengerScreen';
+  static const CompleteBookingsScreen = '/CompleteBookingsScreen';
+  static const CustomerFormScreen = '/CustomerFormScreen';
 }

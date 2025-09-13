@@ -3,7 +3,9 @@
 import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
 import 'package:get/get.dart';
 import '../view/auth/login_screen.dart';
+import '../view/booking_view/complete_bookingview.dart';
 import '../view/cli_Screen.dart';
+import '../view/customer/add_customerScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/dashboard_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
@@ -34,6 +36,11 @@ class AppPages {
       // binding: DashBoardBindings(),
     ),
     GetPage(
+      name: _Paths.CompleteBookingsScreen,
+      page: () => CompleteBookingsScreen(),
+      // binding: DashBoardBindings(),
+    ),
+    GetPage(
       name: _Paths.dashBoarScreen,
       page: () => DashBoarScreen(),
       binding: DashBoardBindings(),
@@ -41,6 +48,10 @@ class AppPages {
     GetPage(
       name: _Paths.createBooking,
       page: () => CreateBooking(),
+    ),
+    GetPage(
+      name: _Paths.CustomerFormScreen,
+      page: () => CustomerFormScreen(),
     ),
     GetPage(
       name: _Paths.viewDriversMap,

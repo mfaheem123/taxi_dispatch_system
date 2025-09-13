@@ -12,6 +12,7 @@ class MultiReservationPage extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+
           const Row(
             children: [
               Icon(Icons.directions_car, size: 20),
@@ -22,7 +23,10 @@ class MultiReservationPage extends StatelessWidget {
               ),
             ],
           ),
+
+
           const SizedBox(height: 20),
+
 
           // PickUp Location section
           const Text(
@@ -30,24 +34,28 @@ class MultiReservationPage extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
+
           Row(
             children: [
               Checkbox(value: false, onChanged: (value) {}),
               const Text('Notes'),
             ],
           ),
+
           Row(
             children: [
               Checkbox(value: true, onChanged: (value) {}),
               const Text('DropOff Location'),
             ],
           ),
+
           Row(
             children: [
               Checkbox(value: false, onChanged: (value) {}),
               const Text('Notes'),
             ],
           ),
+
           const SizedBox(height: 20),
 
           // Passenger Info section
@@ -56,6 +64,7 @@ class MultiReservationPage extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
+
           _buildInfoRow('Date:', 'Fri 18 - 7 - 2025'),
           _buildInfoRow('Time:', '19:04'),
           _buildInfoRow('Mobile:', 'Journey Type'),

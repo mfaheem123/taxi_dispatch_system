@@ -37,8 +37,7 @@ class _UserListscreenState extends State<UserListscreen> {
     if (event is RawKeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex + 1) % totalRows; // move down
+          selectedRowIndex = (selectedRowIndex + 1) % totalRows; // move down
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
@@ -105,6 +104,7 @@ class _UserListscreenState extends State<UserListscreen> {
                             color: DynamicColors.primaryClr,
                             borderRadius: BorderRadius.circular(8)
                         ),
+
                         child: IconButton(
                             padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
                             onPressed: (){
@@ -131,13 +131,19 @@ class _UserListscreenState extends State<UserListscreen> {
                           fontWeight: FontWeight.w800,
                           fontSize: 13,
                         ),
+
+
                         dataTextStyle: TextStyle(
                           fontSize: 10,
                         ),
+
+
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
                         ),
+
+
                         columns: [
                           buildHeaderWithSearch(title: "USERNAME"),
                           buildHeaderWithSearch(title: "EMAIL"),
@@ -151,12 +157,14 @@ class _UserListscreenState extends State<UserListscreen> {
                           bool isSelected = index == selectedRowIndex;
                           return DataRow(
                             cells: [
+
                               const DataCell(Text("Saloon")),
                               const DataCell(Text("4")),
                               const DataCell(Text("2")),
                               const DataCell(Text("2")),
                               const DataCell(Text("£ 7.00")),
                               const DataCell(Text("2.00 mi")),
+
                               DataCell(
                                 Row(
                                   children: [

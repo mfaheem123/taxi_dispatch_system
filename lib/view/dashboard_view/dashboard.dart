@@ -3,6 +3,10 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
 import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
 import 'package:dashboard_new1/view/User/create_userScreen.dart';
+import 'package:dashboard_new1/view/accounts/create_escorteScreen.dart';
+import 'package:dashboard_new1/view/booking_view/create_bookingScreen.dart';
+import 'package:dashboard_new1/view/customer/create_complaintsScreen.dart';
+import 'package:dashboard_new1/view/customer/create_lost_propertyScreen.dart';
 import 'package:dashboard_new1/view/locations_view/location/zone_listScreen.dart';
 import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +16,8 @@ import '../../component/textStyle.dart';
 import '../../routes/app_pages.dart';
 import '../User/user_listScreen.dart';
 import '../accounts/list_of_accountScreen.dart';
+import '../booking_view/complete_bookingview.dart';
+import '../customer/add_customerScreen.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
 import '../drivers_view/driver/create_driver_form/driver_form.dart';
@@ -509,13 +515,14 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     final selectedItems = selectedTexts.where((e) => e.selectedItem == true).toList();
 
-    if (selectedItems.isEmpty) return FareMeter();
+    if (selectedItems.isEmpty) return LostPropertyScreen();
     // if (selectedItems.isEmpty) return ByDefaultDashboard();
 
     final lastSelected = selectedItems.last; // 👈 sirf last true item
 
     print(lastSelected.title);
-    if (selectedTexts.isEmpty) return FareMeter();
+    // if (selectedTexts.isEmpty) return FareMeter();
+    if (selectedTexts.isEmpty) return LostPropertyScreen();
 
     late Widget child;
 
@@ -571,6 +578,8 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         break;
       case 'BULK DRIVER COMMISSION':
         child = BulkDriverCommission();
+        case 'LIST OF BOOKINGS':
+        child = CompleteBookingsScreen();
         break;
       case 'DRIVER COMMISSION PAY':
         child = DriverCommissionPay();
