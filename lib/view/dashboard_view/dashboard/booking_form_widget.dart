@@ -326,7 +326,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                       mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _buildFocusableIcon(
+                          buildFocusableIcon(
                             icon: Icons.person,
                             focusNode: _focusNodes[0],
                             onPressed: (){
@@ -336,7 +336,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                       RestrictDriversAlert());
                             },
                           ),
-                          _buildFocusableIcon(
+                          buildFocusableIcon(
                             icon: Icons.shopping_cart_checkout_outlined,
                             focusNode: _focusNodes[1],
                             onPressed: () {
@@ -347,7 +347,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               );
                             },
                           ),
-                          _buildFocusableIcon(
+                          buildFocusableIcon(
                             icon: Icons.attach_money,
                             focusNode: _focusNodes[2],
                             onPressed: () {
@@ -358,7 +358,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               );
                             },
                           ),
-                          _buildFocusableIcon(
+                          buildFocusableIcon(
                             icon: Icons.note_add_sharp,
                             focusNode: _focusNodes[3],
                             onPressed: () {
@@ -495,52 +495,51 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
       );
     });
   }
+}
 
-
-  Widget _buildFocusableIcon({
-    required IconData icon,
-    required VoidCallback onPressed,
-    required FocusNode focusNode,
-  }) {
-    return Focus(
-      focusNode: focusNode,
-      onKey: (node, event) {
-        if (event is RawKeyDownEvent &&
-            (event.logicalKey == LogicalKeyboardKey.enter ||
-                event.logicalKey == LogicalKeyboardKey.space)) {
-          onPressed();
-          return KeyEventResult.handled;
-        }
-        return KeyEventResult.ignored;
-      },
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Builder(
-          builder: (context) {
-            final isFocused = Focus.of(context).hasFocus; // 👈 direct focus check
-            return AnimatedScale(
-              scale: isFocused ? 1.2 : 1.0,
-              duration: const Duration(milliseconds: 150),
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: isFocused
-                      ? DynamicColors.primaryClr.withOpacity(0.2)
-                      : Colors.transparent,
-                  // border: isFocused
-                  //     ? Border.all(color: Colors.orange, width: 2)
-                  //     : null,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Icon(icon, size: 20),
+Widget buildFocusableIcon({
+  required IconData icon,
+  required VoidCallback onPressed,
+  required FocusNode focusNode,
+}) {
+  return Focus(
+    focusNode: focusNode,
+    onKey: (node, event) {
+      if (event is RawKeyDownEvent &&
+          (event.logicalKey == LogicalKeyboardKey.enter ||
+              event.logicalKey == LogicalKeyboardKey.space)) {
+        onPressed();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    },
+    child: GestureDetector(
+      onTap: onPressed,
+      child: Builder(
+        builder: (context) {
+          final isFocused = Focus.of(context).hasFocus; // 👈 direct focus check
+          return AnimatedScale(
+            scale: isFocused ? 1.2 : 1.0,
+            duration: const Duration(milliseconds: 150),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: isFocused
+                    ? DynamicColors.primaryClr.withOpacity(0.2)
+                    : Colors.transparent,
+                // border: isFocused
+                //     ? Border.all(color: Colors.orange, width: 2)
+                //     : null,
+                borderRadius: BorderRadius.circular(6),
               ),
-            );
-          },
-        ),
+              child: Icon(icon, size: 20),
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
 }
 
 ///todo calender widget

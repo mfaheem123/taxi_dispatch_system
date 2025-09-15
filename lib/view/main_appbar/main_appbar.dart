@@ -298,8 +298,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  // _currentPage ?? ComplaintsView(),
-                  _currentPage ?? ByDefaultDashboard(),
+                  _currentPage ?? CompleteBookingsScreen(),
+                  // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -317,11 +317,16 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
-            Get.offAllNamed(Routes.completeBookingsScreen);
-       /*     setState(() {
+            Get.offNamed(Routes.createBooking);
+          },
+        ),
+        NestedMenuItem(
+          title: "COMPLETE BOOKINGS",
+          onTap: () {
+            setState(() {
               _currentPage = CompleteBookingsScreen();
-              controller.menuBarRefresh(title: "CREATE BOOKINGS", pageName: CompleteBookingsScreen());
-            });*/
+              controller.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
+            });
           },
         ),
         NestedMenuItem(

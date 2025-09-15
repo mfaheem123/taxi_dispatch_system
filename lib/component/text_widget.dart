@@ -263,4 +263,6 @@ class AppText{
   static get complaint => "COMPLAINT";
   static get howDealWith => "HOW WAS IT DEALT WITH";
   static get lostProperties => "LOST PROPERTIES";
+  static get completeBooking => "COMPLETE BOOKINGS";
+  static get enterKeyboard => "ENTER KEYWORD";
 }

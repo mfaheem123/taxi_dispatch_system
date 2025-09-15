@@ -245,6 +245,19 @@ class DashboardController extends GetxController {
     });
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final mobileController = TextEditingController();
+  final telController = TextEditingController();
+  final minController = TextEditingController();
+  final slugController = TextEditingController();
+  final accountNoController = TextEditingController();
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
+
+
 
   @override
   void onClose() {
