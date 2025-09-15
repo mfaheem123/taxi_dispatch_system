@@ -23,19 +23,12 @@ class PickupWidget extends StatefulWidget {
 
 class _PickupWidgetState extends State<PickupWidget> {
 
-  // Extra focus nodes for non-textfield clickable items
-  final FocusNode plot1FN = FocusNode();
-  final FocusNode plot2FN = FocusNode();
-  final FocusNode notes2FN = FocusNode();
   final FocusNode swap1FN = FocusNode();
   final FocusNode swap2FN = FocusNode();
 
 
   @override
   void dispose() {
-    plot1FN.dispose();
-    plot2FN.dispose();
-    notes2FN.dispose();
     swap1FN.dispose();
     swap2FN.dispose();
     super.dispose();
@@ -66,6 +59,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                   : isTablet
                   ? constraints.maxWidth / 4
                   : constraints.maxWidth / 8;
+
               return Column(
                 children: [
                   // ================= PICKUP ROW =================

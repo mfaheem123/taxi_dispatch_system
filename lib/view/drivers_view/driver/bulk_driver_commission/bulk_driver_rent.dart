@@ -108,6 +108,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: RestrictedDrivers(
+                                          width: fieldWidth,
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(
@@ -322,6 +323,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: RestrictedDrivers(
+                                          width: fieldWidth,
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(

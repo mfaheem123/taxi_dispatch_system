@@ -50,6 +50,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                         width: 200,
                         // height: 30,
                         child: RestrictedDrivers(
+                          width: 200,
                           titleText: "SELECT DRIVER",
                           driversList: [
                             "25 GEORGE HAMPTON",

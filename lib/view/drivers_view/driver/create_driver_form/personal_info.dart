@@ -113,6 +113,7 @@ class DriverPersonalInfo extends StatelessWidget {
              width: 200,
              // height: 30,
              child: RestrictedDrivers(
+               width: 200,
                border: Border(
                  bottom: BorderSide(
                    color: Colors.grey, // border color
@@ -252,10 +253,11 @@ class DriverPersonalInfo extends StatelessWidget {
                               isMobile: isMobile,
                               label: "",
                               width: fieldWidth,
-                              child:    SizedBox(
+                              child: SizedBox(
                                 width: fieldWidth,
                                 // height: 30,
                                 child: RestrictedDrivers(
+                                  width: fieldWidth,
                                   driversList: ['Commission', "Other Driver"],
                                 ),
                               ),

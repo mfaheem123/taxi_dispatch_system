@@ -1,5 +1,6 @@
-import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../tabbarview.dart';
@@ -9,6 +10,7 @@ import '../accounts/account/create_escopt.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
+import '../booking_view/complete_bookingview.dart';
 import '../customer/add_customerScreen.dart';
 import '../customer/complaints.dart';
 import '../customer/create_complaint.dart';
@@ -16,9 +18,7 @@ import '../customer/create_lost_propertyScreen.dart';
 import '../customer/customers_screen.dart';
 import '../customer/lost_property.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
-
 import 'package:nested_menu_bar/nested_menu_bar.dart';
-
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
@@ -43,161 +43,10 @@ import '../fare_view/plot_fare/plot_fare.dart';
 import '../locations_view/location/localization_screen.dart';
 import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
-import '../locations_view/location/plotting_Screen.dart';
 import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
-import '../setting/template_settings.dart';
+import 'dart:html' as html;
 
-class MainAppBar extends StatelessWidget {
-  MainAppBar({super.key});
-
-  DashboardController controller = Get.isRegistered<DashboardController>()
-      ? Get.find<DashboardController>()
-      : Get.put(DashboardController());
-
-  late final List<GlobalKey> menuKeys;
-
-  @override
-  Widget build(BuildContext context) {
-    return GetBuilder<DashboardController>(builder: (controller) {
-      return Container(
-        color: const Color(0xFF43489A),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        height: 60,
-        width: Get.width,
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              const Text(
-                "NEXUS",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 24),
-              ),
-              const SizedBox(width: 20),
-              for (int i = 0; i < menus.length; i++)
-                Padding(
-                  key: menuKeys[i],
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: InkWell(
-                    onTap: () {
-                      shortCutKeyValue.value = 'shortCutKey';
-                      if (controller.selectedIndex == i) {
-                        controller.isDropdownOpen = !controller.isDropdownOpen;
-                      } else {
-                        controller.selectedIndex = i;
-                        controller.isDropdownOpen = true;
-                      }
-                      controller.update();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: controller.selectedIndex == i
-                            ? Colors.white24
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(menus[i].icon, color: Colors.white, size: 16),
-                          const SizedBox(width: 5),
-                          Text(
-                            menus[i].label,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              SizedBox(width: MediaQuery.of(context).size.width / 7.3),
-            ],
-          ),
-        ),
-      );
-    });
-  }
-
-  final List<MenuItemData> menus = [
-    MenuItemData("BOOKINGS", Icons.book_online, [
-      "CREATE BOOKINGS",
-      "LIST OF BOOKINGS",
-      "LIST OF WEB BOOKINGS",
-      "LIST OF APP BOOKINGS",
-      "LIST OF MULTI BOOKINGS",
-      "LIST OF TRASH BOOKINGS"
-    ]),
-    MenuItemData("CUSTOMERS", Icons.headset_mic, [
-      "CREATE BOOKINGS",
-      "LIST OF BOOKINGS",
-      "LIST OF WEB BOOKINGS",
-      "LIST OF APP BOOKINGS",
-      "LIST OF MULTI BOOKINGS",
-      "LIST OF TRASH BOOKINGS"
-    ]),
-    MenuItemData("FARES", Icons.wallet_outlined, [
-      "CREATE FARE SETTINGS",
-      "CREATE FIXED FARE SETTINGS",
-      "CREATE FARE BY VEHICLE SETTINGS"
-    ]),
-    MenuItemData("LOCATIONS", Icons.location_pin, [
-      "CREATE LOCATIONS",
-      "LIST OF LOCATIONS",
-      "CREATE ZONE",
-      "LIST OF ZONES",
-      "LOCALIZATION",
-      "PLOTTING"
-    ]),
-    MenuItemData("DRIVERS", Icons.person, [
-      "CREATE DRIVER",
-      "LIST OF DRIVERS",
-      "LIST OF INACTIVE DRIVERS",
-      "LIST OF LOGGED IN DRIVERS",
-      "DRIVER APP FEATURES",
-      "LIST OF LOGGED OUT DRIVERS",
-      "CREATE DRIVER COMMISSION",
-      "LIST OF DRIVER COMMISSION"
-    ]),
-    MenuItemData("ACCOUNTS", Icons.account_circle, [
-      "CREATE ACCOUNT",
-      "LIST OF ACCOUNTS",
-      "CREATE CUSTOMER INVOICE",
-      "LIST OF CUSTOMER INVOICES",
-      "CREATE ACCOUNT INVOICE",
-      "LIST OF ACCOUNT INVOICES"
-    ]),
-    MenuItemData("VEHICLES", Icons.directions_car, [
-      "CREATE VEHICLE TYPE",
-      "LIST OF VEHICLE TYPES",
-      "CREATE COMPANY VEHICLE",
-      "LIST OF COMPANY VEHICLE"
-    ]),
-    MenuItemData("USERS", Icons.supervised_user_circle,
-        ["CREATE USER", "LIST OF USER", "AUTHORIZATION"]),
-    MenuItemData("SUBSIDIARY", Icons.supervised_user_circle,
-        ["CREATE SUBSIDIARY", "LIST OF SUBSIDIARIES"]),
-    MenuItemData("REPORTS", Icons.receipt_long,
-        ["DRIVER", "BOOKINGS", "CALL", "INCOME", "PCO"]),
-    MenuItemData("SETTINGS", Icons.settings, [
-      "COMPANY INFORMATION",
-      "COMPANY CONFIGURATION",
-      "DOCUMENT NUMBER",
-      "TEMPLATE SETTINGS",
-      "BOOKING CLEARING UTILITY",
-      "LOCATION TYPE SHORTCUTS",
-      "VOIP SETTINGS",
-      "GENERAL SMS CONFIG",
-      "SMS SETTINGS",
-      "CHAT WITH DRIVER AND PASSENGER",
-      "PERMISSION SETTINGS"
-    ]),
-  ];
-}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -213,7 +62,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    RawKeyboard.instance.addListener(_handleKey);
     hoverMenu = _makeMenus(context);
+  }
+
+  @override
+  void dispose()
+  {
+    RawKeyboard.instance.removeListener(_handleKey);
+    super.dispose();
   }
 
   void message(context, String text) {
@@ -232,6 +89,91 @@ class _MyHomePageState extends State<MyHomePage> {
   DashboardController controller = Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
       : Get.put(DashboardController());
+
+  void _handleKey(RawKeyEvent event)
+  {
+    if (event is RawKeyDownEvent)
+    {
+      if(event.logicalKey.keyLabel == "F#"){
+        shortCutKeyValue.value = "alert";
+      }
+      if(event.logicalKey.keyLabel == "Escape" &&
+          shortCutKeyValue.value == "alert"){
+        shortCutKeyValue.value = "shortCutKey";
+      }
+      else if(event.logicalKey.keyLabel == "F2"){
+        final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
+        html.window.open(newTabUrl, '_blank');
+      }
+    }
+  /*  if (event is RawKeyDownEvent && shortCutKeyValue.value == "shortCutKey")
+    {
+      if (event.logicalKey == LogicalKeyboardKey.arrowRight)
+      {
+        setState(() {
+          controller.selectedIndex = (controller.selectedIndex + 1) % menus.length;
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft)
+      {
+        setState(() {
+          controller.selectedIndex = (controller.selectedIndex - 1 + menus.length) % menus.length;
+        });
+      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown)
+      {
+        if (controller.isDropdownOpen) {
+          setState(() {
+            controller.dropdownIndex = (controller.dropdownIndex + 1) % menus[controller.selectedIndex].subItems.length;
+          });
+        } else {
+          setState(() {
+            controller.isDropdownOpen = true;
+          });
+        }
+      }
+
+      else if (event.logicalKey == LogicalKeyboardKey.arrowUp)
+
+      {
+        if (dashBoardCntrl.isDropdownOpen) {
+          setState(() {
+            dashBoardCntrl.dropdownIndex = (dashBoardCntrl.dropdownIndex - 1 + menus[dashBoardCntrl.selectedIndex].subItems.length) %
+                menus[dashBoardCntrl.selectedIndex].subItems.length;
+          });
+        }
+
+      }
+
+      else if (event.logicalKey == LogicalKeyboardKey.enter) {
+        if (dashBoardCntrl.isDropdownOpen) {
+          String selectedItem = menus[dashBoardCntrl.selectedIndex].subItems[dashBoardCntrl.dropdownIndex];
+          widget.onSelect?.call(selectedItem);
+          setState(() {
+            for (var action in selectedTexts) {
+              action.selectedItem = false;
+            }
+            selectedTexts.add(SelectedDropdown(selectedItem: true,title: selectedItem));
+            // selectedTexts.remove(selectedItem);
+            // selectedTexts.add(selectedItem);
+            dashBoardCntrl.isDropdownOpen = false;
+          });
+        }
+
+        else
+        {
+          setState(() {
+            dashBoardCntrl.isDropdownOpen = true;
+          });
+        }
+
+      }
+      else if (event.logicalKey == LogicalKeyboardKey.escape)
+      {
+        setState(() {
+          dashBoardCntrl.isDropdownOpen = false;
+        });
+      }
+    }*/
+  }
 
 
   @override
@@ -375,17 +317,11 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
-            setState(() {
-              int index = controller.selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-              if (index != -1) {
-                controller.selectedMenuItems[index].selectedItem = false;
-              }
-              controller.selectedMenuItems.add(SelectedDropdown(
-                title: "CREATE BOOKINGS",
-                selectedItem: true,
-              )
-              );
-            });
+            Get.offAllNamed(Routes.completeBookingsScreen);
+       /*     setState(() {
+              _currentPage = CompleteBookingsScreen();
+              controller.menuBarRefresh(title: "CREATE BOOKINGS", pageName: CompleteBookingsScreen());
+            });*/
           },
         ),
         NestedMenuItem(
@@ -973,6 +909,38 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "PERMISSION SETTINGS",
           onTap: () => message(context, "DevOps"),
+        ),
+      ]),
+      NestedMenuItem(title: "SETTINGS", children: [
+        NestedMenuItem(
+          title: "",
+          icon: Icons.menu,
+          onTap: () {
+
+          },
+          children: [
+            NestedMenuItem(
+              icon: Icons.email,
+              title: "",
+              onTap: () {
+
+              }
+            ),
+            NestedMenuItem(
+              icon: Icons.notifications,
+              title: "",
+              onTap: () {
+
+              }
+            ),
+            NestedMenuItem(
+              icon: Icons.power_settings_new,
+              title: "",
+              onTap: () {
+
+              }
+            ),
+          ]
         ),
       ]),
     ];

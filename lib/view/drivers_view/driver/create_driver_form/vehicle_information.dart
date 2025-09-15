@@ -74,6 +74,7 @@ class VehicleInformation extends StatelessWidget {
                             width: 200,
                             // height: 30,
                             child: RestrictedDrivers(
+                              width: 200,
                               border: Border(
                                 bottom: BorderSide(
                                   color: Colors.grey, // border color
@@ -194,6 +195,7 @@ class VehicleInformation extends StatelessWidget {
                               width: 200,
                               // height: 30,
                               child: RestrictedDrivers(
+                                width: 200,
                                 // border: Border(
                                 //   bottom: BorderSide(
                                 //     color: Colors.grey, // border color

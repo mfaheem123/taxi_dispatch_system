@@ -36,7 +36,7 @@ class AppPages {
       // binding: DashBoardBindings(),
     ),
     GetPage(
-      name: _Paths.CompleteBookingsScreen,
+      name: _Paths.completeBookingsScreen,
       page: () => CompleteBookingsScreen(),
       // binding: DashBoardBindings(),
     ),

@@ -111,6 +111,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: RestrictedDrivers(
+                                          width: fieldWidth,
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(
@@ -325,6 +326,7 @@ class _BulkDriverCommissionState extends State<BulkDriverCommission> {
                                           borderRadius: BorderRadius.circular(4),
                                         ),
                                         child: RestrictedDrivers(
+                                          width: fieldWidth,
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(

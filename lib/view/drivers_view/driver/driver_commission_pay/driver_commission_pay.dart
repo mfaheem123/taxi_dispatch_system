@@ -88,6 +88,7 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: RestrictedDrivers(
+                                    width: fieldWidth,
                                     border: Border.all(color: Colors.transparent),
                                     // border: Border(
                                     //   bottom: BorderSide(

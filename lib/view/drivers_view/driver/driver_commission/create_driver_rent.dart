@@ -98,6 +98,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                     style: mozillaTextSemiBoldText(
                                         context: context, fontSize: 13)),
                                 RestrictedDrivers(
+                                  width: fieldWidth,
                                   titleText: "SELECT DRIVER",
                                   driversList: [
                                     "25 GEORGE HAMPTON",

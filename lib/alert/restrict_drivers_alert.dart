@@ -83,6 +83,7 @@ class RestrictDriversAlert extends StatelessWidget {
               ),
                 RestrictedDrivers(
                   driversList: driversList,
+                  width: MediaQuery.of(context).size.width/4,
                 ),
                 GestureDetector(
                   onTap: (){
@@ -230,6 +231,7 @@ class RestrictedDrivers extends StatefulWidget {
 class _RestrictedDriversState extends State<RestrictedDrivers> {
   final FocusNode _focusNode = FocusNode();
   int _selectedIndex = 0;
+  bool _isFocused = false;
 
 
   void _showPopover(BuildContext context, List<String> items) {
@@ -292,6 +294,24 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return Focus(
       focusNode: _focusNode,
@@ -309,18 +329,21 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
         onTap: () =>
             _showPopover(context, widget.driversList ?? []),
         child: Container(
-          width: widget.width?? MediaQuery.of(context).size.width / 6,
+          width: widget.width!*1.5/*MediaQuery.of(context).size.width / 6*/,
           height: widget.height,
           padding: EdgeInsets.only(top: 2, bottom: 2, left: 3),
           decoration: BoxDecoration(
-            border: widget.border ?? Border.all(color: Colors.grey),
+            border: Border.all(
+              color: _isFocused ? DynamicColors.primaryClr : Colors.grey, // 👈 change color on focus
+            ),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                width: widget.width!/1.3,
+                width: widget.width! /2.5,
                 child: Text(
                   widget.titleText??AppText.selectDriver,
                   maxLines: 1,

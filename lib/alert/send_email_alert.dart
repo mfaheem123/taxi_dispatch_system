@@ -101,6 +101,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                   width: 100,
                   height: 30,
                   child: RestrictedDrivers(
+                    width: 100,
                     driversList: sendEmailRoleList,
                   ),
                 ),
@@ -234,6 +235,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                   child: SizedBox(
                     height: 30,
                     child: RestrictedDrivers(
+                      width: 100,
                       driversList: sendEmailRoleList,
                     ),
                   ),
