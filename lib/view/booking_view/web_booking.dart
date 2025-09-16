@@ -1,34 +1,32 @@
-
-
-import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/component/text_field.dart';
+import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
+import '../../component/customButton.dart';
+import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
+import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller.dart';
 
-class CompleteBookingsScreen extends StatefulWidget {
-  const CompleteBookingsScreen({super.key});
+class WebBooking extends StatefulWidget {
+  const WebBooking({super.key});
 
   @override
-  State<CompleteBookingsScreen> createState() => _CompleteBookingsScreenState();
+  State<WebBooking> createState() => _WebBookingState();
 }
 
-class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
-
-
+class _WebBookingState extends State<WebBooking> {
 
   BookingController controller = Get.isRegistered<BookingController>()
       ? Get.find<BookingController>()
       : Get.put(BookingController());
-
 
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 50;  // total rows (dynamic list ke hisaab se change hoga)
@@ -36,7 +34,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
   @override
   void initState() {
     super.initState();
-    shortCutKeyValue.value = "completeBookingsScreen";
+    shortCutKeyValue.value = "WebBooking";
   }
 
   @override
@@ -63,7 +61,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                     children: [
                       Row(
                         children: [
-                          Text(AppText.completeBooking+" (10)",
+                          Text(AppText.webBookings+" (10)",
                             style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 17
@@ -187,28 +185,54 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         spacing: 10,
                         runSpacing: 16,
                         children: [
-                          SizedBox(
-                            width: 100,
-                            child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: Checkbox(
-                                      value: controller.completeValue.value,
-                                      onChanged: (v){
-                                        controller.completeValue.value = v!;
-                                        controller.update();
-                                      }
-                                  ),
-                                ),
-                                Text(AppText.completed,
-                                  style: mozillaTextRegularText(
-                                    fontSize: 12,
-                                  ),
-                                )
-                              ],
-                            ),
+                          customWidget(
+                              value: controller.completeValue.value,
+                              onChanged: (v){
+                                controller.completeValue.value = v!;
+                                controller.update();
+                              }
+                          ),
+                          customWidget(
+                              value: controller.cancelledValue.value,
+                              onChanged: (v){
+                                controller.cancelledValue.value = v!;
+                                controller.update();
+                              },
+                              text: AppText.cancelled
+                          ),
+                          customWidget(
+                              value: controller.waitingValue.value,
+                              onChanged: (v){
+                                controller.waitingValue.value = v!;
+                                controller.update();
+                              },
+                              text: AppText.waiting
+                          ),
+                          customWidget(
+                              value: controller.preDispatchValue.value,
+                              onChanged: (v){
+                                controller.preDispatchValue.value = v!;
+                                controller.update();
+                              },
+                              text: AppText.preDispatch
+                          ),
+                          CustomButton(
+                            width: 130,
+                            height: 30,
+                            borderRadius: 4,
+                            btnColor: DynamicColors.redClr,
+                            verticalPadding: 0.0,
+                            fontSize: 11,
+                            btnText: AppText.cancelled,
+                          ),
+                          CustomButton(
+                            width: 150,
+                            height: 30,
+                            borderRadius: 4,
+                            verticalPadding: 0.0,
+                            fontSize: 11,
+                            btnColor: DynamicColors.redClr,
+                            btnText: AppText.deleteSelected,
                           ),
                         ],
                       ),
@@ -217,68 +241,75 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                       ),
 
                       // 📋 Data Table
-                      Container(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                            columnSpacing: 40,
-                            columns: const [
-                              DataColumn(label: Text("SOURCE")),
-                              DataColumn(label: Text("REF #")),
-                              DataColumn(label: Text("DATETIME")),
-                              DataColumn(label: Text("CUSTOMER")),
-                              DataColumn(label: Text("PICKUP")),
-                              DataColumn(label: Text("DROPOFF")),
-                              DataColumn(label: Text("ACC")),
-                              DataColumn(label: Text("DRV")),
-                              DataColumn(label: Text("P/T")),
-                              DataColumn(label: Text("VEH")),
-                              DataColumn(label: Text("FARE")),
-                              DataColumn(label: Text("STATUS")),
-                              DataColumn(label: Text("ACTIONS")),
-                            ],
-                            rows: [
-                              DataRow(
-                                cells: [
-                                  const DataCell(Text("OPT")),
-                                  const DataCell(Text("BCB75044")),
-                                  const DataCell(Text("26-08-25 06:00")),
-                                  const DataCell(Text("CUSTOMER")),
-                                  const DataCell(Text("NORTHWICK AVENUE")),
-                                  const DataCell(Text("GREEN PARK WAY")),
-                                  const DataCell(Text("TEST")),
-                                  const DataCell(Text("TEST")),
-                                  const DataCell(Text("CASH")),
-                                  const DataCell(Text("SAL...")),
-                                  const DataCell(Text("£10.90")),
-                                  DataCell(Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(6),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child:
+                        DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "SOURCE"),
+                            buildHeaderWithSearch(title: "REF #"),
+                            buildHeaderWithSearch(title: "DATETIME"),
+                            buildHeaderWithSearch(title: "CUSTOMER"),
+                            buildHeaderWithSearch(title: "PICKUP"),
+                            buildHeaderWithSearch(title: "DROPOFF"),
+                            buildHeaderWithSearch(title: "ACC"),
+                            buildHeaderWithSearch(title: "DRV"),
+                            buildHeaderWithSearch(title: "P/T"),
+                            buildHeaderWithSearch(title: "VEH"),
+                            buildHeaderWithSearch(title: "NOT"),
+                            buildHeaderWithSearch(title: "FARE"),
+                            buildHeaderWithSearch(title: "STATUS"),
+                            buildHeaderWithSearch(title: "J/T"),
+                            buildHeaderWithSearch(title: "SUBS"),
+
+                            buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                          ],
+                          totalRow: totalRows,
+                          cells: [
+                            const DataCell(Text("OPT")),
+                            const DataCell(Text("BCB75058")),
+                            const DataCell(Text("09-09-25 07:16")),
+                            const DataCell(Text("09-09-25 07:16")),
+                            const DataCell(Text("NADEEM")),
+                            const DataCell(Text("FLAT 12 BLANDFORD COURT 4-6 BRO")),
+                            const DataCell(Text("NORTHWICK AVENUE HARROW HA3")),
+                            const DataCell(Text("CASH")),
+                            const DataCell(Text("CASH")),
+                            const DataCell(Text("SAL.")),
+                            const DataCell(Text("NOTE")),
+                            const DataCell(Text("£ 0.00")),
+                            const DataCell(Text("WAITING")),
+                            const DataCell(Text("o/w")),
+                            const DataCell(Text("DEMO ACCOUNT")),
+                            DataCell(
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,   // 👈 remove inner padding
+                                      minimumSize: Size(24, 24),  // 👈 shrink button size
+                                      side: BorderSide.none,      // 👈 remove border
                                     ),
-                                    child: const Text(
-                                      "COMP",
-                                      style: TextStyle(color: Colors.white),
+                                    onPressed: () {},
+                                    child: Icon(Icons.edit_calendar, size: 20),
+                                  ),
+                                  const SizedBox(width: 4), // 👈 replace "|" with small spacing
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size(24, 24),
+                                      side: BorderSide.none,
                                     ),
-                                  )),
-                                  DataCell(
-                                    Row(
-                                      children: const [
-                                        Icon(Icons.edit, color: Colors.purple),
-                                        SizedBox(width: 8),
-                                        Icon(Icons.delete, color: Colors.red),
-                                      ],
-                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.delete_forever, size: 20),
                                   ),
                                 ],
                               ),
-                              // ✅ Yahan aur rows add kar sakte ho
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
+                      )
                     ],
                   ),
                 );
@@ -287,5 +318,4 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
         }
     );
   }
-
 }

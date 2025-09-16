@@ -21,10 +21,10 @@ import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../../routes/app_pages.dart';
-import 'Controller/dashboard_controller.dart';
-import 'dashboard/booking_form_widget.dart';
-import 'dashboard/map_view_widget.dart';
-import 'dashboard/shortcut_key_widget.dart';
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/booking_form_widget.dart';
+import '../dashboard_view/dashboard/map_view_widget.dart';
+import '../dashboard_view/dashboard/shortcut_key_widget.dart';
 
 class CreateBooking extends StatefulWidget {
   const CreateBooking({super.key});

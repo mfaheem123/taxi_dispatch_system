@@ -7,7 +7,7 @@ import '../view/booking_view/complete_bookingview.dart';
 import '../view/cli_Screen.dart';
 import '../view/customer/add_customerScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
-import '../view/dashboard_view/craate_booking.dart';
+import '../view/booking_view/craate_booking.dart';
 import '../view/dashboard_view/dashboard.dart';
 import '../view/dashboard_view/widgets/view_drivers_map.dart';
 import '../view/main_appbar/main_appbar.dart';

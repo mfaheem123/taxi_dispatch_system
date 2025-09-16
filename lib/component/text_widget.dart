@@ -267,4 +267,16 @@ class AppText{
   static get enterKeyboard => "ENTER KEYWORD";
   static get completed => "COMPLETED";
   static get cancelled => "CANCELLED";
+  static get incomplete => "incomplete";
+  static get missed => "missed";
+  static get declined => "declined";
+  static get pendingBookings => "PENDING BOOKINGS";
+  static get preBookings => "PRE BOOKING";
+  static get waiting => "WAITING";
+  static get preDispatch => "PRE DISPATCH";
+  static get deleteSelected => "DELETE SELECTED";
+  static get webBookings => "WEB BOOKINGS";
+  static get appBookings => "APP BOOKINGS";
+  static get multiBookings => "MULTI BOOKINGS";
+  static get trashBookings => "TRASH BOOKINGS";
 }
