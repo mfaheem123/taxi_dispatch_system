@@ -120,7 +120,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         context: context,
                         isMobile: isMobile,
                         label: AppText.date,
-                        width: fieldWidth/3,
+                        width: fieldWidth/2.3,
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(),
@@ -130,7 +130,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         context: context,
                         isMobile: isMobile,
                         label: AppText.time,
-                        width: fieldWidth/3,
+                        width: fieldWidth/3.0,
                         child: SizedBox(height: 30, child: CustomTimePicker()),
                       ),
                       Text(AppText.to,
@@ -142,7 +142,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         context: context,
                         isMobile: isMobile,
                         label: AppText.date,
-                        width: fieldWidth/3,
+                        width: fieldWidth/2.3,
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(),
@@ -155,9 +155,9 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         width: fieldWidth/3,
                         child: SizedBox(height: 30, child: CustomTimePicker()),
                       ),
-                      SizedBox(
-                        width: fieldWidth/3,
-                      ),
+                      // SizedBox(
+                      //   width: fieldWidth/3,
+                      // ),
                       CustomButton(
                         width: 100,
                         height: 30,
@@ -176,6 +176,41 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                         btnText: AppText.search,
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 16,
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: Checkbox(
+                                  value: controller.completeValue.value,
+                                  onChanged: (v){
+                                    controller.completeValue.value = v!;
+                                    controller.update();
+                                  }
+                              ),
+                            ),
+                            Text(AppText.completed,
+                              style: mozillaTextRegularText(
+                                fontSize: 12,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
 
                   // 📋 Data Table
@@ -249,4 +284,5 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
       }
     );
   }
+
 }

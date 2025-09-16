@@ -265,4 +265,6 @@ class AppText{
   static get lostProperties => "LOST PROPERTIES";
   static get completeBooking => "COMPLETE BOOKINGS";
   static get enterKeyboard => "ENTER KEYWORD";
+  static get completed => "COMPLETED";
+  static get cancelled => "CANCELLED";
 }
