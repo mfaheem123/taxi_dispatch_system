@@ -29,6 +29,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
       ? Get.find<BookingController>()
       : Get.put(BookingController());
 
+
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 50;  // total rows (dynamic list ke hisaab se change hoga)
 
