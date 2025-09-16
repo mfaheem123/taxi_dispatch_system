@@ -45,6 +45,7 @@ import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
 import '../locations_view/location/plotting_Screen.dart';
 import '../locations_view/location/zone_screen.dart';
+import '../reports/driver_login_screen.dart';
 import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
 import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
 import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
@@ -516,14 +517,14 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
   Widget getSelectedWidget({GestureTapCallback? onTap}) {
     final selectedItems = selectedTexts.where((e) => e.selectedItem == true).toList();
 
-    if (selectedItems.isEmpty) return LostPropertyScreen();
+    if (selectedItems.isEmpty) return DriverLoginScreen();
     // if (selectedItems.isEmpty) return ByDefaultDashboard();
 
     final lastSelected = selectedItems.last; // 👈 sirf last true item
 
     print(lastSelected.title);
     // if (selectedTexts.isEmpty) return FareMeter();
-    if (selectedTexts.isEmpty) return LostPropertyScreen();
+    if (selectedTexts.isEmpty) return DriverLoginScreen();
 
     late Widget child;
 
