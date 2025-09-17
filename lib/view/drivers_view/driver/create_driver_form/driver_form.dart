@@ -53,7 +53,7 @@ class _DriverFormState extends State<DriverForm> {
                           ),
                           margin: EdgeInsets.only(bottom: 12),
                           child: Padding(
-                            padding:  controller.profileImg != null? EdgeInsets.zero: EdgeInsets.all(14),
+                            padding: controller.profileImg != null? EdgeInsets.zero: EdgeInsets.all(14),
                             child: Container(
                               height: 345,
                               width: double.infinity,

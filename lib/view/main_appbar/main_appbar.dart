@@ -2,6 +2,7 @@
 
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
+import 'package:dashboard_new1/view/vehicles_view/vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -243,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? AppBooking(),
+                  _currentPage ?? VehicleTypes(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -718,6 +719,15 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ]),
       NestedMenuItem(title: "VEHICLES", children: [
+        NestedMenuItem(
+          title: "VEHICLE TYPES",
+          onTap: () {
+            setState(() {
+              _currentPage = VehicleTypes();
+              controller.menuBarRefresh(title: "VEHICLE TYPES", pageName: VehicleTypes());
+            });
+          },
+        ),
         NestedMenuItem(
           title: "CREATE VEHICLE TYPE",
           onTap: () => message(context, "DevOps"),

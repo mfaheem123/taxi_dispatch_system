@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 
-Widget customWidget({value, ValueChanged<bool?>? onChanged, String? text}){
+Widget customWidget({value, ValueChanged<bool?>? onChanged, String? text, double? width}){
   return SizedBox(
-    width: 120,
+    width: width?? 120,
     child: Row(
       children: [
         SizedBox(

@@ -124,7 +124,20 @@ class _WebBookingState extends State<WebBooking> {
                             width: fieldWidth/2.3,
                             child: SizedBox(
                               height: 30,
-                              child: KeyboardDatePicker(),
+                              child: KeyboardDatePicker(
+                                initialDate: DateTime.now(),
+                                borderClr: Colors.blue,
+                                onChanged: (date) {
+                                  // jab bhi user change kare
+                                  setState(() {
+                                    print(date);
+                                  });
+                                },
+                                onSubmitted: (date) {
+                                  // jab user enter press kare
+                                  print("User pressed enter: $date");
+                                },
+                              ),
                             ),
                           ),
                           labeledField(

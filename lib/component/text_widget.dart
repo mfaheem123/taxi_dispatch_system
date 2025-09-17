@@ -279,4 +279,6 @@ class AppText{
   static get appBookings => "APP BOOKINGS";
   static get multiBookings => "MULTI BOOKINGS";
   static get trashBookings => "TRASH BOOKINGS";
+  static get defaultVehicle => "DEFAULT VEHICLE";
+  static get minimumMiles => "MINIMUM MILES";
 }
