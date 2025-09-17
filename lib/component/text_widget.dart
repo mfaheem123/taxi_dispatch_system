@@ -281,4 +281,12 @@ class AppText{
   static get trashBookings => "TRASH BOOKINGS";
   static get defaultVehicle => "DEFAULT VEHICLE";
   static get minimumMiles => "MINIMUM MILES";
+  static get passengers => "PASSENGERS";
+  static get luggages => "LUGGAGES";
+  static get handLuggages => "HAND LUGGAGES";
+  static get minimumFares => "MINIMUM FARES";
+  static get driverWaitingCharges => "DRIVER WAITING CHARGES";
+  static get accountWaitingCharges => "ACCOUNT WAITING CHARGES";
+  static get waitingTime => "WAITING TIME";
+  static get companyVehicle => "COMPANY VEHICLE";
 }

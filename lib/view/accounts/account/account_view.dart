@@ -4,6 +4,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
+import '../../../component/color_picker_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -320,47 +321,21 @@ class _AccountViewState extends State<AccountView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.backgroundClr, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      GestureDetector(
-                                        onTap: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: const Text('Pick a color!'),
-                                                content: SingleChildScrollView(
-                                                  child: ColorPicker(
-                                                    pickerColor: controller.pickerColor,
-                                                    onColorChanged: controller.changeColor,
-                                                  ),
-                                                ),
-                                                actions: <Widget>[
-                                                  ElevatedButton(
-                                                    child: const Text('Got it'),
-                                                    onPressed: () {
-                                                      controller.currentColor = controller.pickerColor;
-                                                      controller.update();
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: fieldWidth/3,
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(4),
-                                            border: Border.all(color: DynamicColors.primaryClr),
-                                          ),
-                                          child: Center(
-                                            child: Container(
-                                              color: controller.pickerColor,
-                                              height: 5,width: fieldWidth/3.5,),
-                                          ),
-                                        ),
-                                      ),
+                      ColorPickerWidget(
+                        pickerColor: controller.pickerColor,
+                        onColorChanged: (color) {
+                          setState(() {
+                            controller.pickerColor = color; // live preview
+                          });
+                        },
+                        onColorSelected: (color) {
+                          setState(() {
+                            controller.pickerColor = color; // final selected
+                          });
+                        },
+                        width: fieldWidth/3,
+                        borderColor: Colors.grey,
+                      ),
                                     ],
                                   ),
                                   Column(

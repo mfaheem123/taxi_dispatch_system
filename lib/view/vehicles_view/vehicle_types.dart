@@ -1,12 +1,15 @@
 
 
 import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/color_picker_widget.dart';
 import '../../component/textStyle.dart';
+import '../../component/text_field.dart';
 import '../booking_view/reusable_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
@@ -57,6 +60,9 @@ class _VehicleTypesState extends State<VehicleTypes> {
 
           return Column(
             children: [
+              SizedBox(
+                height: 10,
+              ),
               Wrap(
                 runSpacing: 16,
                 spacing: 10,
@@ -118,34 +124,183 @@ class _VehicleTypesState extends State<VehicleTypes> {
                             ),
                           ),
                         ),
-                        Wrap(
-                          children: [
-                            customWidget(
-                              value: controller.defaultVehicleValue.value,
-                              onChanged: (v){
-                                controller.defaultVehicleValue.value = v!;
-                                controller.update();
-                              },
-                              text: AppText.defaultVehicle,
-                              width: 140,
-                            ),
-                            customWidget(
-                              value: controller.minimumMilesValue.value,
-                              onChanged: (v){
-                                controller.minimumMilesValue.value = v!;
-                                controller.update();
-                              },
-                              text: AppText.minimumMiles,
-                              width: 140,
-                            ),
-
-                          ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        customWidget(
+                          value: controller.defaultVehicleValue.value,
+                          onChanged: (v){
+                            controller.defaultVehicleValue.value = v!;
+                            controller.update();
+                          },
+                          text: AppText.defaultVehicle,
+                          width: 140,
+                        ),
+                        SizedBox(
+                          height: 10,
                         ),
                         Wrap(
+                          runSpacing: 16,
+                          spacing: 10,
                           children: [
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.vehicleTypeController,
+                              width: fieldWidth/2,
+                              hintText: AppText.vehicleType,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.passengersController,
+                              width: fieldWidth/2,
+                              hintText: AppText.passengers,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.luggagesController,
+                              width: fieldWidth/2,
+                              hintText: AppText.luggages,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.handLuggagesController,
+                              width: fieldWidth/2,
+                              hintText: AppText.handLuggages,
+                              columnText: true,
+                              height: 35,
+                            ),
 
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                customWidget(
+                                  value: controller.minimumMilesValue.value,
+                                  onChanged: (v){
+                                    controller.minimumMilesValue.value = v!;
+                                    controller.update();
+                                  },
+                                  text: AppText.minimumMiles,
+                                  width: 140,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.minimumMilesController,
+                                  width: fieldWidth/2,
+                                  hintText: "",
+                                  readOnly: !controller.minimumMilesValue.value,
+                                  columnText: false,
+                                  height: 35,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                customWidget(
+                                  value: controller.minimumMilesValue.value,
+                                  onChanged: (v){
+                                    controller.minimumMilesValue.value = v!;
+                                    controller.update();
+                                  },
+                                  text: AppText.minimumMiles,
+                                  width: 140,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.minimumFaresController,
+                                  width: fieldWidth/2,
+                                  hintText: "",
+                                  readOnly: !controller.minimumMilesValue.value,
+                                  columnText: false,
+                                  height: 35,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.backgroundClr, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth/2,
+                                  pickerColor: controller.pickerColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.pickerColor = color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.pickerColor = color; // final selected
+                                    });
+                                  },
+                                  borderColor: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(AppText.foregroundClr, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                ColorPickerWidget(
+                                  width: fieldWidth/2,
+                                  pickerColor: controller.foregroundColor,
+                                  onColorChanged: (color) {
+                                    setState(() {
+                                      controller.foregroundColor = color; // live preview
+                                    });
+                                  },
+                                  onColorSelected: (color) {
+                                    setState(() {
+                                      controller.foregroundColor = color; // final selected
+                                    });
+                                  },
+                                  borderColor: Colors.grey,
+                                ),
+                              ],
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.driverWaitingChargesController,
+                              width: fieldWidth/2,
+                              hintText: AppText.driverWaitingCharges,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.accountWaitingChargesController,
+                              width: fieldWidth/2,
+                              hintText: AppText.accountWaitingCharges,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.waitingTimeController,
+                              width: fieldWidth/2,
+                              hintText: AppText.waitingTime,
+                              columnText: true,
+                              height: 35,
+                            ),
                           ],
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        CustomButton(
+                          height: 30,
+                          width: fieldWidth,
+                          btnText: AppText.save,
+                          fontSize: 11,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                        )
                       ],
                     ),
                   ),

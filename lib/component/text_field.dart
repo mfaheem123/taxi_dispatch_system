@@ -32,6 +32,7 @@ class CustomTextField extends StatelessWidget {
     this.height,
     this.width,
     this.columnText = false,
+    this.readOnly = false,
   });
 
   String? labelText;
@@ -51,6 +52,7 @@ class CustomTextField extends StatelessWidget {
   final GestureTapCallback? onTap;
   Color? borderColor;
   final int? maxLines;
+  final bool readOnly;
   double? height;
   double? width;
   Color? fillColor;
@@ -85,6 +87,7 @@ class CustomTextField extends StatelessWidget {
                 inputFormatters: inputFormatters,
                 maxLines: maxLines,
                 minLines: maxLines,
+                readOnly: readOnly,
                 decoration: InputDecoration(
                   prefixIcon: prefixIcon,
                   hintText: hintText,

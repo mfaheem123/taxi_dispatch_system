@@ -56,6 +56,7 @@ import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
 
+import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
 import '../vehicles_view/vehicle/create_vehicleScreen.dart';
 import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
@@ -244,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? VehicleTypes(),
+                  _currentPage ?? CreateCompanyVehicle(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -735,15 +736,20 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "LIST OF VEHICLE TYPES",
           onTap: () {
-            setState(() {
-              _currentPage = VehicleTypeListScreen();
-              controller.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: VehicleTypeListScreen());
-            });
+            // setState(() {
+            //   _currentPage = VehicleTypeListScreen();
+            //   controller.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: VehicleTypeListScreen());
+            // });
           },
         ),
         NestedMenuItem(
           title: "CREATE COMPANY VEHICLE",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = CreateCompanyVehicle();
+              controller.menuBarRefresh(title: "CREATE COMPANY VEHICLE", pageName: CreateCompanyVehicle());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LIST COMPANY VEHICLE",
