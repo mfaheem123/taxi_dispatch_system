@@ -35,7 +35,6 @@ class VehicleController extends GetxController{
       );
     }
     update();
-
   }
 
   /// text fields editing

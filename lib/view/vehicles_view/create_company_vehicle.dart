@@ -2,7 +2,10 @@
 
 
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../component/text_widget.dart';
@@ -38,7 +41,6 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<VehicleController>(builder: (controller) {
-
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -66,6 +68,14 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
+                ),
+                // Image.memory(
+                //   bytes,
+                //   fit: BoxFit.contain,
+                // ),
+
+                Image(
+                  image: NetworkImage("https://nexustechnologys.com:4000/uploads/1758222803248_01.png"),
                 ),
                 const Placeholder(),
               ],
