@@ -289,4 +289,7 @@ class AppText{
   static get accountWaitingCharges => "ACCOUNT WAITING CHARGES";
   static get waitingTime => "WAITING TIME";
   static get companyVehicle => "COMPANY VEHICLE";
+  static get logBookingDoc => "LOG BOOK DOCUMENT";
+  static get phcVehicleExpire => "PHC VEHICLE EXPIRY";
+  static get phcVehicleNumber => "PHC VEHICLE NUMBER";
 }

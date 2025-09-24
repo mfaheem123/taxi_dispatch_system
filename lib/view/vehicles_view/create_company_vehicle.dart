@@ -8,8 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../alert/restrict_drivers_alert.dart';
+import '../../component/textStyle.dart';
+import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/widgets/time_picker_widget.dart';
+import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller.dart';
 
 class CreateCompanyVehicle extends StatefulWidget {
@@ -69,15 +74,93 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     ),
                   ),
                 ),
-                // Image.memory(
-                //   bytes,
-                //   fit: BoxFit.contain,
-                // ),
-
-                Image(
-                  image: NetworkImage("https://nexustechnologys.com:4000/uploads/1758222803248_01.png"),
+                SizedBox(
+                  height: 8,
                 ),
-                const Placeholder(),
+        Wrap(
+        runSpacing: 16,
+        spacing: 10,
+          children: [
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.vehicleTypeController,
+              width: fieldWidth,
+              hintText: AppText.vehicleType,
+              columnText: true,
+              height: 30,
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                RestrictedDrivers(
+                  width: fieldWidth/1.5,
+                  // height: 35,
+                  padding: 0.0,
+                  border: Border.all(
+                    color: Colors.grey,
+                  ),
+                  titleText: "ESTAT",
+                  driversList: [
+                    "25 GEORGE HAMPTON",
+                    "26 PAUL DOUBLEDAY",
+                    "27 RICHARD HARDWICK",
+                    "28 LANRE OKERJO",
+                  ],
+                ),
+              ],
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.colorController,
+              width: fieldWidth,
+              hintText: AppText.color,
+              columnText: true,
+              height: 30,
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.vehicleMakeController,
+              width: fieldWidth,
+              hintText: AppText.make,
+              columnText: true,
+              height: 30,
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.vehicleModelController,
+              width: fieldWidth,
+              hintText: AppText.model,
+              columnText: true,
+              height: 30,
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.logBookingDocController,
+              width: fieldWidth,
+              hintText: AppText.logBookingDoc,
+              columnText: true,
+              height: 30,
+            ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.phcVehicleExpire,
+              column: true,
+              width: fieldWidth,
+              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+            ),
+
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.phcVehicleNumberController,
+              width: fieldWidth,
+              hintText: AppText.phcVehicleNumber,
+              columnText: true,
+              height: 30,
+            ),
+          ],
+        ),
               ],
             );
           }

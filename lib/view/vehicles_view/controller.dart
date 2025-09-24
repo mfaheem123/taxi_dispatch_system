@@ -50,4 +50,20 @@ class VehicleController extends GetxController{
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
+
+  /// text fields editing
+  final colorController = TextEditingController();
+  final vehicleMakeController = TextEditingController();
+  final vehicleModelController = TextEditingController();
+  final logBookingDocController = TextEditingController();
+  final phcVehicleNumberController = TextEditingController();
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
+
 }
