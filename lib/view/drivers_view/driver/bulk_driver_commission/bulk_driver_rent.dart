@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../alert/booking_alert.dart';
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
@@ -179,6 +180,9 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                             color: DynamicColors.whiteClr),
                                         verticalPadding: 0.0,
                                         btnText: AppText.getBooking,
+                                        onTap: () {
+                                          BookingAlert.showNoBookingAlert();
+                                        },
                                       ),
                                       CustomButton(
                                         width: 80,

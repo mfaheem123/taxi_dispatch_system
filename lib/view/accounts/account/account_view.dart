@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../../alert/web_login_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/color_picker_widget.dart';
 import '../../../component/textStyle.dart';
@@ -87,6 +88,10 @@ class _AccountViewState extends State<AccountView> {
                                         fontSize: 10,
                                         color: DynamicColors.whiteClr
                                       ),
+                                        onTap: () {
+                                          WebLoginAlert.show();
+                                        }
+
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
+import '../../../../alert/success_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
@@ -109,6 +110,9 @@ class _DriverSinBinSettingState extends State<DriverSinBinSetting> {
                               style: mozillaTextRegularText(fontSize: 14,
                               color: DynamicColors.whiteClr
                               ),
+                                onTap: () {
+                                  SuccessAlert.show("Data saved successfully!");
+                                }
                             ),
                           )
                         ],
