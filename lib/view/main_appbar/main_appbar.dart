@@ -31,6 +31,7 @@ import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../dashboard_view/dashboard/defult_dashboard_view.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_rent.dart';
+import '../drivers_view/driver/create_driver_form/driver_form.dart';
 import '../drivers_view/driver/driver_app_features/driver_app_feature_screen.dart';
 import '../drivers_view/driver/driver_commission/create_driver_rent.dart';
 import '../drivers_view/driver/driver_commission/driver_commission.dart';
@@ -544,8 +545,8 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "ADD DRIVER",
               onTap: () {
                 setState(() {
-                  _currentPage = CreateDriverRent();
-                  controller.menuBarRefresh(title: "ADD DRIVER", pageName: CreateDriverRent());
+                  _currentPage = DriverForm();
+                  controller.menuBarRefresh(title: "ADD DRIVER", pageName: DriverForm());
                 });
               },
             ),
