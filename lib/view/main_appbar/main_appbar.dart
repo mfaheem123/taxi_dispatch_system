@@ -2,7 +2,7 @@
 
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
-import 'package:dashboard_new1/view/vehicles_view/vehicle_types.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -58,6 +58,7 @@ import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
 
 import '../vehicles_view/create_company_vehicle.dart';
+import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
 import '../vehicles_view/vehicle/create_vehicleScreen.dart';
 import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
@@ -246,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? CreateCompanyVehicle(),
+                  _currentPage ?? ListVehicleType(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -722,25 +723,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ]),
       NestedMenuItem(title: "VEHICLES", children: [
         NestedMenuItem(
-          title: "VEHICLE TYPES",
+          title: "CREATE VEHICLE TYPE",
           onTap: () {
             setState(() {
-              _currentPage = VehicleTypes();
-              controller.menuBarRefresh(title: "VEHICLE TYPES", pageName: VehicleTypes());
+              _currentPage = CreateVehicleTypes();
+              controller.menuBarRefresh(title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
             });
           },
         ),
         NestedMenuItem(
-          title: "CREATE VEHICLE TYPE",
-          onTap: () => message(context, "DevOps"),
-        ),
-        NestedMenuItem(
-          title: "LIST OF VEHICLE TYPES",
+          title: "VEHICLE TYPE",
           onTap: () {
-            // setState(() {
-            //   _currentPage = VehicleTypeListScreen();
-            //   controller.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: VehicleTypeListScreen());
-            // });
+            setState(() {
+              _currentPage = ListVehicleType();
+              controller.menuBarRefresh(title: "VEHICLE TYPE", pageName: ListVehicleType());
+            });
+
           },
         ),
         NestedMenuItem(

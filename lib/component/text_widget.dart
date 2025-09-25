@@ -303,4 +303,5 @@ class AppText{
   static get motDoc => "MOT DOCUMENT";
   static get mot2Doc => "MOT2 DOCUMENT";
   static get insuranceDoc => "INSURANCE DOCUMENT";
+  // static get vehicleType => "VEHICLE TYPES";
 }

@@ -411,7 +411,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         side: BorderSide(color: Colors.transparent,), // border color & thickness
                                       ),
                                       onPressed: () {},
-                                      child: Icon(Icons.search,
+                                      child: Icon(Icons.edit_calendar,
                                         size: 28,
                                         color: DynamicColors.primaryClr,
                                       ),
@@ -421,7 +421,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         side: BorderSide(color: Colors.transparent,), // border color & thickness
                                       ),
                                       onPressed: () {},
-                                      child: Icon(Icons.clear,
+                                      child: Icon(Icons.delete_forever,
                                         size: 28,
                                         color: DynamicColors.redClr,
                                       ),

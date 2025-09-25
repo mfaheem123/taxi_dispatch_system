@@ -13,14 +13,15 @@ import '../../component/text_field.dart';
 import '../booking_view/reusable_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
-class VehicleTypes extends StatefulWidget {
-  const VehicleTypes({super.key});
+
+class CreateVehicleTypes extends StatefulWidget {
+  const CreateVehicleTypes({super.key});
 
   @override
-  State<VehicleTypes> createState() => _VehicleTypesState();
+  State<CreateVehicleTypes> createState() => _CreateVehicleTypesState();
 }
 
-class _VehicleTypesState extends State<VehicleTypes> {
+class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
 
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
