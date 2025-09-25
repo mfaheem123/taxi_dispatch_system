@@ -24,15 +24,20 @@ class VehicleInformation extends StatelessWidget {
         builder: (controller) {
           return LayoutBuilder(
               builder: (context, constraints) {
-                final bool isMobile = constraints.maxWidth < 600;
-                final bool isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 1024;
+                final double maxWidth = constraints.maxWidth;
+                final bool isMobile = maxWidth < 600;
+                final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+                // Instead of fixed width, we calculate flexible field widths
                 final double fieldWidth = isMobile
-                    ? constraints.maxWidth * 0.9
+                    ? maxWidth // full width
                     : isTablet
-                    ? 175
-                    : 150;
+                    ? maxWidth / 2
+                    : maxWidth / 4;
+
+
                 return Container(
+                  width: Get.width/2.6,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
@@ -55,159 +60,113 @@ class VehicleInformation extends StatelessWidget {
                       ),
                       Divider(height: 1),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Wrap(
+                        spacing: 7,
+                        runSpacing: 10,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: controller.vehicleInformation.value,
-                                onChanged: (val) {
-                                  controller.vehicleInformation.value = val!;
-                                  controller.update();
-                                },
-                              ),
-                              Text(AppText.usedCompanyVehicle),
-                            ],
+                          Checkbox(
+                            value: controller.vehicleInformation.value,
+                            onChanged: (val) {
+                              controller.vehicleInformation.value = val!;
+                              controller.update();
+                            },
                           ),
-                          SizedBox(
-                            width: 200,
-                            // height: 30,
-                            child: RestrictedDrivers(
-                              width: 200,
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: Colors.grey, // border color
-                                  width: 2.0,        // border thickness
-                                ),
+                          Text(AppText.usedCompanyVehicle),
+                          RestrictedDrivers(
+                            width: fieldWidth/1.4,
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Colors.grey, // border color
+                                width: 2.0,        // border thickness
                               ),
-                              driversList: ['Demo Company', "Other Company"],
                             ),
+                            driversList: ['Demo Company', "Other Company"],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 20),
 
-                      SingleChildScrollView(
-                        scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
-                        child: Flex(
-                          direction: isMobile ? Axis.vertical : Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            FocusTraversalOrder(
-                              order: const NumericFocusOrder(12),
-                              child: labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.startDate,
-                                  width: fieldWidth,
-                                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                                  column: true
-                              ),
-                            ),
-                             const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: const NumericFocusOrder(13),
-                              child: labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.endDate,
-                                  width: fieldWidth,
-                                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                                  column: true
-                              ),
-                            ),
-                             const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(14),
-                              child: labeledTextField(context, isMobile, AppText.vehicle, controller.vehicleNameController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                             const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(15),
-                              child: labeledTextField(context, isMobile, AppText.make, controller.vehicleMakeController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                            // _gap(isMobile),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      SingleChildScrollView(
-                        scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
-                        child: Flex(
-                          direction: isMobile ? Axis.vertical : Axis.horizontal,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(16),
-                              child: labeledTextField(context, isMobile, AppText.model, controller.vehicleModelController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(17),
-                              child: labeledTextField(context, isMobile, AppText.color, controller.vehicleColorController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(18),
-                              child: labeledTextField(context, isMobile, AppText.owner, controller.vehicleOwnerController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            FocusTraversalOrder(
-                              order: NumericFocusOrder(19),
-                              child: labeledTextField(context, isMobile, AppText.logBook, controller.vehicleLogBookController,
-                                  width: fieldWidth,
-                                  textInputAction: TextInputAction.next,
-                                  column: true
-                              ),
-                            ),
-                            // _gap(isMobile),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            padding: EdgeInsets.only(left: 23),
-                            child: SizedBox(
-                              width: 200,
-                              // height: 30,
-                              child: RestrictedDrivers(
-                                width: 200,
-                                // border: Border(
-                                //   bottom: BorderSide(
-                                //     color: Colors.grey, // border color
-                                //     width: 2.0,        // border thickness
-                                //   ),
-                                // ),
-                                driversList: ['Saloon', "SUV" ,"Van"],
-                              ),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(12),
+                            child: labeledField(
+                                context: context,
+                                isMobile: isMobile,
+                                label: AppText.startDate,
+                                width: fieldWidth/1.4,
+                                child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                                column: true
                             ),
                           ),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(13),
+                            child: labeledField(
+                                context: context,
+                                isMobile: isMobile,
+                                label: AppText.endDate,
+                                width: fieldWidth/1.4,
+                                child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                                column: true
+                            ),
+                          ),
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(14),
+                            child: labeledTextField(context, isMobile, AppText.vehicle, controller.vehicleNameController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(15),
+                            child: labeledTextField(context, isMobile, AppText.make, controller.vehicleMakeController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(16),
+                            child: labeledTextField(context, isMobile, AppText.model, controller.vehicleModelController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(17),
+                            child: labeledTextField(context, isMobile, AppText.color, controller.vehicleColorController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(18),
+                            child: labeledTextField(context, isMobile, AppText.owner, controller.vehicleOwnerController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(19),
+                            child: labeledTextField(context, isMobile, AppText.logBook, controller.vehicleLogBookController,
+                                width: fieldWidth/1.4,
+                                textInputAction: TextInputAction.next,
+                                column: true
+                            ),
+                          ),
+                          RestrictedDrivers(
+                            width: fieldWidth/1.4,
+                            // border: Border(
+                            //   bottom: BorderSide(
+                            //     color: Colors.grey, // border color
+                            //     width: 2.0,        // border thickness
+                            //   ),
+                            // ),
+                            driversList: ['Saloon', "SUV" ,"Van"],
+                          ),
                           SizedBox(
-                            width: Get.width/4,
+                            width: Get.width/6,
                             height: 60,
                             child: ListView.builder(
                                 itemCount: controller.imageList.length,
@@ -215,34 +174,34 @@ class VehicleInformation extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 physics: AlwaysScrollableScrollPhysics(),
                                 itemBuilder: (BuildContext context,index){
-                              return  Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Stack(
-                                  children: [
-                                    SizedBox(
-                                      height: 300,
-                                      width: 150,
-                                      child: Image.memory(controller.imageList[index].bytes, width: 200, height: 200,fit: BoxFit.fill,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: (){
-                                        controller.imageList.remove(controller.imageList[index]);
-                                        controller.update();
-                                      },
-                                      child: CircleAvatar(
-                                        radius: 10,
-                                        backgroundColor: DynamicColors.whiteClr,
-                                        child: Icon(Icons.close,
-                                        color: DynamicColors.primaryClr,
-                                          size: 15,
+                                  return  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Stack(
+                                      children: [
+                                        SizedBox(
+                                          height: 300,
+                                          width: 150,
+                                          child: Image.memory(controller.imageList[index].bytes, width: 200, height: 200,fit: BoxFit.fill,
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }),
+                                        GestureDetector(
+                                          onTap: (){
+                                            controller.imageList.remove(controller.imageList[index]);
+                                            controller.update();
+                                          },
+                                          child: CircleAvatar(
+                                            radius: 10,
+                                            backgroundColor: DynamicColors.whiteClr,
+                                            child: Icon(Icons.close,
+                                              color: DynamicColors.primaryClr,
+                                              size: 15,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }),
                           )
                         ],
                       ),
