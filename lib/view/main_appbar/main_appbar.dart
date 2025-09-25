@@ -59,6 +59,7 @@ import 'dart:html' as html;
 
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
+import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
 import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
 import '../vehicles_view/vehicle/create_vehicleScreen.dart';
 import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
@@ -750,7 +751,7 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-        NestedMenuItem(
+       /* NestedMenuItem(
           title: "LIST COMPANY VEHICLE",
           onTap: () {
             setState(() {
@@ -758,13 +759,13 @@ class _MyHomePageState extends State<MyHomePage> {
               controller.menuBarRefresh(title: "LIST COMPANY VEHICLE", pageName: CompanyVehicleForm());
             });
           },
-        ),
+        ),*/
         NestedMenuItem(
           title: "COMPANY VEHICLES",
           onTap: () {
             setState(() {
-              _currentPage = CreateVehicle();
-              controller.menuBarRefresh(title: "COMPANY VEHICLES", pageName: CreateVehicle());
+              _currentPage = CompanyVehiclesScreen();
+              controller.menuBarRefresh(title: "COMPANY VEHICLES", pageName: CompanyVehiclesScreen());
             });
           },
         ),

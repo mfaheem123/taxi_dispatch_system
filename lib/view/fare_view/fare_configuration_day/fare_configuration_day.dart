@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -80,7 +81,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 color: DynamicColors.whiteClr,
                               ),
                               child: RestrictedDrivers(
-                                width: fieldWidth,
+
+                                width: fieldWidth/1.5,
                                 height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -113,7 +115,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             children: [
                               Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               RestrictedDrivers(
-                                width: fieldWidth,
+
+                                width: fieldWidth/1.5,
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -134,7 +137,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             children: [
                               Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               RestrictedDrivers(
-                                width: fieldWidth,
+                                width: fieldWidth/1.5,
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -167,7 +170,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             children: [
                               Text(AppText.fromDay, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               RestrictedDrivers(
-                                width: fieldWidth,
+                                width: fieldWidth/1.5,
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -191,7 +194,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             children: [
                               Text(AppText.today, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               RestrictedDrivers(
-                                width: fieldWidth,
+                                width: fieldWidth/1.5,
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -280,85 +283,69 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                     ],
                   ),
                 ),
+
                 SizedBox(
                   width: Get.width,
-                  child: DataTable(
-                      headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                      dataRowMinHeight: 48,
-                      dataRowMaxHeight: 56,
-                      headingTextStyle: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 10,
-                      ),
-                      dataTextStyle: TextStyle(
-                        fontSize: 10,
-                      ),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                      ),
-                      columnSpacing: 12, // kam spacing taake sab fit ho
-                      horizontalMargin: 8,
-                      columns: [
-                        buildHeaderWithSearch(title: "VEHICLE TYPE"),
-                        buildHeaderWithSearch(title: "ACCOUNT"),
-                        buildHeaderWithSearch(title: "FROM DAY"),
-                        buildHeaderWithSearch(title: "TO DAY"),
-                        buildHeaderWithSearch(title: "FROM TIME"),
-                        buildHeaderWithSearch(title: "TO TIME"),
-                        buildHeaderWithSearch(title: "MINIMUM FARES"),
-                        buildHeaderWithSearch(title: "MINIMUM MILES"),
-                        buildHeaderWithSearch(title: "TITLE"),
-                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                      ],
-                      rows: List.generate(totalRows, (index) {
-                        bool isSelected = index == selectedRowIndex;
-                        return DataRow(
-                          cells: [
-                            const DataCell(Text("SALOON")),
-                            const DataCell(Text("21213")),
-                            const DataCell(Text("SUNDAY")),
-                            const DataCell(Text("SUNDAY")),
-                            const DataCell(Text("00:00:00")),
-                            const DataCell(Text("23:59:00")),
-                            const DataCell(Text("£ 6.20")),
-                            const DataCell(Text("0.90 MI")),
-                            const DataCell(Text("NORMAL FARES")),
-                            DataCell(
-                              Row(
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
-                                      minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.edit_calendar,
-                                      size: 20,
-                                      color: DynamicColors.primaryClr,
-                                    ),
-                                  ),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
-                                      minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.clear,
-                                      size: 20,
-                                      color: DynamicColors.redClr,
-                                    ),
-                                  ),
-                                ],
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(title: "VEHICLE TYPE"),
+                      buildHeaderWithSearch(title: "ACCOUNT"),
+                      buildHeaderWithSearch(title: "FROM DAY"),
+                      buildHeaderWithSearch(title: "TO DAY"),
+                      buildHeaderWithSearch(title: "FROM TIME"),
+                      buildHeaderWithSearch(title: "TO TIME"),
+                      buildHeaderWithSearch(title: "MINIMUM FARES"),
+                      buildHeaderWithSearch(title: "MINIMUM MILES"),
+                      buildHeaderWithSearch(title: "TITLE"),
+                      buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                    ],
+                    totalRow: totalRows,
+                    cells: [
+                      const DataCell(Center(child: Text("SALOON"))),
+                      const DataCell(Center(child: Text("21213"))),
+                      const DataCell(Center(child: Text("SUNDAY"))),
+                      const DataCell(Center(child: Text("SUNDAY"))),
+                      const DataCell(Center(child: Text("00:00:00"))),
+                      const DataCell(Center(child: Text("23:59:00"))),
+                      const DataCell(Center(child: Text("£ 6.20"))),
+                      const DataCell(Center(child: Text("0.90 MI"))),
+                      const DataCell(Center(child: Text("NORMAL FARES"))),
+                      DataCell(
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
+                                  minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.edit_calendar,
+                                  size: 20,
+                                  color: DynamicColors.primaryClr,
+                                ),
                               ),
-                            ),
-                          ],
-                        );
-                      })
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
+                                  minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.delete_forever,
+                                  size: 20,
+                                  color: DynamicColors.redClr,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                )
+                ),
               ],
             );
           }

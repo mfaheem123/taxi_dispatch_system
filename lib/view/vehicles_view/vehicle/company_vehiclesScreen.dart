@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../component/datatable_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
@@ -116,77 +117,63 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                     height: 12,
                   ),
 
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          buildHeaderWithSearch(title: "VEHICLE #"),
-                          buildHeaderWithSearch(title: "VEHICLE TYPE"),
-                          buildHeaderWithSearch(title: "OWNER"),
-                          buildHeaderWithSearch(title: "MAKE"),
-                          buildHeaderWithSearch(title: "MODEL"),
-                          buildHeaderWithSearch(title: "COLOR"),
-                          buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
+                  SizedBox(
+                    width: Get.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "VEHICLE #"),
+                        buildHeaderWithSearch(title: "VEHICLE TYPE"),
+                        buildHeaderWithSearch(title: "OWNER"),
+                        buildHeaderWithSearch(title: "MAKE"),
+                        buildHeaderWithSearch(title: "MODEL"),
+                        buildHeaderWithSearch(title: "COLOR"),
+                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
 
-                              const DataCell(Text("ASJ690")),
-                              const DataCell(Text("SALOON")),
-                              const DataCell(Text("Faheem")),
-                              const DataCell(Text("Honda")),
-                              const DataCell(Text("2025")),
-                              const DataCell(Text("Black")),
+                        const DataCell(Center(child: Text("ASJ690"))),
+                        const DataCell(Center(child: Text("SALOON"))),
+                        const DataCell(Center(child: Text("Faheem"))),
+                        const DataCell(Center(child: Text("Honda"))),
+                        const DataCell(Center(child: Text("2025"))),
+                        const DataCell(Center(child: Text("Black"))),
 
-                              DataCell(
-                                Row(
-                                  children: [
+                        DataCell(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
 
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.search,
-                                        size: 28,
-                                      ),
-                                    ),
-
-                                    Text("|"),
-
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ],
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.search,
+                                    size: 28,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        })
+
+                                Text("|"),
+
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.delete_forever,
+                                    color: DynamicColors.redClr,
+                                    size: 28,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             );
