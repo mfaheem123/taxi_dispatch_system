@@ -299,4 +299,8 @@ class AppText{
   static get insuranceExpiry => "INSURANCE EXPIRY";
   static get insuranceNumber => "INSURANCE NUMBER";
   static get companyVehiclePicture => "COMPANY VEHICLE PICTURE";
+  static get phcVehicleDoc => "PHC VEHICLE DOCUMENT";
+  static get motDoc => "MOT DOCUMENT";
+  static get mot2Doc => "MOT2 DOCUMENT";
+  static get insuranceDoc => "INSURANCE DOCUMENT";
 }

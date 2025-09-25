@@ -28,11 +28,11 @@ class VehicleController extends GetxController{
     );
 
     if (result != null && result.files.single.bytes != null) {
-      profileImg = ImageModel(
+      profileImg; /*= asd.ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
           path: result.files.single.path
-      );
+      );*/
     }
     update();
   }
@@ -65,6 +65,19 @@ class VehicleController extends GetxController{
   final motNumberController = TextEditingController();
   final mot2NumberController = TextEditingController();
   final insuranceNumberController = TextEditingController();
+
+  /// store image variable
+  // Uint8List? bytes;
+
+  // Future<void> selectProfileImage() async {
+  // /*  final image = await ImagePickerHelper.pickImage();
+  //
+  //   if (image != null) {
+  //     // yahan apni logic lagao
+  //     print("Image Name: ${image.name}");
+  //     print("Image Path: ${image.path}");
+  //   }*/
+  // }
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle

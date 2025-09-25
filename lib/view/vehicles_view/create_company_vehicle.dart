@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -264,83 +265,124 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                 ),
                 Wrap(
                   children: [
-                    Container(
-                      height: isMobile ? 100 : 200,
-                      width: fieldWidth/1.5,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "PHC VEHICLE DOCUMENT",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppText.phcVehicleDoc,
+                          style: mozillaTextRegularText(fontSize: 11),
+                        ),
+                        Container(
+                          height: isMobile ? 100 : 200,
+                          width: fieldWidth/1.5,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Center(
+                            child: Text(
+                              AppText.phcVehicleDoc,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Container(
-                      height: isMobile ? 100 : 200,
-                      width: fieldWidth/1.5,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "MOT DOCUMENT",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppText.motDoc,
+                          style: mozillaTextRegularText(fontSize: 11),
+                        ),
+                        Container(
+                          height: isMobile ? 100 : 200,
+                          width: fieldWidth/1.5,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Center(
+                            child: Text(
+                              AppText.motDoc,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Container(
-                      height: isMobile ? 100 : 200,
-                      width: fieldWidth/1.5,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "MOT2 DOCUMENT",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppText.mot2Doc,
+                          style: mozillaTextRegularText(fontSize: 11),
+                        ),
+                        Container(
+                          height: isMobile ? 100 : 200,
+                          width: fieldWidth/1.5,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Center(
+                            child: Text(AppText.mot2Doc,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                    Container(
-                      height: isMobile ? 100 : 200,
-                      width: fieldWidth/1.5,
-                      margin: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      child: const Center(
-                        child: Text(
-                          "INSURANCE DOCUMENT",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppText.insuranceDoc,
+                          style: mozillaTextRegularText(fontSize: 11),
+                        ),
+                        Container(
+                          height: isMobile ? 100 : 200,
+                          width: fieldWidth/1.5,
+                          margin: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Center(
+                            child: Text(
+                              AppText.insuranceDoc,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                CustomButton(
+                  height: 35,
+                  verticalPadding: 0.0,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  btnText: AppText.save,
                 )
               ],
             );
