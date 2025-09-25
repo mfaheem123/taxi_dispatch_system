@@ -292,4 +292,11 @@ class AppText{
   static get logBookingDoc => "LOG BOOK DOCUMENT";
   static get phcVehicleExpire => "PHC VEHICLE EXPIRY";
   static get phcVehicleNumber => "PHC VEHICLE NUMBER";
+  static get motExpiry => "MOT EXPIRY";
+  static get motNumber => "MOT NUMBER";
+  static get mot2Expiry => "MOT2 EXPIRY";
+  static get mot2Number => "MOT2 NUMBER";
+  static get insuranceExpiry => "INSURANCE EXPIRY";
+  static get insuranceNumber => "INSURANCE NUMBER";
+  static get companyVehiclePicture => "COMPANY VEHICLE PICTURE";
 }

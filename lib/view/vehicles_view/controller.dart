@@ -62,6 +62,9 @@ class VehicleController extends GetxController{
   final vehicleModelController = TextEditingController();
   final logBookingDocController = TextEditingController();
   final phcVehicleNumberController = TextEditingController();
+  final motNumberController = TextEditingController();
+  final mot2NumberController = TextEditingController();
+  final insuranceNumberController = TextEditingController();
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle

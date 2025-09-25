@@ -147,8 +147,17 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               isMobile: isMobile,
               label: AppText.phcVehicleExpire,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth/1.5,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
+            ),
+
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              column: true,
+              label: AppText.phcVehicleExpire,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: CustomTimePicker()),
             ),
 
             CustomTextField(
@@ -159,8 +168,180 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               columnText: true,
               height: 30,
             ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.motExpiry,
+              column: true,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+            ),
+
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              column: true,
+              label: AppText.motExpiry,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: CustomTimePicker()),
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.motNumberController,
+              width: fieldWidth,
+              hintText: AppText.motNumber,
+              columnText: true,
+              height: 30,
+            ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.mot2Expiry,
+              column: true,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+            ),
+
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              column: true,
+              label: AppText.mot2Expiry,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: CustomTimePicker()),
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.mot2NumberController,
+              width: fieldWidth,
+              hintText: AppText.mot2Number,
+              columnText: true,
+              height: 30,
+            ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.insuranceExpiry,
+              column: true,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+            ),
+
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              column: true,
+              label: AppText.insuranceExpiry,
+              width: fieldWidth/1.5,
+              child: SizedBox(height: 30, child: CustomTimePicker()),
+            ),
+            CustomTextField(
+              borderRadius: 4,
+              controller: controller.insuranceNumberController,
+              width: fieldWidth,
+              hintText: AppText.insuranceNumber,
+              columnText: true,
+              height: 30,
+            ),
           ],
         ),
+                SizedBox(
+                  height: 8,
+                ),
+                Container(
+                  // height: screenHeight / 20,
+                  width: Get.width,
+                  color: Colors.grey.withOpacity(0.3),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+                    child: Text(AppText.companyVehiclePicture,
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Wrap(
+                  children: [
+                    Container(
+                      height: isMobile ? 100 : 200,
+                      width: fieldWidth/1.5,
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "PHC VEHICLE DOCUMENT",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: isMobile ? 100 : 200,
+                      width: fieldWidth/1.5,
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "MOT DOCUMENT",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: isMobile ? 100 : 200,
+                      width: fieldWidth/1.5,
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "MOT2 DOCUMENT",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: isMobile ? 100 : 200,
+                      width: fieldWidth/1.5,
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          "INSURANCE DOCUMENT",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
               ],
             );
           }
