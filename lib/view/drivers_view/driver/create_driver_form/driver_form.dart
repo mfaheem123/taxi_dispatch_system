@@ -3,6 +3,10 @@ import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/perso
 import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/vehicle_information.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../alert/shift_alert.dart';
+import '../../../../component/color.dart';
+import '../../../../component/customButton.dart';
+import '../../../../component/textStyle.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../controller/driver_controller.dart';
 
@@ -26,129 +30,192 @@ class _DriverFormState extends State<DriverForm> {
 
   @override
   Widget build(BuildContext context) {
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+    double maxWidth = MediaQuery.of(context).size.width;
+    bool isMobile = maxWidth < 600;
+    bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+    double fieldWidth = isMobile
+        ? maxWidth
+        : isTablet
+            ? maxWidth / 2
+            : maxWidth / 4;
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return FocusTraversalGroup(
-      policy: OrderedTraversalPolicy(), // ensures NumericFocusOrder works globally
+      policy: OrderedTraversalPolicy(),
+      // ensures NumericFocusOrder works globally
 
-      child: GetBuilder<DriverController>(
-        builder: (controller) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  width < 1920 ? Column(
-                    children: [
-                      GestureDetector(
-                        onTap: (){
-                          controller.pickImage(singleImg: "profileImg");
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(6),
-                            border: Border.all(color: Colors.grey.shade400, width: 1),
-                          ),
-                          margin: EdgeInsets.only(bottom: 12),
-                          child: Padding(
-                            padding: controller.profileImg != null? EdgeInsets.zero: EdgeInsets.all(14),
-                            child: Container(
-                              height: 345,
-                              width: double.infinity,
-                              // color: Colors.grey[200],
-                              alignment: Alignment.center,
-                              child: controller.profileImg != null?  Image.memory(controller.profileImg!.bytes,fit: BoxFit.fill,
-                            ): Text(
-                                AppText.uploadImage,
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ),
+      child: GetBuilder<DriverController>(builder: (controller) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(12),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Driver",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
                       ),
-                      DriverPersonalInfo(),
-                      const SizedBox(height: 12),
-                      VehicleInformation(),
-                    ],
-                  ):
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Upload Image
-                      Expanded(
-                          flex: 2,
-                          child: GestureDetector(
-                            onTap: (){
+                    ),
+                    Row(
+                      children: [
+                        CustomButton(
+                          width: 80,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: "Shifts",
+                          borderRadius: 4,
+                          style: mozillaTextRegularText(
+                              fontSize: 14, color: DynamicColors.whiteClr),
+                          onTap: () {
+                            ShiftAlert.show();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        CustomButton(
+                          width: 80,
+                          height: 35,
+                          verticalPadding: 0.0,
+                          btnText: AppText.note,
+                          borderRadius: 4,
+                          style: mozillaTextRegularText(
+                              fontSize: 14, color: DynamicColors.whiteClr),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                width < 1920
+                    ? Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
                               controller.pickImage(singleImg: "profileImg");
                             },
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: Colors.grey.shade400, width: 1),
+                                border: Border.all(
+                                    color: Colors.grey.shade400, width: 1),
                               ),
-                              margin: const EdgeInsets.only(bottom: 12),
+                              margin: EdgeInsets.only(bottom: 12),
                               child: Padding(
-                                padding: const EdgeInsets.all(14),
+                                padding: controller.profileImg != null
+                                    ? EdgeInsets.zero
+                                    : EdgeInsets.all(14),
                                 child: Container(
                                   height: 345,
                                   width: double.infinity,
                                   // color: Colors.grey[200],
                                   alignment: Alignment.center,
-                                  child:
-                                  controller.profileImg != null?  Image.memory(controller.profileImg!.bytes,fit: BoxFit.fill,
-                                  ):
-                                  Text(
-                                    AppText.uploadImage,
-                                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                  ),
+                                  child: controller.profileImg != null
+                                      ? Image.memory(
+                                          controller.profileImg!.bytes,
+                                          fit: BoxFit.fill,
+                                        )
+                                      : Text(
+                                          AppText.uploadImage,
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                 ),
                               ),
                             ),
-                          )
+                          ),
+                          DriverPersonalInfo(),
+                          const SizedBox(height: 12),
+                          VehicleInformation(),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Upload Image
+                          Expanded(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: () {
+                                  controller.pickImage(singleImg: "profileImg");
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                        color: Colors.grey.shade400, width: 1),
+                                  ),
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(14),
+                                    child: Container(
+                                      height: 345,
+                                      width: double.infinity,
+                                      // color: Colors.grey[200],
+                                      alignment: Alignment.center,
+                                      child: controller.profileImg != null
+                                          ? Image.memory(
+                                              controller.profileImg!.bytes,
+                                              fit: BoxFit.fill,
+                                            )
+                                          : Text(
+                                              AppText.uploadImage,
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              )),
+
+                          const SizedBox(width: 12),
+
+                          // Personal Info
+                          Expanded(flex: 5, child: DriverPersonalInfo()),
+
+                          const SizedBox(width: 12),
+
+                          // Vehicle Info
+                          Expanded(flex: 5, child: VehicleInformation()),
+                        ],
                       ),
-      
-                      const SizedBox(width: 12),
-      
-                      // Personal Info
-                      Expanded(flex: 5, child: DriverPersonalInfo()),
-      
-                      const SizedBox(width: 12),
-      
-                      // Vehicle Info
-                      Expanded(flex: 5, child: VehicleInformation()),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-      
-                  // TABLES SECTION
-                  width < 1920 ? Column(
-                    children: [
-                      _buildDocumentsTable(),
-                      const SizedBox(height: 12),
-                      _buildValidityTable(),
-                    ],
-                  ): Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // LEFT SIDE
-                      Expanded(flex: 7, child: _buildDocumentsTable()),
-                      const SizedBox(width: 12),
-                      // RIGHT SIDE
-                      Expanded(flex: 5, child: _buildValidityTable()),
-                    ],
-                  ),
-                ],
-              ),
+                const SizedBox(height: 20),
+
+                // TABLES SECTION
+                width < 1920
+                    ? Column(
+                        children: [
+                          _buildDocumentsTable(),
+                          const SizedBox(height: 12),
+                          _buildValidityTable(),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // LEFT SIDE
+                          Expanded(flex: 7, child: _buildDocumentsTable()),
+                          const SizedBox(width: 12),
+                          // RIGHT SIDE
+                          Expanded(flex: 5, child: _buildValidityTable()),
+                        ],
+                      ),
+              ],
             ),
-          );
-        }
-      ),
+          ),
+        );
+      }),
     );
   }
-
 
   // LEFT TABLE
   Widget _buildDocumentsTable() {
@@ -355,10 +422,10 @@ class _DriverFormState extends State<DriverForm> {
 
   // Helper dropdown
   Widget _dropdownField(
-      String label,
-      List<String> items,
-      Function(String?)? onChanged,
-      ) {
+    String label,
+    List<String> items,
+    Function(String?)? onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
