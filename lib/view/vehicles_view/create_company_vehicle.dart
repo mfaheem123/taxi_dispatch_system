@@ -1,15 +1,12 @@
 
-
-
-
-import 'dart:convert';
-
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../alert/restrict_drivers_alert.dart';
+import '../../component/image_pick_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -271,24 +268,50 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         Text(AppText.phcVehicleDoc,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Container(
-                          height: isMobile ? 100 : 200,
-                          width: fieldWidth/1.5,
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Center(
-                            child: Text(
-                              AppText.phcVehicleDoc,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Container(
+                              height: isMobile ? 100 : 200,
+                              width: fieldWidth/1.5,
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                image:  controller.phcVehicleDocPic == null ? null : DecorationImage(
+                                  image: MemoryImage(controller.phcVehicleDocPic!), // ✅ correct provider
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              child: controller.phcVehicleDocPic != null ? SizedBox.shrink() : Center(
+                                child: Text(
+                                  AppText.phcVehicleDoc,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () async {
+                                if(controller.phcVehicleDocPic == null){
+                              final image = await ImagePickerHelper.pickImage();
+                              if (image != null) {
+                                controller.phcVehicleDocPic = image.bytes;
+                              }
+                            }else{
+                                  controller.phcVehicleDocPic = null;
+                                }
+                                controller.update();
+                          },
+                              child: Icon(controller.phcVehicleDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                              size: 30,
+                              color: DynamicColors.primaryClr,
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),
@@ -298,24 +321,50 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         Text(AppText.motDoc,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Container(
-                          height: isMobile ? 100 : 200,
-                          width: fieldWidth/1.5,
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Center(
-                            child: Text(
-                              AppText.motDoc,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Container(
+                              height: isMobile ? 100 : 200,
+                              width: fieldWidth/1.5,
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                image:  controller.motDocPic == null ? null : DecorationImage(
+                                  image: MemoryImage(controller.motDocPic!), // ✅ correct provider
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              child: controller.motDocPic != null ? SizedBox.shrink() :Center(
+                                child: Text(
+                                  AppText.motDoc,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () async {
+                                if(controller.motDocPic == null){
+                                  final image = await ImagePickerHelper.pickImage();
+                                  if (image != null) {
+                                    controller.motDocPic = image.bytes;
+                                  }
+                                }else{
+                                  controller.motDocPic = null;
+                                }
+                                controller.update();
+                              },
+                              child: Icon(controller.motDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                                size: 30,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),
@@ -325,23 +374,49 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         Text(AppText.mot2Doc,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Container(
-                          height: isMobile ? 100 : 200,
-                          width: fieldWidth/1.5,
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Center(
-                            child: Text(AppText.mot2Doc,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Container(
+                              height: isMobile ? 100 : 200,
+                              width: fieldWidth/1.5,
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                image:  controller.mot2DocPic == null ? null : DecorationImage(
+                                  image: MemoryImage(controller.mot2DocPic!), // ✅ correct provider
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              child: controller.mot2DocPic != null ? SizedBox.shrink() : Center(
+                                child: Text(AppText.mot2Doc,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () async {
+                                if(controller.mot2DocPic == null){
+                                  final image = await ImagePickerHelper.pickImage();
+                                  if (image != null) {
+                                    controller.mot2DocPic = image.bytes;
+                                  }
+                                }else{
+                                  controller.mot2DocPic = null;
+                                }
+                                controller.update();
+                              },
+                              child: Icon(controller.mot2DocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                                size: 30,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),
@@ -351,24 +426,50 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         Text(AppText.insuranceDoc,
                           style: mozillaTextRegularText(fontSize: 11),
                         ),
-                        Container(
-                          height: isMobile ? 100 : 200,
-                          width: fieldWidth/1.5,
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.grey),
-                          ),
-                          child: Center(
-                            child: Text(
-                              AppText.insuranceDoc,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            Container(
+                              height: isMobile ? 100 : 200,
+                              width: fieldWidth/1.5,
+                              margin: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                                image:  controller.insuranceDocPic == null ? null : DecorationImage(
+                                  image: MemoryImage(controller.insuranceDocPic!), // ✅ correct provider
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                              child: controller.insuranceDocPic != null ? SizedBox.shrink() : Center(
+                                child: Text(
+                                  AppText.insuranceDoc,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            GestureDetector(
+                              onTap: () async {
+                                if(controller.insuranceDocPic == null){
+                                  final image = await ImagePickerHelper.pickImage();
+                                  if (image != null) {
+                                    controller.insuranceDocPic = image.bytes;
+                                  }
+                                }else{
+                                  controller.insuranceDocPic = null;
+                                }
+                                controller.update();
+                              },
+                              child: Icon(controller.insuranceDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                                size: 30,
+                                color: DynamicColors.primaryClr,
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),

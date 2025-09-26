@@ -1,10 +1,14 @@
 
+
+import 'dart:typed_data';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../Model/image_model.dart';
+import '../../component/image_pick_widget.dart';
 
 class VehicleController extends GetxController{
 
@@ -28,11 +32,11 @@ class VehicleController extends GetxController{
     );
 
     if (result != null && result.files.single.bytes != null) {
-      profileImg; /*= asd.ImageModel(
+      profileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
           path: result.files.single.path
-      );*/
+      );
     }
     update();
   }
@@ -67,17 +71,10 @@ class VehicleController extends GetxController{
   final insuranceNumberController = TextEditingController();
 
   /// store image variable
-  // Uint8List? bytes;
-
-  // Future<void> selectProfileImage() async {
-  // /*  final image = await ImagePickerHelper.pickImage();
-  //
-  //   if (image != null) {
-  //     // yahan apni logic lagao
-  //     print("Image Name: ${image.name}");
-  //     print("Image Path: ${image.path}");
-  //   }*/
-  // }
+  Uint8List? phcVehicleDocPic;
+  Uint8List? motDocPic;
+  Uint8List? insuranceDocPic;
+  Uint8List? mot2DocPic;
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
