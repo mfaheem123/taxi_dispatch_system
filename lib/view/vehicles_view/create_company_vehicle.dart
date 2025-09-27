@@ -64,7 +64,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                 Container(
                   // height: screenHeight / 20,
                   width: Get.width,
-                  color: Colors.grey.withOpacity(0.3),
+                  color: DynamicColors.gryClr,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
                     child: Text(AppText.companyVehicle,
@@ -96,7 +96,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                   // height: 35,
                   padding: 0.0,
                   border: Border.all(
-                    color: Colors.grey,
+                    color: DynamicColors.gryClr,
                   ),
                   titleText: "ESTAT",
                   driversList: [
@@ -249,7 +249,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                 Container(
                   // height: screenHeight / 20,
                   width: Get.width,
-                  color: Colors.grey.withOpacity(0.3),
+                  color: DynamicColors.gryClr,
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
                     child: Text(AppText.companyVehiclePicture,

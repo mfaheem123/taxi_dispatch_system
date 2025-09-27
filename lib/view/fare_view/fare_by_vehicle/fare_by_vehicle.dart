@@ -80,7 +80,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                           // height: 35,
                           padding: 0.0,
                           border: Border.all(
-                            color: Colors.grey,
+                            color: DynamicColors.gryClr,
                           ),
                           titleText: "ESTAT",
                           driversList: [
@@ -101,7 +101,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                           // height: 35,
                           padding: 0.0,
                           border: Border.all(
-                            color: Colors.grey,
+                            color: DynamicColors.gryClr,
                           ),
                           titleText: "SELECT OPERATION",
                           driversList: [

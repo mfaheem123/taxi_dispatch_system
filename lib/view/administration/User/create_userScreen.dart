@@ -63,7 +63,7 @@ class CreateUserScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey,
+                color: DynamicColors.gryClr,
               ),
             ),
           ],
@@ -85,7 +85,7 @@ class CreateUserScreen extends StatelessWidget {
           Container(
             // height: screenHeight / 20,
             width: double.infinity,
-            color: Colors.grey.withOpacity(0.3),
+            color: DynamicColors.gryClr,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
               child: Text(
@@ -134,7 +134,7 @@ class CreateUserScreen extends StatelessWidget {
           Container(
             // height: screenHeight / 20,
             width: double.infinity,
-            color: Colors.grey.withOpacity(0.3),
+            color: DynamicColors.gryClr,
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: CustomButton(
               height: 30,

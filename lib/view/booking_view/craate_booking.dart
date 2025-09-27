@@ -155,7 +155,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                   width: fieldWidth / 1.5,
                                   // border: Border(
                                   //   bottom: BorderSide(
-                                  //     color: Colors.grey, // border color
+                                  //     color: DynamicColors.gryClr, // border color
                                   //     width: 2.0,        // border thickness
                                   //   ),
                                   // ),
@@ -988,7 +988,7 @@ class _CreateBookingState extends State<CreateBooking> {
                             DynamicSwitch(
                               controller: controller.switchController,
                               activeColor: DynamicColors.primaryClr,
-                              inactiveColor: Colors.grey,
+                              inactiveColor: DynamicColors.gryClr,
                               focusScale: 1.5,
                               onToggle: () {
                                 print("Switch toggled: ${controller.switchController.value}");

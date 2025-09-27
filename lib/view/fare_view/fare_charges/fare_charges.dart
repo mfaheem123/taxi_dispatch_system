@@ -87,7 +87,7 @@ class _FareChargesState extends State<FareCharges> {
                                         width: fieldWidth/1.8,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "POSTCODE WISE",
                                         driversList: [
@@ -119,7 +119,7 @@ class _FareChargesState extends State<FareCharges> {
                                         width: fieldWidth/1.8,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "DATE WISE",
                                         driversList: [
@@ -153,7 +153,7 @@ class _FareChargesState extends State<FareCharges> {
                                         width: fieldWidth/1.8,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "PICKUP",
                                         driversList: [
@@ -237,7 +237,7 @@ class _FareChargesState extends State<FareCharges> {
                                         width: fieldWidth/1.8,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "SELECT OPERATION",
                                         driversList: [

@@ -12,6 +12,7 @@ class DynamicColors {
   static Color pink = Color(0xff593196);
   static Color redClr = Colors.red;
   static Color greenClr = Colors.green;
-  static Color gryClr = Colors.grey;
+  static Color gryClr = Color(0xffA0DCFF);
+  // static Color gryClr = Colors.grey;
 
 }

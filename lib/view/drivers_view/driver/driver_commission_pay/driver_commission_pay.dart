@@ -92,7 +92,7 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                                     border: Border.all(color: Colors.transparent),
                                     // border: Border(
                                     //   bottom: BorderSide(
-                                    //     color: Colors.grey, // border color
+                                    //     color: DynamicColors.gryClr, // border color
                                     //     width: 2.0,        // border thickness
                                     //   ),
                                     // ),
@@ -141,7 +141,7 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                           DynamicSwitch(
                             controller: controller.creditValue,
                             activeColor: DynamicColors.primaryClr,
-                            inactiveColor: Colors.grey,
+                            inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
                             onToggle: () {
                               print("Switch toggled: ${controller.creditValue.value}");
@@ -151,7 +151,7 @@ class _DriverCommissionPayState extends State<DriverCommissionPay> {
                           DynamicSwitch(
                             controller: controller.debitValue,
                             activeColor: DynamicColors.primaryClr,
-                            inactiveColor: Colors.grey,
+                            inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
                             onToggle: () {
                               print("Switch toggled: ${controller.debitValue.value}");

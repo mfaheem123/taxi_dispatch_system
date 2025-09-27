@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
@@ -57,6 +59,9 @@ import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
 
+import '../reports/driver_login_screen.dart';
+import '../reports/driver_logs_screen.dart';
+import '../reports/earning_and_info_screen.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
@@ -146,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
           menuBarItemColor: Colors.white,
           popUpDecoration: BoxDecoration(
             color: Colors.white,
-            // border: Border.all(color: Colors.grey,width: 2),
+            // border: Border.all(color: DynamicColors.gryClr,width: 2),
             borderRadius: BorderRadius.circular(8),
           ),
           popUpPadding: 3,
@@ -248,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? DriverForm(),
+                  _currentPage ?? EarningAndInfoScreen(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -814,7 +819,33 @@ class _MyHomePageState extends State<MyHomePage> {
       NestedMenuItem(title: "REPORTS", children: [
         NestedMenuItem(
           title: "DRIVER",
-          onTap: () => message(context, "DevOps"),
+          // onTap: () => message(context, "DevOps"),
+          children: [
+            NestedMenuItem(title: "LOGIN",
+            onTap: (){
+              setState(() {
+                _currentPage = DriverLoginScreen();
+                controller.menuBarRefresh(title: "LOGIN", pageName: DriverLoginScreen());
+              });
+            }
+            ),
+            NestedMenuItem(title: "LOG",
+            onTap: (){
+              setState(() {
+                _currentPage = DriverLogsScreen();
+                controller.menuBarRefresh(title: "LOG", pageName: DriverLogsScreen());
+              });
+            }
+            ),
+            NestedMenuItem(title: "EARNINGS & INFO",
+            onTap: (){
+              setState(() {
+                _currentPage = EarningAndInfoScreen();
+                controller.menuBarRefresh(title: "EARNINGS & INFO", pageName: EarningAndInfoScreen());
+              });
+            }
+            ),
+          ]
         ),
         NestedMenuItem(
           title: "BOOKINGS",

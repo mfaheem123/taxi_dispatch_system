@@ -87,7 +87,7 @@ class _PlotFareState extends State<PlotFare> {
                                 height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: "SELECT VEHICLE TYPE",
                                 driversList: [
@@ -137,7 +137,7 @@ class _PlotFareState extends State<PlotFare> {
                                       height: 35,
                                       padding: 0.0,
                                       border: Border.all(
-                                        color: Colors.grey,
+                                        color: DynamicColors.gryClr,
                                       ),
                                       titleText: "SELECT PLOT",
                                       driversList: [
@@ -199,7 +199,7 @@ class _PlotFareState extends State<PlotFare> {
                                   height: 35,
                                   padding: 0.0,
                                   border: Border.all(
-                                    color: Colors.grey,
+                                    color: DynamicColors.gryClr,
                                   ),
                                   titleText: "SELECT PLOT",
                                   driversList: [

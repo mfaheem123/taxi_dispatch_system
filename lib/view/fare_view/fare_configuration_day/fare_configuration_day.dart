@@ -86,7 +86,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: "NORMAL DAY",
                                 driversList: [
@@ -120,7 +120,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: "VEHICLE TYPE",
                                 driversList: [
@@ -141,7 +141,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: "ACCOUNT",
                                 driversList: [
@@ -174,7 +174,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: AppText.fromDay,
                                 driversList: [
@@ -198,7 +198,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
-                                  color: Colors.grey,
+                                  color: DynamicColors.gryClr,
                                 ),
                                 titleText: AppText.today,
                                 driversList: [

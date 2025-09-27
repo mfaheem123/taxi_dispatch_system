@@ -71,7 +71,7 @@ class _FareMeterState extends State<FareMeter> {
                   dataRowMaxHeight: 56,
                   columnSpacing: 30.0,
                   border: TableBorder.all(
-                    color: Colors.grey,
+                    color: DynamicColors.gryClr,
                     width: 0.5,
                   ),
                   headingTextStyle: const TextStyle(
@@ -127,7 +127,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: DynamicSwitch(
                             controller: controller.meteredSwitch,
                             activeColor: DynamicColors.primaryClr,
-                            inactiveColor: Colors.grey,
+                            inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
                             onToggle: () {
                               print(
@@ -139,7 +139,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: DynamicSwitch(
                             controller: controller.autoWaitSwitch,
                             activeColor: DynamicColors.primaryClr,
-                            inactiveColor: Colors.grey,
+                            inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
                             onToggle: () {
                               print(

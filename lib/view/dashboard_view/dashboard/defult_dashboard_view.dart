@@ -37,6 +37,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
+    print(width);
+    print(width);
+    print(width);
+    print(width);
+
     return GetBuilder<DashboardController>(
       builder: (dashboardController) {
         return RawKeyboardListener(
@@ -105,7 +110,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                             visible: dashboardController.hideDashBoard.value,
                             child: SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
-                              child: width >=1920? Row(
+                              child: width <= 1366 ? Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   SizedBox(

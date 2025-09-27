@@ -169,7 +169,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                           DynamicSwitch(
                           controller: controller.switchController,
                             activeColor: DynamicColors.primaryClr,
-                            inactiveColor: Colors.grey,
+                            inactiveColor: DynamicColors.gryClr,
                           focusScale: 1.5,
                           onToggle: () {
                             print("Switch toggled: ${controller.switchController.value}");

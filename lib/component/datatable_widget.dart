@@ -22,7 +22,7 @@ class _DatatableWidgetState extends State<DatatableWidget> {
   Widget build(BuildContext context) {
     return DataTable(
         columnSpacing: 10, // 👈 space between columns
-        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+        headingRowColor: MaterialStateProperty.all(DynamicColors.secondaryClr),
         dataRowMinHeight: 48,
         dataRowMaxHeight: 56,
         headingTextStyle: const TextStyle(

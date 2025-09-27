@@ -116,7 +116,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                         Container(
                           // height: screenHeight / 20,
                           width: Get.width,
-                          color: Colors.grey.withOpacity(0.3),
+                          color: DynamicColors.gryClr,
                           child: Padding(
                             padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
                             child: Text(
@@ -240,7 +240,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                                       controller.pickerColor = color; // final selected
                                     });
                                   },
-                                  borderColor: Colors.grey,
+                                  borderColor: DynamicColors.gryClr,
                                 ),
                               ],
                             ),
@@ -261,7 +261,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                                       controller.foregroundColor = color; // final selected
                                     });
                                   },
-                                  borderColor: Colors.grey,
+                                  borderColor: DynamicColors.gryClr,
                                 ),
                               ],
                             ),

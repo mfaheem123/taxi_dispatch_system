@@ -77,7 +77,7 @@ class VehicleInformation extends StatelessWidget {
                             width: fieldWidth/1.4,
                             border: Border(
                               bottom: BorderSide(
-                                color: Colors.grey, // border color
+                                color: DynamicColors.gryClr, // border color
                                 width: 2.0,        // border thickness
                               ),
                             ),
@@ -159,7 +159,7 @@ class VehicleInformation extends StatelessWidget {
                             width: fieldWidth/1.4,
                             // border: Border(
                             //   bottom: BorderSide(
-                            //     color: Colors.grey, // border color
+                            //     color: DynamicColors.gryClr, // border color
                             //     width: 2.0,        // border thickness
                             //   ),
                             // ),

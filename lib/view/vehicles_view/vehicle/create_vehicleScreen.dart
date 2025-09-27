@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 
 class CreateVehicle extends StatelessWidget {
@@ -73,7 +74,7 @@ class CreateVehicle extends StatelessWidget {
           Container(
             height: screenHeight / 20,
             width: double.infinity,
-            color: Colors.grey.withOpacity(0.3),
+            color: DynamicColors.gryClr,
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
               child: Text(
@@ -112,7 +113,7 @@ class CreateVehicle extends StatelessWidget {
           Container(
             height: screenHeight / 20,
             width: double.infinity,
-            color: Colors.grey.withOpacity(0.3),
+            color: DynamicColors.gryClr,
             child:  Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(

@@ -7,7 +7,7 @@ class ColorPickerWidget extends StatelessWidget {
   final void Function(Color) onColorChanged;
   final double? width;
   final double? height;
-  final Color borderColor;
+  final Color? borderColor;
   final void Function(Color)? onColorSelected;
 
   const ColorPickerWidget({
@@ -61,7 +61,7 @@ class ColorPickerWidget extends StatelessWidget {
         width: width ?? 100,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: borderColor),
+          border: Border.all(color: borderColor!),
         ),
         child: Center(
           child: Container(

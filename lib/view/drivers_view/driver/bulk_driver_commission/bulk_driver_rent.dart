@@ -113,7 +113,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(
-                                          //     color: Colors.grey, // border color
+                                          //     color: DynamicColors.gryClr, // border color
                                           //     width: 2.0,        // border thickness
                                           //   ),
                                           // ),
@@ -331,7 +331,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           border: Border.all(color: Colors.transparent),
                                           // border: Border(
                                           //   bottom: BorderSide(
-                                          //     color: Colors.grey, // border color
+                                          //     color: DynamicColors.gryClr, // border color
                                           //     width: 2.0,        // border thickness
                                           //   ),
                                           // ),

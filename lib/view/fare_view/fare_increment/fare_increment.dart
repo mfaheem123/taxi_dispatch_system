@@ -107,7 +107,7 @@ class _FareIncrementState extends State<FareIncrement> {
                               padding: 0.0,
 
                               border: Border.all(
-                                color: Colors.grey,
+                                color: DynamicColors.gryClr,
                               ),
                               titleText: "SELECT OPERATOR",
                               driversList: [

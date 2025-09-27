@@ -191,7 +191,7 @@ class _AccountViewState extends State<AccountView> {
                                         // height: 35,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "DEMO COMPANY",
                                         driversList: [
@@ -212,7 +212,7 @@ class _AccountViewState extends State<AccountView> {
                                         // height: 35,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "SELECT ACCOUNT",
                                         driversList: [
@@ -291,7 +291,7 @@ class _AccountViewState extends State<AccountView> {
                                         // height: 35,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "",
                                         driversList: [
@@ -339,7 +339,7 @@ class _AccountViewState extends State<AccountView> {
                           });
                         },
                         width: fieldWidth/3,
-                        borderColor: Colors.grey,
+                        borderColor: DynamicColors.gryClr,
                       ),
                                     ],
                                   ),
@@ -399,7 +399,7 @@ class _AccountViewState extends State<AccountView> {
                                         // height: 35,
                                         padding: 0.0,
                                         border: Border.all(
-                                          color: Colors.grey,
+                                          color: DynamicColors.gryClr,
                                         ),
                                         titleText: "",
                                         driversList: [
@@ -447,7 +447,7 @@ class _AccountViewState extends State<AccountView> {
                                     // height: 35,
                                     padding: 0.0,
                                     border: Border.all(
-                                      color: Colors.grey,
+                                      color: DynamicColors.gryClr,
                                     ),
                                     titleText: "",
                                     driversList: [
@@ -476,7 +476,7 @@ class _AccountViewState extends State<AccountView> {
                                     // height: 35,
                                     padding: 0.0,
                                     border: Border.all(
-                                      color: Colors.grey,
+                                      color: DynamicColors.gryClr,
                                     ),
                                     titleText: "",
                                     driversList: [
@@ -530,7 +530,7 @@ class _AccountViewState extends State<AccountView> {
                                     // height: 35,
                                     padding: 0.0,
                                     border: Border.all(
-                                      color: Colors.grey,
+                                      color: DynamicColors.gryClr,
                                     ),
                                     titleText: "",
                                     driversList: [

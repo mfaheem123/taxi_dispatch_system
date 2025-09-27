@@ -177,9 +177,10 @@ class _DriverFormState extends State<DriverForm> {
                         ),
                       ],
                     ),
+                    _buildValidityTable(),
                   ],
                 ),
-                // TABLES SECTION
+             /*   // TABLES SECTION
                 width < 1920
                     ? Column(
                         children: [
@@ -197,7 +198,7 @@ class _DriverFormState extends State<DriverForm> {
                           // RIGHT SIDE
                           Expanded(flex: 5, child: _buildValidityTable()),
                         ],
-                      ),
+                      ),*/
               ],
             ),
           ),
