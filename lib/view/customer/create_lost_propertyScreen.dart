@@ -73,7 +73,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                         spacing: fieldWidth/2,
                         children: [
                           Container(
-                            color: Colors.grey.shade100,
+                            color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
                             child: Center(child: Text(AppText.lostProperty, style: titleDesign())),
                           ),
@@ -138,7 +138,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                         spacing: fieldWidth/2,
                         children: [
                           Container(
-                            color: Colors.grey.shade100,
+                            color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
                             child: Center(child: Text(AppText.customer, style: titleDesign())),
                           ),
@@ -191,7 +191,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   child: SizedBox(
                     width: Get.width,
                     child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                        headingRowColor: MaterialStateProperty.all( DynamicColors.secondaryClr,),
                         dataRowMinHeight: 48,
                         dataRowMaxHeight: 56,
                         headingTextStyle: const TextStyle(
@@ -214,7 +214,6 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
                         ],
                         rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
                           return DataRow(
                             cells: [
                               const DataCell(Text("BCB75029")),
@@ -232,7 +231,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   height: 10,
                 ),
                 Container(
-                  color: Colors.grey.shade100,
+                  color: DynamicColors.secondaryClr,
                   padding: const EdgeInsets.all(12),
                   child: Center(child: Text(AppText.enquiry, style: titleDesign())),
                 ),

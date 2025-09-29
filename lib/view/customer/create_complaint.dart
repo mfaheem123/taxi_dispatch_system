@@ -75,7 +75,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                 spacing: fieldWidth/2,
                 children: [
                   Container(
-                    color: Colors.grey.shade100,
+                    color: DynamicColors.secondaryClr,
                     padding: const EdgeInsets.all(12),
                     child: Center(child: Text(AppText.customer, style: titleDesign())),
                   ),
@@ -135,7 +135,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                         spacing: fieldWidth/6,
                         children: [
                           Container(
-                            color: Colors.grey.shade100,
+                        color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
                             child: Row(
                               children: [
@@ -264,7 +264,7 @@ class _CreateComplaintState extends State<CreateComplaint> {
                   child: SizedBox(
                     width: Get.width,
                     child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                        headingRowColor: MaterialStateProperty.all(DynamicColors.secondaryClr),
                         dataRowMinHeight: 48,
                         dataRowMaxHeight: 56,
                         headingTextStyle: const TextStyle(

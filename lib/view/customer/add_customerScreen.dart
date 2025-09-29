@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -67,7 +68,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
 
                     children: [
                       Container(
-                        color: Colors.grey.shade100,
+                        color: DynamicColors.secondaryClr,
                         padding: const EdgeInsets.all(12),
                         child: Center(child: Text(AppText.customer, style: titleDesign())),
                       ),
@@ -141,7 +142,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         ),
                       ),
                       Container(
-                        color: Colors.grey.shade100,
+                        color: DynamicColors.secondaryClr,
                         padding: const EdgeInsets.all(12),
                         child: Center(child: Text(AppText.other, style: titleDesign())),
                       ),

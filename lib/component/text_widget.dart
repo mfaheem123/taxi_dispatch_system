@@ -307,4 +307,5 @@ class AppText{
   static get loginDrivers => "LOGIN DRIVERS";
   static get logoutDrivers => "LOGOUT DRIVERS";
   static get view => "VIEW";
+  static get feedBack => "FEEDBACK";
 }

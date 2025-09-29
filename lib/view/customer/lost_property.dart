@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../component/color.dart';
+import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -92,97 +93,80 @@ class _LostPropertyState extends State<LostProperty> {
                 SizedBox(
                   height: 10,
                 ),
+
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          buildHeaderWithSearch(title: "LOST #"),
-                          buildHeaderWithSearch(title: "REPORT DATE"),
-                          buildHeaderWithSearch(title: "LOST DATE"),
-                          buildHeaderWithSearch(title: "CUSTOMER"),
-                          buildHeaderWithSearch(title: "ITEM DESCRIPTION"),
-                          buildHeaderWithSearch(title: "ACTIONS",
-                              customWidget: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.search,
-                                      size: 28,
-                                    ),
+                    width: MediaQuery.of(context).size.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "LOST #"),
+                        buildHeaderWithSearch(title: "REPORT DATE"),
+                        buildHeaderWithSearch(title: "LOST DATE"),
+                        buildHeaderWithSearch(title: "CUSTOMER"),
+                        buildHeaderWithSearch(title: "ITEM DESCRIPTION"),
+                        buildHeaderWithSearch(title: "ACTIONS",
+                            customWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
                                   ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.close,
-                                      size: 28,
-                                      color: DynamicColors.redClr,
-                                    ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.search,
+                                    size: 28,
                                   ),
-                                ],
-                              )
-                          ),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("#PHC VEHICLE")),
-                              const DataCell(Text("20/10/2025")),
-                              const DataCell(Text("#PHC VEHICLE")),
-                              const DataCell(Text("PHC VEHICLE")),
-                              const DataCell(Text("PHC VEHICLE")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.edit_calendar,
-                                        size: 28,
-                                      ),
-                                    ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                  ],
+                                ),
+                                Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.close,
+                                    size: 28,
+                                    color: DynamicColors.redClr,
+                                  ),
+                                ),
+                              ],
+                            )
+                        ),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        DataCell(
+                          Row(
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.edit_calendar,
+                                  size: 28,
+                                ),
+                              ),
+                              Text("|"),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.delete_forever,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
                                 ),
                               ),
                             ],
-                          );
-                        })
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

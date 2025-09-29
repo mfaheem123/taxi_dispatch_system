@@ -62,6 +62,7 @@ import 'dart:html' as html;
 import '../reports/driver_login_screen.dart';
 import '../reports/driver_logs_screen.dart';
 import '../reports/earning_and_info_screen.dart';
+import '../reports/report_feedback.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
@@ -253,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? EarningAndInfoScreen(),
+                  _currentPage ?? ReportFeedback(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -842,6 +843,14 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _currentPage = EarningAndInfoScreen();
                 controller.menuBarRefresh(title: "EARNINGS & INFO", pageName: EarningAndInfoScreen());
+              });
+            }
+            ),
+            NestedMenuItem(title: "FEEDBACK",
+            onTap: (){
+              setState(() {
+                _currentPage = ReportFeedback();
+                controller.menuBarRefresh(title: "FEEDBACK", pageName: ReportFeedback());
               });
             }
             ),
