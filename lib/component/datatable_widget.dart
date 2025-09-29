@@ -30,7 +30,8 @@ class _DatatableWidgetState extends State<DatatableWidget> {
           fontSize: 13,
         ),
         dataTextStyle: TextStyle(
-          fontSize: 10,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
         ),
         border: TableBorder(
           horizontalInside: BorderSide(

@@ -59,10 +59,13 @@ import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
 
-import '../reports/driver_login_screen.dart';
-import '../reports/driver_logs_screen.dart';
-import '../reports/earning_and_info_screen.dart';
-import '../reports/report_feedback.dart';
+import '../reports/driver_report_view/all_booking_view.dart';
+import '../reports/driver_reports_view/driver_login_screen.dart';
+import '../reports/driver_reports_view/driver_logs_screen.dart';
+import '../reports/driver_reports_view/earning_and_info_screen.dart';
+import '../reports/driver_reports_view/report_feedback.dart';
+import '../reports/driver_reports_view/statistics_screen.dart';
+import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
@@ -254,8 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? ReportFeedback(),
-                  // _currentPage ?? ByDefaultDashboard(),
+                  // _currentPage ?? AllBookingView(),
+                  _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -854,11 +857,29 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             }
             ),
+            NestedMenuItem(title: "STATISTICS",
+            onTap: (){
+              setState(() {
+                _currentPage = StatisticsScreen();
+                controller.menuBarRefresh(title: "STATISTICS", pageName: StatisticsScreen());
+              });
+            }
+            ),
           ]
         ),
         NestedMenuItem(
           title: "BOOKINGS",
-          onTap: () => message(context, "DevOps"),
+          children: [
+            NestedMenuItem(
+              title: "ALL BOOKINGS",
+              onTap: () {
+                setState(() {
+                  _currentPage = AllBookingView();
+                  controller.menuBarRefresh(title: "ALL BOOKINGS", pageName: AllBookingView());
+                });
+              },
+            ),
+          ]
         ),
         NestedMenuItem(
           title: "CALL",
@@ -908,7 +929,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "SMS SETTINGS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = TemplateSettings();
+              controller.menuBarRefresh(title: "SMS SETTINGS", pageName: TemplateSettings());
+            });
+          },
         ),
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",

@@ -53,4 +53,30 @@ class ReportController extends GetxController {
   String? selectDriver;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report feedback functionality
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
+
+  int selectedValue = 0; // 👈 groupValue
+  RxBool ptValue = false.obs;
+  RxBool cashValue = false.obs;
+  RxBool accountValue = false.obs;
+  RxBool creditCardPaidValue = false.obs;
+
+  ///focusNode value of checkBox
+
+  final FocusNode ptNode = FocusNode();
+  final FocusNode cashNode = FocusNode();
+  final FocusNode accountNode = FocusNode();
+  final FocusNode creditCardPaidNode = FocusNode();
+
+  /// text editing controller
+  final customerController = TextEditingController();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final pickUpController = TextEditingController();
+  final dropUpController = TextEditingController();
+  final orderNumberController = TextEditingController();
+  final bookedByController = TextEditingController();
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 }

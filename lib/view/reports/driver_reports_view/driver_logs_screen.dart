@@ -1,25 +1,24 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
-import '../../../component/text_widget.dart';
-import '../../component/calender.dart';
-import '../../component/datatable_widget.dart';
-import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/booking_table.dart';
-import '../drivers_view/controller/driver_controller.dart';
-import 'controller/report_controller.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../dashboard_view/booking_table.dart';
+import '../controller/report_controller.dart';
 
-class DriverLoginScreen extends StatefulWidget {
-  const DriverLoginScreen({super.key});
+class DriverLogsScreen extends StatefulWidget {
+  const DriverLogsScreen({super.key});
 
   @override
-  State<DriverLoginScreen> createState() => _DriverLoginScreenState();
+  State<DriverLogsScreen> createState() => _DriverLogsScreenState();
 }
 
-class _DriverLoginScreenState extends State<DriverLoginScreen> {
+class _DriverLogsScreenState extends State<DriverLogsScreen> {
   int selectedRowIndex = 0;
   final int totalRows = 15;
 
@@ -36,7 +35,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
   @override
   void initState() {
     super.initState();
-    shortCutKeyValue.value = "driverLogin";
+    shortCutKeyValue.value = "driverLogsScreen";
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -114,7 +113,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                       SizedBox(
                         width: maxWidth < 600 ? double.infinity : 200,
                         child: Text(
-                          "DRIVER LOGIN",
+                          "DRIVER LOG",
                           style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17,
@@ -223,12 +222,12 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                       width: MediaQuery.of(context).size.width,
                       child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "LOGIN DATE"),
-                          buildHeaderWithSearch(title: "LOGIN TIME"),
-                          buildHeaderWithSearch(title: "LOGOUT DATE"),
-                          buildHeaderWithSearch(title: "LOGOUT TIME"),
+                          buildHeaderWithSearch(title: "REF #"),
+                          buildHeaderWithSearch(title: "DATETIME"),
+                          buildHeaderWithSearch(title: "VEHICLE"),
+                          buildHeaderWithSearch(title: "PICKUP"),
+                          buildHeaderWithSearch(title: "DROPOFF"),
+                          buildHeaderWithSearch(title: "FARES"),
                         ],
                         totalRow: totalRows,
                         cells: [

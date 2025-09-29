@@ -1,24 +1,22 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../../component/color.dart';
-import '../../component/datatable_widget.dart';
-import '../../component/textStyle.dart';
-import '../dashboard_view/Controller/dashboard_controller.dart';
-import '../dashboard_view/booking_table.dart';
-import 'controller/report_controller.dart';
+import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
+import '../../../component/textStyle.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../dashboard_view/booking_table.dart';
+import '../controller/report_controller.dart';
 
-class DriverLogsScreen extends StatefulWidget {
-  const DriverLogsScreen({super.key});
+class DriverLoginScreen extends StatefulWidget {
+  const DriverLoginScreen({super.key});
 
   @override
-  State<DriverLogsScreen> createState() => _DriverLogsScreenState();
+  State<DriverLoginScreen> createState() => _DriverLoginScreenState();
 }
 
-class _DriverLogsScreenState extends State<DriverLogsScreen> {
+class _DriverLoginScreenState extends State<DriverLoginScreen> {
   int selectedRowIndex = 0;
   final int totalRows = 15;
 
@@ -35,7 +33,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
   @override
   void initState() {
     super.initState();
-    shortCutKeyValue.value = "driverLogsScreen";
+    shortCutKeyValue.value = "driverLogin";
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -113,7 +111,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                       SizedBox(
                         width: maxWidth < 600 ? double.infinity : 200,
                         child: Text(
-                          "DRIVER LOG",
+                          "DRIVER LOGIN",
                           style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17,
@@ -222,12 +220,12 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                       width: MediaQuery.of(context).size.width,
                       child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "VEHICLE"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "FARES"),
+                          buildHeaderWithSearch(title: "DRIVER"),
+                          buildHeaderWithSearch(title: "BOOKINGS"),
+                          buildHeaderWithSearch(title: "LOGIN DATE"),
+                          buildHeaderWithSearch(title: "LOGIN TIME"),
+                          buildHeaderWithSearch(title: "LOGOUT DATE"),
+                          buildHeaderWithSearch(title: "LOGOUT TIME"),
                         ],
                         totalRow: totalRows,
                         cells: [

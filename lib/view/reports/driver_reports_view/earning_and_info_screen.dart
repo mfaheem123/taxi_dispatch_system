@@ -7,13 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../component/datatable_widget.dart';
-import '../../component/text_widget.dart';
-import '../dashboard_view/booking_table.dart';
-import '../dashboard_view/widgets/time_picker_widget.dart';
-import '../dashboard_view/widgets/user_info_widget.dart';
-import 'controller/report_controller.dart';
-
+import '../../../component/datatable_widget.dart';
+import '../../../component/text_widget.dart';
+import '../../dashboard_view/booking_table.dart';
+import '../../dashboard_view/widgets/time_picker_widget.dart';
+import '../../dashboard_view/widgets/user_info_widget.dart';
+import '../controller/report_controller.dart';
 class EarningAndInfoScreen extends StatefulWidget {
   const EarningAndInfoScreen({super.key});
 
