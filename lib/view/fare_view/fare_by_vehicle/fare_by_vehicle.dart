@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -162,73 +163,59 @@ class _FareByVehicleState extends State<FareByVehicle> {
                 SizedBox(
                   height: 6,
                 ),
-                SizedBox(
-                  width: Get.width,
-                  child: DataTable(
-                      headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                      dataRowMinHeight: 48,
-                      dataRowMaxHeight: 56,
-                      headingTextStyle: const TextStyle(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 10,
-                      ),
-                      dataTextStyle: TextStyle(
-                        fontSize: 10,
-                      ),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                      ),
-                      columnSpacing: 12, // kam spacing taake sab fit ho
-                      horizontalMargin: 8,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: Get.width,
+                    child: DatatableWidget(
                       columns: [
                         buildHeaderWithSearch(title: "VEHICLE TYPE"),
                         buildHeaderWithSearch(title: "OPERATOR"),
                         buildHeaderWithSearch(title: "VALUE"),
                         buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                       ],
-                      rows: List.generate(totalRows, (index) {
-                        bool isSelected = index == selectedRowIndex;
-                        return DataRow(
-                          cells: [
-                            const DataCell(Text("MPV6")),
-                            const DataCell(Text("PERCENTAGE")),
-                            const DataCell(Text("40%")),
-                            DataCell(
-                              Row(
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
-                                      minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.edit_calendar,
-                                      size: 20,
-                                      color: DynamicColors.primaryClr,
-                                    ),
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Center(child: Text("MPV6"))),
+                        const DataCell(Center(child: Text("PERCENTAGE"))),
+                        const DataCell(Center(child: Text("40%"))),
+                        DataCell(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
+                                    minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
                                   ),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
-                                      minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.clear,
-                                      size: 20,
-                                      color: DynamicColors.redClr,
-                                    ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.edit_calendar,
+                                    size: 20,
+                                    color: DynamicColors.primaryClr,
                                   ),
-                                ],
-                              ),
+                                ),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.zero, // 👈 yeh horizontal aur vertical padding remove karega
+                                    minimumSize: const Size(32, 32), // 👈 button ka size fix karna zaroori hai
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.clear,
+                                    size: 20,
+                                    color: DynamicColors.redClr,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        );
-                      })
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
+                ),
               ],
             ),
           );

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -225,101 +226,82 @@ class _InvoiceListState extends State<InvoiceList> {
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: Get.width,
-                    child: DataTable(
-                        columnSpacing: 20,
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          DataColumn(
-                            label: Checkbox(
-                              value: false, // a bool you keep in state
-                              onChanged: (val) {
-                              },
-                            ),
+                    child: DatatableWidget(
+                      columns: [
+                        DataColumn(
+                          label: Checkbox(
+                            value: false, // a bool you keep in state
+                            onChanged: (val) {
+                            },
                           ),
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "VEH"),
-                          buildHeaderWithSearch(title: "J/T"),
-                          buildHeaderWithSearch(title: "P/T"),
-                          buildHeaderWithSearch(title: "FARE"),
-                          buildHeaderWithSearch(title: "PC"),
-                          buildHeaderWithSearch(title: "WC"),
-                          buildHeaderWithSearch(title: "EDC"),
-                          buildHeaderWithSearch(title: "M&G"),
-                          buildHeaderWithSearch(title: "Cc"),
-                          buildHeaderWithSearch(title: "TOTA"),
-                          buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                Checkbox(
-                                  value: isSelected, // ✅ controlled by your state
-                                  onChanged: (val) {
-                                    // update your selected index or list here
-                                  },
+                        ),
+                        buildHeaderWithSearch(title: "REF #"),
+                        buildHeaderWithSearch(title: "DATETIME"),
+                        buildHeaderWithSearch(title: "PICKUP"),
+                        buildHeaderWithSearch(title: "DROPOFF"),
+                        buildHeaderWithSearch(title: "VEH"),
+                        buildHeaderWithSearch(title: "J/T"),
+                        buildHeaderWithSearch(title: "P/T"),
+                        buildHeaderWithSearch(title: "FARE"),
+                        buildHeaderWithSearch(title: "PC"),
+                        buildHeaderWithSearch(title: "WC"),
+                        buildHeaderWithSearch(title: "EDC"),
+                        buildHeaderWithSearch(title: "M&G"),
+                        buildHeaderWithSearch(title: "Cc"),
+                        buildHeaderWithSearch(title: "TOTA"),
+                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        DataCell(
+                          Checkbox(
+                            value: false, // ✅ controlled by your state
+                            onChanged: (val) {
+                              // update your selected index or list here
+                            },
+                          ),
+                        ),
+                        const DataCell(Text("SALOON")),
+                        const DataCell(Text("NW7")),
+                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                        const DataCell(Text("£55.00")),
+                        const DataCell(Text("SALOON")),
+                        const DataCell(Text("NW7")),
+                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                        const DataCell(Text("£55.00")),
+                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                        const DataCell(Text("£55.00")),
+                        const DataCell(Text("£55.00")),
+                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
+                        const DataCell(Text("£55.00")),
+                        const DataCell(Text("£55.00")),
+                        DataCell(
+                          Row(
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.search,
+                                  size: 28,
+                                  color: DynamicColors.primaryClr,
                                 ),
                               ),
-                              const DataCell(Text("SALOON")),
-                              const DataCell(Text("NW7")),
-                              const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                              const DataCell(Text("£55.00")),
-                              const DataCell(Text("SALOON")),
-                              const DataCell(Text("NW7")),
-                              const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                              const DataCell(Text("£55.00")),
-                              const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                              const DataCell(Text("£55.00")),
-                              const DataCell(Text("£55.00")),
-                              const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                              const DataCell(Text("£55.00")),
-                              const DataCell(Text("£55.00")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.search,
-                                        size: 28,
-                                        color: DynamicColors.primaryClr,
-                                      ),
-                                    ),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.clear,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                  ],
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(Icons.clear,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
                                 ),
                               ),
                             ],
-                          );
-                        })
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

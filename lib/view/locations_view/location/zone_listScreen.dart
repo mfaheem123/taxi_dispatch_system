@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../component/datatable_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
@@ -84,21 +85,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
+                    child: SizedBox(
+                      width: Get.width,
+                      child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(title: "NAME"),
                           buildHeaderWithSearch(title: "SHORT NAME"),
@@ -107,45 +96,45 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
 
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("Action Town Tube Station")),
-                              const DataCell(Text("W3BHN")),
-                              const DataCell(Text("RA")),
-                              const DataCell(Text("Action Town Tube Station W3BHN")),
+                        totalRow: totalRows,
+                        cells: [
 
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.edit_calendar,
-                                        size: 28,
-                                      ),
+                          const DataCell(Center(child: Text("Action Town Tube Station"))),
+                          const DataCell(Center(child: Text("W3BHN"))),
+                          const DataCell(Center(child: Text("RA"))),
+                          const DataCell(Center(child: Text("Action Town Tube Station W3BHN"))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
                                     ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                      ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.edit_calendar,
+                                      size: 28,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.delete_forever,
+                                      size: 28,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          );
-                        })
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             );

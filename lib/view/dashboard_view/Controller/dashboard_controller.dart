@@ -154,8 +154,8 @@ class DashboardController extends GetxController {
 
   final activeFieldKey = Rx<GlobalKey?>(null);
 
-  final PickupController = TextEditingController();
-  final DropoffController = TextEditingController();
+  // final pickupController = TextEditingController();
+  // final dropOffController = TextEditingController();
   final viaLocation1Controller = TextEditingController();
   final viaLocation2Controller = TextEditingController();
 
@@ -185,12 +185,12 @@ class DashboardController extends GetxController {
 
   void selectSuggestion(String value) {
     if (activeFieldKey.value == pickupFieldKey) {
-      PickupController.text = value;
-      PickupController.selection =
+      pickupController.text = value;
+      pickupController.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
-      DropoffController.text = value;
-      DropoffController.selection =
+      dropOffController.text = value;
+      dropOffController.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
       viaLocation1Controller.text = value;
@@ -212,19 +212,19 @@ class DashboardController extends GetxController {
     super.onInit();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
-    PickupController.addListener(() {
-      if (PickupController.selection.baseOffset != -1) {
+    pickupController.addListener(() {
+      if (pickupController.selection.baseOffset != -1) {
         activeFieldKey.value = pickupFieldKey;
-        inputText.value = PickupController.text;
-        onInputChanged(PickupController.text);
+        inputText.value = pickupController.text;
+        onInputChanged(pickupController.text);
       }
     });
 
-    DropoffController.addListener(() {
-      if (DropoffController.selection.baseOffset != -1) {
+    dropOffController.addListener(() {
+      if (dropOffController.selection.baseOffset != -1) {
         activeFieldKey.value = dropOffFieldKey;
-        inputText.value = DropoffController.text;
-        onInputChanged(DropoffController.text);
+        inputText.value = dropOffController.text;
+        onInputChanged(dropOffController.text);
       }
     });
 
@@ -268,9 +268,8 @@ class DashboardController extends GetxController {
     dropoffFocusNode.dispose();
     via1FocusNode.dispose();
     via2FocusNode.dispose();
-
-    PickupController.dispose();
-    DropoffController.dispose();
+    pickupController.dispose();
+    dropOffController.dispose();
     viaLocation1Controller.dispose();
     viaLocation2Controller.dispose();
     referenceNumberController.dispose();

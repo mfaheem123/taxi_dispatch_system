@@ -310,5 +310,11 @@ class AppText{
   static get feedBack => "FEEDBACK";
   static get all => "ALL";
   static get orderNumber => "ORDER NUMBER";
-  // static get bookedBy => "BOOKED BY";
+  static get selectEmployee => "SELECT EMPLOYEE";
+  static get selectSubsidiary => "SELECT SUBSIDIARY";
+  static get selectRefNumber => "REFERENCE NUMBER";
+  static get ascending => "ASCENDING";
+  static get selectAccount => "SELECT ACCOUNT";
+  static get selectDepartment => "SELECT DEPARTMENT";
+  static get statistics => "STATISTICS";
 }

@@ -223,7 +223,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                       },
                                       child: CustomTextField(
                                         key: controller.pickupFieldKey,
-                                        controller: controller.PickupController,
+                                        controller: controller.pickupController,
                                         focusNode:
                                             controller.pickupTextFieldFocusNode,
                                         hintText: 'PICKUP LOCATION',
@@ -243,12 +243,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                           focusNode: swap1FN,
                                           onActivate: () {
                                             String tempPic =
-                                                controller.PickupController.text;
+                                                controller.pickupController.text;
                                             String tempDrop =
-                                                controller.DropoffController.text;
-                                            controller.PickupController.text =
+                                                controller.dropOffController.text;
+                                            controller.pickupController.text =
                                                 tempDrop;
-                                            controller.DropoffController.text =
+                                            controller.dropOffController.text =
                                                 tempPic;
                                             controller.update();
                                           },
@@ -344,7 +344,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                       },
                                       child: CustomTextField(
                                         key: controller.dropOffFieldKey,
-                                        controller: controller.DropoffController,
+                                        controller: controller.dropOffController,
                                         focusNode:
                                             controller.dropOffTextFieldFocusNode,
                                         hintText: 'DROP LOCATION',
@@ -361,12 +361,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                           focusNode: swap2FN,
                                           onActivate: () {
                                             String tempPic =
-                                                controller.PickupController.text;
+                                                controller.pickupController.text;
                                             String tempDrop =
-                                                controller.DropoffController.text;
-                                            controller.PickupController.text =
+                                                controller.dropOffController.text;
+                                            controller.pickupController.text =
                                                 tempDrop;
-                                            controller.DropoffController.text =
+                                            controller.dropOffController.text =
                                                 tempPic;
                                             controller.update();
                                           },
@@ -1002,7 +1002,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                             // SMS Checkbox
                             SizedBox(
-                              width: fieldWidth/6,
+                              // width: fieldWidth/6,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -1037,7 +1037,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                             // Email Checkbox
                             SizedBox(
-                              width: fieldWidth/5,
+                              // width: fieldWidth/5,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -1073,7 +1073,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                             // Pass, Lugg, Slugg fields
                             SizedBox(
-                              width: fieldWidth/2.0,
+                              // width: fieldWidth/2.0,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -1204,54 +1204,28 @@ class _CreateBookingState extends State<CreateBooking> {
                             spacing: 10,
                             runSpacing: 16,
                             children: [
-                            SizedBox(
-                              width: fieldWidth/3.5,
-                              child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.access_time_filled_outlined,
-                                    color: DynamicColors.textClr, size: 18),
-                                SizedBox(width: 4),
-                                Text("ETA : 0.0 mins",
-                                    style: TextStyle(
-                                        color: DynamicColors.textClr,
-                                        fontSize: 13)),
-                              ],
-                                                        ),
-                            ),
-                              SizedBox(
-                                width: fieldWidth/3.2,
-                                child:
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.access_time_filled_outlined,
-                                        color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 4),
-                                    Text("JOURNEY : 0.0 mins",
-                                        style: TextStyle(
-                                            color: DynamicColors.textClr,
-                                            fontSize: 13)),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                width: fieldWidth/3.2,
-                                child:
+                              Icon(Icons.access_time_filled_outlined,
+                                  color: DynamicColors.textClr, size: 18),
+                              SizedBox(width: 4),
+                              Text("ETA : 0.0 mins",
+                                  style: TextStyle(
+                                      color: DynamicColors.textClr,
+                                      fontSize: 13)),
 
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.location_on,
-                                        color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 4),
-                                    Text("DISTANCE : 0.0 miles",
-                                        style: TextStyle(
-                                            color: DynamicColors.textClr,
-                                            fontSize: 13)),
-                                  ],
-                                ),
-                              ),
+                              Icon(Icons.access_time_filled_outlined,
+                                  color: DynamicColors.textClr, size: 18),
+                              SizedBox(width: 4),
+                              Text("JOURNEY : 0.0 mins",
+                                  style: TextStyle(
+                                      color: DynamicColors.textClr,
+                                      fontSize: 13)),
+                              Icon(Icons.location_on,
+                                  color: DynamicColors.textClr, size: 18),
+                              SizedBox(width: 4),
+                              Text("DISTANCE : 0.0 miles",
+                                  style: TextStyle(
+                                      color: DynamicColors.textClr,
+                                      fontSize: 13)),
                               Container(
                                 width: fieldWidth/3.5,
 

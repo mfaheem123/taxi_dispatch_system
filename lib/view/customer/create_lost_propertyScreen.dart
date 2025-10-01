@@ -3,6 +3,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -186,26 +187,12 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                 SizedBox(
                   height: 10,
                 ),
+
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all( DynamicColors.secondaryClr,),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-
+                    width: MediaQuery.of(context).size.width,
+                    child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(title: "REF #",removeSearching: true),
                           buildHeaderWithSearch(title: "DATETIME",removeSearching: true),
@@ -213,17 +200,14 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                           buildHeaderWithSearch(title: "PICKUP",removeSearching: true),
                           buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
                         ],
-                        rows: List.generate(totalRows, (index) {
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("BCB75029")),
-                              const DataCell(Text("07-08-25 06:07")),
-                              const DataCell(Text("SALOON")),
-                              const DataCell(Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP")),
-                              const DataCell(Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB")),
-                            ],
-                          );
-                        })
+                        totalRow: totalRows,
+                        cells: [
+                          const DataCell(Center(child: Text("BCB75029"))),
+                          const DataCell(Center(child: Text("07-08-25 06:07"))),
+                          const DataCell(Center(child: Text("SALOON"))),
+                          const DataCell(Center(child: Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP"))),
+                          const DataCell(Center(child: Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB"))),
+                        ],
                     ),
                   ),
                 ),

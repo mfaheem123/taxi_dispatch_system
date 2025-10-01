@@ -7,6 +7,7 @@ import '../../../../alert/booking_alert.dart';
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
+import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
@@ -495,70 +496,50 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                     ),
                   ],
                 ),
-
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingRowHeight: 80,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          buildHeaderWithSearch(
-                              widget: Checkbox(value: controller.selectAllDrivers.value,
-                                  onChanged: (v){
-                                    controller.selectAllDrivers.value = v!;
-                                    controller.update();
-                                  })),
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "CASH TOTAL"),
-                          buildHeaderWithSearch(title: maxWidth > 1669? "ACCOUNT TOTALS":"ACCOUNT\nTOTALS"),
-                          buildHeaderWithSearch(title: "TOTALS"),
-                          buildHeaderWithSearch(title: "COMM"),
-                          buildHeaderWithSearch(title: "OLD BALANCE"),
-                          buildHeaderWithSearch(title: "BALANCE"),
-                          buildHeaderWithSearch(title: "OWED"),
-                          buildHeaderWithSearch(title: "ACTION"),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              DataCell(Checkbox(value: controller.selectAllDrivers.value,
-                                  onChanged: (v){
-                                    controller.selectAllDrivers.value = v!;
-                                    controller.update();
-                                  })),
-                              const DataCell(Text("#PHC VEHICLE")),
-                              const DataCell(Text("PHC VEHICLE")),
-                              const DataCell(Text("20/10/2025")),
-                              const DataCell(Text("#PHC VEHICLE")),
-                              const DataCell(Text("PHC VEHICLE")),
-                              const DataCell(Text("20/10/2025")),
-                              const DataCell(Text("#PHC VEHICLE")),
-                              const DataCell(Text("PHC VEHICLE")),
-                              const DataCell(Text("20/10/2025")),
-                              const DataCell(Text("20/10/2025")),
-                            ],
-                          );
-                        })
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(
+                            widget: Checkbox(value: controller.selectAllDrivers.value,
+                                onChanged: (v){
+                                  controller.selectAllDrivers.value = v!;
+                                  controller.update();
+                                })),
+                        buildHeaderWithSearch(title: "DRIVER"),
+                        buildHeaderWithSearch(title: "BOOKINGS"),
+                        buildHeaderWithSearch(title: "CASH TOTAL"),
+                        buildHeaderWithSearch(title: maxWidth > 1669? "ACCOUNT TOTALS":"ACCOUNT\nTOTALS"),
+                        buildHeaderWithSearch(title: "TOTALS"),
+                        buildHeaderWithSearch(title: "COMM"),
+                        buildHeaderWithSearch(title: "OLD BALANCE"),
+                        buildHeaderWithSearch(title: "BALANCE"),
+                        buildHeaderWithSearch(title: "OWED"),
+                        buildHeaderWithSearch(title: "ACTION"),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        DataCell(Checkbox(value: controller.selectAllDrivers.value,
+                            onChanged: (v){
+                              controller.selectAllDrivers.value = v!;
+                              controller.update();
+                            })),
+                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("20/10/2025"))),
+                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("20/10/2025"))),
+                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("20/10/2025"))),
+                        const DataCell(Center(child: Text("20/10/2025"))),
+                      ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
           );

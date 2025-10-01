@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../component/color.dart';
 import '../../component/customButton.dart';
+import '../../component/datatable_widget.dart';
 import '../../component/dropdown_button.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -259,39 +260,21 @@ class _CreateComplaintState extends State<CreateComplaint> {
                 SizedBox(
                   height: 10,
                 ),
+
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(DynamicColors.secondaryClr),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-
-                        columns: [
-                          buildHeaderWithSearch(title: "PICKUP",removeSearching: true),
-                          buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
-                        ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP")),
-                              const DataCell(Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB")),
-                            ],
-                          );
-                        })
+                    width: MediaQuery.of(context).size.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "PICKUP",removeSearching: true),
+                        buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP")),
+                        const DataCell(Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB")),
+                      ],
                     ),
                   ),
                 ),

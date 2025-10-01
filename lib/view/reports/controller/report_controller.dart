@@ -78,5 +78,14 @@ class ReportController extends GetxController {
   final orderNumberController = TextEditingController();
   final bookedByController = TextEditingController();
 
+  /// booking in reports
+  String? selectBookingDriver;
+  String? selectEmployee;
+  String? selectSubsidiary;
+  String? selectRefNumber;
+  String? selectAscending;
+  String? selectAccount;
+  String? selectDepartment;
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 }

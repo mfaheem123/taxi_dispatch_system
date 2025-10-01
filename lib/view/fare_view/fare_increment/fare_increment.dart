@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -184,54 +185,41 @@ class _FareIncrementState extends State<FareIncrement> {
                 ],
               ),
             ),
-            SizedBox(
-              width: Get.width,
-              child: DataTable(
-                headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                dataRowMinHeight: 48,
-                dataRowMaxHeight: 56,
-                headingTextStyle: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 13,
-                ),
-                dataTextStyle: const TextStyle(
-                  fontSize: 10,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(
-                    color: DynamicColors.textClr.withOpacity(0.5),
-                  ),
-                ),
-                columns: [
-                  buildHeaderWithSearch(title: "FROM"),
-                  buildHeaderWithSearch(title: "TO"),
-                  buildHeaderWithSearch(title: "OPERATOR"),
-                  buildHeaderWithSearch(title: "VALUE"),
-                  buildHeaderWithSearch(title: "FIX FARE"),
-                  buildHeaderWithSearch(title: "MILEAGE"),
-                  buildHeaderWithSearch(
-                      title: "ACTIONS", removeSearching: true),
-                ],
-                rows: List.generate(totalRows, (index) {
-                  bool isSelected = index == selectedRowIndex;
-                  return DataRow(
-                    cells: [
-                      const DataCell(Text("SALOON")),
-                      const DataCell(Text("NW7")),
-                      const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                      const DataCell(Text("£55.00")),
-                      const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                      const DataCell(Text("£55.00")),
-                      DataCell(
-                        Row(
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: Get.width,
+                child: DatatableWidget(
+                  columns: [
+                    buildHeaderWithSearch(title: "FROM"),
+                    buildHeaderWithSearch(title: "TO"),
+                    buildHeaderWithSearch(title: "OPERATOR"),
+                    buildHeaderWithSearch(title: "VALUE"),
+                    buildHeaderWithSearch(title: "FIX FARE"),
+                    buildHeaderWithSearch(title: "MILEAGE"),
+                    buildHeaderWithSearch(
+                        title: "ACTIONS", removeSearching: true),
+                  ],
+                  totalRow: totalRows,
+                  cells: [
+                    const DataCell(Center(child: Text("SALOON"))),
+                    const DataCell(Center(child: Text("NW7"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    DataCell(
+                      Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             OutlinedButton(
                               style: OutlinedButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
                                 tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                                MaterialTapTargetSize.shrinkWrap,
                                 side: BorderSide.none,
                               ),
                               onPressed: () {},
@@ -246,7 +234,7 @@ class _FareIncrementState extends State<FareIncrement> {
                                 padding: EdgeInsets.zero,
                                 minimumSize: Size.zero,
                                 tapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
+                                MaterialTapTargetSize.shrinkWrap,
                                 side: BorderSide.none,
                               ),
                               onPressed: () {},
@@ -259,11 +247,11 @@ class _FareIncrementState extends State<FareIncrement> {
                           ],
                         ),
                       ),
-                    ],
-                  );
-                }),
+                    ),
+                  ],
+                ),
               ),
-            )
+            ),
           ],
         );
       });

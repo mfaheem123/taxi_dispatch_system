@@ -91,58 +91,62 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                     )
                   ],
                 ),
-                SizedBox(
-                  width: Get.width,
-                  child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(title: AppText.vehicleType),
-                      buildHeaderWithSearch(title: "PASSENGERS"),
-                      buildHeaderWithSearch(title: "LUGGAGES"),
-                      buildHeaderWithSearch(title: "HAND LUGGAGES"),
-                      buildHeaderWithSearch(title: "MINIMUM FARES"),
-                      buildHeaderWithSearch(title: "MINIMUM MILES"),
-                      buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                    ],
-                    totalRow: totalRows,
-                    cells: [
-                      const DataCell(Center(child: Text("SALOON"))),
-                      const DataCell(Center(child: Text("8"))),
-                      const DataCell(Center(child: Text("9"))),
-                      const DataCell(Center(child: Text("2"))),
-                      const DataCell(Center(child: Text("£ 8.00"))),
-                      const DataCell(Center(child: Text("2.00 MI"))),
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.zero,   // 👈 remove inner padding
-                                  minimumSize: Size(24, 24),  // 👈 shrink button size
-                                  side: BorderSide.none,      // 👈 remove border
+
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: Get.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: AppText.vehicleType),
+                        buildHeaderWithSearch(title: "PASSENGERS"),
+                        buildHeaderWithSearch(title: "LUGGAGES"),
+                        buildHeaderWithSearch(title: "HAND LUGGAGES"),
+                        buildHeaderWithSearch(title: "MINIMUM FARES"),
+                        buildHeaderWithSearch(title: "MINIMUM MILES"),
+                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Center(child: Text("SALOON"))),
+                        const DataCell(Center(child: Text("8"))),
+                        const DataCell(Center(child: Text("9"))),
+                        const DataCell(Center(child: Text("2"))),
+                        const DataCell(Center(child: Text("£ 8.00"))),
+                        const DataCell(Center(child: Text("2.00 MI"))),
+                        DataCell(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.zero,   // 👈 remove inner padding
+                                    minimumSize: Size(24, 24),  // 👈 shrink button size
+                                    side: BorderSide.none,      // 👈 remove border
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.edit_calendar, size: 20),
                                 ),
-                                onPressed: () {},
-                                child: Icon(Icons.edit_calendar, size: 20),
-                              ),
-                              const SizedBox(width: 4), // 👈 replace "|" with small spacing
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: Size(24, 24),
-                                  side: BorderSide.none,
+                                const SizedBox(width: 4), // 👈 replace "|" with small spacing
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size(24, 24),
+                                    side: BorderSide.none,
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.delete_forever, size: 20,
+                                  color: DynamicColors.redClr,
+                                  ),
                                 ),
-                                onPressed: () {},
-                                child: Icon(Icons.delete_forever, size: 20,
-                                color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],

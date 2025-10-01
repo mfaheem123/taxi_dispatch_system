@@ -111,7 +111,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                               },
                               child: CustomTextField(
                                 key: controller.pickupFieldKey,
-                                controller: controller.PickupController,
+                                controller: controller.pickupController,
                                 focusNode:
                                 controller.pickupTextFieldFocusNode,
                                 hintText: 'PICKUP LOCATION',
@@ -128,12 +128,12 @@ class _PickupWidgetState extends State<PickupWidget> {
                                   focusNode: swap1FN,
                                   onActivate: () {
                                     String tempPic =
-                                        controller.PickupController.text;
+                                        controller.pickupController.text;
                                     String tempDrop =
-                                        controller.DropoffController.text;
-                                    controller.PickupController.text =
+                                        controller.dropOffController.text;
+                                    controller.pickupController.text =
                                         tempDrop;
-                                    controller.DropoffController.text =
+                                    controller.dropOffController.text =
                                         tempPic;
                                     controller.update();
                                   },
@@ -264,7 +264,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                               },
                               child: CustomTextField(
                                 key: controller.dropOffFieldKey,
-                                controller: controller.DropoffController,
+                                controller: controller.dropOffController,
                                 focusNode:
                                 controller.dropOffTextFieldFocusNode,
                                 hintText: 'DROP LOCATION',
@@ -278,12 +278,12 @@ class _PickupWidgetState extends State<PickupWidget> {
                                   focusNode: swap2FN,
                                   onActivate: () {
                                     String tempPic =
-                                        controller.PickupController.text;
+                                        controller.pickupController.text;
                                     String tempDrop =
-                                        controller.DropoffController.text;
-                                    controller.PickupController.text =
+                                        controller.dropOffController.text;
+                                    controller.pickupController.text =
                                         tempDrop;
-                                    controller.DropoffController.text =
+                                    controller.dropOffController.text =
                                         tempPic;
                                     controller.update();
                                   },

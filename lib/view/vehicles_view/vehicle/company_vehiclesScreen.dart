@@ -117,6 +117,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                     height: 12,
                   ),
 
+
                   SizedBox(
                     width: Get.width,
                     child: DatatableWidget(

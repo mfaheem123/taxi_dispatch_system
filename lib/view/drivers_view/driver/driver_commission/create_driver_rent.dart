@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
+import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
@@ -275,83 +276,68 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
               SizedBox(
                 height: 10,
               ),
-              DataTable(
-                  headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                  dataRowMinHeight: 48,
-                  dataRowMaxHeight: 56,
-                  horizontalMargin: 0.0,
-                  checkboxHorizontalMargin: 0.0,
-                  showCheckboxColumn: true,
-                  columnSpacing: 5,
-                  headingTextStyle: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: Get.width,
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(
+                          widget: Checkbox(
+                              value: controller.selectAllDrivers.value,
+                              onChanged: (v) {
+                                controller.selectAllDrivers.value = v!;
+                                controller.update();
+                              })),
+                      buildHeaderWithSearch(title: "COMM"),
+                      buildHeaderWithSearch(title: "REF#"),
+                      buildHeaderWithSearch(title: "DATETIME"),
+                      buildHeaderWithSearch(title: "PICKUP"),
+                      buildHeaderWithSearch(title: "DROPOFF"),
+                      buildHeaderWithSearch(title: "VEH"),
+                      buildHeaderWithSearch(title: "ACC"),
+                      buildHeaderWithSearch(title: "J/T"),
+                      buildHeaderWithSearch(title: "P/T"),
+                      buildHeaderWithSearch(title: "FARE"),
+                      buildHeaderWithSearch(title: "PC"),
+                      buildHeaderWithSearch(title: "WC"),
+                      buildHeaderWithSearch(title: "EDC"),
+                      buildHeaderWithSearch(title: "CC"),
+                      buildHeaderWithSearch(title: "W/COMM"),
+                      buildHeaderWithSearch(title: "COMM"),
+                      buildHeaderWithSearch(title: "TOTAL"),
+                      buildHeaderWithSearch(title: "ACTIONS"),
+                    ],
+                    totalRow: totalRows,
+                    cells: [
+                      DataCell(Checkbox(
+                          value: controller.selectAllDrivers.value,
+                          onChanged: (v) {
+                            controller.selectAllDrivers.value = v!;
+                            controller.update();
+                          })),
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                    ],
                   ),
-                  dataTextStyle: TextStyle(
-                    fontSize: 10,
-                  ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                          color: DynamicColors.textClr.withOpacity(0.5))),
-                  columns: [
-                    buildHeaderWithSearch(
-                        widget: Checkbox(
-                            value: controller.selectAllDrivers.value,
-                            onChanged: (v) {
-                              controller.selectAllDrivers.value = v!;
-                              controller.update();
-                            })),
-                    buildHeaderWithSearch(title: "COMM"),
-                    buildHeaderWithSearch(title: "REF#"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "ACC"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "PC"),
-                    buildHeaderWithSearch(title: "WC"),
-                    buildHeaderWithSearch(title: "EDC"),
-                    buildHeaderWithSearch(title: "CC"),
-                    buildHeaderWithSearch(title: "W/COMM"),
-                    buildHeaderWithSearch(title: "COMM"),
-                    buildHeaderWithSearch(title: "TOTAL"),
-                    buildHeaderWithSearch(title: "ACTIONS"),
-                  ],
-                  rows: List.generate(totalRows, (index) {
-                    bool isSelected = index == selectedRowIndex;
-                    return DataRow(
-                      cells: [
-                        DataCell(Checkbox(
-                            value: controller.selectAllDrivers.value,
-                            onChanged: (v) {
-                              controller.selectAllDrivers.value = v!;
-                              controller.update();
-                            })),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("20/10/2025")),
-                      ],
-                    );
-                  })),
+                ),
+              ),
               SizedBox(
                 height: 30,
               ),

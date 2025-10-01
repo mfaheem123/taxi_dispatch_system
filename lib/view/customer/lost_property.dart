@@ -135,35 +135,38 @@ class _LostPropertyState extends State<LostProperty> {
                       ],
                       totalRow: totalRows,
                       cells: [
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("20/10/2025"))),
+                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("PHC VEHICLE"))),
+                        const DataCell(Center(child: Text("PHC VEHICLE"))),
                         DataCell(
-                          Row(
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.edit_calendar,
+                                    size: 28,
+                                  ),
                                 ),
-                                onPressed: () {},
-                                child: Icon(Icons.edit_calendar,
-                                  size: 28,
+                                Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(Icons.delete_forever,
+                                    size: 28,
+                                    color: DynamicColors.redClr,
+                                  ),
                                 ),
-                              ),
-                              Text("|"),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ],

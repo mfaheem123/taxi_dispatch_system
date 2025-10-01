@@ -110,7 +110,7 @@ class _DriversViewState extends State<DriversView> {
             // }
           },
           child: SizedBox(
-            width: screenWidth >= 1900 ? screenWidth * 0.2 : screenWidth / 2,
+            width: screenWidth >= 1270 ? screenWidth/4.5 : screenWidth / 2.1,
             height: screenHeight * 0.465,
             child: Card(
               elevation: 4,
@@ -163,21 +163,18 @@ class _DriversViewState extends State<DriversView> {
                               }
                               debugPrint("Clicked on header icon index $index");
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isSelected
-                                      ? Colors.blue.shade200
-                                      : Colors.transparent,
-                                ),
-                                padding: const EdgeInsets.all(4),
-                                child: Icon(
-                                  icon,
-                                  size: 18,
-                                  color: DynamicColors.primaryClr,
-                                ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected
+                                    ? Colors.blue.shade200
+                                    : Colors.transparent,
+                              ),
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                icon,
+                                size: 18,
+                                color: DynamicColors.primaryClr,
                               ),
                             ),
                           );
@@ -188,7 +185,7 @@ class _DriversViewState extends State<DriversView> {
 
                   // ----- Tabs -----
                   Container(
-                    width: double.infinity,
+                    // width: double.infinity,
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(color: DynamicColors.secondaryClr),
@@ -278,7 +275,7 @@ class _DriversViewState extends State<DriversView> {
                     child: ListView.builder(
                       itemCount: 4,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
+                          vertical: 8),
                       itemBuilder: (context, index) {
                         final isSelected =
                             !isHeaderMode && controller.selectedDriverIndex == index;

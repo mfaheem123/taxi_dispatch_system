@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -371,23 +372,12 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                   SizedBox(
                     height: 10,
                   ),
-                  SizedBox(
-                    width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
-                          fontSize: 10,
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
+
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: Get.width,
+                      child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(title: "VEHICLE"),
                           buildHeaderWithSearch(title: "FROM LOCATION"),
@@ -395,45 +385,45 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           buildHeaderWithSearch(title: "FARES"),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        rows: List.generate(totalRows, (index) {
-                          bool isSelected = index == selectedRowIndex;
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("SALOON")),
-                              const DataCell(Text("NW7")),
-                              const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                              const DataCell(Text("£55.00")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.edit_calendar,
-                                        size: 28,
-                                        color: DynamicColors.primaryClr,
-                                      ),
+                        totalRow: totalRows,
+                        cells: [
+                          const DataCell(Center(child: Text("SALOON"))),
+                          const DataCell(Center(child: Text("NW7"))),
+                          const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                          const DataCell(Center(child: Text("£55.00"))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
                                     ),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(Icons.delete_forever,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.edit_calendar,
+                                      size: 28,
+                                      color: DynamicColors.primaryClr,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(Icons.delete_forever,
+                                      size: 28,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          );
-                        })
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             );

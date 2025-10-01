@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
+import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';

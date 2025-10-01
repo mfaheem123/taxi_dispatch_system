@@ -35,7 +35,7 @@ class MapViewWidget extends StatelessWidget {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return SizedBox(
-      width: width >= 1900? screenWidth * 0.3:screenWidth/2,
+      width: width >= 1270 ? screenWidth/3.6:screenWidth/2.1,
       height: screenHeight * 0.465,
       child: GetBuilder<DashboardController>(
         builder: (controller) {

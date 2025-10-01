@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../component/color.dart';
+import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
@@ -107,44 +108,26 @@ class _DriverCommissionState extends State<DriverCommission> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: MediaQuery.of(context).size.width, // 👈 full screen width
-                      child: DataTable(
-                          headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                          dataRowMinHeight: 48,
-                          dataRowMaxHeight: 56,
-                          headingTextStyle: const TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                          dataTextStyle: TextStyle(
-                            fontSize: 10,
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                          ),
-                          columns: [
-                            buildHeaderWithSearch(title: "USERNAME"),
-                            buildHeaderWithSearch(title: "NAME"),
-                            buildHeaderWithSearch(title: "TYPE"),
-                            buildHeaderWithSearch(title: "COMMISSION"),
-                            buildHeaderWithSearch(title: "LAST MODIFIED"),
-                          ],
-                          rows: List.generate(totalRows, (index) {
-                            bool isSelected = index == selectedRowIndex;
-                            return DataRow(
-                              cells: [
-                                const DataCell(Text("20/10/2025")),
-                                const DataCell(Text("#PHC VEHICLE")),
-                                const DataCell(Text("PHC VEHICLE")),
-                                const DataCell(Text("20/10/2025")),
-                                const DataCell(Text("#PHC VEHICLE")),
-                              ],
-                            );
-                          })
+                      width: Get.width,
+                      child: DatatableWidget(
+                        columns: [
+                          buildHeaderWithSearch(title: "USERNAME"),
+                          buildHeaderWithSearch(title: "NAME"),
+                          buildHeaderWithSearch(title: "TYPE"),
+                          buildHeaderWithSearch(title: "COMMISSION"),
+                          buildHeaderWithSearch(title: "LAST MODIFIED"),
+                        ],
+                        totalRow: totalRows,
+                        cells: [
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                        ],
                       ),
                     ),
-                  )
+                  ),
                 ],
               ),
             );
