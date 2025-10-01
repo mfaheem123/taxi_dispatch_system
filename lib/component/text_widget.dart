@@ -317,4 +317,13 @@ class AppText{
   static get selectAccount => "SELECT ACCOUNT";
   static get selectDepartment => "SELECT DEPARTMENT";
   static get statistics => "STATISTICS";
+  static get download => "DOWNLOAD";
+  static get employeeActivity => "EMPLOYEE ACTIVITY";
+  static get income => "INCOME";
+  static get totalBookings => "TOTAL BOOKINGS:";
+  static get totalEarnings => "TOTAL EARNINGS:";
+  static get companyIncome => "COMPANY INCOME:";
+  static get creditCardPayment => "CREDIT CARD PAYMENTS";
+  static get paymentRef => "PAYMENT REF #";
+  // static get generate => "GENERATE";
 }

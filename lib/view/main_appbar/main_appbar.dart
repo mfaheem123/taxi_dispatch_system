@@ -59,12 +59,18 @@ import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
 
-import '../reports/driver_report_view/all_booking_view.dart';
+import '../reports/driver_booking_view/all_booking_view.dart';
+import '../reports/driver_booking_view/report_transfered_booking.dart';
 import '../reports/driver_reports_view/driver_login_screen.dart';
 import '../reports/driver_reports_view/driver_logs_screen.dart';
 import '../reports/driver_reports_view/earning_and_info_screen.dart';
 import '../reports/driver_reports_view/report_feedback.dart';
 import '../reports/driver_reports_view/statistics_screen.dart';
+import '../reports/employee_reports_view/activity_screen.dart';
+import '../reports/income_report_view/company_income_screen.dart';
+import '../reports/income_report_view/creidit_card_payments.dart';
+import '../reports/income_report_view/income_screen.dart';
+import '../reports/pco_view/pco_screen.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -257,8 +263,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  // _currentPage ?? AllBookingView(),
-                  _currentPage ?? ByDefaultDashboard(),
+                  _currentPage ?? PcoScreen(),
+                  // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -879,19 +885,71 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
               },
             ),
+            NestedMenuItem(
+              title: "TRANSFERED BOOKINGS",
+              onTap: () {
+                setState(() {
+                  _currentPage = ReportTransferedBooking();
+                  controller.menuBarRefresh(title: "TRANSFERED BOOKINGS", pageName: ReportTransferedBooking());
+                });
+              },
+            ),
           ]
         ),
         NestedMenuItem(
-          title: "CALL",
-          onTap: () => message(context, "DevOps"),
+          title: "EMPLOYEE",
+          children: [
+            NestedMenuItem(
+              title: "ACTIVITY",
+              onTap: () {
+                setState(() {
+                  _currentPage = ActivityScreen();
+                  controller.menuBarRefresh(title: "ACTIVITY", pageName: ActivityScreen());
+                });
+              },
+            ),
+          ]
         ),
         NestedMenuItem(
           title: "INCOME",
-          onTap: () => message(context, "DevOps"),
+          children: [
+            NestedMenuItem(
+              title: "INCOME",
+              onTap: () {
+                setState(() {
+                  _currentPage = IncomeScreen();
+                  controller.menuBarRefresh(title: "INCOME", pageName: IncomeScreen());
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "COMPANY INCOME",
+              onTap: () {
+                setState(() {
+                  _currentPage = CompanyIncomeScreen();
+                  controller.menuBarRefresh(title: "COMPANY INCOME", pageName: CompanyIncomeScreen());
+                });
+              },
+            ),
+            NestedMenuItem(
+              title: "CREDIT CARD PAYMENTS",
+              onTap: () {
+                setState(() {
+                  _currentPage = CreiditCardPayments();
+                  controller.menuBarRefresh(title: "CREDIT CARD PAYMENTS", pageName: CreiditCardPayments());
+                });
+              },
+            ),
+          ]
         ),
         NestedMenuItem(
           title: "PCO",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = PcoScreen();
+              controller.menuBarRefresh(title: "PCO", pageName: PcoScreen());
+            });
+          },
         ),
       ]),
       NestedMenuItem(title: "SETTINGS", children: [
