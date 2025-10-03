@@ -71,6 +71,7 @@ import '../reports/income_report_view/company_income_screen.dart';
 import '../reports/income_report_view/creidit_card_payments.dart';
 import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
+import '../setting/company_configuration_view/company_configuration_view.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -263,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? PcoScreen(),
+                  _currentPage ?? CompanyConfigurationView(),
                   // _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
@@ -959,7 +960,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "COMPANY CONFIGURATION",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = CompanyConfigurationView();
+              controller.menuBarRefresh(title: "COMPANY CONFIGURATION", pageName: CompanyConfigurationView());
+            });
+          },
         ),
         NestedMenuItem(
           title: "DOCUMENT NUMBER",

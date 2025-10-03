@@ -2,6 +2,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../component/customButton.dart';
@@ -21,6 +22,14 @@ class PcoScreen extends StatefulWidget {
 }
 
 class _PcoScreenState extends State<PcoScreen> {
+
+  int selectedRowIndex = 0;
+  final int totalRows = 50;
+
+  ReportController controller = Get.isRegistered<ReportController>()
+      ? Get.find<ReportController>()
+      : Get.put(ReportController());
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(builder: (controller) {

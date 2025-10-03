@@ -39,4 +39,39 @@ class SettingController  extends GetxController{
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
+
+  String? selectSubsidiaryValue;
+  String? serviceValue;
+
+/// text field controllers
+  final userNameController = TextEditingController();
+  final passwordController = TextEditingController();
+  final hostController = TextEditingController();
+  final portController = TextEditingController();
+  final ccController = TextEditingController();
+  final smsServiceIpController = TextEditingController();
+  final smsHostController = TextEditingController();
+  final smsPortController = TextEditingController();
+  final smsUserNameController = TextEditingController();
+  final smsPasswordController = TextEditingController();
+  final serviceApiKeyController = TextEditingController();
+  final mapApiKeyController = TextEditingController();
+  final distanceFactorController = TextEditingController();
+  final timeFactorController = TextEditingController();
+
+  /// bool
+  RxBool secureConnectionValue = false.obs;
+  final FocusNode secureConnectionNode = FocusNode();
+  RxBool toggleAcceptEmailValue = false.obs;
+  final FocusNode toggleAcceptEmailNode = FocusNode();
+  RxBool toggleDeclineEmailValue = false.obs;
+  final FocusNode toggleDeclineEmailNode = FocusNode();
+  RxBool enableIncomingMessagesValue = false.obs;
+  final FocusNode enableIncomingMessagesNode = FocusNode();
+  RxBool toggleMapControlsValue = false.obs;
+  final FocusNode toggleMapControlsNode = FocusNode();
+
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
+
 }
