@@ -327,6 +327,28 @@ class AppText {
   static get vehicleinfo => "VEHICLE INFORMATION";
   static get documents => "DOCUMENTS";
   static get expiry => "EXPIRY DATES";
-
+  static get companyConfigurations => "COMPANY CONFIGURATIONS";
+  static get emailConfigurations => "EMAIL CONFIGURATIONS";
+  static get service => "SERVICE";
+  static get host => "HOST";
+  static get port => "PORT";
+  static get cc => "cc";
+  static get secureConnection => "SECURE CONNECTION";
+  static get toggleAcceptEmail => "TOGGLE ACCEPT EMAIL";
+  static get toggleDeclineEmail => "TOGGLE DECLINE EMAIL";
+  static get smsConfigurations => "SMS CONFIGURATIONS";
+  static get smsServiceIp => "SMS SERVICE IP";
+  static get smsHost => "SMS HOST";
+  static get smsPort => "SMS PORT";
+  static get smsUserName => "SMS USERNAME";
+  static get smsPassword => "SMS PASSWORD";
+  static get enableIncomingMessages => "ENABLE INCOMING MESSAGES";
+  static get mapConfiguration => "MAP CONFIGURATIONS";
+  static get serviceApiKey => "SERVICE API KEY";
+  static get mapApiKey => "MAP API KEY";
+  static get distanceFactor => "DISTANCE FACTOR";
+  static get timeFactor => "TIME FACTOR";
+  static get toggleMapControls => "TOGGLE MAP CONTROLS";
+  static get paymentGateWays => "PAYMENT GATEWAYS";
   // static get generate => "GENERATE";
 }
