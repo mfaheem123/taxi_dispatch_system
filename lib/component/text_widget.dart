@@ -1,7 +1,4 @@
-
-
-
-class AppText{
+class AppText {
   static get login => 'Login';
   static get manage => 'Manage';
   static get dispatch => 'Dispatch';
@@ -325,5 +322,11 @@ class AppText{
   static get companyIncome => "COMPANY INCOME:";
   static get creditCardPayment => "CREDIT CARD PAYMENTS";
   static get paymentRef => "PAYMENT REF #";
+  static get richard => "27 | RICHARD HARDWICK";
+  static get logout => "LOGGED OUT";
+  static get vehicleinfo => "VEHICLE INFORMATION";
+  static get documents => "DOCUMENTS";
+  static get expiry => "EXPIRY DATES";
+
   // static get generate => "GENERATE";
 }

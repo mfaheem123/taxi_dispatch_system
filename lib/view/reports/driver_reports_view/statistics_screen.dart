@@ -6,7 +6,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../../../component/color.dart';
 import '../controller/report_controller.dart';
-import 'earning_and_info_screen.dart';
+import 'earning_and_info_screen/earning_and_info_screen.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});

@@ -63,7 +63,7 @@ import '../reports/driver_booking_view/all_booking_view.dart';
 import '../reports/driver_booking_view/report_transfered_booking.dart';
 import '../reports/driver_reports_view/driver_login_screen.dart';
 import '../reports/driver_reports_view/driver_logs_screen.dart';
-import '../reports/driver_reports_view/earning_and_info_screen.dart';
+import '../reports/driver_reports_view/earning_and_info_screen/earning_and_info_screen.dart';
 import '../reports/driver_reports_view/report_feedback.dart';
 import '../reports/driver_reports_view/statistics_screen.dart';
 import '../reports/employee_reports_view/activity_screen.dart';
