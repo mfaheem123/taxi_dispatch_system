@@ -2,6 +2,7 @@
 
 
 
+import 'package:dashboard_new1/view/setting/company_configuration_view/payment_getways_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/sms_configuration_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -110,8 +111,8 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                         SmsConfigurationView(), // SMS
                         MapConfigurationView(), // Map
 
-                        Center(child: Icon(Icons.payment)), // Payment
-                        DateTimeConfigurationView(), // DateTime
+                        DateTimeConfigurationView(), // Payment
+                        PaymentConfigurationView(), // DateTime
                       ],
                     ),
                   ),

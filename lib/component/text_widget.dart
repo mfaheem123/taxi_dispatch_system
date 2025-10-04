@@ -351,5 +351,12 @@ class AppText {
   static get toggleMapControls => "TOGGLE MAP CONTROLS";
   static get paymentGateWays => "PAYMENT GATEWAYS";
   static get locationTypeShortcuts => "LOCATION TYPE SHORTCUTS";
+  static get strippublickey => "STRIPE PUBLIC KEY";
+  static get stripSecretKey => "STRIPE SECRET KEY";
+  static get endPointKey => "END POINT KEY";
+  static get DateTimeConfiguration => "DATE TIME CONFIGURATION";
+  static get dateFormate => "DATE FORMATE";
+  static get timeFormate => "TIME FORMATE";
+  static get timeZone => "TIME ZONE";
   // static get generate => "GENERATE";
 }

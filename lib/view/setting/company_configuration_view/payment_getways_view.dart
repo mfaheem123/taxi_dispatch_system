@@ -2,24 +2,24 @@
 
 
 
-import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/textStyle.dart';
+import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../setting_controller.dart';
 
-class DateTimeConfigurationView extends StatefulWidget {
-  const DateTimeConfigurationView({super.key});
+class PaymentConfigurationView extends StatefulWidget {
+  const PaymentConfigurationView({super.key});
 
   @override
-  State<DateTimeConfigurationView> createState() => _DateTimeConfigurationViewState();
+  State<PaymentConfigurationView> createState() => _PaymentConfigurationViewState();
 }
 
-class _DateTimeConfigurationViewState extends State<DateTimeConfigurationView> {
+class _PaymentConfigurationViewState extends State<PaymentConfigurationView> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
@@ -60,7 +60,7 @@ class _DateTimeConfigurationViewState extends State<DateTimeConfigurationView> {
 
                             child: Align(
                                 alignment: Alignment.centerLeft,
-                                child: Text(AppText.DateTimeConfiguration, style: titleDesign()))
+                                child: Text(AppText.paymentGateWays, style: titleDesign()))
                         ),
 
                         Padding(
@@ -70,59 +70,26 @@ class _DateTimeConfigurationViewState extends State<DateTimeConfigurationView> {
                             spacing: 10,
                             crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              CustomDropdownField<String>(
-                                text: AppText.dateFormate,
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.mapApiKeyController,
                                 width: fieldWidth/1.5,
-                                label: AppText.dateFormate,
-                                items:[
-                                  "DD-MM-YY 1",
-                                  "DD-MM-YY 2",
-                                  "DD-MM-YY 3",
-                                  "DD-MM-YY 4",
-                                  "DD-MM-YY 5",
-                                ],
-                                value: controller.dateFormate,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.dateFormate = val!;
-                                  controller.update();
-                                },
+                                hintText: AppText.strippublickey,
+                                columnText: true,
                               ),
-                             CustomDropdownField<String>(
-                                text: AppText.timeFormate,
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.distanceFactorController,
                                 width: fieldWidth/1.5,
-                                label: AppText.timeFormate,
-                                items:[
-                                  "24 HOUR FORMATE 1",
-                                  "24 HOUR FORMATE 2",
-                                  "24 HOUR FORMATE 3",
-                                  "24 HOUR FORMATE 4",
-                                  "24 HOUR FORMATE 5",
-                                ],
-                                value: controller.timeFormate,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.timeFormate = val!;
-                                  controller.update();
-                                },
+                                hintText: AppText.stripSecretKey,
+                                columnText: true,
                               ),
-                              CustomDropdownField<String>(
-                                text: AppText.timeZone,
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.timeFactorController,
                                 width: fieldWidth/1.5,
-                                label: AppText.timeZone,
-                                items:[
-                                  "EUROPE/LONDON 1",
-                                  "EUROPE/LONDON 2",
-                                  "EUROPE/LONDON 3",
-                                  "EUROPE/LONDON 4",
-                                  "EUROPE/LONDON 5",
-                                ],
-                                value: controller.zoneFormate,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.zoneFormate = val!;
-                                  controller.update();
-                                },
+                                hintText: AppText.endPointKey,
+                                columnText: true,
                               ),
 
                             ],

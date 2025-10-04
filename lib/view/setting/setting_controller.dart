@@ -43,6 +43,9 @@ class SettingController  extends GetxController{
 
   String? selectSubsidiaryValue;
   String? serviceValue;
+  String? dateFormate;
+  String? timeFormate;
+  String? zoneFormate;
 
 /// text field controllers
   final userNameController = TextEditingController();
