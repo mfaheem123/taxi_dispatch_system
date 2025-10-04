@@ -72,6 +72,7 @@ import '../reports/income_report_view/creidit_card_payments.dart';
 import '../reports/income_report_view/income_screen.dart';
 import '../reports/pco_view/pco_screen.dart';
 import '../setting/company_configuration_view/company_configuration_view.dart';
+import '../setting/location_type_shortcuts.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
@@ -264,8 +265,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     ),
                   ),
-                  _currentPage ?? CompanyConfigurationView(),
-                  // _currentPage ?? ByDefaultDashboard(),
+                  // _currentPage ?? LocationTypeShortcuts(),
+                  _currentPage ?? ByDefaultDashboard(),
                 ],
               ),
             );
@@ -981,7 +982,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "LOCATION TYPE SHORTCUTS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = LocationTypeShortcuts();
+              controller.menuBarRefresh(title: "LOCATION TYPE SHORTCUTS", pageName: LocationTypeShortcuts());
+            });
+          },
         ),
         NestedMenuItem(
           title: "VOIP SETTINGS",

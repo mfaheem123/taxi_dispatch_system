@@ -350,5 +350,6 @@ class AppText {
   static get timeFactor => "TIME FACTOR";
   static get toggleMapControls => "TOGGLE MAP CONTROLS";
   static get paymentGateWays => "PAYMENT GATEWAYS";
+  static get locationTypeShortcuts => "LOCATION TYPE SHORTCUTS";
   // static get generate => "GENERATE";
 }

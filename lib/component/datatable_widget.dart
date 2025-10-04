@@ -6,11 +6,12 @@ import 'package:flutter/material.dart';
 import 'color.dart';
 
 class DatatableWidget extends StatefulWidget {
-  DatatableWidget({super.key, this.columns, this.totalRow,this.cells});
+  DatatableWidget({super.key, this.columns, this.totalRow,this.cells,this.rows});
 
   List<DataColumn>? columns;
   int? totalRow;
   List<DataCell>? cells;
+  final List<DataRow>? rows;
 
 
   @override
@@ -61,7 +62,7 @@ class _DatatableWidgetState extends State<DatatableWidget> {
           ),
         ),
         columns: widget.columns!,
-        rows: List.generate(widget.totalRow!, (index) {
+        rows: widget.rows?? List.generate(widget.totalRow!, (index) {
           return DataRow(
             cells: widget.cells!,
           );

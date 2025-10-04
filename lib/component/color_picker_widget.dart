@@ -9,8 +9,9 @@ class ColorPickerWidget extends StatelessWidget {
   final double? height;
   final Color? borderColor;
   final void Function(Color)? onColorSelected;
+  double? colorContainerHeight;
 
-  const ColorPickerWidget({
+  ColorPickerWidget({
     super.key,
     required this.pickerColor,
     required this.onColorChanged,
@@ -18,6 +19,7 @@ class ColorPickerWidget extends StatelessWidget {
     this.height,
     this.borderColor = Colors.black,
     this.onColorSelected,
+    this.colorContainerHeight
   });
 
   @override
@@ -66,7 +68,7 @@ class ColorPickerWidget extends StatelessWidget {
         child: Center(
           child: Container(
             color: pickerColor,
-            height: 5,
+            height: colorContainerHeight?? 5,
             width: (width ?? 100) / 1.2,
           ),
         ),
