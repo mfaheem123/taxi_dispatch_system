@@ -261,8 +261,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             );
                           }).toList(),
                         ]
-
-
                     ),
                   ),
                   // _currentPage ?? LocationTypeShortcuts(),
