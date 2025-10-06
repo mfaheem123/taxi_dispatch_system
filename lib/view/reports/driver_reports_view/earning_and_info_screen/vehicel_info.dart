@@ -1,3 +1,6 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 
 class VehicelsScreen extends StatelessWidget {
@@ -9,135 +12,153 @@ class VehicelsScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 700),
-          padding: const EdgeInsets.all(16),
+          constraints: const BoxConstraints(maxWidth: 900),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.green, width: 2),
+            border: Border.all(color: Colors.green, width: 5),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               /// HEADER
-              Column(children: [ Text(
-                "UPLOAD\nIMAGE",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-             ],),
-              Row(children: [ Text(
-                "27 | RICHARD HARDWICK",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(width: 2),
-              const Text(
-                "LOGGED OUT",
-                style:
-                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-              ),],),
-             
-              const SizedBox(height: 2),
 
-              /// VEHICLE INFO
-              const Text(
-                "VEHICLE INFORMATION",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.1),
-              ),
-              const SizedBox(height: 10),
-
-              Wrap(
-                spacing: 20,
-                runSpacing: 10,
-                alignment: WrapAlignment.center,
-                children: const [
-                  InfoTile(title: "VEHICLE #", value: ""),
-                  InfoTile(title: "START DATE", value: "27-05-25"),
-                  InfoTile(title: "VEHICLE TYPE", value: "SALOON"),
-                  InfoTile(title: "MAKE", value: ""),
-                  InfoTile(title: "MODEL", value: ""),
-                  InfoTile(title: "COLOR", value: ""),
+              Column(
+                children: [
+                  Text(
+                    AppText.upload_image,
+                    style: mozillaTextSemiBoldText(fontSize: 20),
+                  ),
                 ],
               ),
-              const SizedBox(height: 20),
 
-              /// DOCUMENTS SECTION
-              const Text(
-                "DOCUMENTS",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                "EXPIRY DATES",
-                style: TextStyle(color: Colors.black54),
-              ),
-              const SizedBox(height: 10),
+              Expanded(
+                child: Column(
+                  children: [
+                    Wrap(
+                      children: [
+                        Text(
+                          AppText.richard,
+                          style: mozillaTextSemiBoldText(fontSize: 18),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          AppText.logout,
+                          style: mozillaTextSemiBoldText(
+                              color: DynamicColors.redClr, fontSize: 18),
+                        ),
+                      ],
+                    ),
 
-              Wrap(
-                spacing: 16,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: const [
-                  InfoTile(title: "PHC DRIVER", value: "00-00-0000"),
-                  InfoTile(title: "PHC VEHICLE", value: "00-00-0000"),
-                  InfoTile(title: "INSURANCE", value: "00-00-0000"),
-                  InfoTile(title: "MOT2", value: "00-00-0000"),
-                  InfoTile(title: "MOT", value: "00-00-0000"),
-                ],
-              ),
-              const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
-              const Text(
-                "DOCUMENT #",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
+                    /// VEHICLE INFO
+                    Text(
+                      AppText.vehicleinfo,
+                      style: mozillaTextRegularText(),
+                    ),
+                    const SizedBox(height: 10),
 
-              Wrap(
-                spacing: 16,
-                runSpacing: 8,
-                alignment: WrapAlignment.center,
-                children: const [
-                  InfoTile(title: "PHC DRIVER", value: ""),
-                  InfoTile(title: "PHC VEHICLE", value: ""),
-                  InfoTile(title: "INSURANCE", value: ""),
-                  InfoTile(title: "MOT2", value: ""),
-                  InfoTile(title: "MOT", value: ""),
-                ],
-              ),
-              const SizedBox(height: 25),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        InfoTile(title: AppText.vehicle, value: ""),
+                        InfoTile(title: AppText.startDate, value: "27-05-25"),
+                        InfoTile(title: AppText.vehicleType, value: "SALOON"),
+                      ],
+                    ),
+                    SizedBox(height: 5),
+                    Wrap(
+                      spacing: 20,
+                      runSpacing: 10,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        InfoTile(title: AppText.make, value: ""),
+                        InfoTile(title: AppText.model, value: ""),
+                        InfoTile(title: AppText.color, value: ""),
+                      ],
+                    ),
 
-              /// FOOTER
-              Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-                color: Colors.grey.shade100,
-                child: Wrap(
-                  spacing: 20,
-                  alignment: WrapAlignment.center,
-                  children: const [
-                    FooterInfo(
-                        icon: Icons.money,
-                        title: "TOTAL AMOUNT",
-                        value: "£0.00"),
-                    FooterInfo(
-                        icon: Icons.directions_car,
-                        title: "TOTAL BOOKINGS",
-                        value: "0"),
-                    FooterInfo(
-                        icon: Icons.calendar_today,
-                        title: "PERIOD",
-                        value: "27-09-25 27-09-25"),
+                    /// DOCUMENTS SECTION
+                    Text(
+                      AppText.documents,
+                      style: mozillaTextSemiBoldText(),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      AppText.expiry,
+                      style: TextStyle(color: Colors.black54),
+                    ),
+                    const SizedBox(height: 6),
+                    Divider(
+                      indent: 50,
+                      endIndent: 50,
+                    ),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        InfoTile(title: AppText.phcdriver, value: "00-00-0000"),
+                        InfoTile(
+                            title: AppText.phcvehicle, value: "00-00-0000"),
+                        InfoTile(title: AppText.insurance, value: "00-00-0000"),
+                        InfoTile(title: AppText.mot2, value: "00-00-0000"),
+                        InfoTile(title: AppText.mot, value: "00-00-0000"),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+
+                    Text(
+                      AppText.document_hash,
+                      style: mozillaTextRegularText(fontSize: 15),
+                    ),
+
+                    Divider(
+                      indent: 50,
+                      endIndent: 50,
+                    ),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 8,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        InfoTile(title: AppText.phcdriver, value: ""),
+                        InfoTile(title: AppText.phcvehicle, value: ""),
+                        InfoTile(title: AppText.insurance, value: ""),
+                        InfoTile(title: AppText.mot2, value: ""),
+                        InfoTile(title: AppText.mot, value: ""),
+                      ],
+                    ),
+                    const SizedBox(height: 25),
+
+                    /// FOOTER
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 10),
+                      color: Colors.grey.shade100,
+                      child: Wrap(
+                        spacing: 70,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          FooterInfo(
+                              icon: Icons.money,
+                              title: AppText.totalamount,
+                              value: "£0.00"),
+                          FooterInfo(
+                              icon: Icons.directions_car,
+                              title: AppText.totalBookings,
+                              value: "0"),
+                          FooterInfo(
+                              icon: Icons.calendar_today,
+                              title: AppText.period,
+                              value: "27-09-25 27-09-25"),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -157,22 +178,20 @@ class InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,
-   
-      // decoration: BoxDecoration(
-      //   border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-      // ),
+      width: 120,
       child: Column(
         children: [
           Text(
             title,
-            style: const TextStyle(fontSize: 12, color: Colors.black54),
+            style: mozillaTextRegularText(
+              fontSize: 12,
+            ),
           ),
-        
           Text(
             value,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black),
+            style: mozillaTextSemiBoldText(
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -186,7 +205,10 @@ class FooterInfo extends StatelessWidget {
   final String value;
 
   const FooterInfo(
-      {super.key, required this.icon, required this.title, required this.value});
+      {super.key,
+      required this.icon,
+      required this.title,
+      required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -197,13 +219,71 @@ class FooterInfo extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           "$title: ",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+          style: mozillaTextSemiBoldText(fontSize: 13),
         ),
         Text(
           value,
-          style: const TextStyle(fontSize: 13, color: Colors.black87),
+          style: mozillaTextRegularText(fontSize: 12),
         ),
       ],
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// LayoutBuilder(
+//   builder: (context, constraints) {
+//     bool isSmallScreen = constraints.maxWidth < 700;
+
+//     return isSmallScreen
+//         ? Column(
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             children: [
+//               /// LEFT SECTION (Upload Image)
+//               Column(
+//                 children: [
+//                   Text(
+//                     AppText.upload_image,
+//                     style: mozillaTextSemiBoldText(fontSize: 20),
+//                   ),
+//                   const SizedBox(height: 12),
+//                 ],
+//               ),
+
+//               /// RIGHT SECTION (Vehicle Info)
+//               _buildVehicleInfoSection(),
+//             ],
+//           )
+//         : Row(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               /// LEFT SECTION (Upload Image)
+//               Column(
+//                 children: [
+//                   Text(
+//                     AppText.upload_image,
+//                     style: mozillaTextSemiBoldText(fontSize: 20),
+//                   ),
+//                 ],
+//               ),
+//               const SizedBox(width: 20),
+
+//               /// RIGHT SECTION (Vehicle Info)
+//               Expanded(child: _buildVehicleInfoSection()),
+//             ],
+//           );
+//   },
+// ),
+

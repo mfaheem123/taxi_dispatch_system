@@ -358,5 +358,14 @@ class AppText {
   static get dateFormate => "DATE FORMATE";
   static get timeFormate => "TIME FORMATE";
   static get timeZone => "TIME ZONE";
+  static get upload_image => "UPLOAD\nIMAGE";
+  static get phcvehicle => "PHC VEHICLE:";
+  static get phcdriver => "PHC DRIVER:";
+  static get insurance => "INSURANCE:";
+  static get mot2 => "MOT2:";
+  static get mot => "MOT:";
+  static get totalamount => "TOTAL AMOUNT:";
+  static get period => "PERIOD:";
+  static get document_hash => "DOCUMENT #";
   // static get generate => "GENERATE";
 }

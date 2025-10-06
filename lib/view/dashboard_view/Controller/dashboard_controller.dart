@@ -274,6 +274,7 @@ class DashboardController extends GetxController {
             .map((e) => AllAddressesModel.fromJson(e))
             .toList(),
       );
+
       inputText.value = searchingText;
       if (searchingText.isEmpty) {
         suggestions.clear();
