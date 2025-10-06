@@ -1,9 +1,13 @@
+import 'dart:async';
+
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../tabbarview.dart';
+import '../models/all_addresses_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 class DashboardController extends GetxController {
@@ -106,13 +110,52 @@ class DashboardController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
+
+  @override
+  void onInit() {
+    super.onInit();
+
+    // Add listeners to text controllers to detect focus and assign activeFieldKey
+    pickupController.addListener(() {
+      if (pickupController.selection.baseOffset != -1) {
+        activeFieldKey.value = pickupFieldKey;
+        inputText.value = pickupController.text;
+        onInputChanged(pickupController.text);
+      }
+    });
+
+    dropOffController.addListener(() {
+      if (dropOffController.selection.baseOffset != -1) {
+        activeFieldKey.value = dropOffFieldKey;
+        inputText.value = dropOffController.text;
+        onInputChanged(dropOffController.text);
+      }
+    });
+
+    viaLocation1Controller.addListener(() {
+      if (viaLocation1Controller.selection.baseOffset != -1) {
+        activeFieldKey.value = via1FieldKey;
+        inputText.value = viaLocation1Controller.text;
+        onInputChanged(viaLocation1Controller.text);
+      }
+    });
+
+    viaLocation2Controller.addListener(() {
+      if (viaLocation2Controller.selection.baseOffset != -1) {
+        activeFieldKey.value = via2FieldKey;
+        inputText.value = viaLocation2Controller.text;
+        onInputChanged(viaLocation2Controller.text);
+      }
+    });
+  }
+
   var selectedBookingTab  = 'TODAY BOOKINGS'.obs;
 
   RxString selectedTab = 'MAPS'.obs;
   RxString driverSelectionTab = 'activeDriver'.obs;
   var miles = '00.0'.obs;
   var duration = '00.0'.obs;
-  var suggestions = <String>[].obs;
+  List<AllAddressesModel> suggestions = <AllAddressesModel>[].obs;
   var inputText = ''.obs;
   final highlightedIndex = 0.obs;
   int selectedDriverIndex = 0;
@@ -159,91 +202,92 @@ class DashboardController extends GetxController {
   final viaLocation1Controller = TextEditingController();
   final viaLocation2Controller = TextEditingController();
 
-  final allLocations = [
-    'Karachi',
-    'Lahore',
-    'Islamabad',
-    'Peshawar',
-    'Quetta',
-    'Multan',
-    'Rawalpindi',
-    'Faisalabad',
-  ];
-
 
   void onInputChanged(String value) {
     inputText.value = value;
     if (value.isEmpty) {
       suggestions.clear();
     } else {
-      suggestions.value = allLocations
-          .where((loc) => loc.toLowerCase().contains(value.toLowerCase()))
-          .toList();
+      suggestions = allAddressesData.where((loc) => loc.name!.toUpperCase().contains(value.toLowerCase())).toList();
       highlightedIndex.value = 0;
     }
   }
 
-  void selectSuggestion(String value) {
+  void selectSuggestion(String? value) {
     if (activeFieldKey.value == pickupFieldKey) {
-      pickupController.text = value;
+      pickupController.text = value!;
       pickupController.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
-      dropOffController.text = value;
+      dropOffController.text = value!;
       dropOffController.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
-      viaLocation1Controller.text = value;
+      viaLocation1Controller.text = value!;
       viaLocation1Controller.selection =
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via2FieldKey) {
-      viaLocation2Controller.text = value;
+      viaLocation2Controller.text = value!;
       viaLocation2Controller.selection =
           TextSelection.collapsed(offset: value.length);
     }
 
-    inputText.value = value;
+    inputText.value = value!;
     suggestions.clear();
   }
 
 
-  @override
-  void onInit() {
-    super.onInit();
+  Timer? onStoppedTyping;
 
-    // Add listeners to text controllers to detect focus and assign activeFieldKey
-    pickupController.addListener(() {
-      if (pickupController.selection.baseOffset != -1) {
-        activeFieldKey.value = pickupFieldKey;
-        inputText.value = pickupController.text;
-        onInputChanged(pickupController.text);
-      }
-    });
-
-    dropOffController.addListener(() {
-      if (dropOffController.selection.baseOffset != -1) {
-        activeFieldKey.value = dropOffFieldKey;
-        inputText.value = dropOffController.text;
-        onInputChanged(dropOffController.text);
-      }
-    });
-
-    viaLocation1Controller.addListener(() {
-      if (viaLocation1Controller.selection.baseOffset != -1) {
-        activeFieldKey.value = via1FieldKey;
-        inputText.value = viaLocation1Controller.text;
-        onInputChanged(viaLocation1Controller.text);
-      }
-    });
-
-    viaLocation2Controller.addListener(() {
-      if (viaLocation2Controller.selection.baseOffset != -1) {
-        activeFieldKey.value = via2FieldKey;
-        inputText.value = viaLocation2Controller.text;
-        onInputChanged(viaLocation2Controller.text);
-      }
-    });
+  onChangeHandler({fieldsName, searchingText}) {
+    const duration = Duration(
+        milliseconds:
+        800); // set the duration that you want call stopTyping() after that.
+    onStoppedTyping = Timer(duration, () => stopTyping(fieldsName: fieldsName, searchingText: searchingText));
   }
+
+  stopTyping({fieldsName, searchingText}) {
+    getAddresses(searchingText: searchingText,fieldsName: fieldsName);
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
+
+  // final allLocations = [
+  //   'Karachi',
+  //   'Lahore',
+  //   'Islamabad',
+  //   'Peshawar',
+  //   'Quetta',
+  //   'Multan',
+  //   'Rawalpindi',
+  //   'Faisalabad',
+  // ];
+
+  RxBool getAddressesLoader = false.obs;
+  List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
+  getAddresses({fieldsName,searchingText}) async{
+    getAddressesLoader(false);
+    var response = await Api().get("addresses/search?search=$searchingText",auth: true);
+    if(response.statusCode == 200){
+      allAddressesData.addAll(
+        (response.data as List)
+            .map((e) => AllAddressesModel.fromJson(e))
+            .toList(),
+      );
+      inputText.value = searchingText;
+      if (searchingText.isEmpty) {
+        suggestions.clear();
+      } else {
+        suggestions = allAddressesData.where((loc) => loc.name!.toUpperCase().contains(searchingText.toLowerCase())).toList();
+        highlightedIndex.value = 0;
+      }
+      update();
+  }
+  }
+
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
 

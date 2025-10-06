@@ -54,11 +54,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    print(width);
-    print(width);
-    print(width);
-    print(width);
-
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return LayoutBuilder(
@@ -188,9 +183,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  controller.highlightedIndex.value--;
                                                                } else if (event.logicalKey ==
                                                                    LogicalKeyboardKey.enter) {
-                                                                 final selected =
-                                                                 controller.suggestions[controller
-                                                                     .highlightedIndex.value];
+                                                                 final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                                                  controller.selectSuggestion(selected);
                                                                }
                                                              }
@@ -210,6 +203,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              textInputAction: TextInputAction.next,
                                                              onTap: () {
                                                                shortCutKeyValue.value = "formKey";
+                                                             },
+                                                             onChanged: (v){
+                                                               controller.onChangeHandler(fieldsName: "PICKUP LOCATION",searchingText: v);
                                                              },
                                                              onSubmitted: (_) =>
                                                                  FocusScope.of(context).nextFocus(),
@@ -311,7 +307,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    LogicalKeyboardKey.enter) {
                                                                  final selected =
                                                                  controller.suggestions[controller
-                                                                     .highlightedIndex.value];
+                                                                     .highlightedIndex.value].name;
                                                                  controller.selectSuggestion(selected);
                                                                }
                                                              }
@@ -443,7 +439,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      controller.suggestions[
                                                                      controller
                                                                          .highlightedIndex
-                                                                         .value];
+                                                                         .value].name;
                                                                      controller
                                                                          .selectSuggestion(selected);
                                                                    }
@@ -589,7 +585,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      controller.suggestions[
                                                                      controller
                                                                          .highlightedIndex
-                                                                         .value];
+                                                                         .value].name;
                                                                      controller
                                                                          .selectSuggestion(selected);
                                                                    }
@@ -1422,7 +1418,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         ),
                         // SizedBox(height: 12),
                         Obx(() {
-                          if (controller.suggestions.isEmpty) return SizedBox();
+                          if (controller.allAddressesData.isEmpty) return SizedBox();
                           final GlobalKey<State<StatefulWidget>>? activeKey =
                               controller.activeFieldKey.value;
                           final RenderBox? fieldBox = activeKey?.currentContext
@@ -1463,12 +1459,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                               ),
                               child: ListView(
                                 shrinkWrap: true,
-                                children: controller.suggestions
+                                children: controller.allAddressesData
                                     .asMap()
                                     .entries
                                     .map((entry) {
                                   int index = entry.key;
-                                  String suggestion = entry.value;
+                                  String suggestion = entry.value.name!;
                                   bool isHighlighted = index == controller.highlightedIndex.value;
                                   return Container(
                                     color: isHighlighted ? Color(0xffA0DCFF) : null,

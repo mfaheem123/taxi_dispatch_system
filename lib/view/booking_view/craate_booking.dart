@@ -25,6 +25,7 @@ import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/booking_form_widget.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/dashboard/shortcut_key_widget.dart';
+import '../dashboard_view/models/all_addresses_model.dart';
 
 class CreateBooking extends StatefulWidget {
   const CreateBooking({super.key});
@@ -192,7 +193,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                 // (1) Pickup textfield
                                 FocusTraversalOrder(
-                                  order: const NumericFocusOrder(1),
+                                  order: NumericFocusOrder(1),
                                   child: SizedBox(
                                     width: fieldWidth,
                                     height: 30,
@@ -215,8 +216,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           } else if (event.logicalKey ==
                                               LogicalKeyboardKey.enter) {
                                             final selected =
-                                                controller.suggestions[controller
-                                                    .highlightedIndex.value];
+                                                controller.suggestions[controller.highlightedIndex.value].name;
                                             controller.selectSuggestion(selected);
                                           }
                                         }
@@ -338,7 +338,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             final selected =
                                                 controller.suggestions[controller
                                                     .highlightedIndex.value];
-                                            controller.selectSuggestion(selected);
+                                            // controller.selectSuggestion(selected);
                                           }
                                         }
                                       },
@@ -466,8 +466,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                         controller
                                                             .highlightedIndex
                                                             .value];
-                                                controller
-                                                    .selectSuggestion(selected);
+                                                // controller
+                                                //     .selectSuggestion(selected);
                                               }
                                             }
                                           },
@@ -611,7 +611,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     controller.suggestions[
                                                         controller
                                                             .highlightedIndex
-                                                            .value];
+                                                            .value].name;
                                                 controller
                                                     .selectSuggestion(selected);
                                               }

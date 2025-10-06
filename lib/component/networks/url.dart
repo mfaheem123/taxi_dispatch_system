@@ -10,7 +10,7 @@ abstract class BaseConfig {
 
 class DevConfig implements BaseConfig {
   @override
-  String get baseUrl => "https://bloodlines.gologonow.app/";
+  String get baseUrl => "http://192.168.110.4:5000/api/";
 
   @override
   String get imageUrl => "https://bloodlines.gologonow.app";
@@ -19,7 +19,7 @@ class DevConfig implements BaseConfig {
   String get slashImageUrl => "https://bloodlines.gologonow.app/";
 
   @override
-  String get apiUrl => "https://bloodlines.gologonow.app/api/";
+  String get apiUrl => "http://192.168.110.4:5000/api/";
 
   @override
   String get socketUrl => "ws://192.168.5.251:8086/cam";
@@ -28,7 +28,7 @@ class DevConfig implements BaseConfig {
 
 class ProductionConfig implements BaseConfig {
   @override
-  String get baseUrl => "http://apis.bloodlines.info/public/api/";
+  String get baseUrl => "http://192.168.110.4:5000/api/";
 
   @override
   String get imageUrl => "http://apis.bloodlines.info/public";
@@ -36,7 +36,7 @@ class ProductionConfig implements BaseConfig {
   String get slashImageUrl => "http://apis.bloodlines.info/public";
 
   @override
-  String get apiUrl => "http://apis.bloodlines.info/public/api/";
+  String get apiUrl => "http://192.168.110.4:5000/api/";
 
   @override
   String get socketUrl => "ws://apis.bloodlines.info:8088";

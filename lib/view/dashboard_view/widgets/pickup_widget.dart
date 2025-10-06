@@ -12,6 +12,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
+import '../models/all_addresses_model.dart';
 
 
 class PickupWidget extends StatefulWidget {
@@ -105,7 +106,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                       LogicalKeyboardKey.enter) {
                                     final selected = controller.suggestions[
                                     controller.highlightedIndex.value];
-                                    controller.selectSuggestion(selected);
+                                    // controller.selectSuggestion(selected);
                                   }
                                 }
                               },
@@ -119,8 +120,11 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 prefixIcon: const Icon(Icons.location_pin,
                                     color: Colors.red,size: 20,),
                                 textInputAction: TextInputAction.next,
+                                onChanged: (v){
+                                  controller.onChangeHandler(fieldsName: "PICKUP LOCATION",searchingText: v);
+                                },
                                 onTap: (){
-                                  shortCutKeyValue.value = "formKey";
+                                  // shortCutKeyValue.value = "formKey";
                                 },
                                 onSubmitted: (_) =>
                                     FocusScope.of(context).nextFocus(),
@@ -258,7 +262,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                       LogicalKeyboardKey.enter) {
                                     final selected = controller.suggestions[
                                     controller.highlightedIndex.value];
-                                    controller.selectSuggestion(selected);
+                                    // controller.selectSuggestion(selected);
                                   }
                                 }
                               },
@@ -383,7 +387,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                         LogicalKeyboardKey.enter) {
                                       final selected = controller.suggestions[
                                       controller.highlightedIndex.value];
-                                      controller.selectSuggestion(selected);
+                                      // controller.selectSuggestion(selected);
                                     }
                                   }
                                 },
@@ -510,7 +514,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                         LogicalKeyboardKey.enter) {
                                       final selected = controller.suggestions[
                                       controller.highlightedIndex.value];
-                                      controller.selectSuggestion(selected);
+                                      // controller.selectSuggestion(selected);
                                     }
                                   }
                                 },
