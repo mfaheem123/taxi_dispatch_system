@@ -3,19 +3,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:bloodlines/View/Chat/controller/chatController.dart';
-import 'package:bloodlines/View/Chat/view/messageTile.dart';
-import 'package:bloodlines/notification.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:bloodlines/Components/Network/interceptor.dart';
-import 'package:bloodlines/Components/loader.dart';
-import 'package:bloodlines/Routes/app_pages.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dashboard_new1/component/networks/loader.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as getx;
 import 'package:get_storage/get_storage.dart';
+import '../../routes/app_pages.dart';
 import 'Url.dart';
+import 'interceptor.dart';
 
 final String baseUrl = Environment().config.baseUrl;
 final String apiUrl = Environment().config.apiUrl;
@@ -74,108 +70,7 @@ class Api {
     }
   }
 
-  final notifications = FlutterLocalNotificationsPlugin();
-  getx.RxDouble progress = 0.0.obs;
-  CancelToken cancelToken = CancelToken();
-  Future<dynamic> messagePost(formData, url,
-      {auth = false,
-        multiPart = false,
-        nonFormContent = false,
-        isProgressShow = false,
-        video = false,
-        fromChat = false,
-        int? rand,
-        String? inboxId,
-        fullUrl}) async {
-    if (isProgressShow == false) {
-      showLoading();
-    }
-    // if(fullUrl != null){
-    //   if (fullUrl.contains("http://18.223.229.217/api/")) {
-    //     fullUrl = fullUrl.replaceFirst("http://18.223.229.217/api/",
-    //         "http://18.223.229.217/hero-self/api/");
-    //   }
-    // }
-    if (cancelToken.isCancelled) {
-      cancelToken = CancelToken();
-    }
-    Dio dio = Dio();
 
-    dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
-
-    try {
-      dynamic response = await dio.post(
-        fullUrl ?? apiUrl + url,
-        data: formData,
-        cancelToken: cancelToken,
-        onSendProgress: video == true
-            ? (int sent, int total) {
-          onProgress(video, rand, total, sent, fullUrl,
-              inboxId: inboxId, fromChat: true);
-        }
-            : null,
-        options: Options(
-          headers: {
-            Headers.acceptHeader: "application/json",
-          },
-          contentType: 'multipart/form-data',
-        ),
-      );
-      BotToast.closeAllLoading();
-
-      return response;
-    } on DioException catch (e) {
-      BotToast.closeAllLoading();
-
-      if (e.type == DioExceptionType.connectionError) {
-        BotToast.showText(text: 'No Internet connection');
-      }
-      return returnResponse(e.response);
-    } on SocketException catch (e) {
-      BotToast.closeAllLoading();
-      print("error $e");
-    }
-  }
-
-  onProgress(video, rand, total, sent, fullUrl, {inboxId, fromChat = false}) {
-    videoProgress.value = (sent / total);
-    print(videoProgress.value);
-
-    if (videoProgress.value == 1.0) {
-      if (fromChat == true) {
-        if (inboxId != null) {
-          ChatController controller = getx.Get.find();
-          controller.getUserChat(inboxId, fullUrl: fullUrl);
-        }
-      }
-    }
-
-    if (video == true) {
-      if ((sent / total * 100).toInt() != 100) {
-        noti((sent / total * 100).toInt(), rand);
-      } else {
-        notifications.cancel(rand);
-        notifications.show(
-          rand,
-          fromChat == true ? 'Bloodlines' : 'Uploading Post',
-          'Upload Completed',
-          NotificationDetails(
-            android: AndroidNotificationDetails(
-              'DemoTestChannel',
-              'High Importance Notifications',
-              progress: total,
-              icon: 'ic_launcher',
-              enableVibration: false,
-              importance: Importance.high,
-              onlyAlertOnce: true,
-              channelShowBadge: false,
-            ),
-            iOS: const DarwinNotificationDetails(),
-          ),
-        );
-      }
-    }
-  }
 
   Future<dynamic> get(String url,
       {fullUrl, queryParameters, auth = false}) async {
@@ -338,7 +233,7 @@ class Api {
               });
               BotToast.showText(text: "Your session has been expired");
               Api.singleton.sp.erase();
-              getx.Get.offAllNamed(Routes.login);
+              getx.Get.offAllNamed(Routes.loginScreen);
             }
           }
 
@@ -383,7 +278,7 @@ class Api {
           BotToast.showText(
               text: "Your account has been deactivated by the admin");
           Api.singleton.sp.erase();
-          getx.Get.offAllNamed(Routes.login);
+          getx.Get.offAllNamed(Routes.loginScreen);
           return response;
         case 500:
           BotToast.showText(text: 'Server not responding');

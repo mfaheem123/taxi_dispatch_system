@@ -59,96 +59,94 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     print(width);
     print(width);
 
-    return FocusTraversalGroup(
-      policy: OrderedTraversalPolicy(),
-      child: GetBuilder<DashboardController>(
-        builder: (controller) {
-          return LayoutBuilder(
-              builder: (context, constraints) {
-                final double maxWidth = constraints.maxWidth;
-                final bool isMobile = maxWidth < 600;
-                final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        return LayoutBuilder(
+            builder: (context, constraints) {
+              final double maxWidth = constraints.maxWidth;
+              final bool isMobile = maxWidth < 600;
+              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-                // Instead of fixed width, we calculate flexible field widths
-                final double fieldWidth = isMobile
-                    ? maxWidth // full width
-                    : isTablet
-                    ? maxWidth / 2
-                    : maxWidth / 4;
+              // Instead of fixed width, we calculate flexible field widths
+              final double fieldWidth = isMobile
+                  ? maxWidth // full width
+                  : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
 
-              return RawKeyboardListener(
-                focusNode: _focusNode,
-                autofocus: true,
-                onKey: (RawKeyEvent event) {
-                  if (event is RawKeyDownEvent) {
-                    final key = event.logicalKey;
-                  }
-                },
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                      width: screenWidth,
-                      decoration: BoxDecoration(color: DynamicColors.secondaryClr),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Wrap(
-                          spacing: 10, // horizontal gap
-                          runSpacing: 8, // vertical gap when wrapped
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            Row(
-                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                 ShortcutKeyWidget(),
-                                 ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
-                                 ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
-                                 ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
-                                 ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
-                                width >= 1900 ?
-                                Spacer():SizedBox.shrink(),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 6.0),
-                                  child: CustomButton(
-                                    width: 120,
-                                    height: 35,
-                                    borderRadius: 6,
-                                    verticalPadding: 0,
-                                    style: mozillaTextSemiBoldText(
-                                        fontSize: 11,
-                                        color: DynamicColors.whiteClr
-                                    ),
-                                    onTap: (){
-                                      controller.hideDashBoard.value = !controller.hideDashBoard.value;
-                                      controller.update();
-                                    },
-                                    btnText:controller.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
+            return RawKeyboardListener(
+              focusNode: _focusNode,
+              autofocus: true,
+              onKey: (RawKeyEvent event) {
+                if (event is RawKeyDownEvent) {
+                  final key = event.logicalKey;
+                }
+              },
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                    width: screenWidth,
+                    decoration: BoxDecoration(color: DynamicColors.secondaryClr),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Wrap(
+                        spacing: 10, // horizontal gap
+                        runSpacing: 8, // vertical gap when wrapped
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Row(
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                               ShortcutKeyWidget(),
+                               ShortcutKeyWidget(keyss: "F2",valuess: "BOOKING FORM"),
+                               ShortcutKeyWidget(keyss: "F3",valuess: "DRIVER VEHICLE"),
+                               ShortcutKeyWidget(keyss: "F4",valuess: "DRIVER EARNING"),
+                               ShortcutKeyWidget(keyss: "F6",valuess: "QUOTATION"),
+                              width >= 1900 ?
+                              Spacer():SizedBox.shrink(),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 6.0),
+                                child: CustomButton(
+                                  width: 120,
+                                  height: 35,
+                                  borderRadius: 6,
+                                  verticalPadding: 0,
+                                  style: mozillaTextSemiBoldText(
+                                      fontSize: 11,
+                                      color: DynamicColors.whiteClr
                                   ),
+                                  onTap: (){
+                                    controller.hideDashBoard.value = !controller.hideDashBoard.value;
+                                    controller.update();
+                                  },
+                                  btnText:controller.hideDashBoard.value? "HIDE DASHBOARD":"SHOW DASHBOARD",
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                      Stack(
-                        key: controller.stackKey,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Column(
-                              children: [
-                                Visibility(
-                                  visible: controller.hideDashBoard.value,
-                                  child: SingleChildScrollView(
-                                    // scrollDirection: Axis.horizontal,
-                                   child: width >= 1270 ? Row(
-                                     children: [
-                                       SizedBox(
+                  ),
+                    Stack(
+                      key: controller.stackKey,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Column(
+                            children: [
+                              Visibility(
+                                visible: controller.hideDashBoard.value,
+                                child: SingleChildScrollView(
+                                  // scrollDirection: Axis.horizontal,
+                                 child: width >= 1270 ? Row(
+                                   children: [
+                                     FocusTraversalGroup(
+                                     policy: OrderedTraversalPolicy(),
+                                       child: SizedBox(
                                          width: Get.width/2,
-                                         child:
-
-                                         Column(
+                                         child: Column(
                                            children: [
                                              Column(
                                                children: [
@@ -965,14 +963,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  ),
 
                                                  // Switch + Quotation
-                                                 DynamicSwitch(
-                                                   controller: controller.switchController,
-                                                   activeColor: DynamicColors.primaryClr,
-                                                   inactiveColor: DynamicColors.gryClr,
-                                                   focusScale: 1.5,
-                                                   onToggle: () {
-                                                     print("Switch toggled: ${controller.switchController.value}");
-                                                   },
+                                                 FocusTraversalOrder(
+                                                   order: const NumericFocusOrder(27),
+                                                   child: DynamicSwitch(
+                                                     controller: controller.switchController,
+                                                     activeColor: DynamicColors.primaryClr,
+                                                     inactiveColor: DynamicColors.gryClr,
+                                                     focusScale: 1.5,
+                                                     onToggle: () {
+                                                       print("Switch toggled: ${controller.switchController.value}");
+                                                     },
+                                                   ),
                                                  ),
                                                  Text(
                                                    AppText.quotation,
@@ -982,7 +983,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // SMS Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(27),
+                                                   order: const NumericFocusOrder(28),
                                                    child: SizedBox(
                                                      // width: fieldWidth/6,
                                                      child: Row(
@@ -1020,7 +1021,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // Email Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(28),
+                                                   order: const NumericFocusOrder(29),
                                                    child: SizedBox(
                                                      // width: fieldWidth/5,
                                                      child: Row(
@@ -1064,7 +1065,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      mainAxisSize: MainAxisSize.min,
                                                      children: [
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(29),
+                                                         order: const NumericFocusOrder(30),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1084,7 +1085,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        ),
                                                        SizedBox(width: 8),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(30),
+                                                         order: const NumericFocusOrder(31),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1104,7 +1105,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        ),
                                                        SizedBox(width: 8),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(31),
+                                                         order: const NumericFocusOrder(32),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1126,20 +1127,20 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
                                                  ),
 
-                                                 FocusTraversalGroup(
-                                                   policy: OrderedTraversalPolicy(),
-                                                   child: Container(
-                                                     height: 40,
-                                                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                                                     decoration: BoxDecoration(
-                                                       color: Colors.grey.shade300,
-                                                       borderRadius: BorderRadius.circular(4),
-                                                     ),
-                                                     child: Row(
-                                                       mainAxisAlignment: MainAxisAlignment.end,
-                                                       mainAxisSize: MainAxisSize.min,
-                                                       children: [
-                                                         buildFocusableIcon(
+                                                 Container(
+                                                   height: 40,
+                                                   padding: const EdgeInsets.symmetric(horizontal: 8),
+                                                   decoration: BoxDecoration(
+                                                     color: Colors.grey.shade300,
+                                                     borderRadius: BorderRadius.circular(4),
+                                                   ),
+                                                   child: Row(
+                                                     mainAxisAlignment: MainAxisAlignment.end,
+                                                     mainAxisSize: MainAxisSize.min,
+                                                     children: [
+                                                       FocusTraversalOrder(
+                                                         order: const NumericFocusOrder(33),
+                                                         child: buildFocusableIcon(
                                                            icon: Icons.person,
                                                            focusNode: _focusNodes[0],
                                                            onPressed: (){
@@ -1149,7 +1150,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      RestrictDriversAlert());
                                                            },
                                                          ),
-                                                         buildFocusableIcon(
+                                                       ),
+                                                       FocusTraversalOrder(
+                                                         order: const NumericFocusOrder(34),
+                                                         child: buildFocusableIcon(
                                                            icon: Icons.shopping_cart_checkout_outlined,
                                                            focusNode: _focusNodes[1],
                                                            onPressed: () {
@@ -1160,7 +1164,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              );
                                                            },
                                                          ),
-                                                         buildFocusableIcon(
+                                                       ),
+                                                       FocusTraversalOrder(
+                                                         order: const NumericFocusOrder(35),
+                                                         child: buildFocusableIcon(
                                                            icon: Icons.attach_money,
                                                            focusNode: _focusNodes[2],
                                                            onPressed: () {
@@ -1171,7 +1178,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              );
                                                            },
                                                          ),
-                                                         buildFocusableIcon(
+                                                       ),
+                                                       FocusTraversalOrder(
+                                                         order: const NumericFocusOrder(36),
+                                                         child: buildFocusableIcon(
                                                            icon: Icons.note_add_sharp,
                                                            focusNode: _focusNodes[3],
                                                            onPressed: () {
@@ -1182,8 +1192,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              );
                                                            },
                                                          ),
-                                                       ],
-                                                     ),
+                                                       ),
+                                                     ],
                                                    ),
                                                  ),
                                                ],
@@ -1257,7 +1267,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  runSpacing: 16,
                                                  children: [
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(36),
+                                                     order: const NumericFocusOrder(37),
                                                      child: labeledField(
                                                        context: context,
                                                        isMobile: isMobile,
@@ -1287,7 +1297,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(37),
+                                                     order: const NumericFocusOrder(38),
                                                      child: CustomButton(
                                                        btnText: "MULTI BOOKING [F8]",
                                                        width: 150,
@@ -1299,7 +1309,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(38),
+                                                     order: const NumericFocusOrder(39),
                                                      child: CustomButton(
                                                        btnText: "MULTI VEHICLE [F9]",
                                                        width: 150,
@@ -1311,7 +1321,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(39),
+                                                     order: const NumericFocusOrder(40),
                                                      child: CustomButton(
                                                        btnText: "CLEAR [F7]",
                                                        width: 110,
@@ -1324,7 +1334,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(40),
+                                                     order: const NumericFocusOrder(41),
                                                      child: CustomButton(
                                                        btnText: "SAVE[HOME]",
                                                        width: 110,
@@ -1340,160 +1350,160 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                            ],
                                          ),
                                        ),
-                                       MapViewWidget(),
-                                       DriversView(),
-                                     ],
-                                   ):Column(
-                                     children: [
-                                       BookingFormWidget(),
-                                       Row(
-                                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                         children: [
-                                           /// todo MAP SECTION
-                                           MapViewWidget(),
-                                           /// todo MAP SECTION
-                                           SizedBox(width: screenWidth * 0.0133),
+                                     ),
+                                     MapViewWidget(),
+                                     DriversView(),
+                                   ],
+                                 ):Column(
+                                   children: [
+                                     BookingFormWidget(),
+                                     Row(
+                                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                       children: [
+                                         /// todo MAP SECTION
+                                         MapViewWidget(),
+                                         /// todo MAP SECTION
+                                         SizedBox(width: screenWidth * 0.0133),
 
-                                           //Driver
-                                           DriversView(),
-                                         ],
-                                       )
-                                     ],
-                                   ),
-                                   /* child: width <= 1366 ? Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                          width: screenWidth * 0.007,
-                                        ),
-                                        BookingFormWidget(),
-                                        SizedBox(width: screenWidth * 0.011),
-
-                                        /// todo MAP SECTION
-                                        MapViewWidget(),
-                                        /// todo MAP SECTION
-                                        SizedBox(width: screenWidth * 0.0133),
-
-                                        //Driver
-                                        DriversView(),
-                                      ],
-                                    ):Column(
-                                      children: [
-                                        BookingFormWidget(),
-                                        Row(
-                                          children: [
-                                            /// todo MAP SECTION
-                                            MapViewWidget(),
-                                            /// todo MAP SECTION
-                                            SizedBox(width: screenWidth * 0.0133),
-
-                                            //Driver
-                                            DriversView(),
-                                          ],
-                                        )
-                                      ],
-                                    ),*/
-                                  ),
-                                ),
-                                Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      // color: Colors.white,
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(color: Colors.grey.shade300),
-                                    ),
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: BookingTable(),
-                                    )),
-                              ],
-                            ),
-                          ),
-                          // SizedBox(height: 12),
-                          Obx(() {
-                            if (controller.suggestions.isEmpty) return SizedBox();
-                            final GlobalKey<State<StatefulWidget>>? activeKey =
-                                controller.activeFieldKey.value;
-                            final RenderBox? fieldBox = activeKey?.currentContext
-                                ?.findRenderObject() as RenderBox?;
-                            final RenderBox? stackBox =
-                            controller.stackKey.currentContext?.findRenderObject()
-                            as RenderBox?;
-
-                            double top = 0.0;
-                            double left = 0.0;
-                            double width = screenWidth;
-
-                            if (fieldBox != null && stackBox != null) {
-                              final Offset localOffset = fieldBox
-                                  .localToGlobal(Offset.zero, ancestor: stackBox);
-                              final double fieldHeight = fieldBox.size.height;
-                              width = fieldBox.size.width;
-                              top = localOffset.dy + fieldHeight;
-                              left = localOffset.dx;
-                            }
-
-                            return Positioned(
-                              top: top,
-                              left: left,
-                              width: width,
-                              child: Container(
-                                height: screenHeight * 0.4,
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFEFF0F2),
-                                  borderRadius: BorderRadius.circular(5),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 2),
-                                    )
-                                  ],
-                                ),
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  children: controller.suggestions
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
-                                    int index = entry.key;
-                                    String suggestion = entry.value;
-                                    bool isHighlighted = index == controller.highlightedIndex.value;
-                                    return Container(
-                                      color: isHighlighted ? Color(0xffA0DCFF) : null,
-                                      child: ListTile(
-                                        dense: true,
-                                        visualDensity: VisualDensity.compact,
-                                        title: Text(suggestion,
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: isHighlighted
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal,
-                                              color: isHighlighted
-                                                  ? Colors.blue
-                                                  : Colors.black,
-                                            )),
-                                        onTap: () {
-                                          // controller.selectSuggestion(suggestion);
-                                        },
+                                         //Driver
+                                         DriversView(),
+                                       ],
+                                     )
+                                   ],
+                                 ),
+                                 /* child: width <= 1366 ? Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.007,
                                       ),
-                                    );
-                                  }).toList(),
+                                      BookingFormWidget(),
+                                      SizedBox(width: screenWidth * 0.011),
+
+                                      /// todo MAP SECTION
+                                      MapViewWidget(),
+                                      /// todo MAP SECTION
+                                      SizedBox(width: screenWidth * 0.0133),
+
+                                      //Driver
+                                      DriversView(),
+                                    ],
+                                  ):Column(
+                                    children: [
+                                      BookingFormWidget(),
+                                      Row(
+                                        children: [
+                                          /// todo MAP SECTION
+                                          MapViewWidget(),
+                                          /// todo MAP SECTION
+                                          SizedBox(width: screenWidth * 0.0133),
+
+                                          //Driver
+                                          DriversView(),
+                                        ],
+                                      )
+                                    ],
+                                  ),*/
                                 ),
                               ),
-                            );
-                          }),
-                        ],
-                      ),
-                    ],
-                  ),
+                              Container(
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    // color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.grey.shade300),
+                                  ),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: BookingTable(),
+                                  )),
+                            ],
+                          ),
+                        ),
+                        // SizedBox(height: 12),
+                        Obx(() {
+                          if (controller.suggestions.isEmpty) return SizedBox();
+                          final GlobalKey<State<StatefulWidget>>? activeKey =
+                              controller.activeFieldKey.value;
+                          final RenderBox? fieldBox = activeKey?.currentContext
+                              ?.findRenderObject() as RenderBox?;
+                          final RenderBox? stackBox =
+                          controller.stackKey.currentContext?.findRenderObject()
+                          as RenderBox?;
+
+                          double top = 0.0;
+                          double left = 0.0;
+                          double width = screenWidth;
+
+                          if (fieldBox != null && stackBox != null) {
+                            final Offset localOffset = fieldBox
+                                .localToGlobal(Offset.zero, ancestor: stackBox);
+                            final double fieldHeight = fieldBox.size.height;
+                            width = fieldBox.size.width;
+                            top = localOffset.dy + fieldHeight;
+                            left = localOffset.dx;
+                          }
+
+                          return Positioned(
+                            top: top,
+                            left: left,
+                            width: width,
+                            child: Container(
+                              height: screenHeight * 0.4,
+                              decoration: BoxDecoration(
+                                color: Color(0xFFEFF0F2),
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              child: ListView(
+                                shrinkWrap: true,
+                                children: controller.suggestions
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                  int index = entry.key;
+                                  String suggestion = entry.value;
+                                  bool isHighlighted = index == controller.highlightedIndex.value;
+                                  return Container(
+                                    color: isHighlighted ? Color(0xffA0DCFF) : null,
+                                    child: ListTile(
+                                      dense: true,
+                                      visualDensity: VisualDensity.compact,
+                                      title: Text(suggestion,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: isHighlighted
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                            color: isHighlighted
+                                                ? Colors.blue
+                                                : Colors.black,
+                                          )),
+                                      onTap: () {
+                                        // controller.selectSuggestion(suggestion);
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                  ],
                 ),
-              );
-            }
-          );
-        }
-      ),
+              ),
+            );
+          }
+        );
+      }
     );
   }
 

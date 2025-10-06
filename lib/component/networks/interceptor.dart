@@ -2,11 +2,10 @@
 // ignore_for_file: invalid_required_positional_param, unrelated_type_equality_checks, use_rethrow_when_possible, empty_constructor_bodies
 
 import 'dart:async';
-
-import 'package:bloodlines/Components/Network/API.dart';
-import 'package:bloodlines/Components/loader.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/component/networks/loader.dart';
 import 'package:dio/dio.dart';
 
 class RetryOnConnectionChangeInterceptor extends Interceptor {

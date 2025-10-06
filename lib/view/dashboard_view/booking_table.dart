@@ -31,102 +31,82 @@ class _BookingTableState extends State<BookingTable> {
             children: [
               SizedBox(
                 width: Get.width,
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      height: 40,
-                      child: ListView.builder(
-                        itemCount: tabList.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal, // <-- enable horizontal
-                        physics: const BouncingScrollPhysics(), // smooth scrolling
-                        itemBuilder: (BuildContext context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: tabList[index].dropDown == false? CustomButton(
-                              width: 150,
-                              verticalPadding: 0,
-                              borderRadius: 4,
-                              style: mozillaTextRegularText(
-                                fontSize: 13,
-                                color: DynamicColors.textClr,
-                              ),
-                              btnText: tabList[index].titleText,
-                              btnColor:tabList[index].selectedClr!.value == true?DynamicColors.primaryClr.withOpacity(0.4): DynamicColors.secondaryClr,
-                              onTap: () {
-                                int selectedIndex =
-                                tabList.indexWhere((test) => test.selectedClr!.value == true);
-                                if (selectedIndex != -1) {
-                                  tabList[selectedIndex].selectedClr!.value = false;
-                                }
-                                tabList[index].selectedClr!.value = true; // <-- fix selection
-                                controller.update();
-                              },
-                            ):
+                child: SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    itemCount: tabList.length,
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal, // <-- enable horizontal
+                    physics: const BouncingScrollPhysics(), // smooth scrolling
+                    itemBuilder: (BuildContext context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: tabList[index].dropDown == false? CustomButton(
+                          width: 150,
+                          verticalPadding: 0,
+                          borderRadius: 4,
+                          style: mozillaTextRegularText(
+                            fontSize: 13,
+                            color: DynamicColors.textClr,
+                          ),
+                          btnText: tabList[index].titleText,
+                          btnColor: tabList[index].deletedClr==true?DynamicColors.redClr: tabList[index].selectedClr!.value == true?DynamicColors.primaryClr.withOpacity(0.4): DynamicColors.secondaryClr,
+                          onTap: () {
+                            int selectedIndex =
+                            tabList.indexWhere((test) => test.selectedClr!.value == true);
+                            if (selectedIndex != -1) {
+                              tabList[selectedIndex].selectedClr!.value = false;
+                            }
+                            tabList[index].selectedClr!.value = true; // <-- fix selection
+                            controller.update();
+                          },
+                        ):
 
-                            SizedBox(
-                              width: 150,
-                              child: Container(color: DynamicColors.secondaryClr,
-                                child: DropdownButton<String>(
-                                  value: tabList[index].selectedDropDownValue,
-                                  icon: const Icon(Icons.arrow_drop_down),
-                                  isExpanded: true,
-                                  hint: Text("JOB DUE BY",
+                        SizedBox(
+                          width: 150,
+                          child: Container(color: DynamicColors.secondaryClr,
+                            child: DropdownButton<String>(
+                              value: tabList[index].selectedDropDownValue,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              isExpanded: true,
+                              hint: Text("JOB DUE BY",
+                                style: mozillaTextRegularText(
+                                    fontSize: 13,
+                                    color: DynamicColors.textClr
+                                ),
+                              ),
+                              underline: const SizedBox(),
+                              items: tabList[index].dropDownList.map((item) {
+                                return DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(item,
                                     style: mozillaTextRegularText(
                                         fontSize: 13,
                                         color: DynamicColors.textClr
                                     ),
                                   ),
-                                  underline: const SizedBox(),
-                                  items: tabList[index].dropDownList.map((item) {
-                                    return DropdownMenuItem<String>(
-                                      value: item,
-                                      child: Text(item,
-                                        style: mozillaTextRegularText(
-                                            fontSize: 13,
-                                            color: DynamicColors.textClr
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (value) {
-                                    int selectedIndex =
-                                    tabList.indexWhere((test) => test.selectedClr!.value == true);
-                                    if (selectedIndex != -1) {
-                                      tabList[selectedIndex].selectedClr!.value = false;
-                                    }
-                                   setState(() {
-                                     tabList[index].selectedDropDownValue = value;
-                                     tabList[index].selectedClr!.value = true; // <-- fix selection
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                int selectedIndex =
+                                tabList.indexWhere((test) => test.selectedClr!.value == true);
+                                if (selectedIndex != -1) {
+                                  tabList[selectedIndex].selectedClr!.value = false;
+                                }
+                                setState(() {
+                                  tabList[index].selectedDropDownValue = value;
+                                  tabList[index].selectedClr!.value = true; // <-- fix selection
 
-                                   });
-                                    controller.update();
-                                    // });
-                                  },
-                                ),
-                              ),
+                                });
+                                controller.update();
+                                // });
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: CustomButton(
-                        width: 140,
-                        verticalPadding: 0,
-                        borderRadius: 4,
-                        height: 40,
-                        btnColor: DynamicColors.redClr,
-                        style: mozillaTextRegularText(
-                          fontSize: 12,
-                          color: DynamicColors.textClr,
+                          ),
                         ),
-                        btnText: "DELETE SELECTION",
-                      ),
-                    )
-                  ],
+                      );
+                    },
+                  ),
                 ),
               ),
               // _buildTabs(),
@@ -308,20 +288,21 @@ class _BookingTableState extends State<BookingTable> {
 
 
 List<TableSelectClass> tabList = [
-  TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "RECENT BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "COMPLETED", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "WEB BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "QUOTED BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs, dropDownList: []),
-  TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs, dropDownList: []),
+  TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs, dropDownList: [], deletedClr: false),
+  TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "RECENT BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "COMPLETED", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "WEB BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "QUOTED BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
+  TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "JOB DUE BY", selectedClr: false.obs,dropDown: true,dropDownList: [
     "JOB DUE BY",
     "15 MIN",
     "30 MIN",
-    "60 MIN",]),
+    "60 MIN",],deletedClr: false),
+  TableSelectClass(titleText: "DELETE SELECTION", selectedClr: false.obs, dropDownList: [],deletedClr: true),
 ];
 
 class TableSelectClass{
@@ -330,7 +311,8 @@ class TableSelectClass{
   bool dropDown = false;
   List<String> dropDownList = [];
   String? selectedDropDownValue;
-  TableSelectClass({this.selectedClr, this.dropDown = false,this.titleText,required this.dropDownList,this.selectedDropDownValue});
+  bool deletedClr = false;
+  TableSelectClass({this.selectedClr, this.dropDown = false,this.titleText,required this.dropDownList,this.selectedDropDownValue,this.deletedClr = false});
 }
 
 
