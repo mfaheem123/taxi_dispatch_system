@@ -1,3 +1,5 @@
+import 'package:dashboard_new1/view/setting/company_configuration_view/general_configuration_view.dart';
+
 class AppText {
   static get login => 'Login';
   static get manage => 'Manage';
@@ -367,5 +369,41 @@ class AppText {
   static get totalamount => "TOTAL AMOUNT:";
   static get period => "PERIOD:";
   static get document_hash => "DOCUMENT #";
+  static get generalConfiguration => "GENERAL CONFIGURATIONS";
+  static get tabBooksinHours => "TAB BOOKINGS (in Hours)";
+  static get tabBooksinday => "TAB PRE BOOKINGS (in Days)";
+  static get tabrecentBooksinday => "TAB RECENT BOOKINGS (in Days)";
+  static get tabBooksAfterminuts => "BOOKING TEXT (after Minutes)";
+  static get bookingExpiryNoties => "BOOKING EXPIRY NOTICE";
+  static get airportBookingExpiryNotice => "AIRPORT BOOKING EXPIRY NOTICE";
+  static get accountBookingExpiry => "ACCOUNT BOOKING EXPIRY NOTICE";
+  static get driverExpiryNotice => "DRIVER EXPIRY NOTICE";
+  static get flightTrackerAPI => "Flight Tracker API";
+  static get type => "TYPE";
+  static get creditCardCharges => "CREDIT CARD CHARGES";
+  static get roundOffFares => "ROUNDOFF FARES";
+  static get discountOneWay => "DISCOUNT ONEWAY BOOKING";
+  static get discountReturn => "DISCOUNT RETURN BOOKING";
+  static get discountWaitAndReturn => "DISCOUNT WAIT AND RETURN BOOKING";
+  static get huntGroup => "HUNT GROUP";
+  static get baseAddress => "BASE ADDRESS";
+  static get deadMileageMiles => "DEAD MILEAGE MILES";
+  static get deadMileageMethods => "DEAD MILEAGE METHODS";
+  static get bookingQuotationSMS => "BOOKING QUOTATION SMS";
+  static get enableBookingText => "ENABLE BOOKING TEXT";
+  static get peakFactor => "PEAK FACTORS";
+  static get webBookerConfiguration => "WEB BOOKER\nCONFIRMATION";
+  static get bookingDueNotification => "BOOKING DUE NOTIFICATION";
+  static get enableCustomText => "ENABLE CUSTOMER TEXT";
+  static get notifictaion => "NOTIFICATION";
+  static get deadMileage => "DEAD MILEAGE";
+
+
+
+
+
+
+
+
   // static get generate => "GENERATE";
 }

@@ -1307,6 +1307,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                 borderRadius: 4,
                               ),
                               CustomButton(
+                              
                                 btnText: "CLEAR [F7]",
                                 width: 110,
                                 height: 30,
