@@ -51,6 +51,7 @@
 //   }
 // }
 
+import 'package:dashboard_new1/view/auth/Controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../component/customButton.dart';
@@ -63,8 +64,7 @@ import '../../routes/app_pages.dart';
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
 
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+AuthController controller = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +139,7 @@ class LoginScreen extends StatelessWidget {
                       CustomTextField(
                         hintText: AppText.username,
                         fillColor: Colors.white,
-                        controller: usernameController,
+                        controller: controller.usernameController,
                         prefixIcon: const Icon(Icons.person),
                       ),
                       const SizedBox(height: 20),
@@ -148,7 +148,7 @@ class LoginScreen extends StatelessWidget {
                       CustomTextField(
                         hintText: AppText.password,
                         fillColor: Colors.white,
-                        controller: passwordController,
+                        controller: controller. passwordController,
                         // obscureText: true,
                         prefixIcon: const Icon(Icons.lock),
                       ),
@@ -166,6 +166,7 @@ class LoginScreen extends StatelessWidget {
                         height: 55,
                         // text: "Login",
                         onTap: () {
+                          // controller.postLoginDetails();
                           Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.dashBoarScreen);
                         },

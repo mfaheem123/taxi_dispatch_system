@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/send_email_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
@@ -90,13 +91,22 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                     Text(AppText.enableSms),
 
                                     const Spacer(),
-                                    CustomButton(
-                                      height: 30,
-                                      width: 160,
-                                      verticalPadding: 0.0,
-                                      btnText: AppText.restrictionDrivers,
-                                      borderRadius: 4,
-                                      fontSize: 11,
+                                    GestureDetector(
+                                 onTap:(){
+                                   showDialog(
+                                     context: context,
+                                     builder: (_) =>
+                                         SendEmailAlert(),
+                                   );
+                                 },
+                                      child: CustomButton(
+                                        height: 30,
+                                        width: 160,
+                                        verticalPadding: 0.0,
+                                        btnText: AppText.restrictionDrivers,
+                                        borderRadius: 4,
+                                        fontSize: 11,
+                                      ),
                                     )
                                   ],
                                 ),
