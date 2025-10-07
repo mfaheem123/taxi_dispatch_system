@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -237,17 +239,36 @@ class DashboardController extends GetxController {
   }
 
 
-  Timer? onStoppedTyping;
 
-  onChangeHandler({fieldsName, searchingText}) {
-    const duration = Duration(
-        milliseconds:
-        800); // set the duration that you want call stopTyping() after that.
-    onStoppedTyping = Timer(duration, () => stopTyping(fieldsName: fieldsName, searchingText: searchingText));
+
+  Timer? _debounce;
+
+  RxString selectedTextFieldsValue = "".obs;
+
+  // 👇 ye function har baar text change hone par call hoga
+  onChangeHandler({required String fieldName, required String searchingText}) {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay
+    selectedTextFieldsValue.value = fieldName;
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _debounce = Timer(duration, () {
+      _stopTyping(fieldName: fieldName, searchingText: searchingText);
+    });
   }
 
-  stopTyping({fieldsName, searchingText}) {
-    getAddresses(searchingText: searchingText,fieldsName: fieldsName);
+  void _stopTyping({required String fieldName, required String searchingText}) {
+    // 👇 Yahan API call ya search function call karna hai
+    getAddresses(fieldsName: fieldName, searchingText: searchingText);
+  }
+
+
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
@@ -263,29 +284,147 @@ class DashboardController extends GetxController {
   //   'Faisalabad',
   // ];
 
-  RxBool getAddressesLoader = false.obs;
+  RxBool getPickupAddressesLoader = true.obs;
+  RxBool getDropAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName,searchingText}) async{
-    getAddressesLoader(false);
-    var response = await Api().get("addresses/search?search=$searchingText",auth: true);
+    if(fieldsName =="PICKUP LOCATION"){
+      getPickupAddressesLoader(false);
+    }else{
+      getDropAddressesLoader(false);
+    }
+    var response = await Api().get("addresses/search?search=${searchingText.toString().toUpperCase()}",auth: true);
     if(response.statusCode == 200){
+      if(response.data.isNotEmpty){
+        allAddressesData.clear();
+        allAddressesData.addAll(
+          (response.data as List)
+              .map((e) => AllAddressesModel.fromJson(e))
+              .toList(),
+        );
+
+        inputText.value = searchingText;
+        if (searchingText.isEmpty) {
+          suggestions.clear();
+        } else {
+          suggestions = allAddressesData
+              .where((loc) =>
+                  loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
+              .toList();
+          highlightedIndex.value = 0;
+        }
+        getPickupAddressesLoader(true);
+        update();
+      }else{
+        openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
+      }
+    }
+  }
+
+  openStreetMapApi({searchingText}) async{
+
+    var dio = Dio();
+    var response = await dio.request(
+      'https://api.postcodes.io/postcodes/nw67bt',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      allAddressesData.clear();
+      pickLocationAddress(response.data['result']['latitude'], response.data['result']['longitude']);
+    }
+  }
+
+  pickLocationAddress(lat,lng) async{
+    var dio = Dio();
+    var response = await dio.request(
+      'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&addressdetails=1',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if(response.statusCode == 200){
+      final addressObject = [{
+        "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
+        "postcode": response.data['address']['postcode'], // e.g. Brondesbury Park, Brent
+        "area": response.data['address']['postcode'],                                      // NW6
+        "district": response.data['address']['postcode'],                           // Brent
+        "sector": response.data['address']['postcode'],                                     // London
+        "unit": response.data['address']['postcode'],                                     // NW6 7BP
+        "type": "address",
+        "lat": double.parse(response.data['lat']),                                    // 51.542059
+        "lon": double.parse(response.data['lon']),                                  // -0.212545
+      }];
+
       allAddressesData.addAll(
-        (response.data as List)
+        (addressObject as List)
             .map((e) => AllAddressesModel.fromJson(e))
             .toList(),
       );
-
-      inputText.value = searchingText;
-      if (searchingText.isEmpty) {
-        suggestions.clear();
-      } else {
-        suggestions = allAddressesData.where((loc) => loc.name!.toUpperCase().contains(searchingText.toLowerCase())).toList();
-        highlightedIndex.value = 0;
-      }
+      getPickupAddressesLoader(true);
+      getDropAddressesLoader(true);
       update();
-  }
+    }
   }
 
+
+
+
+
+// inside your controller
+  final suggestionFocusNode = FocusNode();
+  final suggestionScrollController = ScrollController();
+
+
+// change move functions to scroll after change:
+  void moveHighlightDown() {
+    if (allAddressesData.isEmpty) return;
+    highlightedIndex.value =
+        (highlightedIndex.value + 1) % allAddressesData.length;
+    _scrollToHighlighted();
+  }
+
+  void moveHighlightUp() {
+    if (allAddressesData.isEmpty) return;
+    highlightedIndex.value =
+        (highlightedIndex.value - 1 + allAddressesData.length) %
+            allAddressesData.length;
+    _scrollToHighlighted();
+  }
+
+  void _scrollToHighlighted() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!suggestionScrollController.hasClients) return;
+      final index = highlightedIndex.value;
+      const itemHeight = 48.0; // adjust if your item height differs
+      final offset = (index * itemHeight).clamp(
+        suggestionScrollController.position.minScrollExtent,
+        suggestionScrollController.position.maxScrollExtent,
+      );
+      suggestionScrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+// Keep tap selection (Enter intentionally NOT handled)
+  void tapSelect(int index) {
+    if (allAddressesData.isEmpty) return;
+    final selected = allAddressesData[index];
+    final suggestion = selected.name!;
+    final postCode = selected.postcode!;
+    if (selectedTextFieldsValue.value == "PICKUP LOCATION") {
+      pickupController.text = "$suggestion $postCode";
+    } else {
+      dropOffController.text = "$suggestion $postCode";
+    }
+    allAddressesData.clear();
+    highlightedIndex.value = 0;
+  }
 
 
 

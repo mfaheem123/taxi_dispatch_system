@@ -54,6 +54,7 @@ dependencies:
   connectivity_plus: ^7.0.0
   dio: ^5.9.0
   get_storage: ^2.1.1
+  field_suggestion: ^0.2.6
 
 dev_dependencies:
   flutter_test:

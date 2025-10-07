@@ -23,6 +23,7 @@ import '../widgets/user_info_widget.dart' hide KbdActivatable;
 import '../widgets/via_location.dart';
 import 'booking_form_widget.dart';
 import 'drivers.dart';
+import 'location_suggestions.dart';
 import 'map_view_widget.dart';
 
 class ByDefaultDashboard extends StatefulWidget {
@@ -158,7 +159,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
                                                      ),
-
+                                                     Obx(() =>
+                                                     controller.getPickupAddressesLoader.value?SizedBox.shrink():
+                                                     Padding(
+                                                       padding: const EdgeInsets.all(3.0),
+                                                       child: SizedBox(
+                                                         width: 20,
+                                                         height: 20,
+                                                         child: Center(
+                                                           child: CircularProgressIndicator(),
+                                                         ),
+                                                       ),
+                                                     ),
+                                                     ),
                                                      // (1) Pickup textfield
                                                      FocusTraversalOrder(
                                                        order: const NumericFocusOrder(1),
@@ -205,7 +218,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                shortCutKeyValue.value = "formKey";
                                                              },
                                                              onChanged: (v){
-                                                               controller.onChangeHandler(fieldsName: "PICKUP LOCATION",searchingText: v);
+                                                               controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
                                                              },
                                                              onSubmitted: (_) =>
                                                                  FocusScope.of(context).nextFocus(),
@@ -280,7 +293,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      ),
 
                                                      // (1) Pickup textfield
-
+                                                     Obx(() =>
+                                                     controller.getDropAddressesLoader.value?SizedBox.shrink():
+                                                     Padding(
+                                                       padding: const EdgeInsets.all(3.0),
+                                                       child: SizedBox(
+                                                         width: 20,
+                                                         height: 20,
+                                                         child: Center(
+                                                           child: CircularProgressIndicator(),
+                                                         ),
+                                                       ),
+                                                     ),
+                                                     ),
                                                      // (4) Dropoff textfield
                                                      FocusTraversalOrder(
                                                        order: const NumericFocusOrder(4),
@@ -319,6 +344,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              controller.dropOffTextFieldFocusNode,
                                                              hintText: 'DROP LOCATION',
                                                              borderRadius: 4,
+                                                             onChanged: (v){
+                                                               controller.onChangeHandler(fieldName: "DROP LOCATION",searchingText: v);
+                                                             },
                                                              prefixIcon: const Icon(
                                                                Icons.location_pin,
                                                                color: Colors.red,
@@ -1417,80 +1445,100 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                           ),
                         ),
                         // SizedBox(height: 12),
+                        // 🔽 Address suggestion dropdown with keyboard support
                         Obx(() {
-                          if (controller.allAddressesData.isEmpty) return SizedBox();
+                          if (controller.allAddressesData.isEmpty) return const SizedBox();
+
                           final GlobalKey<State<StatefulWidget>>? activeKey =
                               controller.activeFieldKey.value;
-                          final RenderBox? fieldBox = activeKey?.currentContext
-                              ?.findRenderObject() as RenderBox?;
+                          final RenderBox? fieldBox =
+                          activeKey?.currentContext?.findRenderObject() as RenderBox?;
                           final RenderBox? stackBox =
-                          controller.stackKey.currentContext?.findRenderObject()
-                          as RenderBox?;
+                          controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
 
                           double top = 0.0;
                           double left = 0.0;
                           double width = screenWidth;
 
                           if (fieldBox != null && stackBox != null) {
-                            final Offset localOffset = fieldBox
-                                .localToGlobal(Offset.zero, ancestor: stackBox);
+                            final Offset localOffset =
+                            fieldBox.localToGlobal(Offset.zero, ancestor: stackBox);
                             final double fieldHeight = fieldBox.size.height;
                             width = fieldBox.size.width;
                             top = localOffset.dy + fieldHeight;
                             left = localOffset.dx;
                           }
 
+                          // ensure RawKeyboardListener gets focus when suggestions appear
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (controller.allAddressesData.isNotEmpty &&
+                                !controller.suggestionFocusNode.hasFocus) {
+                              FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                            }
+                          });
+
                           return Positioned(
                             top: top,
                             left: left,
                             width: width,
-                            child: Container(
-                              height: screenHeight * 0.4,
-                              decoration: BoxDecoration(
-                                color: Color(0xFFEFF0F2),
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2),
-                                  )
-                                ],
-                              ),
-                              child: ListView(
-                                shrinkWrap: true,
-                                children: controller.allAddressesData
-                                    .asMap()
-                                    .entries
-                                    .map((entry) {
-                                  int index = entry.key;
-                                  String suggestion = entry.value.name!;
-                                  bool isHighlighted = index == controller.highlightedIndex.value;
-                                  return Container(
-                                    color: isHighlighted ? Color(0xffA0DCFF) : null,
-                                    child: ListTile(
-                                      dense: true,
-                                      visualDensity: VisualDensity.compact,
-                                      title: Text(suggestion,
+                            child: RawKeyboardListener(
+                              focusNode: controller.suggestionFocusNode,
+                              autofocus: true,
+                              onKey: (RawKeyEvent event) {
+                                if (event is RawKeyDownEvent) {
+                                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                                    controller.moveHighlightDown();
+                                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                                    controller.moveHighlightUp();
+                                  }
+                                  // Enter intentionally ignored so it does not select anything
+                                }
+                              },
+                              child: Container(
+                                height: screenHeight * 0.3,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEFF0F2),
+                                  borderRadius: BorderRadius.circular(5),
+                                  boxShadow: const [
+                                    BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
+                                  ],
+                                ),
+
+                                // Rebuild list when highlightedIndex or data changes
+                                child: Obx(() => ListView.builder(
+                                  controller: controller.suggestionScrollController,
+                                  itemCount: controller.allAddressesData.length,
+                                  itemBuilder: (context, index) {
+                                    final item = controller.allAddressesData[index];
+                                    final isHighlighted = index == controller.highlightedIndex.value;
+
+                                    return Container(
+                                      // optional background highlight
+                                      color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                                      child: ListTile(
+                                        dense: true,
+                                        visualDensity: VisualDensity.compact,
+                                        // Animated text style so color/weight changes step-by-step
+                                        title: AnimatedDefaultTextStyle(
+                                          duration: const Duration(milliseconds: 120),
                                           style: TextStyle(
                                             fontSize: 13,
-                                            fontWeight: isHighlighted
-                                                ? FontWeight.bold
-                                                : FontWeight.normal,
-                                            color: isHighlighted
-                                                ? Colors.blue
-                                                : Colors.black,
-                                          )),
-                                      onTap: () {
-                                        // controller.selectSuggestion(suggestion);
-                                      },
-                                    ),
-                                  );
-                                }).toList(),
+                                            fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+                                            color: isHighlighted ? Colors.blue : Colors.black,
+                                          ),
+                                          child: Text("${item.name} ${item.postcode}"),
+                                        ),
+                                        onTap: () => controller.tapSelect(index),
+                                      ),
+                                    );
+                                  },
+                                )),
                               ),
                             ),
                           );
                         }),
+
+
                       ],
                     ),
                   ],

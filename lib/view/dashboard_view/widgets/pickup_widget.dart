@@ -121,7 +121,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                     color: Colors.red,size: 20,),
                                 textInputAction: TextInputAction.next,
                                 onChanged: (v){
-                                  controller.onChangeHandler(fieldsName: "PICKUP LOCATION",searchingText: v);
+                                  controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
                                 },
                                 onTap: (){
                                   // shortCutKeyValue.value = "formKey";
