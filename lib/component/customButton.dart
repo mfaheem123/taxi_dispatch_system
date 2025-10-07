@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'color.dart';
 
 class CustomButton extends StatefulWidget {
+  
   CustomButton({this.onTap,
   this.width,
     this.btnText,

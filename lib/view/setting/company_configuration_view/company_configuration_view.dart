@@ -2,6 +2,7 @@
 
 
 
+import 'package:dashboard_new1/view/setting/company_configuration_view/general_configuration_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/payment_getways_view.dart';
 import 'package:dashboard_new1/view/setting/company_configuration_view/sms_configuration_view.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +107,7 @@ class _CompanyConfigurationViewState extends State<CompanyConfigurationView> {
                     height: Get.height/1.3,
                     child: TabBarView(
                       children: [
-                        Center(child: Icon(Icons.settings)), // General
+                        GeneralConfigurationView(), // General
                         EmailConfigurationView(), // Email
                         SmsConfigurationView(), // SMS
                         MapConfigurationView(), // Map
