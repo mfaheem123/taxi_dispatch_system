@@ -78,48 +78,60 @@ class DriverPersonalInfo extends StatelessWidget {
                        }
                        return KeyEventResult.ignored;
                      },
+                     child: FocusTraversalOrder(
+                       order: NumericFocusOrder(1),
+                       child: Checkbox(
+                         value: controller.hasPDA.value,
+                         onChanged: (val) {
+                           controller.hasPDA.value = val!;
+                           controller.update();
+                         },
+                       ),
+                     ),
+                   ),
+                   Text(AppText.hasPDA),
+                   FocusTraversalOrder(
+                     order: NumericFocusOrder(2),
                      child: Checkbox(
-                       value: controller.hasPDA.value,
+                       value: controller.rentPaid.value,
                        onChanged: (val) {
-                         controller.hasPDA.value = val!;
+                         controller.rentPaid.value = val!;
                          controller.update();
                        },
                      ),
                    ),
-                   Text(AppText.hasPDA),
-                   Checkbox(
-                     value: controller.rentPaid.value,
-                     onChanged: (val) {
-                       controller.rentPaid.value = val!;
-                       controller.update();
-                     },
-                   ),
                    Text(AppText.rentPaid),
 
-                   Checkbox(
-                     value: controller.isActive.value,
-                     onChanged: (val) {
-                       controller.isActive.value = val!;
-                       controller.update();
-                     },
+                   FocusTraversalOrder(
+                     order: NumericFocusOrder(3),
+                     child: Checkbox(
+                       value: controller.isActive.value,
+                       onChanged: (val) {
+                         controller.isActive.value = val!;
+                         controller.update();
+                       },
+                     ),
                    ),
                    const Text("Active"),
                    SizedBox(
                      width: 20,
                    ),
-                   RestrictedDrivers(
-                     width: fieldWidth/2,
-                     border: Border(
-                       bottom: BorderSide(
-                         color: DynamicColors.gryClr, // border color
-                         width: 2.0,        // border thickness
+                   FocusTraversalOrder(
+                     order: NumericFocusOrder(4),
+                     child: RestrictedDrivers(
+                       width: fieldWidth/2,
+                       border: Border(
+                         bottom: BorderSide(
+                           color: DynamicColors.gryClr, // border color
+                           width: 2.0,        // border thickness
+                         ),
                        ),
+                       driversList: ['Demo Company', "Other Company"],
                      ),
-                     driversList: ['Demo Company', "Other Company"],
                    ),
 
                    FocusTraversalOrder(
-                     order: NumericFocusOrder(1),
+                     order: NumericFocusOrder(5),
                      child: labeledTextField(context, isMobile, AppText.userName, controller.driverUserNameController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
@@ -128,7 +140,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(2),
+                     order: const NumericFocusOrder(6),
                      child: labeledTextField(context, isMobile, AppText.password, controller.driverPasswordController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
@@ -137,7 +149,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(3),
+                     order: const NumericFocusOrder(7),
                      child: labeledTextField(context, isMobile, AppText.fullName, controller.driverFullNameController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
@@ -147,7 +159,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      ),
                    ),
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(4),
+                     order: const NumericFocusOrder(8),
                      child: labeledField(
                          context: context,
                          isMobile: isMobile,
@@ -158,7 +170,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      ),
                    ),
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(5),
+                     order: const NumericFocusOrder(9),
                      child: labeledTextField(
                          context, isMobile,
                          AppText.email,
@@ -169,7 +181,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      ),
                    ),
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(6),
+                     order: const NumericFocusOrder(10),
                      child: labeledTextField(context,
                          isMobile,
                          AppText.mobile,
@@ -179,7 +191,7 @@ class DriverPersonalInfo extends StatelessWidget {
                          textInputAction: TextInputAction.next),
                    ),
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(7),
+                     order: const NumericFocusOrder(11),
                      child: labeledTextField(context, isMobile,
                          AppText.tel,
                          controller.driverTelController,
@@ -191,7 +203,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(8),
+                     order: const NumericFocusOrder(12),
                      child: labeledTextField(context, isMobile,
                          AppText.nl,
                          controller.driverNLController,
@@ -203,7 +215,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(4),
+                     order: const NumericFocusOrder(13),
                      child: labeledField(
                          context: context,
                          isMobile: isMobile,
@@ -222,7 +234,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(9),
+                     order: const NumericFocusOrder(14),
                      child: labeledTextField(context,
                          isMobile,
                          AppText.commission,
@@ -233,7 +245,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(10),
+                     order: const NumericFocusOrder(15),
                      child: labeledTextField(context, isMobile,
                          AppText.rentLimit,
                          controller.driverRendLimitController,
@@ -245,7 +257,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
 
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(11),
+                     order: const NumericFocusOrder(16),
                      child: labeledTextField(context, isMobile,
                          AppText.balance,
                          controller.driverBalanceController,
@@ -256,7 +268,7 @@ class DriverPersonalInfo extends StatelessWidget {
                          formatDigitsOnly: false),
                    ),
                    FocusTraversalOrder(
-                     order: const NumericFocusOrder(11),
+                     order: const NumericFocusOrder(17),
                      child: labeledTextField(context,
                          isMobile,
                          AppText.address,

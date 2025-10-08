@@ -209,7 +209,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                                     controller.minimumMilesValue.value = v!;
                                     controller.update();
                                   },
-                                  text: AppText.minimumMiles,
+                                  text: AppText.minimumFares,
                                   width: 140,
                                 ),
                                 CustomTextField(

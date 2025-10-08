@@ -297,10 +297,13 @@ List<TableSelectClass> tabList = [
   TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "JOB DUE BY", selectedClr: false.obs,dropDown: true,dropDownList: [
+
     "JOB DUE BY",
     "15 MIN",
     "30 MIN",
-    "60 MIN",],deletedClr: false),
+    "60 MIN",
+  ],
+      deletedClr: false),
   TableSelectClass(titleText: "DELETE SELECTION", selectedClr: false.obs, dropDownList: [],deletedClr: true),
 ];
 

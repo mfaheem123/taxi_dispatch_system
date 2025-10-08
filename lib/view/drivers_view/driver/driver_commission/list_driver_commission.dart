@@ -190,8 +190,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: Text(AppText.pt,
                       style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
+                          fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          color: DynamicColors.primaryClr)),
                 ),
                 Checkbox(
                     value: controller.ptValue.value,
@@ -204,8 +205,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: Text(AppText.cash,
                       style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: DynamicColors.primaryClr)),
                 ),
                 Checkbox(
                     value: controller.cashValue.value,
@@ -218,8 +220,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: Text(AppText.creditCard,
                       style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: DynamicColors.primaryClr)),
                 ),
                 Checkbox(
                     value: controller.creditCardValue.value,
@@ -232,8 +235,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: Text(AppText.account,
                       style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: DynamicColors.primaryClr)),
                 ),
                 Checkbox(
                     value: controller.accountValue.value,
@@ -246,8 +250,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: Text(AppText.creditCardPaid,
                       style: mozillaTextSemiBoldText(
                           context: context,
-                          fontSize: 13,
-                          color: DynamicColors.gryClr)),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: DynamicColors.primaryClr)),
                 ),
                 SizedBox(
                   width: 50,

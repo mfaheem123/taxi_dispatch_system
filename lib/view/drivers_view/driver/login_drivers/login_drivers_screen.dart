@@ -1,6 +1,7 @@
 
 
 
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -98,20 +99,19 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                       SizedBox(
                         width: 60,
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: DynamicColors.primaryClr,
-                            borderRadius: BorderRadius.circular(8)
+                      CustomButton(
+                        height: 40,
+                        width: 80,
+                        verticalPadding: 0.0,
+                        borderRadius: 4,
+                        widget: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                          child: Icon(Icons.refresh,
+                            color: DynamicColors.whiteClr,
+                            size: 25,
+                          ),
                         ),
-                        child: IconButton(
-                            padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                            onPressed: (){
-
-                            }, icon: Icon(Icons.refresh,
-                          color: DynamicColors.whiteClr,
-                          size: 25,
-                        )),
-                      )
+                      ),
                     ],
                   ),
                   SizedBox(
