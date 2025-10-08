@@ -78,14 +78,17 @@ class _LocationListScreenState extends State<LocationListScreen> {
                             fontSize: 17
                         ),
                       ),
+
                       Checkbox(
                           value: controller.blackList.value, onChanged: (v){
                           controller.blackList.value = v!;
                           controller.update();
                       }),
+
                       Text(AppText.blackList,
                       style: mozillaTextRegularText(color: DynamicColors.redClr),
                       ),
+
                       SizedBox(
                         width: 20,
                       ),
