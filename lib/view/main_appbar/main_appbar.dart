@@ -76,9 +76,6 @@ import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
 import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
-import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
-import '../vehicles_view/vehicle/create_vehicleScreen.dart';
-import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

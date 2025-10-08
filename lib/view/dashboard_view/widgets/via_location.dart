@@ -1,6 +1,22 @@
+import 'dart:async';
+
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../Model/via_point.dart';
+import '../models/all_addresses_model.dart';
+
+class Job {
+  final String name;
+  final IconData icon;
+  const Job(this.name, this.icon);
+
+  @override
+  String toString() => name;
+}
 
 class ViaLocation extends StatefulWidget {
   const ViaLocation({super.key});
@@ -11,7 +27,54 @@ class ViaLocation extends StatefulWidget {
 
 class _ViaLocationState extends State<ViaLocation> {
   final TextEditingController addressController = TextEditingController();
-  final List<ViaPoint> viaPoints = [];
+
+  FocusNode textFieldFocusNode = FocusNode();
+  FocusNode searchFocusNode = FocusNode();
+  Timer? _debounce;
+
+  final DashboardController _controller = Get.find();
+
+  Future<List<String>> _getNamesRequest(String query) async {
+    if (query.isEmpty) return [];
+
+    const duration = Duration(milliseconds: 800);
+
+    // 👇 cancel previous debounce timer
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Completer to wait for API completion
+    final completer = Completer<List<String>>();
+    _controller.selectedTextFieldsValue.value = "VIA";
+    _debounce = Timer(duration, () async {
+      await _controller.getAddresses(fieldsName: "VIA", searchingText: query);
+
+      // ✅ Prepare list after data fetched
+      final list = _controller.allAddressesData
+          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
+          .toList();
+
+      completer.complete(list); // mark as finished
+    });
+
+    // ✅ Wait until completer completes
+    return completer.future;
+  }
+
+
+  // dataAssign() async{
+  //   await Future.delayed(Duration(milliseconds: 400));
+  //   final filtered = _controller.allAddressesData.where((m) => (m.name ?? '').toLowerCase().contains(query.toLowerCase()))
+  //       .toList();
+  //
+  //   return _controller.allAddressesData.map((m) => m.name ?? '').toList();
+  // }
+
+  Future<List<AllAddressesModel>> _getFakeRequestData(String query) async {
+    _controller.onChangeHandler(fieldName: "VIA",searchingText: query);
+    return await Future.delayed(const Duration(seconds: 1), () async {
+      return _controller.allAddressesData.where((e) => e.name!.toLowerCase().contains(query.toLowerCase())).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,224 +82,258 @@ class _ViaLocationState extends State<ViaLocation> {
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: SizedBox(
-        height: 300,
-        width: 600,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: GetBuilder<DashboardController>(
+        builder: (controller) {
+          return SizedBox(
+            height: 400,
+            width: 600,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      "VIA POINT(S)",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text(
-                        "#",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 22),
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    Expanded(
-                        child: TextField(
-                          controller: addressController,
-                      decoration: InputDecoration(
-                          hintText: "Search Address",
-                          border: OutlineInputBorder(),
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                          )),
-                    ),
-                    SizedBox(width: 12),
-                    SizedBox(
-                      width: 30,
-                      height: 30,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          final addr = addressController.text.trim();
-                          if (addr.isNotEmpty) {
-                            setState(() {
-                              viaPoints.add(ViaPoint(address: addr));
-                              addressController.clear();
-                            });
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "VIA POINT(S)",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
-                        child: Icon(Icons.add, color: Colors.white),
-                      ),
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                ListView.builder(
-                    itemCount: viaPoints.length,
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final point = viaPoints[index];
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${index + 1}',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                    SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 10),
+                          child: Text(
+                            "#",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 22),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownFlutter<String>.searchRequest(
+                            futureRequest: _getNamesRequest,
+                            hintText: 'Search location',
+                            items: controller.allAddressesData.map((m) => m.name ?? '').toList(),
+                            onChanged: (selectedName) {
+                              // find original model (simple loop avoids firstWhere/orElse issues)
+                              for (final m in controller.allAddressesData) {
+                                if (m.name == selectedName) {
+                                  controller.selectedModel = m;
+                                  break;
+                                }
+                              }
+                              if (controller.selectedModel != null) {
+                                print('Selected model: ${controller.selectedModel!.name}');
+                                // use selectedModel (lat/lon, postcode, etc.)
+                              }
+                            },
+                            decoration: CustomDropdownDecoration(
+                              closedBorder: Border.all(color: Colors.grey),
+                              closedBorderRadius: BorderRadius.circular(8),
                             ),
-                            SizedBox(width: 12),
-                            Expanded(
-                                child: Column(
-                              children: [
-                                TextField(
-                                  readOnly: true,
-                                  controller: TextEditingController(
-                                      text: point.address),
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: TextField(
-                                      onChanged: (val) => point.name = val,
-                                      decoration: InputDecoration(
-                                        hintText: "Name",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    )),
-                                    SizedBox(width: 8),
-                                    Expanded(
-                                        child: TextField(
-                                      onChanged: (val) => point.mobile = val,
-                                      decoration: InputDecoration(
-                                        hintText: "Mobile",
-                                        border: OutlineInputBorder(),
-                                      ),
-                                    )),
-                                  ],
-                                ),
-                              ],
-                            )),
-
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
-                              child: SizedBox(
-                                width: 30,
-                                height: 30,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      viaPoints.removeAt(index);
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    padding: EdgeInsets.zero,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                  ),
-                                  child: Icon(Icons.delete, color: Colors.white, size: 20),
-                                ),
+                            closedHeaderPadding: EdgeInsets.all(6),
+                          ),
+                          //   child: TextField(
+                          //     controller: addressController,
+                          // decoration: InputDecoration(
+                          //     hintText: "Search Address",
+                          //     border: OutlineInputBorder(),
+                          //   isDense: true,
+                          //   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          //     )),
+                        ),
+                        SizedBox(width: 12),
+                        SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (controller.selectedModel !=null) {
+                                controller.viaPoints.add(ViaPoint(
+                                    address: controller.selectedModel!.name!,
+                                    lat: controller.selectedModel!.lat!,
+                                    lng: controller.selectedModel!.lon!
+                                ));
+                             controller.update();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
                               ),
                             ),
-
-                            // SizedBox(
-                            //   width: 30,
-                            //   height: 30,
-                            //   child: ElevatedButton(
-                            //     onPressed: () {
-                            //       setState(() {
-                            //         viaPoints.removeAt(index);
-                            //       });
-                            //     },
-                            //     style: ElevatedButton.styleFrom(
-                            //         backgroundColor: Colors.red,
-                            //         padding: EdgeInsets.zero,
-                            //         shape: RoundedRectangleBorder(
-                            //           borderRadius: BorderRadius.circular(4),
-                            //         )),
-                            //     child: Icon(Icons.delete,
-                            //         color: Colors.white, size: 20),
-                            //   ),
-                            // ),
-                          ],
+                            child: Icon(Icons.add, color: Colors.white),
+                          ),
                         ),
-                      );
-                    }),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        "Cancel",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      ],
                     ),
-                    SizedBox(width: 10),
-                    TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                      onPressed: () {
-                        for (var point in viaPoints) {
-                          print(
-                              "${point.address} - ${point.name} - ${point.mobile}");
-                        }
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        " Save ",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
+                    SizedBox(height: 16),
+                    ListView.builder(
+                        itemCount: controller.viaPoints.length,
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final point = controller.viaPoints[index];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${index + 1}',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                    child: Column(
+                                  children: [
+                                    TextField(
+                                      readOnly: true,
+                                      controller: TextEditingController(text: point.address),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                            child: TextField(
+                                          onChanged: (val){
+                                            point.name!.text = val;
+                                            controller.update();
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: "Name",
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        )),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                            child: TextField(
+                                          onChanged: (val) {
+                                            point.mobile!.text = val;
+                                            controller.update();
+                                          },
+                                          decoration: InputDecoration(
+                                            hintText: "Mobile",
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        )),
+                                      ],
+                                    ),
+                                  ],
+                                )),
+
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
+                                  child: SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          controller.viaPoints.removeAt(index);
+                                          controller.update();
+                                        });
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.red,
+                                        padding: EdgeInsets.zero,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                      ),
+                                      child: Icon(Icons.delete, color: Colors.white, size: 20),
+                                    ),
+                                  ),
+                                ),
+
+                                // SizedBox(
+                                //   width: 30,
+                                //   height: 30,
+                                //   child: ElevatedButton(
+                                //     onPressed: () {
+                                //       setState(() {
+                                //         viaPoints.removeAt(index);
+                                //       });
+                                //     },
+                                //     style: ElevatedButton.styleFrom(
+                                //         backgroundColor: Colors.red,
+                                //         padding: EdgeInsets.zero,
+                                //         shape: RoundedRectangleBorder(
+                                //           borderRadius: BorderRadius.circular(4),
+                                //         )),
+                                //     child: Icon(Icons.delete,
+                                //         color: Colors.white, size: 20),
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          );
+                        }),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 15, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          onPressed: () {
+                            for (var point in controller.viaPoints) {
+                              print(
+                                  "${point.address} - ${point.name} - ${point.mobile}");
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            " Save ",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        }
       ),
     );
   }

@@ -65,27 +65,33 @@ class VehicleInformation extends StatelessWidget {
                         runSpacing: 10,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Checkbox(
-                            value: controller.vehicleInformation.value,
-                            onChanged: (val) {
-                              controller.vehicleInformation.value = val!;
-                              controller.update();
-                            },
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(18),
+                            child: Checkbox(
+                              value: controller.vehicleInformation.value,
+                              onChanged: (val) {
+                                controller.vehicleInformation.value = val!;
+                                controller.update();
+                              },
+                            ),
                           ),
                           Text(AppText.usedCompanyVehicle),
-                          RestrictedDrivers(
-                            width: fieldWidth/1.4,
-                            border: Border(
-                              bottom: BorderSide(
-                                color: DynamicColors.gryClr, // border color
-                                width: 2.0,        // border thickness
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(19),
+                            child: RestrictedDrivers(
+                              width: fieldWidth/1.4,
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: DynamicColors.gryClr, // border color
+                                  width: 2.0,        // border thickness
+                                ),
                               ),
+                              driversList: ['Demo Company', "Other Company"],
                             ),
-                            driversList: ['Demo Company', "Other Company"],
                           ),
 
                           FocusTraversalOrder(
-                            order: const NumericFocusOrder(12),
+                            order: const NumericFocusOrder(20),
                             child: labeledField(
                                 context: context,
                                 isMobile: isMobile,
@@ -96,7 +102,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: const NumericFocusOrder(13),
+                            order: const NumericFocusOrder(21),
                             child: labeledField(
                                 context: context,
                                 isMobile: isMobile,
@@ -107,7 +113,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(14),
+                            order: NumericFocusOrder(22),
                             child: labeledTextField(context, isMobile, AppText.vehicle, controller.vehicleNameController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
@@ -115,7 +121,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(15),
+                            order: NumericFocusOrder(23),
                             child: labeledTextField(context, isMobile, AppText.make, controller.vehicleMakeController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
@@ -124,7 +130,7 @@ class VehicleInformation extends StatelessWidget {
                           ),
 
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(16),
+                            order: NumericFocusOrder(24),
                             child: labeledTextField(context, isMobile, AppText.model, controller.vehicleModelController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
@@ -132,7 +138,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(17),
+                            order: NumericFocusOrder(25),
                             child: labeledTextField(context, isMobile, AppText.color, controller.vehicleColorController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
@@ -140,7 +146,7 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(18),
+                            order: NumericFocusOrder(26),
                             child: labeledTextField(context, isMobile, AppText.owner, controller.vehicleOwnerController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
@@ -148,22 +154,25 @@ class VehicleInformation extends StatelessWidget {
                             ),
                           ),
                           FocusTraversalOrder(
-                            order: NumericFocusOrder(19),
+                            order: NumericFocusOrder(27),
                             child: labeledTextField(context, isMobile, AppText.logBook, controller.vehicleLogBookController,
                                 width: fieldWidth/1.4,
                                 textInputAction: TextInputAction.next,
                                 column: true
                             ),
                           ),
-                          RestrictedDrivers(
-                            width: fieldWidth/1.4,
-                            // border: Border(
-                            //   bottom: BorderSide(
-                            //     color: DynamicColors.gryClr, // border color
-                            //     width: 2.0,        // border thickness
-                            //   ),
-                            // ),
-                            driversList: ['Saloon', "SUV" ,"Van"],
+                          FocusTraversalOrder(
+                            order: NumericFocusOrder(28),
+                            child: RestrictedDrivers(
+                              width: fieldWidth/1.4,
+                              // border: Border(
+                              //   bottom: BorderSide(
+                              //     color: DynamicColors.gryClr, // border color
+                              //     width: 2.0,        // border thickness
+                              //   ),
+                              // ),
+                              driversList: ['Saloon', "SUV" ,"Van"],
+                            ),
                           ),
                           SizedBox(
                             width: Get.width/6,

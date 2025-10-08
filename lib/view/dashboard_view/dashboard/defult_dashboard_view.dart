@@ -23,6 +23,7 @@ import '../widgets/user_info_widget.dart' hide KbdActivatable;
 import '../widgets/via_location.dart';
 import 'booking_form_widget.dart';
 import 'drivers.dart';
+import 'form_short_cut_key.dart';
 import 'location_suggestions.dart';
 import 'map_view_widget.dart';
 
@@ -146,7 +147,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                            children: [
                                              Column(
                                                children: [
-
+                                                 FormShortCutKey(),
+                                                 SizedBox(
+                                                   height: screenHeight * 0.018,
+                                                 ),
                                                  Row(
                                                    children: [
                                                      Padding(
@@ -1447,8 +1451,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         // SizedBox(height: 12),
                         // 🔽 Address suggestion dropdown with keyboard support
                         Obx(() {
+                          if(controller.selectedTextFieldsValue.value == "VIA") return SizedBox();
                           if (controller.allAddressesData.isEmpty) return const SizedBox();
-
                           final GlobalKey<State<StatefulWidget>>? activeKey =
                               controller.activeFieldKey.value;
                           final RenderBox? fieldBox =
