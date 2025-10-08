@@ -27,7 +27,6 @@ class ViaLocation extends StatefulWidget {
 
 class _ViaLocationState extends State<ViaLocation> {
   final TextEditingController addressController = TextEditingController();
-  final List<ViaPoint> viaPoints = [];
 
   FocusNode textFieldFocusNode = FocusNode();
   FocusNode searchFocusNode = FocusNode();
@@ -163,7 +162,7 @@ class _ViaLocationState extends State<ViaLocation> {
                           child: ElevatedButton(
                             onPressed: () {
                               if (controller.selectedModel !=null) {
-                                viaPoints.add(ViaPoint(
+                                controller.viaPoints.add(ViaPoint(
                                     address: controller.selectedModel!.name!,
                                     lat: controller.selectedModel!.lat!,
                                     lng: controller.selectedModel!.lon!
@@ -185,11 +184,11 @@ class _ViaLocationState extends State<ViaLocation> {
                     ),
                     SizedBox(height: 16),
                     ListView.builder(
-                        itemCount: viaPoints.length,
+                        itemCount: controller.viaPoints.length,
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         itemBuilder: (context, index) {
-                          final point = viaPoints[index];
+                          final point = controller.viaPoints[index];
                           return Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Row(
@@ -249,7 +248,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                     child: ElevatedButton(
                                       onPressed: () {
                                         setState(() {
-                                          viaPoints.removeAt(index);
+                                          controller.viaPoints.removeAt(index);
                                           controller.update();
                                         });
                                       },
@@ -316,7 +315,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                 borderRadius: BorderRadius.circular(4)),
                           ),
                           onPressed: () {
-                            for (var point in viaPoints) {
+                            for (var point in controller.viaPoints) {
                               print(
                                   "${point.address} - ${point.name} - ${point.mobile}");
                             }

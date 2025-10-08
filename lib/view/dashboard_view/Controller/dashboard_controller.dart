@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
+import '../../../Model/via_point.dart';
 import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
 
@@ -319,7 +320,7 @@ class DashboardController extends GetxController {
         method: 'GET',
       ),
     );
-
+ 
     if (response.statusCode == 200) {
       allAddressesData.clear();
       pickLocationAddress(response.data['result']['latitude'], response.data['result']['longitude']);
@@ -359,6 +360,8 @@ class DashboardController extends GetxController {
   }
 
   AllAddressesModel? selectedModel;
+
+  final List<ViaPoint> viaPoints = [];
 
 
 
