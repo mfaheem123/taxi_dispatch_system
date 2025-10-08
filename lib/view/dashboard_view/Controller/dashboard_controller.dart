@@ -12,24 +12,22 @@ import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
-class DashboardController extends GetxController {
 
+class DashboardController extends GetxController {
   ///Todo menu bar functionality
 
   List<SelectedDropdown> selectedMenuItems = [];
 
   ///refresh function for menu bar
-  menuBarRefresh({title,pageName}){
+  menuBarRefresh({title, pageName}) {
     // if(selectedMenuItems.length < 3){
-      int index = selectedMenuItems.indexWhere((item) => item.selectedItem == true);
-      if (index != -1) {
-        selectedMenuItems[index].selectedItem = false;
-      }
-      selectedMenuItems.add(SelectedDropdown(
-          title: title,
-          selectedItem: true,
-          category: pageName
-      ));
+    int index =
+        selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+    if (index != -1) {
+      selectedMenuItems[index].selectedItem = false;
+    }
+    selectedMenuItems.add(
+        SelectedDropdown(title: title, selectedItem: true, category: pageName));
     // }else{
     //   Get.snackbar("", "You can select maximum 4 menu items",);
     // }
@@ -37,7 +35,6 @@ class DashboardController extends GetxController {
   }
 
   ///Todo menu bar functionality
-
 
   ///Todo booking form data
   /// String
@@ -48,11 +45,10 @@ class DashboardController extends GetxController {
   String selectedDriver = 'Select Driver';
   // Start with shortcut mode that allows navigation; set to "alert" only when showing a modal
 
-
   // Dropdown selections
-  String? jourValue;   // O/W, R/N, W/R
-  String? drvValue;    // driver list
-  String? payValue;    // Cash, Credit Card, ...
+  String? jourValue; // O/W, R/N, W/R
+  String? drvValue; // driver list
+  String? payValue; // Cash, Credit Card, ...
 
   ///bool
 
@@ -70,7 +66,6 @@ class DashboardController extends GetxController {
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
-
   /// unique keys
   final GlobalKey bookingKey = GlobalKey();
   final GlobalKey bookingDropKey = GlobalKey();
@@ -82,12 +77,11 @@ class DashboardController extends GetxController {
   FocusNode focusNode = FocusNode();
 
   /// RxInt
-  int selectedIndex= 0;
+  int selectedIndex = 0;
   int dropdownIndex = 0;
   RxInt selectionMenuBtn = 0.obs;
 
   ///Todo booking form data
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
 
@@ -109,7 +103,6 @@ class DashboardController extends GetxController {
   final typeEmailController = TextEditingController();
   final smsToController = TextEditingController();
   final typeYourMessageController = TextEditingController();
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
 
@@ -151,7 +144,7 @@ class DashboardController extends GetxController {
     });
   }
 
-  var selectedBookingTab  = 'TODAY BOOKINGS'.obs;
+  var selectedBookingTab = 'TODAY BOOKINGS'.obs;
 
   RxString selectedTab = 'MAPS'.obs;
   RxString driverSelectionTab = 'activeDriver'.obs;
@@ -204,13 +197,14 @@ class DashboardController extends GetxController {
   final viaLocation1Controller = TextEditingController();
   final viaLocation2Controller = TextEditingController();
 
-
   void onInputChanged(String value) {
     inputText.value = value;
     if (value.isEmpty) {
       suggestions.clear();
     } else {
-      suggestions = allAddressesData.where((loc) => loc.name!.toUpperCase().contains(value.toLowerCase())).toList();
+      suggestions = allAddressesData
+          .where((loc) => loc.name!.toUpperCase().contains(value.toLowerCase()))
+          .toList();
       highlightedIndex.value = 0;
     }
   }
@@ -238,9 +232,6 @@ class DashboardController extends GetxController {
     suggestions.clear();
   }
 
-
-
-
   Timer? _debounce;
 
   RxString selectedTextFieldsValue = "".obs;
@@ -262,8 +253,6 @@ class DashboardController extends GetxController {
     // 👇 Yahan API call ya search function call karna hai
     getAddresses(fieldsName: fieldName, searchingText: searchingText);
   }
-
-
 
   @override
   void dispose() {
@@ -287,15 +276,17 @@ class DashboardController extends GetxController {
   RxBool getPickupAddressesLoader = true.obs;
   RxBool getDropAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
-  getAddresses({fieldsName,searchingText}) async{
-    if(fieldsName =="PICKUP LOCATION"){
+  getAddresses({fieldsName, searchingText}) async {
+    if (fieldsName == "PICKUP LOCATION") {
       getPickupAddressesLoader(false);
-    }else{
+    } else {
       getDropAddressesLoader(false);
     }
-    var response = await Api().get("addresses/search?search=${searchingText.toString().toUpperCase()}",auth: true);
-    if(response.statusCode == 200){
-      if(response.data.isNotEmpty){
+    var response = await Api().get(
+        "addresses/search?search=${searchingText.toString().toUpperCase()}",
+        auth: true);
+    if (response.statusCode == 200) {
+      if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll(
           (response.data as List)
@@ -315,14 +306,13 @@ class DashboardController extends GetxController {
         }
         getPickupAddressesLoader(true);
         update();
-      }else{
+      } else {
         openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
       }
     }
   }
 
-  openStreetMapApi({searchingText}) async{
-
+  openStreetMapApi({searchingText}) async {
     var dio = Dio();
     var response = await dio.request(
       'https://api.postcodes.io/postcodes/nw67bt',
@@ -333,11 +323,12 @@ class DashboardController extends GetxController {
 
     if (response.statusCode == 200) {
       allAddressesData.clear();
-      pickLocationAddress(response.data['result']['latitude'], response.data['result']['longitude']);
+      pickLocationAddress(response.data['result']['latitude'],
+          response.data['result']['longitude']);
     }
   }
 
-  pickLocationAddress(lat,lng) async{
+  pickLocationAddress(lat, lng) async {
     var dio = Dio();
     var response = await dio.request(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&addressdetails=1',
@@ -345,18 +336,21 @@ class DashboardController extends GetxController {
         method: 'GET',
       ),
     );
-    if(response.statusCode == 200){
-      final addressObject = [{
-        "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
-        "postcode": response.data['address']['postcode'], // e.g. Brondesbury Park, Brent
-        "area": response.data['address']['postcode'],                                      // NW6
-        "district": response.data['address']['postcode'],                           // Brent
-        "sector": response.data['address']['postcode'],                                     // London
-        "unit": response.data['address']['postcode'],                                     // NW6 7BP
-        "type": "address",
-        "lat": double.parse(response.data['lat']),                                    // 51.542059
-        "lon": double.parse(response.data['lon']),                                  // -0.212545
-      }];
+    if (response.statusCode == 200) {
+      final addressObject = [
+        {
+          "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
+          "postcode": response.data['address']
+              ['postcode'], // e.g. Brondesbury Park, Brent
+          "area": response.data['address']['postcode'], // NW6
+          "district": response.data['address']['postcode'], // Brent
+          "sector": response.data['address']['postcode'], // London
+          "unit": response.data['address']['postcode'], // NW6 7BP
+          "type": "address",
+          "lat": double.parse(response.data['lat']), // 51.542059
+          "lon": double.parse(response.data['lon']), // -0.212545
+        }
+      ];
 
       allAddressesData.addAll(
         (addressObject as List)
@@ -369,14 +363,9 @@ class DashboardController extends GetxController {
     }
   }
 
-
-
-
-
 // inside your controller
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();
-
 
 // change move functions to scroll after change:
   void moveHighlightDown() {
@@ -426,9 +415,6 @@ class DashboardController extends GetxController {
     highlightedIndex.value = 0;
   }
 
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
 
   final nameController = TextEditingController();
@@ -440,8 +426,6 @@ class DashboardController extends GetxController {
   final accountNoController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
-
-
 
   @override
   void onClose() {
@@ -462,6 +446,31 @@ class DashboardController extends GetxController {
     super.onClose();
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Alert Multi Booking
+  RxBool mondayValue = false.obs;
+  final FocusNode mondayNode = FocusNode();
+  RxBool tuesdayValue = false.obs;
+  final FocusNode tuesdayNode = FocusNode();
+  RxBool wednesdayValue = false.obs;
+  final FocusNode wednesdayNode = FocusNode();
+  RxBool thursdayValue = false.obs;
+  final FocusNode thursdayNode = FocusNode();
+  RxBool fridayValue = false.obs;
+  final FocusNode fridayNode = FocusNode();
+  RxBool saturdayValue = false.obs;
+  final FocusNode saturdayNode = FocusNode();
+  RxBool sundayValue = false.obs;
+  final FocusNode sundayNode = FocusNode();
+
+  String? account;
+  String? departmentType;
+  String? cash;
+  String? selectDriver;
+
+      RxBool returnTrip = false.obs;
+  final FocusNode returnTripNode = FocusNode();
+
+  final weeks = TextEditingController();
 }
 
 class DashBoardBindings implements Bindings {
@@ -471,4 +480,3 @@ class DashBoardBindings implements Bindings {
     Get.lazyPut<DashboardController>(() => DashboardController());
   }
 }
-

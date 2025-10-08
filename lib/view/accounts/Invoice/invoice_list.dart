@@ -1,7 +1,5 @@
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,9 +22,8 @@ class InvoiceList extends StatefulWidget {
 }
 
 class _InvoiceListState extends State<InvoiceList> {
-
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
@@ -39,17 +36,15 @@ class _InvoiceListState extends State<InvoiceList> {
     shortCutKeyValue.value = "invoiceList";
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(builder: (controller) {
-
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -59,257 +54,133 @@ class _InvoiceListState extends State<InvoiceList> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
+                ? maxWidth / 2
+                : maxWidth / 4;
 
-            return Wrap(
-              runSpacing: 10,
-              spacing: 10,
-              children: [
-                Container(
-                  width: Get.width,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                  color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text(AppText.customerInvoice, style: titleDesign()),
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.invoiceDate,
-                  column: true,
-                  width: fieldWidth,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.invoiceDueDate,
-                  column: true,
-                  width: fieldWidth,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                Padding(
-                    padding: EdgeInsets.only(top: 25),
-                    child: Text(AppText.invoice+" AG1757501649")),
-                CustomTextField(
-                  borderRadius: 4,
-                  controller: controller.customerNameController,
-                  width: fieldWidth,
-                  hintText: AppText.name,
-                  columnText: true,
-                  height: 30,
-                ),
-                CustomTextField(
-                  borderRadius: 4,
-                  controller: controller.customerEmailController,
-                  width: fieldWidth,
-                  hintText: AppText.email,
-                  columnText: true,
-                  height: 30,
-                ),
-                CustomTextField(
-                  borderRadius: 4,
-                  controller: controller.customerMobileController,
-                  width: fieldWidth,
-                  hintText: AppText.mobile,
-                  columnText: true,
-                  height: 30,
-                ),
-                CustomTextField(
-                  borderRadius: 4,
-                  controller: controller.customerTelephoneController,
-                  width: fieldWidth,
-                  hintText: AppText.tel,
-                  columnText: true,
-                  height: 30,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Wrap(
-                  runSpacing: 10,
-                  spacing: 10,
-                  children: [
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: AppText.from,
-                      width: fieldWidth/1.8,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                    ),
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: AppText.to,
-                      width: fieldWidth/1.8,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                    ),
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(value: true, onChanged: (v){
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text("P/T"),
-                    ),
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(value: true, onChanged: (v){
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text("CASH"),
-                    ),
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(value: true, onChanged: (v){
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text("CREDIT CARD"),
-                    ),
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(value: true, onChanged: (v){
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text("ACCOUNT"),
-                    ),
-                    SizedBox(
-                      width: 20,
-                      child: Checkbox(value: true, onChanged: (v){
-                      }),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: Text("CREDIT CARD PAID"),
-                    ),
-                    SizedBox(
-                      width: fieldWidth/1.8,
-                    ),
-                    CustomButton(
-                      verticalPadding: 0.0,
-                      width: 40,
-                      height: 30,
-                      borderRadius: 4,
-                      btnText: AppText.filter,
-                      style: mozillaTextRegularText(
-                        fontSize: 10,
-                        color: DynamicColors.whiteClr
+        return Wrap(
+          runSpacing: 10,
+          spacing: 10,
+          children: [
+            Container(
+              width: Get.width,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              color: DynamicColors.gryClr.withOpacity(0.5),
+              child: Row(
+                children: [
+                  Text(AppText.customerInvoices, style: titleDesign()),
+                  SizedBox(width: 20),
+                  KeyboardCheckbox(
+                    onChanged: (v) {
+                      controller.paid.value = v;
+                      controller.update();
+                    },
+                    label: AppText.paid,
+                    value: controller.paid.value,
+                    focusNode: controller.paidNode,
+                    width: 200,
+                  ),
+                  Spacer(),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: DynamicColors.primaryClr,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: IconButton(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
+                        )),
+                  )
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: Get.width,
+                child: DatatableWidget(
+                  columns: [
+                    DataColumn(
+                      label: Checkbox(
+                        value: false, // a bool you keep in state
+                        onChanged: (val) {},
                       ),
                     ),
-                    CustomButton(
-                      verticalPadding: 0.0,
-                      width: 40,
-                      height: 30,
-                      borderRadius: 4,
-                      btnText: AppText.save,
-                      style: mozillaTextRegularText(
-                        fontSize: 10,
-                        color: DynamicColors.whiteClr
+                    buildHeaderWithSearch(title: "INVOICE #"),
+                    buildHeaderWithSearch(title: "CUSTOMER"),
+                    buildHeaderWithSearch(title: "DATE"),
+                    buildHeaderWithSearch(title: "DUE DATE"),
+                    buildHeaderWithSearch(title: "STATUS"),
+                    buildHeaderWithSearch(title: "AMOUNT"),
+                    buildHeaderWithSearch(title: "ACTIONS"),
+                    buildHeaderWithSearch(
+                        title: "ACTIONS", removeSearching: true),
+                  ],
+                  totalRow: totalRows,
+                  cells: [
+                    DataCell(
+                      Checkbox(
+                        value: false, // ✅ controlled by your state
+                        onChanged: (val) {
+                          // update your selected index or list here
+                        },
+                      ),
+                    ),
+                    const DataCell(Text("546465464")),
+                    const DataCell(Text("MAN")),
+                    const DataCell(Text("25_10_25")),
+                    const DataCell(Text("12_12_25")),
+                    const DataCell(Text("COMPLETED")),
+                    const DataCell(Text("1500")),
+                    const DataCell(Text("GOOD")),
+                    DataCell(
+                      Row(
+                        children: [
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: Colors.transparent,
+                              ), // border color & thickness
+                            ),
+                            onPressed: () {},
+                            child: Icon(
+                              Icons.search,
+                              size: 28,
+                              color: DynamicColors.primaryClr,
+                            ),
+                          ),
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: Colors.transparent,
+                              ), // border color & thickness
+                            ),
+                            onPressed: () {},
+                            child: Icon(
+                              Icons.clear,
+                              size: 28,
+                              color: DynamicColors.redClr,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 8,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: Get.width,
-                    child: DatatableWidget(
-                      columns: [
-                        DataColumn(
-                          label: Checkbox(
-                            value: false, // a bool you keep in state
-                            onChanged: (val) {
-                            },
-                          ),
-                        ),
-                        buildHeaderWithSearch(title: "REF #"),
-                        buildHeaderWithSearch(title: "DATETIME"),
-                        buildHeaderWithSearch(title: "PICKUP"),
-                        buildHeaderWithSearch(title: "DROPOFF"),
-                        buildHeaderWithSearch(title: "VEH"),
-                        buildHeaderWithSearch(title: "J/T"),
-                        buildHeaderWithSearch(title: "P/T"),
-                        buildHeaderWithSearch(title: "FARE"),
-                        buildHeaderWithSearch(title: "PC"),
-                        buildHeaderWithSearch(title: "WC"),
-                        buildHeaderWithSearch(title: "EDC"),
-                        buildHeaderWithSearch(title: "M&G"),
-                        buildHeaderWithSearch(title: "Cc"),
-                        buildHeaderWithSearch(title: "TOTA"),
-                        buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                      ],
-                      totalRow: totalRows,
-                      cells: [
-                        DataCell(
-                          Checkbox(
-                            value: false, // ✅ controlled by your state
-                            onChanged: (val) {
-                              // update your selected index or list here
-                            },
-                          ),
-                        ),
-                        const DataCell(Text("SALOON")),
-                        const DataCell(Text("NW7")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("SALOON")),
-                        const DataCell(Text("NW7")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                        const DataCell(Text("£55.00")),
-                        const DataCell(Text("£55.00")),
-                        DataCell(
-                          Row(
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(Icons.search,
-                                  size: 28,
-                                  color: DynamicColors.primaryClr,
-                                ),
-                              ),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(Icons.clear,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }
+              ),
+            ),
+          ],
         );
-      }
-    );
+      });
+    });
   }
 }

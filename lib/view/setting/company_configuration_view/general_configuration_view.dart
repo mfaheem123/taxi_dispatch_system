@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/setting/company_configuration_view/alert_createbooking.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -69,8 +70,8 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                           children: [
                             Wrap(
                               direction: Axis.horizontal,
-                              runSpacing: 10,
-                              spacing: 10,
+                              runSpacing: 40,
+                              spacing: 30,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 CustomTextField(
@@ -330,7 +331,12 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                         alignment: Alignment.center,
                         child: CustomButton(
                           onTap: () {
-                            
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return MultiReservationAlert();
+                              },
+                            );
                           },
                           height: 35,
                           width: fieldWidth,

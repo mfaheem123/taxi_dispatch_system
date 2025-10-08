@@ -397,13 +397,27 @@ class AppText {
   static get enableCustomText => "ENABLE CUSTOMER TEXT";
   static get notifictaion => "NOTIFICATION";
   static get deadMileage => "DEAD MILEAGE";
-
-
-
-
-
-
-
+  static get monday => "Monday";
+  static get tuesday => "Tuesday";
+  static get wednesday => "Wednesday";
+  static get thursday => "Thursday";
+  static get friday => "Friday";
+  static get saturday => "Saturday";
+  static get sunday => "Sunday";
+  static get weeks => "WEEKS";
+  static get fromDate => "FROM DATE";
+  static get finishDate => "FINISH DATE";
+  static get pickupTime => "PICKUP TIME";
+  static get returnPickupTime => "RETURN PICKUP TIME";
+  static get returnFare => "RETURN FARE";
+  static get accountPrice => "ACCOUNT PRICE";
+  static get returnAccountPrice => "RETURN ACCOUNT PRICE";
+  static get returnTrip => "RETURN TRIP";
+  static get createreservation => "CRATE RESEVERVATION";
+  static get saveAndClose => "SAVE & CLOSE";
+  static get departmentType => "DEPARTMENT TYPE";
+  static get customerInvoices => "CUSTOMER INVOICES (0)";
+  static get paid => "PAID";
 
   // static get generate => "GENERATE";
 }

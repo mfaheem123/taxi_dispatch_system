@@ -69,4 +69,15 @@ class AccountController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo AccountView functionality
+  
+
+
+
+  /// ...............>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List of customer invoice
+  
+    RxBool paid = false.obs;
+  final FocusNode paidNode = FocusNode();
+
+
+
 }

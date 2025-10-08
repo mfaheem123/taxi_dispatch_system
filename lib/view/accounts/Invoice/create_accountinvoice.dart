@@ -8,6 +8,9 @@ class CustomerPreInvoice extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 600;
 
+
+    /// ye screen bni hui hai attech nh ki hai >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
     return Container(
       width: double.infinity,
       height: double.infinity,
