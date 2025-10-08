@@ -1,11 +1,17 @@
+import 'package:flutter/cupertino.dart';
+
 class ViaPoint {
   final String address;
-  String name;
-  String mobile;
+  TextEditingController? name  = TextEditingController();
+  TextEditingController? mobile = TextEditingController();
+  double lat;
+  double lng;
 
   ViaPoint({
     required this.address,
-    this.name = '',
-    this.mobile = '',
+    required this.lat,
+    required this.lng,
+    this.name,
+    this.mobile,
   });
 }

@@ -246,7 +246,7 @@ class DashboardController extends GetxController {
   RxString selectedTextFieldsValue = "".obs;
 
   // 👇 ye function har baar text change hone par call hoga
-  onChangeHandler({required String fieldName, required String searchingText}) {
+  Future<void> onChangeHandler({required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
     selectedTextFieldsValue.value = fieldName;
     // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
@@ -273,24 +273,13 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
 
-  // final allLocations = [
-  //   'Karachi',
-  //   'Lahore',
-  //   'Islamabad',
-  //   'Peshawar',
-  //   'Quetta',
-  //   'Multan',
-  //   'Rawalpindi',
-  //   'Faisalabad',
-  // ];
-
   RxBool getPickupAddressesLoader = true.obs;
   RxBool getDropAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName,searchingText}) async{
     if(fieldsName =="PICKUP LOCATION"){
       getPickupAddressesLoader(false);
-    }else{
+    }else if (fieldsName == "PICKUP LOCATION"){
       getDropAddressesLoader(false);
     }
     var response = await Api().get("addresses/search?search=${searchingText.toString().toUpperCase()}",auth: true);
@@ -369,7 +358,7 @@ class DashboardController extends GetxController {
     }
   }
 
-
+  AllAddressesModel? selectedModel;
 
 
 
