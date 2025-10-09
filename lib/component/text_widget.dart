@@ -237,7 +237,7 @@ class AppText {
   static get templateSettings => "TEMPLATE SETTINGS";
   static get templateSelection => "TEMPLATE SELECTION";
   static get tags => "TAGS";
-  static get update => "update";
+  static get update => "UPDATE";
   static get customer => "CUSTOMER";
   static get enableSms => "ENABLE SMS";
   static get restrictionDrivers => "RESTRICTED DRIVERS";

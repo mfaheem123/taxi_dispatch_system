@@ -6,45 +6,55 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
+import '../../../component/keyboard_checkBox_widget.dart';
+import '../administration_controller.dart';
 
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});
+
+  AdministrationController controller = Get.isRegistered<AdministrationController>()
+      ? Get.find<AdministrationController>()
+      : Get.put(AdministrationController());
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isMobile = constraints.maxWidth < 800;
+    return GetBuilder<AdministrationController>(
+      builder: (controller) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            bool isMobile = constraints.maxWidth < 800;
 
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16),
-          child: isMobile
-              ? Column(
-                  children: [
-                    _buildImageBox(isMobile),
-                    SizedBox(height: 20),
-                    _buildFormBox(screenHeight),
-                  ],
-                )
-              : Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Image box fix with Flexible
-                    Flexible(flex: 1, child: _buildImageBox(isMobile)),
-                    SizedBox(width: 20),
-                    // Form box fix with Flexible
-                    Flexible(flex: 3, child: _buildFormBox(screenHeight)),
-                  ],
-                ),
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: isMobile
+                  ? Column(
+                      children: [
+                        _buildImageBox(isMobile,controller: controller),
+                        SizedBox(height: 20),
+                        _buildFormBox(screenHeight),
+                      ],
+                    )
+                  : Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Image box fix with Flexible
+                        Flexible(flex: 1, child: _buildImageBox(isMobile, controller: controller)),
+                        SizedBox(width: 20),
+                        // Form box fix with Flexible
+                        Flexible(flex: 3, child: _buildFormBox(screenHeight)),
+                      ],
+                    ),
+            );
+          },
         );
-      },
+      }
     );
   }
 
-  Widget _buildImageBox(bool isMobile) {
+  Widget _buildImageBox(bool isMobile, {controller}) {
     return Container(
       height: isMobile ? 200 : 400,
       margin: EdgeInsets.all(8),
@@ -71,6 +81,7 @@ class CreateUserScreen extends StatelessWidget {
       ),
     );
   }
+
 
   Widget _buildFormBox(double screenHeight) {
     String? selectedValue;
@@ -121,12 +132,71 @@ class CreateUserScreen extends StatelessWidget {
                 ),
                 _buildTextField("SURBIONARY"),
                 _buildTextField("DIDIC COMPANY"),
-                _buildCheckBox("ACTIVE"),
-                _buildCheckBox("ALL DRIVERS"),
-                _buildCheckBox("ALL BOOKINGS"),
-                _buildCheckBox("ALL ACCOUNTS"),
-                _buildCheckBox("CALL RECEIVER"),
-                _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.activeValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.activeValue.value,
+                  focusNode: controller.activeNode,
+                  width: 120,
+                  label: "ACTIVE",
+                ),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.alldriversValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.alldriversValue.value,
+                  focusNode: controller.alldriversNode,
+                  width: 120,
+                  label: "ALL DRIVERS",
+                ),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.allbookingValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.allbookingValue.value,
+                  focusNode: controller.allbookingNode,
+                  width: 140,
+                  label: "ALL BOOKINGS",
+                ),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.accuntValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.accuntValue.value,
+                  focusNode: controller.accuntNode,
+                  width: 160,
+                  label: "ALL ACCOUNTS",
+                ),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.receviverValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.receviverValue.value,
+                  focusNode: controller.receviverNode,
+                  width: 160,
+                  label: "CALL RECEIVER",
+                ),
+                KeyboardCheckbox(
+                  onChanged: (v){
+                    controller.transferValue.value = v;
+                    controller.update();
+                  },
+                  value: controller.transferValue.value,
+                  focusNode: controller.transferNode,
+                  width: 240,
+                  label: "ALLOW TRANSFER BOOKINGS",
+                ),
+
+
+
+                // _buildCheckBox("CALL RECEIVER"),
+                // _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
               ],
             ),
           ),
@@ -194,12 +264,16 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildCheckBox(String label) {
+  static Widget _buildCheckBox(String label,{bool checkBoxValue = false,ValueChanged<bool?>? onChanged, required FocusNode focusNode}) {
     return SizedBox(
       width: 300,
       child: Row(
         children: [
-          Checkbox(value: false, onChanged: (v) {}),
+          KeyboardCheckbox(
+            onChanged: onChanged!,
+            value: checkBoxValue,
+            focusNode: focusNode,
+          ),
           Text(label),
         ],
       ),

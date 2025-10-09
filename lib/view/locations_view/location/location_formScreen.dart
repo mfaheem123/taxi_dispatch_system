@@ -1,4 +1,10 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class LocationForm extends StatelessWidget {
   const LocationForm({super.key});
@@ -122,22 +128,21 @@ class LocationForm extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   /// Save Button
-                  SizedBox(
-                    height: 45,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "SAVE",
-                        style: TextStyle(fontSize: 16,
-                        color: Colors.white
-
-                        ),
-                      ),
+                  Container(
+                    // height: screenHeight / 20,
+                    width: double.infinity,
+                    color: DynamicColors.gryClr,
+                    padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+                    child: CustomButton(
+                      height: 30,
+                      width: Get.width / 4,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      style: mozillaTextSemiBoldText(
+                          fontSize: 12, color: DynamicColors.whiteClr),
+                      btnText: AppText.save,
                     ),
-                  )
+                  ),
 
                 ],
               ),

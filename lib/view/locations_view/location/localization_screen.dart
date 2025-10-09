@@ -1,5 +1,6 @@
 
 
+import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,7 +36,7 @@ class LocalizationScreen extends StatelessWidget {
                       color: Colors.black,
                     ),
                   ),
-                  // const SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   IconButton(
                     onPressed: () => _showAddDialog(context),
                     icon: const Icon(
@@ -44,7 +45,7 @@ class LocalizationScreen extends StatelessWidget {
                       size: 18,
                     ),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: DynamicColors.primaryClr,
                       padding: const EdgeInsets.all(4),
                       minimumSize: const Size(28, 28),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,

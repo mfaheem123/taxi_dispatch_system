@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -106,7 +107,6 @@ class _FareIncrementState extends State<FareIncrement> {
                               width: fieldWidth,
                               height: 35,
                               padding: 0.0,
-
                               border: Border.all(
                                 color: DynamicColors.gryClr,
                               ),
@@ -162,21 +162,35 @@ class _FareIncrementState extends State<FareIncrement> {
                               fontSize: 12, color: DynamicColors.primaryClr),
                         ),
                       ),
-                      OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor: DynamicColors.primaryClr,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // 👈 yahan ap radius set karen
+                      CustomButton(
+                        height: 35,
+                        width: 80,
+                        verticalPadding: 0.0,
+                        borderRadius: 4,
+                        widget: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                          child:  Text(
+                            AppText.save,
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
                           ),
                         ),
-                        onPressed: () {},
-                        child: Text(
-                          AppText.save,
-                          style: mozillaTextRegularText(
-                              fontSize: 12, color: DynamicColors.whiteClr),
-                        ),
                       ),
+                      // OutlinedButton(
+                      //   style: OutlinedButton.styleFrom(
+                      //     backgroundColor: DynamicColors.primaryClr,
+                      //     shape: RoundedRectangleBorder(
+                      //       borderRadius: BorderRadius.circular(
+                      //           8), // 👈 yahan ap radius set karen
+                      //     ),
+                      //   ),
+                      //   onPressed: () {},
+                      //   child: Text(
+                      //     AppText.save,
+                      //     style: mozillaTextRegularText(
+                      //         fontSize: 12, color: DynamicColors.whiteClr),
+                      //   ),
+                      // ),
                     ],
                   ),
                   SizedBox(
