@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customerInvoice.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
+import 'package:dashboard_new1/view/accounts/create_accountScreen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/color.dart';
 import '../../tabbarview.dart';
-import '../accounts/Invoice/invoice_list.dart';
+import '../accounts/Invoice/list_customer_invoices.dart';
 import '../accounts/account/account_view.dart';
 import '../accounts/account/create_escopt.dart';
 import '../accounts/list_of_accountScreen.dart';
@@ -780,11 +782,26 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "CREATE ACCOUNT INVOICE",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = CreateAccountInvoiceScreen();
+              controller.menuBarRefresh(
+                  title: "CREATE ACCOUNT INVOICE",
+                  pageName: CreateAccountInvoiceScreen());
+            });
+          },
         ),
+        // ListOfAccountInvoiceScreen
         NestedMenuItem(
           title: "LIST OF ACCOUNT INVOICES",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = ListOfAccountInvoiceScreen();
+              controller.menuBarRefresh(
+                  title: "LIST OF ACCOUNT INVOICES",
+                  pageName: ListOfAccountInvoiceScreen());
+            });
+          },
         ),
       ]),
       NestedMenuItem(title: "VEHICLES", children: [

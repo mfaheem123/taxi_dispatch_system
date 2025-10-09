@@ -201,7 +201,7 @@ class AppText {
   static get invoice => "INVOICE";
   static get feeSection => "FEES SECTION";
   static get webLogin => "WEB LOGINS";
-  static get department => "DEPARTMENTS";
+  static get department => "DEPARTMENT";
   static get contact => "CONTACTS";
   static get companyAddress => "COMPANY ADDRESSES";
   static get code => "CODE";
@@ -418,6 +418,8 @@ class AppText {
   static get departmentType => "DEPARTMENT TYPE";
   static get customerInvoices => "CUSTOMER INVOICES (0)";
   static get paid => "PAID";
+  static get accountInvoice => "Account Invoice";
+  static get create => "CREATE";
 
   // static get generate => "GENERATE";
 }
