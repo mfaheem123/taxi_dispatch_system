@@ -8,20 +8,40 @@ import 'dart:html' as html;
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
 
-class MapViewWidget extends StatelessWidget {
+class MapViewWidget extends StatefulWidget {
   MapViewWidget({super.key});
 
+  @override
+  State<MapViewWidget> createState() => _MapViewWidgetState();
+}
+
+class _MapViewWidgetState extends State<MapViewWidget> {
   final controller = Get.find<DashboardController>();
+
+
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller.mapController = MapController(); // ✅ Initialize here
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    final List<LatLng> polylinePoints = controller.polylinePoints.isNotEmpty?controller.polylinePointsCoordinate: [
+      LatLng(50.85496238858419, 0.561166687845978),
+    ];
+
     // Responsive width calculation
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
+    if (polylinePoints.isEmpty) {
+      return Center(child: CircularProgressIndicator());
+    }
     return SizedBox(
       width: width >= 1270 ? screenWidth / 3.6 : screenWidth / 2.1,
       height: screenHeight * 0.465,
@@ -37,58 +57,77 @@ class MapViewWidget extends StatelessWidget {
             child: Stack(
               children: [
                 /// MAP VIEW
-                Positioned.fill(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(26),
-                    child: FlutterMap(
-                      options: MapOptions(
-                        initialCenter: controller.viaPoints.isNotEmpty
-                            ? LatLng(controller.viaPoints.first.lat, controller.viaPoints.first.lng)
-                            : LatLng(33.6844, 73.0479), // fallback center
-                        initialZoom: 10,
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: ['a', 'b', 'c'],
-                        ),
+            Positioned.fill(
+            child: ClipRRect(
+            borderRadius: BorderRadius.circular(26),
+           child: FlutterMap(
+             mapController: controller.mapController,
+             options: MapOptions(
+               initialCenter: polylinePoints[0],
+                 initialZoom: 12.5,
+               onMapReady: () {
+                 // ✅ This runs when map is fully ready
+                 if (controller.polylinePointsCoordinate.isNotEmpty && controller.polylinePointsCoordinate.length >=2) {
+                   final bounds = LatLngBounds.fromPoints(controller.polylinePointsCoordinate);
+                   controller.mapController.fitCamera(
+                     CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(2)),
+                   );
+                 }
+               },
+             ),
+             children: [
+               // 🗺️ Map background tiles
+               TileLayer(
+                 urlTemplate:
+                 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                 subdomains: const ['a', 'b', 'c'],
+               ),
 
-                        /// ✅ POLYLINE LAYER (Route Path)
-                        PolylineLayer(
-                          polylines: [
-                            Polyline(
-                              points: controller.viaPoints
-                                  .map((p) => LatLng(p.lat, p.lng))
-                                  .toList(),
-                              color: DynamicColors.primaryClr,
-                              strokeWidth: 4.0,
-                            ),
-                          ],
-                        ),
+               // 📍 Marker layer
+               MarkerLayer(
+                 markers: [
+                   for (int i = 0; i < polylinePoints.length; i++)
+                     Marker(
+                       point: polylinePoints[i],
+                       width: 30,
+                       height: 40,
+                       child: Icon(
+                         i == 0
+                             ? Icons.location_pin // start marker
+                             : i == polylinePoints.length - 1
+                             ? Icons.flag // end marker
+                             : Icons.circle, // middle points
+                         color: i == 0
+                             ? Colors.green
+                             : i == polylinePoints.length - 1
+                             ? Colors.red
+                             : Colors.blue,
+                         size: 40,
+                       ),
+                     ),
+                 ],
+               ),
 
+               // ➿ Polyline layer (route)
+               PolylineLayer(
+                 polylines: [
+                   Polyline(
+                     points: polylinePoints,
+                     color: Colors.blue,
+                     strokeWidth: 2.0,
+                   ),
+                 ],
+               ),
+               /// 🕓 Show loader when no polyline
+               if (controller.polylinePoints.isEmpty)
+                 const Center(child: CircularProgressIndicator()),
+             ],
+           ),
 
-                        /// ✅ Optional: Marker Layer (if needed)
-                        if (controller.viaPoints.isNotEmpty)
-                          MarkerLayer(
-                            markers: controller.viaPoints.map((v) {
-                              return Marker(
-                                width: 40,
-                                height: 40,
-                                point: LatLng(v.lat, v.lng),
-                                child: const Icon(
-                                  Icons.location_on,
-                                  color: Colors.red,
-                                  size: 32,
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
+          ),
+          ),
 
-                /// TAB TOGGLE
+          /// TAB TOGGLE
                 Positioned(
                   child: Container(
                     width: Get.width,
