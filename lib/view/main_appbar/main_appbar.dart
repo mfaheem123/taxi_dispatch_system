@@ -857,7 +857,7 @@ class _MyHomePageState extends State<MyHomePage> {
               setState(() {
                 _currentPage = UserListscreen();
                 controller.menuBarRefresh(
-                    title: "CREATE USER", pageName: UserListscreen());
+                    title: "USERS", pageName: UserListscreen());
               });
             },
           ),
@@ -1070,10 +1070,10 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CHAT WITH DRIVER AND PASSENGER",
           onTap: () => message(context, "DevOps"),
         ),
-        NestedMenuItem(
-          title: "PERMISSION SETTINGS",
-          onTap: () => message(context, "DevOps"),
-        ),
+        // NestedMenuItem(
+        //   title: "PERMISSION SETTINGS",
+        //   onTap: () => message(context, "DevOps"),
+        // ),
       ]),
       NestedMenuItem(title: "SETTINGS", children: [
         NestedMenuItem(title: "", icon: Icons.menu, onTap: () {}, children: [

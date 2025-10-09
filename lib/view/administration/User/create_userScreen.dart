@@ -138,7 +138,7 @@ class CreateUserScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: CustomButton(
               height: 30,
-              width: Get.width / 3,
+              width: Get.width / 4,
               verticalPadding: 0.0,
               borderRadius: 4,
               style: mozillaTextSemiBoldText(

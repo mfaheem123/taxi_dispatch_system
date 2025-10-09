@@ -105,7 +105,6 @@ class _AppBookingState extends State<AppBooking> {
                             buildHeaderWithSearch(title: "STATUS"),
                             buildHeaderWithSearch(title: "J/T"),
                             buildHeaderWithSearch(title: "SUBS"),
-
                             buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                           ],
                           totalRow: totalRows,
