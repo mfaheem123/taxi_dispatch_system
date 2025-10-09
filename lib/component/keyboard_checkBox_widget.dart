@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 class KeyboardCheckbox extends StatelessWidget {
   final FocusNode focusNode;
   final bool value;
-  final String label;
+  String? label;
   final ValueChanged<bool> onChanged;
   final TextStyle? textStyle;
   double? width;
@@ -17,7 +17,7 @@ class KeyboardCheckbox extends StatelessWidget {
     super.key,
     required this.focusNode,
     required this.value,
-    required this.label,
+    this.label,
     required this.onChanged,
     this.textStyle,
     this.width
@@ -53,7 +53,7 @@ class KeyboardCheckbox extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            label,
+            label!,
             style: textStyle ?? mozillaTextRegularText(fontSize: 12),
           ),
         ],
