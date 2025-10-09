@@ -1,40 +1,34 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
-import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
-import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
-import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
+import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
-import '../controller/account_controller.dart';
 
-class ListOfAccountInvoiceScreen extends StatefulWidget {
-  const ListOfAccountInvoiceScreen({super.key});
+class SubsiDiariesScreen extends StatefulWidget {
+  const SubsiDiariesScreen({super.key});
 
   @override
-  State<ListOfAccountInvoiceScreen> createState() =>
-      _ListOfAccountInvoiceScreenState();
+  State<SubsiDiariesScreen> createState() => _SubsiDiariesScreenState();
 }
 
-class _ListOfAccountInvoiceScreenState
-    extends State<ListOfAccountInvoiceScreen> {
+class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
-  AccountController controller = Get.isRegistered<AccountController>()
-      ? Get.find<AccountController>()
-      : Get.put(AccountController());
+  AdministrationController controller =
+      Get.isRegistered<AdministrationController>()
+          ? Get.find<AdministrationController>()
+          : Get.put(AdministrationController());
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "ListOfAccountInvoiceScreen";
+    shortCutKeyValue.value = "SubsiDiariesScreen";
   }
 
   @override
@@ -45,7 +39,7 @@ class _ListOfAccountInvoiceScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
+    return GetBuilder<AdministrationController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -69,23 +63,11 @@ class _ListOfAccountInvoiceScreenState
               child: Row(
                 children: [
                   Text(
-                    "ACCOUNTS Invoice (0)",
+                    "SUBSIDIARIES",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
                   Spacer(),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 60,
-                    height: 40,
-                    borderRadius: 4,
-                    btnText: AppText.create,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                  ),
-                  SizedBox(
-                    width: 12,
-                  ),
                   CustomButton(
                     height: 40,
                     width: 80,
@@ -104,70 +86,6 @@ class _ListOfAccountInvoiceScreenState
                 ],
               ),
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Wrap(
-              spacing: 15,
-              runSpacing: 15,
-              children: [
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.from,
-                  width: fieldWidth / 1.8,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.to,
-                  width: fieldWidth / 1.8,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                Text("STATUS"),
-                CustomDropdownField<String>(
-                  width: fieldWidth / 4,
-                  label: AppText.status,
-                  items: [
-                    "Paid 1",
-                    "Paid 2",
-                    "Paid 3",
-                    "Paid 4",
-                    "Paid 5",
-                    "Paid 6",
-                  ],
-                  value: controller.status,
-                  itemLabel: (val) => val, // just show the string
-                  onChanged: (val) {
-                    controller.status = val!;
-                    controller.update();
-                  },
-                ),
-              ],
-            ),
-            Spacer(),
-            CustomButton(
-              verticalPadding: 0.0,
-              width: 60,
-              height: 40,
-              borderRadius: 4,
-              btnText: AppText.clear,
-              style: mozillaTextRegularText(
-                  fontSize: 10, color: DynamicColors.whiteClr),
-            ),
-            CustomButton(
-              verticalPadding: 0.0,
-              width: 60,
-              height: 40,
-              borderRadius: 4,
-              btnText: AppText.search,
-              style: mozillaTextRegularText(
-                  fontSize: 10, color: DynamicColors.whiteClr),
-            ),
-            SizedBox(
-              height: 8,
-            ),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
@@ -180,15 +98,11 @@ class _ListOfAccountInvoiceScreenState
                         onChanged: (val) {},
                       ),
                     ),
-                    buildHeaderWithSearch(title: "INVOICE #"),
-                    buildHeaderWithSearch(title: "ACCOUNT"),
-                    buildHeaderWithSearch(title: "DEPARTMENT"),
-                    buildHeaderWithSearch(title: "ORDER #"),
-                    buildHeaderWithSearch(title: "DATE"),
-                    buildHeaderWithSearch(title: "DUE DATE"),
-                    buildHeaderWithSearch(title: "STATUS"),
-                    buildHeaderWithSearch(title: "AMOUNT"),
-                    buildHeaderWithSearch(title: "SUBSIDIARY"),
+                    buildHeaderWithSearch(title: "NAME"),
+                    buildHeaderWithSearch(title: "EMAIL"),
+                    buildHeaderWithSearch(title: "TELEPHONE"),
+                    buildHeaderWithSearch(title: "ADDRESS"),
+                    buildHeaderWithSearch(title: "FAX"),
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
@@ -207,10 +121,6 @@ class _ListOfAccountInvoiceScreenState
                     const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
                     const DataCell(Text("£55.00")),
                     const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
                     DataCell(
                       Row(
                         children: [

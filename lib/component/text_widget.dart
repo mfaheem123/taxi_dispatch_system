@@ -420,6 +420,11 @@ class AppText {
   static get paid => "PAID";
   static get accountInvoice => "Account Invoice";
   static get create => "CREATE";
+  static get bankDetails => "BANK DETAILS";
+  static get emergencyContactHash => "EMERGENCY CONTACT #";
+  static get company => "COMPANY #";
+  static get currency => "CURRENCY";
+  static get abbreviation => "ABBREVIATION";
 
   // static get generate => "GENERATE";
 }
