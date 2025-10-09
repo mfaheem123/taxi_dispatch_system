@@ -5,6 +5,7 @@ import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controll
 import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../Model/via_point.dart';
 import '../models/all_addresses_model.dart';
@@ -128,9 +129,10 @@ class _ViaLocationState extends State<ViaLocation> {
                             hintText: 'Search location',
                             items: controller.allAddressesData.map((m) => m.name ?? '').toList(),
                             onChanged: (selectedName) {
+                              print(selectedName);
                               // find original model (simple loop avoids firstWhere/orElse issues)
                               for (final m in controller.allAddressesData) {
-                                if (m.name == selectedName) {
+                                if ("${m.name!} ${m.postcode!}"  == selectedName) {
                                   controller.selectedModel = m;
                                   break;
                                 }
@@ -161,14 +163,11 @@ class _ViaLocationState extends State<ViaLocation> {
                           height: 30,
                           child: ElevatedButton(
                             onPressed: () {
-                              if (controller.selectedModel !=null) {
-                                controller.viaPoints.add(ViaPoint(
-                                    address: controller.selectedModel!.name!,
-                                    lat: controller.selectedModel!.lat!,
-                                    lng: controller.selectedModel!.lon!
-                                ));
-                             controller.update();
-                              }
+                              controller.polylinePoints.add(
+                                LatLng(controller.selectedModel!.lat!, controller.selectedModel!.lon!),
+                              );
+                              controller.viaPoints.add(ViaPoint(address: controller.selectedModel!.name!, lat: controller.selectedModel!.lat!, lng: controller.selectedModel!.lon!));
+                              controller.update();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
@@ -315,10 +314,11 @@ class _ViaLocationState extends State<ViaLocation> {
                                 borderRadius: BorderRadius.circular(4)),
                           ),
                           onPressed: () {
-                            for (var point in controller.viaPoints) {
-                              print(
-                                  "${point.address} - ${point.name} - ${point.mobile}");
-                            }
+                            controller.fetchRouteFromOSRM();
+                            // for (var point in controller.viaPoints) {
+                            //   print(
+                            //       "${point.address} - ${point.name} - ${point.mobile}");
+                            // }
                             Navigator.pop(context);
                           },
                           child: Text(

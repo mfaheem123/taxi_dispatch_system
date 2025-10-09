@@ -1,3 +1,5 @@
+import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -179,34 +181,32 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                         ),
                       ),
 
-                      SizedBox(
-                        height: 30,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DynamicColors.primaryClr,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(4)),
-                            ),
+                      CustomButton(
+                        height: 35,
+                        width: 80,
+                        verticalPadding: 0.0,
+                        borderRadius: 4,
+                        widget: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                          child:  Text(
+                            AppText.filter,
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
                           ),
-                          onPressed: () {
-                            controller.applyFilters();
-                          },
-                          child: const Text("FILTER",
-                              style: TextStyle(color: Colors.white)),
                         ),
                       ),
-                      SizedBox(
-                        height: 30,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: DynamicColors.primaryClr,
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(4)),
-                            ),
+                      CustomButton(
+                        height: 35,
+                        width: 80,
+                        verticalPadding: 0.0,
+                        borderRadius: 4,
+                        widget: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                          child:  Text(
+                            AppText.view,
+                            style: mozillaTextRegularText(
+                                fontSize: 12, color: DynamicColors.whiteClr),
                           ),
-                          onPressed: () {},
-                          child: const Text("VIEW",
-                              style: TextStyle(color: Colors.white)),
                         ),
                       ),
                     ],

@@ -161,7 +161,7 @@ class FormShortCutKey extends StatelessWidget {
                             BorderRadius.circular(10),
                           ),
                           child: Text(
-                            'VLA (0)',
+                            'VLA (${dashboardController.viaPoints.length})',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 13,

@@ -129,20 +129,18 @@ class _AirportChargesState extends State<AirportCharges> {
                               ),
                             ),
                             DataCell(
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.transparent),
-                                  backgroundColor: DynamicColors.primaryClr,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8), // 👈 yahan ap radius set karen
+                              CustomButton(
+                                height: 35,
+                                width: 80,
+                                verticalPadding: 0.0,
+                                borderRadius: 4,
+                                widget: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                                  child:  Text(
+                                    AppText.save,
+                                    style: mozillaTextRegularText(
+                                        fontSize: 12, color: DynamicColors.whiteClr),
                                   ),
-                                ),
-                                onPressed: () {},
-                                child: Text(AppText.save,
-                                style: mozillaTextRegularText(
-                                  fontSize: 13,
-                                  color: DynamicColors.whiteClr
-                                ),
                                 ),
                               ),
                             ),
