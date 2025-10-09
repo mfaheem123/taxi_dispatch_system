@@ -80,4 +80,10 @@ class AccountController extends GetxController {
 
 
 
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
+
+  String? account;
+  String? department;
+  String? subDiary;
+
 }
