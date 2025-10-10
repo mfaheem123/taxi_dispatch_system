@@ -249,6 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             controller.selectedMenuItems.remove(item);
                             controller.selectedMenuItems.last.selectedItem =
                                 true;
+                            _currentPage = controller.selectedMenuItems.last.category;
                           } else {
                             controller.selectedMenuItems.remove(item);
                             _currentPage = ByDefaultDashboard();
@@ -765,7 +766,8 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: () {
             _currentPage = CreateEscortScreen();
             controller.menuBarRefresh(
-                title: "CREATE ESCORT", pageName: CreateEscortScreen());   ///------------------------------------------------------------------------------------------------------------------
+                title: "CREATE ESCORT", pageName: CreateEscortScreen());
+            ///------------------------------------------------------------------------------------------------------------------
           },
         ),
         // CreateEscortScreen

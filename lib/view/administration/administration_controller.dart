@@ -33,5 +33,4 @@ class AdministrationController extends GetxController{
 
 
 
-
 }
