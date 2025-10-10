@@ -123,7 +123,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
                           child: Row(
                             children: [
                               Text(
-                                AppText.subsidiary,
+                                AppText.companyinformation,
                                 style: TextStyle(
                                     fontSize: 18, fontWeight: FontWeight.bold),
                               ),

@@ -12,46 +12,50 @@ import '../administration_controller.dart';
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});
 
-  AdministrationController controller = Get.isRegistered<AdministrationController>()
-      ? Get.find<AdministrationController>()
-      : Get.put(AdministrationController());
+  AdministrationController controller =
+      Get.isRegistered<AdministrationController>()
+          ? Get.find<AdministrationController>()
+          : Get.put(AdministrationController());
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return GetBuilder<AdministrationController>(
-      builder: (controller) {
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            bool isMobile = constraints.maxWidth < 800;
+    return GetBuilder<AdministrationController>(builder: (controller) {
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          bool isMobile = constraints.maxWidth < 800;
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: isMobile
-                  ? Column(
-                      children: [
-                        _buildImageBox(isMobile,controller: controller),
-                        SizedBox(height: 20),
-                        _buildFormBox(screenHeight),
-                      ],
-                    )
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Image box fix with Flexible
-                        Flexible(flex: 1, child: _buildImageBox(isMobile, controller: controller)),
-                        SizedBox(width: 20),
-                        // Form box fix with Flexible
-                        Flexible(flex: 3, child: _buildFormBox(screenHeight)),
-                      ],
-                    ),
-            );
-          },
-        );
-      }
-    );
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: isMobile
+                ? Column(
+                    children: [
+                      _buildImageBox(isMobile, controller: controller),
+                      SizedBox(height: 20),
+                      _buildFormBox(screenHeight, screenHeight),
+                    ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Image box fix with Flexible
+                      Flexible(
+                          flex: 1,
+                          child:
+                              _buildImageBox(isMobile, controller: controller)),
+                      SizedBox(width: 20),
+                      // Form box fix with Flexible
+                      Flexible(
+                          flex: 3,
+                          child: _buildFormBox(screenHeight, screenWidth)),
+                    ],
+                  ),
+          );
+        },
+      );
+    });
   }
 
   Widget _buildImageBox(bool isMobile, {controller}) {
@@ -82,8 +86,7 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-
-  Widget _buildFormBox(double screenHeight) {
+  Widget _buildFormBox(double screenHeight, double screenWidth) {
     String? selectedValue;
     return Container(
       decoration: BoxDecoration(
@@ -133,7 +136,7 @@ class CreateUserScreen extends StatelessWidget {
                 _buildTextField("SURBIONARY"),
                 _buildTextField("DIDIC COMPANY"),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.activeValue.value = v;
                     controller.update();
                   },
@@ -143,7 +146,7 @@ class CreateUserScreen extends StatelessWidget {
                   label: "ACTIVE",
                 ),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.alldriversValue.value = v;
                     controller.update();
                   },
@@ -153,7 +156,7 @@ class CreateUserScreen extends StatelessWidget {
                   label: "ALL DRIVERS",
                 ),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.allbookingValue.value = v;
                     controller.update();
                   },
@@ -163,7 +166,7 @@ class CreateUserScreen extends StatelessWidget {
                   label: "ALL BOOKINGS",
                 ),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.accuntValue.value = v;
                     controller.update();
                   },
@@ -173,7 +176,7 @@ class CreateUserScreen extends StatelessWidget {
                   label: "ALL ACCOUNTS",
                 ),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.receviverValue.value = v;
                     controller.update();
                   },
@@ -183,7 +186,7 @@ class CreateUserScreen extends StatelessWidget {
                   label: "CALL RECEIVER",
                 ),
                 KeyboardCheckbox(
-                  onChanged: (v){
+                  onChanged: (v) {
                     controller.transferValue.value = v;
                     controller.update();
                   },
@@ -192,8 +195,6 @@ class CreateUserScreen extends StatelessWidget {
                   width: 240,
                   label: "ALLOW TRANSFER BOOKINGS",
                 ),
-
-
 
                 // _buildCheckBox("CALL RECEIVER"),
                 // _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
@@ -206,14 +207,16 @@ class CreateUserScreen extends StatelessWidget {
             width: double.infinity,
             color: DynamicColors.gryClr,
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
-            child: CustomButton(
-              height: 30,
-              width: Get.width / 4,
-              verticalPadding: 0.0,
-              borderRadius: 4,
-              style: mozillaTextSemiBoldText(
-                  fontSize: 12, color: DynamicColors.whiteClr),
-              btnText: AppText.save,
+            child: Center(
+              child: CustomButton(
+                height: 30,
+                width: screenWidth / 4,
+                verticalPadding: 0.0,
+                borderRadius: 4,
+                style: mozillaTextSemiBoldText(
+                    fontSize: 12, color: DynamicColors.whiteClr),
+                btnText: AppText.save,
+              ),
             ),
           ),
         ],
@@ -264,7 +267,10 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildCheckBox(String label,{bool checkBoxValue = false,ValueChanged<bool?>? onChanged, required FocusNode focusNode}) {
+  static Widget _buildCheckBox(String label,
+      {bool checkBoxValue = false,
+      ValueChanged<bool?>? onChanged,
+      required FocusNode focusNode}) {
     return SizedBox(
       width: 300,
       child: Row(
@@ -280,4 +286,3 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 }
-

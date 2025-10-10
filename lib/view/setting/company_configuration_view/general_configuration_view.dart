@@ -214,6 +214,8 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                                   columnText: true,
                                 ),
                                 CustomDropdownField<String>(
+
+                                  
                                   text: AppText.service,
                                   width: fieldWidth / 1.5,
                                   label: AppText.deadMileageMethods,

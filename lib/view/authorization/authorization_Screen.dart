@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 
 class AuthorizationScreen extends StatefulWidget {
@@ -34,37 +35,30 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "Read Fare Configuration",
           "Read Fare Configurations",
           "Update Fare Configuration",
-          "Delete Fare Configuration",
         ]
       },
-
       {
         "FIXED FARE": [
           "Create Fixed Fare",
           "Read Fixed Fare",
           "Read Fixed Fares",
           "Update Fixed Fare",
-          "Delete Fixed Fare",
         ]
       },
-
       {
         "FARE BY VEHICLE": [
           "Create Fare By Vehicle",
           "Read Fare By Vehicle",
           "Read Fare By Vehicles",
           "Update Fare By Vehicle",
-          "Delete Fare By Vehicle",
         ]
       },
-
       {
         "FARE CONFIGURATION MILEAGE": [
           "Create Fare Configuration Mileage",
           "Read Fare Configuration Mileage",
           "Read Fare Configuration Mileages",
           "Update Fare Configuration Mileage",
-          "Delete Fare Configuration Mileage",
         ]
       },
     ],
@@ -75,7 +69,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "Read Employee",
           "Read Employees",
           "Update Employee",
-          "Delete Employee",
         ]
       },
     ],
@@ -86,7 +79,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "Read Vehicle",
           "Read Vehicles",
           "Update Vehicle",
-          "Delete Vehicle",
         ]
       },
     ],
@@ -97,7 +89,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "Read Customer",
           "Read Customers",
           "Update Customer",
-          "Delete Customer",
         ]
       },
     ],
@@ -108,9 +99,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "Read Driver",
           "Read Drivers",
           "Update Driver",
-          "Delete Driver",
         ]
-
       },
     ],
     // baki ke liye tum apne cards add kar lena
@@ -118,7 +107,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
@@ -146,12 +134,11 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                   onChanged: (value) {},
                 ),
               ),
-
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: DynamicColors.primaryClr,
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
                 ),
                 onPressed: () {},
                 child: const Text("SAVE",
@@ -167,6 +154,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Left Sidebar
+
                 Container(
                   width: 200,
                   padding: const EdgeInsets.symmetric(vertical: 10),
@@ -176,11 +164,11 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                   child: ListView(
                     children: menuItems
                         .map((item) => _menuItem(item,
-                        selected: item == selectedMenu, onTap: () {
-                          setState(() {
-                            selectedMenu = item;
-                          });
-                        }))
+                                selected: item == selectedMenu, onTap: () {
+                              setState(() {
+                                selectedMenu = item;
+                              });
+                            }))
                         .toList(),
                   ),
                 ),
@@ -191,17 +179,17 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                 Expanded(
                   child: permissions[selectedMenu] == null
                       ? const Center(
-                    child: Text("No Permissions Configured"),
-                  )
+                          child: Text("No Permissions Configured"),
+                        )
                       : GridView.count(
-                    crossAxisCount: w > 1200 ? 4 : 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    children: permissions[selectedMenu]!
-                        .map((card) => _permissionCard(
-                        card.keys.first, card.values.first))
-                        .toList(),
-                  ),
+                          crossAxisCount: w > 1200 ? 4 : 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          children: permissions[selectedMenu]!
+                              .map((card) => _permissionCard(
+                                  card.keys.first, card.values.first))
+                              .toList(),
+                        ),
                 )
               ],
             ),
@@ -215,16 +203,16 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
   Widget _menuItem(String title,
       {bool selected = false, required VoidCallback onTap}) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 3),
       decoration: BoxDecoration(
-        color: selected ? Colors.purple : Colors.transparent,
+        color: selected ? DynamicColors.primaryClr : Colors.transparent,
         borderRadius: BorderRadius.circular(30),
       ),
       child: ListTile(
         title: Text(
           title,
           style: TextStyle(
-              color: selected ? Colors.white : Colors.purple,
+              color: selected ? Colors.white : DynamicColors.primaryClr,
               fontWeight: FontWeight.bold),
         ),
         onTap: onTap,
@@ -245,14 +233,15 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         children: [
           Text(title,
               style:
-              const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const Divider(),
           ...options.map((opt) => Row(
-            children: [
-              Switch(value: false, onChanged: (val) {}),
-              Expanded(child: Text(opt, style: const TextStyle(fontSize: 13))),
-            ],
-          )),
+                children: [
+                  Switch(value: false, onChanged: (val) {}),
+                  Expanded(
+                      child: Text(opt, style: const TextStyle(fontSize: 13))),
+                ],
+              )),
         ],
       ),
     );
