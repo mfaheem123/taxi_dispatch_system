@@ -174,7 +174,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 onChanged: (val) {
                                   controller.templateTitleController.clear();
                                   selectedTemplateValue = val;
-
                                   controller.insertTagValue(value: val?.templateValue,temFormate: true);
                                   print("Selected User ID: ${val?.id}");
                                 },

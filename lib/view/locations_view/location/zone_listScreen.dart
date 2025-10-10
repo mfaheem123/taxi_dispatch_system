@@ -45,7 +45,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
           selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+              (selectedRowIndex - 1 + totalRows) % totalRows;// move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam

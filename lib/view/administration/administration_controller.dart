@@ -17,4 +17,5 @@ class AdministrationController extends GetxController{
   final FocusNode receviverNode = FocusNode();
   RxBool transferValue = false.obs;
   final FocusNode transferNode = FocusNode();
+
 }

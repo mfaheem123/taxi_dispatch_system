@@ -4,7 +4,11 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customerInvoice.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/create_accountScreen.dart';
+import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
+import 'package:dashboard_new1/view/administration/User/subsi_diaries_screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
+import 'package:dashboard_new1/view/setting/company_information_screen.dart';
+import 'package:dashboard_new1/view/setting/voipSetting_Screen.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -878,13 +882,27 @@ class _MyHomePageState extends State<MyHomePage> {
               });
             },
           ),
+          // CreateSubsiDiary
           NestedMenuItem(
             title: "CREATE SUBSIDIARY",
-            onTap: () => message(context, "DevOps"),
+               onTap: () {
+              setState(() {
+                _currentPage = CreateSubsiDiary();
+                controller.menuBarRefresh(
+                    title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
+              });
+            },
           ),
+          // SubsiDiariesScreen
           NestedMenuItem(
             title: "SUBSIDIARIES",
-            onTap: () => message(context, "DevOps"),
+               onTap: () {
+              setState(() {
+                _currentPage = SubsiDiariesScreen();
+                controller.menuBarRefresh(
+                    title: "SUBSIDIARIES", pageName: SubsiDiariesScreen());
+              });
+            },
           ),
           NestedMenuItem(
             title: "AUTHORIZATION",
@@ -1027,9 +1045,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ]),
       NestedMenuItem(title: "SETTINGS", children: [
+        
         NestedMenuItem(
           title: "COMPANY INFORMATION",
-          onTap: () => message(context, "DevOps"),
+         onTap: () {
+            setState(() {
+              _currentPage = ComapanyInformationScreen();
+              controller.menuBarRefresh(
+                  title: "COMPANY INFORMATION",
+                  pageName: ComapanyInformationScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "COMPANY CONFIGURATION",
@@ -1067,7 +1093,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "VOIP SETTINGS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = VoipSettingsScreen();
+              controller.menuBarRefresh(
+                  title: "VOIP SETTINGS",
+                  pageName: VoipSettingsScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "GENERAL SMS CONFIG",

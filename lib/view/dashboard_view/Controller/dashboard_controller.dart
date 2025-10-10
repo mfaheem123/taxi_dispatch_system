@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
@@ -354,8 +356,51 @@ class DashboardController extends GetxController {
   }
 
   AllAddressesModel? selectedModel;
+  late final MapController mapController;
 
   final List<ViaPoint> viaPoints = [];
+  final List<LatLng> polylinePoints = [];
+  List<LatLng> polylinePointsCoordinate = [];
+
+  /// ✅ Step 2: Fetch real road route from OSRM (OpenStreetMap)
+  Future<void> fetchRouteFromOSRM() async {
+    if (polylinePoints.length < 2) return;
+
+    List<LatLng> tempPoints = [];
+    for (var item in polylinePoints) {
+      tempPoints.add(LatLng(item.latitude, item.longitude));
+    }
+    // polylinePointsCoordinate.add(LatLng(item['lat'], item['lon']));
+
+    final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+
+    final url = Uri.parse(
+      'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=geojson',
+    );
+
+    final res = await Dio().getUri(url);
+
+    if (res.statusCode == 200) {
+      final data = res.data;
+      final route = data['routes'][0]['geometry']['coordinates'] as List;
+
+      final roadPoints = route
+          .map((c) => LatLng(c[1].toDouble(), c[0].toDouble()))
+          .toList();
+
+      polylinePointsCoordinate = roadPoints;
+
+
+      // ✅ Fit map bounds to show route
+      final bounds = LatLngBounds.fromPoints(roadPoints);
+      mapController.fitCamera(
+        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(3)),
+      );
+      update();
+    } else {
+      print("❌ OSRM error: ${res.statusCode}");
+    }
+  }
 
 
 

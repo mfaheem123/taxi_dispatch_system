@@ -2,7 +2,6 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -52,7 +51,6 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
             // Instead of fixed width, we calculate flexible field widths
             final double fieldWidth = isMobile
                 ? maxWidth // full width

@@ -85,5 +85,6 @@ class AccountController extends GetxController {
   String? account;
   String? department;
   String? subDiary;
+  String? status;
 
 }
