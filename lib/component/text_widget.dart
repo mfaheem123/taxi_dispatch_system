@@ -425,6 +425,12 @@ class AppText {
   static get company => "COMPANY #";
   static get currency => "CURRENCY";
   static get abbreviation => "ABBREVIATION";
+  static get companyinformation => "COMPANY INFORMATION";
+  static get documentsNumber => "DOCUMENT NUMBERS";
+  static get clearBooking => "CLEAR BOOKINGS";
+  static get clearSelected => "CLEAR SELECTED";
+  static get clearAll => "CLEAR ALL";
+  static get escortWithZero => "ESCORT";
 
   // static get generate => "GENERATE";
 }

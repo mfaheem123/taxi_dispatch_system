@@ -4,9 +4,14 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_customerInvoice.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/create_accountScreen.dart';
+import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
+import 'package:dashboard_new1/view/accounts/escorte_screen.dart';
 import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
 import 'package:dashboard_new1/view/administration/User/subsi_diaries_screen.dart';
+import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
+import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import 'package:dashboard_new1/view/setting/document_number_screen.dart';
 import 'package:dashboard_new1/view/setting/company_information_screen.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:flutter/material.dart';
@@ -754,12 +759,21 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
+           NestedMenuItem(
+          title: "CREATE ESCORT",
+          onTap: () {
+            _currentPage = CreateEscortScreen();
+            controller.menuBarRefresh(
+                title: "CREATE ESCORT", pageName: CreateEscortScreen());   ///------------------------------------------------------------------------------------------------------------------
+          },
+        ),
+        // CreateEscortScreen
         NestedMenuItem(
           title: "ESCORT",
           onTap: () {
-            _currentPage = CreateEscopt();
+            _currentPage = ESCORTScreen();
             controller.menuBarRefresh(
-                title: "ESCORT", pageName: CreateEscopt());
+                title: "ESCORT", pageName: ESCORTScreen());
           },
         ),
         NestedMenuItem(
@@ -905,7 +919,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           NestedMenuItem(
             title: "AUTHORIZATION",
-            onTap: () => message(context, "DevOps"),
+              onTap: () {
+              setState(() {
+                _currentPage = AuthorizationScreen();
+                controller.menuBarRefresh(
+                    title: "AUTHORIZATION", pageName: AuthorizationScreen());
+              });
+            },
           ),
         ]),
         NestedMenuItem(
@@ -1067,9 +1087,17 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
+        // DocumentNumberScreen
         NestedMenuItem(
           title: "DOCUMENT NUMBER",
-          onTap: () => message(context, "DevOps"),
+         onTap: () {
+            setState(() {
+              _currentPage =  DocumentNumberScreen();
+              controller.menuBarRefresh(
+                  title: "DOCUMENT NUMBER",
+                  pageName:  DocumentNumberScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "TEMPLATE SETTINGS",
@@ -1077,7 +1105,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "BOOKING CLEARING UTILITY",
-          onTap: () => message(context, "DevOps"),
+           onTap: () {
+            setState(() {
+              _currentPage =  BookingClearingUtilityScreen();
+              controller.menuBarRefresh(
+                  title: "BOOKING CLEARING UTILITY",
+                  pageName:  BookingClearingUtilityScreen());
+            });
+          },
         ),
         NestedMenuItem(
           title: "LOCATION TYPE SHORTCUTS",
