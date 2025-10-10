@@ -98,7 +98,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                              ? Icons.flag // end marker
                              : Icons.circle, // middle points
                          color: i == 0
-                             ? Colors.green
+                             ? DynamicColors.primaryClr
                              : i == polylinePoints.length - 1
                              ? Colors.red
                              : Colors.blue,
@@ -119,8 +119,8 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                  ],
                ),
                /// 🕓 Show loader when no polyline
-               if (controller.polylinePoints.isEmpty)
-                 const Center(child: CircularProgressIndicator()),
+               // if (controller.polylinePoints.isEmpty)
+               //   const Center(child: CircularProgressIndicator()),
              ],
            ),
 

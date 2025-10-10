@@ -462,11 +462,30 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     }
   }
 
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        day = picked.day;
+        month = picked.month;
+        year = picked.year;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final dayText = day.toString().padLeft(2, '0');
     final monthText = month.toString().padLeft(2, '0');
     final yearText = year.toString();
+
+
 
     return RawKeyboardListener(
       focusNode: _focusNode,
@@ -522,8 +541,13 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                 }),
               ],
             ),
-            Icon(Icons.calendar_month,
-            size: 20,
+            GestureDetector(
+              onTap: (){
+                _selectDate(context);
+              },
+              child: Icon(Icons.calendar_month,
+              size: 20,
+              ),
             )
           ],
         ),
