@@ -13,6 +13,292 @@ import '../../component/text_field.dart';
 import '../booking_view/reusable_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 
+// class CreateEscortScreen extends StatefulWidget {
+//   const CreateEscortScreen({super.key});
+
+//   @override
+//   State<CreateEscortScreen> createState() => _CreateEscortScreenState();
+// }
+
+// class _CreateEscortScreenState extends State<CreateEscortScreen> {
+//   int selectedRowIndex = 0; // currently selected row
+//   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+
+//   VehicleController controller = Get.isRegistered<VehicleController>()
+//       ? Get.find<VehicleController>()
+//       : Get.put(VehicleController());
+
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//     shortCutKeyValue.value = "vehicleTypes";
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//     final screenHeight = MediaQuery.of(context).size.height;
+//     double width = WidgetsBinding
+//             .instance.platformDispatcher.views.first.physicalSize.width /
+//         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+//     return GetBuilder<VehicleController>(builder: (controller) {
+//       return LayoutBuilder(builder: (context, constraints) {
+//         final double maxWidth = constraints.maxWidth;
+//         final bool isMobile = maxWidth < 600;
+//         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+//         // Instead of fixed width, we calculate flexible field widths
+//         final double fieldWidth = isMobile
+//             ? maxWidth // full width
+//             : isTablet
+//                 ? maxWidth / 2
+//                 : maxWidth / 4;
+
+//         return Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Wrap(
+//               direction: Axis.horizontal,
+//               children: [
+//                 Wrap(
+//                   direction: Axis.vertical,
+//                   children: [
+//                     Container(
+//                       width: screenWidth / 3,
+//                       color: DynamicColors.gryClr,
+//                       child: Padding(
+//                         padding: EdgeInsets.symmetric(
+//                             horizontal: 18.0, vertical: 12),
+//                         child: Text(
+//                           AppText.escopt,
+//                           style: TextStyle(
+//                               fontSize: 18, fontWeight: FontWeight.bold),
+//                         ),
+//                       ),
+//                     ),
+//                     Wrap(
+//                       direction: Axis.horizontal,
+//                       runSpacing: 16,
+//                       spacing: 10,
+//                       children: [
+//                         GestureDetector(
+//                           onTap: () {
+//                             if (controller.profileImg == null) {
+//                               controller.pickImage();
+//                             }
+//                           },
+//                           child: Container(
+//                             height: isMobile ? 200 : 400,
+//                             width: fieldWidth / 1.5,
+//                             margin: EdgeInsets.only(
+//                               left: 5,
+//                               right: 5,
+//                               top: 15,
+//                             ),
+//                             decoration: BoxDecoration(
+//                               color: Colors.white,
+//                               border: Border.all(color: Colors.grey),
+//                               image: controller.profileImg == null
+//                                   ? null
+//                                   : DecorationImage(
+//                                       image: MemoryImage(controller.profileImg!
+//                                           .bytes), // ✅ correct provider
+//                                       fit: BoxFit.fill,
+//                                     ),
+//                             ),
+//                             child: controller.profileImg != null
+//                                 ? Align(
+//                                     alignment: Alignment.topRight,
+//                                     child: GestureDetector(
+//                                       onTap: () {
+//                                         controller.profileImg = null;
+//                                         controller.update();
+//                                       },
+//                                       child: Icon(
+//                                         Icons.close_rounded,
+//                                         color: DynamicColors.redClr,
+//                                       ),
+//                                     ),
+//                                   )
+//                                 : Center(
+//                                     child: Text(
+//                                       "UPLOAD IMAGE",
+//                                       style: TextStyle(
+//                                         fontSize: 30,
+//                                         fontWeight: FontWeight.bold,
+//                                         color: Colors.black,
+//                                       ),
+//                                     ),
+//                                   ),
+//                           ),
+//                         ),
+//                         SizedBox(
+//                           width: fieldWidth * 1.5,
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Wrap(
+//                                 direction: Axis.vertical,
+//                                 runSpacing: 16,
+//                                 spacing: 10,
+//                                 children: [
+//                                   CustomTextField(
+//                                     borderRadius: 4,
+//                                     controller:
+//                                         controller.vehicleTypeController,
+//                                     width: fieldWidth / 2,
+//                                     hintText: AppText.vehicleType,
+//                                     columnText: true,
+//                                     height: 35,
+//                                   ),
+//                                   CustomTextField(
+//                                     borderRadius: 4,
+//                                     controller: controller.passengersController,
+//                                     width: fieldWidth / 2,
+//                                     hintText: AppText.passengers,
+//                                     columnText: true,
+//                                     height: 35,
+//                                   ),
+//                                   CustomTextField(
+//                                     borderRadius: 4,
+//                                     controller: controller.luggagesController,
+//                                     width: fieldWidth / 2,
+//                                     hintText: AppText.luggages,
+//                                     columnText: true,
+//                                     height: 35,
+//                                   ),
+//                                   CustomTextField(
+//                                     borderRadius: 4,
+//                                     controller:
+//                                         controller.handLuggagesController,
+//                                     width: fieldWidth / 2,
+//                                     hintText: AppText.handLuggages,
+//                                     columnText: true,
+//                                     height: 35,
+//                                   ),
+//                                   CustomTextField(
+//                                     borderRadius: 4,
+//                                     controller: controller
+//                                         .driverWaitingChargesController,
+//                                     width: fieldWidth / 2,
+//                                     hintText: AppText.driverWaitingCharges,
+//                                     columnText: true,
+//                                     height: 35,
+//                                   ),
+//                                 ],
+//                               ),
+//                               // SizedBox(
+//                               //   height: 20,
+//                               // ),
+//                               // CustomButton(
+//                               //   height: 30,
+//                               //   width: fieldWidth,
+//                               //   btnText: AppText.save,
+//                               //   fontSize: 11,
+//                               //   verticalPadding: 0.0,
+//                               //   borderRadius: 4,
+//                               // )
+//                             ],
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ],
+//                 ),
+//                 Wrap(
+//                   direction: Axis.horizontal,
+//                   children: [
+//                     SizedBox(
+//                       width: fieldWidth * 1.5,
+//                       child: Column(
+//                         children: [
+//                           Container(
+//                             // height: screenHeight / 20,
+//                             width: Get.width,
+//                             color: DynamicColors.gryClr,
+//                             child: Padding(
+//                               padding: EdgeInsets.symmetric(
+//                                   horizontal: 18.0, vertical: 12),
+//                               child: Text(
+//                                 AppText.escopt,
+//                                 style: TextStyle(
+//                                     fontSize: 18, fontWeight: FontWeight.bold),
+//                               ),
+//                             ),
+//                           ),
+//                           SizedBox(
+//                             height: 10,
+//                           ),
+//                           Wrap(
+//                             direction: Axis.vertical,
+//                             runSpacing: 16,
+//                             spacing: 10,
+//                             children: [
+//                               CustomTextField(
+//                                 borderRadius: 4,
+//                                 controller: controller.vehicleTypeController,
+//                                 width: fieldWidth / 2,
+//                                 hintText: AppText.vehicleType,
+//                                 columnText: true,
+//                                 height: 35,
+//                               ),
+//                               CustomTextField(
+//                                 borderRadius: 4,
+//                                 controller: controller.passengersController,
+//                                 width: fieldWidth / 2,
+//                                 hintText: AppText.passengers,
+//                                 columnText: true,
+//                                 height: 35,
+//                               ),
+//                               CustomTextField(
+//                                 borderRadius: 4,
+//                                 controller: controller.luggagesController,
+//                                 width: fieldWidth / 2,
+//                                 hintText: AppText.luggages,
+//                                 columnText: true,
+//                                 height: 35,
+//                               ),
+//                               CustomTextField(
+//                                 borderRadius: 4,
+//                                 controller: controller.handLuggagesController,
+//                                 width: fieldWidth / 2,
+//                                 hintText: AppText.handLuggages,
+//                                 columnText: true,
+//                                 height: 35,
+//                               ),
+//                               CustomTextField(
+//                                 borderRadius: 4,
+//                                 controller:
+//                                     controller.driverWaitingChargesController,
+//                                 width: fieldWidth / 2,
+//                                 hintText: AppText.driverWaitingCharges,
+//                                 columnText: true,
+//                                 height: 35,
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//           ],
+//         );
+//       });
+//     });
+//   }
+// }
+
+
+
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 class CreateEscortScreen extends StatefulWidget {
   const CreateEscortScreen({super.key});
 
@@ -21,274 +307,197 @@ class CreateEscortScreen extends StatefulWidget {
 }
 
 class _CreateEscortScreenState extends State<CreateEscortScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  Uint8List? profileImg;
+  final picker = ImagePicker();
 
-  VehicleController controller = Get.isRegistered<VehicleController>()
-      ? Get.find<VehicleController>()
-      : Get.put(VehicleController());
+  final nameController = TextEditingController();
+  final mobileController = TextEditingController();
+  final emailController = TextEditingController();
+  final dobController = TextEditingController();
+  final addressController = TextEditingController();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    shortCutKeyValue.value = "vehicleTypes";
+  // Future<void> pickImage() async {
+  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  //   if (pickedFile != null) {
+  //     final bytes = await pickedFile.readAsBytes();
+  //     setState(() => profileImg = bytes);
+  //   }
+  // }
+
+  Widget buildTextField(String label, TextEditingController controller,
+      {bool isDate = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 4),
+        TextField(
+          controller: controller,
+          readOnly: isDate,
+          onTap: isDate
+              ? () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100),
+                    initialDate: DateTime.now(),
+                  );
+                  if (pickedDate != null) {
+                    controller.text =
+                        DateFormat('MM/dd/yyyy').format(pickedDate);
+                  }
+                }
+              : null,
+          decoration: InputDecoration(
+            hintText: isDate ? 'MM/DD/YYYY' : '',
+            border:
+                OutlineInputBorder(borderRadius: BorderRadius.circular(6.0)),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
-    return GetBuilder<VehicleController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
-
-        return Column(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
+      appBar: AppBar(
+        title: const Text('ESCORT'),
+        backgroundColor: Colors.green.shade700,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              direction: Axis.horizontal,
+            const Text("ESCORT INFORMATION",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
+            const SizedBox(height: 16),
+
+            // Upload Image Section
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Wrap(
-                  direction: Axis.vertical,
-                  children: [
-                    Container(
-                      width: screenWidth / 3,
-                      color: DynamicColors.gryClr,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 18.0, vertical: 12),
-                        child: Text(
-                          AppText.escopt,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Container(
+                    height: 200,
+                    width: 250,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                      image: profileImg != null
+                          ? DecorationImage(
+                              image: MemoryImage(profileImg!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                     ),
-                    Wrap(
-                      direction: Axis.horizontal,
-                      runSpacing: 16,
-                      spacing: 10,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            if (controller.profileImg == null) {
-                              controller.pickImage();
-                            }
-                          },
-                          child: Container(
-                            height: isMobile ? 200 : 400,
-                            width: fieldWidth / 1.5,
-                            margin: EdgeInsets.only(
-                              left: 5,
-                              right: 5,
-                              top: 15,
+                    child: profileImg == null
+                        ? const Center(
+                            child: Text(
+                              "UPLOAD IMAGE",
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              image: controller.profileImg == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller.profileImg!
-                                          .bytes), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
+                          )
+                        : Align(
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              onPressed: () {
+                                setState(() => profileImg = null);
+                              },
                             ),
-                            child: controller.profileImg != null
-                                ? Align(
-                                    alignment: Alignment.topRight,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        controller.profileImg = null;
-                                        controller.update();
-                                      },
-                                      child: Icon(
-                                        Icons.close_rounded,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                  )
-                                : Center(
-                                    child: Text(
-                                      "UPLOAD IMAGE",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
                           ),
-                        ),
-                        SizedBox(
-                          width: fieldWidth * 1.5,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                direction: Axis.vertical,
-                                runSpacing: 16,
-                                spacing: 10,
-                                children: [
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller:
-                                        controller.vehicleTypeController,
-                                    width: fieldWidth / 2,
-                                    hintText: AppText.vehicleType,
-                                    columnText: true,
-                                    height: 35,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.passengersController,
-                                    width: fieldWidth / 2,
-                                    hintText: AppText.passengers,
-                                    columnText: true,
-                                    height: 35,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller.luggagesController,
-                                    width: fieldWidth / 2,
-                                    hintText: AppText.luggages,
-                                    columnText: true,
-                                    height: 35,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller:
-                                        controller.handLuggagesController,
-                                    width: fieldWidth / 2,
-                                    hintText: AppText.handLuggages,
-                                    columnText: true,
-                                    height: 35,
-                                  ),
-                                  CustomTextField(
-                                    borderRadius: 4,
-                                    controller: controller
-                                        .driverWaitingChargesController,
-                                    width: fieldWidth / 2,
-                                    hintText: AppText.driverWaitingCharges,
-                                    columnText: true,
-                                    height: 35,
-                                  ),
-                                ],
-                              ),
-                              // SizedBox(
-                              //   height: 20,
-                              // ),
-                              // CustomButton(
-                              //   height: 30,
-                              //   width: fieldWidth,
-                              //   btnText: AppText.save,
-                              //   fontSize: 11,
-                              //   verticalPadding: 0.0,
-                              //   borderRadius: 4,
-                              // )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-                Wrap(
-                  direction: Axis.horizontal,
-                  children: [
-                    SizedBox(
-                      width: fieldWidth * 1.5,
-                      child: Column(
-                        children: [
-                          Container(
-                            // height: screenHeight / 20,
-                            width: Get.width,
-                            color: DynamicColors.gryClr,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 18.0, vertical: 12),
-                              child: Text(
-                                AppText.escopt,
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Wrap(
-                            direction: Axis.vertical,
-                            runSpacing: 16,
-                            spacing: 10,
-                            children: [
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.vehicleTypeController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.vehicleType,
-                                columnText: true,
-                                height: 35,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.passengersController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.passengers,
-                                columnText: true,
-                                height: 35,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.luggagesController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.luggages,
-                                columnText: true,
-                                height: 35,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.handLuggagesController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.handLuggages,
-                                columnText: true,
-                                height: 35,
-                              ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller:
-                                    controller.driverWaitingChargesController,
-                                width: fieldWidth / 2,
-                                hintText: AppText.driverWaitingCharges,
-                                columnText: true,
-                                height: 35,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                const SizedBox(width: 20),
+
+                // Text Fields Section
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTextField("Name", nameController),
+                      const SizedBox(height: 10),
+                      buildTextField("Mobile #", mobileController),
+                      const SizedBox(height: 10),
+                      buildTextField("Email", emailController),
+                      const SizedBox(height: 10),
+                      buildTextField("DOB", dobController, isDate: true),
+                      const SizedBox(height: 10),
+                      buildTextField("Address", addressController),
+                    ],
+                  ),
                 ),
               ],
             ),
+
+            const SizedBox(height: 20),
+            const Divider(),
+
+            // Document Table
+            const Text(
+              "DOCUMENTS",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            DataTable(
+              columns: const [
+                DataColumn(label: Text('EXPIRY DATE')),
+                DataColumn(label: Text('BATCH #')),
+                DataColumn(label: Text('DOCUMENT TITLE')),
+                DataColumn(label: Text('FILE')),
+              ],
+              rows: [
+                _buildRow('10/22/2025 08:22 PM', 'SAFEGUARDING'),
+                _buildRow('', 'PAT'),
+                _buildRow('', 'FIRSTAID'),
+                _buildRow('', 'DBS'),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade700,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                onPressed: () {},
+                child: const Text("SAVE",
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
+              ),
+            ),
           ],
-        );
-      });
-    });
+        ),
+      ),
+    );
+  }
+
+  DataRow _buildRow(String expiryDate, String title) {
+    return DataRow(
+      cells: [
+        DataCell(Text(expiryDate.isEmpty ? 'MM/DD/YYYY' : expiryDate)),
+        DataCell(Text('# $title')),
+        DataCell(Text(title)),
+        DataCell(ElevatedButton(
+          onPressed: () {},
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey[200]),
+          child: const Text("Choose File"),
+        )),
+      ],
+    );
   }
 }
