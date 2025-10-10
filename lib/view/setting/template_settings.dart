@@ -118,19 +118,19 @@ class _TemplateSettingsState extends State<TemplateSettings> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 8,
+                  height: 50,
                 ),
                 Align(
                     alignment: Alignment.center,
                     child: Text(AppText.templateSettings, style: titleDesign())),
                 SizedBox(
-                  height: 8,
+                  height: 15,
                 ),
                 Padding(
                   padding: const EdgeInsets.all(6.0),
                   child: Wrap(
                     spacing: 10,
-                    runSpacing: 10,
+                    runSpacing: 16,
                     children: [
                       Container(
                         // width: fieldWidth*2.5,
@@ -142,7 +142,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                           padding: const EdgeInsets.symmetric(vertical: 6.0),
                           child: Wrap(
                             spacing: 10,
-                            runSpacing: 10,
+                            runSpacing: 16,
                             children: [
                               Container(
                                 width: Get.width,
@@ -226,6 +226,160 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                         ),
                       ),
                       Container(
+                          width: fieldWidth*2.4,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: DynamicColors.textClr)
+                          ),
+                          height: 300,
+                          child: HtmlEditor(
+                            controller: controller.templateTitleController,
+                            htmlEditorOptions: HtmlEditorOptions(
+                              hint: 'Your text here...',
+                              shouldEnsureVisible: true,
+                              //initialText: "<p>text content initial, if any</p>",
+                            ),
+                            htmlToolbarOptions: HtmlToolbarOptions(
+                              toolbarPosition: ToolbarPosition.aboveEditor, //by default
+                              toolbarType: ToolbarType.nativeScrollable, //by default
+                              onButtonPressed:
+                                  (ButtonType type, bool? status, Function? updateStatus) {
+                                print(
+                                    "button '${type.name}' pressed, the current selected status is $status");
+                                return true;
+                              },
+                              onDropdownChanged: (DropdownType type, dynamic changed,
+                                  Function(dynamic)? updateSelectedItem) {
+                                print(
+                                    "dropdown '${type.name}' changed to $changed");
+                                return true;
+                              },
+                              mediaLinkInsertInterceptor:
+                                  (String url, InsertFileType type) {
+                                print(url);
+                                return true;
+                              },
+                              defaultToolbarButtons: [
+                                StyleButtons(style: false),
+                                FontButtons(
+                                  bold: true,
+                                  italic: true,
+                                  underline: true,
+                                  subscript: false,
+                                  strikethrough: false,
+                                  superscript: false,
+                                ),
+                                ColorButtons(highlightColor: true, foregroundColor: false),
+                                FontSettingButtons(fontName: false, fontSize: false, fontSizeUnit: false),
+                                ParagraphButtons(
+                                  alignCenter: true,
+                                  alignJustify: true,
+                                  alignLeft: true,
+                                  alignRight: true,
+                                  caseConverter: false,
+                                  decreaseIndent: false,
+                                  increaseIndent: false,
+                                  lineHeight: false,
+                                  textDirection: false,
+                                ),
+                                StyleButtons(style: false),
+                                FontSettingButtons(
+                                  fontSize: false,
+                                  fontName: false,
+                                  fontSizeUnit: false,
+                                ),
+                                ListButtons(listStyles: false),
+                                InsertButtons(
+                                  audio: false,
+                                  video: false,
+                                  table: false,
+                                  hr: false,
+                                  link: false,
+                                  otherFile: false,
+                                  picture: false,
+                                ),
+                                OtherButtons(
+                                  codeview: false,
+                                  help: false,
+                                  copy: false,
+                                  paste: false,
+                                  fullscreen: false,
+                                  redo: false,
+                                  undo: false,
+                                ),
+                              ],
+
+                            ),
+                            otherOptions: OtherOptions(height: 300),
+                            callbacks: Callbacks(onBeforeCommand: (String? currentHtml) {
+                              print('html before change is $currentHtml');
+                            },
+                                onChangeContent: (String? changed) {
+                                  print('content changed to $changed');
+                                },
+                                onChangeCodeview: (String? changed) {
+                                  print('code changed to $changed');
+                                },
+                                onChangeSelection: (EditorSettings settings) {
+                                  print('parent element is ${settings.parentElement}');
+                                  print('font name is ${settings.fontName}');
+                                },
+                                onDialogShown: () {
+                                  print('dialog shown');
+                                },
+                                onEnter: () {
+                                  print('enter/return pressed');
+                                },
+                                onFocus: () {
+                                  print('editor focused');
+                                }, onBlur: () {
+                                  print('editor unfocused');
+                                }, onBlurCodeview: () {
+                                  print('codeview either focused or unfocused');
+                                }, onInit: () {
+                                  print('init');
+                                },
+                                onImageUploadError: (FileUpload? file, String? base64Str,
+                                    UploadError error) {
+                                  print(error.name);
+                                  print(base64Str ?? '');
+                                  if (file != null) {
+                                    print(file.name);
+                                    print(file.size);
+                                    print(file.type);
+                                  }
+                                }, onKeyDown: (int? keyCode) {
+                                  print('$keyCode key downed');
+                                }, onKeyUp: (int? keyCode) {
+                                  print('$keyCode key released');
+                                }, onMouseDown: () {
+                                  print('mouse downed');
+                                }, onMouseUp: () {
+                                  print('mouse released');
+                                }, onNavigationRequestMobile: (String url) {
+                                  print(url);
+                                  return NavigationActionPolicy.ALLOW;
+                                }, onPaste: () {
+                                  print('pasted into editor');
+                                }, onScroll: () {
+                                  print('editor scrolled');
+                                }),
+                            plugins: [
+                              SummernoteAtMention(
+                                  getSuggestionsMobile: (String value) {
+                                    var mentions = <String>['test1', 'test2', 'test3'];
+                                    return mentions
+                                        .where((element) => element.contains(value))
+                                        .toList();
+                                  },
+                                  mentionsWeb: ['test1', 'test2', 'test3'],
+                                  onSelect: (String value) {
+                                    print(value);
+                                  }),
+                            ],
+                          )
+                      ),
+                      Container(
                         width: fieldWidth,
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
@@ -267,180 +421,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                           )
                         ),
                       ),
-                      Container(
-                          width: fieldWidth*2.4,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: DynamicColors.textClr)
-                          ),
-                          // height: 300,
-                          child: HtmlEditor(
-                            controller: controller.templateTitleController,
-                            htmlEditorOptions: HtmlEditorOptions(
-                              hint: 'Your text here...',
-                              shouldEnsureVisible: true,
-                              //initialText: "<p>text content initial, if any</p>",
-                            ),
 
-
-                            htmlToolbarOptions: HtmlToolbarOptions(
-                              toolbarPosition: ToolbarPosition.aboveEditor, //by default
-                              toolbarType: ToolbarType.nativeScrollable, //by default
-                              onButtonPressed:
-                                  (ButtonType type, bool? status, Function? updateStatus) {
-                                print(
-                                    "button '${type.name}' pressed, the current selected status is $status");
-                                return true;
-                              },
-                              onDropdownChanged: (DropdownType type, dynamic changed,
-                                  Function(dynamic)? updateSelectedItem) {
-                                print(
-                                    "dropdown '${type.name}' changed to $changed");
-                                return true;
-                              },
-                              mediaLinkInsertInterceptor:
-                                  (String url, InsertFileType type) {
-                                print(url);
-                                return true;
-                              },
-                              defaultToolbarButtons: [
-                                StyleButtons(
-                                  style: false,
-                                ),
-                                FontButtons(
-                                  bold: true,
-                                  italic: true,
-                                  underline: true,
-                                  subscript: false,
-                                  strikethrough: false,
-                                  superscript: false,
-                                ),
-                                ColorButtons(
-                                  highlightColor: true,
-                                  foregroundColor: false
-                                ),
-                                FontSettingButtons(
-                                  fontName: false,
-                                  fontSize: false,
-                                  fontSizeUnit: false
-                                ),
-                                ParagraphButtons(
-                                  alignCenter: true,
-                                  alignJustify: true,
-                                  alignLeft: true,
-                                  alignRight: true,
-                                  caseConverter: false,
-                                  decreaseIndent: false,
-                                  increaseIndent: false,
-                                  lineHeight: false,
-                                  textDirection: false
-                                ),
-                                StyleButtons(style: false),
-                                const FontSettingButtons(
-                                    fontSize: false,
-                                    fontName: false,
-                                    fontSizeUnit: false,
-                                ), // optional (font size, color)
-                                const ListButtons(listStyles: false), // disable list buttons
-                                const InsertButtons(
-                                    audio: false,
-                                    video: false,
-                                    table: false,
-                                    hr: false,
-                                    link: false,
-                                    otherFile: false,
-                                    picture: false
-                                ),
-                                const OtherButtons(
-                                  codeview: false,
-                                  help: false,
-                                  copy: false,
-                                  paste: false,
-                                  fullscreen: false,
-                                  redo: false,
-                                  undo: false,
-                                ),
-                              ],
-                            ),
-                            otherOptions: OtherOptions(height: 300),
-                            callbacks: Callbacks(onBeforeCommand: (String? currentHtml) {
-                              print('html before change is $currentHtml');
-                            },
-                                onChangeContent: (String? changed) {
-                                  print('content changed to $changed');
-                                },
-                                onChangeCodeview: (String? changed) {
-                                  print('code changed to $changed');
-                                },
-                                onChangeSelection: (EditorSettings settings) {
-                                  print('parent element is ${settings.parentElement}');
-                                  print('font name is ${settings.fontName}');
-                                },
-                                onDialogShown: () {
-                                  print('dialog shown');
-                                },
-                                onEnter: () {
-                                  print('enter/return pressed');
-                                },
-                                onFocus: () {
-                                  print('editor focused');
-                                }, onBlur: () {
-                                  print('editor unfocused');
-                                }, onBlurCodeview: () {
-                                  print('codeview either focused or unfocused');
-                                }, onInit: () {
-                                  print('init');
-                                },
-                                //this is commented because it overrides the default Summernote handlers
-                                /*onImageLinkInsert: (String? url) {
-                      print(url ?? "unknown url");
-                    },
-                    onImageUpload: (FileUpload file) async {
-                      print(file.name);
-                      print(file.size);
-                      print(file.type);
-                      print(file.base64);
-                    },*/
-                                onImageUploadError: (FileUpload? file, String? base64Str,
-                                    UploadError error) {
-                                  print(error.name);
-                                  print(base64Str ?? '');
-                                  if (file != null) {
-                                    print(file.name);
-                                    print(file.size);
-                                    print(file.type);
-                                  }
-                                }, onKeyDown: (int? keyCode) {
-                                  print('$keyCode key downed');
-                                }, onKeyUp: (int? keyCode) {
-                                  print('$keyCode key released');
-                                }, onMouseDown: () {
-                                  print('mouse downed');
-                                }, onMouseUp: () {
-                                  print('mouse released');
-                                }, onNavigationRequestMobile: (String url) {
-                                  print(url);
-                                  return NavigationActionPolicy.ALLOW;
-                                }, onPaste: () {
-                                  print('pasted into editor');
-                                }, onScroll: () {
-                                  print('editor scrolled');
-                                }),
-                            plugins: [
-                              SummernoteAtMention(
-                                  getSuggestionsMobile: (String value) {
-                                    var mentions = <String>['test1', 'test2', 'test3'];
-                                    return mentions
-                                        .where((element) => element.contains(value))
-                                        .toList();
-                                  },
-                                  mentionsWeb: ['test1', 'test2', 'test3'],
-                                  onSelect: (String value) {
-                                    print(value);
-                                  }),
-                            ],
-                          )
-                      ),
                     ],
                   ),
                 ),
