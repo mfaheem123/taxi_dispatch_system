@@ -110,13 +110,13 @@ class _DriversViewState extends State<DriversView> {
             // }
           },
           child: SizedBox(
-            width: screenWidth >= 1270 ? screenWidth/4.5 : screenWidth / 2.1,
-            height: screenHeight * 0.465,
+            width: screenWidth >= 1270 ? screenWidth/4.6 : screenWidth / 2.1,
+            height: screenHeight * 0.80,
             child: Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              // shape: RoundedRectangleBorder(
+              //   borderRadius: BorderRadius.circular(16),
+              // ),
               child: Column(
                 children: [
                   // ----- Header -----
@@ -126,10 +126,10 @@ class _DriversViewState extends State<DriversView> {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: DynamicColors.secondaryClr,
-                      borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
+                      // borderRadius:
+                      // const BorderRadius.vertical(top: Radius.circular(16)),
                     ),
-                    child:  Row(
+                    child: Row(
                       children: [
                         Expanded(
                           child: Text(

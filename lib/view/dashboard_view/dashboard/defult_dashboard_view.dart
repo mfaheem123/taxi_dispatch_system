@@ -130,7 +130,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       key: controller.stackKey,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(top: 10),
+                          padding: EdgeInsets.only(top: 10,left: 6,right: 6),
                           child: Column(
                             children: [
                               Visibility(
@@ -138,6 +138,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 child: SingleChildScrollView(
                                   // scrollDirection: Axis.horizontal,
                                  child: width >= 1270 ? Row(
+                                   crossAxisAlignment: CrossAxisAlignment.start,
                                    children: [
                                      FocusTraversalGroup(
                                      policy: OrderedTraversalPolicy(),

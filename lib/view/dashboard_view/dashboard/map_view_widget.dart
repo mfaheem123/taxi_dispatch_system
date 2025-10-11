@@ -43,8 +43,8 @@ class _MapViewWidgetState extends State<MapViewWidget> {
       return Center(child: CircularProgressIndicator());
     }
     return SizedBox(
-      width: width >= 1270 ? screenWidth / 3.6 : screenWidth / 2.1,
-      height: screenHeight * 0.465,
+      width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
+      height: screenHeight * 0.80,
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
@@ -59,13 +59,41 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                 /// MAP VIEW
             Positioned.fill(
             child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
+            // borderRadius: BorderRadius.circular(26),
            child: FlutterMap(
              mapController: controller.mapController,
              options: MapOptions(
                initialCenter: polylinePoints[0],
                  initialZoom: 12.5,
                onMapReady: () {
+                 // ✅ Only fit camera if there are at least 2 route points
+                 if (controller.polylinePointsCoordinate.isNotEmpty &&
+                     controller.polylinePointsCoordinate.length >= 2) {
+
+                   final bounds = LatLngBounds.fromPoints(controller.polylinePointsCoordinate);
+
+                   // ✅ Fit map to route, but keep a comfortable zoom-in level
+                   controller.mapController.fitCamera(
+                     CameraFit.bounds(
+                       bounds: bounds,
+                       padding: const EdgeInsets.all(50), // More padding = zoom in a bit
+                     ),
+                   );
+
+                   // ✅ Optional: Lock minimum zoom so it never zooms out too far
+                   WidgetsBinding.instance.addPostFrameCallback((_) {
+                     final zoom = controller.mapController.camera.zoom;
+                     if (zoom < 12.0) {
+                       controller.mapController.move(
+                         controller.polylinePointsCoordinate.first,
+                         12.0, // Minimum zoom level you want
+                       );
+                     }
+                   });
+                 }
+               },
+
+               /*     onMapReady: () {
                  // ✅ This runs when map is fully ready
                  if (controller.polylinePointsCoordinate.isNotEmpty && controller.polylinePointsCoordinate.length >=2) {
                    final bounds = LatLngBounds.fromPoints(controller.polylinePointsCoordinate);
@@ -73,7 +101,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(2)),
                    );
                  }
-               },
+               },*/
              ),
              children: [
                // 🗺️ Map background tiles
@@ -119,8 +147,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                  ],
                ),
                /// 🕓 Show loader when no polyline
-               // if (controller.polylinePoints.isEmpty)
-               //   const Center(child: CircularProgressIndicator()),
+               if (controller.polylinePoints.isEmpty)
+                 SizedBox.shrink()
+                 // const Center(child: CircularProgressIndicator()),
              ],
            ),
 
