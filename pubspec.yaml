@@ -57,6 +57,8 @@ dependencies:
   field_suggestion: ^0.2.6
 
   dropdown_flutter: ^1.0.2
+  polyline_codec: ^0.1.6
+  flutter_polyline_points: ^3.1.0
 
 dev_dependencies:
   flutter_test:

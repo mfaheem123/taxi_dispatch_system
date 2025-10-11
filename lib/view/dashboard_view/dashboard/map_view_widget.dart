@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
@@ -24,8 +28,8 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    controller.mapController = MapController(); // ✅ Initialize here
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,97 +65,40 @@ class _MapViewWidgetState extends State<MapViewWidget> {
             child: ClipRRect(
             // borderRadius: BorderRadius.circular(26),
            child: FlutterMap(
-             mapController: controller.mapController,
-             options: MapOptions(
-               initialCenter: polylinePoints[0],
-                 initialZoom: 12.5,
-               onMapReady: () {
-                 // ✅ Only fit camera if there are at least 2 route points
-                 if (controller.polylinePointsCoordinate.isNotEmpty &&
-                     controller.polylinePointsCoordinate.length >= 2) {
+              mapController: controller.mapController,
+              options: MapOptions(
+                initialCenter: polylinePoints.first,
+                initialZoom: 13.0,
+                onMapReady: () {
+                  if (polylinePoints.length >= 2) {
+                    final bounds = LatLngBounds.fromPoints(polylinePoints);
+                    controller.mapController.fitCamera(
+                      CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60)),
+                    );
+                  }
+                },
+              ),
+              children: [
+                // 🗺️ Background
+                TileLayer(
+                  urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  subdomains: const ['a', 'b', 'c'],
+                ),
 
-                   final bounds = LatLngBounds.fromPoints(controller.polylinePointsCoordinate);
-
-                   // ✅ Fit map to route, but keep a comfortable zoom-in level
-                   controller.mapController.fitCamera(
-                     CameraFit.bounds(
-                       bounds: bounds,
-                       padding: const EdgeInsets.all(50), // More padding = zoom in a bit
-                     ),
-                   );
-
-                   // ✅ Optional: Lock minimum zoom so it never zooms out too far
-                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                     final zoom = controller.mapController.camera.zoom;
-                     if (zoom < 12.0) {
-                       controller.mapController.move(
-                         controller.polylinePointsCoordinate.first,
-                         12.0, // Minimum zoom level you want
-                       );
-                     }
-                   });
-                 }
-               },
-
-               /*     onMapReady: () {
-                 // ✅ This runs when map is fully ready
-                 if (controller.polylinePointsCoordinate.isNotEmpty && controller.polylinePointsCoordinate.length >=2) {
-                   final bounds = LatLngBounds.fromPoints(controller.polylinePointsCoordinate);
-                   controller.mapController.fitCamera(
-                     CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(2)),
-                   );
-                 }
-               },*/
-             ),
-             children: [
-               // 🗺️ Map background tiles
-               TileLayer(
-                 urlTemplate:
-                 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                 subdomains: const ['a', 'b', 'c'],
-               ),
-
-               // 📍 Marker layer
-               MarkerLayer(
-                 markers: [
-                   for (int i = 0; i < polylinePoints.length; i++)
-                     Marker(
-                       point: polylinePoints[i],
-                       width: 30,
-                       height: 40,
-                       child: Icon(
-                         i == 0
-                             ? Icons.location_pin // start marker
-                             : i == polylinePoints.length - 1
-                             ? Icons.flag // end marker
-                             : Icons.circle, // middle points
-                         color: i == 0
-                             ? DynamicColors.primaryClr
-                             : i == polylinePoints.length - 1
-                             ? Colors.red
-                             : Colors.blue,
-                         size: 40,
-                       ),
-                     ),
-                 ],
-               ),
-
-               // ➿ Polyline layer (route)
-               PolylineLayer(
-                 polylines: [
-                   Polyline(
-                     points: polylinePoints,
-                     color: Colors.blue,
-                     strokeWidth: 2.0,
-                   ),
-                 ],
-               ),
-               /// 🕓 Show loader when no polyline
-               if (controller.polylinePoints.isEmpty)
-                 SizedBox.shrink()
-                 // const Center(child: CircularProgressIndicator()),
-             ],
-           ),
+                // 🧭 Route polyline
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: polylinePoints,
+                      color: Colors.blue,
+                      strokeWidth: 4.0,
+                    ),
+                  ],
+                ),
+                // PolylineLayer(polylines: controller.polylines),
+                MarkerLayer(markers: controller.markers),
+              ],
+            ),
 
           ),
           ),
@@ -232,4 +179,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
       ),
     );
   }
+
+  /// 🧮 Calculate bearing between two points for arrow rotation
+
 }
