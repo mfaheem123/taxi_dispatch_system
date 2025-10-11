@@ -56,12 +56,14 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return Row(
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Wrap(
-              direction: Axis.vertical,
+              direction: Axis.horizontal,
               children: [
-                Column(
+                Wrap(
+                  direction: Axis.vertical,
                   children: [
                     Container(
                       width: screenWidth / 3,
@@ -203,6 +205,11 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                         ),
                       ],
                     ),
+                  ],
+                ),
+                Wrap(
+                  direction: Axis.horizontal,
+                  children: [
                     SizedBox(
                       width: fieldWidth * 1.5,
                       child: Column(
