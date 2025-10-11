@@ -19,7 +19,7 @@ class BookingTable extends StatefulWidget {
 class _BookingTableState extends State<BookingTable> {
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
 
   @override
   Widget build(BuildContext context) {
