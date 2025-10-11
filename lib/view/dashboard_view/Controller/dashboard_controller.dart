@@ -311,7 +311,7 @@ class DashboardController extends GetxController {
   openStreetMapApi({searchingText}) async {
     var dio = Dio();
     var response = await dio.request(
-      'https://api.postcodes.io/postcodes/nw67bt',
+      'https://api.postcodes.io/postcodes/$searchingText',
       options: Options(
         method: 'GET',
       ),
@@ -347,6 +347,13 @@ class DashboardController extends GetxController {
           "lon": double.parse(response.data['lon']), // -0.212545
         }
       ];
+
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
 
       allAddressesData.addAll(
         (addressObject as List)
