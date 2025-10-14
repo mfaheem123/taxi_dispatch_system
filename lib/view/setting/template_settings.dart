@@ -400,6 +400,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 child: CustomDropdownField<DropdownModel>(
                                   label: "Select User",
                                   items: templateList,
+
                                   value: selectedTag,
                                   itemLabel: (templateList) => templateList.name!, // show name
                                   onChanged: (val) {

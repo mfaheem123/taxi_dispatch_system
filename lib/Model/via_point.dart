@@ -6,6 +6,7 @@ class ViaPoint {
   TextEditingController? mobile = TextEditingController();
   double lat;
   double lng;
+  String? markerType;
 
   ViaPoint({
     required this.address,
@@ -13,5 +14,6 @@ class ViaPoint {
     required this.lng,
     this.name,
     this.mobile,
+    this.markerType,
   });
 }

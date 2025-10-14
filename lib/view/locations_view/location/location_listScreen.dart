@@ -103,7 +103,8 @@ class _LocationListScreenState extends State<LocationListScreen> {
                         verticalPadding: 0.0,
                         borderRadius: 4,
                         widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                          padding: EdgeInsets.symmetric(horizontal
+                              : 15,vertical: 0.0),
                           child: Icon(Icons.refresh,
                             color: DynamicColors.whiteClr,
                             size: 25,

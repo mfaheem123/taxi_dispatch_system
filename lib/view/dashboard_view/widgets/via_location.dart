@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
@@ -163,12 +164,20 @@ class _ViaLocationState extends State<ViaLocation> {
                           height: 30,
                           child: ElevatedButton(
                             onPressed: () {
+                              if(controller.viaPoints.length <6){
                               controller.polylinePoints.add(
-                                LatLng(controller.selectedModel!.lat!, controller.selectedModel!.lon!),
+                                LatLng(controller.selectedModel!.lat!,
+                                    controller.selectedModel!.lon!),
                               );
-                              controller.viaPoints.add(ViaPoint(address: controller.selectedModel!.name!, lat: controller.selectedModel!.lat!, lng: controller.selectedModel!.lon!));
+                              controller.viaPoints.add(ViaPoint(
+                                  address: controller.selectedModel!.name!,
+                                  lat: controller.selectedModel!.lat!,
+                                  lng: controller.selectedModel!.lon!));
                               controller.update();
-                            },
+                            }else{
+                                BotToast.showText(text: "Only Five VIA Allow");
+                              }
+                          },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               padding: EdgeInsets.zero,

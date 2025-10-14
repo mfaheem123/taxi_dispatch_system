@@ -98,6 +98,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                 decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 isDense: true,
+
                 contentPadding: EdgeInsets.all(8),
                 ),
                 ),
@@ -175,55 +176,55 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
     ),
     ShowCutKeyValue(
       title: "BASE",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationbase,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "CARE HOME",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationhome,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "CHURCHES",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationCHURCHES,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "CLINIC",
-      shortcutKey: TextEditingController(),
+      shortcutKey:controller.locationCLINIC,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "CLUB/BAR",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationCLUBBAR,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "CORPORATE",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationCORPORATE,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "DENTAL CLINIC",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationDENTALCLINIC,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "HOSPITAL",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationHOSPITAL,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "HOTELS",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationHOTELS,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),

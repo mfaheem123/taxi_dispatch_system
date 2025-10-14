@@ -174,6 +174,7 @@ class SettingController  extends GetxController{
   final locationCHURCHES = TextEditingController();
   final locationCLINIC = TextEditingController();
   final locationCLUBBAR = TextEditingController();
+
   final locationCORPORATE = TextEditingController();
   final locationDENTALCLINIC = TextEditingController();
   final locationHOSPITAL = TextEditingController();

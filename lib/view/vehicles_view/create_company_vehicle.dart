@@ -32,6 +32,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     shortCutKeyValue.value = "createCompanyVehicle";
   }
 

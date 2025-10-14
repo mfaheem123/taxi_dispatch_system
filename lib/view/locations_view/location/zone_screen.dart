@@ -11,6 +11,7 @@ class ZoneScreen extends StatelessWidget {
       child: Container(
         color: Colors.grey[200],
         child: Row(
+
           crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure all children stretch to full height
           children: [
             // Form Section

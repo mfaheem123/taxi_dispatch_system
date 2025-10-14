@@ -110,7 +110,8 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                 children: [
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                      side: BorderSide(color: Colors.transparent,),
+                                      // border color & thickness
                                     ),
                                     onPressed: () {},
                                     child: Icon(Icons.edit_calendar,

@@ -1,13 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:polyline_codec/polyline_codec.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
@@ -112,6 +115,7 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    mapController = MapController(); // ✅ Initialize here
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     pickupController.addListener(() {
@@ -307,7 +311,7 @@ class DashboardController extends GetxController {
   openStreetMapApi({searchingText}) async {
     var dio = Dio();
     var response = await dio.request(
-      'https://api.postcodes.io/postcodes/nw67bt',
+      'https://api.postcodes.io/postcodes/$searchingText',
       options: Options(
         method: 'GET',
       ),
@@ -344,6 +348,13 @@ class DashboardController extends GetxController {
         }
       ];
 
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
+      print(double.parse(response.data['lat']));
+      print(double.parse(response.data['lon']));
+
       allAddressesData.addAll(
         (addressObject as List)
             .map((e) => AllAddressesModel.fromJson(e))
@@ -360,47 +371,107 @@ class DashboardController extends GetxController {
 
   final List<ViaPoint> viaPoints = [];
   final List<LatLng> polylinePoints = [];
+  List<ViaPoint> polyLineMarkerInfo = [];
   List<LatLng> polylinePointsCoordinate = [];
+
+  List<Polyline> polylines = [];
+  List<Marker> markers = [];
 
   /// ✅ Step 2: Fetch real road route from OSRM (OpenStreetMap)
   Future<void> fetchRouteFromOSRM() async {
-    if (polylinePoints.length < 2) return;
-
+    // if (polylinePoints.length < 2) return;
+    markers.clear();
     List<LatLng> tempPoints = [];
     for (var item in polylinePoints) {
       tempPoints.add(LatLng(item.latitude, item.longitude));
+      markers.add(Marker(point: LatLng(item.latitude, item.longitude), child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,), width: 30, height: 30));
     }
-    // polylinePointsCoordinate.add(LatLng(item['lat'], item['lon']));
+   if(polyLineMarkerInfo.isNotEmpty) {
+      for (var item in polyLineMarkerInfo) {
+        if (item.markerType == "PICKUP LOCATION") {
+          markers.add(Marker(
+              point: LatLng(item.lat, item.lng),
+              child: Icon(
+                Icons.location_pin,
+                color: DynamicColors.greenClr,
+                size: 30,
+              ),
+              width: 30,
+              height: 30));
+        } else {
+          markers.add(Marker(
+              point: LatLng(item.lat, item.lng),
+              child: Icon(
+                Icons.location_pin,
+                color: DynamicColors.redClr,
+                size: 30,
+              ),
+              width: 30,
+              height: 30));
+        }
+      }
+    }
 
     final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
 
     final url = Uri.parse(
-      'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full&geometries=geojson',
+      'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full',
     );
 
     final res = await Dio().getUri(url);
 
     if (res.statusCode == 200) {
+      polylinePointsCoordinate.clear();
       final data = res.data;
-      final route = data['routes'][0]['geometry']['coordinates'] as List;
+      final encodedPolyline = data['routes'][0]['geometry'];
+      PolylinePoints polylinePoints = PolylinePoints(apiKey: 'AIzaSyBaXpJ2zz_aelMDtgyfAVP9Xsb9e9MxRIA');
+      List<PointLatLng> result =
+      PolylinePoints.decodePolyline(encodedPolyline);
+      List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
 
-      final roadPoints = route
-          .map((c) => LatLng(c[1].toDouble(), c[0].toDouble()))
-          .toList();
+      polylinePointsCoordinate = polylinePointss
+          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
 
-      polylinePointsCoordinate = roadPoints;
+      if (polylinePointsCoordinate.isNotEmpty) {
+        polylines.add(Polyline(
+            points: polylinePointsCoordinate, color: DynamicColors.primaryClr, strokeWidth: 2.0));
 
+        LatLngBounds bounds = calculateBounds(polylinePointsCoordinate);
 
-      // ✅ Fit map bounds to show route
-      final bounds = LatLngBounds.fromPoints(roadPoints);
-      mapController.fitCamera(
-        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(3)),
-      );
+        // Replacing fitBounds with fitCamera using CameraFit.bounds
+        CameraFit cameraFit = CameraFit.bounds(bounds: bounds);
+        mapController.fitCamera(cameraFit);
+      }
       update();
     } else {
       print("❌ OSRM error: ${res.statusCode}");
     }
   }
+
+  LatLngBounds calculateBounds(List<LatLng> coordinates) {
+    double minLat = coordinates[0].latitude;
+    double maxLat = coordinates[0].latitude;
+    double minLng = coordinates[0].longitude;
+    double maxLng = coordinates[0].longitude;
+
+    for (LatLng coordinate in coordinates) {
+      if (coordinate.latitude < minLat) {
+        minLat = coordinate.latitude;
+      }
+      if (coordinate.latitude > maxLat) {
+        maxLat = coordinate.latitude;
+      }
+      if (coordinate.longitude < minLng) {
+        minLng = coordinate.longitude;
+      }
+      if (coordinate.longitude > maxLng) {
+        maxLng = coordinate.longitude;
+      }
+    }
+
+    return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
+  }
+
 
 
 
@@ -448,9 +519,32 @@ class DashboardController extends GetxController {
     final suggestion = selected.name!;
     final postCode = selected.postcode!;
     if (selectedTextFieldsValue.value == "PICKUP LOCATION") {
+      polylinePoints.add(
+        LatLng(selected.lat!,
+            selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+          lng: selected.lon!,
+        markerType: "PICKUP LOCATION",
+        address: '',
+      ));
+      print(polyLineMarkerInfo);
       pickupController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
     } else {
+      polylinePoints.add(
+        LatLng(selected.lat!,
+            selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "DROP LOCATION",
+        address: '',
+      ));
       dropOffController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
     }
     allAddressesData.clear();
     highlightedIndex.value = 0;

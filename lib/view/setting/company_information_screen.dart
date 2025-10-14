@@ -23,6 +23,7 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
 
   SettingController controller = Get.isRegistered<SettingController>()
       ? Get.find<SettingController>()
+
       : Get.put(SettingController());
 
   @override
