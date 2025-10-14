@@ -11,6 +11,7 @@ import 'package:dashboard_new1/view/administration/User/subsi_diaries_screen.dar
 import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
 import 'package:dashboard_new1/view/booking_view/trash_booking.dart';
 import 'package:dashboard_new1/view/setting/booking_clearing_utility_screen.dart';
+import 'package:dashboard_new1/view/setting/chat_with_driver_passenger.dart';
 import 'package:dashboard_new1/view/setting/document_number_screen.dart';
 import 'package:dashboard_new1/view/setting/company_information_screen.dart';
 import 'package:dashboard_new1/view/setting/voipSetting_Screen.dart';
@@ -1153,9 +1154,16 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
+  
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = ChatWithDriverAndPassenger();
+              controller.menuBarRefresh(
+                  title: "CHAT WITH DRIVER AND PASSENGER", pageName: ChatWithDriverAndPassenger());
+            });
+          },
         ),
         // NestedMenuItem(
         //   title: "PERMISSION SETTINGS",

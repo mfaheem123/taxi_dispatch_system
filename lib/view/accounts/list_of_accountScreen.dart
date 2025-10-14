@@ -28,6 +28,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
       ? Get.find<AccountController>()
       : Get.put(AccountController());
 
+
   @override
   void initState() {
     // TODO: implement initState

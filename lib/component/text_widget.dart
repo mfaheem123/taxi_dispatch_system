@@ -32,7 +32,7 @@ class AppText {
   static get clr => "COLOR";
   static get vehicleType => "VEHICLE TYPE";
   static get model => "MODEL";
-  static get mobileNo => "Mobile #";
+  static get mobileNo => "MOBILE #";
   static get driverEarning => "DRIVER EARNINGS";
   static get from => "From";
   static get comingSoon => "coming soon...";
@@ -76,7 +76,7 @@ class AppText {
   static get commission => "Commission";
   static get rentLimit => "Rent Limit";
   static get balance => "Balance";
-  static get address => "Address";
+  static get address => "ADDRESS";
   static get vehicleInformation => "Vehicle Information";
   static get usedCompanyVehicle => "Use Company Vehicle";
   static get startDate => "Start Date";
@@ -431,6 +431,16 @@ class AppText {
   static get clearSelected => "CLEAR SELECTED";
   static get clearAll => "CLEAR ALL";
   static get escortWithZero => "ESCORT";
+  static get escortInformation => "ESCORT INFORMATION";
+  static get safeguardingExpiry => "	SAFEGUARDING EXPIRY";
+  static get 	patExpiry => "PAT EXPIRY";
+  static get 	firstAidExpiry => "FIRSTAID EXPIRY";
+  static get 	dbsExpiry => "DBS EXPIRY";
+  static get 	safeguarding => "SAFEGUARDING";
+  static get 	patPic => "PAT";
+  static get 	firstAid => "FIRSTAID";
+  static get 	dbs => "DBS";
+  static get 	escortAttachment => "ESCORT ATTACHMENT";
 
   // static get generate => "GENERATE";
 }

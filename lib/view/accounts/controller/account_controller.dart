@@ -16,6 +16,7 @@ class AccountController extends GetxController {
   /// RxBool variable
 
   /// controllers for text fields
+  ///
   final customerNameController = TextEditingController();
   final customerEmailController = TextEditingController();
   final customerMobileController = TextEditingController();
