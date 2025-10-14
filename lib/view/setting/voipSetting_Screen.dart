@@ -162,6 +162,7 @@ class VoipSettingsScreen extends StatelessWidget {
                       children: [
                         IconButton(
                             onPressed: () {},
+
                             icon:  Icon(Icons.edit, color:  DynamicColors.primaryClr,)),
                         IconButton(
                             onPressed: () {},

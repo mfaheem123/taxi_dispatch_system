@@ -87,6 +87,7 @@ class LocalizationScreen extends StatelessWidget {
                               BoxDecoration(color: Color(0xFFE0E0E0)),
                               children: [
                                 Padding(
+
                                   padding: EdgeInsets.symmetric(
                                       vertical: 14, horizontal: 20),
                                   child: Align(

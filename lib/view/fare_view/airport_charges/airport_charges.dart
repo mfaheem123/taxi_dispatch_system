@@ -81,7 +81,7 @@ class _AirportChargesState extends State<AirportCharges> {
                           fontSize: 13,
                         ),
                         dataTextStyle: TextStyle(
-                          fontSize: 10,
+
                         ),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),

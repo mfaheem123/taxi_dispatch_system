@@ -14,6 +14,7 @@ class BookingClearingUtilityScreen extends StatefulWidget {
 
   @override
   State<BookingClearingUtilityScreen> createState() =>
+
       _BookingClearingUtilityScreenState();
 }
 

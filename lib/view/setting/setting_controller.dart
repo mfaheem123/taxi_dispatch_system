@@ -121,7 +121,7 @@ class SettingController  extends GetxController{
 
 
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company Information
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
 
 
@@ -160,6 +160,54 @@ class SettingController  extends GetxController{
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
+
+
+  final locationaddress = TextEditingController();
+  final locationairport = TextEditingController();
+  final locationbank = TextEditingController();
+  final locationbase = TextEditingController();
+  final locationhome = TextEditingController();
+  final locationCHURCHES = TextEditingController();
+  final locationCLINIC = TextEditingController();
+  final locationCLUBBAR = TextEditingController();
+
+  final locationCORPORATE = TextEditingController();
+  final locationDENTALCLINIC = TextEditingController();
+  final locationHOSPITAL = TextEditingController();
+  final locationHOTELS = TextEditingController();
+
+
+
+
+
+
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

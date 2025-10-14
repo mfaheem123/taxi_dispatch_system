@@ -22,6 +22,7 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
 
   AdministrationController controller =
       Get.isRegistered<AdministrationController>()
+
           ? Get.find<AdministrationController>()
           : Get.put(AdministrationController());
 

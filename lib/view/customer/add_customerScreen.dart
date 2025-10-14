@@ -57,6 +57,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
               color: Colors.grey[200],
               alignment: Alignment.center,
               child: SingleChildScrollView(
+
                 child: Container(
                   constraints: const BoxConstraints(maxWidth: 1100),
                   margin: const EdgeInsets.all(16),
