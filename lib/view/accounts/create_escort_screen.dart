@@ -3,6 +3,8 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
+import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
+import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -36,6 +38,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
     shortCutKeyValue.value = "vehicleTypes";
   }
 
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -66,180 +69,152 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                   width: Get.width,
                   child: Wrap(
                     children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: Get.width,
-                            // height: screenHeight / 20,
-                            color: DynamicColors.gryClr,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 18.0, vertical: 12),
-                              child: Text(
-                                "ESCORT INFORMATION",
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                      Container(
+                        width: Get.width,
+                        // height: screenHeight / 20,
+                        color: DynamicColors.gryClr,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 18.0, vertical: 12),
+                          child: Text(
+                            AppText.escortInformation,
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                        ],
+                        ),
                       ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              if (controller.profileImg == null) {
-                                controller.pickImage();
-                              }
-                            },
-                            child: Container(
-                              height: isMobile ? 200 : 400,
+                      GestureDetector(
+                        onTap: () {
+                          if (controller.profileImg == null) {
+                            controller.pickImage();
+                          }
+                        },
+                        child: Container(
+                          height: isMobile ? 200 : 400,
+                          width: fieldWidth / 1.5,
+                          margin: EdgeInsets.only(
+                            left: 5,
+                            right: 5,
+                            top: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.grey),
+                            image: controller.profileImg == null
+                                ? null
+                                : DecorationImage(
+                                    image: MemoryImage(controller.profileImg!
+                                        .bytes), // ✅ correct provider
+                                    fit: BoxFit.fill,
+                                  ),
+                          ),
+                          child: controller.profileImg != null
+                              ? Align(
+                                  alignment: Alignment.topRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      controller.profileImg = null;
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: Text(
+                                    AppText.upload_image,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: fieldWidth * 1.5,
+                        child: Wrap(
+                          runSpacing: 10,
+                          spacing: 10,
+                          children: [
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.vehicleTypeController,
                               width: fieldWidth / 1.5,
-                              margin: EdgeInsets.only(
-                                left: 5,
-                                right: 5,
-                                top: 15,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(color: Colors.grey),
-                                image: controller.profileImg == null
-                                    ? null
-                                    : DecorationImage(
-                                  image: MemoryImage(controller
-                                      .profileImg!
-                                      .bytes), // ✅ correct provider
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                              child: controller.profileImg != null
-                                  ? Align(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    controller.profileImg = null;
-                                    controller.update();
-                                  },
-                                  child: Icon(
-                                    Icons.close_rounded,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              )
-                                  : Center(
-                                child: Text(
-                                  "UPLOAD IMAGE",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
+                              hintText: AppText.name,
+                              columnText: true,
+                              height: 35,
                             ),
-                          ),
-                          SizedBox(
-                            width: fieldWidth * 1.5,
-                            child: Wrap(
-                              runSpacing: 16,
-                              spacing: 10,
-                              children: [
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.vehicleTypeController,
-                                  width: fieldWidth / 1.5,
-                                  hintText: AppText.vehicleType,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.passengersController,
-                                  width: fieldWidth / 1.5,
-                                  hintText: AppText.passengers,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.luggagesController,
-                                  width: fieldWidth / 1.5,
-                                  hintText: AppText.luggages,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.handLuggagesController,
-                                  width: fieldWidth / 1.5,
-                                  hintText: AppText.handLuggages,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller
-                                      .driverWaitingChargesController,
-                                  width: fieldWidth / 1.5,
-                                  hintText: AppText.driverWaitingCharges,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.vehicleTypeController,
-                                  width: fieldWidth / 2,
-                                  hintText: AppText.vehicleType,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.passengersController,
-                                  width: fieldWidth / 2,
-                                  hintText: AppText.passengers,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.luggagesController,
-                                  width: fieldWidth / 2,
-                                  hintText: AppText.luggages,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller:
-                                  controller.handLuggagesController,
-                                  width: fieldWidth / 2,
-                                  hintText: AppText.handLuggages,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller
-                                      .driverWaitingChargesController,
-                                  width: fieldWidth / 2,
-                                  hintText: AppText.driverWaitingCharges,
-                                  columnText: true,
-                                  height: 35,
-                                ),
-                              ],
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.passengersController,
+                              width: fieldWidth / 1.5,
+                              hintText: AppText.mobile,
+                              columnText: true,
+                              height: 35,
                             ),
-                          ),
-                        ],
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.luggagesController,
+                              width: fieldWidth / 1.5,
+                              hintText: AppText.email,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.dob,
+                              width: fieldWidth / 1.8,
+                              child: SizedBox(
+                                  height: 30, child: KeyboardDatePicker()),
+                            ),
+                            CustomTextField(
+                              borderRadius: 4,
+                              controller:
+                                  controller.driverWaitingChargesController,
+                              width: fieldWidth / 1.5,
+                              hintText: AppText.address,
+                              columnText: true,
+                              height: 35,
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.safeguardingExpiry,
+                              width: fieldWidth / 1.8,
+                              child: SizedBox(
+                                  height: 30, child: KeyboardDatePicker()),
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.patExpiry,
+                              width: fieldWidth / 1.8,
+                              child: SizedBox(
+                                  height: 30, child: KeyboardDatePicker()),
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.firstAidExpiry,
+                              width: fieldWidth / 1.8,
+                              child: SizedBox(
+                                  height: 30, child: KeyboardDatePicker()),
+                            ),
+                            labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.dbsExpiry,
+                              width: fieldWidth / 1.8,
+                              child: SizedBox(
+                                  height: 30, child: KeyboardDatePicker()),
+                            ),
+                          ],
+                        ),
                       ),
                       Container(
                         width: Get.width,
@@ -249,296 +224,275 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 18.0, vertical: 12),
                           child: Text(
-                            "ESCORT Attachments",
+                            AppText.escortAttachment,
                             style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
-                      Wrap(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppText.phcVehicleDoc,
-                                style:
-                                mozillaTextRegularText(fontSize: 11),
-                              ),
-                              Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Container(
-                                    height: isMobile ? 100 : 200,
-                                    width: fieldWidth / 1.5,
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border:
-                                      Border.all(color: Colors.grey),
-                                      image: controller
-                                          .phcVehicleDocPic ==
-                                          null
-                                          ? null
-                                          : DecorationImage(
-                                        image: MemoryImage(controller
-                                            .phcVehicleDocPic!), // ✅ correct provider
-                                        fit: BoxFit.fill,
+                      Center(
+                        child: Wrap(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppText.safeguarding,
+                                  style: mozillaTextRegularText(fontSize: 11),
+                                ),
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey),
+                                        image:
+                                            controller.phcVehicleDocPic == null
+                                                ? null
+                                                : DecorationImage(
+                                                    image: MemoryImage(controller
+                                                        .phcVehicleDocPic!), // ✅ correct provider
+                                                    fit: BoxFit.fill,
+                                                  ),
                                       ),
+                                      child: controller.phcVehicleDocPic != null
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.safeguarding,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                     ),
-                                    child: controller.phcVehicleDocPic !=
-                                        null
-                                        ? SizedBox.shrink()
-                                        : Center(
-                                      child: Text(
-                                        AppText.phcVehicleDoc,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (controller.phcVehicleDocPic ==
-                                          null) {
-                                        final image =
-                                        await ImagePickerHelper
-                                            .pickImage();
-                                        if (image != null) {
-                                          controller.phcVehicleDocPic =
-                                              image.bytes;
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (controller.phcVehicleDocPic ==
+                                            null) {
+                                          final image = await ImagePickerHelper
+                                              .pickImage();
+                                          if (image != null) {
+                                            controller.phcVehicleDocPic =
+                                                image.bytes;
+                                          }
+                                        } else {
+                                          controller.phcVehicleDocPic = null;
                                         }
-                                      } else {
-                                        controller.phcVehicleDocPic =
-                                        null;
-                                      }
-                                      controller.update();
-                                    },
-                                    child: Icon(
-                                      controller.phcVehicleDocPic != null
-                                          ? Icons.remove_circle
-                                          : Icons.add_circle_outlined,
-                                      size: 30,
-                                      color: DynamicColors.primaryClr,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppText.motDoc,
-                                style:
-                                mozillaTextRegularText(fontSize: 11),
-                              ),
-                              Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Container(
-                                    height: isMobile ? 100 : 200,
-                                    width: fieldWidth / 1.5,
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border:
-                                      Border.all(color: Colors.grey),
-                                      image: controller.motDocPic == null
-                                          ? null
-                                          : DecorationImage(
-                                        image: MemoryImage(controller
-                                            .motDocPic!), // ✅ correct provider
-                                        fit: BoxFit.fill,
+                                        controller.update();
+                                      },
+                                      child: Icon(
+                                        controller.phcVehicleDocPic != null
+                                            ? Icons.remove_circle
+                                            : Icons.add_circle_outlined,
+                                        size: 30,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                    ),
-                                    child: controller.motDocPic != null
-                                        ? SizedBox.shrink()
-                                        : Center(
-                                      child: Text(
-                                        AppText.motDoc,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppText.patPic,
+                                  style: mozillaTextRegularText(fontSize: 11),
+                                ),
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey),
+                                        image: controller.motDocPic == null
+                                            ? null
+                                            : DecorationImage(
+                                                image: MemoryImage(controller
+                                                    .motDocPic!), // ✅ correct provider
+                                                fit: BoxFit.fill,
+                                              ),
                                       ),
+                                      child: controller.motDocPic != null
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.patPic,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (controller.motDocPic == null) {
-                                        final image =
-                                        await ImagePickerHelper
-                                            .pickImage();
-                                        if (image != null) {
-                                          controller.motDocPic =
-                                              image.bytes;
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (controller.motDocPic == null) {
+                                          final image = await ImagePickerHelper
+                                              .pickImage();
+                                          if (image != null) {
+                                            controller.motDocPic = image.bytes;
+                                          }
+                                        } else {
+                                          controller.motDocPic = null;
                                         }
-                                      } else {
-                                        controller.motDocPic = null;
-                                      }
-                                      controller.update();
-                                    },
-                                    child: Icon(
-                                      controller.motDocPic != null
-                                          ? Icons.remove_circle
-                                          : Icons.add_circle_outlined,
-                                      size: 30,
-                                      color: DynamicColors.primaryClr,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppText.mot2Doc,
-                                style:
-                                mozillaTextRegularText(fontSize: 11),
-                              ),
-                              Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Container(
-                                    height: isMobile ? 100 : 200,
-                                    width: fieldWidth / 1.5,
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border:
-                                      Border.all(color: Colors.grey),
-                                      image: controller.mot2DocPic == null
-                                          ? null
-                                          : DecorationImage(
-                                        image: MemoryImage(controller
-                                            .mot2DocPic!), // ✅ correct provider
-                                        fit: BoxFit.fill,
+                                        controller.update();
+                                      },
+                                      child: Icon(
+                                        controller.motDocPic != null
+                                            ? Icons.remove_circle
+                                            : Icons.add_circle_outlined,
+                                        size: 30,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                    ),
-                                    child: controller.mot2DocPic != null
-                                        ? SizedBox.shrink()
-                                        : Center(
-                                      child: Text(
-                                        AppText.mot2Doc,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppText.firstAid,
+                                  style: mozillaTextRegularText(fontSize: 11),
+                                ),
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey),
+                                        image: controller.mot2DocPic == null
+                                            ? null
+                                            : DecorationImage(
+                                                image: MemoryImage(controller
+                                                    .mot2DocPic!), // ✅ correct provider
+                                                fit: BoxFit.fill,
+                                              ),
                                       ),
+                                      child: controller.mot2DocPic != null
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.firstAid,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (controller.mot2DocPic == null) {
-                                        final image =
-                                        await ImagePickerHelper
-                                            .pickImage();
-                                        if (image != null) {
-                                          controller.mot2DocPic =
-                                              image.bytes;
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (controller.mot2DocPic == null) {
+                                          final image = await ImagePickerHelper
+                                              .pickImage();
+                                          if (image != null) {
+                                            controller.mot2DocPic = image.bytes;
+                                          }
+                                        } else {
+                                          controller.mot2DocPic = null;
                                         }
-                                      } else {
-                                        controller.mot2DocPic = null;
-                                      }
-                                      controller.update();
-                                    },
-                                    child: Icon(
-                                      controller.mot2DocPic != null
-                                          ? Icons.remove_circle
-                                          : Icons.add_circle_outlined,
-                                      size: 30,
-                                      color: DynamicColors.primaryClr,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                AppText.insuranceDoc,
-                                style:
-                                mozillaTextRegularText(fontSize: 11),
-                              ),
-                              Stack(
-                                alignment: Alignment.topRight,
-                                children: [
-                                  Container(
-                                    height: isMobile ? 100 : 200,
-                                    width: fieldWidth / 1.5,
-                                    margin: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border:
-                                      Border.all(color: Colors.grey),
-                                      image: controller.insuranceDocPic ==
-                                          null
-                                          ? null
-                                          : DecorationImage(
-                                        image: MemoryImage(controller
-                                            .insuranceDocPic!), // ✅ correct provider
-                                        fit: BoxFit.fill,
+                                        controller.update();
+                                      },
+                                      child: Icon(
+                                        controller.mot2DocPic != null
+                                            ? Icons.remove_circle
+                                            : Icons.add_circle_outlined,
+                                        size: 30,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                    ),
-                                    child:
-                                    controller.insuranceDocPic != null
-                                        ? SizedBox.shrink()
-                                        : Center(
-                                      child: Text(
-                                        AppText.insuranceDoc,
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight:
-                                          FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppText.dbs,
+                                  style: mozillaTextRegularText(fontSize: 11),
+                                ),
+                                Stack(
+                                  alignment: Alignment.topRight,
+                                  children: [
+                                    Container(
+                                      height: isMobile ? 100 : 200,
+                                      width: fieldWidth / 1.5,
+                                      margin: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.grey),
+                                        image:
+                                            controller.insuranceDocPic == null
+                                                ? null
+                                                : DecorationImage(
+                                                    image: MemoryImage(controller
+                                                        .insuranceDocPic!), // ✅ correct provider
+                                                    fit: BoxFit.fill,
+                                                  ),
                                       ),
+                                      child: controller.insuranceDocPic != null
+                                          ? SizedBox.shrink()
+                                          : Center(
+                                              child: Text(
+                                                AppText.dbs,
+                                                style: TextStyle(
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
                                     ),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (controller.insuranceDocPic ==
-                                          null) {
-                                        final image =
-                                        await ImagePickerHelper
-                                            .pickImage();
-                                        if (image != null) {
-                                          controller.insuranceDocPic =
-                                              image.bytes;
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (controller.insuranceDocPic ==
+                                            null) {
+                                          final image = await ImagePickerHelper
+                                              .pickImage();
+                                          if (image != null) {
+                                            controller.insuranceDocPic =
+                                                image.bytes;
+                                          }
+                                        } else {
+                                          controller.insuranceDocPic = null;
                                         }
-                                      } else {
-                                        controller.insuranceDocPic = null;
-                                      }
-                                      controller.update();
-                                    },
-                                    child: Icon(
-                                      controller.insuranceDocPic != null
-                                          ? Icons.remove_circle
-                                          : Icons.add_circle_outlined,
-                                      size: 30,
-                                      color: DynamicColors.primaryClr,
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                        controller.update();
+                                      },
+                                      child: Icon(
+                                        controller.insuranceDocPic != null
+                                            ? Icons.remove_circle
+                                            : Icons.add_circle_outlined,
+                                        size: 30,
+                                        color: DynamicColors.primaryClr,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -546,7 +500,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
               ],
             ),
             CustomButton(
-              width: Get.width/2,
+              width: Get.width / 2,
               btnText: AppText.save,
               verticalPadding: 0.0,
               height: 40,

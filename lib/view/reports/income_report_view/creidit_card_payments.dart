@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/keyboard_checkBox_widget.dart';

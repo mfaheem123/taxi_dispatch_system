@@ -28,6 +28,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
 
+
   @override
   void initState() {
     // TODO: implement initState

@@ -20,6 +20,7 @@ import '../models/all_addresses_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
+
 class DashboardController extends GetxController {
   ///Todo menu bar functionality
 
