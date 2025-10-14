@@ -195,6 +195,7 @@ class _ViaLocationState extends State<ViaLocation> {
                               children: [
                                 Text(
                                   '${index + 1}',
+
                                   style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(width: 12),

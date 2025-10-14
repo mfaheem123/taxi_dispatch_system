@@ -125,7 +125,7 @@ class _UserListscreenState extends State<UserListscreen> {
                         headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                         dataRowMinHeight: 48,
                         dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
+                        headingTextStyle:  TextStyle(
                           fontWeight: FontWeight.w800,
                           fontSize: 13,
                         ),
@@ -156,12 +156,38 @@ class _UserListscreenState extends State<UserListscreen> {
                           return DataRow(
                             cells: [
 
-                              const DataCell(Text("Saloon")),
-                              const DataCell(Text("4")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("£ 7.00")),
-                              const DataCell(Text("2.00 mi")),
+                               DataCell(Text("Saloon",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w800,
+                              ),
+
+                              )),
+                               DataCell(Text("4",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),)),
+                               DataCell(Text("2",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),)),
+                               DataCell(Text("2",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),)),
+                               DataCell(Text("£ 7.00",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),)),
+                               DataCell(Text("2.00 mi",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                ),)),
 
                               DataCell(
                                 Row(

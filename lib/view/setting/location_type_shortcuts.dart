@@ -154,22 +154,22 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
   }
 
 
-  List<ShowCutKeyValue> locationShortcutKey = [
+  late List<ShowCutKeyValue> locationShortcutKey = [
     ShowCutKeyValue(
       title: "ADDRESS",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationaddress,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "AIRPORT",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationairport,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),
     ShowCutKeyValue(
       title: "BANK",
-      shortcutKey: TextEditingController(),
+      shortcutKey: controller.locationbank,
       foregroundColor: Colors.blue,
       backgroundColor: Colors.blue
     ),

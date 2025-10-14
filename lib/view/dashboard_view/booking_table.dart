@@ -126,7 +126,9 @@ class _BookingTableState extends State<BookingTable> {
                     fontSize: 13,
                   ),
                   dataTextStyle: const TextStyle(
-                    fontSize: 10,
+
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
                   ),
                   border: TableBorder(
                     horizontalInside: BorderSide(
