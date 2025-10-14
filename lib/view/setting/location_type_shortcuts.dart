@@ -29,6 +29,9 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
+      initState: (v){
+        controller.getShortCut();
+      },
         builder: (controller) {
 
           return LayoutBuilder(builder: (context, constraints) {
@@ -43,7 +46,10 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-            return Column(
+            return
+              controller.getShortCutLoader.value?
+              SizedBox.shrink():
+            Column(
               children: [
                 SizedBox(
                 height: 8,
@@ -70,7 +76,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
             SizedBox(
               width: Get.width,
               child: DatatableWidget(
-              totalRow: locationShortcutKey.length,
+              totalRow: controller.locationShortCut!.locationTypes!.length,
               columns: [
               buildHeaderWithSearch(title: "LOCATION TYPE",
               removeSearching: true,
@@ -87,14 +93,14 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
               ],
 
               // 🔹 Create a list of DataRow, each having 4 DataCell
-              rows: locationShortcutKey.map((item) {
+              rows: controller.locationShortCut!.locationTypes!.map((item) {
               return DataRow(
                   cells: [
-              DataCell(Center(child: Text(item.title!))),
+              DataCell(Center(child: Text(item.name!))),
               DataCell(
               Center(
                 child: TextField(
-                controller: item.shortcutKey,
+                controller: item.controller,
                 decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 isDense: true,
@@ -106,7 +112,8 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
               ),
              DataCell(Center(
                child: ColorPickerWidget(
-                 pickerColor: item.backgroundColor,
+                 pickerColor: item.backgroundColor!,
+                 // pickerColor: (0xff item.backgroundColor),
                  onColorChanged: (color) {
                    setState(() {
                      item.backgroundColor = color; // live preview
@@ -125,7 +132,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
              )),
              DataCell(Center(
                child: ColorPickerWidget(
-                 pickerColor: item.foregroundColor,
+                 pickerColor: item.foregroundColor!,
                  onColorChanged: (color) {
                    setState(() {
                      item.foregroundColor = color; // live preview
@@ -153,90 +160,5 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
       }
     );
   }
-
-
-  late List<ShowCutKeyValue> locationShortcutKey = [
-    ShowCutKeyValue(
-      title: "ADDRESS",
-      shortcutKey: controller.locationaddress,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "AIRPORT",
-      shortcutKey: controller.locationairport,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "BANK",
-      shortcutKey: controller.locationbank,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "BASE",
-      shortcutKey: controller.locationbase,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "CARE HOME",
-      shortcutKey: controller.locationhome,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "CHURCHES",
-      shortcutKey: controller.locationCHURCHES,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "CLINIC",
-      shortcutKey:controller.locationCLINIC,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "CLUB/BAR",
-      shortcutKey: controller.locationCLUBBAR,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "CORPORATE",
-      shortcutKey: controller.locationCORPORATE,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "DENTAL CLINIC",
-      shortcutKey: controller.locationDENTALCLINIC,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "HOSPITAL",
-      shortcutKey: controller.locationHOSPITAL,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-    ShowCutKeyValue(
-      title: "HOTELS",
-      shortcutKey: controller.locationHOTELS,
-      foregroundColor: Colors.blue,
-      backgroundColor: Colors.blue
-    ),
-  ];
 }
 
-class ShowCutKeyValue {
-
-  String? title;
-  TextEditingController shortcutKey = TextEditingController();
-  Color backgroundColor = Colors.blue;
-  Color foregroundColor = Colors.blue;
-
-  ShowCutKeyValue({this.title,required this.backgroundColor,required this.foregroundColor,required this.shortcutKey});
-}

@@ -2,6 +2,8 @@
 
 
 import 'package:dashboard_new1/Model/image_model.dart';
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/setting/shortcut_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -165,30 +167,17 @@ class SettingController  extends GetxController{
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
 
-
-  final locationaddress = TextEditingController();
-  final locationairport = TextEditingController();
-  final locationbank = TextEditingController();
-  final locationbase = TextEditingController();
-  final locationhome = TextEditingController();
-  final locationCHURCHES = TextEditingController();
-  final locationCLINIC = TextEditingController();
-  final locationCLUBBAR = TextEditingController();
-
-  final locationCORPORATE = TextEditingController();
-  final locationDENTALCLINIC = TextEditingController();
-  final locationHOSPITAL = TextEditingController();
-  final locationHOTELS = TextEditingController();
-
-
-
-
-
-
-
-
-
-
+  LocationShortCutModel? locationShortCut;
+  RxBool getShortCutLoader = false.obs;
+  getShortCut() async{
+    getShortCutLoader(true);
+    var response = await Api().get("location-types");
+    if(response.statusCode == 200){
+      locationShortCut = LocationShortCutModel.fromJson(response.data);
+      getShortCutLoader(false);
+      update();
+    }
+  }
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
