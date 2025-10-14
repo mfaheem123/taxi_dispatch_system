@@ -14,6 +14,7 @@ import 'package:polyline_codec/polyline_codec.dart';
 
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
+import '../../../component/marker_class.dart';
 import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
 
@@ -285,11 +286,7 @@ class DashboardController extends GetxController {
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll(
-          (response.data as List)
-              .map((e) => AllAddressesModel.fromJson(e))
-              .toList(),
-        );
-
+          (response.data as List).map((e) => AllAddressesModel.fromJson(e)).toList());
         inputText.value = searchingText;
         if (searchingText.isEmpty) {
           suggestions.clear();
@@ -375,39 +372,57 @@ class DashboardController extends GetxController {
   List<LatLng> polylinePointsCoordinate = [];
 
   List<Polyline> polylines = [];
-  List<Marker> markers = [];
+  List<CustomMarker> markers = [];
 
   /// ✅ Step 2: Fetch real road route from OSRM (OpenStreetMap)
   Future<void> fetchRouteFromOSRM() async {
     // if (polylinePoints.length < 2) return;
     markers.clear();
     List<LatLng> tempPoints = [];
-    for (var item in polylinePoints) {
-      tempPoints.add(LatLng(item.latitude, item.longitude));
-      markers.add(Marker(point: LatLng(item.latitude, item.longitude), child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,), width: 30, height: 30));
+    for (var item in viaPoints) {
+      tempPoints.add(LatLng(item.lat, item.lng));
+        markers.add(
+            CustomMarker(
+              type: "via",
+              child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,),
+              point: LatLng(item.lat, item.lng),
+              width: 30, height: 30,
+            ),
+      );
     }
    if(polyLineMarkerInfo.isNotEmpty) {
       for (var item in polyLineMarkerInfo) {
+
         if (item.markerType == "PICKUP LOCATION") {
-          markers.add(Marker(
-              point: LatLng(item.lat, item.lng),
-              child: Icon(
-                Icons.location_pin,
-                color: DynamicColors.greenClr,
-                size: 30,
-              ),
-              width: 30,
-              height: 30));
+          print(markers);
+          tempPoints.add(LatLng(item.lat, item.lng));
+          markers.add(
+              CustomMarker(
+                type: "pickup",
+                  point: LatLng(item.lat, item.lng),
+                  child: Icon(
+                    Icons.location_pin,
+                    color: DynamicColors.greenClr,
+                    size: 30,
+                  ),
+                  width: 30,
+                  height: 30
+              ),);
         } else {
-          markers.add(Marker(
-              point: LatLng(item.lat, item.lng),
-              child: Icon(
-                Icons.location_pin,
-                color: DynamicColors.redClr,
-                size: 30,
+          tempPoints.add(LatLng(item.lat, item.lng));
+          markers.add(
+              CustomMarker(
+                  type: "dropOff",
+                  point: LatLng(item.lat, item.lng),
+                  child: Icon(
+                    Icons.location_pin,
+                    color: DynamicColors.redClr,
+                    size: 30,
+                  ),
+                  width: 30,
+                  height: 30
               ),
-              width: 30,
-              height: 30));
+          );
         }
       }
     }
@@ -519,6 +534,10 @@ class DashboardController extends GetxController {
     final suggestion = selected.name!;
     final postCode = selected.postcode!;
     if (selectedTextFieldsValue.value == "PICKUP LOCATION") {
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "PICKUP LOCATION");
+      if(index != -1){
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
       polylinePoints.add(
         LatLng(selected.lat!,
             selected.lon!),
@@ -533,6 +552,10 @@ class DashboardController extends GetxController {
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
     } else {
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "DROP LOCATION");
+      if(index != -1){
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
       polylinePoints.add(
         LatLng(selected.lat!,
             selected.lon!),

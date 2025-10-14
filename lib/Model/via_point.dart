@@ -17,3 +17,4 @@ class ViaPoint {
     this.markerType,
   });
 }
+
