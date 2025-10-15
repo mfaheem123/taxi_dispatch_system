@@ -296,8 +296,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    controller.pickupController.text.isEmpty?SizedBox.shrink(): KbdActivatable(
                                                                      focusNode: clearPic,
                                                                      onActivate: () {
+                                                                      int index = controller.markers.indexWhere((test) => test.type == "pickup");
+                                                                      int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
+                                                                      controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
+                                                                      controller.markers.remove(controller.markers[index]);
                                                                        controller.pickupController.clear();
-                                                                       controller.update();
+                                                                      controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
                                                                        color: DynamicColors.redClr,
@@ -450,8 +454,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    controller.dropOffController.text.isEmpty?SizedBox.shrink(): KbdActivatable(
                                                                      focusNode: clearDrop,
                                                                      onActivate: () {
+                                                                       int index = controller.markers.indexWhere((test) => test.type == "dropOff");
+                                                                       int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
+                                                                       controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
+                                                                       controller.markers.remove(controller.markers[index]);
                                                                        controller.dropOffController.clear();
-                                                                       controller.update();
+                                                                       controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
                                                                        color: DynamicColors.redClr,
@@ -594,7 +602,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  ),
                                                                  textInputAction: TextInputAction.next,
                                                                  onTap: () {
-                                                                   shortCutKeyValue.value = "formKey";
+                                                                   shortCutKeyValue.value = "PICKUP LOCATION";
                                                                  },
                                                                  onSubmitted: (_) =>
                                                                      FocusScope.of(context)
@@ -1575,13 +1583,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                           }
 
                           // ensure RawKeyboardListener gets focus when suggestions appear
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (controller.allAddressesData.isNotEmpty &&
-                                !controller.suggestionFocusNode.hasFocus) {
-                              FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                              FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
-                            }
-                          });
+                          // WidgetsBinding.instance.addPostFrameCallback((_) {
+                          //   if (controller.allAddressesData.isNotEmpty &&
+                          //       !controller.suggestionFocusNode.hasFocus) {
+                          //     FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                          //     if(shortCutKeyValue.value == "PICKUP LOCATION"){
+                          //       FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
+                          //     }else{
+                          //       FocusScope.of(context).requestFocus(controller.dropOffTextFieldFocusNode);
+                          //     }
+                          //   }
+                          // });
 
                           return Positioned(
                             top: top,
@@ -1643,8 +1655,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                             ),
                           );
                         }),
-
-
                       ],
                     ),
                   ],
