@@ -48,7 +48,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     }
     return SizedBox(
       width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
-      height: screenHeight * 0.80,
+      height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(

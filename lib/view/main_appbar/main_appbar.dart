@@ -284,9 +284,9 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
-            final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
-            html.window.open(newTabUrl, '_blank');
-            // Get.offNamed(Routes.createBooking);
+            // final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
+            // html.window.open(newTabUrl, '_blank');
+            Get.toNamed(Routes.createBooking);
           },
         ),
         NestedMenuItem(

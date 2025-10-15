@@ -349,13 +349,6 @@ class DashboardController extends GetxController {
         }
       ];
 
-      print(double.parse(response.data['lat']));
-      print(double.parse(response.data['lon']));
-      print(double.parse(response.data['lat']));
-      print(double.parse(response.data['lon']));
-      print(double.parse(response.data['lat']));
-      print(double.parse(response.data['lon']));
-
       allAddressesData.addAll(
         (addressObject as List)
             .map((e) => AllAddressesModel.fromJson(e))
@@ -490,6 +483,7 @@ class DashboardController extends GetxController {
 
     return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
   }
+
 
 
 
@@ -633,6 +627,37 @@ class DashboardController extends GetxController {
   final FocusNode returnTripNode = FocusNode();
 
   final weeks = TextEditingController();
+
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
+
+  Future<List<String>> getNamesRequest(String query) async {
+    if (query.isEmpty) return [];
+
+    const duration = Duration(milliseconds: 800);
+
+    // 👇 cancel previous debounce timer
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Completer to wait for API completion
+    final completer = Completer<List<String>>();
+    selectedTextFieldsValue.value = "createPickUp";
+    _debounce = Timer(duration, () async {
+      await getAddresses(fieldsName: "VIA", searchingText: query);
+
+      // ✅ Prepare list after data fetched
+      final list = allAddressesData
+          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
+          .toList();
+
+      completer.complete(list); // mark as finished
+    });
+
+    // ✅ Wait until completer completes
+    return completer.future;
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 }
 
 class DashBoardBindings implements Bindings {
