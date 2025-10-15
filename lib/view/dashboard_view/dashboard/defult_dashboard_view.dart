@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
+import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -42,12 +45,44 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   FocusNode _focusNode = FocusNode();
 
   final FocusNode swap1FN = FocusNode();
+  final FocusNode clearPic = FocusNode();
+  final FocusNode clearDrop = FocusNode();
   final FocusNode swap2FN = FocusNode();
   final FocusNode calendarFN = FocusNode();
   final FocusNode checkboxFocus = FocusNode();
   final FocusNode emailFocus = FocusNode();
   final List<FocusNode> _focusNodes =
   List.generate(4, (index) => FocusNode()); // 4 icons
+
+  Timer? _debounce;
+
+  DashboardController controller = Get.find();
+
+  Future<List<String>> _getNamesRequest(String query) async {
+    if (query.isEmpty) return [];
+
+    const duration = Duration(milliseconds: 800);
+
+    // 👇 cancel previous debounce timer
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Completer to wait for API completion
+    final completer = Completer<List<String>>();
+    controller.selectedTextFieldsValue.value = "pickup";
+    _debounce = Timer(duration, () async {
+      await controller.getAddresses(fieldsName: "VIA", searchingText: query);
+
+      // ✅ Prepare list after data fetched
+      final list = controller.allAddressesData
+          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
+          .toList();
+
+      completer.complete(list); // mark as finished
+    });
+
+    // ✅ Wait until completer completes
+    return completer.future;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,9 +220,34 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          child: SizedBox(
                                                            width: fieldWidth/1.2,
                                                            height: 30,
+                                                           // child: DropdownFlutter<String>.searchRequest(
+                                                           //   futureRequest: _getNamesRequest,
+                                                           //   hintText: 'Search location',
+                                                           //   items: controller.allAddressesData.map((m) => m.name ?? '').toList(),
+                                                           //   onChanged: (selectedName) {
+                                                           //     // find original model (simple loop avoids firstWhere/orElse issues)
+                                                           //     for (final m in controller.allAddressesData) {
+                                                           //       if ("${m.name!} ${m.postcode!}"  == selectedName) {
+                                                           //         controller.selectedModel = m;
+                                                           //         break;
+                                                           //       }
+                                                           //     }
+                                                           //     if (controller.selectedModel != null) {
+                                                           //       print('Selected model: ${controller.selectedModel!.name}');
+                                                           //       // use selectedModel (lat/lon, postcode, etc.)
+                                                           //     }
+                                                           //   },
+                                                           //   decoration: CustomDropdownDecoration(
+                                                           //     hintStyle: mozillaTextRegularText(fontSize: 12),
+                                                           //     noResultFoundStyle: mozillaTextRegularText(fontSize: 14),
+                                                           //     listItemStyle: mozillaTextRegularText(fontSize: 14),
+                                                           //     closedBorder: Border.all(color: Colors.grey),
+                                                           //     closedBorderRadius: BorderRadius.circular(4),
+                                                           //   ),
+                                                           //   closedHeaderPadding: EdgeInsets.all(6),
+                                                           // ),
                                                            child: RawKeyboardListener(
-                                                             focusNode:
-                                                             controller.pickupKeyboardFocusNode,
+                                                             focusNode: controller.pickupKeyboardFocusNode,
                                                              onKey: (event) {
                                                                if (event is RawKeyDownEvent) {
                                                                  if (event.logicalKey ==
@@ -229,26 +289,44 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                },
                                                                onSubmitted: (_) =>
                                                                    FocusScope.of(context).nextFocus(),
-                                                               suffixIcon: KbdActivatable(
-                                                                 focusNode: swap1FN,
-                                                                 onActivate: () {
-                                                                   String tempPic =
-                                                                       controller.pickupController.text;
-                                                                   String tempDrop =
-                                                                       controller.dropOffController.text;
-                                                                   controller.pickupController.text =
-                                                                       tempDrop;
-                                                                   controller.dropOffController.text =
-                                                                       tempPic;
-                                                                   controller.update();
-                                                                 },
-                                                                 child: const Icon(Icons.swap_vert,
-                                                                     color: Color(0xFF575797), size: 20),
+                                                               suffixIcon: Row(
+                                                                 mainAxisAlignment: MainAxisAlignment.end,
+                                                                 mainAxisSize: MainAxisSize.min,
+                                                                 children: [
+                                                                   controller.pickupController.text.isEmpty?SizedBox.shrink(): KbdActivatable(
+                                                                     focusNode: clearPic,
+                                                                     onActivate: () {
+                                                                       controller.pickupController.clear();
+                                                                       controller.update();
+                                                                     },
+                                                                     child: Icon(Icons.close,
+                                                                       color: DynamicColors.redClr,
+                                                                       size: 15,
+                                                                     ),
+                                                                   ),
+                                                                   KbdActivatable(
+                                                                     focusNode: swap1FN,
+                                                                     onActivate: () {
+                                                                       String tempPic =
+                                                                           controller.pickupController.text;
+                                                                       String tempDrop =
+                                                                           controller.dropOffController.text;
+                                                                       controller.pickupController.text =
+                                                                           tempDrop;
+                                                                       controller.dropOffController.text =
+                                                                           tempPic;
+                                                                       controller.update();
+                                                                     },
+                                                                     child: const Icon(Icons.swap_vert,
+                                                                         color: Color(0xFF575797), size: 20),
+                                                                   ),
+                                                                 ],
                                                                ),
                                                              ),
                                                            ),
                                                          ),
                                                        ),
+
                                                        Padding(
                                                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                                          child: FocusTraversalOrder(
@@ -365,21 +443,38 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                textInputAction: TextInputAction.next,
                                                                onSubmitted: (_) =>
                                                                    FocusScope.of(context).nextFocus(),
-                                                               suffixIcon: KbdActivatable(
-                                                                 focusNode: swap2FN,
-                                                                 onActivate: () {
-                                                                   String tempPic =
-                                                                       controller.pickupController.text;
-                                                                   String tempDrop =
-                                                                       controller.dropOffController.text;
-                                                                   controller.pickupController.text =
-                                                                       tempDrop;
-                                                                   controller.dropOffController.text =
-                                                                       tempPic;
-                                                                   controller.update();
-                                                                 },
-                                                                 child: const Icon(Icons.swap_vert,
-                                                                     color: Color(0xFF575797), size: 20),
+                                                               suffixIcon: Row(
+                                                                 mainAxisSize: MainAxisSize.min,
+                                                                 mainAxisAlignment: MainAxisAlignment.end,
+                                                                 children: [
+                                                                   controller.dropOffController.text.isEmpty?SizedBox.shrink(): KbdActivatable(
+                                                                     focusNode: clearDrop,
+                                                                     onActivate: () {
+                                                                       controller.dropOffController.clear();
+                                                                       controller.update();
+                                                                     },
+                                                                     child: Icon(Icons.close,
+                                                                       color: DynamicColors.redClr,
+                                                                       size: 15,
+                                                                     ),
+                                                                   ),
+                                                                   KbdActivatable(
+                                                                     focusNode: swap2FN,
+                                                                     onActivate: () {
+                                                                       String tempPic =
+                                                                           controller.pickupController.text;
+                                                                       String tempDrop =
+                                                                           controller.dropOffController.text;
+                                                                       controller.pickupController.text =
+                                                                           tempDrop;
+                                                                       controller.dropOffController.text =
+                                                                           tempPic;
+                                                                       controller.update();
+                                                                     },
+                                                                     child: const Icon(Icons.swap_vert,
+                                                                         color: Color(0xFF575797), size: 20),
+                                                                   ),
+                                                                 ],
                                                                ),
                                                              ),
                                                            ),
@@ -1484,6 +1579,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                             if (controller.allAddressesData.isNotEmpty &&
                                 !controller.suggestionFocusNode.hasFocus) {
                               FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                              FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
                             }
                           });
 
