@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,7 +21,6 @@ class CreateDriverRent extends StatefulWidget {
 }
 
 class _CreateDriverRentState extends State<CreateDriverRent> {
-
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
       : Get.put(DriverController());
@@ -44,7 +39,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<DriverController>(builder: (controller) {
@@ -59,10 +54,10 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
         final double fieldWidth = isMobile
             ? maxWidth * 0.9 // almost full width on mobile
             : isTablet
-            ? 200 // smaller fixed size on tablet
-            : isLaptop
-            ? 250 // medium size on laptop
-            : 330; // larger on LCD
+                ? 200 // smaller fixed size on tablet
+                : isLaptop
+                    ? 250 // medium size on laptop
+                    : 330; // larger on LCD
         print(fieldWidth);
         return SingleChildScrollView(
           child: Column(
@@ -161,7 +156,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   SizedBox(
                     width: fieldWidth / 1.2,
@@ -174,7 +169,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   SizedBox(
                     width: fieldWidth / 1.2,
@@ -187,7 +182,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   Checkbox(
                       value: controller.ptValue.value,
@@ -201,7 +196,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   Checkbox(
                       value: controller.cashValue.value,
@@ -215,7 +210,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   Checkbox(
                       value: controller.creditCardValue.value,
@@ -229,7 +224,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   Checkbox(
                       value: controller.accountValue.value,
@@ -243,7 +238,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                         style: mozillaTextSemiBoldText(
                             context: context,
                             fontSize: 13,
-                            color: DynamicColors.gryClr)),
+                            color: DynamicColors.textClr)),
                   ),
                   SizedBox(
                     width: 50,
@@ -345,12 +340,12 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(AppText.total,
+                  child: Text(
+                    AppText.total,
                     style: mozillaTextSemiBoldText(
                         fontSize: 25,
                         color: DynamicColors.textClr.withOpacity(0.8),
-                        fontWeight: FontWeight.w800
-                    ),
+                        fontWeight: FontWeight.w800),
                   ),
                 ),
               ),
@@ -363,49 +358,25 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       customWidget(),
-                      customWidget(
-                          title: AppText.total+":",
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.owed,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.owed,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.oldBalance,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.newBalance,
-                          value: "0"
-                      ),
+                      customWidget(title: AppText.total + ":", value: "0"),
+                      customWidget(title: AppText.owed, value: "0"),
+                      customWidget(title: AppText.owed, value: "0"),
+                      customWidget(title: AppText.oldBalance, value: "0"),
+                      customWidget(title: AppText.newBalance, value: "0"),
                     ],
                   ),
-                  SizedBox(width: 80,),
+                  SizedBox(
+                    width: 80,
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       customWidget(),
+                      customWidget(title: AppText.accountWCmm, value: "0"),
+                      customWidget(title: AppText.accountWOCmm, value: "0"),
                       customWidget(
-                          title: AppText.accountWCmm,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.accountWOCmm,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.parkingCongestion,
-                          value: "0"
-                      ),
-                      customWidget(
-                          title: AppText.totalCommission,
-                          value: "0"
-                      ),
+                          title: AppText.parkingCongestion, value: "0"),
+                      customWidget(title: AppText.totalCommission, value: "0"),
                     ],
                   ),
                 ],
@@ -417,32 +388,30 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
     });
   }
 
-  Widget customWidget({title,value}){
+  Widget customWidget({title, value}) {
     return Row(
       children: [
         Padding(
           padding: EdgeInsets.only(left: 20.0),
-          child: Text(title??AppText.cashTotal,
+          child: Text(
+            title ?? AppText.cashTotal,
             style: mozillaTextSemiBoldText(
                 fontSize: 20,
                 color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800
-            ),
+                fontWeight: FontWeight.w800),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.0),
-          child: Text(value??"0",
+          child: Text(
+            value ?? "0",
             style: mozillaTextSemiBoldText(
                 fontSize: 20,
                 color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800
-            ),
+                fontWeight: FontWeight.w800),
           ),
         ),
-
       ],
     );
   }
-
 }

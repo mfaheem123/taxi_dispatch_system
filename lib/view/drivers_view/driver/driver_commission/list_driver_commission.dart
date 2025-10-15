@@ -16,7 +16,6 @@ import '../../controller/driver_controller.dart';
 import '../driver_app_features/drivers_list_feature.dart';
 import '../driver_app_features/pda_details_widget.dart';
 
-
 class ListDriverCommission extends StatefulWidget {
   const ListDriverCommission({super.key});
 
@@ -25,7 +24,6 @@ class ListDriverCommission extends StatefulWidget {
 }
 
 class _ListDriverCommissionState extends State<ListDriverCommission> {
-
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
       : Get.put(DriverController());
@@ -85,8 +83,9 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Wrap(
+                      runSpacing: 20,
+                      spacing: 50,
                       children: [
                         SizedBox(
                           width: fieldWidth,
@@ -98,7 +97,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
                               RestrictedDrivers(
-                                width: fieldWidth/2.5,
+                                width: fieldWidth / 2.5,
                                 // height: 35,
                                 padding: 0.0,
                                 border: Border.all(
@@ -191,7 +190,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                       style: mozillaTextSemiBoldText(
                           context: context,
                           fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.bold,
                           color: DynamicColors.primaryClr)),
                 ),
                 Checkbox(
@@ -290,6 +289,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
               child: SizedBox(
                 width: Get.width,
                 child: DatatableWidget(
+                  
                   columns: [
                     buildHeaderWithSearch(
                         widget: Checkbox(
@@ -354,12 +354,12 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: const EdgeInsets.only(left: 20.0),
-                child: Text(AppText.total,
-                style: mozillaTextSemiBoldText(
-                  fontSize: 25,
-                    color: DynamicColors.textClr.withOpacity(0.8),
-                  fontWeight: FontWeight.w800
-                ),
+                child: Text(
+                  AppText.total,
+                  style: mozillaTextSemiBoldText(
+                      fontSize: 25,
+                      color: DynamicColors.textClr.withOpacity(0.8),
+                      fontWeight: FontWeight.w800),
                 ),
               ),
             ),
@@ -372,49 +372,24 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customWidget(),
-                    customWidget(
-                      title: AppText.total+":",
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.owed,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.owed,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.oldBalance,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.newBalance,
-                      value: "0"
-                    ),
+                    customWidget(title: AppText.total + ":", value: "0"),
+                    customWidget(title: AppText.owed, value: "0"),
+                    customWidget(title: AppText.owed, value: "0"),
+                    customWidget(title: AppText.oldBalance, value: "0"),
+                    customWidget(title: AppText.newBalance, value: "0"),
                   ],
                 ),
-                SizedBox(width: 80,),
+                SizedBox(
+                  width: 80,
+                ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     customWidget(),
-                    customWidget(
-                      title: AppText.accountWCmm,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.accountWOCmm,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.parkingCongestion,
-                      value: "0"
-                    ),
-                    customWidget(
-                      title: AppText.totalCommission,
-                      value: "0"
-                    ),
+                    customWidget(title: AppText.accountWCmm, value: "0"),
+                    customWidget(title: AppText.accountWOCmm, value: "0"),
+                    customWidget(title: AppText.parkingCongestion, value: "0"),
+                    customWidget(title: AppText.totalCommission, value: "0"),
                   ],
                 ),
               ],
@@ -425,32 +400,30 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
     });
   }
 
-  Widget customWidget({title,value}){
+  Widget customWidget({title, value}) {
     return Row(
       children: [
         Padding(
           padding: EdgeInsets.only(left: 20.0),
-          child: Text(title??AppText.cashTotal,
+          child: Text(
+            title ?? AppText.cashTotal,
             style: mozillaTextSemiBoldText(
                 fontSize: 20,
                 color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800
-            ),
+                fontWeight: FontWeight.w800),
           ),
         ),
         Padding(
           padding: EdgeInsets.only(left: 5.0),
-          child: Text(value??"0",
+          child: Text(
+            value ?? "0",
             style: mozillaTextSemiBoldText(
                 fontSize: 20,
                 color: DynamicColors.textClr.withOpacity(0.8),
-                fontWeight: FontWeight.w800
-            ),
+                fontWeight: FontWeight.w800),
           ),
         ),
-
       ],
     );
   }
-
 }

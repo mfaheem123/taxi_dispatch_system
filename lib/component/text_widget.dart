@@ -441,6 +441,8 @@ class AppText {
   static get 	firstAid => "FIRSTAID";
   static get 	dbs => "DBS";
   static get 	escortAttachment => "ESCORT ATTACHMENT";
+  static get 	selectMessage => "SELECT MESSAGE";
+  static get 	sendAll => "SEND ALL";
 
   // static get generate => "GENERATE";
 }

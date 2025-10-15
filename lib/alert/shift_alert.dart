@@ -1,3 +1,6 @@
+import 'package:dashboard_new1/component/color.dart';
+import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +22,9 @@ class ShiftAlert {
           child: StatefulBuilder(
             builder: (context, setState) {
               void saveShift() {
-                if (shiftCtrl.text.isEmpty || startTimeCtrl.text.isEmpty || endTimeCtrl.text.isEmpty) return;
+                if (shiftCtrl.text.isEmpty ||
+                    startTimeCtrl.text.isEmpty ||
+                    endTimeCtrl.text.isEmpty) return;
 
                 setState(() {
                   if (editingIndex == null) {
@@ -67,11 +72,13 @@ class ShiftAlert {
                       children: [
                         const Text(
                           "SHIFTS",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         InkWell(
                           onTap: () => Get.back(),
-                          child: const Icon(Icons.close, size: 20, color: Colors.black54),
+                          child: const Icon(Icons.close,
+                              size: 20, color: Colors.black54),
                         ),
                       ],
                     ),
@@ -79,29 +86,38 @@ class ShiftAlert {
 
                     Row(
                       children: [
-                        Expanded(flex: 2, child: _buildField("SHIFT", shiftCtrl)),
+                        Expanded(
+                            flex: 2, child: _buildField("SHIFT", shiftCtrl)),
                         const SizedBox(width: 8),
-                        Expanded(flex: 2, child: _buildField("START TIME", startTimeCtrl)),
+                        Expanded(
+                            flex: 2,
+                            child: _buildField("START TIME", startTimeCtrl)),
                         const SizedBox(width: 8),
-                        Expanded(flex: 2, child: _buildField("END TIME", endTimeCtrl)),
+                        Expanded(
+                            flex: 2,
+                            child: _buildField("END TIME", endTimeCtrl)),
                         const SizedBox(width: 8),
                         Expanded(
                           flex: 2,
                           child: SizedBox(
                             height: 34,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: editingIndex == null ? Color(0xFF43489A) : Colors.orange,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                              ),
-                              onPressed: saveShift,
-                              child: Text(
-                                editingIndex == null ? "SAVE" : "UPDATE",
-                                style: const TextStyle(fontSize: 13, color: Colors.white),
-                              ),
+                            child: CustomButton(
+                              width: 150,
+                              height: 35,
+                              verticalPadding: 0.0,
+                              btnText: editingIndex == null ? "SAVE" : "UPDATE",
+                              borderRadius: 4,
+                              style: mozillaTextRegularText(
+                                  fontSize: 14, color: DynamicColors.whiteClr),
+                              onTap: () {
+                                saveShift;
+                              },
                             ),
+
                           ),
                         ),
+
+                        ///-------------------
                       ],
                     ),
 
@@ -109,17 +125,38 @@ class ShiftAlert {
 
                     // Table Header
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 6, horizontal: 4),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         children: const [
-                          Expanded(flex: 2, child: Text("SHIFT NAME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(flex: 2, child: Text("START TIME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(flex: 2, child: Text("END TIME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(flex: 2, child: Text("ACTIONS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
+                          Expanded(
+                              flex: 2,
+                              child: Text("SHIFT NAME",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold))),
+                          Expanded(
+                              flex: 2,
+                              child: Text("START TIME",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold))),
+                          Expanded(
+                              flex: 2,
+                              child: Text("END TIME",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold))),
+                          Expanded(
+                              flex: 2,
+                              child: Text("ACTIONS",
+                                  style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold))),
                         ],
                       ),
                     ),
@@ -129,7 +166,8 @@ class ShiftAlert {
                       int index = entry.key;
                       var row = entry.value;
                       return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 6, horizontal: 4),
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(color: Colors.grey.shade200),
@@ -145,7 +183,8 @@ class ShiftAlert {
                               child: Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
+                                    icon: const Icon(Icons.edit,
+                                        size: 18, color: Color(0xFF43489A)),
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
@@ -156,7 +195,8 @@ class ShiftAlert {
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                    icon: const Icon(Icons.delete,
+                                        size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
                                         shifts.removeAt(index);
@@ -199,7 +239,8 @@ class ShiftAlert {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         ),
       ),
     );

@@ -250,7 +250,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             controller.selectedMenuItems.remove(item);
                             controller.selectedMenuItems.last.selectedItem =
                                 true;
-                            _currentPage = controller.selectedMenuItems.last.category;
+                            _currentPage =
+                                controller.selectedMenuItems.last.category;
                           } else {
                             controller.selectedMenuItems.remove(item);
                             _currentPage = ByDefaultDashboard();
@@ -762,22 +763,23 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-           NestedMenuItem(
+        NestedMenuItem(
           title: "CREATE ESCORT",
           onTap: () {
             _currentPage = CreateEscortScreen();
             controller.menuBarRefresh(
                 title: "CREATE ESCORT", pageName: CreateEscortScreen());
+
             ///------------------------------------------------------------------------------------------------------------------
           },
         ),
         // CreateEscortScreen
         NestedMenuItem(
-          title: "ESCORT",
+          title: "ESCORT LIST ",
           onTap: () {
             _currentPage = ESCORTScreen();
             controller.menuBarRefresh(
-                title: "ESCORT", pageName: ESCORTScreen());
+                title: "ESCORT LIST", pageName: ESCORTScreen());
           },
         ),
         NestedMenuItem(
@@ -867,18 +869,19 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         ),*/
         NestedMenuItem(
-          title: "COMPANY VEHICLES",
+          title: "COMPANY VEHICLES LIST",
           onTap: () {
             setState(() {
               _currentPage = CompanyVehiclesScreen();
               controller.menuBarRefresh(
-                  title: "COMPANY VEHICLES", pageName: CompanyVehiclesScreen());
+                  title: "COMPANY VEHICLES LIST",
+                  pageName: CompanyVehiclesScreen());
             });
           },
         ),
       ]),
       NestedMenuItem(title: "ADMINISTRATIONS", children: [
-        NestedMenuItem(title: "USERS", children: [
+        NestedMenuItem(title: "USERS LIST", children: [
           NestedMenuItem(
             title: "CREATE USER",
             onTap: () {
@@ -902,7 +905,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // CreateSubsiDiary
           NestedMenuItem(
             title: "CREATE SUBSIDIARY",
-               onTap: () {
+            onTap: () {
               setState(() {
                 _currentPage = CreateSubsiDiary();
                 controller.menuBarRefresh(
@@ -913,7 +916,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // SubsiDiariesScreen
           NestedMenuItem(
             title: "SUBSIDIARIES",
-               onTap: () {
+            onTap: () {
               setState(() {
                 _currentPage = SubsiDiariesScreen();
                 controller.menuBarRefresh(
@@ -923,7 +926,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           NestedMenuItem(
             title: "AUTHORIZATION",
-              onTap: () {
+            onTap: () {
               setState(() {
                 _currentPage = AuthorizationScreen();
                 controller.menuBarRefresh(
@@ -1068,10 +1071,9 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ]),
       NestedMenuItem(title: "SETTINGS", children: [
-        
         NestedMenuItem(
           title: "COMPANY INFORMATION",
-         onTap: () {
+          onTap: () {
             setState(() {
               _currentPage = ComapanyInformationScreen();
               controller.menuBarRefresh(
@@ -1094,12 +1096,11 @@ class _MyHomePageState extends State<MyHomePage> {
         // DocumentNumberScreen
         NestedMenuItem(
           title: "DOCUMENT NUMBER",
-         onTap: () {
+          onTap: () {
             setState(() {
-              _currentPage =  DocumentNumberScreen();
+              _currentPage = DocumentNumberScreen();
               controller.menuBarRefresh(
-                  title: "DOCUMENT NUMBER",
-                  pageName:  DocumentNumberScreen());
+                  title: "DOCUMENT NUMBER", pageName: DocumentNumberScreen());
             });
           },
         ),
@@ -1109,12 +1110,12 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "BOOKING CLEARING UTILITY",
-           onTap: () {
+          onTap: () {
             setState(() {
-              _currentPage =  BookingClearingUtilityScreen();
+              _currentPage = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
                   title: "BOOKING CLEARING UTILITY",
-                  pageName:  BookingClearingUtilityScreen());
+                  pageName: BookingClearingUtilityScreen());
             });
           },
         ),
@@ -1135,8 +1136,7 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() {
               _currentPage = VoipSettingsScreen();
               controller.menuBarRefresh(
-                  title: "VOIP SETTINGS",
-                  pageName: VoipSettingsScreen());
+                  title: "VOIP SETTINGS", pageName: VoipSettingsScreen());
             });
           },
         ),
@@ -1154,14 +1154,15 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-  
+
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",
           onTap: () {
             setState(() {
               _currentPage = ChatWithDriverAndPassenger();
               controller.menuBarRefresh(
-                  title: "CHAT WITH DRIVER AND PASSENGER", pageName: ChatWithDriverAndPassenger());
+                  title: "CHAT WITH DRIVER AND PASSENGER",
+                  pageName: ChatWithDriverAndPassenger());
             });
           },
         ),
