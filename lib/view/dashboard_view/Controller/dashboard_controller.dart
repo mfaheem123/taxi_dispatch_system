@@ -70,6 +70,8 @@ class DashboardController extends GetxController {
   final dropOffController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = false.obs;
+
+  
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
