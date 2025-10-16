@@ -160,8 +160,6 @@ class DashboardController extends GetxController {
   RxString selectedTab = 'MAPS'.obs;
   RxString driverSelectionTab = 'activeDriver'.obs;
   var miles = '00.0'.obs;
-
-
   var duration = '00.0'.obs;
   List<AllAddressesModel> suggestions = <AllAddressesModel>[].obs;
   var inputText = ''.obs;
@@ -369,12 +367,10 @@ class DashboardController extends GetxController {
 
   AllAddressesModel? selectedModel;
   late final MapController mapController;
-
   final List<ViaPoint> viaPoints = [];
   final List<LatLng> polylinePoints = [];
   List<ViaPoint> polyLineMarkerInfo = [];
   List<LatLng> polylinePointsCoordinate = [];
-
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
 
@@ -448,8 +444,7 @@ class DashboardController extends GetxController {
       PolylinePoints.decodePolyline(encodedPolyline);
       List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
 
-      polylinePointsCoordinate = polylinePointss
-          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
+      polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
 
       if (polylinePointsCoordinate.isNotEmpty) {
         polylines.add(Polyline(

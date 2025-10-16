@@ -1,6 +1,9 @@
 
 
 
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class LocationController extends GetxController{
@@ -39,6 +42,70 @@ class LocationController extends GetxController{
   RxBool blackList = false.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LIST OF LOCATIONS Functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
+final locationNameCtrl=TextEditingController();
+final longitudeCtrl=TextEditingController();
+final postcodeCtrl=TextEditingController();
+final shortcutCtrl=TextEditingController();
+final extraChargesCtrl=TextEditingController();
+final latitudeCtrl=TextEditingController();
+final addressCtrl=TextEditingController();
+
+
+  RxString zoneValue = ''.obs;
+  RxString locationTypeValue = ''.obs;
+
+  List<String> zones = ["Zone 1", "Zone 2", "Zone 3"];
+  List<String> locationTypes = ["Pickup", "Dropoff", "Hub"];
+
+  RxBool postLocationForm = false.obs;
+
+  postLocation()async{
+    postLocationForm(true);
+
+    var formData = {
+
+      "name":locationNameCtrl.text,
+      "location_type_id": 11,
+      "address": addressCtrl.text,
+      "postcode": postcodeCtrl.text,
+      "zone_id": null,
+      "shortcut":shortcutCtrl.text,
+      "background_color": null,
+      "foreground_color": null,
+      "extra_charges": extraChargesCtrl.text,
+      "pickup_charges": null,
+      "dropoff_charges": null,
+      "blacklist": false,
+      "latitude": latitudeCtrl.text,
+      "longitude": longitudeCtrl.text
+
+    };
+      var response = await Api().post(formData, 'locations', auth: true);
+    if (response.statusCode == 201) {
+      print(response);
+    }else{
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+      print(response);
+    }
+
+  }
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
+
+  LocationListModel? locationListModel;
+  RxBool getLocationLoader = false.obs;
+  getLocationList() async{
+    getLocationLoader(true);
+    var response = await Api().get("locations");
+    if(response.statusCode == 200){
+      locationListModel = LocationListModel.fromJson(response.data);
+      getLocationLoader(false);
+      update();
+    }
+  }
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
 
 
 }

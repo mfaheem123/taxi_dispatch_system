@@ -44,8 +44,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+          selectedRowIndex = (selectedRowIndex - 1 + totalRows) % totalRows; // move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam
@@ -65,8 +64,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<LocationController>(
+          initState: (v){
+            controller.getLocationList();
+          },
           builder: (controller) {
-            return SingleChildScrollView(
+            return controller.getLocationLoader.value == true?SizedBox.shrink(): SingleChildScrollView(
               padding: const EdgeInsets.all(12),
               child: Column(
                 children: [
@@ -113,9 +115,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
                       ),
                     ],
                   ),
+
                   SizedBox(
                     height: 12,
                   ),
+
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
@@ -130,43 +134,47 @@ class _LocationListScreenState extends State<LocationListScreen> {
                           buildHeaderWithSearch(title: "Zone"),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("Action Town Tube Station"))),
-                          const DataCell(Center(child: Text("W3BHN"))),
-                          const DataCell(Center(child: Text("RA"))),
-                          const DataCell(Center(child: Text("Action Town Tube Station W3BHN"))),
-                          const DataCell(Center(child: Text("Railway Statiion"))),
-                          const DataCell(Center(child: Text("2.00 mi"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.edit_calendar,
-                                      size: 28,
+                        totalRow: controller.locationListModel!.locations!.length,
+
+                        rows: controller.locationListModel!.locations!.map((item) {
+                          return DataRow(
+                              cells: [
+                                DataCell(Center(child: Text(item.name!))),
+                                 DataCell(Center(child: Text(item.postcode!))),
+                                 DataCell(Center(child: Text(item.shortcut!))),
+                                 DataCell(Center(child: Text(item.address!))),
+                                 DataCell(Center(child: Text(item.locationType.toString()))),
+                                 DataCell(Center(child: Text(item.zone.toString()))),
+                                DataCell(
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(Icons.edit_calendar,
+                                            size: 28,
+                                          ),
+                                        ),
+                                        Text("|"),
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(Icons.delete_forever,
+                                            size: 28,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.delete_forever,
-                                      size: 28,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                                ),
+                              ]);
+                        }).toList(),
                       ),
                     ),
                   ),

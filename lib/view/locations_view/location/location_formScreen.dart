@@ -1,13 +1,230 @@
+// import 'package:dashboard_new1/component/color.dart';
+// import 'package:dashboard_new1/component/customButton.dart';
+// import 'package:dashboard_new1/component/textStyle.dart';
+// import 'package:dashboard_new1/component/text_widget.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:get/get_core/src/get_main.dart';
+//
+// class LocationForm extends StatelessWidget {
+//   const LocationForm({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: LayoutBuilder(
+//         builder: (context, constraints) {
+//           bool isMobile = constraints.maxWidth < 600;
+//
+//           return SingleChildScrollView(
+//             child: Container(
+//               width: isMobile ? double.infinity : 800,
+//               padding: const EdgeInsets.all(20),
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 border: Border.all(color: Colors.grey.shade300),
+//               ),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.stretch,
+//                 children: [
+//                   Container(
+//                     padding: const EdgeInsets.all(12),
+//                     color: Colors.grey.shade200,
+//                     child: const Center(
+//                       child: Text(
+//                         "LOCATION",
+//                         style: TextStyle(
+//                           fontSize: 20,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//
+//                   const SizedBox(height: 20),
+//
+//                   /// First Row (Location Name - Longitude)
+//                   isMobile
+//                       ? Column(
+//                     children: [
+//                       _buildField("LOCATION NAME"),
+//                       const SizedBox(height: 10),
+//                       _buildField("LONGITUDE"),
+//                     ],
+//                   )
+//                       : Row(
+//                     children: [
+//                       Expanded(child: _buildField("LOCATION NAME")),
+//                       const SizedBox(width: 10),
+//                       Expanded(child: _buildField("LONGITUDE")),
+//                     ],
+//                   ),
+//
+//                   const SizedBox(height: 15),
+//
+//                   /// Second Row (Postcode - Zone)
+//                   isMobile
+//                       ? Column(
+//                     children: [
+//                       _buildField("POSTCODE"),
+//                       const SizedBox(height: 10),
+//                       _buildDropdown("ZONE"),
+//                     ],
+//                   )
+//                       : Row(
+//                     children: [
+//                       Expanded(child: _buildField("POSTCODE")),
+//                       const SizedBox(width: 10),
+//                       Expanded(child: _buildDropdown("ZONE")),
+//                     ],
+//                   ),
+//
+//                   const SizedBox(height: 15),
+//
+//                   /// Third Row (Shortcut - Extra Charges)
+//                   isMobile
+//                       ? Column(
+//                     children: [
+//                       _buildField("SHORTCUT"),
+//                       const SizedBox(height: 10),
+//                       _buildField("EXTRA CHARGES"),
+//                     ],
+//                   )
+//
+//                       : Row(
+//                     children: [
+//                       Expanded(child: _buildField("SHORTCUT")),
+//                       const SizedBox(width: 10),
+//                       Expanded(child: _buildField("EXTRA CHARGES")),
+//                     ],
+//                   ),
+//
+//                   const SizedBox(height: 15),
+//
+//                   /// Fourth Row (Location Type - Latitude)
+//                   isMobile
+//                       ? Column(
+//                     children: [
+//                       _buildDropdown("LOCATION TYPE"),
+//                       const SizedBox(height: 10),
+//                       _buildField("LATITUDE"),
+//                     ],
+//                   )
+//
+//                       : Row(
+//                     children: [
+//                       Expanded(child: _buildDropdown("LOCATION TYPE")),
+//                       const SizedBox(width: 10),
+//                       Expanded(child: _buildField("LATITUDE")),
+//                     ],
+//                   ),
+//
+//
+//                   const SizedBox(height: 15),
+//
+//
+//                   /// Address
+//                   _buildMultiline("ADDRESS"),
+//                   const SizedBox(height: 20),
+//
+//
+//                   /// Save Button
+//                   Container(
+//                     // height: screenHeight / 20,
+//                     width: double.infinity,
+//                     color: DynamicColors.gryClr,
+//                     padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+//                     child: CustomButton(
+//                       height: 30,
+//                       width: Get.width / 4,
+//                       verticalPadding: 0.0,
+//                       borderRadius: 4,
+//                       style: mozillaTextSemiBoldText(
+//                           fontSize: 12, color: DynamicColors.whiteClr),
+//                       btnText: AppText.save,
+//                     ),
+//                   ),
+//
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+//
+//   static Widget _buildField(String label) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(label,
+//             style: const TextStyle(
+//                 fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+//         const SizedBox(height: 5),
+//         TextField(
+//           decoration: InputDecoration(
+//             border: OutlineInputBorder(),
+//             isDense: true,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+//
+//   static Widget _buildDropdown(String label) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(label,
+//             style: const TextStyle(
+//                 fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+//         const SizedBox(height: 5),
+//         DropdownButtonFormField<String>(
+//           decoration: const InputDecoration(
+//             border: OutlineInputBorder(),
+//             isDense: true,
+//           ),
+//           items: const [
+//             DropdownMenuItem(value: "1", child: Text("Option 1")),
+//             DropdownMenuItem(value: "2", child: Text("Option 2")),
+//           ],
+//           onChanged: (value) {},
+//         ),
+//       ],
+//     );
+//   }
+//
+//   static Widget _buildMultiline(String label) {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(label,
+//             style: const TextStyle(
+//                 fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+//         const SizedBox(height: 5),
+//         TextField(
+//           maxLines: 3,
+//           decoration: const InputDecoration(
+//             border: OutlineInputBorder(),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+
+
 import 'package:dashboard_new1/component/color.dart';
-import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/component/textStyle.dart';
-import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/locations_view/controller/lacations_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 class LocationForm extends StatelessWidget {
-  const LocationForm({super.key});
+  LocationForm({super.key});
+
+  final LocationController controller = Get.put(LocationController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +232,6 @@ class LocationForm extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           bool isMobile = constraints.maxWidth < 600;
-
           return SingleChildScrollView(
             child: Container(
               width: isMobile ? double.infinity : 800,
@@ -27,124 +243,104 @@ class LocationForm extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    color: Colors.grey.shade200,
-                    child: const Center(
-                      child: Text(
-                        "LOCATION",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _header(),
 
                   const SizedBox(height: 20),
 
-                  /// First Row (Location Name - Longitude)
+                  // Location Name - Longitude
                   isMobile
                       ? Column(
                     children: [
-                      _buildField("LOCATION NAME"),
+                      _buildField("LOCATION NAME", controller.locationNameCtrl),
                       const SizedBox(height: 10),
-                      _buildField("LONGITUDE"),
+                      _buildField("LONGITUDE", controller.longitudeCtrl),
                     ],
                   )
                       : Row(
                     children: [
-                      Expanded(child: _buildField("LOCATION NAME")),
+                      Expanded(child: _buildField("LOCATION NAME", controller.locationNameCtrl)),
                       const SizedBox(width: 10),
-                      Expanded(child: _buildField("LONGITUDE")),
+                      Expanded(child: _buildField("LONGITUDE", controller.longitudeCtrl)),
                     ],
                   ),
 
                   const SizedBox(height: 15),
 
-                  /// Second Row (Postcode - Zone)
+                  // Postcode - Zone
                   isMobile
                       ? Column(
                     children: [
-                      _buildField("POSTCODE"),
+                      _buildField("POSTCODE", controller.postcodeCtrl),
                       const SizedBox(height: 10),
-                      _buildDropdown("ZONE"),
+                      _buildDropdown("ZONE", controller.zoneValue, controller.zones),
                     ],
                   )
                       : Row(
                     children: [
-                      Expanded(child: _buildField("POSTCODE")),
+                      Expanded(child: _buildField("POSTCODE", controller.postcodeCtrl)),
                       const SizedBox(width: 10),
-                      Expanded(child: _buildDropdown("ZONE")),
+                      Expanded(child: _buildDropdown("ZONE", controller.zoneValue, controller.zones)),
                     ],
                   ),
 
                   const SizedBox(height: 15),
 
-                  /// Third Row (Shortcut - Extra Charges)
+                  // Shortcut - Extra Charges
                   isMobile
                       ? Column(
                     children: [
-                      _buildField("SHORTCUT"),
+                      _buildField("SHORTCUT", controller.shortcutCtrl),
                       const SizedBox(height: 10),
-                      _buildField("EXTRA CHARGES"),
+                      _buildField("EXTRA CHARGES", controller.extraChargesCtrl),
                     ],
                   )
-
                       : Row(
                     children: [
-                      Expanded(child: _buildField("SHORTCUT")),
+                      Expanded(child: _buildField("SHORTCUT", controller.shortcutCtrl)),
                       const SizedBox(width: 10),
-                      Expanded(child: _buildField("EXTRA CHARGES")),
+                      Expanded(child: _buildField("EXTRA CHARGES", controller.extraChargesCtrl)),
                     ],
                   ),
 
                   const SizedBox(height: 15),
 
-                  /// Fourth Row (Location Type - Latitude)
+                  // Location Type - Latitude
                   isMobile
                       ? Column(
                     children: [
-                      _buildDropdown("LOCATION TYPE"),
+                      _buildDropdown("LOCATION TYPE", controller.locationTypeValue, controller.locationTypes),
                       const SizedBox(height: 10),
-                      _buildField("LATITUDE"),
+                      _buildField("LATITUDE", controller.latitudeCtrl),
                     ],
                   )
-
                       : Row(
                     children: [
-                      Expanded(child: _buildDropdown("LOCATION TYPE")),
+                      Expanded(child: _buildDropdown("LOCATION TYPE", controller.locationTypeValue, controller.locationTypes)),
                       const SizedBox(width: 10),
-                      Expanded(child: _buildField("LATITUDE")),
+                      Expanded(child: _buildField("LATITUDE", controller.latitudeCtrl)),
                     ],
                   ),
 
-
                   const SizedBox(height: 15),
 
+                  _buildMultiline("ADDRESS", controller.addressCtrl),
 
-                  /// Address
-                  _buildMultiline("ADDRESS"),
                   const SizedBox(height: 20),
 
-
-                  /// Save Button
-                  Container(
-                    // height: screenHeight / 20,
-                    width: double.infinity,
-                    color: DynamicColors.gryClr,
-                    padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
-                    child: CustomButton(
-                      height: 30,
-                      width: Get.width / 4,
-                      verticalPadding: 0.0,
-                      borderRadius: 4,
-                      style: mozillaTextSemiBoldText(
-                          fontSize: 12, color: DynamicColors.whiteClr),
-                      btnText: AppText.save,
+                  ElevatedButton(
+                    onPressed: () {
+                      controller.postLocation();
+                      // controller.saveLocation();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DynamicColors.primaryClr,
+                      padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 14),
+                    ),
+                    child: const Text(
+                      "SAVE",
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -154,56 +350,70 @@ class LocationForm extends StatelessWidget {
     );
   }
 
-  static Widget _buildField(String label) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
-        const SizedBox(height: 5),
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            isDense: true,
+  Widget _header() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      color: Colors.grey.shade200,
+      child: const Center(
+        child: Text(
+          "LOCATION",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ],
+      ),
     );
   }
 
-  static Widget _buildDropdown(String label) {
+  static Widget _buildField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
         const SizedBox(height: 5),
-        DropdownButtonFormField<String>(
+        TextField(
+          controller: controller,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             isDense: true,
           ),
-          items: const [
-            DropdownMenuItem(value: "1", child: Text("Option 1")),
-            DropdownMenuItem(value: "2", child: Text("Option 2")),
-          ],
-          onChanged: (value) {},
         ),
       ],
     );
   }
 
-  static Widget _buildMultiline(String label) {
+  static Widget _buildDropdown(String label, RxString value, List<String> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
+        const SizedBox(height: 5),
+        Obx(() {
+          return DropdownButtonFormField<String>(
+            decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
+            value: value.value.isEmpty ? null : value.value,
+            items: items
+                .map((e) => DropdownMenuItem<String>(
+              value: e,
+              child: Text(e),
+            ))
+                .toList(),
+            onChanged: (v) => value.value = v ?? '',
+          );
+        }),
+      ],
+    );
+  }
+
+  static Widget _buildMultiline(String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: .5)),
         const SizedBox(height: 5),
         TextField(
+          controller: controller,
           maxLines: 3,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),

@@ -14,7 +14,6 @@ class _ManagePostcodesState extends State<ManagePostcodes> {
   final List<Map<String, String>> allPostcodes = [
     {"area": "Aberdeen", "postcode": "AB"},
     {"area": "St Albans", "postcode": "AL"},
-
     {"area": "Birmingham", "postcode": "B"},
 
   ];
