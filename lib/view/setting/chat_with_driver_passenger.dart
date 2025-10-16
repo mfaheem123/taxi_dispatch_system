@@ -5,7 +5,6 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/setting/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 // class ChatWithDriverAndPassenger extends StatelessWidget {
 
 class ChatWithDriverAndPassenger extends StatefulWidget {
@@ -77,8 +76,10 @@ class ChatWithDriverAndPassengerState
             isDriver ? driverSelections : passengerSelections;
 
         return Container(
-          width: maxWidth,
-          height: fieldWidth / 1.2,
+          width: Get.width,
+          // width: maxWidth,
+          height: Get.height/1.14,
+          // height: fieldWidth / 1.2,
           color: Colors.white,
           padding: const EdgeInsets.all(0),
           child: Column(
@@ -168,10 +169,13 @@ class ChatWithDriverAndPassengerState
                     const SizedBox(width: 16),
 
                     // ===== Right Side (Chat Area) =====
-                    Expanded(
-                      child: Column(
+                    SizedBox(
+                      width: Get.width/1.5,
+
+                      child: Stack(
+                        alignment: Alignment.bottomCenter,
                         children: [
-                          Expanded(child: const ChatMessagesArea()),
+                          ChatMessagesArea(),
                           ChatInputBox(),
                         ],
                       ),

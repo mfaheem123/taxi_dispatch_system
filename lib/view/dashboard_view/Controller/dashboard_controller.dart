@@ -402,7 +402,7 @@ class DashboardController extends GetxController {
               ),);
           // CameraFit cameraFit = CameraFit.bounds(bounds: polyLineMarkerInfo.);
           // mapController.fitCamera(cameraFit);
-        } else {
+        } else if(item.markerType == "DROP LOCATION") {
           tempPoints.add(LatLng(item.lat, item.lng));
           markers.add(
               CustomMarker(
@@ -416,6 +416,36 @@ class DashboardController extends GetxController {
                   width: 30,
                   height: 30
               ),
+          );
+        }else if (item.markerType == "Create Booking PICKUP"){
+          tempPoints.add(LatLng(item.lat, item.lng));
+          markers.add(
+            CustomMarker(
+                type: "Create Booking PICKUP",
+                point: LatLng(item.lat, item.lng),
+                child: Icon(
+                  Icons.location_pin,
+                  color: DynamicColors.greenClr,
+                  size: 30,
+                ),
+                width: 30,
+                height: 30
+            ),
+          );
+        }else if (item.markerType == "Create Booking DROP LOCATION"){
+          tempPoints.add(LatLng(item.lat, item.lng));
+          markers.add(
+            CustomMarker(
+                type: "Create Booking DROP LOCATION",
+                point: LatLng(item.lat, item.lng),
+                child: Icon(
+                  Icons.location_pin,
+                  color: DynamicColors.redClr,
+                  size: 30,
+                ),
+                width: 30,
+                height: 30
+            ),
           );
         }
       }
@@ -541,10 +571,10 @@ class DashboardController extends GetxController {
         markerType: "PICKUP LOCATION",
         address: '',
       ));
-      print(polyLineMarkerInfo);
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    } else {
+    }
+    else if(selectedTextFieldsValue.value == "DROP LOCATION") {
       int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "DROP LOCATION");
       if(index != -1){
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
@@ -557,6 +587,42 @@ class DashboardController extends GetxController {
         lat: selected.lat!,
         lng: selected.lon!,
         markerType: "DROP LOCATION",
+        address: '',
+      ));
+      dropOffController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
+    }
+    else if(selectedTextFieldsValue.value == "Create Booking PICKUP"){
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking PICKUP");
+      if(index != -1){
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
+      polylinePoints.add(
+        LatLng(selected.lat!,
+            selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "Create Booking PICKUP",
+        address: '',
+      ));
+      pickupController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
+    }
+    else if(selectedTextFieldsValue.value == "Create Booking DROP LOCATION"){
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking DROP LOCATION");
+      if(index != -1){
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
+      polylinePoints.add(
+        LatLng(selected.lat!,
+            selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "Create Booking DROP LOCATION",
         address: '',
       ));
       dropOffController.text = "$suggestion $postCode";

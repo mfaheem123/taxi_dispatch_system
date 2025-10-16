@@ -1106,7 +1106,13 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         NestedMenuItem(
           title: "TEMPLATE SETTINGS",
-          onTap: () => message(context, "DevOps"),
+          onTap: () {
+            setState(() {
+              _currentPage = TemplateSettings();
+              controller.menuBarRefresh(
+                  title: "TEMPLATE SETTINGS", pageName: TemplateSettings());
+            });
+          },
         ),
         NestedMenuItem(
           title: "BOOKING CLEARING UTILITY",
@@ -1144,16 +1150,16 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "GENERAL SMS CONFIG",
           onTap: () => message(context, "DevOps"),
         ),
-        NestedMenuItem(
-          title: "SMS SETTINGS",
-          onTap: () {
-            setState(() {
-              _currentPage = TemplateSettings();
-              controller.menuBarRefresh(
-                  title: "SMS SETTINGS", pageName: TemplateSettings());
-            });
-          },
-        ),
+        // NestedMenuItem(
+        //   title: "SMS SETTINGS",
+        //   onTap: () {
+        //     setState(() {
+        //       _currentPage = TemplateSettings();
+        //       controller.menuBarRefresh(
+        //           title: "SMS SETTINGS", pageName: TemplateSettings());
+        //     });
+        //   },
+        // ),
 
         NestedMenuItem(
           title: "CHAT WITH DRIVER AND PASSENGER",

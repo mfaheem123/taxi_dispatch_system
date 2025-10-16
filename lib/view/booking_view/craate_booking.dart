@@ -300,12 +300,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                               onChanged: (v) {
                                                 controller.onChangeHandler(
                                                     fieldName:
-                                                        "Create Booking PICKUP ",
+                                                        "Create Booking PICKUP",
                                                     searchingText: v);
                                               },
                                               onTap: () {
                                                 shortCutKeyValue.value =
-                                                    "create booking";
+                                                    "Create Booking PICKUP";
                                               },
                                               onSubmitted: (_) =>
                                                   FocusScope.of(context)
@@ -321,18 +321,10 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       : KbdActivatable(
                                                           focusNode: clearPic,
                                                           onActivate: () {
-                                                            int index = controller
-                                                                .markers
-                                                                .indexWhere((test) =>
-                                                                    test.type ==
-                                                                    "pickup");
+                                                            int index = controller.markers.indexWhere((test) => test.type == "Create Booking PICKUP");
                                                             controller.markers
-                                                                .remove(controller
-                                                                        .markers[
-                                                                    index]);
-                                                            controller
-                                                                .pickupController
-                                                                .clear();
+                                                                .remove(controller.markers[index]);
+                                                            controller.pickupController.clear();
                                                             controller.update();
                                                           },
                                                           child: Icon(
@@ -559,7 +551,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 color: Colors.red,
                                                 size: 20,
                                               ),
-                                              onTap: () {},
+                                              onTap: () {
+                                                shortCutKeyValue.value = "Create Booking DROP LOCATION";
+                                              },
                                               onChanged: (v) {
                                                 controller.onChangeHandler(
                                                     fieldName: "Create Booking DROP LOCATION",
@@ -585,7 +579,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                                 .markers
                                                                 .indexWhere((test) =>
                                                                     test.type ==
-                                                                    "dropOff");
+                                                                    "Create Booking DROP LOCATION");
                                                             controller.markers
                                                                 .remove(controller
                                                                         .markers[
@@ -606,12 +600,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     focusNode: swap2FN,
                                                     onActivate: () {
                                                       String tempPic =
-                                                          controller
-                                                              .pickupController
-                                                              .text;
+                                                          controller.pickupController.text;
                                                       String tempDrop =
-                                                          controller
-                                                              .dropOffController
+                                                          controller.dropOffController
                                                               .text;
                                                       controller
                                                           .pickupController
@@ -1707,7 +1698,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                 ),
                               ),
                               SizedBox(
-                                height: Get.height / 1.4,
+                                height: Get.height / 2.1,
                       child: MapViewWidget(createBooking: true,),
                       //           child: Stack(
                       //             children: [
