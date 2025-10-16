@@ -13,7 +13,8 @@ import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
 
 class MapViewWidget extends StatefulWidget {
-  MapViewWidget({super.key});
+  MapViewWidget({super.key, this.createBooking = false});
+  bool createBooking = false;
 
   @override
   State<MapViewWidget> createState() => _MapViewWidgetState();
@@ -43,12 +44,14 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     // Responsive width calculation
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    if (polylinePoints.isEmpty) {
-      return Center(child: CircularProgressIndicator());
-    }
+    // if (polylinePoints.isEmpty) {
+    //   return Center(child: CircularProgressIndicator());
+    // }
     return SizedBox(
-      width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
-      height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
+      width: widget.createBooking == true?Get.width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
+      height: widget.createBooking == true?Get.height / 1.4:
+      screenHeight >=940? screenHeight * 0.51:
+      screenHeight * 0.80, /// yaha per aghar create booking per map access karte hu tu map ka height (Get.height / 1.4) our aghar laptop se bara screen hogha tu os ka height (screenHeight >=940? screenHeight * 0.51:) our aghar lap ka screen hogha tu os ka height (screenHeight * 0.80)
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
@@ -67,7 +70,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
            child: FlutterMap(
               mapController: controller.mapController,
               options: MapOptions(
-                initialCenter: polylinePoints.first,
+                initialCenter: polylinePoints.isEmpty?LatLng(50.5, 30.51): polylinePoints.first,
                 initialZoom: 13.0,
                 onMapReady: () {
                   if (polylinePoints.length >= 2) {
@@ -86,7 +89,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                 ),
 
                 // 🧭 Route polyline
-                PolylineLayer(
+                polylinePoints.length>1? PolylineLayer(
                   polylines: [
                     Polyline(
                       points: polylinePoints,
@@ -94,7 +97,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                       strokeWidth: 4.0,
                     ),
                   ],
-                ),
+                ):SizedBox.shrink(),
                 // PolylineLayer(polylines: controller.polylines),
                 MarkerLayer(markers: controller.markers),
               ],
@@ -104,6 +107,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
           ),
 
           /// TAB TOGGLE
+                widget.createBooking == true?SizedBox.shrink():
                 Positioned(
                   child: Container(
                     width: Get.width,
