@@ -385,7 +385,6 @@ class DashboardController extends GetxController {
     }
    if(polyLineMarkerInfo.isNotEmpty) {
       for (var item in polyLineMarkerInfo) {
-
         if (item.markerType == "PICKUP LOCATION") {
           print(markers);
           tempPoints.add(LatLng(item.lat, item.lng));
@@ -401,6 +400,8 @@ class DashboardController extends GetxController {
                   width: 30,
                   height: 30
               ),);
+          // CameraFit cameraFit = CameraFit.bounds(bounds: polyLineMarkerInfo.);
+          // mapController.fitCamera(cameraFit);
         } else {
           tempPoints.add(LatLng(item.lat, item.lng));
           markers.add(
@@ -419,6 +420,8 @@ class DashboardController extends GetxController {
         }
       }
     }
+
+   update();
 
     final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
 
@@ -478,9 +481,6 @@ class DashboardController extends GetxController {
 
     return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
   }
-
-
-
 
 
 // inside your controller

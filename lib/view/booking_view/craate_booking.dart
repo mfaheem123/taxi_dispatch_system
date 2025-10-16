@@ -300,12 +300,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                               onChanged: (v) {
                                                 controller.onChangeHandler(
                                                     fieldName:
-                                                        "PICKUP LOCATION",
+                                                        "Create Booking PICKUP ",
                                                     searchingText: v);
                                               },
                                               onTap: () {
                                                 shortCutKeyValue.value =
-                                                    "formKey";
+                                                    "create booking";
                                               },
                                               onSubmitted: (_) =>
                                                   FocusScope.of(context)
@@ -562,7 +562,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               onTap: () {},
                                               onChanged: (v) {
                                                 controller.onChangeHandler(
-                                                    fieldName: "DROP LOCATION",
+                                                    fieldName: "Create Booking DROP LOCATION",
                                                     searchingText: v);
                                               },
                                               textInputAction:
@@ -1708,110 +1708,111 @@ class _CreateBookingState extends State<CreateBooking> {
                               ),
                               SizedBox(
                                 height: Get.height / 1.4,
-                                child: Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: FlutterMap(
-                                        options: MapOptions(
-                                          initialCenter:
-                                              LatLng(33.6844, 73.0479),
-                                          initialZoom: 13.0,
-                                        ),
-                                        children: [
-                                          TileLayer(
-                                            urlTemplate:
-                                                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                            subdomains: ['a', 'b', 'c'],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Positioned(
-                                        bottom: 0,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(7.0),
-                                          child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                  color: DynamicColors
-                                                      .secondaryClr),
-                                              child: IconButton(
-                                                  padding: EdgeInsets.zero,
-                                                  onPressed: () {
-                                                    final newTabUrll = Uri
-                                                            .base.origin +
-                                                        '/#' +
-                                                        Routes.viewDriversMap;
-                                                    html.window.open(
-                                                      newTabUrll,
-                                                      '_blank', // "_blank" nayi window/tab me open karega
-                                                      'width=1200,height=800,noopener,noreferrer', // Optional: size aur options
-                                                    );
-                                                  },
-                                                  icon: Icon(Icons
-                                                      .crop_square_outlined))),
-                                        ))
-
-                                    ///todo Duration Info
-                                    /*Positioned(
-                      top: 90,
-                      left: 10,
-                      child: Obx(() {
-                        final controller = Get.find<
-                            DashboardController>();
-                        return Container(
-                          padding:
-                          const EdgeInsets.symmetric(
-                              horizontal: 17,
-                              vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF3CC2C1)
-                                .withOpacity(0.7),
-                            borderRadius:
-                            BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
-                              const Text("MILES:",
-                                  style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 12,
-                                      color:
-                                      Colors.white)),
-                              Text(controller.miles.value,
-                                  style: const TextStyle(
-                                      fontSize: 10,
-                                      color:
-                                      Colors.white)),
-                              SizedBox(
-                                  height: screenHeight *
-                                      0.0075),
-                              const Text("DURATION:",
-                                  style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 12,
-                                      color:
-                                      Colors.white)),
-                              Text(
-                                  controller
-                                      .duration.value,
-                                  style: const TextStyle(
-                                      fontSize: 10,
-                                      color:
-                                      Colors.white)),
-                            ],
-                          ),
-                        );
-                      }),
-                                      ),*/
-                                    ///todo Duration Info
-                                  ],
-                                ),
+                      child: MapViewWidget(createBooking: true,),
+                      //           child: Stack(
+                      //             children: [
+                      //               Positioned.fill(
+                      //                 child: FlutterMap(
+                      //                   options: MapOptions(
+                      //                     initialCenter:
+                      //                         LatLng(33.6844, 73.0479),
+                      //                     initialZoom: 13.0,
+                      //                   ),
+                      //                   children: [
+                      //                     TileLayer(
+                      //                       urlTemplate:
+                      //                           'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      //                       subdomains: ['a', 'b', 'c'],
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //               Positioned(
+                      //                   bottom: 0,
+                      //                   child: Padding(
+                      //                     padding: const EdgeInsets.all(7.0),
+                      //                     child: Container(
+                      //                         decoration: BoxDecoration(
+                      //                             borderRadius:
+                      //                                 BorderRadius.circular(6),
+                      //                             color: DynamicColors
+                      //                                 .secondaryClr),
+                      //                         child: IconButton(
+                      //                             padding: EdgeInsets.zero,
+                      //                             onPressed: () {
+                      //                               final newTabUrll = Uri
+                      //                                       .base.origin +
+                      //                                   '/#' +
+                      //                                   Routes.viewDriversMap;
+                      //                               html.window.open(
+                      //                                 newTabUrll,
+                      //                                 '_blank', // "_blank" nayi window/tab me open karega
+                      //                                 'width=1200,height=800,noopener,noreferrer', // Optional: size aur options
+                      //                               );
+                      //                             },
+                      //                             icon: Icon(Icons
+                      //                                 .crop_square_outlined))),
+                      //                   ))
+                      //
+                      //               ///todo Duration Info
+                      //               /*Positioned(
+                      // top: 90,
+                      // left: 10,
+                      // child: Obx(() {
+                      //   final controller = Get.find<
+                      //       DashboardController>();
+                      //   return Container(
+                      //     padding:
+                      //     const EdgeInsets.symmetric(
+                      //         horizontal: 17,
+                      //         vertical: 8),
+                      //     decoration: BoxDecoration(
+                      //       color: Color(0xFF3CC2C1)
+                      //           .withOpacity(0.7),
+                      //       borderRadius:
+                      //       BorderRadius.circular(12),
+                      //     ),
+                      //     child: Column(
+                      //       crossAxisAlignment:
+                      //       CrossAxisAlignment.start,
+                      //       children: [
+                      //         const Text("MILES:",
+                      //             style: TextStyle(
+                      //                 fontWeight:
+                      //                 FontWeight.bold,
+                      //                 fontSize: 12,
+                      //                 color:
+                      //                 Colors.white)),
+                      //         Text(controller.miles.value,
+                      //             style: const TextStyle(
+                      //                 fontSize: 10,
+                      //                 color:
+                      //                 Colors.white)),
+                      //         SizedBox(
+                      //             height: screenHeight *
+                      //                 0.0075),
+                      //         const Text("DURATION:",
+                      //             style: TextStyle(
+                      //                 fontWeight:
+                      //                 FontWeight.bold,
+                      //                 fontSize: 12,
+                      //                 color:
+                      //                 Colors.white)),
+                      //         Text(
+                      //             controller
+                      //                 .duration.value,
+                      //             style: const TextStyle(
+                      //                 fontSize: 10,
+                      //                 color:
+                      //                 Colors.white)),
+                      //       ],
+                      //     ),
+                      //   );
+                      // }),
+                      //                 ),*/
+                      //               ///todo Duration Info
+                      //             ],
+                      //           ),
                               )
                             ],
                           ),

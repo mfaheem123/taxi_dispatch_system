@@ -58,31 +58,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   DashboardController controller = Get.find();
 
-  Future<List<String>> _getNamesRequest(String query) async {
-    if (query.isEmpty) return [];
-
-    const duration = Duration(milliseconds: 800);
-
-    // 👇 cancel previous debounce timer
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-    // 👇 Completer to wait for API completion
-    final completer = Completer<List<String>>();
-    controller.selectedTextFieldsValue.value = "pickup";
-    _debounce = Timer(duration, () async {
-      await controller.getAddresses(fieldsName: "VIA", searchingText: query);
-
-      // ✅ Prepare list after data fetched
-      final list = controller.allAddressesData
-          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
-          .toList();
-
-      completer.complete(list); // mark as finished
-    });
-
-    // ✅ Wait until completer completes
-    return completer.future;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +257,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                                textInputAction: TextInputAction.next,
                                                                onTap: () {
-                                                                 shortCutKeyValue.value = "formKey";
+                                                                 shortCutKeyValue.value = "PICKUP LOCATION";
                                                                },
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
@@ -301,6 +276,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
                                                                       controller.markers.remove(controller.markers[index]);
                                                                        controller.pickupController.clear();
+                                                                      controller.update();
                                                                       controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
@@ -435,6 +411,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                focusNode:
                                                                controller.dropOffTextFieldFocusNode,
                                                                hintText: 'DROP LOCATION',
+                                                               onTap: (){
+                                                                 shortCutKeyValue.value = "DROP LOCATION";
+                                                               },
                                                                borderRadius: 4,
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "DROP LOCATION",searchingText: v);
@@ -459,6 +438,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
                                                                        controller.markers.remove(controller.markers[index]);
                                                                        controller.dropOffController.clear();
+                                                                       controller.update();
                                                                        controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
@@ -747,6 +727,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    size: 20,
                                                                  ),
                                                                  textInputAction: TextInputAction.next,
+                                                                 onTap: (){
+                                                                   shortCutKeyValue.value = "DROP LOCATION";
+                                                                 },
                                                                  onSubmitted: (_) =>
                                                                      FocusScope.of(context)
                                                                          .nextFocus(),
