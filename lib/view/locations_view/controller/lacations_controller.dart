@@ -3,6 +3,7 @@
 
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
+import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -51,6 +52,9 @@ final extraChargesCtrl=TextEditingController();
 final latitudeCtrl=TextEditingController();
 final addressCtrl=TextEditingController();
 
+  LocationtypezoneModel? locationtypezoneModel;
+
+
 
   RxString zoneValue = ''.obs;
   RxString locationTypeValue = ''.obs;
@@ -90,6 +94,22 @@ final addressCtrl=TextEditingController();
     }
 
   }
+
+
+
+  RxBool getLocationtypeZone = false.obs;
+  getLocationTypeZone()async{
+    getLocationtypeZone(true);
+    var response = await Api().get("locationtype/zone");
+    if(response.statusCode == 200){
+      locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
+      getLocationtypeZone(false);
+      update();
+    }
+  }
+
+
+
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
 

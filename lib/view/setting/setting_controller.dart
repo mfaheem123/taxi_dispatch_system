@@ -191,6 +191,22 @@ class SettingController  extends GetxController{
 
 
 
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen 
+
+
+ String? selectMessageRole;
+
+     RxBool sendToAllValue = false.obs;
+  final FocusNode sendToAllNode = FocusNode();
+
+
+
+
+
+
+
+
+
 
 
 

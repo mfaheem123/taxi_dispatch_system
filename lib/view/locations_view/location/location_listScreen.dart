@@ -135,7 +135,6 @@ class _LocationListScreenState extends State<LocationListScreen> {
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
                         totalRow: controller.locationListModel!.locations!.length,
-
                         rows: controller.locationListModel!.locations!.map((item) {
                           return DataRow(
                               cells: [
@@ -143,8 +142,8 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                  DataCell(Center(child: Text(item.postcode!))),
                                  DataCell(Center(child: Text(item.shortcut!))),
                                  DataCell(Center(child: Text(item.address!))),
-                                 DataCell(Center(child: Text(item.locationType.toString()))),
-                                 DataCell(Center(child: Text(item.zone.toString()))),
+                                 DataCell(Center(child: Text(item.locationType!.name.toString()))),
+                                 DataCell(Center(child: Text(item.zone!.name.toString()))),
                                 DataCell(
                                   Center(
                                     child: Row(
