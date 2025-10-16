@@ -81,6 +81,16 @@ class AccountController extends GetxController {
 
 
 
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create Customer invoice
+
+
+  RxBool P_T_Value = false.obs;
+  RxBool cashValue = false.obs;
+  RxBool creditValue = false.obs;
+  RxBool account_Value = false.obs;
+  RxBool creditCardPaid_Value = false.obs;
+
+
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 
   String? account;

@@ -89,9 +89,13 @@ class _FareMeterState extends State<FareMeter> {
                   ),
                   columns: [
                     buildHeaderWithSearch(
-                        title: " VEHICLES ", removeSearching: true, fontSize: 13),
+                        title: " VEHICLES ",
+                        removeSearching: true,
+                        fontSize: 13),
                     buildHeaderWithSearch(
-                        title: " METERED ", removeSearching: true, fontSize: 13),
+                        title: " METERED ",
+                        removeSearching: true,
+                        fontSize: 13),
                     buildHeaderWithSearch(
                         title: " AUTO WAIT ",
                         removeSearching: true,
@@ -117,7 +121,9 @@ class _FareMeterState extends State<FareMeter> {
                         removeSearching: true,
                         fontSize: 13),
                     buildHeaderWithSearch(
-                        title: " ACTIONS ", removeSearching: true, fontSize: 13),
+                        title: " ACTIONS ",
+                        removeSearching: true,
+                        fontSize: 13),
                   ],
                   rows: List.generate(totalRows, (index) {
                     return DataRow(
@@ -148,7 +154,7 @@ class _FareMeterState extends State<FareMeter> {
                           ),
                         )),
                         DataCell(Center(
-                          child:  customRow(
+                          child: customRow(
                             icons: Icons.speed,
                             controller.activeWaitingController,
                             width: fieldWidth / 3.9,
@@ -156,8 +162,7 @@ class _FareMeterState extends State<FareMeter> {
                           ),
                         )),
                         DataCell(Center(
-                          child:
-                          customRow(
+                          child: customRow(
                             icons: Icons.alarm,
                             controller.activeWaitingController,
                             width: fieldWidth / 3.9,
@@ -175,7 +180,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: CustomButton(
                             width: fieldWidth / 1.9,
-                            onTap: (){
+                            onTap: () {
                               print("object");
                             },
                             height: 30,
@@ -199,7 +204,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: CustomButton(
                             width: 60,
-                            onTap: (){
+                            onTap: () {
                               print("object");
                             },
                             height: 30,
@@ -224,11 +229,13 @@ class _FareMeterState extends State<FareMeter> {
     });
   }
 
-  Widget customRow(TextEditingController controller,{
-  double? width,
-  String? unitText,
+  Widget customRow(
+    TextEditingController controller, {
+    double? width,
+    String? unitText,
     IconData? icons,
-  double borderRadius = 4,}){
+    double borderRadius = 4,
+  }) {
     return Row(
       children: [
         Container(
@@ -240,12 +247,16 @@ class _FareMeterState extends State<FareMeter> {
               top: BorderSide(color: DynamicColors.primaryClr),
               right: BorderSide.none,
               bottom: BorderSide(color: DynamicColors.primaryClr),
-              left: BorderSide(color: DynamicColors.primaryClr), // left border hataya
+              left: BorderSide(
+                  color: DynamicColors.primaryClr), // left border hataya
             ),
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Center(
-            child: Icon(icons, size: 20,),
+            child: Icon(
+              icons,
+              size: 20,
+            ),
           ),
         ),
         CustomTextField(
@@ -275,5 +286,4 @@ class _FareMeterState extends State<FareMeter> {
       ],
     );
   }
-
 }

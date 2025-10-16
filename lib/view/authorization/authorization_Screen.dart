@@ -162,6 +162,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                     border: Border.all(color: Colors.grey.shade300),
                   ),
                   child: ListView(
+                  
                     children: menuItems
                         .map((item) => _menuItem(item,
                                 selected: item == selectedMenu, onTap: () {

@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -143,48 +144,50 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                   width: fieldWidth / 1.8,
                   child: SizedBox(height: 30, child: KeyboardDatePicker()),
                 ),
-                SizedBox(
-                  width: 20,
-                  child: Checkbox(value: true, onChanged: (v) {}),
+                customWidget(
+                  value: controller.P_T_Value.value,
+                  onChanged: (v) {
+                    controller.P_T_Value.value = v!;
+                    controller.update();
+                  },
+                  text: "P/T",
+                  width: 140,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text("P/T"),
+                customWidget(
+                  value: controller.cashValue.value,
+                  onChanged: (v) {
+                    controller.cashValue.value = v!;
+                    controller.update();
+                  },
+                  text: "CASH",
+                  width: 140,
                 ),
-                SizedBox(
-                  width: 20,
-                  child: Checkbox(value: true, onChanged: (v) {}),
+                customWidget(
+                  value: controller.creditValue.value,
+                  onChanged: (v) {
+                    controller.creditValue.value = v!;
+                    controller.update();
+                  },
+                  text: "CREDIT CARD",
+                  width: 140,
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text("CASH"),
+                customWidget(
+                  value: controller.account_Value.value,
+                  onChanged: (v) {
+                    controller.account_Value.value = v!;
+                    controller.update();
+                  },
+                  text: "ACCOUNT",
+                  width: 140,
                 ),
-                SizedBox(
-                  width: 20,
-                  child: Checkbox(value: true, onChanged: (v) {}),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text("CREDIT CARD"),
-                ),
-                SizedBox(
-                  width: 20,
-                  child: Checkbox(value: true, onChanged: (v) {}),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text("ACCOUNT"),
-                ),
-                SizedBox(
-                  width: 20,
-                  child: Checkbox(value: true, onChanged: (v) {}),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10),
-                  child: Text("CREDIT CARD PAID"),
-                ),
-                SizedBox(
-                  width: fieldWidth / 1.8,
+                customWidget(
+                  value: controller.creditCardPaid_Value.value,
+                  onChanged: (v) {
+                    controller.creditCardPaid_Value.value = v!;
+                    controller.update();
+                  },
+                  text: "CREDIT CARD PAID",
+                  width: 140,
                 ),
                 CustomButton(
                   verticalPadding: 0.0,
