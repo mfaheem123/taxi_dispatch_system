@@ -433,16 +433,27 @@ class AppText {
   static get escortWithZero => "ESCORT";
   static get escortInformation => "ESCORT INFORMATION";
   static get safeguardingExpiry => "	SAFEGUARDING EXPIRY";
-  static get 	patExpiry => "PAT EXPIRY";
-  static get 	firstAidExpiry => "FIRSTAID EXPIRY";
-  static get 	dbsExpiry => "DBS EXPIRY";
-  static get 	safeguarding => "SAFEGUARDING";
-  static get 	patPic => "PAT";
-  static get 	firstAid => "FIRSTAID";
-  static get 	dbs => "DBS";
-  static get 	escortAttachment => "ESCORT ATTACHMENT";
-  static get 	selectMessage => "SELECT MESSAGE";
-  static get 	sendAll => "SEND ALL";
+  static get patExpiry => "PAT EXPIRY";
+  static get firstAidExpiry => "FIRSTAID EXPIRY";
+  static get dbsExpiry => "DBS EXPIRY";
+  static get safeguarding => "SAFEGUARDING";
+  static get patPic => "PAT";
+  static get firstAid => "FIRSTAID";
+  static get dbs => "DBS";
+  static get escortAttachment => "ESCORT ATTACHMENT";
+  static get selectMessage => "SELECT MESSAGE";
+  static get sendAll => "SEND ALL";
+  static get safeguardingBatch => "SAFEGUARDING BATCH";
+  static get patPicBatch => "PAT BATCH";
+  static get firstAidBatch => "FIRSTAID BATCH";
+  static get dbsBatch => "DBS BATCH";
+
+
+  static get safeguardingDocument => "SAFEGUARDING DOCUMENT";
+  static get patDocument => "PAT DOCUMENT";
+  static get firstAidDocument => "FIRSTAID DOCUMENT";
+  static get dbsDocument => "DBS DOCUMENT";
+  static get driverStatus => "DRIVER STATUS";
 
   // static get generate => "GENERATE";
 }

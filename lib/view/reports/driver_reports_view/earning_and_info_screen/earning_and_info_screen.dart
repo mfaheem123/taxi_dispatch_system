@@ -1,10 +1,11 @@
+import 'package:dashboard_new1/alert/restrict_drivers_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/view/reports/driver_reports_view/earning_and_info_screen/vehicel_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -115,6 +116,63 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                   fontSize: 12,
                   verticalPadding: 0.0,
                   btnText: AppText.view,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppText.driver,
+                        style: mozillaTextSemiBoldText(
+                            context: context, fontSize: 13)),
+                    RestrictedDrivers(
+                      width: fieldWidth / 2.5,
+                      // height: 35,
+                      padding: 0.0,
+                      border: Border.all(
+                        color: DynamicColors.gryClr,
+                      ),
+                      titleText: AppText.selectDriver,
+                      driversList: [
+                        "Driver 01",
+                        "Driver 02",
+                        "Driver 03",
+                        "Driver 04",
+                      ],
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(AppText.driverStatus,
+                        style: mozillaTextSemiBoldText(
+                            context: context, fontSize: 13)),
+                    Wrap(
+                      children: [
+                        CustomButton(
+                          width: 120,
+                          height: 30,
+                          btnText: "ACTIVE",
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          fontSize: 15,
+                          btnColor: DynamicColors.primaryClr,
+                          onTap: () {},
+                        ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        CustomButton(
+                          width: 120,
+                          height: 30,
+                          btnText: "IN ACTIVE",
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          fontSize: 15,
+                          btnColor: DynamicColors.secondaryClr,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
