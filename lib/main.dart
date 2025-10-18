@@ -15,21 +15,6 @@ void main() async{
   disableInspect();
   html.document.documentElement?.requestFullscreen();
 
-  // prevent browser-level scroll on arrow keys
-  html.window.onKeyDown.listen((event) {
-    if ([
-      'ArrowUp',
-      'ArrowDown',
-      'PageUp',
-      'PageDown',
-      ' ',
-      'Home',
-      'End'
-    ].contains(event.key)) {
-      event.preventDefault();
-    }
-  });
-
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',
     defaultValue: Environment.production,
