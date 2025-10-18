@@ -1,14 +1,13 @@
-
 import 'dart:typed_data';
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Model/image_model.dart';
 
-class VehicleController extends GetxController{
-
-
+class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
 
   /// bool variable
@@ -31,8 +30,7 @@ class VehicleController extends GetxController{
       profileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
-          path: result.files.single.path
-      );
+          path: result.files.single.path);
     }
     update();
   }
@@ -48,11 +46,7 @@ class VehicleController extends GetxController{
   final accountWaitingChargesController = TextEditingController();
   final waitingTimeController = TextEditingController();
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
-
-
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
@@ -72,12 +66,59 @@ class VehicleController extends GetxController{
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo VEHICLE TYPES
+  VehicleTypeModel? vehicleTypeModel;
+  RxBool isLoading = false.obs;
 
+  Future<void> getVehicleTypes() async {
+    try {
+      isLoading.value = true;
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo VEHICLE TYPES
+      final response = await Api().get('vehicle-type');
 
+      if (response.statusCode == 200) {
+        vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
+        print("Vehicle types ${vehicleTypeModel?.vehicleTypes?.length}");
+      } else {
+        print("Status Code Error ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in getVehicleTypes(): $e");
+    } finally {
+      isLoading.value = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
+
+  RxBool isCompanyVehicle = false.obs;
+
+  CompanyVehicleModel? companyVehicleModel;
+
+  Future<void> conpanyVehicleModel() async {
+    try {
+      isCompanyVehicle.value = true;
+      final response = await Api().get('company-vehicles');
+
+      if (response.statusCode == 200) {
+        companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
+        print('Company ${CompanyVehicleModel}');
+      } else {
+        print("Status Code Error-------${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in getVehicleTypes(): $e");
+    } finally {
+      isCompanyVehicle.value = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 }
