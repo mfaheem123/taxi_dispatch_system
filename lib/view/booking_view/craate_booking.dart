@@ -262,12 +262,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             1) {
                                                   controller
                                                       .highlightedIndex.value++;
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 } else if (event.logicalKey ==
                                                         LogicalKeyboardKey
                                                             .arrowUp &&
                                                     controller.highlightedIndex
                                                             .value >
                                                         0) {
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                   controller
                                                       .highlightedIndex.value--;
                                                 } else if (event.logicalKey ==
@@ -279,6 +281,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       .name;
                                                   controller.selectSuggestion(
                                                       selected);
+                                                }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 }
                                               }
                                             },
@@ -325,6 +329,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             controller.markers
                                                                 .remove(controller.markers[index]);
                                                             controller.pickupController.clear();
+                                                            controller.polylinePoints.clear();
                                                             controller.update();
                                                           },
                                                           child: Icon(
@@ -587,6 +592,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             controller
                                                                 .dropOffController
                                                                 .clear();
+                                                            controller.polylinePoints.clear();
                                                             controller.update();
                                                           },
                                                           child: Icon(
@@ -1807,6 +1813,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               )
                             ],
                           ),
+
                           Obx(() {
                             if (controller.selectedTextFieldsValue.value ==
                                 "VIA") return SizedBox();
@@ -1885,13 +1892,17 @@ class _CreateBookingState extends State<CreateBooking> {
                                         itemBuilder: (context, index) {
                                           final item = controller
                                               .allAddressesData[index];
-                                          final isHighlighted = index ==
-                                              controller.highlightedIndex.value;
+                                          // final isHighlighted = index ==
+                                          //     controller.highlightedIndex.value;
 
-                                          return Container(
-                                            // optional background highlight
+                                          final bool isHighlighted =
+                                              index == controller.highlightedIndex.value;
+
+                                          return AnimatedContainer(
+                                            duration: const Duration(milliseconds: 120),
+                                            curve: Curves.easeInOut,
                                             color: isHighlighted
-                                                ? const Color(0xffA0DCFF)
+                                                ? const Color(0xffA0DCFF) // highlighted background
                                                 : Colors.transparent,
                                             child: ListTile(
                                               dense: true,

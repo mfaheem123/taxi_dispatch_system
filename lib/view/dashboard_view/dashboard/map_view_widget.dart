@@ -47,6 +47,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     // if (polylinePoints.isEmpty) {
     //   return Center(child: CircularProgressIndicator());
     // }
+
     return SizedBox(
       width: widget.createBooking == true?Get.width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
       height: widget.createBooking == true?Get.height / 1.4:
@@ -70,7 +71,8 @@ class _MapViewWidgetState extends State<MapViewWidget> {
            child: FlutterMap(
               mapController: controller.mapController,
               options: MapOptions(
-                initialCenter: polylinePoints.isEmpty?LatLng(50.5, 30.51): polylinePoints.first,
+                initialCenter: polylinePoints.isEmpty?LatLng(50.5, 30.51):
+                polylinePoints.first,
                 initialZoom: 13.0,
                 onMapReady: () {
                   if (polylinePoints.length >= 2) {
