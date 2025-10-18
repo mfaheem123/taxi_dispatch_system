@@ -1635,6 +1635,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                 // Rebuild list when highlightedIndex or data changes
                                 child: Obx(() => ListView.builder(
+                                  key: controller.suggestionListKey,
                                   controller: controller.suggestionScrollController,
                                   itemCount: controller.allAddressesData.length,
                                   padding: EdgeInsets.only(top: 15),

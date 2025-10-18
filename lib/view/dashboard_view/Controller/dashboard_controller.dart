@@ -607,7 +607,7 @@ class DashboardController extends GetxController {
     update();
 
     // --------- MULTI-POINT: request route from OSRM ----------
-    final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+    final coordinates = tempPoints.map((p) => "${p.longitude },${p.latitude}").join(";");
     final url = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
 
     final res = await Dio().getUri(url);
@@ -664,6 +664,7 @@ class DashboardController extends GetxController {
     suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
   }
 
+  final GlobalKey suggestionListKey = GlobalKey();
 
 
 // change move functions to scroll after change:
@@ -690,26 +691,66 @@ class DashboardController extends GetxController {
       final i = highlightedIndex.value;
       if (i < 0 || i >= suggestionItemKeys.length) return;
 
-      final ctx = suggestionItemKeys[i].currentContext;
-      if (ctx != null) {
-        Scrollable.ensureVisible(
-          ctx,
-          duration: const Duration(milliseconds: 150),
-          curve: Curves.easeInOut,
-          alignment: scrollDown ? 1.0 : 0.0, // 👈 bottom if down, top if up
+      final itemCtx = suggestionItemKeys[i].currentContext;
+      final listCtx = suggestionListKey.currentContext;
+
+      if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
+        final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
+        final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
+
+        // item position relative to the ListView viewport
+        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final double itemTopLocal = itemOffset.dy;
+        final double itemBottomLocal = itemTopLocal + itemBox.size.height;
+
+        final double viewportHeight = listBox.size.height;
+        final double currentOffset = suggestionScrollController.offset;
+
+        double targetOffset = currentOffset;
+
+        // small margin so item doesn't hug the edge too tightly
+        const double edgeMargin = 8.0;
+
+        // If item bottom is below visible viewport -> scroll down minimally
+        if (itemBottomLocal > viewportHeight - edgeMargin) {
+          final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        }
+        // If item top is above visible viewport -> scroll up minimally
+        else if (itemTopLocal < edgeMargin) {
+          final double delta = itemTopLocal - edgeMargin; // negative
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        } else {
+          // already visible enough -> no scroll
+          return;
+        }
+
+        // tiny guard to avoid micro animations
+        if ((targetOffset - currentOffset).abs() < 0.5) return;
+
+        suggestionScrollController.animateTo(
+          targetOffset,
+          duration: const Duration(milliseconds: 120),
+          curve: Curves.easeOut,
         );
       } else {
+        // fallback if contexts not ready
         _fallbackScroll(i, scrollDown);
       }
     });
   }
 
-
   void _fallbackScroll(int index, bool scrollDown) {
     if (!suggestionScrollController.hasClients) return;
-    const itemHeight = 48.0;
-    const topPadding = 15.0;
 
+    const double itemHeight = 48.0; // adjust if needed
+    const double topPadding = 15.0;
     final currentOffset = suggestionScrollController.offset;
     final viewport = suggestionScrollController.position.viewportDimension;
     final visibleStart = currentOffset;
@@ -719,13 +760,16 @@ class DashboardController extends GetxController {
     final itemBottom = itemTop + itemHeight;
 
     double target = currentOffset;
+    const double margin = itemHeight * 0.12; // small margin
 
-    if (scrollDown && itemBottom > visibleEnd) {
-      // move so that item is near bottom
-      target = itemBottom - viewport + itemHeight;
-    } else if (!scrollDown && itemTop < visibleStart) {
-      // move so that item is near top
-      target = itemTop - itemHeight;
+    if (itemBottom > visibleEnd) {
+      // scroll just enough so item bottom is inside viewport with margin
+      target = itemBottom - viewport + margin;
+    } else if (itemTop < visibleStart) {
+      // scroll just enough so item top is inside viewport with margin
+      target = itemTop - margin;
+    } else {
+      return; // visible
     }
 
     target = target.clamp(
@@ -733,12 +777,15 @@ class DashboardController extends GetxController {
       suggestionScrollController.position.maxScrollExtent,
     );
 
+    if ((target - currentOffset).abs() < 0.5) return;
+
     suggestionScrollController.animateTo(
       target,
-      duration: const Duration(milliseconds: 150),
-      curve: Curves.easeInOut,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
     );
   }
+
 
 
 
