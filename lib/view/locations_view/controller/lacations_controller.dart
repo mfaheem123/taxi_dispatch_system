@@ -53,15 +53,24 @@ final extraChargesCtrl=TextEditingController();
 final latitudeCtrl=TextEditingController();
 final addressCtrl=TextEditingController();
 
-  LocationtypezoneModel? locationtypezoneModel;
 
-
-
-  RxString zoneValue = ''.obs;
-  RxString locationTypeValue = ''.obs;
+  ZoneObject? zoneValue;
+  LocationTypeObject? locationTypeValue;
 
   List<String> zones = ["Zone 1", "Zone 2", "Zone 3"];
   List<String> locationTypes = ["Pickup", "Dropoff", "Hub"];
+
+  RxBool getLocationTypeZoneLoader = false.obs;
+  LocationtypezoneModel? locationtypezoneModel;
+  getLocationTypeZone()async{
+    getLocationTypeZoneLoader(true);
+    var response = await Api().get("locationtype/zone");
+    if(response.statusCode == 200){
+      locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
+      getLocationTypeZoneLoader(false);
+      update();
+    }
+  }
 
   RxBool postLocationForm = false.obs;
 
@@ -95,19 +104,6 @@ final addressCtrl=TextEditingController();
       print(response);
     }
 
-  }
-
-
-
-  RxBool getLocationtypeZone = false.obs;
-  getLocationTypeZone()async{
-    getLocationtypeZone(true);
-    var response = await Api().get("locationtype/zone");
-    if(response.statusCode == 200){
-      locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
-      getLocationtypeZone(false);
-      update();
-    }
   }
 
 

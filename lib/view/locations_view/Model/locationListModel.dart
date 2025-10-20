@@ -140,24 +140,24 @@ class LocationType {
 }
 
 class Zone {
-  int id;
-  bool base;
-  String name;
-  String type;
-  String overlay;
-  String category;
-  List<Vertex> vertices;
-  String secondaryName;
+  int? id;
+  bool? base;
+  String? name;
+  String? type;
+  String? overlay;
+  String? category;
+  List<Vertex>? vertices;
+  String? secondaryName;
 
   Zone({
-    required this.id,
-    required this.base,
-    required this.name,
-    required this.type,
-    required this.overlay,
-    required this.category,
-    required this.vertices,
-    required this.secondaryName,
+    this.id,
+    this.base,
+    this.name,
+    this.type,
+    this.overlay,
+    this.category,
+    this.vertices,
+    this.secondaryName,
   });
 
   factory Zone.fromJson(Map<String, dynamic> json) => Zone(
@@ -181,7 +181,7 @@ class Zone {
     "type": type,
     "overlay": overlay,
     "category": category,
-    "vertices": vertices.map((x) => x.toJson()).toList(),
+    "vertices": vertices!.map((x) => x.toJson()).toList(),
     "secondary_name": secondaryName,
   };
 }

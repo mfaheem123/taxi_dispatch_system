@@ -13,16 +13,16 @@ class LocationtypezoneModel {
   String? message;
   int? locationTypesCount;
   int? zonesCount;
-  List<LocationType>? locationTypes;
-  List<Zone>? zones;
+  List<LocationTypeObject>? locationTypesList;
+  List<ZoneObject>? zonesList;
 
   LocationtypezoneModel({
     this.status,
     this.message,
     this.locationTypesCount,
     this.zonesCount,
-    this.locationTypes,
-    this.zones,
+    this.locationTypesList,
+    this.zonesList,
   });
 
   factory LocationtypezoneModel.fromJson(Map<String, dynamic> json) => LocationtypezoneModel(
@@ -30,8 +30,8 @@ class LocationtypezoneModel {
     message: json["message"],
     locationTypesCount: json["location_types_count"],
     zonesCount: json["zones_count"],
-    locationTypes: json["location_types"] == null ? [] : List<LocationType>.from(json["location_types"]!.map((x) => LocationType.fromJson(x))),
-    zones: json["zones"] == null ? [] : List<Zone>.from(json["zones"]!.map((x) => Zone.fromJson(x))),
+    locationTypesList: json["location_types"] == null ? [] : List<LocationTypeObject>.from(json["location_types"]!.map((x) => LocationTypeObject.fromJson(x))),
+    zonesList: json["zones"] == null ? [] : List<ZoneObject>.from(json["zones"]!.map((x) => ZoneObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -39,19 +39,19 @@ class LocationtypezoneModel {
     "message": message,
     "location_types_count": locationTypesCount,
     "zones_count": zonesCount,
-    "location_types": locationTypes == null ? [] : List<dynamic>.from(locationTypes!.map((x) => x.toJson())),
-    "zones": zones == null ? [] : List<dynamic>.from(zones!.map((x) => x.toJson())),
+    "location_types": locationTypesList == null ? [] : List<dynamic>.from(locationTypesList!.map((x) => x.toJson())),
+    "zones": zonesList == null ? [] : List<dynamic>.from(zonesList!.map((x) => x.toJson())),
   };
 }
 
-class LocationType {
+class LocationTypeObject {
   int? id;
   String? name;
   String? shortcut;
   String? backgroundColor;
   String? foregroundColor;
 
-  LocationType({
+  LocationTypeObject({
     this.id,
     this.name,
     this.shortcut,
@@ -59,7 +59,7 @@ class LocationType {
     this.foregroundColor,
   });
 
-  factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
+  factory LocationTypeObject.fromJson(Map<String, dynamic> json) => LocationTypeObject(
     id: json["id"],
     name: json["name"],
     shortcut: json["shortcut"],
@@ -76,7 +76,7 @@ class LocationType {
   };
 }
 
-class Zone {
+class ZoneObject {
   int? id;
   String? name;
   String? secondaryName;
@@ -88,7 +88,7 @@ class Zone {
   String? createdAt;
   String? updatedAt;
 
-  Zone({
+  ZoneObject({
     this.id,
     this.name,
     this.secondaryName,
@@ -101,7 +101,7 @@ class Zone {
     this.updatedAt,
   });
 
-  factory Zone.fromJson(Map<String, dynamic> json) => Zone(
+  factory ZoneObject.fromJson(Map<String, dynamic> json) => ZoneObject(
     id: json["id"],
     name: json["name"],
     secondaryName: json["secondary_name"],
