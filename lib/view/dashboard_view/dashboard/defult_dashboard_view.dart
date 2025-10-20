@@ -251,9 +251,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      LogicalKeyboardKey.enter) {
                                                                    final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                                                    controller.selectSuggestion(selected);
-                                                               }else if(event.logicalKey == LogicalKeyboardKey.tab){
-                                                                 FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                               }
+                                                                 }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
+                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                                                 }
+                                                               // }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                               //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                                               // }
                                                                }
                                                              },
                                                              child: CustomTextField(
@@ -288,6 +291,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
                                                                       // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
                                                                       // controller.markers.remove(controller.markers[index]);
+                                                                      FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                       controller.markers.clear();
                                                                       controller.polyLineMarkerInfo.clear();
                                                                        controller.pickupController.clear();
@@ -295,6 +299,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.update();
+
                                                                       // controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
@@ -420,7 +425,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    controller.suggestions[controller
                                                                        .highlightedIndex.value].name;
                                                                    controller.selectSuggestion(selected);
-                                                                 }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                                 }else if(event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab){
                                                                    FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                  }
                                                                }
@@ -457,6 +462,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
                                                                        // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
                                                                        // controller.markers.remove(controller.markers[index]);
+                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                        controller.dropOffController.clear();
                                                                        controller.markers.clear();
                                                                        controller.polyLineMarkerInfo.clear();
@@ -1617,6 +1623,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                                     controller.moveHighlightUp();
                                     return;
+                                  }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                                    controller.tapSelect(controller.suggestionSelectedIndex.value);
+                                    print("enter press");
                                   }
 
 
@@ -1642,7 +1651,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   itemBuilder: (context, index) {
                                     final item = controller.allAddressesData[index];
                                     final isHighlighted = controller.highlightedIndex.value == index;
-
+                                    controller.suggestionSelectedIndex.value = index;
                                     print("controller.highlightedIndex.value");
                                     print(controller.highlightedIndex.value);
                                     print(index);

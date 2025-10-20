@@ -281,7 +281,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       .name;
                                                   controller.selectSuggestion(
                                                       selected);
-                                                }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 }
                                               }

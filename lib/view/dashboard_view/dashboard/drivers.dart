@@ -54,12 +54,6 @@ class _DriversViewState extends State<DriversView> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    print(screenHeight);
-    print(screenHeight);
-    print(screenHeight);
-    print(screenHeight);
-    print(screenHeight);
-
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return RawKeyboardListener(
@@ -116,7 +110,7 @@ class _DriversViewState extends State<DriversView> {
             // }
           },
           child: SizedBox(
-            width: screenWidth >= 1270 ? screenWidth/4.6 : screenWidth / 2.1,
+            width: screenWidth >= 1270 ? screenWidth/6.8 : screenWidth / 4.8,
             height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
             child: Card(
               elevation: 4,
