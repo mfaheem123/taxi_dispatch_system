@@ -7,14 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AdministrationController extends GetxController {
-  
-
-  
   /// RxBool variable
   RxBool inActive = false.obs;
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
-
 
   RxBool activeValue = false.obs;
   final FocusNode activeNode = FocusNode();
@@ -42,8 +38,6 @@ class AdministrationController extends GetxController {
       if (response.statusCode == 200) {
         subsDiaryModel = SubsDiaryModel.fromJson(response.data);
         print('Company ${SubsDiaryModel}');
-      } else {
-        print("Status Code Error-------${response.statusCode}");
       }
     } catch (e) {
       print("Error in subsDiary: $e");
@@ -53,12 +47,10 @@ class AdministrationController extends GetxController {
     }
   }
 
-
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User subsDiary api
 
-
-UserModel? userModel;
- RxBool userLoading = false.obs;
+  UserModel? userModel;
+  RxBool userLoading = false.obs;
 
   Future<void> userData() async {
     try {
@@ -68,8 +60,6 @@ UserModel? userModel;
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
         print('User data ${UserModel}');
-      } else {
-        print("Status Code Error-------${response.statusCode}");
       }
     } catch (e) {
       print("Error in User: $e");
@@ -100,6 +90,12 @@ UserModel? userModel;
     update();
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Subsidiaries Controller
+
+// String?
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final faxController = TextEditingController();
@@ -113,7 +109,47 @@ UserModel? userModel;
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Subsidiaries Controller
+  Color subsiDiarypickerColor = Colors.blue;
+  Color subsiDiaryforegroundColor = Colors.blue;
 
-// String?
+  RxBool isLoadVehicleType = false.obs;
+  createSubsiDiary() async {
+    isLoadVehicleType.value = false;
+
+    var formData = {
+      'name': nameController.text,
+      'background_color':
+          subsiDiarypickerColor.value.toRadixString(16).substring(2),
+      'foreground_color':
+          subsiDiaryforegroundColor.value.toRadixString(16).substring(2),
+      'telephone_number': telephoneController.text,
+      'emergency_contact_number': emergencyContactController.text,
+      'email': emailController.text,
+      'fax': faxController.text,
+      'website': websiteController.text,
+      'address': addressController.text,
+      'sort_code': '12-34-56',
+      'account_number': '12345678',
+      'account_title': 'Demo Company Ltd',
+      'bank': 'Demo Bank',
+      'company_number': companyController.text,
+      'vat_number': 'GB123456789',
+      'iban': 'GB29NWBK60161331926819',
+      'balance': balanceController.text,
+      'currency': currencyController.text,
+      'web_access_token': 'web-token-demo-123',
+      'mobile_access_token': 'mobile-token-demo-456',
+      'maximum_drivers': '50',
+      'active_drivers': '10',
+      'address_latitude': '51.5074',
+      'address_longitude': '-0.1278'
+    };
+
+    var response = await Api().post(formData, 'subsidiaries/add', auth: true);
+    if (response.statusCode == 200) {
+      
+      Text("Saved Successfully");
+      print("response of body -------------------------${response.data}");
+    }
+  }
 }

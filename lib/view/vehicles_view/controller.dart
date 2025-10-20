@@ -131,9 +131,7 @@ class VehicleController extends GetxController {
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
         print('Company ${CompanyVehicleModel}');
-      } else {
-        print("Status Code Error-------${response.statusCode}");
-      }
+      } 
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
     } finally {
