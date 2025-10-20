@@ -31,7 +31,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-    controller.conpanyVehicleModel();
+    controller.companyVehicle();
   }
 
   void _handleKey(RawKeyEvent event) {

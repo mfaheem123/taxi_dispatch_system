@@ -84,7 +84,6 @@ class _VehicleTypeListScreenState extends State<VehicleTypeListScreen> {
                         width: 20,
                       ),
 
-
                       SizedBox(
                         width: 60,
                       ),
@@ -144,12 +143,12 @@ class _VehicleTypeListScreenState extends State<VehicleTypeListScreen> {
                           bool isSelected = index == selectedRowIndex;
                           return DataRow(
                             cells: [
-                              const DataCell(Text("Saloon")),
-                              const DataCell(Text("4")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("2")),
-                              const DataCell(Text("£ 7.00")),
-                              const DataCell(Text("2.00 mi")),
+                               DataCell(Text("Saloon")),
+                               DataCell(Text("4")),
+                               DataCell(Text("2")),
+                               DataCell(Text("2")),
+                               DataCell(Text("£ 7.00")),
+                               DataCell(Text("2.00 mi")),
 
                               DataCell(
                                 Row(
