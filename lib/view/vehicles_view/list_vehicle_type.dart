@@ -57,7 +57,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                 : maxWidth / 4;
 
         return controller.isLoading.value == true
-            ? CircularProgressIndicator()
+            ? Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -119,58 +119,60 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                           totalRow: controller
                                   .vehicleTypeModel!.vehicleTypes!.length ??
                               0,
-
                           rows:
                               (controller.vehicleTypeModel!.vehicleTypes ?? [])
-                                  .map((item) {
-                            return DataRow(cells: [
-                              DataCell(Center(child: Text(item.name!))),
-                              DataCell(Center(
-                                  child: Text(item.passengers.toString()))),
-                              DataCell(Center(
-                                  child: Text(item.luggages.toString()))),
-                              DataCell(Center(
-                                  child: Text(item.handLuggages.toString()))),
-                              DataCell(Center(child: Text(item.minimumFares!))),
-                              DataCell(Center(child: Text(item.minimumMiles!))),
-                              DataCell(
-                                Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: Size(24, 24),
-                                          side: BorderSide.none,
+                                  .map(
+                            (item) {
+                              return DataRow(cells: [
+                                DataCell(Center(child: Text(item.name!))),
+                                DataCell(Center(
+                                    child: Text(item.passengers.toString()))),
+                                DataCell(Center(
+                                    child: Text(item.luggages.toString()))),
+                                DataCell(Center(
+                                    child: Text(item.handLuggages.toString()))),
+                                DataCell(
+                                    Center(child: Text(item.minimumFares!))),
+                                DataCell(
+                                    Center(child: Text(item.minimumMiles!))),
+                                DataCell(
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size(24, 24),
+                                            side: BorderSide.none,
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(Icons.edit_calendar,
+                                              size: 20),
                                         ),
-                                        onPressed: () {},
-                                        child:
-                                            Icon(Icons.edit_calendar, size: 20),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: Size(24, 24),
-                                          side: BorderSide.none,
+                                        const SizedBox(width: 4),
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: Size(24, 24),
+                                            side: BorderSide.none,
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(
+                                            Icons.delete_forever,
+                                            size: 20,
+                                            color: DynamicColors.redClr,
+                                          ),
                                         ),
-                                        onPressed: () {},
-                                        child: Icon(
-                                          Icons.delete_forever,
-                                          size: 20,
-                                          color: DynamicColors.redClr,
-                                        ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ]);
-                          }).toList(),
-
-                         
+                              ]);
+                            },
+                          ).toList(),
                         ),
                       ),
                     ),

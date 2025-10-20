@@ -154,7 +154,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                         ),
                                         onPressed: () {},
                                         child: Icon(
-                                          Icons.search,
+                                          Icons.edit,
                                           size: 28,
                                         ),
                                       ),
