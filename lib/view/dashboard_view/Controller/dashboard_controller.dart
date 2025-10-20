@@ -736,7 +736,7 @@ class DashboardController extends GetxController {
 
         suggestionScrollController.animateTo(
           targetOffset,
-          duration: const Duration(milliseconds: 120),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       } else {
@@ -781,7 +781,7 @@ class DashboardController extends GetxController {
 
     suggestionScrollController.animateTo(
       target,
-      duration: const Duration(milliseconds: 120),
+      duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
   }
