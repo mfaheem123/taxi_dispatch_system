@@ -82,7 +82,7 @@ class VehicleController extends GetxController {
 
   CompanyVehicleModel? companyVehicleModel;
 
-  Future<void> conpanyVehicleModel() async {
+  Future<void> companyVehicleModel() async {
     try {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles');
@@ -138,9 +138,8 @@ class VehicleController extends GetxController {
       'waiting_time_duration': '45',
       'default_vehicle': defaultVehicleValue.value,
       'vehicle_type_minimum_fares': minimumFaresValue.value,
-'background_color': '${pickerColor.value.toRadixString(16).substring(2)}',
-'foreground_color': '${foregroundColor.value.toRadixString(16).substring(2)}',
-
+      'background_color': pickerColor.value.toRadixString(16).substring(2),
+      'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
       'driver_waiting_charges': driverWaitingChargesController.text,
       'account_waiting_charges': accountWaitingChargesController.text,
     };
