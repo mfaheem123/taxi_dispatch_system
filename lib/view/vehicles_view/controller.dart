@@ -82,7 +82,7 @@ class VehicleController extends GetxController {
 
   CompanyVehicleModel? companyVehicleModel;
 
-  Future<void> companyVehicleModel() async {
+  Future<void> companyVehicle() async {
     try {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles');
@@ -90,9 +90,7 @@ class VehicleController extends GetxController {
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
         print('Company ${CompanyVehicleModel}');
-      } else {
-        print("Status Code Error-------${response.statusCode}");
-      }
+      } 
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
     } finally {

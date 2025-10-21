@@ -21,9 +21,10 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
-  AdministrationController controller = Get.isRegistered<AdministrationController>()
-      ? Get.find<AdministrationController>()
-      : Get.put(AdministrationController());
+  AdministrationController controller =
+      Get.isRegistered<AdministrationController>()
+          ? Get.find<AdministrationController>()
+          : Get.put(AdministrationController());
 
   @override
   void initState() {
@@ -210,16 +211,16 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                       context: context, fontSize: 13)),
                               ColorPickerWidget(
                                 width: fieldWidth / 2,
-                                pickerColor: controller.pickerColor,
+                                pickerColor: controller.subsiDiarypickerColor,
                                 onColorChanged: (color) {
                                   setState(() {
-                                    controller.pickerColor =
+                                    controller.subsiDiarypickerColor =
                                         color; // live preview
                                   });
                                 },
                                 onColorSelected: (color) {
                                   setState(() {
-                                    controller.pickerColor =
+                                    controller.subsiDiarypickerColor =
                                         color; // final selected
                                   });
                                 },
@@ -235,16 +236,17 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                       context: context, fontSize: 13)),
                               ColorPickerWidget(
                                 width: fieldWidth / 2,
-                                pickerColor: controller.foregroundColor,
+                                pickerColor:
+                                    controller.subsiDiaryforegroundColor,
                                 onColorChanged: (color) {
                                   setState(() {
-                                    controller.foregroundColor =
+                                    controller.subsiDiaryforegroundColor =
                                         color; // live preview
                                   });
                                 },
                                 onColorSelected: (color) {
                                   setState(() {
-                                    controller.foregroundColor =
+                                    controller.subsiDiaryforegroundColor =
                                         color; // final selected
                                   });
                                 },
@@ -290,6 +292,9 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         height: 20,
                       ),
                       CustomButton(
+                        onTap: () {
+                          controller.createVehicleType();
+                        },
                         height: 30,
                         width: fieldWidth,
                         btnText: AppText.save,
