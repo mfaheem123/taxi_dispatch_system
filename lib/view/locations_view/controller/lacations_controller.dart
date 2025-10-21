@@ -4,6 +4,7 @@
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
+import 'package:dio/dio.dart' show Dio, BaseOptions;
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -87,6 +88,7 @@ final addressCtrl=TextEditingController();
     };
       var response = await Api().post(formData, 'locations', auth: true);
     if (response.statusCode == 201) {
+
       print(response);
     }else{
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
@@ -126,6 +128,64 @@ final addressCtrl=TextEditingController();
   }
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
+
+  // class Postcode {
+  // final String code;
+  // Postcode(this.code);
+  // }
+  // List<Postcode> postcodes = [];
+  //
+  // final Dio _dio = Dio(BaseOptions(
+  //   baseUrl: 'http://192.168.110.4:5000/api',
+  //   connectTimeout: const Duration(seconds: 10),
+  //   receiveTimeout: const Duration(seconds: 10),
+  // ));
+  //
+  // Future<void> adddPostcode(String code) async {
+  //   try {
+  //     final response = await _dio.post(
+  //       '/localizations',
+  //       data: FormData.fromMap({
+  //         'postcode': code,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       // Successfully added on server — now update local list
+  //       postcodes.add(Postcode(code));
+  //       update();
+  //       Get.snackbar('Success', 'Postcode added successfully',
+  //           snackPosition: SnackPosition.BOTTOM,
+  //           backgroundColor: const Color(0xFF4CAF50),
+  //           colorText: const Color(0xFFFFFFFF));
+  //     } else {
+  //       Get.snackbar('Error', 'Failed to add postcode',
+  //           snackPosition: SnackPosition.BOTTOM,
+  //           backgroundColor: const Color(0xFFE53935),
+  //           colorText: const Color(0xFFFFFFFF));
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar('Error', e.toString(),
+  //         snackPosition: SnackPosition.BOTTOM,
+  //         backgroundColor: const Color(0xFFE53935),
+  //         colorText: const Color(0xFFFFFFFF));
+  //   }
+  // }
+  //
+  // void removeePostcode(Postcode postcode) {
+  //   postcodes.remove(postcode);
+  //   update();
+  // }
+
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
 
 
 }

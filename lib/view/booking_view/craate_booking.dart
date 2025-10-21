@@ -26,6 +26,7 @@ import '../dashboard_view/dashboard/booking_form_widget.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/dashboard/shortcut_key_widget.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
+import '../dashboard_view/widgets/via_location.dart';
 
 class CreateBooking extends StatefulWidget {
   const CreateBooking({super.key});
@@ -144,10 +145,42 @@ class _CreateBookingState extends State<CreateBooking> {
                           decoration:
                               BoxDecoration(color: DynamicColors.secondaryClr),
                           child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               Text(
                                 AppText.booking,
                                 style: mozillaTextSemiBoldText(fontSize: 17),
+                              ),
+                              SizedBox(
+                                width: 15,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) =>
+                                          ViaLocation());
+                                },
+                                child: Container(
+                                  // margin: EdgeInsets.symmetric(
+                                  //     horizontal: 16, vertical: 3),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    // color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                    borderRadius:
+                                    BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    'VIA (${controller.viaPoints.length})',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
                               ),
                               SizedBox(
                                 width: fieldWidth / 3,
@@ -326,11 +359,23 @@ class _CreateBookingState extends State<CreateBooking> {
                                                           focusNode: clearPic,
                                                           onActivate: () {
                                                             int index = controller.markers.indexWhere((test) => test.type == "pickup");
-                                                            controller.markers
-                                                                .remove(controller.markers[index]);
+                                                            // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
+                                                            // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
+                                                            // controller.markers.remove(controller.markers[index]);
+                                                            FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
+                                                            controller.markers.clear();
+                                                            controller.polyLineMarkerInfo.clear();
                                                             controller.pickupController.clear();
+                                                            controller.dropOffController.clear();
                                                             controller.polylinePoints.clear();
+                                                            controller.fetchRouteFromOSRM();
                                                             controller.update();
+                                                            // int index = controller.markers.indexWhere((test) => test.type == "pickup");
+                                                            // controller.markers
+                                                            //     .remove(controller.markers[index]);
+                                                            // controller.pickupController.clear();
+                                                            // controller.polylinePoints.clear();
+                                                            // controller.update();
                                                           },
                                                           child: Icon(
                                                             Icons.close,
@@ -540,7 +585,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       .name;
                                                   controller.selectSuggestion(
                                                       selected);
-                                                }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                }else if(event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab){
                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 }
                                               }
@@ -582,20 +627,28 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       : KbdActivatable(
                                                           focusNode: clearDrop,
                                                           onActivate: () {
-                                                            int index = controller
-                                                                .markers
-                                                                .indexWhere((test) =>
-                                                                    test.type ==
-                                                                    "dropOff");
-                                                            controller.markers
-                                                                .remove(controller
-                                                                        .markers[
-                                                                    index]);
-                                                            controller
-                                                                .dropOffController
-                                                                .clear();
+                                                            FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
+                                                            controller.dropOffController.clear();
+                                                            controller.markers.clear();
+                                                            controller.polyLineMarkerInfo.clear();
+                                                            controller.pickupController.clear();
                                                             controller.polylinePoints.clear();
+                                                            controller.fetchRouteFromOSRM();
                                                             controller.update();
+                                                            // int index = controller
+                                                            //     .markers
+                                                            //     .indexWhere((test) =>
+                                                            //         test.type ==
+                                                            //         "dropOff");
+                                                            // controller.markers
+                                                            //     .remove(controller
+                                                            //             .markers[
+                                                            //         index]);
+                                                            // controller
+                                                            //     .dropOffController
+                                                            //     .clear();
+                                                            // controller.polylinePoints.clear();
+                                                            // controller.update();
                                                           },
                                                           child: Icon(
                                                             Icons.close,
@@ -1868,6 +1921,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                     } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                                       controller.moveHighlightUp();
                                       return;
+                                    }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                                      controller.tapSelect(controller.suggestionSelectedIndex.value);
+                                      print("enter press");
                                     }
                                     // Enter intentionally ignored so it does not select anything
                                   }
@@ -1887,6 +1943,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                   // Rebuild list when highlightedIndex or data changes
                                   child: Obx(() => ListView.builder(
+                                    key: controller.suggestionListKey,
                                     controller: controller.suggestionScrollController,
                                     itemCount: controller.allAddressesData.length,
                                     padding: EdgeInsets.only(top: 15),

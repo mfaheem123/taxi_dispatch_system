@@ -183,11 +183,14 @@ class DashboardController extends GetxController {
   final FocusNode dropOffKeyboardFocusNode = FocusNode();
   final FocusNode via1KeyboardFocusNode = FocusNode();
   final FocusNode via2KeyboardFocusNode = FocusNode();
+  final FocusNode searchingAddressViaFocusNode = FocusNode();
 
   final FocusNode pickupTextFieldFocusNode = FocusNode();
   final FocusNode dropOffTextFieldFocusNode = FocusNode();
   final FocusNode via1TextFieldFocusNode = FocusNode();
   final FocusNode via2TextFieldFocusNode = FocusNode();
+
+  final FocusNode viaFieldFocusNode = FocusNode();
 
   final referenceNumberController = TextEditingController(text: 'NTG54851');
   final dateController = TextEditingController(
@@ -688,6 +691,10 @@ class DashboardController extends GetxController {
 // inside your controller
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();
+
+// inside your controller
+  final viaFocusNode = FocusNode();
+  final viaSuggestionScrollController = ScrollController();
 
   List<GlobalKey> suggestionItemKeys = [];
 
