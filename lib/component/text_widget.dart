@@ -430,7 +430,7 @@ class AppText {
   static get clearBooking => "CLEAR BOOKINGS";
   static get clearSelected => "CLEAR SELECTED";
   static get clearAll => "CLEAR ALL";
-  static get escortWithZero => "ESCORT";
+  static get escort => "ESCORT";
   static get escortInformation => "ESCORT INFORMATION";
   static get safeguardingExpiry => "	SAFEGUARDING EXPIRY";
   static get patExpiry => "PAT EXPIRY";

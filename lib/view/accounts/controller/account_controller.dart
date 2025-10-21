@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
 import 'package:dashboard_new1/view/accounts/model/listof_account.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -94,7 +95,8 @@ class AccountController extends GetxController {
       if (response.statusCode == 200) {
         listofAccount = ListofAccount.fromJson(response.data);
 
-        print('List of Account Error ------------------------------ ${listofAccount}');
+        print(
+            'List of Account Error ------------------------------ ${listofAccount}');
       } else {
         print("Status Code Error-------${response.statusCode}");
       }
@@ -106,8 +108,32 @@ class AccountController extends GetxController {
     }
   }
 
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
 
-  
+  ListEscortModel? listEscortModel;
+  RxBool listEscortLoding = false.obs;
+Future<void> listEscort() async {
+    try {
+      listEscortLoding.value = true;
+      var response = await Api().get('escorts/get');
+
+      if (response.statusCode == 200) {
+        listEscortModel = ListEscortModel.fromJson(response.data);
+
+        print(
+            'List of Account Error ------------------------------ $listEscortModel');
+      } else {
+        print("Status Code Error-------${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in List of Account: $e");
+    } finally {
+      listEscortLoding.value = false;
+      update();
+    }
+  }
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 

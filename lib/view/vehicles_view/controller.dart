@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart';
@@ -9,15 +10,6 @@ import '../../Model/image_model.dart';
 
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
-
-  /// bool variable
-  RxBool defaultVehicleValue = false.obs;
-  RxBool minimumMilesValue = false.obs;
-  RxBool minimumFaresValue = false.obs;
-
-  /// color pick
-  Color pickerColor = Colors.blue;
-  Color foregroundColor = Colors.blue;
 
   ImageModel? profileImg;
 
@@ -34,17 +26,6 @@ class VehicleController extends GetxController {
     }
     update();
   }
-
-  /// text fields editing
-  final vehicleTypeController = TextEditingController();
-  final passengersController = TextEditingController();
-  final luggagesController = TextEditingController();
-  final handLuggagesController = TextEditingController();
-  final minimumMilesController = TextEditingController();
-  final minimumFaresController = TextEditingController();
-  final driverWaitingChargesController = TextEditingController();
-  final accountWaitingChargesController = TextEditingController();
-  final waitingTimeController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
 
@@ -120,5 +101,55 @@ class VehicleController extends GetxController {
     }
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
+  /// bool variable
+  RxBool defaultVehicleValue = false.obs;
+  RxBool minimumMilesValue = false.obs;
+  RxBool minimumFaresValue = false.obs;
+
+  /// color pick
+  Color pickerColor = Colors.blue;
+  Color foregroundColor = Colors.blue;
+
+  RxBool isLoadVehicleType = false.obs;
+
+  /// text fields editing
+  final vehicleTypeController = TextEditingController();
+  final passengersController = TextEditingController();
+  final luggagesController = TextEditingController();
+  final handLuggagesController = TextEditingController();
+  final minimumMilesController = TextEditingController();
+  final minimumFaresController = TextEditingController();
+  final driverWaitingChargesController = TextEditingController();
+  final accountWaitingChargesController = TextEditingController();
+  final waitingTimeController = TextEditingController();
+
+  createVehicleType() async {
+    isLoadVehicleType.value = false;
+
+    var formData = {
+      'name': vehicleTypeController.text,
+      'passengers': passengersController.text,
+      'luggages': luggagesController.text,
+      'hand_luggages': handLuggagesController.text,
+      'minimum_fares': minimumFaresController.text,
+      'minimum_miles': minimumMilesController.text,
+      'waiting_time': waitingTimeController.text,
+      'waiting_time_duration': '45',
+      'default_vehicle': defaultVehicleValue.value,
+      'vehicle_type_minimum_fares': minimumFaresValue.value,
+'background_color': '${pickerColor.value.toRadixString(16).substring(2)}',
+'foreground_color': '${foregroundColor.value.toRadixString(16).substring(2)}',
+
+      'driver_waiting_charges': driverWaitingChargesController.text,
+      'account_waiting_charges': accountWaitingChargesController.text,
+    };
+
+    var response = await Api().post(formData, 'vehicle-type/add', auth: true);
+    if (response.statusCode == 200 ) {
+      print("response of body -------------------------${response.data}");
+    } else {
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+    }
+  }
 }

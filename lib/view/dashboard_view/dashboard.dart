@@ -4,7 +4,7 @@ import 'package:dashboard_new1/tabbarview.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/User/create_userScreen.dart';
-import 'package:dashboard_new1/view/accounts/escorte_screen.dart';
+import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
 import 'package:dashboard_new1/view/booking_view/create_bookingScreen.dart';
 import 'package:dashboard_new1/view/customer/create_complaintsScreen.dart';
 import 'package:dashboard_new1/view/customer/create_lost_propertyScreen.dart';

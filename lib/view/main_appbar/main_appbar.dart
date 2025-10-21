@@ -5,7 +5,7 @@ import 'package:dashboard_new1/view/accounts/Invoice/create_customerInvoice.dart
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/create_accountScreen.dart';
 import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
-import 'package:dashboard_new1/view/accounts/escorte_screen.dart';
+import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
 import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
 import 'package:dashboard_new1/view/administration/User/subsi_diaries_screen.dart';
 import 'package:dashboard_new1/view/authorization/authorization_Screen.dart';
