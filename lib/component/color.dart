@@ -9,6 +9,7 @@ class DynamicColors {
   static Color secondaryClr = Color(0xffA0DCFF);
   static Color textClr = Colors.black;
   static Color whiteClr = Colors.white;
+  static Color black = Colors.black;
   static Color pink = Color(0xff593196);
   static Color redClr = Colors.red;
   static Color greenClr = Colors.green;

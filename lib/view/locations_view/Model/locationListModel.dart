@@ -1,94 +1,89 @@
-// To parse this JSON data, do
-//
-//     final locationListModel = locationListModelFromJson(jsonString);
-
-import 'dart:convert';
-
-LocationListModel locationListModelFromJson(String str) => LocationListModel.fromJson(json.decode(str));
-
-String locationListModelToJson(LocationListModel data) => json.encode(data.toJson());
-
 class LocationListModel {
-  bool? status;
-  int? count;
-  List<Location>? locations;
+  bool status;
+  int count;
+  List<Location> locations;
 
   LocationListModel({
-    this.status,
-    this.count,
-    this.locations,
+    required this.status,
+    required this.count,
+    required this.locations,
   });
 
   factory LocationListModel.fromJson(Map<String, dynamic> json) => LocationListModel(
-    status: json["status"],
-    count: json["count"],
-    locations: json["locations"] == null ? [] : List<Location>.from(json["locations"]!.map((x) => Location.fromJson(x))),
+    status: json["status"] ?? false,
+    count: json["count"] ?? 0,
+    locations: (json["locations"] as List?)
+        ?.map((x) => Location.fromJson(x))
+        .toList() ??
+        [],
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "count": count,
-    "locations": locations == null ? [] : List<dynamic>.from(locations!.map((x) => x.toJson())),
+    "locations": locations.map((x) => x.toJson()).toList(),
   };
 }
 
 class Location {
-  int? id;
-  String? name;
-  int? locationTypeId;
-  String? address;
-  String? postcode;
-  int? zoneId;
-  String? shortcut;
-  dynamic backgroundColor;
-  dynamic foregroundColor;
-  String? extraCharges;
-  String? pickupCharges;
-  String? dropoffCharges;
-  bool? blacklist;
-  String? latitude;
-  String? longitude;
+  int id;
+  String name;
+  int locationTypeId;
+  String address;
+  String postcode;
+  int zoneId;
+  String shortcut;
+  String backgroundColor;
+  String foregroundColor;
+  String extraCharges;
+  String pickupCharges;
+  String dropoffCharges;
+  bool blacklist;
+  String latitude;
+  String longitude;
   LocationType? locationType;
   Zone? zone;
 
   Location({
-    this.id,
-    this.name,
-    this.locationTypeId,
-    this.address,
-    this.postcode,
-    this.zoneId,
-    this.shortcut,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.extraCharges,
-    this.pickupCharges,
-    this.dropoffCharges,
-    this.blacklist,
-    this.latitude,
-    this.longitude,
+    required this.id,
+    required this.name,
+    required this.locationTypeId,
+    required this.address,
+    required this.postcode,
+    required this.zoneId,
+    required this.shortcut,
+    required this.backgroundColor,
+    required this.foregroundColor,
+    required this.extraCharges,
+    required this.pickupCharges,
+    required this.dropoffCharges,
+    required this.blacklist,
+    required this.latitude,
+    required this.longitude,
     this.locationType,
     this.zone,
   });
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-    id: json["id"],
-    name: json["name"],
-    locationTypeId: json["location_type_id"],
-    address: json["address"],
-    postcode: json["postcode"],
-    zoneId: json["zone_id"],
-    shortcut: json["shortcut"],
-    backgroundColor: json["background_color"],
-    foregroundColor: json["foreground_color"],
-    extraCharges: json["extra_charges"],
-    pickupCharges: json["pickup_charges"],
-    dropoffCharges: json["dropoff_charges"],
-    blacklist: json["blacklist"],
-    latitude: json["latitude"],
-    longitude: json["longitude"],
-    locationType: json["location_type"] == null ? null : LocationType.fromJson(json["location_type"]),
-    zone: json["zone"] == null ? null : Zone.fromJson(json["zone"]),
+    id: json["id"] ?? 0,
+    name: json["name"] ?? '',
+    locationTypeId: json["location_type_id"] ?? 0,
+    address: json["address"] ?? '',
+    postcode: json["postcode"] ?? '',
+    zoneId: json["zone_id"] ?? 0,
+    shortcut: json["shortcut"] ?? '',
+    backgroundColor: json["background_color"] ?? "#FFFFFF",
+    foregroundColor: json["foreground_color"] ?? "#000000",
+    extraCharges: json["extra_charges"] ?? '0',
+    pickupCharges: json["pickup_charges"] ?? '0',
+    dropoffCharges: json["dropoff_charges"] ?? '0',
+    blacklist: json["blacklist"] ?? false,
+    latitude: json["latitude"] ?? '0.0',
+    longitude: json["longitude"] ?? '0.0',
+    locationType: json["location_type"] != null
+        ? LocationType.fromJson(json["location_type"])
+        : null,
+    zone: json["zone"] != null ? Zone.fromJson(json["zone"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -113,26 +108,26 @@ class Location {
 }
 
 class LocationType {
-  int? id;
-  String? name;
-  String? shortcut;
-  String? backgroundColor;
-  String? foregroundColor;
+  int id;
+  String name;
+  String shortcut;
+  String backgroundColor;
+  String foregroundColor;
 
   LocationType({
-    this.id,
-    this.name,
-    this.shortcut,
-    this.backgroundColor,
-    this.foregroundColor,
+    required this.id,
+    required this.name,
+    required this.shortcut,
+    required this.backgroundColor,
+    required this.foregroundColor,
   });
 
   factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
-    id: json["id"],
-    name: json["name"],
-    shortcut: json["shortcut"],
-    backgroundColor: json["background_color"],
-    foregroundColor: json["foreground_color"],
+    id: json["id"] ?? 0,
+    name: json["name"] ?? '',
+    shortcut: json["shortcut"] ?? '',
+    backgroundColor: json["background_color"] ?? "#FFFFFF",
+    foregroundColor: json["foreground_color"] ?? "#000000",
   );
 
   Map<String, dynamic> toJson() => {
@@ -145,35 +140,38 @@ class LocationType {
 }
 
 class Zone {
-  int? id;
-  bool? base;
-  String? name;
-  String? type;
-  String? overlay;
-  String? category;
-  List<Vertex>? vertices;
-  String? secondaryName;
+  int id;
+  bool base;
+  String name;
+  String type;
+  String overlay;
+  String category;
+  List<Vertex> vertices;
+  String secondaryName;
 
   Zone({
-    this.id,
-    this.base,
-    this.name,
-    this.type,
-    this.overlay,
-    this.category,
-    this.vertices,
-    this.secondaryName,
+    required this.id,
+    required this.base,
+    required this.name,
+    required this.type,
+    required this.overlay,
+    required this.category,
+    required this.vertices,
+    required this.secondaryName,
   });
 
   factory Zone.fromJson(Map<String, dynamic> json) => Zone(
-    id: json["id"],
-    base: json["base"],
-    name: json["name"],
-    type: json["type"],
-    overlay: json["overlay"],
-    category: json["category"],
-    vertices: json["vertices"] == null ? [] : List<Vertex>.from(json["vertices"]!.map((x) => Vertex.fromJson(x))),
-    secondaryName: json["secondary_name"],
+    id: json["id"] ?? 0,
+    base: json["base"] ?? false,
+    name: json["name"] ?? '',
+    type: json["type"] ?? '',
+    overlay: json["overlay"] ?? '',
+    category: json["category"] ?? '',
+    vertices: (json["vertices"] as List?)
+        ?.map((x) => Vertex.fromJson(x))
+        .toList() ??
+        [],
+    secondaryName: json["secondary_name"] ?? '',
   );
 
   Map<String, dynamic> toJson() => {
@@ -183,7 +181,7 @@ class Zone {
     "type": type,
     "overlay": overlay,
     "category": category,
-    "vertices": vertices == null ? [] : List<dynamic>.from(vertices!.map((x) => x.toJson())),
+    "vertices": vertices.map((x) => x.toJson()).toList(),
     "secondary_name": secondaryName,
   };
 }
@@ -192,14 +190,13 @@ class Vertex {
   Bounds? bounds;
   Center? center;
 
-  Vertex({
-    this.bounds,
-    this.center,
-  });
+  Vertex({this.bounds, this.center});
 
   factory Vertex.fromJson(Map<String, dynamic> json) => Vertex(
-    bounds: json["bounds"] == null ? null : Bounds.fromJson(json["bounds"]),
-    center: json["center"] == null ? null : Center.fromJson(json["center"]),
+    bounds:
+    json["bounds"] != null ? Bounds.fromJson(json["bounds"]) : null,
+    center:
+    json["center"] != null ? Center.fromJson(json["center"]) : null,
   );
 
   Map<String, dynamic> toJson() => {
@@ -209,23 +206,23 @@ class Vertex {
 }
 
 class Bounds {
-  double? east;
-  double? west;
-  double? north;
-  double? south;
+  double east;
+  double west;
+  double north;
+  double south;
 
   Bounds({
-    this.east,
-    this.west,
-    this.north,
-    this.south,
+    required this.east,
+    required this.west,
+    required this.north,
+    required this.south,
   });
 
   factory Bounds.fromJson(Map<String, dynamic> json) => Bounds(
-    east: json["east"]?.toDouble(),
-    west: json["west"]?.toDouble(),
-    north: json["north"]?.toDouble(),
-    south: json["south"]?.toDouble(),
+    east: (json["east"] ?? 0).toDouble(),
+    west: (json["west"] ?? 0).toDouble(),
+    north: (json["north"] ?? 0).toDouble(),
+    south: (json["south"] ?? 0).toDouble(),
   );
 
   Map<String, dynamic> toJson() => {
@@ -237,17 +234,17 @@ class Bounds {
 }
 
 class Center {
-  double? lat;
-  double? lng;
+  double lat;
+  double lng;
 
   Center({
-    this.lat,
-    this.lng,
+    required this.lat,
+    required this.lng,
   });
 
   factory Center.fromJson(Map<String, dynamic> json) => Center(
-    lat: json["lat"]?.toDouble(),
-    lng: json["lng"]?.toDouble(),
+    lat: (json["lat"] ?? 0).toDouble(),
+    lng: (json["lng"] ?? 0).toDouble(),
   );
 
   Map<String, dynamic> toJson() => {

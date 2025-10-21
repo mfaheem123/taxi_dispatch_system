@@ -1,12 +1,19 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 
-class CreateVehicle extends StatelessWidget {
-  CreateVehicle({super.key});
+class CreateVehicle extends StatefulWidget {
+  const CreateVehicle({super.key});
+
+  @override
+  State<CreateVehicle> createState() => _CreateVehicleState();
+}
+
+class _CreateVehicleState extends State<CreateVehicle> {
+  bool _enableMinimumMiles = false;
+  bool _enableMinimumFares = false;
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
     return LayoutBuilder(
@@ -23,14 +30,11 @@ class CreateVehicle extends StatelessWidget {
               _buildFormBox(screenHeight),
             ],
           )
-
               : Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image box fix with Flexible
               Flexible(flex: 1, child: _buildImageBox(isMobile)),
               const SizedBox(width: 20),
-              // Form box fix with Flexible
               Flexible(flex: 3, child: _buildFormBox(screenHeight)),
             ],
           ),
@@ -38,7 +42,6 @@ class CreateVehicle extends StatelessWidget {
       },
     );
   }
-
 
   Widget _buildImageBox(bool isMobile) {
     return Container(
@@ -61,7 +64,6 @@ class CreateVehicle extends StatelessWidget {
     );
   }
 
-
   Widget _buildFormBox(double screenHeight) {
     return Container(
       decoration: BoxDecoration(
@@ -83,9 +85,7 @@ class CreateVehicle extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 16),
-
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Wrap(
@@ -97,9 +97,24 @@ class CreateVehicle extends StatelessWidget {
                 _buildTextField("Luggages"),
                 _buildTextField("Hand Luggages"),
 
-                _buildCheckBox("Default Vehicle"),
-                _buildCheckBox("Minimum Miles"),
-                _buildTextField("Minimum Fares"),
+                _buildCheckBox("Default Vehicle", false, (v) {}),
+
+                _buildCheckBox("Minimum Miles", _enableMinimumMiles, (v) {
+                  setState(() {
+                    _enableMinimumMiles = v ?? false;
+                  });
+                }),
+                _buildTextField("Minimum Miles",
+                    enabled: _enableMinimumMiles),
+
+                _buildCheckBox("Minimum Fares", _enableMinimumFares, (v) {
+                  setState(() {
+                    _enableMinimumFares = v ?? false;
+                  });
+                }),
+                _buildTextField("Minimum Fares",
+                    enabled: _enableMinimumFares),
+
                 _buildTextField("Background Color"),
                 _buildTextField("Foreground Color"),
                 _buildTextField("Driver Waiting Charges / 10s"),
@@ -107,43 +122,43 @@ class CreateVehicle extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
           Container(
-            height: screenHeight / 20,
-            width: double.infinity,
-            color: DynamicColors.gryClr,
-            child:  Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 120, vertical: 14),
+              height: screenHeight / 20,
+              width: double.infinity,
+              color: DynamicColors.gryClr,
+              child: Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 120, vertical: 14),
+                  ),
+                  onPressed: () {},
+                  child: const Text(
+                    "SAVE",
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
-                onPressed: () {},
-                child: const Text(
-                  "SAVE",
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              ),
-            )
-          ),
-
-
+              )),
         ],
       ),
     );
   }
 
-
-  static Widget _buildTextField(String label) {
+  static Widget _buildTextField(String label, {bool enabled = true}) {
     return SizedBox(
       width: 220,
       height: 40,
       child: TextField(
+        enabled: enabled,
         decoration: InputDecoration(
           labelText: label,
+          filled: true,
+          fillColor: enabled ? Colors.white : Colors.grey.shade200,
+          labelStyle: TextStyle(
+            color: enabled ? Colors.black87 : Colors.grey,
+          ),
           border: const OutlineInputBorder(),
           isDense: true,
         ),
@@ -151,12 +166,12 @@ class CreateVehicle extends StatelessWidget {
     );
   }
 
-
-  static Widget _buildCheckBox(String label) {
+  static Widget _buildCheckBox(
+      String label, bool value, Function(bool?) onChanged) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Checkbox(value: false, onChanged: (v) {}),
+        Checkbox(value: value, onChanged: onChanged),
         Text(label),
       ],
     );

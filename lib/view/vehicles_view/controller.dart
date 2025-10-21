@@ -1,5 +1,6 @@
 
 import 'dart:typed_data';
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -71,6 +72,44 @@ class VehicleController extends GetxController{
   Uint8List? motDocPic;
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
+
+  RxBool CompanyVehicleLoader = false.obs;
+  postCompanyVehicle()async{
+    CompanyVehicleLoader(false);
+    var formData = {
+
+      'vehicle_number': 'DSA-781',
+      'make': 'mehran Boss',
+      'model': '2015',
+      'color': 'Black',
+      'owner': 'company',
+      'company': 'true',
+      'assigned': 'false',
+      'vehicle_type_id': '1',
+      'log_book_number': 'LB1234',
+      'phc_vehicle_expiry': '2025-12-01',
+      'mot_expiry': '2025-12-01',
+      'mot2_expiry': '2025-12-01',
+      'insurance_expiry': '2025-12-01',
+      'phc_vehicle_number': 'PHC5678',
+      'mot_number': 'MOT9012',
+      'mot2_number': 'MOT2134',
+      'insurance_number': 'INS5678',
+      'start_date': '2024-01-10',
+      'end_date': '2025-01-10'
+
+    };
+
+    var response = await Api().post(formData, 'company-vehicles/add', auth: true);
+    if (response.statusCode == 200) {
+      // Get.toNamed(Routes.myHomePage);
+    }else{
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+    }
+
+
+
+  }
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle

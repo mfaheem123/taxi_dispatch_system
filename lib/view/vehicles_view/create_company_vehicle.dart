@@ -485,6 +485,9 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                   borderRadius: 4,
                   fontSize: 12,
                   btnText: AppText.save,
+                  onTap: (){
+                    controller.postCompanyVehicle();
+                  },
                 )
               ],
             );

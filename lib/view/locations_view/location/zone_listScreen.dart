@@ -39,13 +39,11 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
     if (event is RawKeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex + 1) % totalRows; // move down
+          selectedRowIndex = (selectedRowIndex + 1) % totalRows; // move down
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows;// move up
+          selectedRowIndex = (selectedRowIndex - 1 + totalRows) % totalRows;// move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam
@@ -67,7 +65,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       child: GetBuilder<LocationController>(
           builder: (controller) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
+              padding:  EdgeInsets.all(12),
               child: Column(
                 children: [
                   Row(
@@ -93,16 +91,15 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                           buildHeaderWithSearch(title: "SHORT NAME"),
                           buildHeaderWithSearch(title: "TYPES"),
                           buildHeaderWithSearch(title: "CATEGORY"),
-
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
                         totalRow: totalRows,
                         cells: [
 
-                          const DataCell(Center(child: Text("Action Town Tube Station"))),
-                          const DataCell(Center(child: Text("W3BHN"))),
-                          const DataCell(Center(child: Text("RA"))),
-                          const DataCell(Center(child: Text("Action Town Tube Station W3BHN"))),
+                           DataCell(Center(child: Text("Action Town Tube Station"))),
+                           DataCell(Center(child: Text("W3BHN"))),
+                           DataCell(Center(child: Text("RA"))),
+                           DataCell(Center(child: Text("Action Town Tube Station W3BHN"))),
                           DataCell(
                             Center(
                               child: Row(
