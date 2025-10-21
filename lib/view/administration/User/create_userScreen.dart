@@ -2,12 +2,12 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
-import '../administration_controller.dart';
 
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});

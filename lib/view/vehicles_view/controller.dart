@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dashboard_new1/component/networks/api.dart';
-<<<<<<< HEAD
-=======
+
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
->>>>>>> 0b27df0004cedc65a83a3dfa42687a8b2387c45f
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,8 +48,6 @@ class VehicleController extends GetxController {
   Uint8List? motDocPic;
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
-
-<<<<<<< HEAD
   RxBool CompanyVehicleLoader = false.obs;
   postCompanyVehicle()async{
     CompanyVehicleLoader(false);
@@ -89,9 +86,9 @@ class VehicleController extends GetxController {
 
   }
 
-=======
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
->>>>>>> 0b27df0004cedc65a83a3dfa42687a8b2387c45f
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
@@ -126,7 +123,7 @@ class VehicleController extends GetxController {
 
   CompanyVehicleModel? companyVehicleModel;
 
-  Future<void> conpanyVehicleModel() async {
+  Future<void> companyVehicle() async {
     try {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles');
@@ -182,9 +179,8 @@ class VehicleController extends GetxController {
       'waiting_time_duration': '45',
       'default_vehicle': defaultVehicleValue.value,
       'vehicle_type_minimum_fares': minimumFaresValue.value,
-'background_color': '${pickerColor.value.toRadixString(16).substring(2)}',
-'foreground_color': '${foregroundColor.value.toRadixString(16).substring(2)}',
-
+      'background_color': pickerColor.value.toRadixString(16).substring(2),
+      'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
       'driver_waiting_charges': driverWaitingChargesController.text,
       'account_waiting_charges': accountWaitingChargesController.text,
     };

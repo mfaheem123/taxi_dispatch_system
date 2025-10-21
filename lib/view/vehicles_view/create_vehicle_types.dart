@@ -37,13 +37,11 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-<<<<<<< HEAD
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
-=======
 
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
->>>>>>> 0b27df0004cedc65a83a3dfa42687a8b2387c45f
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+
+
+
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<VehicleController>(builder: (controller) {

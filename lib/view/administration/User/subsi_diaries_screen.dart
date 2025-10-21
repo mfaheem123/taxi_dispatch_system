@@ -29,6 +29,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "SubsiDiariesScreen";
+    controller.listSubsDiary();
   }
 
   @override
@@ -69,6 +70,9 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                   ),
                   Spacer(),
                   CustomButton(
+                    onTap: () {
+                      controller.listSubsDiary();
+                    },
                     height: 40,
                     width: 80,
                     verticalPadding: 0.0,
@@ -86,77 +90,99 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                 ],
               ),
             ),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: Get.width,
-                child: DatatableWidget(
-                  columns: [
-                    DataColumn(
-                      label: Checkbox(
-                        value: false, // a bool you keep in state
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    buildHeaderWithSearch(title: "NAME"),
-                    buildHeaderWithSearch(title: "EMAIL"),
-                    buildHeaderWithSearch(title: "TELEPHONE"),
-                    buildHeaderWithSearch(title: "ADDRESS"),
-                    buildHeaderWithSearch(title: "FAX"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
-                  ],
-                  totalRow: totalRows,
-                  cells: [
-                    DataCell(
-                      Checkbox(
-                        value: false, // ✅ controlled by your state
-                        onChanged: (val) {
-                          // update your selected index or list here
-                        },
-                      ),
-                    ),
-                    const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("SALOON")),
-                    DataCell(
-                      Row(
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.search,
-                              size: 28,
-                              color: DynamicColors.primaryClr,
+            controller.subsDiaryLoading == true
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: Get.width,
+                      child: DatatableWidget(
+                        columns: [
+                          DataColumn(
+                            label: Center(
+                              child: Checkbox(
+                                  value: controller.subsDiaryAllSelection.value,
+                                  onChanged: (v) {
+                                    controller.subsDiaryAllSelection.value = v!;
+                                    controller.update();
+                                  }),
                             ),
                           ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.clear,
-                              size: 28,
-                              color: DynamicColors.redClr,
-                            ),
-                          ),
+                          buildHeaderWithSearch(title: "NAME"),
+                          buildHeaderWithSearch(title: "EMAIL"),
+                          buildHeaderWithSearch(title: "TELEPHONE"),
+                          buildHeaderWithSearch(title: "ADDRESS"),
+                          buildHeaderWithSearch(title: "FAX"),
+                          buildHeaderWithSearch(
+                              title: "ACTIONS", removeSearching: true),
                         ],
+                        totalRow:
+                            controller.subsDiaryModel!.subsidiaries!.length ??
+                                0,
+                        rows: (controller.subsDiaryModel!.subsidiaries ?? [])
+                            .map((item) {
+                          return DataRow(
+                            cells: [
+                              DataCell(
+
+                                Center(
+                                  child: Checkbox(
+                                      value:
+                                          controller.subsDiarySelection.value,
+                                      onChanged: (v) {
+                                        controller.subsDiarySelection.value =
+                                            v!;
+                                        controller.update();
+                                      }),
+                                ),
+                              ),
+                              DataCell(Center(child: Text(item.name!))),
+                              DataCell(Center(child: Text(item.email!))),
+                              DataCell(
+                                  Center(child: Text(item.telephoneNumber!))),
+                              DataCell(Center(child: Text(item.address!))),
+                              DataCell(Center(child: Text(item.fax!))),
+                              DataCell(
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.search,
+                                        size: 28,
+                                        color: DynamicColors.primaryClr,
+                                      ),
+                                    ),
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.delete,
+                                        size: 28,
+                                        color: DynamicColors.redClr,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ],
         );
       });
