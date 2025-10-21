@@ -31,6 +31,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "vehicleTypes";
+  
   }
 
   @override
@@ -293,7 +294,9 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                       ),
                       CustomButton(
                         onTap: () {
-                          controller.createVehicleType();
+                          controller.createSubsiDiary();
+                          
+                          
                         },
                         height: 30,
                         width: fieldWidth,
