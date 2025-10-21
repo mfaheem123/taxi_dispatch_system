@@ -100,11 +100,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
             double maxWidth = constraints.maxWidth;
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -120,25 +118,20 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           ),
                         ),
                       ),
-
                       buildFilterField(
                         hint: fromDate == null
                             ? "From Date"
-                            : "${fromDate!.day}/${fromDate!.month}/${fromDate!
-                            .year}",
+                            : "${fromDate!.day}/${fromDate!.month}/${fromDate!.year}",
                         icon: Icons.calendar_today,
                         onTap: () => _pickDate(context, true),
                       ),
-
                       buildFilterField(
                         hint: fromTime == null
                             ? "--:--"
-                            : "${fromTime!.hour}:${fromTime!.minute.toString()
-                            .padLeft(2, '0')}",
+                            : "${fromTime!.hour}:${fromTime!.minute.toString().padLeft(2, '0')}",
                         icon: Icons.access_time,
                         onTap: () => _pickTime(context, true),
                       ),
-
                       buildFilterField(
                         hint: toDate == null
                             ? "To Date"
@@ -146,16 +139,13 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                         icon: Icons.calendar_today,
                         onTap: () => _pickDate(context, false),
                       ),
-
                       buildFilterField(
                         hint: toTime == null
                             ? "--:--"
-                            : "${toTime!.hour}:${toTime!.minute.toString()
-                            .padLeft(2, '0')}",
+                            : "${toTime!.hour}:${toTime!.minute.toString().padLeft(2, '0')}",
                         icon: Icons.access_time,
                         onTap: () => _pickTime(context, false),
                       ),
-
                       SizedBox(
                         width: maxWidth < 400 ? double.infinity : 180,
                         height: 40,
@@ -174,21 +164,21 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           ],
                           onChanged: (val) {},
                           decoration: const InputDecoration(
-                            contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            contentPadding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 8),
                             border: OutlineInputBorder(),
                           ),
                         ),
                       ),
-
                       CustomButton(
                         height: 35,
                         width: 80,
                         verticalPadding: 0.0,
                         borderRadius: 4,
                         widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child:  Text(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 0.0),
+                          child: Text(
                             AppText.filter,
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -201,8 +191,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                         verticalPadding: 0.0,
                         borderRadius: 4,
                         widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child:  Text(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 0.0),
+                          child: Text(
                             AppText.view,
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
@@ -211,32 +202,27 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "DRIVER"),
-                          buildHeaderWithSearch(title: "BOOKINGS"),
-                          buildHeaderWithSearch(title: "LOGIN DATE"),
-                          buildHeaderWithSearch(title: "LOGIN TIME"),
-                          buildHeaderWithSearch(title: "LOGOUT DATE"),
-                          buildHeaderWithSearch(title: "LOGOUT TIME"),
-                        ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("driver"))),
-                          const DataCell(Center(child: Text("bookings"))),
-                          const DataCell(Center(child: Text("loginDate"))),
-                          const DataCell(Center(child: Text("loginTime"))),
-                          const DataCell(Center(child: Text("logoutDate"))),
-                          const DataCell(Center(child: Text("logoutTime"))),
-                        ],
-                      ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: DatatableWidget(
+                      columns: [
+                        buildHeaderWithSearch(title: "DRIVER"),
+                        buildHeaderWithSearch(title: "BOOKINGS"),
+                        buildHeaderWithSearch(title: "LOGIN DATE"),
+                        buildHeaderWithSearch(title: "LOGIN TIME"),
+                        buildHeaderWithSearch(title: "LOGOUT DATE"),
+                        buildHeaderWithSearch(title: "LOGOUT TIME"),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Center(child: Text("driver"))),
+                        const DataCell(Center(child: Text("bookings"))),
+                        const DataCell(Center(child: Text("loginDate"))),
+                        const DataCell(Center(child: Text("loginTime"))),
+                        const DataCell(Center(child: Text("logoutDate"))),
+                        const DataCell(Center(child: Text("logoutTime"))),
+                      ],
                     ),
                   ),
                 ],
@@ -248,6 +234,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
     );
   }
 }
+
 Widget buildFilterField({
   required String hint,
   required IconData icon,
@@ -261,7 +248,8 @@ Widget buildFilterField({
       child: InputDecorator(
         decoration: InputDecoration(
           hintText: hint,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           border: const OutlineInputBorder(),
           prefixIcon: Icon(icon, size: 18),
         ),

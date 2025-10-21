@@ -1,25 +1,18 @@
-
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dashboard_new1/component/networks/api.dart';
+<<<<<<< HEAD
+=======
+import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
+>>>>>>> 0b27df0004cedc65a83a3dfa42687a8b2387c45f
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../Model/image_model.dart';
 
-class VehicleController extends GetxController{
-
-
+class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
-
-  /// bool variable
-  RxBool defaultVehicleValue = false.obs;
-  RxBool minimumMilesValue = false.obs;
-  RxBool minimumFaresValue = false.obs;
-
-  /// color pick
-  Color pickerColor = Colors.blue;
-  Color foregroundColor = Colors.blue;
 
   ImageModel? profileImg;
 
@@ -32,28 +25,12 @@ class VehicleController extends GetxController{
       profileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
-          path: result.files.single.path
-      );
+          path: result.files.single.path);
     }
     update();
   }
 
-  /// text fields editing
-  final vehicleTypeController = TextEditingController();
-  final passengersController = TextEditingController();
-  final luggagesController = TextEditingController();
-  final handLuggagesController = TextEditingController();
-  final minimumMilesController = TextEditingController();
-  final minimumFaresController = TextEditingController();
-  final driverWaitingChargesController = TextEditingController();
-  final accountWaitingChargesController = TextEditingController();
-  final waitingTimeController = TextEditingController();
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
-
-
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
@@ -73,6 +50,7 @@ class VehicleController extends GetxController{
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
 
+<<<<<<< HEAD
   RxBool CompanyVehicleLoader = false.obs;
   postCompanyVehicle()async{
     CompanyVehicleLoader(false);
@@ -111,12 +89,111 @@ class VehicleController extends GetxController{
 
   }
 
+=======
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
+>>>>>>> 0b27df0004cedc65a83a3dfa42687a8b2387c45f
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo VEHICLE TYPES
+  VehicleTypeModel? vehicleTypeModel;
+  RxBool isLoading = false.obs;
 
+  Future<void> getVehicleTypes() async {
+    try {
+      isLoading.value = true;
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo VEHICLE TYPES
+      final response = await Api().get('vehicle-type');
 
+      if (response.statusCode == 200) {
+        vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
+        print("Vehicle types ${vehicleTypeModel?.vehicleTypes?.length}");
+      } else {
+        print("Status Code Error ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in getVehicleTypes(): $e");
+    } finally {
+      isLoading.value = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
+
+  RxBool isCompanyVehicle = false.obs;
+
+  CompanyVehicleModel? companyVehicleModel;
+
+  Future<void> conpanyVehicleModel() async {
+    try {
+      isCompanyVehicle.value = true;
+      final response = await Api().get('company-vehicles');
+
+      if (response.statusCode == 200) {
+        companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
+        print('Company ${CompanyVehicleModel}');
+      } else {
+        print("Status Code Error-------${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in getVehicleTypes(): $e");
+    } finally {
+      isCompanyVehicle.value = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
+  /// bool variable
+  RxBool defaultVehicleValue = false.obs;
+  RxBool minimumMilesValue = false.obs;
+  RxBool minimumFaresValue = false.obs;
+
+  /// color pick
+  Color pickerColor = Colors.blue;
+  Color foregroundColor = Colors.blue;
+
+  RxBool isLoadVehicleType = false.obs;
+
+  /// text fields editing
+  final vehicleTypeController = TextEditingController();
+  final passengersController = TextEditingController();
+  final luggagesController = TextEditingController();
+  final handLuggagesController = TextEditingController();
+  final minimumMilesController = TextEditingController();
+  final minimumFaresController = TextEditingController();
+  final driverWaitingChargesController = TextEditingController();
+  final accountWaitingChargesController = TextEditingController();
+  final waitingTimeController = TextEditingController();
+
+  createVehicleType() async {
+    isLoadVehicleType.value = false;
+
+    var formData = {
+      'name': vehicleTypeController.text,
+      'passengers': passengersController.text,
+      'luggages': luggagesController.text,
+      'hand_luggages': handLuggagesController.text,
+      'minimum_fares': minimumFaresController.text,
+      'minimum_miles': minimumMilesController.text,
+      'waiting_time': waitingTimeController.text,
+      'waiting_time_duration': '45',
+      'default_vehicle': defaultVehicleValue.value,
+      'vehicle_type_minimum_fares': minimumFaresValue.value,
+'background_color': '${pickerColor.value.toRadixString(16).substring(2)}',
+'foreground_color': '${foregroundColor.value.toRadixString(16).substring(2)}',
+
+      'driver_waiting_charges': driverWaitingChargesController.text,
+      'account_waiting_charges': accountWaitingChargesController.text,
+    };
+
+    var response = await Api().post(formData, 'vehicle-type/add', auth: true);
+    if (response.statusCode == 200 ) {
+      print("response of body -------------------------${response.data}");
+    } else {
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+    }
+  }
 }

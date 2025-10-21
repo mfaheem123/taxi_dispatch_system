@@ -87,9 +87,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               onKey: (RawKeyEvent event) {
                 if (event is RawKeyDownEvent) {
                   final key = event.logicalKey;
+                  if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                    return;
+                  } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                    return;
+                  }
                 }
               },
               child: SingleChildScrollView(
+                physics: controller.allAddressesData.isNotEmpty
+                    ? const NeverScrollableScrollPhysics() // 👈 disable scrolling
+                    : const BouncingScrollPhysics(),       // 👈 enable normal scrolling
                 child: Column(
                   children: [
                     Container(
@@ -146,6 +154,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                               Visibility(
                                 visible: controller.hideDashBoard.value,
                                 child: SingleChildScrollView(
+                                  physics: controller.allAddressesData.isNotEmpty
+                                      ? const NeverScrollableScrollPhysics() // 👈 disable scrolling
+                                      : const BouncingScrollPhysics(),       // 👈 enable normal scrolling
                                   // scrollDirection: Axis.horizontal,
                                  child: width >= 1270 ? Row(
                                    crossAxisAlignment: CrossAxisAlignment.start,
@@ -240,7 +251,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      LogicalKeyboardKey.enter) {
                                                                    final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                                                    controller.selectSuggestion(selected);
+                                                                 }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
+                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                  }
+                                                               // }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                               //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                                               // }
                                                                }
                                                              },
                                                              child: CustomTextField(
@@ -272,12 +288,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      focusNode: clearPic,
                                                                      onActivate: () {
                                                                       int index = controller.markers.indexWhere((test) => test.type == "pickup");
-                                                                      int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
-                                                                      controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-                                                                      controller.markers.remove(controller.markers[index]);
+                                                                      // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "PICKUP LOCATION"));
+                                                                      // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
+                                                                      // controller.markers.remove(controller.markers[index]);
+                                                                      FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
+                                                                      controller.markers.clear();
+                                                                      controller.polyLineMarkerInfo.clear();
                                                                        controller.pickupController.clear();
-                                                                      controller.update();
+                                                                      controller.dropOffController.clear();
+                                                                      controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
+                                                                      controller.update();
+
+                                                                      // controller.fetchRouteFromOSRM();
                                                                      },
                                                                      child: Icon(Icons.close,
                                                                        color: DynamicColors.redClr,
@@ -402,6 +425,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    controller.suggestions[controller
                                                                        .highlightedIndex.value].name;
                                                                    controller.selectSuggestion(selected);
+                                                                 }else if(event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab){
+                                                                   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                  }
                                                                }
                                                              },
@@ -433,13 +458,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    controller.dropOffController.text.isEmpty?SizedBox.shrink(): KbdActivatable(
                                                                      focusNode: clearDrop,
                                                                      onActivate: () {
-                                                                       int index = controller.markers.indexWhere((test) => test.type == "dropOff");
-                                                                       int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
-                                                                       controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-                                                                       controller.markers.remove(controller.markers[index]);
+                                                                       // int index = controller.markers.indexWhere((test) => test.type == "dropOff");
+                                                                       // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
+                                                                       // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
+                                                                       // controller.markers.remove(controller.markers[index]);
+                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                        controller.dropOffController.clear();
-                                                                       controller.update();
+                                                                       controller.markers.clear();
+                                                                       controller.polyLineMarkerInfo.clear();
+                                                                       controller.pickupController.clear();
+                                                                       controller.polylinePoints.clear();
                                                                        controller.fetchRouteFromOSRM();
+                                                                       controller.update();
                                                                      },
                                                                      child: Icon(Icons.close,
                                                                        color: DynamicColors.redClr,
@@ -1589,9 +1619,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 if (event is RawKeyDownEvent) {
                                   if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                                     controller.moveHighlightDown();
+                                    return;
                                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                                     controller.moveHighlightUp();
+                                    return;
+                                  }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                                    controller.tapSelect(controller.suggestionSelectedIndex.value);
+                                    print("enter press");
                                   }
+
+
                                   // Enter intentionally ignored so it does not select anything
                                 }
                               },
@@ -1607,31 +1644,43 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                 // Rebuild list when highlightedIndex or data changes
                                 child: Obx(() => ListView.builder(
+                                  key: controller.suggestionListKey,
                                   controller: controller.suggestionScrollController,
                                   itemCount: controller.allAddressesData.length,
+                                  padding: EdgeInsets.only(top: 15),
                                   itemBuilder: (context, index) {
                                     final item = controller.allAddressesData[index];
-                                    final isHighlighted = index == controller.highlightedIndex.value;
+                                    final isHighlighted = controller.highlightedIndex.value == index;
+                                    controller.suggestionSelectedIndex.value = index;
+                                    print("controller.highlightedIndex.value");
+                                    print(controller.highlightedIndex.value);
+                                    print(index);
+                                    print("controller.highlightedIndex.value");
 
-                                    return Container(
-                                      // optional background highlight
-                                      color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
-                                      child: ListTile(
-                                        dense: true,
-                                        visualDensity: VisualDensity.compact,
-                                        // Animated text style so color/weight changes step-by-step
-                                        title: AnimatedDefaultTextStyle(
-                                          duration: const Duration(milliseconds: 120),
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
-                                            color: isHighlighted ? Colors.blue : Colors.black,
+                                    return Obx(
+                                      () {
+                                        final isHighlighted = controller.highlightedIndex.value == index;
+                                       return Container(
+                                        key: controller.suggestionItemKeys[index],
+                                        // optional background highlight
+                                        color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                                        child: ListTile(
+                                          dense: true,
+                                          visualDensity: VisualDensity.compact,
+                                          // Animated text style so color/weight changes step-by-step
+                                          title: AnimatedDefaultTextStyle(
+                                            duration: const Duration(milliseconds: 120),
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
+                                              color: isHighlighted ? Colors.blue : Colors.black,
+                                            ),
+                                            child: Text("${item.name} ${item.postcode}"),
                                           ),
-                                          child: Text("${item.name} ${item.postcode}"),
+                                          onTap: () => controller.tapSelect(index),
                                         ),
-                                        onTap: () => controller.tapSelect(index),
-                                      ),
-                                    );
+                                      );
+                                        });
                                   },
                                 )),
                               ),

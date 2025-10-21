@@ -12,17 +12,27 @@ import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
 
 class BookingTable extends StatefulWidget {
+
   @override
   State<BookingTable> createState() => _BookingTableState();
 }
 
 class _BookingTableState extends State<BookingTable> {
 
+  DashboardController controller = Get.find();
+
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
+  int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
 
   @override
   Widget build(BuildContext context) {
+
+    if(controller.allAddressesData.isNotEmpty){
+      totalRows = 4;
+    }else{
+      totalRows = 10;
+    }
+
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return SingleChildScrollView(

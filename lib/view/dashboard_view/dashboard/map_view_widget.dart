@@ -47,8 +47,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     // if (polylinePoints.isEmpty) {
     //   return Center(child: CircularProgressIndicator());
     // }
+
     return SizedBox(
-      width: widget.createBooking == true?Get.width: width >= 1270 ? screenWidth / 3.65 : screenWidth / 2.1,
+      width: widget.createBooking == true?Get.width: width >= 1270 ? screenWidth / 2.95 : screenWidth / 1.2 ,
       height: widget.createBooking == true?Get.height / 1.4:
       screenHeight >=940? screenHeight * 0.51:
       screenHeight * 0.80, /// yaha per aghar create booking per map access karte hu tu map ka height (Get.height / 1.4) our aghar laptop se bara screen hogha tu os ka height (screenHeight >=940? screenHeight * 0.51:) our aghar lap ka screen hogha tu os ka height (screenHeight * 0.80)
@@ -70,7 +71,8 @@ class _MapViewWidgetState extends State<MapViewWidget> {
            child: FlutterMap(
               mapController: controller.mapController,
               options: MapOptions(
-                initialCenter: polylinePoints.isEmpty?LatLng(50.5, 30.51): polylinePoints.first,
+                initialCenter: polylinePoints.isEmpty?LatLng(50.5, 30.51):
+                polylinePoints.first,
                 initialZoom: 13.0,
                 onMapReady: () {
                   if (polylinePoints.length >= 2) {
@@ -114,38 +116,62 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     decoration: BoxDecoration(
                       border: Border.all(color: DynamicColors.secondaryClr),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: RowButtonWidgetMap(
-                            onTap: () {
-                              controller.selectedTab.value = "MAPS";
-                              controller.update();
-                            },
-                            color: controller.selectedTab.value == "MAPS"
-                                ? DynamicColors.primaryClr
-                                : DynamicColors.secondaryClr,
-                            textClr: controller.selectedTab.value == "MAPS"
-                                ? DynamicColors.secondaryClr
-                                : DynamicColors.primaryClr,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                onTap: () {
+                                  controller.selectedTab.value = "MAPS";
+                                  controller.update();
+                                },
+                                color: controller.selectedTab.value == "MAPS"
+                                    ? DynamicColors.primaryClr
+                                    : DynamicColors.secondaryClr,
+                                textClr: controller.selectedTab.value == "MAPS"
+                                    ? DynamicColors.secondaryClr
+                                    : DynamicColors.primaryClr,
+                              ),
+                            ),
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                onTap: () {
+                                  controller.selectedTab.value = "PLOT";
+                                  controller.update();
+                                },
+                                color: controller.selectedTab.value != "MAPS"
+                                    ? DynamicColors.primaryClr
+                                    : DynamicColors.secondaryClr,
+                                text: "PLOT",
+                                textClr: controller.selectedTab.value != "MAPS"
+                                    ? DynamicColors.secondaryClr
+                                    : DynamicColors.primaryClr,
+                              ),
+                            ),
+                          ],
                         ),
-                        Expanded(
-                          child: RowButtonWidgetMap(
-                            onTap: () {
-                              controller.selectedTab.value = "PLOT";
-                              controller.update();
-                            },
-                            color: controller.selectedTab.value != "MAPS"
-                                ? DynamicColors.primaryClr
-                                : DynamicColors.secondaryClr,
-                            text: "PLOT",
-                            textClr: controller.selectedTab.value != "MAPS"
-                                ? DynamicColors.secondaryClr
-                                : DynamicColors.primaryClr,
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              color: DynamicColors.whiteClr,
+                              // width: 100,
+                              // height: 40,
+                              padding: const EdgeInsets.symmetric(vertical: 18.0,horizontal: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text("${controller.totalDistance.value} miles"),
+                                  Text(controller.totalTimeDuration.value)
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ),

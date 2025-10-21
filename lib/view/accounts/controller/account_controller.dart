@@ -1,11 +1,10 @@
-
-
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
+import 'package:dashboard_new1/view/accounts/model/listof_account.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class AccountController extends GetxController {
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
   /// RxBool variable
   RxBool activeDrivers = false.obs;
@@ -54,10 +53,10 @@ class AccountController extends GetxController {
   final customerAgentCommissionController = TextEditingController();
 
   // Initialize both variables so "pickerColor" is defined
-  Color pickerColor = Colors.blue;   // currently selected color inside picker
-  Color foregroundClr = Colors.blue;   // currently selected color inside picker
-  Color currentColor = Colors.blue;  // applied color on the UI
-  Color foregroundCurrentColor = Colors.blue;  // applied color on the UI
+  Color pickerColor = Colors.blue; // currently selected color inside picker
+  Color foregroundClr = Colors.blue; // currently selected color inside picker
+  Color currentColor = Colors.blue; // applied color on the UI
+  Color foregroundCurrentColor = Colors.blue; // applied color on the UI
 
   void changeColor(Color color) {
     pickerColor = color;
@@ -67,22 +66,14 @@ class AccountController extends GetxController {
     foregroundClr = color;
   }
 
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo AccountView functionality
-  
-
-
 
   /// ...............>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List of customer invoice
-  
-    RxBool paid = false.obs;
+
+  RxBool paid = false.obs;
   final FocusNode paidNode = FocusNode();
 
-
-
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create Customer invoice
-
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create Customer invoice
 
   RxBool P_T_Value = false.obs;
   RxBool cashValue = false.obs;
@@ -90,12 +81,64 @@ class AccountController extends GetxController {
   RxBool account_Value = false.obs;
   RxBool creditCardPaid_Value = false.obs;
 
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
+  RxBool isLoadingListOfAccount = false.obs;
+
+  ListofAccount? listofAccount;
+
+  Future<void> listOFAccount() async {
+    try {
+      isLoadingListOfAccount.value = true;
+      var response = await Api().get('accounts/get');
+
+      if (response.statusCode == 200) {
+        listofAccount = ListofAccount.fromJson(response.data);
+
+        print(
+            'List of Account Error ------------------------------ ${listofAccount}');
+      } else {
+        print("Status Code Error-------${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in List of Account: $e");
+    } finally {
+      isLoadingListOfAccount.value = false;
+      update();
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
+
+  ListEscortModel? listEscortModel;
+  RxBool listEscortLoding = false.obs;
+Future<void> listEscort() async {
+    try {
+      listEscortLoding.value = true;
+      var response = await Api().get('escorts/get');
+
+      if (response.statusCode == 200) {
+        listEscortModel = ListEscortModel.fromJson(response.data);
+
+        print(
+            'List of Account Error ------------------------------ $listEscortModel');
+      } else {
+        print("Status Code Error-------${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in List of Account: $e");
+    } finally {
+      listEscortLoding.value = false;
+      update();
+    }
+  }
+
+
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 
   String? account;
   String? department;
   String? subDiary;
   String? status;
-
 }

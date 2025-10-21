@@ -262,12 +262,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             1) {
                                                   controller
                                                       .highlightedIndex.value++;
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 } else if (event.logicalKey ==
                                                         LogicalKeyboardKey
                                                             .arrowUp &&
                                                     controller.highlightedIndex
                                                             .value >
                                                         0) {
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                   controller
                                                       .highlightedIndex.value--;
                                                 } else if (event.logicalKey ==
@@ -279,6 +281,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       .name;
                                                   controller.selectSuggestion(
                                                       selected);
+                                                }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 }
                                               }
                                             },
@@ -321,10 +325,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       : KbdActivatable(
                                                           focusNode: clearPic,
                                                           onActivate: () {
-                                                            int index = controller.markers.indexWhere((test) => test.type == "Create Booking PICKUP");
+                                                            int index = controller.markers.indexWhere((test) => test.type == "pickup");
                                                             controller.markers
                                                                 .remove(controller.markers[index]);
                                                             controller.pickupController.clear();
+                                                            controller.polylinePoints.clear();
                                                             controller.update();
                                                           },
                                                           child: Icon(
@@ -535,6 +540,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       .name;
                                                   controller.selectSuggestion(
                                                       selected);
+                                                }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                                  FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                 }
                                               }
                                             },
@@ -579,7 +586,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                                 .markers
                                                                 .indexWhere((test) =>
                                                                     test.type ==
-                                                                    "Create Booking DROP LOCATION");
+                                                                    "dropOff");
                                                             controller.markers
                                                                 .remove(controller
                                                                         .markers[
@@ -587,6 +594,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             controller
                                                                 .dropOffController
                                                                 .clear();
+                                                            controller.polylinePoints.clear();
                                                             controller.update();
                                                           },
                                                           child: Icon(
@@ -1807,6 +1815,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               )
                             ],
                           ),
+
                           Obx(() {
                             if (controller.selectedTextFieldsValue.value ==
                                 "VIA") return SizedBox();
@@ -1853,12 +1862,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                 autofocus: true,
                                 onKey: (RawKeyEvent event) {
                                   if (event is RawKeyDownEvent) {
-                                    if (event.logicalKey ==
-                                        LogicalKeyboardKey.arrowDown) {
+                                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                                       controller.moveHighlightDown();
-                                    } else if (event.logicalKey ==
-                                        LogicalKeyboardKey.arrowUp) {
+                                      return;
+                                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                                       controller.moveHighlightUp();
+                                      return;
                                     }
                                     // Enter intentionally ignored so it does not select anything
                                   }
@@ -1878,44 +1887,49 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                   // Rebuild list when highlightedIndex or data changes
                                   child: Obx(() => ListView.builder(
-                                        controller: controller
-                                            .suggestionScrollController,
-                                        itemCount:
-                                            controller.allAddressesData.length,
+                                    controller: controller.suggestionScrollController,
+                                    itemCount: controller.allAddressesData.length,
+                                    padding: EdgeInsets.only(top: 15),
                                         itemBuilder: (context, index) {
-                                          final item = controller
-                                              .allAddressesData[index];
-                                          final isHighlighted = index ==
-                                              controller.highlightedIndex.value;
+                                          final item = controller.allAddressesData[index];
+                                          final isHighlighted = controller.highlightedIndex.value == index;
 
-                                          return Container(
-                                            // optional background highlight
-                                            color: isHighlighted
-                                                ? const Color(0xffA0DCFF)
-                                                : Colors.transparent,
-                                            child: ListTile(
-                                              dense: true,
-                                              visualDensity:
+                                          print("controller.highlightedIndex.value");
+                                          print(controller.highlightedIndex.value);
+                                          print(index);
+                                          print("controller.highlightedIndex.value");
+
+                                          return Obx(
+                                            () {
+                                              final isHighlighted = controller.highlightedIndex.value == index;
+                                             return Container(
+                                               key: controller.suggestionItemKeys[index],
+                                               color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                                                child: ListTile(
+                                                  dense: true,
+                                                  visualDensity:
                                                   VisualDensity.compact,
-                                              // Animated text style so color/weight changes step-by-step
-                                              title: AnimatedDefaultTextStyle(
-                                                duration: const Duration(
-                                                    milliseconds: 120),
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: isHighlighted
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal,
-                                                  color: isHighlighted
-                                                      ? Colors.blue
-                                                      : Colors.black,
+                                                  // Animated text style so color/weight changes step-by-step
+                                                  title: AnimatedDefaultTextStyle(
+                                                    duration: const Duration(
+                                                        milliseconds: 120),
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight: isHighlighted
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal,
+                                                      color: isHighlighted
+                                                          ? Colors.blue
+                                                          : Colors.black,
+                                                    ),
+                                                    child: Text(
+                                                        "${item.name} ${item.postcode}"),
+                                                  ),
+                                                  onTap: () =>
+                                                      controller.tapSelect(index),
                                                 ),
-                                                child: Text(
-                                                    "${item.name} ${item.postcode}"),
-                                              ),
-                                              onTap: () =>
-                                                  controller.tapSelect(index),
-                                            ),
+                                              );
+                                            },
                                           );
                                         },
                                       )),

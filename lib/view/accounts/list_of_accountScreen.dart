@@ -28,14 +28,13 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
       ? Get.find<AccountController>()
       : Get.put(AccountController());
 
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-  } 
-
+    controller.listOFAccount();
+  }
 
   void _handleKey(RawKeyEvent event) {
     if (event is RawKeyDownEvent) {
@@ -71,121 +70,131 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
           padding: const EdgeInsets.all(12),
           child: Column(
             children: [
-               Row(
-                    children: [
-                      Text("ACCOUNTS (7)",
-                        style: mozillaTextSemiBoldText(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 17
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: 20,
-                      ),
-
-                      Checkbox(
-                          value: controller.activeDrivers.value,
-                          onChanged: (v){
-                            controller.activeDrivers.value = v!;
-                            controller.update();
-                          }),
-
-                      Text("Closed",
-                        style: mozillaTextSemiBoldText(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: DynamicColors.redClr
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: 60,
-                      ),
-
-                      CustomButton(
-                        height: 40,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child: Icon(Icons.refresh,
-                            color: DynamicColors.whiteClr,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                    ],
+              Row(
+                children: [
+                  Text(
+                    "ACCOUNTS (7)",
+                    style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w800, fontSize: 17),
                   ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Checkbox(
+                      value: controller.activeDrivers.value,
+                      onChanged: (v) {
+                        controller.activeDrivers.value = v!;
+                        controller.update();
+                      }),
+                  Text(
+                    "Closed",
+                    style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                        color: DynamicColors.redClr),
+                  ),
+                  SizedBox(
+                    width: 60,
+                  ),
+                  CustomButton(
+                    height: 40,
+                    width: 80,
+                    verticalPadding: 0.0,
+                    borderRadius: 4,
+                    widget: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                      child: Icon(
+                        Icons.refresh,
+                        color: DynamicColors.whiteClr,
+                        size: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
               SizedBox(
                 height: 12,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: Get.width,
-                  child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(title: "NAME"),
-                      buildHeaderWithSearch(title: "ACCOUNT TYPE"),
-                      buildHeaderWithSearch(title: "ADDRESS"),
-                      buildHeaderWithSearch(title: "EMAIL"),
-                      buildHeaderWithSearch(title: "MOBILE"),
-                      buildHeaderWithSearch(title: "TELEPHONE"),
-                      buildHeaderWithSearch(title: "CONTACT NAME"),
-                      buildHeaderWithSearch(title: "SUBSIDIARY"),
-                      buildHeaderWithSearch(
-                          title: "ACTIONS", removeSearching: true),
-                    ],
-                    totalRow: totalRows,
-                    cells: [
-                      const DataCell(Center(child: Text("Saloon"))),
-                      const DataCell(Center(child: Text("4"))),
-                      const DataCell(Center(child: Text("2"))),
-                      const DataCell(Center(child: Text("2"))),
-                      const DataCell(Center(child: Text("£ 7.00"))),
-                      const DataCell(Center(child: Text("2.00 mi"))),
-                      const DataCell(Center(child: Text("2.00 mi"))),
-                      const DataCell(Center(child: Text("2.00 mi"))),
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.search,
-                                  size: 28,
-                                ),
-                              ),
-                              Text("|"),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                ),
-                              ),
+              controller.isLoadingListOfAccount == true
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: Get.width,
+                        child: DatatableWidget(
+                            columns: [
+                              buildHeaderWithSearch(title: "NAME"),
+                              buildHeaderWithSearch(title: "ACCOUNT TYPE"),
+                              buildHeaderWithSearch(title: "ADDRESS"),
+                              buildHeaderWithSearch(title: "EMAIL"),
+                              buildHeaderWithSearch(title: "MOBILE"),
+                              buildHeaderWithSearch(title: "TELEPHONE"),
+                              buildHeaderWithSearch(title: "CONTACT NAME"),
+                              buildHeaderWithSearch(title: "SUBSIDIARY"),
+                              buildHeaderWithSearch(
+                                  title: "ACTIONS", removeSearching: true),
                             ],
-                          ),
-                        ),
+                            totalRow:
+                                controller.listofAccount?.accounts?.length,
+                            rows: (controller.listofAccount!.accounts ?? [])
+                                .map((item) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Center(child: Text(item.name!))),
+                                  DataCell(
+                                      Center(child: Text(item.accountType!))),
+                                  DataCell(Center(child: Text(item.address!))),
+                                  DataCell(Center(child: Text(item.email!))),
+                                  DataCell(Center(child: Text(item.mobile!))),
+                                  DataCell(
+                                      Center(child: Text(item.telephone!))),
+                                  DataCell(
+                                      Center(child: Text(item.contactName!))),
+                                  DataCell(Center(
+                                      child: Text(item.subsidiary!.name.toString()))),
+                                  DataCell(
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: BorderSide(
+                                                color: Colors.transparent,
+                                              ), // border color & thickness
+                                            ),
+                                            onPressed: () {},
+                                            child: Icon(
+                                              Icons.search,
+                                              size: 28,
+                                            ),
+                                          ),
+                                          Text("|"),
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: BorderSide(
+                                                color: Colors.transparent,
+                                              ), // border color & thickness
+                                            ),
+                                            onPressed: () {},
+                                            child: Icon(
+                                              Icons.delete_forever,
+                                              size: 28,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList()),
                       ),
-                    ],
-                  ),
-                ),
-              ),
+                    ),
             ],
           ),
         );

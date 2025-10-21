@@ -188,6 +188,7 @@ class _AccountViewState extends State<AccountView> {
                                     children: [
                                       Text(AppText.subsidiary, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                       RestrictedDrivers(
+                                        
                                         width: fieldWidth/2.5,
                                         // height: 35,
                                         padding: 0.0,

@@ -91,6 +91,7 @@ class DashboardController extends GetxController {
   int dropdownIndex = 0;
   RxInt selectionMenuBtn = 0.obs;
 
+
   ///Todo booking form data
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
@@ -282,13 +283,14 @@ class DashboardController extends GetxController {
       getDropAddressesLoader(false);
     }
     var response = await Api().get(
-        "addresses/search?search=${searchingText.toString().toUpperCase()}",
+        "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
     if (response.statusCode == 200) {
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll(
-          (response.data as List).map((e) => AllAddressesModel.fromJson(e)).toList());
+          (response.data['result'] as List).map((e) => AllAddressesModel.fromJson(e)).toList());
+        updateKeys();
         inputText.value = searchingText;
         if (searchingText.isEmpty) {
           suggestions.clear();
@@ -337,11 +339,6 @@ class DashboardController extends GetxController {
           "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
           "postcode": response.data['address']
               ['postcode'], // e.g. Brondesbury Park, Brent
-          "area": response.data['address']['postcode'], // NW6
-          "district": response.data['address']['postcode'], // Brent
-          "sector": response.data['address']['postcode'], // London
-          "unit": response.data['address']['postcode'], // NW6 7BP
-          "type": "address",
           "lat": double.parse(response.data['lat']), // 51.542059
           "lon": double.parse(response.data['lon']), // -0.212545
         }
@@ -352,6 +349,7 @@ class DashboardController extends GetxController {
             .map((e) => AllAddressesModel.fromJson(e))
             .toList(),
       );
+      updateKeys();
       getPickupAddressesLoader(true);
       getDropAddressesLoader(true);
       update();
@@ -367,97 +365,253 @@ class DashboardController extends GetxController {
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
 
+  RxString totalDistance = "0".obs;
+  RxString totalTimeDuration = "0".obs;
+
   /// ✅ Step 2: Fetch real road route from OSRM (OpenStreetMap)
+  // Future<void> fetchRouteFromOSRM() async {
+  //   // if (polylinePoints.length < 2) return;
+  //   markers.clear();
+  //   List<LatLng> tempPoints = [];
+  //   for (var item in viaPoints) {
+  //     tempPoints.add(LatLng(item.lat, item.lng));
+  //       markers.add(
+  //           CustomMarker(
+  //             type: "via",
+  //             child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,),
+  //             point: LatLng(item.lat, item.lng),
+  //             width: 30, height: 30,
+  //           ),
+  //     );
+  //   }
+  //  if(polyLineMarkerInfo.isNotEmpty) {
+  //     for (var item in polyLineMarkerInfo) {
+  //       if (item.markerType == "PICKUP LOCATION") {
+  //         print(markers);
+  //         tempPoints.add(LatLng(item.lat, item.lng));
+  //         markers.add(
+  //             CustomMarker(
+  //               type: "pickup",
+  //                 point: LatLng(item.lat, item.lng),
+  //                 child: Icon(
+  //                   Icons.location_pin,
+  //                   color: DynamicColors.greenClr,
+  //                   size: 30,
+  //                 ),
+  //                 width: 30,
+  //                 height: 30
+  //             ),);
+  //         mapController.camera.focusedZoomCenter(Offset.zero, 14);
+  //         // CameraFit cameraFit = CameraFit.bounds(bounds: polyLineMarkerInfo.);
+  //         // mapController.fitCamera(cameraFit);
+  //       }
+  //       else if(item.markerType == "DROP LOCATION") {
+  //         tempPoints.add(LatLng(item.lat, item.lng));
+  //         markers.add(
+  //             CustomMarker(
+  //                 type: "dropOff",
+  //                 point: LatLng(item.lat, item.lng),
+  //                 child: Icon(
+  //                   Icons.location_pin,
+  //                   color: DynamicColors.redClr,
+  //                   size: 30,
+  //                 ),
+  //                 width: 30,
+  //                 height: 30
+  //             ),
+  //         );
+  //       }
+  //       else if (item.markerType == "Create Booking PICKUP"){
+  //         tempPoints.add(LatLng(item.lat, item.lng));
+  //         markers.add(
+  //           CustomMarker(
+  //               type: "Create Booking PICKUP",
+  //               point: LatLng(item.lat, item.lng),
+  //               child: Icon(
+  //                 Icons.location_pin,
+  //                 color: DynamicColors.greenClr,
+  //                 size: 30,
+  //               ),
+  //               width: 30,
+  //               height: 30
+  //           ),
+  //         );
+  //       }
+  //       else if (item.markerType == "Create Booking DROP LOCATION"){
+  //         tempPoints.add(LatLng(item.lat, item.lng));
+  //         markers.add(
+  //           CustomMarker(
+  //               type: "Create Booking DROP LOCATION",
+  //               point: LatLng(item.lat, item.lng),
+  //               child: Icon(
+  //                 Icons.location_pin,
+  //                 color: DynamicColors.redClr,
+  //                 size: 30,
+  //               ),
+  //               width: 30,
+  //               height: 30
+  //           ),
+  //         );
+  //       }
+  //     }
+  //   }
+  //
+  //
+  //
+  //  update();
+  //
+  //   final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+  //
+  //   final url = Uri.parse(
+  //     'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full',
+  //   );
+  //
+  //   final res = await Dio().getUri(url);
+  //
+  //   if (res.statusCode == 200) {
+  //     polylinePointsCoordinate.clear();
+  //     final data = res.data;
+  //     final encodedPolyline = data['routes'][0]['geometry'];
+  //     // PolylinePoints polylinePoints = PolylinePoints(apiKey: 'AIzaSyBaXpJ2zz_aelMDtgyfAVP9Xsb9e9MxRIA');
+  //     List<PointLatLng> result =
+  //     PolylinePoints.decodePolyline(encodedPolyline);
+  //     List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
+  //
+  //     polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
+  //
+  //     if (polylinePointsCoordinate.isNotEmpty) {
+  //       polylines.add(Polyline(
+  //           points: polylinePointsCoordinate, color: DynamicColors.primaryClr, strokeWidth: 2.0));
+  //
+  //       LatLngBounds bounds = calculateBounds(polylinePointsCoordinate);
+  //
+  //       // Replacing fitBounds with fitCamera using CameraFit.bounds
+  //       CameraFit cameraFit = CameraFit.bounds(bounds: bounds);
+  //       mapController.fitCamera(cameraFit);
+  //     }
+  //     update();
+  //   } else {
+  //     print("❌ OSRM error: ${res.statusCode}");
+  //   }
+  // }
+  //
+  // LatLngBounds calculateBounds(List<LatLng> coordinates) {
+  //   double minLat = coordinates[0].latitude;
+  //   double maxLat = coordinates[0].latitude;
+  //   double minLng = coordinates[0].longitude;
+  //   double maxLng = coordinates[0].longitude;
+  //
+  //   for (LatLng coordinate in coordinates) {
+  //     if (coordinate.latitude < minLat) {
+  //       minLat = coordinate.latitude;
+  //     }
+  //     if (coordinate.latitude > maxLat) {
+  //       maxLat = coordinate.latitude;
+  //     }
+  //     if (coordinate.longitude < minLng) {
+  //       minLng = coordinate.longitude;
+  //     }
+  //     if (coordinate.longitude > maxLng) {
+  //       maxLng = coordinate.longitude;
+  //     }
+  //   }
+  //
+  //   return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
+  // }
+
+  // helper: bounds calculate karne ke liye
+// helper: bounds calculate karne ke liye (using fromPoints)
+
+  LatLngBounds calculateBounds(List<LatLng> points) {
+    assert(points.isNotEmpty);
+
+    // single point -> degenerate bounds
+    if (points.length == 1) {
+      return LatLngBounds.fromPoints([points.first, points.first]);
+    }
+
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+
+    for (var p in points) {
+      if (p.latitude < minLat) minLat = p.latitude;
+      if (p.latitude > maxLat) maxLat = p.latitude;
+      if (p.longitude < minLng) minLng = p.longitude;
+      if (p.longitude > maxLng) maxLng = p.longitude;
+    }
+
+    final sw = LatLng(minLat, minLng);
+    final ne = LatLng(maxLat, maxLng);
+
+    // use fromPoints to avoid constructor signature mismatch
+    return LatLngBounds.fromPoints([sw, ne]);
+  }
+
+// your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
-    // if (polylinePoints.length < 2) return;
     markers.clear();
+    polylines.clear();
+    polylinePointsCoordinate.clear();
     List<LatLng> tempPoints = [];
+
+    // add via points as markers
     for (var item in viaPoints) {
-      tempPoints.add(LatLng(item.lat, item.lng));
-        markers.add(
-            CustomMarker(
-              type: "via",
-              child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,),
-              point: LatLng(item.lat, item.lng),
-              width: 30, height: 30,
-            ),
+      final p = LatLng(item.lat, item.lng);
+      tempPoints.add(p);
+      markers.add(
+        CustomMarker(
+          type: "via",
+          child: Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+          point: p,
+          width: 30,
+          height: 30,
+        ),
       );
     }
-   if(polyLineMarkerInfo.isNotEmpty) {
+
+    // add other marker info (pickup / drop / create booking ...)
+    if (polyLineMarkerInfo.isNotEmpty) {
       for (var item in polyLineMarkerInfo) {
-        if (item.markerType == "PICKUP LOCATION") {
-          print(markers);
-          tempPoints.add(LatLng(item.lat, item.lng));
-          markers.add(
-              CustomMarker(
-                type: "pickup",
-                  point: LatLng(item.lat, item.lng),
-                  child: Icon(
-                    Icons.location_pin,
-                    color: DynamicColors.greenClr,
-                    size: 30,
-                  ),
-                  width: 30,
-                  height: 30
-              ),);
-          // CameraFit cameraFit = CameraFit.bounds(bounds: polyLineMarkerInfo.);
-          // mapController.fitCamera(cameraFit);
-        } else if(item.markerType == "DROP LOCATION") {
-          tempPoints.add(LatLng(item.lat, item.lng));
-          markers.add(
-              CustomMarker(
-                  type: "dropOff",
-                  point: LatLng(item.lat, item.lng),
-                  child: Icon(
-                    Icons.location_pin,
-                    color: DynamicColors.redClr,
-                    size: 30,
-                  ),
-                  width: 30,
-                  height: 30
-              ),
-          );
-        }else if (item.markerType == "Create Booking PICKUP"){
-          tempPoints.add(LatLng(item.lat, item.lng));
+        final p = LatLng(item.lat, item.lng);
+
+        if (item.markerType == "PICKUP LOCATION" ||
+            item.markerType == "Create Booking PICKUP") {
+          tempPoints.add(p);
           markers.add(
             CustomMarker(
-                type: "Create Booking PICKUP",
-                point: LatLng(item.lat, item.lng),
-                child: Icon(
-                  Icons.location_pin,
-                  color: DynamicColors.greenClr,
-                  size: 30,
-                ),
-                width: 30,
-                height: 30
+              type: "pickup",
+              point: p,
+              child: Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+              width: 30,
+              height: 30,
             ),
           );
-        }else if (item.markerType == "Create Booking DROP LOCATION"){
-          tempPoints.add(LatLng(item.lat, item.lng));
+        } else if (item.markerType == "DROP LOCATION" ||
+            item.markerType == "Create Booking DROP LOCATION") {
+          tempPoints.add(p);
           markers.add(
             CustomMarker(
-                type: "Create Booking DROP LOCATION",
-                point: LatLng(item.lat, item.lng),
-                child: Icon(
-                  Icons.location_pin,
-                  color: DynamicColors.redClr,
-                  size: 30,
-                ),
-                width: 30,
-                height: 30
+              type: "dropOff",
+              point: p,
+              child: Icon(Icons.location_pin, color: DynamicColors.redClr, size: 30),
+              width: 30,
+              height: 30,
             ),
           );
         }
       }
     }
+    ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
+    if(polyLineMarkerInfo.length == 1){
+      return;
+    }
+    update();
 
-   update();
-
-    final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
-
-    final url = Uri.parse(
-      'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full',
-    );
+    // --------- MULTI-POINT: request route from OSRM ----------
+    final coordinates = tempPoints.map((p) => "${p.longitude },${p.latitude}").join(";");
+    final url = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
 
     final res = await Dio().getUri(url);
 
@@ -465,51 +619,69 @@ class DashboardController extends GetxController {
       polylinePointsCoordinate.clear();
       final data = res.data;
       final encodedPolyline = data['routes'][0]['geometry'];
-      PolylinePoints polylinePoints = PolylinePoints(apiKey: 'AIzaSyBaXpJ2zz_aelMDtgyfAVP9Xsb9e9MxRIA');
-      List<PointLatLng> result =
-      PolylinePoints.decodePolyline(encodedPolyline);
-      List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
 
-      polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
+      // meters → miles
+      final distanceInMiles = data['routes'][0]['distance'] * 0.000621371;
+
+// seconds → minutes
+      final durationInMinutes = data['routes'][0]['duration'] / 60;
+
+      // final formattedDuration = formatDuration(durationInMinutes);
+
+// (Optional) format nicely
+      totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
+      // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
+      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
+
+      List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
+      List<LatLng> polylinePointss = result
+          .map((PointLatLng point) => LatLng(point.latitude, point.longitude))
+          .toList();
+
+      polylinePointsCoordinate = polylinePointss
+          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble()))
+          .toList();
 
       if (polylinePointsCoordinate.isNotEmpty) {
         polylines.add(Polyline(
-            points: polylinePointsCoordinate, color: DynamicColors.primaryClr, strokeWidth: 2.0));
+          points: polylinePointsCoordinate,
+          color: DynamicColors.primaryClr,
+          strokeWidth: 2.0,
+        ));
 
-        LatLngBounds bounds = calculateBounds(polylinePointsCoordinate);
+        // build bounds from the route or from markers (choose whichever you prefer)
+        final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
-        // Replacing fitBounds with fitCamera using CameraFit.bounds
-        CameraFit cameraFit = CameraFit.bounds(bounds: bounds);
+        LatLngBounds bounds;
+        if (focusPoints.length == 1) {
+          bounds = LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
+        } else {
+          bounds = calculateBounds(focusPoints); // your existing helper
+        }
+
+        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
+
       update();
     } else {
       print("❌ OSRM error: ${res.statusCode}");
     }
   }
 
-  LatLngBounds calculateBounds(List<LatLng> coordinates) {
-    double minLat = coordinates[0].latitude;
-    double maxLat = coordinates[0].latitude;
-    double minLng = coordinates[0].longitude;
-    double maxLng = coordinates[0].longitude;
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> make function for mints and hours
+  String formatDuration(double minutes) {
+    final int totalMinutes = minutes.round();
+    final int hours = totalMinutes ~/ 60;
+    final int remainingMinutes = totalMinutes % 60;
 
-    for (LatLng coordinate in coordinates) {
-      if (coordinate.latitude < minLat) {
-        minLat = coordinate.latitude;
-      }
-      if (coordinate.latitude > maxLat) {
-        maxLat = coordinate.latitude;
-      }
-      if (coordinate.longitude < minLng) {
-        minLng = coordinate.longitude;
-      }
-      if (coordinate.longitude > maxLng) {
-        maxLng = coordinate.longitude;
-      }
+    if (hours > 0 && remainingMinutes > 0) {
+      return '$hours hour${hours > 1 ? 's' : ''} $remainingMinutes min${remainingMinutes > 1 ? 's' : ''}';
+    } else if (hours > 0) {
+      return '$hours hour${hours > 1 ? 's' : ''}';
+    } else {
+      return '$remainingMinutes min${remainingMinutes > 1 ? 's' : ''}';
     }
-
-    return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
   }
 
 
@@ -517,12 +689,22 @@ class DashboardController extends GetxController {
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();
 
+  List<GlobalKey> suggestionItemKeys = [];
+
+  void updateKeys() {
+    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
+  }
+
+  final GlobalKey suggestionListKey = GlobalKey();
+
+
 // change move functions to scroll after change:
   void moveHighlightDown() {
     if (allAddressesData.isEmpty) return;
     highlightedIndex.value =
         (highlightedIndex.value + 1) % allAddressesData.length;
-    _scrollToHighlighted();
+    highlightedIndex.refresh();
+    _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
   }
 
   void moveHighlightUp() {
@@ -530,27 +712,212 @@ class DashboardController extends GetxController {
     highlightedIndex.value =
         (highlightedIndex.value - 1 + allAddressesData.length) %
             allAddressesData.length;
-    _scrollToHighlighted();
+    highlightedIndex.refresh();
+    _scrollToHighlighted(scrollDown: false); // 👈 scroll to top when up
   }
 
-  void _scrollToHighlighted() {
+
+  void _scrollToHighlighted({bool scrollDown = true}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!suggestionScrollController.hasClients) return;
-      final index = highlightedIndex.value;
-      const itemHeight = 48.0; // adjust if your item height differs
-      final offset = (index * itemHeight).clamp(
-        suggestionScrollController.position.minScrollExtent,
-        suggestionScrollController.position.maxScrollExtent,
-      );
-      suggestionScrollController.animateTo(
-        offset,
-        duration: const Duration(milliseconds: 120),
-        curve: Curves.easeInOut,
-      );
+      final i = highlightedIndex.value;
+      if (i < 0 || i >= suggestionItemKeys.length) return;
+
+      final itemCtx = suggestionItemKeys[i].currentContext;
+      final listCtx = suggestionListKey.currentContext;
+
+      if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
+        final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
+        final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
+
+        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final double itemTopLocal = itemOffset.dy;
+        final double itemBottomLocal = itemTopLocal + itemBox.size.height;
+
+        final double viewportHeight = listBox.size.height;
+        final double currentOffset = suggestionScrollController.offset;
+
+        double targetOffset = currentOffset;
+        const double edgeMargin = 8.0;
+
+        if (itemBottomLocal > viewportHeight - edgeMargin) {
+          final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        } else if (itemTopLocal < edgeMargin) {
+          final double delta = itemTopLocal - edgeMargin; // negative
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        } else {
+          return; // already visible
+        }
+
+        _instantOrSmoothScroll(targetOffset, currentOffset);
+      } else {
+        _fallbackScroll(i, scrollDown);
+      }
     });
   }
 
-// Keep tap selection (Enter intentionally NOT handled)
+  void _fallbackScroll(int index, bool scrollDown) {
+    if (!suggestionScrollController.hasClients) return;
+
+    const double itemHeight = 48.0;
+    const double topPadding = 15.0;
+    final currentOffset = suggestionScrollController.offset;
+    final viewport = suggestionScrollController.position.viewportDimension;
+    final visibleStart = currentOffset;
+    final visibleEnd = currentOffset + viewport;
+
+    final itemTop = topPadding + index * itemHeight;
+    final itemBottom = itemTop + itemHeight;
+
+    double target = currentOffset;
+    const double margin = itemHeight * 0.12;
+
+    if (itemBottom > visibleEnd) {
+      target = itemBottom - viewport + margin;
+    } else if (itemTop < visibleStart) {
+      target = itemTop - margin;
+    } else {
+      return;
+    }
+
+    target = target.clamp(
+      suggestionScrollController.position.minScrollExtent,
+      suggestionScrollController.position.maxScrollExtent,
+    );
+
+    _instantOrSmoothScroll(target, currentOffset);
+  }
+
+  void _instantOrSmoothScroll(double targetOffset, double currentOffset) {
+    if (!suggestionScrollController.hasClients) return;
+
+    // difference between current & target
+    final double diff = (targetOffset - currentOffset).abs();
+
+    // if small distance -> jump instantly
+    if (diff < 60) {
+      suggestionScrollController.jumpTo(targetOffset);
+    } else {
+      // if bigger move -> smooth scroll
+      suggestionScrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+
+
+  // void _scrollToHighlighted({bool scrollDown = true}) {
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     final i = highlightedIndex.value;
+  //     if (i < 0 || i >= suggestionItemKeys.length) return;
+  //
+  //     final itemCtx = suggestionItemKeys[i].currentContext;
+  //     final listCtx = suggestionListKey.currentContext;
+  //
+  //     if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
+  //       final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
+  //       final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
+  //
+  //       // item position relative to the ListView viewport
+  //       final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+  //       final double itemTopLocal = itemOffset.dy;
+  //       final double itemBottomLocal = itemTopLocal + itemBox.size.height;
+  //
+  //       final double viewportHeight = listBox.size.height;
+  //       final double currentOffset = suggestionScrollController.offset;
+  //
+  //       double targetOffset = currentOffset;
+  //
+  //       // small margin so item doesn't hug the edge too tightly
+  //       const double edgeMargin = 8.0;
+  //
+  //       // If item bottom is below visible viewport -> scroll down minimally
+  //       if (itemBottomLocal > viewportHeight - edgeMargin) {
+  //         final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
+  //         targetOffset = (currentOffset + delta).clamp(
+  //           suggestionScrollController.position.minScrollExtent,
+  //           suggestionScrollController.position.maxScrollExtent,
+  //         );
+  //       }
+  //       // If item top is above visible viewport -> scroll up minimally
+  //       else if (itemTopLocal < edgeMargin) {
+  //         final double delta = itemTopLocal - edgeMargin; // negative
+  //         targetOffset = (currentOffset + delta).clamp(
+  //           suggestionScrollController.position.minScrollExtent,
+  //           suggestionScrollController.position.maxScrollExtent,
+  //         );
+  //       } else {
+  //         // already visible enough -> no scroll
+  //         return;
+  //       }
+  //
+  //       // tiny guard to avoid micro animations
+  //       if ((targetOffset - currentOffset).abs() < 0.5) return;
+  //
+  //       suggestionScrollController.animateTo(
+  //         targetOffset,
+  //         duration: const Duration(milliseconds: 80),
+  //         curve: Curves.easeOut,
+  //       );
+  //     } else {
+  //       // fallback if contexts not ready
+  //       _fallbackScroll(i, scrollDown);
+  //     }
+  //   });
+  // }
+  //
+  // void _fallbackScroll(int index, bool scrollDown) {
+  //   if (!suggestionScrollController.hasClients) return;
+  //
+  //   const double itemHeight = 48.0; // adjust if needed
+  //   const double topPadding = 15.0;
+  //   final currentOffset = suggestionScrollController.offset;
+  //   final viewport = suggestionScrollController.position.viewportDimension;
+  //   final visibleStart = currentOffset;
+  //   final visibleEnd = currentOffset + viewport;
+  //
+  //   final itemTop = topPadding + index * itemHeight;
+  //   final itemBottom = itemTop + itemHeight;
+  //
+  //   double target = currentOffset;
+  //   const double margin = itemHeight * 0.12; // small margin
+  //
+  //   if (itemBottom > visibleEnd) {
+  //     // scroll just enough so item bottom is inside viewport with margin
+  //     target = itemBottom - viewport + margin;
+  //   } else if (itemTop < visibleStart) {
+  //     // scroll just enough so item top is inside viewport with margin
+  //     target = itemTop - margin;
+  //   } else {
+  //     return; // visible
+  //   }
+  //
+  //   target = target.clamp(
+  //     suggestionScrollController.position.minScrollExtent,
+  //     suggestionScrollController.position.maxScrollExtent,
+  //   );
+  //
+  //   if ((target - currentOffset).abs() < 0.5) return;
+  //
+  //   suggestionScrollController.animateTo(
+  //     target,
+  //     duration: const Duration(milliseconds: 80),
+  //     curve: Curves.easeOut,
+  //   );
+  // }
+
+
+  RxInt suggestionSelectedIndex = 0.obs;
+
   void tapSelect(int index) {
     if (allAddressesData.isEmpty) return;
     final selected = allAddressesData[index];
@@ -630,6 +997,7 @@ class DashboardController extends GetxController {
     }
     allAddressesData.clear();
     highlightedIndex.value = 0;
+  update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality
