@@ -1722,22 +1722,22 @@ class _CreateBookingState extends State<CreateBooking> {
                                     SizedBox(
                                       width: 15,
                                     ),
-                                    CustomButton(
-                                      btnText: "MULTI BOOKING [F8]",
-                                      width: 150,
-                                      height: 30,
-                                      fontSize: 11,
-                                      verticalPadding: 0.0,
-                                      borderRadius: 4,
-                                    ),
-                                    CustomButton(
-                                      btnText: "MULTI VEHICLE [F9]",
-                                      width: 150,
-                                      height: 30,
-                                      fontSize: 11,
-                                      verticalPadding: 0.0,
-                                      borderRadius: 4,
-                                    ),
+                                    // CustomButton(
+                                    //   btnText: "MULTI BOOKING [F8]",
+                                    //   width: 150,
+                                    //   height: 30,
+                                    //   fontSize: 11,
+                                    //   verticalPadding: 0.0,
+                                    //   borderRadius: 4,
+                                    // ),
+                                    // CustomButton(
+                                    //   btnText: "MULTI VEHICLE [F9]",
+                                    //   width: 150,
+                                    //   height: 30,
+                                    //   fontSize: 11,
+                                    //   verticalPadding: 0.0,
+                                    //   borderRadius: 4,
+                                    // ),
                                     CustomButton(
                                       btnText: "CLEAR [F7]",
                                       width: 110,
