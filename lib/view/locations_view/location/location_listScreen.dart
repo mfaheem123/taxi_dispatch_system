@@ -77,7 +77,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                 children: [
                   Row(
                     children: [
-                      Text("Location"+" (7)",
+                      Text("Location (7)",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800,
                             fontSize: 17
@@ -137,8 +137,8 @@ class _LocationListScreenState extends State<LocationListScreen> {
                           buildHeaderWithSearch(title: "Zone"),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        totalRow: controller.locationListModel!.locations!.length,
-                        rows: controller.locationListModel!.locations!.map((item) {
+                        totalRow: controller.locationListModel!.locations.length,
+                        rows: controller.locationListModel!.locations.map((item) {
                           return DataRow(
                             cells: [
                               DataCell(Center(child: Text(item.name ?? '—'))),
@@ -157,7 +157,17 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                           side: BorderSide(color: Colors.transparent),
                                         ),
                                         onPressed: () {
-                                          _controller.currentPage.value = LocationForm();
+                                          controller.bindLocationUpdateLocation(locationUpdate: item);
+                                          int index = _controller.selectedMenuItems.indexWhere(
+                                                  (element) => element.title == "LocationForm");
+                                          if (index != -1) {
+                                            _controller.selectedMenuItems[index].selectedItem = true;
+                                            _controller.currentPage.value = LocationForm();
+                                          }else{
+                                            _controller.currentPage.value = LocationForm();
+                                            _controller.menuBarRefresh(
+                                                title: "LocationForm", pageName: LocationForm());
+                                          }
                                           controller.update();
                                         },
                                         child: Icon(Icons.edit_calendar, size: 28),
