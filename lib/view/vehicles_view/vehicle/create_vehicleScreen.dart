@@ -110,9 +110,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
                     _enableMinimumFares = v ?? false;
                   });
                 }),
-                _buildTextField("Minimum Fares",
-                    enabled: _enableMinimumFares),
-
+                _buildTextField("Minimum Fares", enabled: _enableMinimumFares),
                 _buildTextField("Background Color"),
                 _buildTextField("Foreground Color"),
                 _buildTextField("Driver Waiting Charges / 10s"),

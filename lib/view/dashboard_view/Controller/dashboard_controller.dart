@@ -22,9 +22,17 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 
 class DashboardController extends GetxController {
+
+
+
+
   ///Todo menu bar functionality
+  // Widget? currentPage;
+
+  final Rx<Widget?> currentPage = Rx<Widget?>(null);
 
   List<SelectedDropdown> selectedMenuItems = [];
+
 
   ///refresh function for menu bar
   menuBarRefresh({title, pageName}) {

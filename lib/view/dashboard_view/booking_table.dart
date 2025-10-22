@@ -330,7 +330,7 @@ class TableSelectClass{
 }
 
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget}) {
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged, }  ) {
   return DataColumn(
     label: Expanded(
       child: widget?? Column(
@@ -346,6 +346,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
             width: 100,
             height: textFieldHeight??28,
             child: TextField(
+             onChanged: onChanged,
               onTap: () {
                 shortCutKeyValue.value = "tableSelected";
               },

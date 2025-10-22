@@ -4,19 +4,17 @@ import 'package:dashboard_new1/tabbarview.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/User/create_userScreen.dart';
-import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
-import 'package:dashboard_new1/view/booking_view/create_bookingScreen.dart';
-import 'package:dashboard_new1/view/customer/create_complaintsScreen.dart';
-import 'package:dashboard_new1/view/customer/create_lost_propertyScreen.dart';
 import 'package:dashboard_new1/view/locations_view/location/zone_listScreen.dart';
-import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_company_vehicle.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
+import 'package:dashboard_new1/view/vehicles_view/list_vehicle_type.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_vehicleScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../routes/app_pages.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../booking_view/complete_bookingview.dart';
-import '../customer/add_customerScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
 import '../drivers_view/driver/bulk_driver_commission/bulk_driver_commission.dart';
@@ -45,9 +43,8 @@ import '../locations_view/location/location_formScreen.dart';
 import '../locations_view/location/location_listScreen.dart';
 import '../locations_view/location/plotting_Screen.dart';
 import '../reports/driver_reports_view/driver_login_screen.dart';
-import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
-import '../vehicles_view/vehicle/create_company_vehicleScreen.dart';
-import '../vehicles_view/vehicle/list_vehicle_typeScreen.dart';
+import '../vehicles_view/company_vehiclesScreen.dart';
+import '../vehicles_view/create_company_vehicleScreen.dart';
 import 'Controller/dashboard_controller.dart';
 import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
@@ -558,13 +555,13 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
       case 'DRIVER APP FEATURES':
         return DriverAppFeatureScreen();
       case 'CREATE VEHICLE TYPE':
-        return CreateVehicle();
+        return CreateVehicleTypes();
         case 'LIST OF VEHICLE TYPES':
-        return VehicleTypeListScreen();
+        return ListVehicleType();
         case 'LIST OF COMPANY VEHICLE':
         return CompanyVehiclesScreen();
         case 'CREATE COMPANY VEHICLE':
-        return CompanyVehicleForm();
+        return CreateCompanyVehicle();
         case 'LIST OF ACCOUNTS':
         return ListOfAccountScreen();
         case 'CREATE CUSTOMER INVOICE':

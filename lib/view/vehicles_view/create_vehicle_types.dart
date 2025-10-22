@@ -1,7 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/vehicles_view/controller.dart';
+import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

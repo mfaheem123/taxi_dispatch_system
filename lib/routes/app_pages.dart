@@ -1,6 +1,5 @@
-
-
-import 'package:dashboard_new1/view/vehicles_view/vehicle/create_vehicleScreen.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_vehicleScreen.dart';
+import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
 import 'package:get/get.dart';
 import '../view/auth/login_screen.dart';
 import '../view/booking_view/complete_bookingview.dart';
@@ -15,7 +14,6 @@ part 'app_routes.dart';
 
 class AppPages {
   AppPages._();
-
 
   static const initial = Routes.loginScreen;
   // static const initial = Routes.myHomePage;
@@ -59,7 +57,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.createVehicle,
-      page: () => CreateVehicle(),
+      page: () => CreateVehicleTypes(),
     ),
   ];
 }
