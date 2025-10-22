@@ -10,6 +10,7 @@ import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller/controller.dart';
+import 'create_vehicle_types.dart';
 
 class ListVehicleType extends StatefulWidget {
   const ListVehicleType({super.key});
@@ -33,6 +34,8 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
     shortCutKeyValue.value = "listVehicleType";
     controller.getVehicleTypes();
   }
+
+  final DashboardController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +197,20 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             minimumSize: Size(24, 24),
                                             side: BorderSide.none,
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            controller.vehicleDataBinding(item: item);
+                                            int index = _controller.selectedMenuItems.indexWhere(
+                                                    (element) => element.title == "CREATE VEHICLE TYPE");
+                                            if (index != -1) {
+                                              _controller.selectedMenuItems[index].selectedItem = true;
+                                              _controller.currentPage.value = CreateVehicleTypes();
+                                            }else{
+                                              _controller.currentPage.value = CreateVehicleTypes();
+                                              _controller.menuBarRefresh(
+                                                  title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
+                                            }
+                                            controller.update();
+                                          },
                                           child: Icon(Icons.edit_calendar,
                                               size: 20),
                                         ),

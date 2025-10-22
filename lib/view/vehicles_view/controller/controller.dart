@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Model/image_model.dart';
+import 'package:dio/dio.dart' as dio;
 
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
@@ -273,7 +274,14 @@ class VehicleController extends GetxController {
   createVehicleType() async {
     isLoadVehicleType.value = false;
 
-    var formData = {
+    var multipartFile;
+    if(profileImg !=null){
+      multipartFile = dio.MultipartFile.fromBytes(
+        profileImg!.bytes,
+        filename: profileImg!.name,
+      );
+    }
+    final formData = dio.FormData.fromMap({
       'name': vehicleTypeController.text,
       'passengers': passengersController.text,
       'luggages': luggagesController.text,
@@ -288,13 +296,46 @@ class VehicleController extends GetxController {
       'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
       'driver_waiting_charges': driverWaitingChargesController.text,
       'account_waiting_charges': accountWaitingChargesController.text,
-    };
+     if(multipartFile != null) "image": multipartFile!
+    });
 
-    var response = await Api().post(formData, 'vehicle-type/add', auth: true);
+    var response = await Api().post(formData, singleVehicle !=null ? "vehicle-type/edit/${singleVehicle!.id}" : 'vehicle-type/add', auth: true, multiPart: multipartFile != null?true: false);
     if (response.statusCode == 200) {
+      vehicleTypeController.clear();
+      passengersController.clear();
+      luggagesController.clear();
+      handLuggagesController.clear();
+      minimumFaresController.clear();
+      minimumMilesController.clear();
+      waitingTimeController.clear();
+      driverWaitingChargesController.clear();
+      accountWaitingChargesController.clear();
+      defaultVehicleValue.value = false;
+      minimumMilesValue.value = false;
+      minimumFaresValue.value = false;
+      profileImg = null;
+      singleVehicle = null;
+      update();
       print("response of body -------------------------${response.data}");
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
   }
+
+  /// bind data to edit vehicle
+  VehicleType? singleVehicle;
+  vehicleDataBinding({item}) async{
+    singleVehicle = item;
+    vehicleTypeController.text = singleVehicle!.name!;
+    passengersController.text = singleVehicle!.passengers!.toString();
+    luggagesController.text = singleVehicle!.luggages.toString();
+    handLuggagesController.text = singleVehicle!.handLuggages.toString();
+    minimumFaresController.text = singleVehicle!.minimumFares.toString();
+    minimumMilesController.text = singleVehicle!.minimumMiles.toString();
+    waitingTimeController.text = singleVehicle!.waitingTime.toString();
+    driverWaitingChargesController.text = singleVehicle!.driverWaitingCharges.toString();
+    accountWaitingChargesController.text = singleVehicle!.accountWaitingCharges.toString();
+    update();
+  }
+
 }

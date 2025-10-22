@@ -49,6 +49,8 @@ class VehicleType {
     String? image;
     DateTime? createdAt;
     DateTime? updatedAt;
+    int? driverWaitingCharges;
+    int? accountWaitingCharges;
 
     VehicleType({
         this.id,
@@ -65,6 +67,8 @@ class VehicleType {
         this.image,
         this.createdAt,
         this.updatedAt,
+        this.driverWaitingCharges,
+        this.accountWaitingCharges,
     });
 
     factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
@@ -79,6 +83,8 @@ class VehicleType {
         waitingTimeDuration: json["waiting_time_duration"],
         defaultVehicle: json["default_vehicle"],
         vehicleTypeMinimumFares: json["vehicle_type_minimum_fares"],
+        driverWaitingCharges: json["driver_waiting_charges"],
+        accountWaitingCharges: json["account_waiting_charges"],
         image: json["image"],
         createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
@@ -95,6 +101,8 @@ class VehicleType {
         "waiting_time": waitingTime,
         "waiting_time_duration": waitingTimeDuration,
         "default_vehicle": defaultVehicle,
+        "driver_waiting_charges": driverWaitingCharges,
+        "account_waiting_charges": accountWaitingCharges,
         "vehicle_type_minimum_fares": vehicleTypeMinimumFares,
         "image": image,
         "created_at": createdAt?.toIso8601String(),
