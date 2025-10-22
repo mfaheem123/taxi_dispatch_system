@@ -82,7 +82,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
           children: [
             CustomTextField(
               borderRadius: 4,
-              controller: controller.vehicleTypeController,
+              controller: TextEditingController(),
               width: fieldWidth,
               hintText: AppText.vehicleType,
               columnText: true,

@@ -54,24 +54,28 @@ class VehicleController extends GetxController {
     var formData = {
 
       'vehicle_number': 'DSA-781',
-      'make': 'mehran Boss',
-      'model': '2015',
-      'color': 'Black',
+      'make': vehicleMakeController.text,
+      'model': vehicleModelController.text,
+      'color': colorController.text,
       'owner': 'company',
       'company': 'true',
       'assigned': 'false',
       'vehicle_type_id': '1',
-      'log_book_number': 'LB1234',
+      'log_book_number': logBookingDocController.text,
       'phc_vehicle_expiry': '2025-12-01',
       'mot_expiry': '2025-12-01',
       'mot2_expiry': '2025-12-01',
       'insurance_expiry': '2025-12-01',
-      'phc_vehicle_number': 'PHC5678',
-      'mot_number': 'MOT9012',
-      'mot2_number': 'MOT2134',
-      'insurance_number': 'INS5678',
+      'phc_vehicle_number': phcVehicleNumberController.text,
+      'mot_number': motNumberController.text,
+      'mot2_number': mot2NumberController.text,
+      'insurance_number': insuranceNumberController.text,
       'start_date': '2024-01-10',
-      'end_date': '2025-01-10'
+      'end_date': '2025-01-10',
+      'phc_vehicle_document':phcVehicleDocPic,
+      'mot_document':motDocPic,
+      'mot2_document':mot2DocPic,
+      'insurance_document':insuranceDocPic,
 
     };
 

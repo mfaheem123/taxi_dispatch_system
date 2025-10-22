@@ -242,7 +242,7 @@ class LocationForm extends StatelessWidget {
               _controller.getLocationTypeZone();
             },
             builder: (controller) {
-              return controller.getLocationTypeZoneLoader.value == true?SizedBox.shrink():
+              return controller.getLocationTypeZoneLoader.value == true?CircularProgressIndicator():
               SingleChildScrollView(
                 child: Container(
                   width: isMobile ? double.infinity : 800,
@@ -293,7 +293,7 @@ class LocationForm extends StatelessWidget {
                             items: controller.locationtypezoneModel!.zonesList!
                                 .map((zone) => DropdownMenuItem<ZoneObject>(
                               value: controller.zoneValue,
-                              child: Text(controller.zoneValue!.name??""),
+                              child: Text(controller.zoneValue!.name!),
                             ))
                                 .toList(),
                             onChanged: (v) {
@@ -361,7 +361,7 @@ class LocationForm extends StatelessWidget {
                             items: controller.locationtypezoneModel!.zonesList!
                                 .map((zone) => DropdownMenuItem<LocationTypeObject>(
                               value: controller.locationTypeValue,
-                              child: Text(controller.locationTypeValue!.name??""),
+                              child: Text(controller.locationTypeValue!.name!),
                             ))
                                 .toList(),
                             onChanged: (v) {
@@ -385,7 +385,7 @@ class LocationForm extends StatelessWidget {
                             items: controller.locationtypezoneModel!.locationTypesList!
                                 .map((zone) => DropdownMenuItem<LocationTypeObject>(
                               value: controller.locationTypeValue,
-                              child: Text(controller.locationTypeValue!.name??""),
+                              child: Text(controller.locationTypeValue!.name!),
                             ))
                                 .toList(),
                             onChanged: (v) {

@@ -96,9 +96,7 @@ class _CreateVehicleState extends State<CreateVehicle> {
                 _buildTextField("Passengers"),
                 _buildTextField("Luggages"),
                 _buildTextField("Hand Luggages"),
-
                 _buildCheckBox("Default Vehicle", false, (v) {}),
-
                 _buildCheckBox("Minimum Miles", _enableMinimumMiles, (v) {
                   setState(() {
                     _enableMinimumMiles = v ?? false;
