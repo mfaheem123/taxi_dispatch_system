@@ -120,8 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  Widget? _currentPage;
-
   // List<SelectedDropdown> selectedMenuItems = [];
 
   DashboardController controller = Get.isRegistered<DashboardController>()
@@ -190,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         controller.selectedMenuItems[index].selectedItem =
                             false;
                       }
-                      _currentPage = ByDefaultDashboard();
+                      controller.currentPage.value = ByDefaultDashboard();
                       controller.update();
                     },
                     child: Container(
@@ -218,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         item.selectedItem = true;
                         if (item.category != null) {
-                          _currentPage = item.category;
+                          controller.currentPage.value = item.category;
                         }
                         controller.update();
                       },
@@ -250,11 +248,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             controller.selectedMenuItems.remove(item);
                             controller.selectedMenuItems.last.selectedItem =
                                 true;
-                            _currentPage =
+                            controller.currentPage.value =
                                 controller.selectedMenuItems.last.category;
                           } else {
                             controller.selectedMenuItems.remove(item);
-                            _currentPage = ByDefaultDashboard();
+                            controller.currentPage.value = ByDefaultDashboard();
                           }
 
                           controller.update(); // if using GetX
@@ -267,8 +265,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   }).toList(),
                 ]),
               ),
-              // _currentPage ?? CreateEscortScreen(),
-              _currentPage ?? ByDefaultDashboard(),
+              // controller.currentPage.value ?? CreateEscortScreen(),
+             Obx(()=>  controller.currentPage.value ?? ByDefaultDashboard(),)
             ],
           ),
         );
@@ -294,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPLETE BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = CompleteBookingsScreen();
+              controller.currentPage.value = CompleteBookingsScreen();
               controller.menuBarRefresh(
                   title: "COMPLETE BOOKINGS",
                   pageName: CompleteBookingsScreen());
@@ -305,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "PENDING BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = PendingBooking();
+              controller.currentPage.value = PendingBooking();
               controller.menuBarRefresh(
                   title: "PENDING BOOKINGS", pageName: PendingBooking());
             });
@@ -315,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "PRE BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = PreBooking();
+              controller.currentPage.value = PreBooking();
               controller.menuBarRefresh(
                   title: "PRE BOOKINGS", pageName: PreBooking());
             });
@@ -325,7 +323,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "WEB BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = WebBooking();
+              controller.currentPage.value = WebBooking();
               controller.menuBarRefresh(
                   title: "WEB BOOKINGS", pageName: WebBooking());
             });
@@ -335,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "APP BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = AppBooking();
+              controller.currentPage.value = AppBooking();
               controller.menuBarRefresh(
                   title: "APP BOOKINGS", pageName: AppBooking());
             });
@@ -345,7 +343,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "MULTI BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = MultiBooking();
+              controller.currentPage.value = MultiBooking();
               controller.menuBarRefresh(
                   title: "MULTI BOOKINGS", pageName: MultiBooking());
             });
@@ -355,7 +353,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "TRASH BOOKINGS",
           onTap: () {
             setState(() {
-              _currentPage = TrashBooking();
+              controller.currentPage.value = TrashBooking();
               controller.menuBarRefresh(
                   title: "TRASH BOOKINGS", pageName: TrashBooking());
             });
@@ -383,7 +381,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "ADD CUSTOMER",
           onTap: () {
             setState(() {
-              _currentPage = CustomerFormScreen();
+              controller.currentPage.value = CustomerFormScreen();
               controller.menuBarRefresh(
                   title: "ADD CUSTOMER", pageName: CustomerFormScreen());
             });
@@ -393,7 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CUSTOMERS",
           onTap: () {
             setState(() {
-              _currentPage = CustomersScreen();
+              controller.currentPage.value = CustomersScreen();
               controller.menuBarRefresh(
                   title: "CUSTOMERS", pageName: CustomersScreen());
             });
@@ -403,7 +401,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE LOST PROPERTY",
           onTap: () {
             setState(() {
-              _currentPage = LostPropertyScreen();
+              controller.currentPage.value = LostPropertyScreen();
               controller.menuBarRefresh(
                   title: "CREATE LOST PROPERTY",
                   pageName: LostPropertyScreen());
@@ -414,7 +412,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LOST PROPERTY",
           onTap: () {
             setState(() {
-              _currentPage = LostProperty();
+              controller.currentPage.value = LostProperty();
               controller.menuBarRefresh(
                   title: "LOST PROPERTY", pageName: LostProperty());
             });
@@ -424,7 +422,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE COMPLAINT",
           onTap: () {
             setState(() {
-              _currentPage = CreateComplaint();
+              controller.currentPage.value = CreateComplaint();
               controller.menuBarRefresh(
                   title: "CREATE COMPLAINT", pageName: CreateComplaint());
             });
@@ -434,7 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPLAINTS",
           onTap: () {
             setState(() {
-              _currentPage = ComplaintsView();
+              controller.currentPage.value = ComplaintsView();
               controller.menuBarRefresh(
                   title: "COMPLAINTS", pageName: ComplaintsView());
             });
@@ -446,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE SETTINGS",
             onTap: () {
               setState(() {
-                _currentPage = FareConfigurationDay();
+                controller.currentPage.value = FareConfigurationDay();
                 controller.menuBarRefresh(
                     title: "CREATE FARE SETTINGS",
                     pageName: FareConfigurationDay());
@@ -456,7 +454,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FIXED FARE SETTINGS",
             onTap: () {
               setState(() {
-                _currentPage = CreateFixedFareSetting();
+                controller.currentPage.value = CreateFixedFareSetting();
                 controller.menuBarRefresh(
                     title: "CREATE FIXED FARE SETTINGS",
                     pageName: CreateFixedFareSetting());
@@ -466,7 +464,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE PLOT FARE",
           onTap: () {
             setState(() {
-              _currentPage = PlotFare();
+              controller.currentPage.value = PlotFare();
               controller.menuBarRefresh(
                   title: "CREATE PLOT FARE", pageName: PlotFare());
             });
@@ -476,7 +474,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE FARE BY VEHICLE SETTINGS",
             onTap: () {
               setState(() {
-                _currentPage = FareByVehicle();
+                controller.currentPage.value = FareByVehicle();
                 controller.menuBarRefresh(
                     title: "CREATE FARE BY VEHICLE SETTINGS",
                     pageName: FareByVehicle());
@@ -486,7 +484,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "AIRPORT CHARGES",
           onTap: () {
             setState(() {
-              _currentPage = AirportCharges();
+              controller.currentPage.value = AirportCharges();
               controller.menuBarRefresh(
                   title: "AIRPORT CHARGES", pageName: AirportCharges());
             });
@@ -496,7 +494,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE INCREMENT",
           onTap: () {
             setState(() {
-              _currentPage = FareIncrement();
+              controller.currentPage.value = FareIncrement();
               controller.menuBarRefresh(
                   title: "FARE INCREMENT", pageName: FareIncrement());
             });
@@ -506,7 +504,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "SUR CHARGES",
           onTap: () {
             setState(() {
-              _currentPage = FareCharges();
+              controller.currentPage.value = FareCharges();
               controller.menuBarRefresh(
                   title: "SUR CHARGES", pageName: FareCharges());
             });
@@ -516,7 +514,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "FARE METER",
           onTap: () {
             setState(() {
-              _currentPage = FareMeter();
+              controller.currentPage.value = FareMeter();
               controller.menuBarRefresh(
                   title: "FARE METER", pageName: FareMeter());
             });
@@ -528,7 +526,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE LOCATIONS",
           onTap: () {
             setState(() {
-              _currentPage = LocationForm();
+              controller.currentPage.value = LocationForm();
               controller.menuBarRefresh(
                   title: "CREATE LOCATIONS", pageName: LocationForm());
             });
@@ -538,7 +536,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST OF LOCATIONS",
           onTap: () {
             setState(() {
-              _currentPage = LocationListScreen();
+              controller.currentPage.value = LocationListScreen();
               controller.menuBarRefresh(
                   title: "LIST OF LOCATIONS", pageName: LocationListScreen());
             });
@@ -548,7 +546,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE ZONE",
           onTap: () {
             setState(() {
-              _currentPage = ZoneScreen();
+              controller.currentPage.value = ZoneScreen();
               controller.menuBarRefresh(
                   title: "CREATE ZONE", pageName: ZoneScreen());
             });
@@ -558,7 +556,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST OF ZONES",
           onTap: () {
             setState(() {
-              _currentPage = ZoneListScreen();
+              controller.currentPage.value = ZoneListScreen();
               controller.menuBarRefresh(
                   title: "LIST OF ZONES", pageName: ZoneListScreen());
             });
@@ -568,7 +566,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LOCALIZATION",
           onTap: () {
             setState(() {
-              _currentPage = LocalizationScreen();
+              controller.currentPage.value = LocalizationScreen();
               controller.menuBarRefresh(
                   title: "LOCALIZATION", pageName: LocalizationScreen());
             });
@@ -578,7 +576,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "PLOTTING",
           onTap: () {
             setState(() {
-              _currentPage = ManagePostcodes();
+              controller.currentPage.value = ManagePostcodes();
               controller.menuBarRefresh(title: "PLOTTING", pageName: ManagePostcodes());
             });
           },
@@ -589,7 +587,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "DRIVER",
           /*onTap: () {
               setState(() {
-                _currentPage = CreateDriverRent();
+                controller.currentPage.value = CreateDriverRent();
               });
             },*/
           children: [
@@ -597,7 +595,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "ADD DRIVER",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverForm();
+                  controller.currentPage.value = DriverForm();
                   controller.menuBarRefresh(
                       title: "ADD DRIVER", pageName: DriverForm());
                 });
@@ -607,7 +605,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVERS",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverListScreen();
+                  controller.currentPage.value = DriverListScreen();
                   controller.menuBarRefresh(
                       title: "DRIVERS", pageName: DriverListScreen());
                 });
@@ -617,7 +615,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "LIST OF LOGGED IN/OUT DRIVERS",
               onTap: () {
                 setState(() {
-                  _currentPage = LoginDriversScreen();
+                  controller.currentPage.value = LoginDriversScreen();
                   controller.menuBarRefresh(
                       title: "LIST OF LOGGED IN/OUT DRIVERS",
                       pageName: LoginDriversScreen());
@@ -633,7 +631,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "CREATE DRIVER COMMISSION",
               onTap: () {
                 setState(() {
-                  _currentPage = ListDriverCommission();
+                  controller.currentPage.value = ListDriverCommission();
                   controller.menuBarRefresh(
                       title: "CREATE DRIVER COMMISSION",
                       pageName: ListDriverCommission());
@@ -644,7 +642,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER COMMISSIONS",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverCommission();
+                  controller.currentPage.value = DriverCommission();
                   controller.menuBarRefresh(
                       title: "DRIVER COMMISSIONS",
                       pageName: DriverCommission());
@@ -655,7 +653,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "BULK DRIVER COMMISSION",
               onTap: () {
                 setState(() {
-                  _currentPage = BulkDriverCommission();
+                  controller.currentPage.value = BulkDriverCommission();
                   controller.menuBarRefresh(
                       title: "BULK DRIVER COMMISSION",
                       pageName: BulkDriverCommission());
@@ -666,7 +664,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER COMMISSION PAY",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverCommissionPay();
+                  controller.currentPage.value = DriverCommissionPay();
                   controller.menuBarRefresh(
                       title: "DRIVER COMMISSION PAY",
                       pageName: DriverCommissionPay());
@@ -682,7 +680,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "CREATE DRIVER RENT",
               onTap: () {
                 setState(() {
-                  _currentPage = CreateDriverRent();
+                  controller.currentPage.value = CreateDriverRent();
                   controller.menuBarRefresh(
                       title: "CREATE DRIVER RENT",
                       pageName: CreateDriverRent());
@@ -693,7 +691,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER RENT",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverRent();
+                  controller.currentPage.value = DriverRent();
                   controller.menuBarRefresh(
                       title: "DRIVER RENT", pageName: DriverRent());
                 });
@@ -703,7 +701,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "BULK DRIVER RENT",
               onTap: () {
                 setState(() {
-                  _currentPage = BulkDriverRent();
+                  controller.currentPage.value = BulkDriverRent();
                   controller.menuBarRefresh(
                       title: "BULK DRIVER RENT", pageName: BulkDriverRent());
                 });
@@ -713,7 +711,7 @@ class _MyHomePageState extends State<MyHomePage> {
               title: "DRIVER RENT PAY",
               onTap: () {
                 setState(() {
-                  _currentPage = DriverRentPay();
+                  controller.currentPage.value = DriverRentPay();
                   controller.menuBarRefresh(
                       title: "DRIVER RENT PAY", pageName: DriverRentPay());
                 });
@@ -725,7 +723,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "DRIVER APP FEATURES",
             onTap: () {
               setState(() {
-                _currentPage = DriverAppFeatureScreen();
+                controller.currentPage.value = DriverAppFeatureScreen();
                 controller.menuBarRefresh(
                     title: "DRIVER APP FEATURES",
                     pageName: DriverAppFeatureScreen());
@@ -735,7 +733,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "DRIVER SIN BIN SETTINGS",
             onTap: () {
               setState(() {
-                _currentPage = DriverSinBinSetting();
+                controller.currentPage.value = DriverSinBinSetting();
                 controller.menuBarRefresh(
                     title: "DRIVER SIN BIN SETTINGS",
                     pageName: DriverSinBinSetting());
@@ -747,7 +745,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE ACCOUNT",
           onTap: () {
             setState(() {
-              _currentPage = AccountView();
+              controller.currentPage.value = AccountView();
               controller.menuBarRefresh(
                   title: "LIST OF ACCOUNTS", pageName: AccountView());
             });
@@ -757,7 +755,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST OF ACCOUNTS",
           onTap: () {
             setState(() {
-              _currentPage = ListOfAccountScreen();
+              controller.currentPage.value = ListOfAccountScreen();
               controller.menuBarRefresh(
                   title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
             });
@@ -766,7 +764,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE ESCORT",
           onTap: () {
-            _currentPage = CreateEscortScreen();
+            controller.currentPage.value = CreateEscortScreen();
             controller.menuBarRefresh(
                 title: "CREATE ESCORT", pageName: CreateEscortScreen());
 
@@ -777,7 +775,7 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "ESCORT LIST ",
           onTap: () {
-            _currentPage = ESCORTScreen();
+            controller.currentPage.value = ESCORTScreen();
             controller.menuBarRefresh(
                 title: "ESCORT LIST", pageName: ESCORTScreen());
           },
@@ -786,7 +784,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE CUSTOMER INVOICE",
           onTap: () {
             setState(() {
-              _currentPage = CreateCustomerinvoice();
+              controller.currentPage.value = CreateCustomerinvoice();
               controller.menuBarRefresh(
                   title: "CREATE CUSTOMER INVOICE",
                   pageName: CreateCustomerinvoice());
@@ -797,7 +795,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST OF CUSTOMER INVOICES",
           onTap: () {
             setState(() {
-              _currentPage = InvoiceList();
+              controller.currentPage.value = InvoiceList();
               controller.menuBarRefresh(
                   title: "LIST OF CUSTOMER INVOICES", pageName: InvoiceList());
             });
@@ -807,7 +805,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE ACCOUNT INVOICE",
           onTap: () {
             setState(() {
-              _currentPage = CreateAccountInvoiceScreen();
+              controller.currentPage.value = CreateAccountInvoiceScreen();
               controller.menuBarRefresh(
                   title: "CREATE ACCOUNT INVOICE",
                   pageName: CreateAccountInvoiceScreen());
@@ -819,7 +817,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST OF ACCOUNT INVOICES",
           onTap: () {
             setState(() {
-              _currentPage = ListOfAccountInvoiceScreen();
+              controller.currentPage.value = ListOfAccountInvoiceScreen();
               controller.menuBarRefresh(
                   title: "LIST OF ACCOUNT INVOICES",
                   pageName: ListOfAccountInvoiceScreen());
@@ -832,7 +830,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE VEHICLE TYPE",
           onTap: () {
             setState(() {
-              _currentPage = CreateVehicleTypes();
+              controller.currentPage.value = CreateVehicleTypes();
               controller.menuBarRefresh(
                   title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
             });
@@ -842,7 +840,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "VEHICLE TYPE",
           onTap: () {
             setState(() {
-              _currentPage = ListVehicleType();
+              controller.currentPage.value = ListVehicleType();
               controller.menuBarRefresh(
                   title: "VEHICLE TYPE", pageName: ListVehicleType());
             });
@@ -852,7 +850,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CREATE COMPANY VEHICLE",
           onTap: () {
             setState(() {
-              _currentPage = CreateCompanyVehicle();
+              controller.currentPage.value = CreateCompanyVehicle();
               controller.menuBarRefresh(
                   title: "CREATE COMPANY VEHICLE",
                   pageName: CreateCompanyVehicle());
@@ -863,7 +861,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LIST COMPANY VEHICLE",
           onTap: () {
             setState(() {
-              _currentPage = CompanyVehicleForm();
+              controller.currentPage.value = CompanyVehicleForm();
               controller.menuBarRefresh(title: "LIST COMPANY VEHICLE", pageName: CompanyVehicleForm());
             });
           },
@@ -872,7 +870,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPANY VEHICLES LIST",
           onTap: () {
             setState(() {
-              _currentPage = CompanyVehiclesScreen();
+              controller.currentPage.value = CompanyVehiclesScreen();
               controller.menuBarRefresh(
                   title: "COMPANY VEHICLES LIST",
                   pageName: CompanyVehiclesScreen());
@@ -886,7 +884,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE USER",
             onTap: () {
               setState(() {
-                _currentPage = CreateUserScreen();
+                controller.currentPage.value = CreateUserScreen();
                 controller.menuBarRefresh(
                     title: "CREATE USER", pageName: CreateUserScreen());
               });
@@ -896,7 +894,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "USERS",
             onTap: () {
               setState(() {
-                _currentPage = UserListscreen();
+                controller.currentPage.value = UserListscreen();
                 controller.menuBarRefresh(
                     title: "USERS", pageName: UserListscreen());
               });
@@ -907,7 +905,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREATE SUBSIDIARY",
             onTap: () {
               setState(() {
-                _currentPage = CreateSubsiDiary();
+                controller.currentPage.value = CreateSubsiDiary();
                 controller.menuBarRefresh(
                     title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
               });
@@ -918,7 +916,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "SUBSIDIARIES",
             onTap: () {
               setState(() {
-                _currentPage = SubsiDiariesScreen();
+                controller.currentPage.value = SubsiDiariesScreen();
                 controller.menuBarRefresh(
                     title: "SUBSIDIARIES", pageName: SubsiDiariesScreen());
               });
@@ -928,7 +926,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "AUTHORIZATION",
             onTap: () {
               setState(() {
-                _currentPage = AuthorizationScreen();
+                controller.currentPage.value = AuthorizationScreen();
                 controller.menuBarRefresh(
                     title: "AUTHORIZATION", pageName: AuthorizationScreen());
               });
@@ -949,7 +947,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "LOGIN",
                   onTap: () {
                     setState(() {
-                      _currentPage = DriverLoginScreen();
+                      controller.currentPage.value = DriverLoginScreen();
                       controller.menuBarRefresh(
                           title: "LOGIN", pageName: DriverLoginScreen());
                     });
@@ -958,7 +956,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "LOG",
                   onTap: () {
                     setState(() {
-                      _currentPage = DriverLogsScreen();
+                      controller.currentPage.value = DriverLogsScreen();
                       controller.menuBarRefresh(
                           title: "LOG", pageName: DriverLogsScreen());
                     });
@@ -967,7 +965,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "EARNINGS & INFO",
                   onTap: () {
                     setState(() {
-                      _currentPage = EarningAndInfoScreen();
+                      controller.currentPage.value = EarningAndInfoScreen();
                       controller.menuBarRefresh(
                           title: "EARNINGS & INFO",
                           pageName: EarningAndInfoScreen());
@@ -977,7 +975,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "FEEDBACK",
                   onTap: () {
                     setState(() {
-                      _currentPage = ReportFeedback();
+                      controller.currentPage.value = ReportFeedback();
                       controller.menuBarRefresh(
                           title: "FEEDBACK", pageName: ReportFeedback());
                     });
@@ -986,7 +984,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   title: "STATISTICS",
                   onTap: () {
                     setState(() {
-                      _currentPage = StatisticsScreen();
+                      controller.currentPage.value = StatisticsScreen();
                       controller.menuBarRefresh(
                           title: "STATISTICS", pageName: StatisticsScreen());
                     });
@@ -997,7 +995,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "ALL BOOKINGS",
             onTap: () {
               setState(() {
-                _currentPage = AllBookingView();
+                controller.currentPage.value = AllBookingView();
                 controller.menuBarRefresh(
                     title: "ALL BOOKINGS", pageName: AllBookingView());
               });
@@ -1007,7 +1005,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "TRANSFERED BOOKINGS",
             onTap: () {
               setState(() {
-                _currentPage = ReportTransferedBooking();
+                controller.currentPage.value = ReportTransferedBooking();
                 controller.menuBarRefresh(
                     title: "TRANSFERED BOOKINGS",
                     pageName: ReportTransferedBooking());
@@ -1020,7 +1018,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "ACTIVITY",
             onTap: () {
               setState(() {
-                _currentPage = ActivityScreen();
+                controller.currentPage.value = ActivityScreen();
                 controller.menuBarRefresh(
                     title: "ACTIVITY", pageName: ActivityScreen());
               });
@@ -1032,7 +1030,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "INCOME",
             onTap: () {
               setState(() {
-                _currentPage = IncomeScreen();
+                controller.currentPage.value = IncomeScreen();
                 controller.menuBarRefresh(
                     title: "INCOME", pageName: IncomeScreen());
               });
@@ -1042,7 +1040,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "COMPANY INCOME",
             onTap: () {
               setState(() {
-                _currentPage = CompanyIncomeScreen();
+                controller.currentPage.value = CompanyIncomeScreen();
                 controller.menuBarRefresh(
                     title: "COMPANY INCOME", pageName: CompanyIncomeScreen());
               });
@@ -1052,7 +1050,7 @@ class _MyHomePageState extends State<MyHomePage> {
             title: "CREDIT CARD PAYMENTS",
             onTap: () {
               setState(() {
-                _currentPage = CreiditCardPayments();
+                controller.currentPage.value = CreiditCardPayments();
                 controller.menuBarRefresh(
                     title: "CREDIT CARD PAYMENTS",
                     pageName: CreiditCardPayments());
@@ -1064,7 +1062,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "PCO",
           onTap: () {
             setState(() {
-              _currentPage = PcoScreen();
+              controller.currentPage.value = PcoScreen();
               controller.menuBarRefresh(title: "PCO", pageName: PcoScreen());
             });
           },
@@ -1075,7 +1073,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPANY INFORMATION",
           onTap: () {
             setState(() {
-              _currentPage = ComapanyInformationScreen();
+              controller.currentPage.value = ComapanyInformationScreen();
               controller.menuBarRefresh(
                   title: "COMPANY INFORMATION",
                   pageName: ComapanyInformationScreen());
@@ -1086,7 +1084,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPANY CONFIGURATION",
           onTap: () {
             setState(() {
-              _currentPage = CompanyConfigurationView();
+              controller.currentPage.value = CompanyConfigurationView();
               controller.menuBarRefresh(
                   title: "COMPANY CONFIGURATION",
                   pageName: CompanyConfigurationView());
@@ -1098,7 +1096,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "DOCUMENT NUMBER",
           onTap: () {
             setState(() {
-              _currentPage = DocumentNumberScreen();
+              controller.currentPage.value = DocumentNumberScreen();
               controller.menuBarRefresh(
                   title: "DOCUMENT NUMBER", pageName: DocumentNumberScreen());
             });
@@ -1108,7 +1106,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "TEMPLATE SETTINGS",
           onTap: () {
             setState(() {
-              _currentPage = TemplateSettings();
+              controller.currentPage.value = TemplateSettings();
               controller.menuBarRefresh(
                   title: "TEMPLATE SETTINGS", pageName: TemplateSettings());
             });
@@ -1118,7 +1116,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "BOOKING CLEARING UTILITY",
           onTap: () {
             setState(() {
-              _currentPage = BookingClearingUtilityScreen();
+              controller.currentPage.value = BookingClearingUtilityScreen();
               controller.menuBarRefresh(
                   title: "BOOKING CLEARING UTILITY",
                   pageName: BookingClearingUtilityScreen());
@@ -1129,7 +1127,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "LOCATION TYPE SHORTCUTS",
           onTap: () {
             setState(() {
-              _currentPage = LocationTypeShortcuts();
+              controller.currentPage.value = LocationTypeShortcuts();
               controller.menuBarRefresh(
                   title: "LOCATION TYPE SHORTCUTS",
                   pageName: LocationTypeShortcuts());
@@ -1140,7 +1138,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "VOIP SETTINGS",
           onTap: () {
             setState(() {
-              _currentPage = VoipSettingsScreen();
+              controller.currentPage.value = VoipSettingsScreen();
               controller.menuBarRefresh(
                   title: "VOIP SETTINGS", pageName: VoipSettingsScreen());
             });
@@ -1154,7 +1152,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //   title: "SMS SETTINGS",
         //   onTap: () {
         //     setState(() {
-        //       _currentPage = TemplateSettings();
+        //       controller.currentPage.value = TemplateSettings();
         //       controller.menuBarRefresh(
         //           title: "SMS SETTINGS", pageName: TemplateSettings());
         //     });
@@ -1165,7 +1163,7 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "CHAT WITH DRIVER AND PASSENGER",
           onTap: () {
             setState(() {
-              _currentPage = ChatWithDriverAndPassenger();
+              controller.currentPage.value = ChatWithDriverAndPassenger();
               controller.menuBarRefresh(
                   title: "CHAT WITH DRIVER AND PASSENGER",
                   pageName: ChatWithDriverAndPassenger());

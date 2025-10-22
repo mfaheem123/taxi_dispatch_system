@@ -298,6 +298,7 @@ class LocationForm extends StatelessWidget {
                                 .toList(),
                             onChanged: (v) {
                               controller.zoneValue = v;
+                              controller.update();
                             },
                           )
 
@@ -312,14 +313,15 @@ class LocationForm extends StatelessWidget {
                             child:
                             CustomDropdownField<ZoneObject>(
                               label: "Select User",
+                              width: Get.width/5,
+                              height: 35,
                               items: controller.locationtypezoneModel!.zonesList!,
                               value: controller.zoneValue,
                               itemLabel: (templateList) => templateList.name!, // show name
                               onChanged: (val) {
                                 // controller.templateTitleController.clear();
                                 controller.zoneValue = val;
-                                // controller.insertTagValue(value: val?.templateValue,temFormate: true);
-                                print("Selected User ID: ${val?.id}");
+                                controller.update();
                               },
                             ),
                           ),
@@ -352,20 +354,16 @@ class LocationForm extends StatelessWidget {
                       isMobile
                           ? Column(
                         children: [
-                          DropdownButtonFormField<LocationTypeObject>(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
+                          CustomDropdownField<LocationTypeObject>(
+                            label: "Select User",
+                            width: Get.width/5,
+                            height: 45,
+                            items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
-                            items: controller.locationtypezoneModel!.zonesList!
-                                .map((zone) => DropdownMenuItem<LocationTypeObject>(
-                              value: controller.locationTypeValue,
-                              child: Text(controller.locationTypeValue!.name??""),
-                            ))
-                                .toList(),
-                            onChanged: (v) {
-                              controller.locationTypeValue = v;
+                            itemLabel: (templateList) => templateList.name!, // show name
+                            onChanged: (val) {
+                              controller.locationTypeValue = val;
+                              controller.update();
                             },
                           ),
                           // _buildDropdown("LOCATION TYPE", controller.locationTypeValue, controller.locationTypes),
@@ -375,21 +373,15 @@ class LocationForm extends StatelessWidget {
                       )
                           : Row(
                         children: [
-
-                          DropdownButtonFormField<LocationTypeObject>(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              isDense: true,
-                            ),
+                          CustomDropdownField<LocationTypeObject>(
+                            label: "Select User",
+                            width: Get.width/5,
+                            height: 45,
+                            items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
-                            items: controller.locationtypezoneModel!.locationTypesList!
-                                .map((zone) => DropdownMenuItem<LocationTypeObject>(
-                              value: controller.locationTypeValue,
-                              child: Text(controller.locationTypeValue!.name??""),
-                            ))
-                                .toList(),
-                            onChanged: (v) {
-                              controller.locationTypeValue = v;
+                            itemLabel: (templateList) => templateList.name!, // show name
+                            onChanged: (val) {
+                              controller.locationTypeValue = val;
                               controller.update();
                             },
                           ),

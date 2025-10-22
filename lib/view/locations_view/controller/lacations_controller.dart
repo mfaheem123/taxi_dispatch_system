@@ -57,9 +57,6 @@ final addressCtrl=TextEditingController();
   ZoneObject? zoneValue;
   LocationTypeObject? locationTypeValue;
 
-  List<String> zones = ["Zone 1", "Zone 2", "Zone 3"];
-  List<String> locationTypes = ["Pickup", "Dropoff", "Hub"];
-
   RxBool getLocationTypeZoneLoader = false.obs;
   LocationtypezoneModel? locationtypezoneModel;
   getLocationTypeZone()async{
@@ -78,12 +75,11 @@ final addressCtrl=TextEditingController();
     postLocationForm(true);
 
     var formData = {
-
       "name":locationNameCtrl.text,
-      "location_type_id": 11,
+      "location_type_id": locationTypeValue!.id,
       "address": addressCtrl.text,
       "postcode": postcodeCtrl.text,
-      "zone_id": null,
+      "zone_id": zoneValue!.id,
       "shortcut":shortcutCtrl.text,
       "background_color": null,
       "foreground_color": null,
@@ -93,11 +89,19 @@ final addressCtrl=TextEditingController();
       "blacklist": false,
       "latitude": latitudeCtrl.text,
       "longitude": longitudeCtrl.text
-
     };
       var response = await Api().post(formData, 'locations', auth: true);
-    if (response.statusCode == 201) {
-
+    if (response.statusCode == 200) {
+      locationNameCtrl.clear();
+      longitudeCtrl.clear();
+      postcodeCtrl.clear();
+      shortcutCtrl.clear();
+      extraChargesCtrl.clear();
+      latitudeCtrl.clear();
+      addressCtrl.clear();
+      locationTypeValue = null;
+      zoneValue = null;
+      update();
       print(response);
     }else{
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");

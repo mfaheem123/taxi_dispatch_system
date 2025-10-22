@@ -12,6 +12,7 @@ import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
 import '../controller/lacations_controller.dart';
+import 'location_formScreen.dart';
 
 class LocationListScreen extends StatefulWidget {
   LocationListScreen({super.key});
@@ -27,6 +28,8 @@ class _LocationListScreenState extends State<LocationListScreen> {
   LocationController controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+
+  final DashboardController _controller = Get.find();
 
   @override
   void initState() {
@@ -153,7 +156,10 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                         style: OutlinedButton.styleFrom(
                                           side: BorderSide(color: Colors.transparent),
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          _controller.currentPage.value = LocationForm();
+                                          controller.update();
+                                        },
                                         child: Icon(Icons.edit_calendar, size: 28),
                                       ),
                                       Text("|"),
