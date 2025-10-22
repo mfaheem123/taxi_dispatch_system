@@ -59,11 +59,18 @@ final addressCtrl=TextEditingController();
 
   RxBool getLocationTypeZoneLoader = false.obs;
   LocationtypezoneModel? locationtypezoneModel;
-  getLocationTypeZone()async{
+
+  getLocationTypeZone({selectedZoneId, selectedLocationTypeId})async{
     getLocationTypeZoneLoader(true);
     var response = await Api().get("locationtype/zone");
     if(response.statusCode == 200){
       locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
+      if(updateLocationValue.value == true){
+        int index = locationtypezoneModel!.zonesList!.indexWhere((test) => test.id == selectedZoneId);
+        int indexx = locationtypezoneModel!.locationTypesList!.indexWhere((testt) => testt.id == selectedLocationTypeId);
+        zoneValue = locationtypezoneModel!.zonesList![index];
+        locationTypeValue = locationtypezoneModel!.locationTypesList![index];
+      }
       getLocationTypeZoneLoader(false);
       update();
     }
@@ -73,7 +80,6 @@ final addressCtrl=TextEditingController();
 
   postLocation()async{
     postLocationForm(true);
-
     var formData = {
       "name":locationNameCtrl.text,
       "location_type_id": locationTypeValue!.id,
@@ -88,9 +94,10 @@ final addressCtrl=TextEditingController();
       "dropoff_charges": null,
       "blacklist": false,
       "latitude": latitudeCtrl.text,
-      "longitude": longitudeCtrl.text
+      "longitude": longitudeCtrl.text,
     };
-      var response = await Api().post(formData, 'locations', auth: true);
+    print(locationUpdateId.value);
+      var response = await Api().post(formData,updateLocationValue.value == false? 'locations':'locations/${locationUpdateId.value}', auth: true);
     if (response.statusCode == 200) {
       locationNameCtrl.clear();
       longitudeCtrl.clear();
@@ -101,13 +108,13 @@ final addressCtrl=TextEditingController();
       addressCtrl.clear();
       locationTypeValue = null;
       zoneValue = null;
+
       update();
       print(response);
     }else{
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
       print(response);
     }
-
   }
 
 
@@ -125,6 +132,21 @@ final addressCtrl=TextEditingController();
       getLocationLoader(false);
       update();
     }
+  }
+
+  RxBool updateLocationValue = false.obs;
+  RxInt locationUpdateId = 0.obs;
+  bindLocationUpdateLocation({Location? locationUpdate}) async{
+    locationUpdateId.value = locationUpdate!.id;
+    locationNameCtrl.text = locationUpdate.name;
+    longitudeCtrl.text = locationUpdate.longitude;
+    postcodeCtrl.text = locationUpdate.postcode;
+    shortcutCtrl.text = locationUpdate.shortcut;
+    extraChargesCtrl.text = locationUpdate.extraCharges;
+    latitudeCtrl.text = locationUpdate.latitude;
+    addressCtrl.text = locationUpdate.address;
+    updateLocationValue(true);
+    getLocationTypeZone(selectedZoneId: locationUpdate.zoneId, selectedLocationTypeId: locationUpdate.locationTypeId);
   }
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work

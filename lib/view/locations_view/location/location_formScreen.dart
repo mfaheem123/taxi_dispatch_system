@@ -239,7 +239,15 @@ class LocationForm extends StatelessWidget {
         bool isMobile = constraints.maxWidth < 600;
         return GetBuilder<LocationController>(
             initState: (v){
-              _controller.getLocationTypeZone();
+              print(_controller.updateLocationValue.value);
+              print(_controller.updateLocationValue.value);
+              print(_controller.updateLocationValue.value);
+              print(_controller.updateLocationValue.value);
+              print(_controller.updateLocationValue.value);
+              print(_controller.updateLocationValue.value);
+              if(_controller.updateLocationValue.value == false){
+                _controller.getLocationTypeZone();
+              }
             },
             builder: (controller) {
               return controller.getLocationTypeZoneLoader.value == true?SizedBox.shrink():
@@ -255,9 +263,7 @@ class LocationForm extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _header(),
-
                       const SizedBox(height: 20),
-
                       // Location Name - Longitude
                       isMobile
                           ? Column(
@@ -406,8 +412,8 @@ class LocationForm extends StatelessWidget {
                           backgroundColor: DynamicColors.primaryClr,
                           padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 14),
                         ),
-                        child: const Text(
-                          "SAVE",
+                        child: Text(
+                          controller.updateLocationValue.value == false? "SAVE":"Update",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
