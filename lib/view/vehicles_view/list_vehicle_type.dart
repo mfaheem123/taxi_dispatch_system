@@ -48,11 +48,10 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
 
     return GetBuilder<VehicleController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
-
-
-        final listToShow = controller.filteredVehicleTypes.isNotEmpty
-    ? controller.filteredVehicleTypes
-    : controller.allVehicleTypes;
+        
+    //     final listToShow = controller.filteredVehicleTypes.isNotEmpty
+    // ? controller.filteredVehicleTypes
+    // : controller.allVehicleTypes;
 
 
         final double maxWidth = constraints.maxWidth;
@@ -120,50 +119,56 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                           columns: [
                             buildHeaderWithSearch(
                                 title: AppText.vehicleType,
-                                onChanged: (v) {
-                                  controller.searchName.value = v;
-                                  controller.applyFilter();
+                                // onChanged: (v) {
+                                //   controller.searchName.value = v;
+                                //   controller.applyFilter();
                                  
-                                }),
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "PASSENGERS",
-                                onChanged: (v) {
-                                  controller.searchPassengers.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchPassengers.value = v;
+                                //   controller.applyFilter();
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "LUGGAGES",
-                                onChanged: (v) {
-                                  controller.searchLuggages.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchLuggages.value = v;
+                                //   controller.applyFilter();
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "HAND LUGGAGES",
-                                onChanged: (v) {
-                                  controller.searchHandLuggages.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchHandLuggages.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "MINIMUM FARES",
-                                onChanged: (v) {
-                                  controller.searchMinFare.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchMinFare.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "MINIMUM MILES",
-                                onChanged: (v) {
-                                  controller.searchMinMiles.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchMinMiles.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
 
 
-                          totalRow: listToShow.length ??
+                          totalRow: controller.vehicleTypeModel?.vehicleTypes?.length ??
                               0,
                           rows:
-                              (listToShow ?? [])
+                              (controller.vehicleTypeModel?.vehicleTypes ?? [])
                                   .map(
                             (item) {
                               return DataRow(cells: [

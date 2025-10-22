@@ -99,18 +99,18 @@ class VehicleController extends GetxController {
 
   VehicleTypeModel? vehicleTypeModel;
 
-  RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
-  RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
+//   RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
+//   RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
 
   RxBool isLoading = false.obs;
 
-// ye search fields hain
-  RxString searchName = ''.obs;
-  RxString searchPassengers = ''.obs;
-  RxString searchLuggages = ''.obs;
-  RxString searchHandLuggages = ''.obs;
-  RxString searchMinFare = ''.obs;
-  RxString searchMinMiles = ''.obs;
+// // ye search fields hain
+//   RxString searchName = ''.obs;
+//   RxString searchPassengers = ''.obs;
+//   RxString searchLuggages = ''.obs;
+//   RxString searchHandLuggages = ''.obs;
+//   RxString searchMinFare = ''.obs;
+//   RxString searchMinMiles = ''.obs;
 
   getVehicleTypes() async {
     try {
@@ -119,8 +119,8 @@ class VehicleController extends GetxController {
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
-        allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
-        filteredVehicleTypes.value = allVehicleTypes;
+        // allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
+        // filteredVehicleTypes.value = allVehicleTypes;
       }
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
@@ -131,122 +131,107 @@ class VehicleController extends GetxController {
   }
 
 // ye function filter lagayega
-  void applyFilter() {
-    if (searchName.value.isEmpty &&
-        searchPassengers.value.isEmpty &&
-        searchLuggages.value.isEmpty &&
-        searchHandLuggages.value.isEmpty &&
-        searchMinFare.value.isEmpty &&
-        searchMinMiles.value.isEmpty) {
-      filteredVehicleTypes.clear(); // koi filter nahi
-      update();
-      return;
-    }
+  // void applyFilter() {
+  //   if (searchName.value.isEmpty &&
+  //       searchPassengers.value.isEmpty &&
+  //       searchLuggages.value.isEmpty &&
+  //       searchHandLuggages.value.isEmpty &&
+  //       searchMinFare.value.isEmpty &&
+  //       searchMinMiles.value.isEmpty) {
+  //     filteredVehicleTypes.clear(); // koi filter nahi
+  //     update();
+  //     return;
+  //   }
 
-    filteredVehicleTypes.value = allVehicleTypes.where((item) {
-      final name = item.name?.toLowerCase() ?? '';
-      final passengers = item.passengers?.toString() ?? '';
-      final luggages = item.luggages?.toString() ?? '';
-      final handLuggages = item.handLuggages?.toString() ?? '';
-      final minFare = item.minimumFares?.toString() ?? '';
-      final minMiles = item.minimumMiles?.toString() ?? '';
+  //   filteredVehicleTypes.value = allVehicleTypes.where((item) {
+  //     final name = item.name?.toLowerCase() ?? '';
+  //     final passengers = item.passengers?.toString() ?? '';
+  //     final luggages = item.luggages?.toString() ?? '';
+  //     final handLuggages = item.handLuggages?.toString() ?? '';
+  //     final minFare = item.minimumFares?.toString() ?? '';
+  //     final minMiles = item.minimumMiles?.toString() ?? '';
 
-      return name.contains(searchName.value.toLowerCase()) &&
-          passengers.contains(searchPassengers.value) &&
-          luggages.contains(searchLuggages.value) &&
-          handLuggages.contains(searchHandLuggages.value) &&
-          minFare.contains(searchMinFare.value) &&
-          minMiles.contains(searchMinMiles.value);
-    }).toList();
+  //     return name.contains(searchName.value.toLowerCase()) &&
+  //         passengers.contains(searchPassengers.value) &&
+  //         luggages.contains(searchLuggages.value) &&
+  //         handLuggages.contains(searchHandLuggages.value) &&
+  //         minFare.contains(searchMinFare.value) &&
+  //         minMiles.contains(searchMinMiles.value);
+  //   }).toList();
 
-    print("filter chal rha hai");
-    update();
-  }
+  //   print("filter chal rha hai");
+  //   update();
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
-
   RxBool isCompanyVehicle = false.obs;
 
-  CompanyVehicleModel? companyVehicleModel;
-  RxList<CompanyVehicleModel> companyallVehicleTypes = <CompanyVehicleModel>[].obs;
-  RxList<CompanyVehicleModel> companyfilteredVehicleTypes = <CompanyVehicleModel>[].obs;
-// ye search fields hain
-  RxString searchVehicle = ''.obs;
-  RxString searchVehicleType = ''.obs;
-  RxString searchOwner = ''.obs;
-  RxString searchMake = ''.obs;
-  RxString searchModel = ''.obs;
-  RxString searchColor = ''.obs;
+  // RxList<Vehicle> companyallVehicle = <Vehicle>[].obs;
+  // RxList<Vehicle> companyfilteredVehicle = <Vehicle>[].obs;
 
+  // // Search fields
+  // RxString searchVehicle = ''.obs;
+  // RxString searchVehicleType = ''.obs;
+  // RxString searchOwner = ''.obs;
+  // RxString searchMake = ''.obs;
+  // RxString searchModel = ''.obs;
+  // RxString searchColor = ''.obs;
+
+  CompanyVehicleModel? companyVehicleModel;
+  // Fetch company vehicles
   Future<void> companyVehicle() async {
     try {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles');
-
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
-                allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
-        filteredVehicleTypes.value = allVehicleTypes;
-        print('Company ${CompanyVehicleModel}');
+        // companyallVehicle.value = companyVehicleModel?.vehicles ?? <Vehicle>[];
+        // companyfilteredVehicle.value = companyallVehicle;
+        print(
+            'Company Vehicles: ${companyVehicleModel?.vehicles?.length ?? 0}');
       }
     } catch (e) {
-      print("Error in getVehicleTypes(): $e");
+      print("Error in companyVehicle(): $e");
     } finally {
       isCompanyVehicle.value = false;
       update();
     }
   }
 
-// ye function filter lagayega
-  void companyApplyFilter() {
-    if (searchVehicle.value.isEmpty &&
-        searchVehicleType.value.isEmpty &&
-        searchOwner.value.isEmpty &&
-        searchMake.value.isEmpty &&
-        searchModel.value.isEmpty &&
-        searchColor.value.isEmpty) {
-      filteredVehicleTypes.clear(); // koi filter nahi
-      update();
-      return;
-    }
+  // Apply filter
+  // void companyApplyFilter() {
+  //   if (searchVehicle.value.isEmpty &&
+  //       searchVehicleType.value.isEmpty &&
+  //       searchOwner.value.isEmpty &&
+  //       searchMake.value.isEmpty &&
+  //       searchModel.value.isEmpty &&
+  //       searchColor.value.isEmpty) {
+  //     companyfilteredVehicle.clear();
+  //     update();
+  //     return;
+  //   }
 
-    filteredVehicleTypes.value = allVehicleTypes.where((item) {
-      final vehicle = item.name?.toLowerCase() ?? '';
-      final passengers = item.passengers?.toString() ?? '';
-      final luggages = item.luggages?.toString() ?? '';
-      final handLuggages = item.handLuggages?.toString() ?? '';
-      final minFare = item.minimumFares?.toString() ?? '';
-      final minMiles = item.minimumMiles?.toString() ?? '';
+  //   companyfilteredVehicle.value = companyallVehicle.where((item) {
+  //     final vehicleNumber = item.vehicleNumber?.toLowerCase() ?? '';
+  //     final vehicleType = item.vehicleType?.name?.toString() ?? '';
+  //     final owner = item.owner?.toString() ?? '';
+  //     final make = item.make?.toString() ?? '';
+  //     final model = item.model?.toString() ?? '';
+  //     final color = item.color?.toString() ?? '';
 
-      return vehicle.contains(searchName.value.toLowerCase()) &&
-          passengers.contains(searchPassengers.value) &&
-          luggages.contains(searchLuggages.value) &&
-          handLuggages.contains(searchHandLuggages.value) &&
-          minFare.contains(searchMinFare.value) &&
-          minMiles.contains(searchMinMiles.value);
-    }).toList();
+  //     return vehicleNumber.contains(searchName.value.toLowerCase()) &&
+  //         vehicleType.contains(searchPassengers.value) &&
+  //         owner.contains(searchLuggages.value) &&
+  //         make.contains(searchHandLuggages.value) &&
+  //         model.contains(searchMinFare.value) &&
+  //         color.contains(searchMinMiles.value);
+  //   }).toList();
 
-    print("filter chal rha hai");
-    update();
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  //   print("filter chal rha hai");
+  //   update();
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
   /// bool variable
