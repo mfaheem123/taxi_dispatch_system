@@ -188,6 +188,7 @@ class Api {
           BotToast.closeAllLoading();
         }
       }
+      print(apiUrl + url);
       return response;
     } on DioException catch (e) {
       print("erro hide");
