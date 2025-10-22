@@ -2,13 +2,16 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dashboard_new1/component/networks/api.dart';
 
-import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
+    hide VehicleType;
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart'
+    as type;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../Model/image_model.dart';
+import '../../../Model/image_model.dart';
 
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
@@ -49,10 +52,9 @@ class VehicleController extends GetxController {
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
   RxBool CompanyVehicleLoader = false.obs;
-  postCompanyVehicle()async{
+  postCompanyVehicle() async {
     CompanyVehicleLoader(false);
     var formData = {
-
       'vehicle_number': 'DSA-781',
       'make': 'mehran Boss',
       'model': '2015',
@@ -72,40 +74,45 @@ class VehicleController extends GetxController {
       'insurance_number': 'INS5678',
       'start_date': '2024-01-10',
       'end_date': '2025-01-10'
-
     };
 
-    var response = await Api().post(formData, 'company-vehicles/add', auth: true);
+    var response =
+        await Api().post(formData, 'company-vehicles/add', auth: true);
     if (response.statusCode == 200) {
       // Get.toNamed(Routes.myHomePage);
-    }else{
+    } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
-
-
-
   }
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
   VehicleTypeModel? vehicleTypeModel;
+
+  RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
+  RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
+
   RxBool isLoading = false.obs;
 
-  Future<void> getVehicleTypes() async {
+// ye search fields hain
+  RxString searchName = ''.obs;
+  RxString searchPassengers = ''.obs;
+  RxString searchLuggages = ''.obs;
+  RxString searchHandLuggages = ''.obs;
+  RxString searchMinFare = ''.obs;
+  RxString searchMinMiles = ''.obs;
+
+  getVehicleTypes() async {
     try {
       isLoading.value = true;
-
       final response = await Api().get('vehicle-type');
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
-        print("Vehicle types ${vehicleTypeModel?.vehicleTypes?.length}");
-      } else {
-        print("Status Code Error ${response.statusCode}");
+        allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
+        filteredVehicleTypes.value = allVehicleTypes;
       }
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
@@ -115,6 +122,39 @@ class VehicleController extends GetxController {
     }
   }
 
+// ye function filter lagayega
+  void applyFilter() {
+    if (searchName.value.isEmpty &&
+        searchPassengers.value.isEmpty &&
+        searchLuggages.value.isEmpty &&
+        searchHandLuggages.value.isEmpty &&
+        searchMinFare.value.isEmpty &&
+        searchMinMiles.value.isEmpty) {
+      filteredVehicleTypes.clear(); // koi filter nahi
+      update();
+      return;
+    }
+
+    filteredVehicleTypes.value = allVehicleTypes.where((item) {
+      final name = item.name?.toLowerCase() ?? '';
+      final passengers = item.passengers?.toString() ?? '';
+      final luggages = item.luggages?.toString() ?? '';
+      final handLuggages = item.handLuggages?.toString() ?? '';
+      final minFare = item.minimumFares?.toString() ?? '';
+      final minMiles = item.minimumMiles?.toString() ?? '';
+
+      return name.contains(searchName.value.toLowerCase()) &&
+          passengers.contains(searchPassengers.value) &&
+          luggages.contains(searchLuggages.value) &&
+          handLuggages.contains(searchHandLuggages.value) &&
+          minFare.contains(searchMinFare.value) &&
+          minMiles.contains(searchMinMiles.value);
+    }).toList();
+
+    print("filter chal rha hai");
+    update();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
@@ -122,6 +162,15 @@ class VehicleController extends GetxController {
   RxBool isCompanyVehicle = false.obs;
 
   CompanyVehicleModel? companyVehicleModel;
+  RxList<CompanyVehicleModel> companyallVehicleTypes = <CompanyVehicleModel>[].obs;
+  RxList<CompanyVehicleModel> companyfilteredVehicleTypes = <CompanyVehicleModel>[].obs;
+// ye search fields hain
+  RxString searchVehicle = ''.obs;
+  RxString searchVehicleType = ''.obs;
+  RxString searchOwner = ''.obs;
+  RxString searchMake = ''.obs;
+  RxString searchModel = ''.obs;
+  RxString searchColor = ''.obs;
 
   Future<void> companyVehicle() async {
     try {
@@ -130,8 +179,10 @@ class VehicleController extends GetxController {
 
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
+                allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
+        filteredVehicleTypes.value = allVehicleTypes;
         print('Company ${CompanyVehicleModel}');
-      } 
+      }
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
     } finally {
@@ -139,6 +190,55 @@ class VehicleController extends GetxController {
       update();
     }
   }
+
+// ye function filter lagayega
+  void companyApplyFilter() {
+    if (searchVehicle.value.isEmpty &&
+        searchVehicleType.value.isEmpty &&
+        searchOwner.value.isEmpty &&
+        searchMake.value.isEmpty &&
+        searchModel.value.isEmpty &&
+        searchColor.value.isEmpty) {
+      filteredVehicleTypes.clear(); // koi filter nahi
+      update();
+      return;
+    }
+
+    filteredVehicleTypes.value = allVehicleTypes.where((item) {
+      final vehicle = item.name?.toLowerCase() ?? '';
+      final passengers = item.passengers?.toString() ?? '';
+      final luggages = item.luggages?.toString() ?? '';
+      final handLuggages = item.handLuggages?.toString() ?? '';
+      final minFare = item.minimumFares?.toString() ?? '';
+      final minMiles = item.minimumMiles?.toString() ?? '';
+
+      return vehicle.contains(searchName.value.toLowerCase()) &&
+          passengers.contains(searchPassengers.value) &&
+          luggages.contains(searchLuggages.value) &&
+          handLuggages.contains(searchHandLuggages.value) &&
+          minFare.contains(searchMinFare.value) &&
+          minMiles.contains(searchMinMiles.value);
+    }).toList();
+
+    print("filter chal rha hai");
+    update();
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
   /// bool variable
@@ -184,7 +284,7 @@ class VehicleController extends GetxController {
     };
 
     var response = await Api().post(formData, 'vehicle-type/add', auth: true);
-    if (response.statusCode == 200 ) {
+    if (response.statusCode == 200) {
       print("response of body -------------------------${response.data}");
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");

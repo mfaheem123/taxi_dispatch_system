@@ -9,7 +9,7 @@ import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
-import 'controller.dart';
+import 'controller/controller.dart';
 
 class ListVehicleType extends StatefulWidget {
   const ListVehicleType({super.key});
@@ -45,6 +45,13 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
 
     return GetBuilder<VehicleController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
+
+
+        final listToShow = controller.filteredVehicleTypes.isNotEmpty
+    ? controller.filteredVehicleTypes
+    : controller.allVehicleTypes;
+
+
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -65,7 +72,8 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                     Row(
                       children: [
                         Text(
-                          AppText.vehicleType + " (10)",
+                          AppText.vehicleType +
+                              " (${controller.vehicleTypeModel!.count.toString() ?? "0"})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -107,34 +115,72 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                         width: Get.width,
                         child: DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: AppText.vehicleType),
-                            buildHeaderWithSearch(title: "PASSENGERS"),
-                            buildHeaderWithSearch(title: "LUGGAGES"),
-                            buildHeaderWithSearch(title: "HAND LUGGAGES"),
-                            buildHeaderWithSearch(title: "MINIMUM FARES"),
-                            buildHeaderWithSearch(title: "MINIMUM MILES"),
+                            buildHeaderWithSearch(
+                                title: AppText.vehicleType,
+                                onChanged: (v) {
+                                  controller.searchName.value = v;
+                                  controller.applyFilter();
+                                 
+                                }),
+                            buildHeaderWithSearch(
+                                title: "PASSENGERS",
+                                onChanged: (v) {
+                                  controller.searchPassengers.value = v;
+                                  controller.applyFilter();
+                                }),
+                            buildHeaderWithSearch(
+                                title: "LUGGAGES",
+                                onChanged: (v) {
+                                  controller.searchLuggages.value = v;
+                                  controller.applyFilter();
+                                }),
+                            buildHeaderWithSearch(
+                                title: "HAND LUGGAGES",
+                                onChanged: (v) {
+                                  controller.searchHandLuggages.value = v;
+                                  controller.applyFilter();
+                                }),
+                            buildHeaderWithSearch(
+                                title: "MINIMUM FARES",
+                                onChanged: (v) {
+                                  controller.searchMinFare.value = v;
+                                  controller.applyFilter();
+                                }),
+                            buildHeaderWithSearch(
+                                title: "MINIMUM MILES",
+                                onChanged: (v) {
+                                  controller.searchMinMiles.value = v;
+                                  controller.applyFilter();
+                                }),
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
-                          totalRow: controller
-                                  .vehicleTypeModel!.vehicleTypes!.length ??
+
+
+                          totalRow: listToShow.length ??
                               0,
                           rows:
-                              (controller.vehicleTypeModel!.vehicleTypes ?? [])
+                              (listToShow ?? [])
                                   .map(
                             (item) {
                               return DataRow(cells: [
-                                DataCell(Center(child: Text(item.name!))),
                                 DataCell(Center(
-                                    child: Text(item.passengers.toString()))),
+                                    child: Text(item.name ?? 'No Data'))),
                                 DataCell(Center(
-                                    child: Text(item.luggages.toString()))),
+                                    child: Text(item.passengers.toString() ??
+                                        'No Data'))),
                                 DataCell(Center(
-                                    child: Text(item.handLuggages.toString()))),
-                                DataCell(
-                                    Center(child: Text(item.minimumFares!))),
-                                DataCell(
-                                    Center(child: Text(item.minimumMiles!))),
+                                    child: Text(item.luggages.toString() ??
+                                        'No Data'))),
+                                DataCell(Center(
+                                    child: Text(item.handLuggages.toString() ??
+                                        'No Data'))),
+                                DataCell(Center(
+                                    child: Text(item.minimumFares.toString() ??
+                                        'No Data'))),
+                                DataCell(Center(
+                                    child: Text(item.minimumMiles.toString() ??
+                                        'No Data'))),
                                 DataCell(
                                   Center(
                                     child: Row(

@@ -25,6 +25,8 @@ class VehicleTypeModel {
         vehicleTypes: json["vehicle_types"] == null ? [] : List<VehicleType>.from(json["vehicle_types"]!.map((x) => VehicleType.fromJson(x))),
     );
 
+
+
     Map<String, dynamic> toJson() => {
         "status": status,
         "count": count,
@@ -38,10 +40,10 @@ class VehicleType {
     int? passengers;
     int? luggages;
     int? handLuggages;
-    String? minimumFares;
-    String? minimumMiles;
-    String? waitingTime;
-    String? waitingTimeDuration;
+    int? minimumFares;
+    int? minimumMiles;
+    int? waitingTime;
+    int? waitingTimeDuration;
     bool? defaultVehicle;
     bool? vehicleTypeMinimumFares;
     String? image;

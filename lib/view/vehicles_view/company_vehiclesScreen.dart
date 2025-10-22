@@ -2,14 +2,14 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/vehicles_view/controller.dart';
+import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import '../../../component/datatable_widget.dart';
-import '../../dashboard_view/Controller/dashboard_controller.dart';
-import '../../dashboard_view/booking_table.dart';
-import '../../drivers_view/controller/driver_controller.dart';
+import '../../component/datatable_widget.dart';
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/booking_table.dart';
+import '../drivers_view/controller/driver_controller.dart';
 
 class CompanyVehiclesScreen extends StatefulWidget {
   CompanyVehiclesScreen({super.key});

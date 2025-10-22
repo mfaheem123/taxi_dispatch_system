@@ -13,7 +13,7 @@ import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
-import 'controller.dart';
+import 'controller/controller.dart';
 
 class CreateCompanyVehicle extends StatefulWidget {
   const CreateCompanyVehicle({super.key});

@@ -87,7 +87,7 @@ import '../setting/location_type_shortcuts.dart';
 import '../setting/template_settings.dart';
 import '../vehicles_view/create_company_vehicle.dart';
 import '../vehicles_view/list_vehicle_type.dart';
-import '../vehicles_view/vehicle/company_vehiclesScreen.dart';
+import '../vehicles_view/company_vehiclesScreen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
