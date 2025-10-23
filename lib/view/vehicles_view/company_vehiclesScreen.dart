@@ -191,6 +191,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                           ), // border color & thickness
                                         ),
                                         onPressed: () {
+                                          controller.companyDataBinding(data: item);
                                           // controller.bindLocationUpdateLocation(locationUpdate: item);
                                           int index = _controller.selectedMenuItems.indexWhere(
                                                   (element) => element.title == "LocationForm");

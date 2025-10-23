@@ -11,7 +11,7 @@ String companyVehicleModelToJson(CompanyVehicleModel data) => json.encode(data.t
 class CompanyVehicleModel {
     bool? status;
     int? count;
-    List<Vehicle>? vehicles;
+    List<VehicleObject>? vehicles;
 
     CompanyVehicleModel({
         this.status,
@@ -22,7 +22,7 @@ class CompanyVehicleModel {
     factory CompanyVehicleModel.fromJson(Map<String, dynamic> json) => CompanyVehicleModel(
         status: json["status"],
         count: json["count"],
-        vehicles: json["vehicles"] == null ? [] : List<Vehicle>.from(json["vehicles"]!.map((x) => Vehicle.fromJson(x))),
+        vehicles: json["vehicles"] == null ? [] : List<VehicleObject>.from(json["vehicles"]!.map((x) => VehicleObject.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class CompanyVehicleModel {
     };
 }
 
-class Vehicle {
+class VehicleObject {
     int? id;
     String? vehicleNumber;
     String? make;
@@ -62,8 +62,12 @@ class Vehicle {
     DateTime? updatedAt;
     String? vehicleTypeName;
     VehicleType? vehicleType;
+    String? phcVehicleExpiryTime;
+    String? motExpiryTime;
+    String? mot2ExpiryTime;
+    String? insuranceExpiryTime;
 
-    Vehicle({
+    VehicleObject({
         this.id,
         this.vehicleNumber,
         this.make,
@@ -93,9 +97,13 @@ class Vehicle {
         this.updatedAt,
         this.vehicleTypeName,
         this.vehicleType,
+        this.phcVehicleExpiryTime,
+        this.motExpiryTime,
+        this.mot2ExpiryTime,
+        this.insuranceExpiryTime,
     });
 
-    factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+    factory VehicleObject.fromJson(Map<String, dynamic> json) => VehicleObject(
         id: json["id"],
         vehicleNumber: json["vehicle_number"],
         make: json["make"],
@@ -125,6 +133,10 @@ class Vehicle {
         updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
         vehicleTypeName: json["vehicle_type_name"],
         vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
+        phcVehicleExpiryTime: json["phc_vehicle_expiry_time"],
+        motExpiryTime: json["mot_expiry_time"],
+        mot2ExpiryTime: json["mot2_expiry_time"],
+        insuranceExpiryTime: json["insurance_expiry_time"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -157,6 +169,10 @@ class Vehicle {
         "updated_at": updatedAt?.toIso8601String(),
         "vehicle_type_name": vehicleTypeName,
         "vehicle_type": vehicleType?.toJson(),
+        "phc_vehicle_expiry_time": phcVehicleExpiryTime,
+        "mot_expiry_time": motExpiryTime,
+        "mot2_expiry_time": mot2ExpiryTime,
+        "insurance_expiry_time": insuranceExpiryTime,
     };
 }
 

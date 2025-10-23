@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../alert/restrict_drivers_alert.dart';
+import '../../component/dropdown_button.dart';
 import '../../component/image_pick_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -24,7 +25,7 @@ class CreateCompanyVehicle extends StatefulWidget {
 
 class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
 
-  VehicleController controller = Get.isRegistered<VehicleController>()
+  final VehicleController _controller = Get.isRegistered<VehicleController>()
       ? Get.find<VehicleController>()
       : Get.put(VehicleController());
 
@@ -43,7 +44,11 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<VehicleController>(builder: (controller) {
+    return GetBuilder<VehicleController>(
+        initState: (v){
+          // _controller.getAllVehicleType();
+        },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -56,7 +61,9 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return Column(
+            return /*controller.getAllVehicleTypeLoader.value == true ? Center(
+              child: CircularProgressIndicator(),
+            ):*/ Column(
               children: [
                 SizedBox(
                   height: 10,
@@ -81,9 +88,9 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
           children: [
             CustomTextField(
               borderRadius: 4,
-              controller: TextEditingController(),
+              controller: controller.vehicleNumberController,
               width: fieldWidth,
-              hintText: AppText.vehicleType,
+              hintText: "Vehicle Number",
               columnText: true,
               height: 30,
             ),
@@ -91,6 +98,20 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                // CustomDropdownField<LocationTypeObject>(
+                //   label: "Location Type",
+                //   width: fieldWidth/1.5,
+                //   height: 45,
+                //   items: controller.locationtypezoneModel!
+                //       .locationTypesList!,
+                //   value: controller.locationTypeValue,
+                //   itemLabel: (templateList) =>
+                //   templateList.name!,
+                //   onChanged: (val) {
+                //     controller.locationTypeValue = val;
+                //     controller.update();
+                //   },
+                // ),
                 RestrictedDrivers(
                   width: fieldWidth/1.5,
                   // height: 35,
@@ -146,7 +167,25 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               label: AppText.phcVehicleExpire,
               column: true,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30,
+                child: KeyboardDatePicker(
+                  initialDate: DateTime.now(),
+                  onChanged: (date) {
+                    // jab bhi user change kare
+                    setState(() {
+                      controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
+                      print(date);
+                    });
+                  },
+                  onSubmitted: (date) {
+                    // jab user enter press kare
+                    setState(() {
+                      controller.phcVehicleExpireDate = "${date.year}-${date.month}-${date.day}";
+                    });
+                    print("User pressed enter: $date");
+                  },
+                ),
+              ),
             ),
             labeledField(
               context: context,
@@ -154,7 +193,15 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               column: true,
               label: AppText.phcVehicleExpire,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: CustomTimePicker()),
+              child: SizedBox(height: 30, child: CustomTimePicker(
+                controller: controller.phcVehicleExpireTimeController, // optional
+                onTimeSelected: (time) {
+                  setState(() {
+                    print(controller.phcVehicleExpireTimeController.text);
+                    print(time);
+                  });
+                },
+              )),
             ),
             CustomTextField(
               borderRadius: 4,
@@ -170,7 +217,23 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               label: AppText.motExpiry,
               column: true,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.motExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.motExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+              )),
             ),
             labeledField(
               context: context,
@@ -178,7 +241,15 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               column: true,
               label: AppText.motExpiry,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: CustomTimePicker()),
+              child: SizedBox(height: 30, child: CustomTimePicker(
+                controller: controller.motExpiryExpireTimeController, // optional
+                onTimeSelected: (time) {
+                  setState(() {
+                    print(controller.motExpiryExpireTimeController.text);
+                    print(time);
+                  });
+                },
+              )),
             ),
             CustomTextField(
               borderRadius: 4,
@@ -194,7 +265,23 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               label: AppText.mot2Expiry,
               column: true,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.mot2ExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.mot2ExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+              )),
             ),
 
             labeledField(
@@ -203,7 +290,14 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               column: true,
               label: AppText.mot2Expiry,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: CustomTimePicker()),
+              child: SizedBox(height: 30, child: CustomTimePicker(
+                controller: controller.mot2ExpiryExpireTimeController, // optional
+                onTimeSelected: (time) {
+                  setState(() {
+                    print(controller.mot2ExpiryExpireTimeController.text);
+                  });
+                },
+              )),
             ),
             CustomTextField(
               borderRadius: 4,
@@ -219,7 +313,21 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               label: AppText.insuranceExpiry,
               column: true,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.insuranceExpiryDate = "${date.year}-${date.month}-${date.day}";
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.insuranceExpiryDate = "${date.year}-${date.month}-${date.day}";
+                  });
+                },
+              )),
             ),
 
             labeledField(
@@ -228,7 +336,14 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               column: true,
               label: AppText.insuranceExpiry,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: CustomTimePicker()),
+              child: SizedBox(height: 30, child: CustomTimePicker(
+                controller: controller.insuranceExpiryTimeController, // optional
+                onTimeSelected: (time) {
+                  setState(() {
+                    print(controller.insuranceExpiryTimeController.text);
+                  });
+                },
+              )),
             ),
             CustomTextField(
               borderRadius: 4,

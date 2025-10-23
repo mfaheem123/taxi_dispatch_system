@@ -6,6 +6,8 @@ import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.da
     hide VehicleType;
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
 
+import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart' as type;
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -35,6 +37,18 @@ class VehicleController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
+  VehicleType? allVehicleTypeData;
+  RxBool getAllVehicleTypeLoader = false.obs;
+  getAllVehicleType() async{
+    getAllVehicleTypeLoader(true);
+    var response = await Api().get("vehicle-type");
+    if(response.statusCode == 200){
+      allVehicleTypeData = VehicleType.fromJson(response.data['vehicle_types']);
+      getAllVehicleTypeLoader(false);
+      update();
+    }
+  }
+
   /// text fields editing
   final colorController = TextEditingController();
   final vehicleMakeController = TextEditingController();
@@ -44,29 +58,39 @@ class VehicleController extends GetxController {
   final motNumberController = TextEditingController();
   final mot2NumberController = TextEditingController();
   final insuranceNumberController = TextEditingController();
+  final vehicleNumberController = TextEditingController();
 
   /// store image variable
   Uint8List? phcVehicleDocPic;
   Uint8List? motDocPic;
   Uint8List? insuranceDocPic;
   Uint8List? mot2DocPic;
-  RxBool CompanyVehicleLoader = false.obs;
+  RxBool companyVehicleLoader = false.obs;
+  String? phcVehicleExpireDate ="2000-01-01";
+  String? motExpiryExpireDate ="2000-01-01";
+  String? mot2ExpiryExpireDate ="2000-01-01";
+  String? insuranceExpiryDate ="2000-01-01";
+  final phcVehicleExpireTimeController = TextEditingController();
+  final motExpiryExpireTimeController = TextEditingController();
+  final mot2ExpiryExpireTimeController = TextEditingController();
+  final insuranceExpiryTimeController = TextEditingController();
+
   postCompanyVehicle() async {
-    CompanyVehicleLoader(false);
+    companyVehicleLoader(false);
     var formData = {
-      'vehicle_number': 'DSA-798',
+      'vehicle_number': vehicleNumberController.text,
       'make': vehicleMakeController.text,
       'model': vehicleModelController.text,
       'color': colorController.text,
       'owner': 'company',
       'company': 'true',
       'assigned': 'false',
-      'vehicle_type_id': '1',
+      'vehicle_type_id': '68',
       'log_book_number': logBookingDocController.text,
-      'phc_vehicle_expiry': '2025-12-01',
-      'mot_expiry': '2025-12-01',
-      'mot2_expiry': '2025-12-01',
-      'insurance_expiry': '2025-12-01',
+      'phc_vehicle_expiry': phcVehicleExpireDate,
+      'mot_expiry': motExpiryExpireDate,
+      'mot2_expiry': mot2ExpiryExpireDate,
+      'insurance_expiry': insuranceExpiryDate,
       'phc_vehicle_number': phcVehicleNumberController.text,
       'mot_number': motNumberController.text,
       'mot2_number': mot2NumberController.text,
@@ -77,6 +101,10 @@ class VehicleController extends GetxController {
       'mot_document': motDocPic,
       'mot2_document': mot2DocPic,
       'insurance_document': insuranceDocPic,
+      "phc_vehicle_expiry_time": phcVehicleExpireTimeController.text,
+      "mot_expiry_time": motExpiryExpireTimeController.text,
+      "mot2_expiry_time": mot2ExpiryExpireTimeController.text,
+      "insurance_expiry_time": insuranceExpiryTimeController.text,
     };
 
     var response =
@@ -91,9 +119,30 @@ class VehicleController extends GetxController {
       mot2NumberController.clear();
 
       insuranceNumberController.clear();
+
+
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
+  }
+
+  VehicleObject? singleVehicleData;
+  companyDataBinding({VehicleObject ? data}) async{
+    vehicleMakeController.text = data!.make.toString();
+    vehicleModelController.text = data.model.toString();
+    colorController.text = data.color.toString();
+    logBookingDocController.text = data.logBookDocument.toString();
+    phcVehicleNumberController.text = data.phcVehicleNumber.toString();
+    motNumberController.text = data.motNumber.toString();
+    mot2NumberController.text = data.mot2Number.toString();
+    insuranceNumberController.text = data.insuranceNumber.toString();
+    vehicleNumberController.text = data.vehicleNumber.toString();
+    phcVehicleExpireTimeController.text = data.phcVehicleExpiryTime.toString();
+    motExpiryExpireTimeController.text = data.motExpiryTime.toString();
+    mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime.toString();
+    insuranceExpiryTimeController.text = data.insuranceExpiryTime.toString();
+    singleVehicleData = data;
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
