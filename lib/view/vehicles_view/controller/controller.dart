@@ -124,12 +124,10 @@ class VehicleController extends GetxController {
     try {
       isLoading.value = true;
       final response = await Api().get('vehicle-type',
-      //  queryParameters: {
-      //   '_page': currentPage.value,
-      //   '_limit': limit,
-      // },
-      
-      );
+       queryParameters: {
+        '_page': currentPage.value,
+        '_limit': limit,
+      });
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);

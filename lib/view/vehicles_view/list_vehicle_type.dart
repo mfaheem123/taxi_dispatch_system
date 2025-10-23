@@ -244,7 +244,14 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                         ),
                       ),
                     ),
-                    
+                     Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child:  NumberPagination(
+                  onPageChanged: controller.onPageChange,
+                  totalPages: controller.totalPages.value,
+                  currentPage: controller.currentPage.value,
+                  visiblePagesCount: 5,
+                )),
                   ],
                 ),
               );

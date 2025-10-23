@@ -1,5 +1,7 @@
 // class ListOfAccountScreen extends StatefulWidget {
 
+import 'dart:io';
+
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
@@ -67,154 +69,176 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<AccountController>(builder: (controller) {
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "ACCOUNTS (7)",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Checkbox(
-                      value: controller.activeDrivers.value,
-                      onChanged: (v) {
-                        controller.activeDrivers.value = v!;
-                        controller.update();
-                      }),
-                  Text(
-                    "Closed",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: DynamicColors.redClr),
-                  ),
-                  SizedBox(
-                    width: 60,
-                  ),
-                  CustomButton(
-                    height: 40,
-                    width: 80,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                      child: Icon(
-                        Icons.refresh,
-                        color: DynamicColors.whiteClr,
-                        size: 25,
+      child: LayoutBuilder(builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isMobile = maxWidth < 400;
+        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+        // Instead of fixed width, we calculate flexible field widths
+        final double fieldWidth = isMobile
+            ? maxWidth // full width
+            : isTablet
+                ? maxWidth / 2
+                : maxWidth / 4;
+        return GetBuilder<AccountController>(builder: (controller) {
+          final listToShow = controller.filteredAccount.isNotEmpty
+              ? controller.filteredAccount
+              : controller.AccountList;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "ACCOUNTS (7)",
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800, fontSize: 17),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Checkbox(
+                        value: controller.activeDrivers.value,
+                        onChanged: (v) {
+                          controller.activeDrivers.value = v!;
+                          controller.update();
+                        }),
+                    Text(
+                      "Closed",
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: DynamicColors.redClr),
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    CustomButton(
+                      height: 40,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                        child: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              controller.isLoadingListOfAccount == true
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: Get.width,
-                        child: DatatableWidget(
-                            columns: [
-                              buildHeaderWithSearch(title: "NAME"),
-                              buildHeaderWithSearch(title: "ACCOUNT TYPE"),
-                              buildHeaderWithSearch(title: "ADDRESS"),
-                              buildHeaderWithSearch(title: "EMAIL"),
-                              buildHeaderWithSearch(title: "MOBILE"),
-                              buildHeaderWithSearch(title: "TELEPHONE"),
-                              buildHeaderWithSearch(title: "CONTACT NAME"),
-                              buildHeaderWithSearch(title: "SUBSIDIARY"),
-                              buildHeaderWithSearch(
-                                  title: "ACTIONS", removeSearching: true),
-                            ],
-                            totalRow:
-                                controller.listofAccount?.accounts?.length,
-                            rows: (controller.listofAccount!.accounts ?? [])
-                                .map((item) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Center(
-                                      child: Text(item.name!.toString()))),
-                                  DataCell(Center(
-                                      child:
-                                          Text(item.accountType!.toString()))),
-                                  DataCell(Center(
-                                      child: Text(item.address!.toString()))),
-                                  DataCell(Center(
-                                      child: Text(item.email!.toString()))),
-                                  DataCell(Center(
-                                      child: Text(item.mobile!.toString()))),
-                                  DataCell(Center(
-                                      child: Text(item.telephone!.toString()))),
-                                  DataCell(Center(
-                                      child:
-                                          Text(item.contactName!.toString()))),
-                                  DataCell(Center(
-                                      child: Text(
-                                          item.subsidiary!.name.toString()))),
-                                  DataCell(
-                                    Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ), // border color & thickness
+                  ],
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                controller.isLoadingListOfAccount == true
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: isMobile || isTablet
+                              ? Get.width + 300
+                              : Get.width, // give extra space for last column
+                          child: DatatableWidget(
+                              columns: [
+                                buildHeaderWithSearch(
+                                    title: "NAME",
+                                    onChanged: (v) {
+                                      controller.searchName.value = v;
+                                      controller.applyFilter();
+                                    }),
+                                buildHeaderWithSearch(title: "ACCOUNT TYPE"),
+                                buildHeaderWithSearch(title: "ADDRESS"),
+                                buildHeaderWithSearch(title: "EMAIL"),
+                                buildHeaderWithSearch(title: "MOBILE"),
+                                buildHeaderWithSearch(title: "TELEPHONE"),
+                                buildHeaderWithSearch(title: "CONTACT NAME"),
+                                buildHeaderWithSearch(title: "SUBSIDIARY"),
+                                buildHeaderWithSearch(
+                                    title: "ACTIONS", removeSearching: true),
+                              ],
+                              totalRow: listToShow.length,
+                              rows: (listToShow ?? []).map((item) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Center(
+                                        child: Text(item.name!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.accountType!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(item.address!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(item.email!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(item.mobile!.toString()))),
+                                    DataCell(Center(
+                                        child:
+                                            Text(item.telephone!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.contactName!.toString()))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.subsidiary!.name.toString()))),
+                                    DataCell(
+                                      Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            OutlinedButton(
+                                              style: OutlinedButton.styleFrom(
+                                                side: BorderSide(
+                                                  color: Colors.transparent,
+                                                ), // border color & thickness
+                                              ),
+                                              onPressed: () {},
+                                              child: Icon(
+                                                Icons.search,
+                                                size: 28,
+                                              ),
                                             ),
-                                            onPressed: () {},
-                                            child: Icon(
-                                              Icons.search,
-                                              size: 28,
+                                            Text("|"),
+                                            OutlinedButton(
+                                              style: OutlinedButton.styleFrom(
+                                                side: BorderSide(
+                                                  color: Colors.transparent,
+                                                ), // border color & thickness
+                                              ),
+                                              onPressed: () {},
+                                              child: Icon(
+                                                Icons.delete_forever,
+                                                size: 28,
+                                              ),
                                             ),
-                                          ),
-                                          Text("|"),
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ), // border color & thickness
-                                            ),
-                                            onPressed: () {},
-                                            child: Icon(
-                                              Icons.delete_forever,
-                                              size: 28,
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            }).toList()),
+                                  ],
+                                );
+                              }).toList()),
+                        ),
                       ),
-                    ),
-              Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: NumberPagination(
-                    onPageChanged: controller.onPageChange,
-                    totalPages: controller.totalPages.value,
-                    currentPage: controller.currentPage.value,
-                    visiblePagesCount: 4,
-                  )),
-            ],
-          ),
-        );
+                Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: NumberPagination(
+                      onPageChanged: controller.onPageChange,
+                      totalPages: controller.totalPages.value,
+                      currentPage: controller.currentPage.value,
+                      visiblePagesCount: 4,
+                    )),
+              ],
+            ),
+          );
+        });
       }),
     );
   }

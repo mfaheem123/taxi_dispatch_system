@@ -83,6 +83,20 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
+  RxList<Account> AccountList = <Account>[].obs;
+  RxList<Account> filteredAccount = <Account>[].obs;
+
+// ye search fields hain
+  RxString searchName = ''.obs;
+  RxString searchAccountType = ''.obs;
+  RxString searchAddress = ''.obs;
+  RxString searchEmail = ''.obs;
+  RxString searchMobile = ''.obs;
+  RxString searchTelephone = ''.obs;
+  RxString searchContactName = ''.obs;
+  RxString searchSubsiDiary = ''.obs;
+
+
   var currentPage = 1.obs;
   var totalPages = 5.obs;
   final int limit = 4;
@@ -99,6 +113,8 @@ class AccountController extends GetxController {
       if (response.statusCode == 200) {
         listofAccount = ListOfAccountModel.fromJson(response.data);
         totalPages.value = listofAccount?.totalPages ?? 1;
+                AccountList.value = listofAccount?.accounts ?? [];
+        filteredAccount.value = AccountList;
         // print("Response data: ${response.data}");
         print(
             'List of Account Error ------------------------------ ${listofAccount}');
@@ -116,6 +132,51 @@ class AccountController extends GetxController {
     currentPage.value = page;
     listOFAccount();
   }
+
+// ye function filter lagayega
+  void applyFilter() {
+    if (searchName.value.isEmpty &&
+        searchAccountType.value.isEmpty &&
+        searchAddress.value.isEmpty &&
+        searchEmail.value.isEmpty &&
+        searchMobile.value.isEmpty &&
+        searchTelephone.value.isEmpty
+        // searchContactName.value.isEmpty 
+        &&
+        searchSubsiDiary.value.isEmpty
+  
+  
+  ) {
+      filteredAccount.clear(); // koi filter nahi
+      update();
+      return;
+    }
+
+    filteredAccount.value = AccountList.where((item) {
+      final name = item.name?.toLowerCase() ?? '';
+      final accountType = item.accountType?.toString() ?? '';
+      final address = item.address?.toString() ?? '';
+      final email = item.email?.toString() ?? '';
+      final mobile = item.mobile?.toString() ?? '';
+      final telephone = item.telephone?.toString() ?? '';
+      final contactName = item.contactName?.toString() ?? '';
+      final subsiDiary = item.subsidiary?.toString() ?? '';
+
+      return name.contains(searchName.value.toLowerCase()) &&
+          accountType.contains(searchAccountType.value) &&
+          address.contains(searchAddress.value) &&
+          email.contains(searchEmail.value) &&
+          mobile.contains(searchMobile.value) &&
+          telephone.contains(searchTelephone.value)&&
+    contactName.contains(searchContactName.value) &&
+          subsiDiary.contains(searchSubsiDiary.value);
+    }).toList();
+
+    print("filter chal rha hai");
+    update();
+  }
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
 
