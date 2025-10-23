@@ -2,6 +2,7 @@
 
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -144,18 +145,25 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                 .map((item) {
                               return DataRow(
                                 cells: [
-                                  DataCell(Center(child: Text(item.name!.toString()))),
-                                  DataCell(
-                                      Center(child: Text(item.accountType!.toString()))),
-                                  DataCell(Center(child: Text(item.address!.toString()))),
-                                  DataCell(Center(child: Text(item.email!.toString()))),
-                                  DataCell(Center(child: Text(item.mobile!.toString()))),
-                                  DataCell(
-                                      Center(child: Text(item.telephone!.toString()))),
-                                  DataCell(
-                                      Center(child: Text(item.contactName!.toString()))),
                                   DataCell(Center(
-                                      child: Text(item.subsidiary!.name.toString()))),
+                                      child: Text(item.name!.toString()))),
+                                  DataCell(Center(
+                                      child:
+                                          Text(item.accountType!.toString()))),
+                                  DataCell(Center(
+                                      child: Text(item.address!.toString()))),
+                                  DataCell(Center(
+                                      child: Text(item.email!.toString()))),
+                                  DataCell(Center(
+                                      child: Text(item.mobile!.toString()))),
+                                  DataCell(Center(
+                                      child: Text(item.telephone!.toString()))),
+                                  DataCell(Center(
+                                      child:
+                                          Text(item.contactName!.toString()))),
+                                  DataCell(Center(
+                                      child: Text(
+                                          item.subsidiary!.name.toString()))),
                                   DataCell(
                                     Center(
                                       child: Row(
@@ -196,16 +204,14 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                             }).toList()),
                       ),
                     ),
-
-           Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child:  NumberPagination(
-                  onPageChanged: controller.onPageChange,
-                  totalPages: controller.totalPages.value,
-                  currentPage: controller.currentPage.value,
-                  visiblePagesCount: 4,
-                )),
-
+              Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: NumberPagination(
+                    onPageChanged: controller.onPageChange,
+                    totalPages: controller.totalPages.value,
+                    currentPage: controller.currentPage.value,
+                    visiblePagesCount: 4,
+                  )),
             ],
           ),
         );

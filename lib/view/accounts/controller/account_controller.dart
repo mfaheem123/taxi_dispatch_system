@@ -84,8 +84,8 @@ class AccountController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
   var currentPage = 1.obs;
-  var totalPages = 1.obs;
-  final int limit = 2;
+  var totalPages = 5.obs;
+  final int limit = 4;
 
   RxBool isLoadingListOfAccount = false.obs;
 
@@ -94,23 +94,14 @@ class AccountController extends GetxController {
   Future<void> listOFAccount() async {
     try {
       isLoadingListOfAccount.value = true;
-      var response = await Api().get(
-        'accounts/get',
-        queryParameters: {
-          'page': currentPage.value,
-          'limit': limit,
-        },
-      );
-
+      var response = await Api()
+          .get('accounts/get?page=${currentPage.value}&limit=${limit}');
       if (response.statusCode == 200) {
         listofAccount = ListOfAccountModel.fromJson(response.data);
-
         totalPages.value = listofAccount?.totalPages ?? 1;
-        print("Response data: ${response.data}");
-
+        // print("Response data: ${response.data}");
         print(
             'List of Account Error ------------------------------ ${listofAccount}');
-      } else {
         print("Status Code Error-------${response.statusCode}");
       }
     } catch (e) {
