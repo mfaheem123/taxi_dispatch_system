@@ -3,6 +3,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../component/color_picker_widget.dart';
@@ -37,12 +38,8 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
-
-
-
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<VehicleController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -80,7 +77,11 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                       color: Colors.white,
                       border: Border.all(color: Colors.grey),
                       image: controller.profileImg == null
-                          ? null
+                          ? ((controller.singleVehicle != null) &&( controller.singleVehicle!.image !=null))?
+                      DecorationImage(
+                        image: NetworkImage(controller.singleVehicle!.image!), // ✅ correct provider
+                        fit: BoxFit.fill,
+                      ): null
                           : DecorationImage(
                               image: MemoryImage(controller
                                   .profileImg!.bytes), // ✅ correct provider
@@ -159,6 +160,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             height: 35,
                           ),
                           CustomTextField(
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             borderRadius: 4,
                             controller: controller.passengersController,
                             width: fieldWidth / 2,
@@ -167,6 +171,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             height: 35,
                           ),
                           CustomTextField(
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             borderRadius: 4,
                             controller: controller.luggagesController,
                             width: fieldWidth / 2,
@@ -175,6 +182,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             height: 35,
                           ),
                           CustomTextField(
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             borderRadius: 4,
                             controller: controller.handLuggagesController,
                             width: fieldWidth / 2,
@@ -195,6 +205,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                                 width: 140,
                               ),
                               CustomTextField(
+                                inputFormatters:  [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 borderRadius: 4,
                                 controller: controller.minimumMilesController,
                                 width: fieldWidth / 2,
@@ -218,6 +231,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                                 width: 140,
                               ),
                               CustomTextField(
+                                inputFormatters:  [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 borderRadius: 4,
                                 controller: controller.minimumFaresController,
                                 width: fieldWidth / 2,
@@ -282,6 +298,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             borderRadius: 4,
                             controller:
                                 controller.driverWaitingChargesController,
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             width: fieldWidth / 2,
                             hintText: AppText.driverWaitingCharges,
                             columnText: true,
@@ -289,6 +308,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                           ),
                           CustomTextField(
                             borderRadius: 4,
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             controller:
                                 controller.accountWaitingChargesController,
                             width: fieldWidth / 2,
@@ -297,6 +319,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             height: 35,
                           ),
                           CustomTextField(
+                            inputFormatters:  [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                             borderRadius: 4,
                             controller: controller.waitingTimeController,
                             width: fieldWidth / 2,
@@ -312,7 +337,6 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                       CustomButton(
                         onTap: () {
                           controller.createVehicleType();
-                          
                         },
                         height: 30,
                         width: fieldWidth,

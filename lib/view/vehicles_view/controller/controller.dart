@@ -12,6 +12,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../Model/image_model.dart';
+import 'package:dio/dio.dart' as dio;
 
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
@@ -86,6 +87,13 @@ class VehicleController extends GetxController {
     var response =
         await Api().post(formData, 'company-vehicles/add', auth: true);
     if (response.statusCode == 200) {
+      colorController.clear();
+      vehicleMakeController.clear();
+      vehicleModelController.clear();
+      logBookingDocController.clear();
+      phcVehicleNumberController.clear();
+      motNumberController.clear();
+      mot2NumberController.clear();
       // Get.toNamed(Routes.myHomePage);
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
@@ -98,18 +106,18 @@ class VehicleController extends GetxController {
 
   VehicleTypeModel? vehicleTypeModel;
 
-  RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
-  RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
+//   RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
+//   RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
 
   RxBool isLoading = false.obs;
 
-// ye search fields hain
-  RxString searchName = ''.obs;
-  RxString searchPassengers = ''.obs;
-  RxString searchLuggages = ''.obs;
-  RxString searchHandLuggages = ''.obs;
-  RxString searchMinFare = ''.obs;
-  RxString searchMinMiles = ''.obs;
+// // ye search fields hain
+//   RxString searchName = ''.obs;
+//   RxString searchPassengers = ''.obs;
+//   RxString searchLuggages = ''.obs;
+//   RxString searchHandLuggages = ''.obs;
+//   RxString searchMinFare = ''.obs;
+//   RxString searchMinMiles = ''.obs;
 
   getVehicleTypes() async {
     try {
@@ -118,8 +126,8 @@ class VehicleController extends GetxController {
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
-        allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
-        filteredVehicleTypes.value = allVehicleTypes;
+        // allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
+        // filteredVehicleTypes.value = allVehicleTypes;
       }
     } catch (e) {
       print("Error in getVehicleTypes(): $e");
@@ -130,122 +138,107 @@ class VehicleController extends GetxController {
   }
 
 // ye function filter lagayega
-  void applyFilter() {
-    if (searchName.value.isEmpty &&
-        searchPassengers.value.isEmpty &&
-        searchLuggages.value.isEmpty &&
-        searchHandLuggages.value.isEmpty &&
-        searchMinFare.value.isEmpty &&
-        searchMinMiles.value.isEmpty) {
-      filteredVehicleTypes.clear(); // koi filter nahi
-      update();
-      return;
-    }
+  // void applyFilter() {
+  //   if (searchName.value.isEmpty &&
+  //       searchPassengers.value.isEmpty &&
+  //       searchLuggages.value.isEmpty &&
+  //       searchHandLuggages.value.isEmpty &&
+  //       searchMinFare.value.isEmpty &&
+  //       searchMinMiles.value.isEmpty) {
+  //     filteredVehicleTypes.clear(); // koi filter nahi
+  //     update();
+  //     return;
+  //   }
 
-    filteredVehicleTypes.value = allVehicleTypes.where((item) {
-      final name = item.name?.toLowerCase() ?? '';
-      final passengers = item.passengers?.toString() ?? '';
-      final luggages = item.luggages?.toString() ?? '';
-      final handLuggages = item.handLuggages?.toString() ?? '';
-      final minFare = item.minimumFares?.toString() ?? '';
-      final minMiles = item.minimumMiles?.toString() ?? '';
+  //   filteredVehicleTypes.value = allVehicleTypes.where((item) {
+  //     final name = item.name?.toLowerCase() ?? '';
+  //     final passengers = item.passengers?.toString() ?? '';
+  //     final luggages = item.luggages?.toString() ?? '';
+  //     final handLuggages = item.handLuggages?.toString() ?? '';
+  //     final minFare = item.minimumFares?.toString() ?? '';
+  //     final minMiles = item.minimumMiles?.toString() ?? '';
 
-      return name.contains(searchName.value.toLowerCase()) &&
-          passengers.contains(searchPassengers.value) &&
-          luggages.contains(searchLuggages.value) &&
-          handLuggages.contains(searchHandLuggages.value) &&
-          minFare.contains(searchMinFare.value) &&
-          minMiles.contains(searchMinMiles.value);
-    }).toList();
+  //     return name.contains(searchName.value.toLowerCase()) &&
+  //         passengers.contains(searchPassengers.value) &&
+  //         luggages.contains(searchLuggages.value) &&
+  //         handLuggages.contains(searchHandLuggages.value) &&
+  //         minFare.contains(searchMinFare.value) &&
+  //         minMiles.contains(searchMinMiles.value);
+  //   }).toList();
 
-    print("filter chal rha hai");
-    update();
-  }
+  //   print("filter chal rha hai");
+  //   update();
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
-
   RxBool isCompanyVehicle = false.obs;
 
-  CompanyVehicleModel? companyVehicleModel;
-  RxList<CompanyVehicleModel> companyallVehicleTypes = <CompanyVehicleModel>[].obs;
-  RxList<CompanyVehicleModel> companyfilteredVehicleTypes = <CompanyVehicleModel>[].obs;
-// ye search fields hain
-  RxString searchVehicle = ''.obs;
-  RxString searchVehicleType = ''.obs;
-  RxString searchOwner = ''.obs;
-  RxString searchMake = ''.obs;
-  RxString searchModel = ''.obs;
-  RxString searchColor = ''.obs;
+  // RxList<Vehicle> companyallVehicle = <Vehicle>[].obs;
+  // RxList<Vehicle> companyfilteredVehicle = <Vehicle>[].obs;
 
+  // // Search fields
+  // RxString searchVehicle = ''.obs;
+  // RxString searchVehicleType = ''.obs;
+  // RxString searchOwner = ''.obs;
+  // RxString searchMake = ''.obs;
+  // RxString searchModel = ''.obs;
+  // RxString searchColor = ''.obs;
+
+  CompanyVehicleModel? companyVehicleModel;
+  // Fetch company vehicles
   Future<void> companyVehicle() async {
     try {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles');
-
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
-                allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
-        filteredVehicleTypes.value = allVehicleTypes;
-        print('Company ${CompanyVehicleModel}');
+        // companyallVehicle.value = companyVehicleModel?.vehicles ?? <Vehicle>[];
+        // companyfilteredVehicle.value = companyallVehicle;
+        print(
+            'Company Vehicles: ${companyVehicleModel?.vehicles?.length ?? 0}');
       }
     } catch (e) {
-      print("Error in getVehicleTypes(): $e");
+      print("Error in companyVehicle(): $e");
     } finally {
       isCompanyVehicle.value = false;
       update();
     }
   }
 
-// ye function filter lagayega
-  void companyApplyFilter() {
-    if (searchVehicle.value.isEmpty &&
-        searchVehicleType.value.isEmpty &&
-        searchOwner.value.isEmpty &&
-        searchMake.value.isEmpty &&
-        searchModel.value.isEmpty &&
-        searchColor.value.isEmpty) {
-      filteredVehicleTypes.clear(); // koi filter nahi
-      update();
-      return;
-    }
+  // Apply filter
+  // void companyApplyFilter() {
+  //   if (searchVehicle.value.isEmpty &&
+  //       searchVehicleType.value.isEmpty &&
+  //       searchOwner.value.isEmpty &&
+  //       searchMake.value.isEmpty &&
+  //       searchModel.value.isEmpty &&
+  //       searchColor.value.isEmpty) {
+  //     companyfilteredVehicle.clear();
+  //     update();
+  //     return;
+  //   }
 
-    filteredVehicleTypes.value = allVehicleTypes.where((item) {
-      final vehicle = item.name?.toLowerCase() ?? '';
-      final passengers = item.passengers?.toString() ?? '';
-      final luggages = item.luggages?.toString() ?? '';
-      final handLuggages = item.handLuggages?.toString() ?? '';
-      final minFare = item.minimumFares?.toString() ?? '';
-      final minMiles = item.minimumMiles?.toString() ?? '';
+  //   companyfilteredVehicle.value = companyallVehicle.where((item) {
+  //     final vehicleNumber = item.vehicleNumber?.toLowerCase() ?? '';
+  //     final vehicleType = item.vehicleType?.name?.toString() ?? '';
+  //     final owner = item.owner?.toString() ?? '';
+  //     final make = item.make?.toString() ?? '';
+  //     final model = item.model?.toString() ?? '';
+  //     final color = item.color?.toString() ?? '';
 
-      return vehicle.contains(searchName.value.toLowerCase()) &&
-          passengers.contains(searchPassengers.value) &&
-          luggages.contains(searchLuggages.value) &&
-          handLuggages.contains(searchHandLuggages.value) &&
-          minFare.contains(searchMinFare.value) &&
-          minMiles.contains(searchMinMiles.value);
-    }).toList();
+  //     return vehicleNumber.contains(searchName.value.toLowerCase()) &&
+  //         vehicleType.contains(searchPassengers.value) &&
+  //         owner.contains(searchLuggages.value) &&
+  //         make.contains(searchHandLuggages.value) &&
+  //         model.contains(searchMinFare.value) &&
+  //         color.contains(searchMinMiles.value);
+  //   }).toList();
 
-    print("filter chal rha hai");
-    update();
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  //   print("filter chal rha hai");
+  //   update();
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
   /// bool variable
@@ -273,7 +266,14 @@ class VehicleController extends GetxController {
   createVehicleType() async {
     isLoadVehicleType.value = false;
 
-    var formData = {
+    var multipartFile;
+    if(profileImg !=null){
+      multipartFile = dio.MultipartFile.fromBytes(
+        profileImg!.bytes,
+        filename: profileImg!.name,
+      );
+    }
+    final formData = dio.FormData.fromMap({
       'name': vehicleTypeController.text,
       'passengers': passengersController.text,
       'luggages': luggagesController.text,
@@ -288,13 +288,46 @@ class VehicleController extends GetxController {
       'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
       'driver_waiting_charges': driverWaitingChargesController.text,
       'account_waiting_charges': accountWaitingChargesController.text,
-    };
+     if(multipartFile != null) "image": multipartFile!
+    });
 
-    var response = await Api().post(formData, 'vehicle-type/add', auth: true);
+    var response = await Api().post(formData, singleVehicle !=null ? "vehicle-type/edit/${singleVehicle!.id}" : 'vehicle-type/add', auth: true, multiPart: multipartFile != null?true: false);
     if (response.statusCode == 200) {
+      vehicleTypeController.clear();
+      passengersController.clear();
+      luggagesController.clear();
+      handLuggagesController.clear();
+      minimumFaresController.clear();
+      minimumMilesController.clear();
+      waitingTimeController.clear();
+      driverWaitingChargesController.clear();
+      accountWaitingChargesController.clear();
+      defaultVehicleValue.value = false;
+      minimumMilesValue.value = false;
+      minimumFaresValue.value = false;
+      profileImg = null;
+      singleVehicle = null;
+      update();
       print("response of body -------------------------${response.data}");
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
   }
+
+  /// bind data to edit vehicle
+  VehicleType? singleVehicle;
+  vehicleDataBinding({item}) async{
+    singleVehicle = item;
+    vehicleTypeController.text = singleVehicle!.name!;
+    passengersController.text = singleVehicle!.passengers!.toString();
+    luggagesController.text = singleVehicle!.luggages.toString();
+    handLuggagesController.text = singleVehicle!.handLuggages.toString();
+    minimumFaresController.text = singleVehicle!.minimumFares.toString();
+    minimumMilesController.text = singleVehicle!.minimumMiles.toString();
+    waitingTimeController.text = singleVehicle!.waitingTime.toString();
+    driverWaitingChargesController.text = singleVehicle!.driverWaitingCharges.toString();
+    accountWaitingChargesController.text = singleVehicle!.accountWaitingCharges.toString();
+    update();
+  }
+
 }

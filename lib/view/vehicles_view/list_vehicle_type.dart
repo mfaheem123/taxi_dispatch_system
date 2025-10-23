@@ -10,6 +10,7 @@ import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller/controller.dart';
+import 'create_vehicle_types.dart';
 
 class ListVehicleType extends StatefulWidget {
   const ListVehicleType({super.key});
@@ -34,6 +35,8 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
     controller.getVehicleTypes();
   }
 
+  final DashboardController _controller = Get.find();
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -45,11 +48,10 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
 
     return GetBuilder<VehicleController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
-
-
-        final listToShow = controller.filteredVehicleTypes.isNotEmpty
-    ? controller.filteredVehicleTypes
-    : controller.allVehicleTypes;
+        
+    //     final listToShow = controller.filteredVehicleTypes.isNotEmpty
+    // ? controller.filteredVehicleTypes
+    // : controller.allVehicleTypes;
 
 
         final double maxWidth = constraints.maxWidth;
@@ -117,50 +119,56 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                           columns: [
                             buildHeaderWithSearch(
                                 title: AppText.vehicleType,
-                                onChanged: (v) {
-                                  controller.searchName.value = v;
-                                  controller.applyFilter();
+                                // onChanged: (v) {
+                                //   controller.searchName.value = v;
+                                //   controller.applyFilter();
                                  
-                                }),
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "PASSENGERS",
-                                onChanged: (v) {
-                                  controller.searchPassengers.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchPassengers.value = v;
+                                //   controller.applyFilter();
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "LUGGAGES",
-                                onChanged: (v) {
-                                  controller.searchLuggages.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchLuggages.value = v;
+                                //   controller.applyFilter();
+                                // }
+                                ),
                             buildHeaderWithSearch(
                                 title: "HAND LUGGAGES",
-                                onChanged: (v) {
-                                  controller.searchHandLuggages.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchHandLuggages.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "MINIMUM FARES",
-                                onChanged: (v) {
-                                  controller.searchMinFare.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchMinFare.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "MINIMUM MILES",
-                                onChanged: (v) {
-                                  controller.searchMinMiles.value = v;
-                                  controller.applyFilter();
-                                }),
+                                // onChanged: (v) {
+                                //   controller.searchMinMiles.value = v;
+                                //   controller.applyFilter();
+                                // },
+                                ),
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
 
 
-                          totalRow: listToShow.length ??
+                          totalRow: controller.vehicleTypeModel?.vehicleTypes?.length ??
                               0,
                           rows:
-                              (listToShow ?? [])
+                              (controller.vehicleTypeModel?.vehicleTypes ?? [])
                                   .map(
                             (item) {
                               return DataRow(cells: [
@@ -194,7 +202,20 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             minimumSize: Size(24, 24),
                                             side: BorderSide.none,
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            controller.vehicleDataBinding(item: item);
+                                            int index = _controller.selectedMenuItems.indexWhere(
+                                                    (element) => element.title == "CREATE VEHICLE TYPE");
+                                            if (index != -1) {
+                                              _controller.selectedMenuItems[index].selectedItem = true;
+                                              _controller.currentPage.value = CreateVehicleTypes();
+                                            }else{
+                                              _controller.currentPage.value = CreateVehicleTypes();
+                                              _controller.menuBarRefresh(
+                                                  title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
+                                            }
+                                            controller.update();
+                                          },
                                           child: Icon(Icons.edit_calendar,
                                               size: 20),
                                         ),
