@@ -83,21 +83,25 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
+  var currentPage = 1.obs;
+  var totalPages = 5.obs;
+  final int limit = 4;
+
   RxBool isLoadingListOfAccount = false.obs;
 
-  ListofAccount? listofAccount;
+  ListOfAccountModel? listofAccount;
 
   Future<void> listOFAccount() async {
     try {
       isLoadingListOfAccount.value = true;
-      var response = await Api().get('accounts/get');
-
+      var response = await Api()
+          .get('accounts/get?page=${currentPage.value}&limit=${limit}');
       if (response.statusCode == 200) {
-        listofAccount = ListofAccount.fromJson(response.data);
-
+        listofAccount = ListOfAccountModel.fromJson(response.data);
+        totalPages.value = listofAccount?.totalPages ?? 1;
+        // print("Response data: ${response.data}");
         print(
             'List of Account Error ------------------------------ ${listofAccount}');
-      } else {
         print("Status Code Error-------${response.statusCode}");
       }
     } catch (e) {
@@ -108,11 +112,16 @@ class AccountController extends GetxController {
     }
   }
 
+  void onPageChange(int page) {
+    currentPage.value = page;
+    listOFAccount();
+  }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
 
   ListEscortModel? listEscortModel;
   RxBool listEscortLoding = false.obs;
-Future<void> listEscort() async {
+  Future<void> listEscort() async {
     try {
       listEscortLoding.value = true;
       var response = await Api().get('escorts/get');
@@ -132,8 +141,6 @@ Future<void> listEscort() async {
       update();
     }
   }
-
-
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 

@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:number_pagination/number_pagination.dart';
 
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
@@ -243,6 +244,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                         ),
                       ),
                     ),
+                    
                   ],
                 ),
               );

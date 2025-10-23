@@ -5,8 +5,6 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
     hide VehicleType;
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
-import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart'
-    as type;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -75,13 +73,10 @@ class VehicleController extends GetxController {
       'insurance_number': insuranceNumberController.text,
       'start_date': '2024-01-10',
       'end_date': '2025-01-10',
-      'phc_vehicle_document':phcVehicleDocPic,
-      'mot_document':motDocPic,
-      'mot2_document':mot2DocPic,
-      'insurance_document':insuranceDocPic,
-
-
-
+      'phc_vehicle_document': phcVehicleDocPic,
+      'mot_document': motDocPic,
+      'mot2_document': mot2DocPic,
+      'insurance_document': insuranceDocPic,
     };
 
     var response =
@@ -94,7 +89,8 @@ class VehicleController extends GetxController {
       phcVehicleNumberController.clear();
       motNumberController.clear();
       mot2NumberController.clear();
-      // Get.toNamed(Routes.myHomePage);
+
+      insuranceNumberController.clear();
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
@@ -119,10 +115,21 @@ class VehicleController extends GetxController {
 //   RxString searchMinFare = ''.obs;
 //   RxString searchMinMiles = ''.obs;
 
+  var posts = <dynamic>[].obs;
+  var currentPage = 1.obs;
+  var totalPages = 10.obs;
+  final int limit = 10;
+
   getVehicleTypes() async {
     try {
       isLoading.value = true;
-      final response = await Api().get('vehicle-type');
+      final response = await Api().get('vehicle-type',
+      //  queryParameters: {
+      //   '_page': currentPage.value,
+      //   '_limit': limit,
+      // },
+      
+      );
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
@@ -135,6 +142,11 @@ class VehicleController extends GetxController {
       isLoading.value = false;
       update();
     }
+  }
+
+  void onPageChange(int page) {
+    currentPage.value = page;
+    getVehicleTypes();
   }
 
 // ye function filter lagayega
@@ -267,7 +279,7 @@ class VehicleController extends GetxController {
     isLoadVehicleType.value = false;
 
     var multipartFile;
-    if(profileImg !=null){
+    if (profileImg != null) {
       multipartFile = dio.MultipartFile.fromBytes(
         profileImg!.bytes,
         filename: profileImg!.name,
@@ -288,10 +300,16 @@ class VehicleController extends GetxController {
       'foreground_color': foregroundColor.value.toRadixString(16).substring(2),
       'driver_waiting_charges': driverWaitingChargesController.text,
       'account_waiting_charges': accountWaitingChargesController.text,
-     if(multipartFile != null) "image": multipartFile!
+      if (multipartFile != null) "image": multipartFile!
     });
 
-    var response = await Api().post(formData, singleVehicle !=null ? "vehicle-type/edit/${singleVehicle!.id}" : 'vehicle-type/add', auth: true, multiPart: multipartFile != null?true: false);
+    var response = await Api().post(
+        formData,
+        singleVehicle != null
+            ? "vehicle-type/edit/${singleVehicle!.id}"
+            : 'vehicle-type/add',
+        auth: true,
+        multiPart: multipartFile != null ? true : false);
     if (response.statusCode == 200) {
       vehicleTypeController.clear();
       passengersController.clear();
@@ -316,7 +334,7 @@ class VehicleController extends GetxController {
 
   /// bind data to edit vehicle
   VehicleType? singleVehicle;
-  vehicleDataBinding({item}) async{
+  vehicleDataBinding({item}) async {
     singleVehicle = item;
     vehicleTypeController.text = singleVehicle!.name!;
     passengersController.text = singleVehicle!.passengers!.toString();
@@ -325,9 +343,10 @@ class VehicleController extends GetxController {
     minimumFaresController.text = singleVehicle!.minimumFares.toString();
     minimumMilesController.text = singleVehicle!.minimumMiles.toString();
     waitingTimeController.text = singleVehicle!.waitingTime.toString();
-    driverWaitingChargesController.text = singleVehicle!.driverWaitingCharges.toString();
-    accountWaitingChargesController.text = singleVehicle!.accountWaitingCharges.toString();
+    driverWaitingChargesController.text =
+        singleVehicle!.driverWaitingCharges.toString();
+    accountWaitingChargesController.text =
+        singleVehicle!.accountWaitingCharges.toString();
     update();
   }
-
 }
