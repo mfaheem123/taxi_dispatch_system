@@ -5,8 +5,6 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
     hide VehicleType;
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
-import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart'
-    as type;
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -91,12 +89,8 @@ class VehicleController extends GetxController {
       phcVehicleNumberController.clear();
       motNumberController.clear();
       mot2NumberController.clear();
-<<<<<<< HEAD
+
       insuranceNumberController.clear();
-      
-=======
-      // Get.toNamed(Routes.myHomePage);
->>>>>>> a7757d92aff35bdb1f467ee23aa1aab35cf2ff3b
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
@@ -129,10 +123,13 @@ class VehicleController extends GetxController {
   getVehicleTypes() async {
     try {
       isLoading.value = true;
-      final response = await Api().get('vehicle-type', queryParameters: {
-        '_page': currentPage.value,
-        '_limit': limit,
-      });
+      final response = await Api().get('vehicle-type',
+      //  queryParameters: {
+      //   '_page': currentPage.value,
+      //   '_limit': limit,
+      // },
+      
+      );
 
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
