@@ -7,14 +7,21 @@ import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 
 class CustomTimePicker extends StatefulWidget {
-  const CustomTimePicker({Key? key}) : super(key: key);
+  final TextEditingController? controller;
+  final ValueChanged<String>? onTimeSelected;
+
+  const CustomTimePicker({
+    Key? key,
+    this.controller,
+    this.onTimeSelected,
+  }) : super(key: key);
 
   @override
   State<CustomTimePicker> createState() => _CustomTimePickerState();
 }
 
 class _CustomTimePickerState extends State<CustomTimePicker> {
-  final TextEditingController _timeController = TextEditingController();
+  late final TextEditingController _timeController;
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 
@@ -25,6 +32,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   @override
   void initState() {
     super.initState();
+    _timeController = widget.controller ?? TextEditingController();
     _updateTimeText();
   }
 
@@ -55,6 +63,8 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       if (period != null) selectedPeriod = period;
       _updateTimeText();
     });
+
+    widget.onTimeSelected?.call(_timeController.text);
     _closeDropdown();
   }
 
@@ -66,27 +76,22 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       builder: (context) => Positioned(
         left: offset.dx,
         top: offset.dy + 80,
-        width: 150,
+        width: 180,
         height: 200,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
           child: Material(
             elevation: 4,
+            borderRadius: BorderRadius.circular(8),
             child: Row(
               children: [
-                _buildScrollColumn(
-                  1,
-                  12,
-                  selectedHour,
-                      (value) => _selectAndClose(hour: value),
-                ),
-                _buildScrollColumn(
-                  0,
-                  59,
-                  selectedMinute,
-                      (value) => _selectAndClose(minute: value),
-                ),
+                _buildScrollColumn(1, 12, selectedHour, (value) {
+                  _selectAndClose(hour: value);
+                }),
+                _buildScrollColumn(0, 59, selectedMinute, (value) {
+                  _selectAndClose(minute: value);
+                }),
                 _buildAmPmColumn(),
               ],
             ),
@@ -115,9 +120,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 child: Text(
                   valueStr,
                   style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10
+                    color: isSelected ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -142,9 +147,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
                 child: Text(
                   period,
                   style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10
+                    color: isSelected ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -157,41 +162,29 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
   @override
   void dispose() {
-    _timeController.dispose();
+    if (widget.controller == null) {
+      _timeController.dispose(); // Only dispose if local
+    }
     _overlayEntry?.remove();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CompositedTransformTarget(
-        link: _layerLink,
-        child: SizedBox(
-          height: 30,
-          child: TextFormField(
-            controller: _timeController,
-            readOnly: true,
-            style: mozillaTextSemiBoldText(
-                context: context,
-                fontSize: 10,
-                fontWeight: FontWeight.w800
-            ),
-            onTap: _toggleTimeDropdown,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(horizontal: 6),
-              hintText: "TIME",
-              hintStyle: mozillaTextSemiBoldText(
-                  context: context,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w800
-              ),
-              suffixIcon: Icon(
-                Icons.access_time,
-                size: 18,
-              ),
-              border: OutlineInputBorder(),
-            ),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: SizedBox(
+        height: 40,
+        width: 150,
+        child: TextFormField(
+          controller: _timeController,
+          readOnly: true,
+          onTap: _toggleTimeDropdown,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            hintText: "Select Time",
+            suffixIcon: const Icon(Icons.access_time, size: 18),
+            border: const OutlineInputBorder(),
           ),
         ),
       ),

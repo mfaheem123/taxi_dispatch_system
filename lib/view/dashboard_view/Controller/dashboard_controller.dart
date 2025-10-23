@@ -36,6 +36,8 @@ class DashboardController extends GetxController {
 
   ///refresh function for menu bar
   menuBarRefresh({title, pageName}) {
+    print(title);
+    print(title);
     // if(selectedMenuItems.length < 3){
     int index =
         selectedMenuItems.indexWhere((item) => item.selectedItem == true);
