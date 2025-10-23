@@ -97,7 +97,6 @@ class _CreateVehicleState extends State<CreateVehicle> {
                 _buildTextField("Luggages"),
                 _buildTextField("Hand Luggages"),
                 _buildCheckBox("Default Vehicle", false, (v) {}),
-
                 _buildCheckBox("Minimum Miles", _enableMinimumMiles, (v) {
                   setState(() {
                     _enableMinimumMiles = v ?? false;
@@ -105,7 +104,6 @@ class _CreateVehicleState extends State<CreateVehicle> {
                 }),
                 _buildTextField("Minimum Miles",
                     enabled: _enableMinimumMiles),
-
                 _buildCheckBox("Minimum Fares", _enableMinimumFares, (v) {
                   setState(() {
                     _enableMinimumFares = v ?? false;

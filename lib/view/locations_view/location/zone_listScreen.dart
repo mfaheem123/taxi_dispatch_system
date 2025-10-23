@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/locations_view/location/zone_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -27,7 +28,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
   LocationController controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
-
+  final DashboardController _controller = Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -63,8 +64,11 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<LocationController>(
+        initState: (v){
+          controller.getZoneList();
+        },
           builder: (controller) {
-            return SingleChildScrollView(
+            return controller.getZoneLoader.value == true?SizedBox.shrink(): SingleChildScrollView(
               padding:  EdgeInsets.all(12),
               child: Column(
                 children: [
@@ -93,43 +97,56 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                           buildHeaderWithSearch(title: "CATEGORY"),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-
-                           DataCell(Center(child: Text("Action Town Tube Station"))),
-                           DataCell(Center(child: Text("W3BHN"))),
-                           DataCell(Center(child: Text("RA"))),
-                           DataCell(Center(child: Text("Action Town Tube Station W3BHN"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,),
-                                      // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.edit_calendar,
-                                      size: 28,
-                                    ),
+                        totalRow:  controller.getZoneListModel!.zones!.length,
+                        rows: controller.getZoneListModel!.zones!.map((item) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Center(child: Text(item.name ?? '—'))),
+                              DataCell(Center(child: Text(item.secondaryName ?? '—'))),
+                              DataCell(Center(child: Text(item.type ?? '—'))),
+                              DataCell(Center(child: Text(item.category ?? '—'))),
+                              DataCell(
+                                Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent),
+                                        ),
+                                        onPressed: () {
+                                          // controller.bindLocationUpdateLocation(locationUpdate: item);
+                                          int index = _controller.selectedMenuItems.indexWhere(
+                                                  (element) => element.title == "LocationForm");
+                                          if (index != -1) {
+                                            _controller.selectedMenuItems[index].selectedItem = true;
+                                            _controller.currentPage.value = ZoneScreen();
+                                          }else{
+                                            _controller.currentPage.value = ZoneScreen();
+                                            _controller.menuBarRefresh(
+                                                title: "CREATE ZONE", pageName: ZoneScreen());
+                                          }
+                                          controller.update();
+                                        },
+                                        child: Icon(Icons.edit_calendar, size: 28),
+                                      ),
+                                      Text("|"),
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: BorderSide(color: Colors.transparent),
+                                        ),
+                                        onPressed: () {
+                                         // controller.deleteZoneList(item.id);
+                                        },
+                                        child: Icon(Icons.delete_forever, size: 28),
+                                      ),
+                                    ],
                                   ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.delete_forever,
-                                      size: 28,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),

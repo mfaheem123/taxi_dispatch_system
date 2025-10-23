@@ -1383,6 +1383,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            color: DynamicColors.textClr,
                                                            fontSize: 13)),
                                                    Container(
+
                                                      width: fieldWidth/3.5,
 
                                                      padding: EdgeInsets.symmetric(
@@ -1444,32 +1445,32 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      ),
                                                    ),
                                                    SizedBox(
-                                                     width: 15,
+                                                     width: 90,
                                                    ),
 
-                                                   FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(38),
-                                                     child: CustomButton(
-                                                       btnText: "MULTI BOOKING [F8]",
-                                                       width: 150,
-                                                       height: 30,
-                                                       fontSize: 11,
-                                                       verticalPadding: 0.0,
-                                                       borderRadius: 4,
-                                                     ),
-                                                   ),
-
-                                                   FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(39),
-                                                     child: CustomButton(
-                                                       btnText: "MULTI VEHICLE [F9]",
-                                                       width: 150,
-                                                       height: 30,
-                                                       fontSize: 11,
-                                                       verticalPadding: 0.0,
-                                                       borderRadius: 4,
-                                                     ),
-                                                   ),
+                                                   // FocusTraversalOrder(
+                                                   //   order: const NumericFocusOrder(38),
+                                                   //   child: CustomButton(
+                                                   //     btnText: "MULTI BOOKING [F8]",
+                                                   //     width: 150,
+                                                   //     height: 30,
+                                                   //     fontSize: 11,
+                                                   //     verticalPadding: 0.0,
+                                                   //     borderRadius: 4,
+                                                   //   ),
+                                                   // ),
+                                                   //
+                                                   // FocusTraversalOrder(
+                                                   //   order: const NumericFocusOrder(39),
+                                                   //   child: CustomButton(
+                                                   //     btnText: "MULTI VEHICLE [F9]",
+                                                   //     width: 150,
+                                                   //     height: 30,
+                                                   //     fontSize: 11,
+                                                   //     verticalPadding: 0.0,
+                                                   //     borderRadius: 4,
+                                                   //   ),
+                                                   // ),
 
                                                    FocusTraversalOrder(
                                                      order: const NumericFocusOrder(40),
@@ -1483,7 +1484,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        borderRadius: 4,
                                                      ),
                                                    ),
-
+                                                   SizedBox(
+                                                     width: 10,
+                                                   ),
                                                    FocusTraversalOrder(
                                                      order: const NumericFocusOrder(41),
                                                      child: CustomButton(

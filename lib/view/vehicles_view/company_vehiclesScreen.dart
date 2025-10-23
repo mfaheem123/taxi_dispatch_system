@@ -10,6 +10,7 @@ import '../../component/datatable_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../drivers_view/controller/driver_controller.dart';
+import 'create_company_vehicle.dart';
 
 class CompanyVehiclesScreen extends StatefulWidget {
   CompanyVehiclesScreen({super.key});
@@ -25,7 +26,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
   VehicleController controller = Get.isRegistered<VehicleController>()
       ? Get.find<VehicleController>()
       : Get.put(VehicleController());
-
+  final DashboardController _controller = Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -189,7 +190,20 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                             color: Colors.transparent,
                                           ), // border color & thickness
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          // controller.bindLocationUpdateLocation(locationUpdate: item);
+                                          int index = _controller.selectedMenuItems.indexWhere(
+                                                  (element) => element.title == "LocationForm");
+                                          if (index != -1) {
+                                            _controller.selectedMenuItems[index].selectedItem = true;
+                                            _controller.currentPage.value = CreateCompanyVehicle();
+                                          }else{
+                                            _controller.currentPage.value = CreateCompanyVehicle();
+                                            _controller.menuBarRefresh(
+                                                title: "CREATE COMPANY VEHICLE", pageName: CreateCompanyVehicle());
+                                          }
+                                          controller.update();
+                                        },
                                         child: Icon(
                                           Icons.edit,
                                           size: 28,
@@ -202,7 +216,12 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                             color: Colors.transparent,
                                           ), // border color & thickness
                                         ),
-                                        onPressed: () {},
+
+                                        onPressed: () {
+
+
+
+                                        },
                                         child: Icon(
                                           Icons.delete_forever,
                                           color: DynamicColors.redClr,

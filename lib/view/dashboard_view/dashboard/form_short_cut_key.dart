@@ -66,7 +66,7 @@ class FormShortCutKey extends StatelessWidget {
                           BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '+ BOOKING [F8]',
+                          '+ MULTI RESERVATION [F8]',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -105,35 +105,35 @@ class FormShortCutKey extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Obx(
-                        ()=> MouseRegion(
-                      onEnter: (_) {
-                        dashboardController.isHovered = true.obs;
-                      },
-                      onExit: (_) {
-                        dashboardController.isHovered = false.obs;
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(
-                        //     horizontal: 16, vertical: 3),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                          borderRadius:
-                          BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'MULTI RESERVATION',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Obx(
+                  //       ()=> MouseRegion(
+                  //     onEnter: (_) {
+                  //       dashboardController.isHovered = true.obs;
+                  //     },
+                  //     onExit: (_) {
+                  //       dashboardController.isHovered = false.obs;
+                  //     },
+                  //     child: Container(
+                  //       // margin: EdgeInsets.symmetric(
+                  //       //     horizontal: 16, vertical: 3),
+                  //       padding: EdgeInsets.symmetric(
+                  //           horizontal: 8, vertical: 3),
+                  //       decoration: BoxDecoration(
+                  //         color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                  //         borderRadius:
+                  //         BorderRadius.circular(10),
+                  //       ),
+                  //       child: Text(
+                  //         'MULTI RESERVATION',
+                  //         style: TextStyle(
+                  //           color: Colors.white,
+                  //           fontSize: 13,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                   Obx(
                         ()=> MouseRegion(
                       onEnter: (_) {

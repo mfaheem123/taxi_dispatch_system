@@ -106,7 +106,7 @@ class Api {
     // }
   }
 
-  Future<dynamic> delete(formData, String url, {isProgressShow = false}) async {
+  Future<dynamic> delete( String url, {isProgressShow = false}) async {
     if (isProgressShow == false) {
       BotToast.showLoading();
     }
@@ -120,7 +120,7 @@ class Api {
     try {
       final response = await dio.post(
         apiUrl + url,
-        data: formData,
+        // data: formData,
         options: Options(
           headers: {
             Headers.acceptHeader: "application/json",

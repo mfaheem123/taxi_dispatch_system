@@ -4,6 +4,7 @@
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
+import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:dio/dio.dart' show Dio, BaseOptions;
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -201,14 +202,50 @@ final addressCtrl=TextEditingController();
   //   update();
   // }
 
-
-
-
-
-
-
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
 
+
+
+  GetZoneListModel? getZoneListModel;
+
+
+  RxBool getZoneLoader = false.obs;
+  getZoneList() async{
+    getZoneLoader(true);
+    var response = await Api().get("zones");
+    if(response.statusCode == 200){
+      getZoneListModel = GetZoneListModel.fromJson(response.data);
+      getZoneLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
+
+
+  // deleteZoneList(int? id, ) async{
+  //
+  //   var response = await Api().delete("zones/delete/$id");
+  //   if(response.statusCode == 200){
+  //
+  //     getZoneList();
+  //
+  //     update();
+  //   }
+  // }
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
 
 }
 

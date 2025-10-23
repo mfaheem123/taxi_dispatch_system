@@ -1,7 +1,7 @@
 import 'dart:async' show Completer;
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:ui' as html;
+import 'dart:ui' as html hide window;
 import 'dart:html' as html;
 import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
@@ -61,10 +61,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
   var zoneItems = ['Select Zone Type', 'Major', 'Minor'];
   LatLng? _rectStart; // live rectangle start
   LatLng? _rectCurrent;
+  // final VoidCallback? onUpdateComplete;
+  bool base = false;
   final List<LatLng> _draft = [];
   final List<LatLng> _pointsDraft = [];
   final Completer<GoogleMapController> _ctrl = Completer();
   final GlobalKey _mapKey = GlobalKey();
+  String zoneID = "";
   static const _initialCamera = CameraPosition(
     target: LatLng(37.7749, -122.4194),
     zoom: 12,
@@ -81,6 +84,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   RectHandle? _activeHandle; // which edge/corner is being dragged
   bool _draggingCenter = false; // moving whole rect?
   _RectBounds? _activeStartBounds;
+  List<dynamic>? localZoneData;
   String? _selectedPolyId;
   double _rad(double d) => d * math.pi / 180.0;
   double _hav(double t) => (1 - math.cos(t)) / 2;
@@ -148,7 +152,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       return;
     }
     if (isEditing) {
-      // updateZone();
+      updateZone();
     } else {
       registerzoneForm();
     }
@@ -168,11 +172,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
       });
     }
   }
-
-
-
-
-
 
   registerzoneForm() {
     registerZoneForm();
@@ -242,64 +241,65 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
   }
 
-  // Future<void> updateZone() async {
-  //   final pts = _currentVertices();
-  //   if (pts == null || pts.length < 3) {
-  //     Prompts().showErrorMessage(
-  //       msg: "Please draw/select a zone (at least 3 points) before updating.",
-  //       context: context,
-  //     );
-  //     return;
-  //   }
-  //
-  //   final vertices = _toApiVertices(pts);
-  //
-  //   final url = "https://nexustechnologys.com:4000/api/zone/updateZone/$zoneID";
-  //   final storedUserId = html.window.localStorage['key'];
-  //
-  //   final data = {
-  //     "userId": storedUserId,
-  //     "name": zonenameContoller.text.trim(),
-  //     "secondaryName": secondarynamezoneController.text.trim(),
-  //     "type": zoneValue,
-  //     "category": categoryValue,
-  //     "base": base,
-  //     "vertices": vertices,
-  //   };
-  //
-  //   try {
-  //     final res = await http.put(
-  //       Uri.parse(url),
-  //       body: json.encode(data),
-  //       headers: {"Content-Type": "application/json"},
-  //     );
-  //
-  //     if (res.statusCode == 200) {
-  //       if (mounted) {
-  //         setState(() {
-  //           clearTextFields();
-  //           localZoneData = null;
-  //           isEditing = false;
-  //         });
-  //       }
-  //       widget.onUpdateComplete?.call();
-  //
-  //       Prompts().showToastMessage(
-  //         msg: "Zone updated successfully",
-  //         context: context,
-  //       );
-  //     } else {
-  //       if (mounted) clearTextFields();
-  //       Prompts().showErrorMessage(
-  //         msg: "Error updating zone (${res.statusCode}): ${res.body}",
-  //         context: context,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (mounted) clearTextFields();
-  //     Prompts().showErrorMessage(msg: "Network error: $e", context: context);
-  //   }
-  // }
+  Future<void> updateZone() async {
+    final pts = _currentVertices();
+    if (pts == null || pts.length < 3) {
+      Prompts().showErrorMessage(
+        msg: "Please draw/select a zone (at least 3 points) before updating.",
+        context: context,
+      );
+      return;
+    }
+
+    final vertices = _toApiVertices(pts);
+
+    final url = "http://192.168.110.4:5000/api/zones/edit/$zoneID";
+    final storedUserId = html.window.localStorage['key'];
+
+    final data = {
+      "userId": storedUserId,
+      "name": zonenameContoller.text.trim(),
+      "secondaryName": secondarynamezoneController.text.trim(),
+      "type": zoneValue,
+      "category": categoryValue,
+      "base": base,
+      "vertices": vertices,
+    };
+
+    try {
+      final res = await http.put(
+        Uri.parse(url),
+        body: json.encode(data),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (res.statusCode == 200) {
+        if (mounted) {
+          setState(() {
+            clearTextFields();
+            localZoneData = null;
+            isEditing = false;
+          });
+        }
+
+        // widget.onUpdateComplete?.call();
+
+        Prompts().showToastMessage(
+          msg: "Zone updated successfully",
+          context: context,
+        );
+      } else {
+        if (mounted) clearTextFields();
+        Prompts().showErrorMessage(
+          msg: "Error updating zone (${res.statusCode}): ${res.body}",
+          context: context,
+        );
+      }
+    } catch (e) {
+      if (mounted) clearTextFields();
+      Prompts().showErrorMessage(msg: "Network error: $e", context: context);
+    }
+  }
 
 
 

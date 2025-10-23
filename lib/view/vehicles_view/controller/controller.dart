@@ -91,8 +91,12 @@ class VehicleController extends GetxController {
       phcVehicleNumberController.clear();
       motNumberController.clear();
       mot2NumberController.clear();
+<<<<<<< HEAD
       insuranceNumberController.clear();
       
+=======
+      // Get.toNamed(Routes.myHomePage);
+>>>>>>> a7757d92aff35bdb1f467ee23aa1aab35cf2ff3b
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
