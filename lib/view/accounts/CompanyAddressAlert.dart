@@ -2,7 +2,7 @@ import 'package:dashboard_new1/view/accounts/controller/account_controller.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class WebLoginAlert {
+class CompanyAddressAlert {
   static void show() {
     final List<Map<String, String>> rows = [];
 
@@ -21,39 +21,26 @@ class WebLoginAlert {
           child: StatefulBuilder(
             builder: (context, setState) {
               void saveRow() {
-                if (controller.webLoginaccountCtrl.text.isEmpty &&
-                    controller.webLoginusernameCtrl.text.isEmpty &&
-                    controller.webLoginpasswordCtrl.text.isEmpty &&
-                    controller.webLoginmobileCtrl.text.isEmpty &&
-                    controller.webLogintelephoneCtrl.text.isEmpty) return;
+                if (controller.orderCtrl.text.isEmpty ) return;
 
                 setState(() {
                   if (editingIndex == null) {
 
                     rows.add({
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
+                      "address": controller.addressCtrl.text,
+
                     });
                   } else {
                     rows[editingIndex!] = {
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
+                      "address": controller.addressCtrl.text,
+
                     };
                     editingIndex = null;
                   }
 
                   // clear fields
-                  controller.webLoginaccountCtrl.clear();
-                  controller.webLoginusernameCtrl.clear();
-                  controller.webLoginpasswordCtrl.clear();
-                  controller.webLoginmobileCtrl.clear();
-                  controller.webLogintelephoneCtrl.clear();
+                  controller.addressCtrl.clear();
+
                 });
               }
 
@@ -80,7 +67,7 @@ class WebLoginAlert {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          "WEB LOGINS",
+                          "ADDRESS ",
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         InkWell(
@@ -94,16 +81,9 @@ class WebLoginAlert {
 
                     Row(
                       children: [
-                        _buildField("ACCOUNT #", controller.webLoginaccountCtrl),
+                        _buildField("ADDRESS", controller.addressCtrl),
                         const SizedBox(width: 8),
-                        _buildField("USERNAME", controller.webLoginusernameCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("PASSWORD", controller.webLoginpasswordCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("MOBILE", controller.webLoginmobileCtrl),
-                        const SizedBox(width: 8),
-                        _buildField("TELEPHONE", controller.webLogintelephoneCtrl),
-                        const SizedBox(width: 8),
+
                         SizedBox(
                           width: 90,
                           height: 34,
@@ -136,11 +116,8 @@ class WebLoginAlert {
                       child: Row(
                         children: const [
 
-                          Expanded(child: Text("ACCOUNT #", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("USERNAME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("PASSWORD", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("MOBILE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("TELEPHONE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
+                          Expanded(child: Text("ADDRESS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
+
                           Expanded(child: Text("ACTIONS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
 
                         ],
@@ -160,11 +137,8 @@ class WebLoginAlert {
                         ),
                         child: Row(
                           children: [
-                            Expanded(child: Text(row["account"] ?? "")),
-                            Expanded(child: Text(row["username"] ?? "")),
-                            Expanded(child: Text(row["password"] ?? "")),
-                            Expanded(child: Text(row["mobile"] ?? "")),
-                            Expanded(child: Text(row["telephone"] ?? "")),
+                            Expanded(child: Text(row["address"] ?? "")),
+
                             Expanded(
                               child: Row(
                                 children: [
@@ -173,11 +147,8 @@ class WebLoginAlert {
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
-                                        controller.webLoginaccountCtrl.text = row["account"] ?? "";
-                                        controller.webLoginusernameCtrl.text = row["username"] ?? "";
-                                        controller.webLoginpasswordCtrl.text = row["password"] ?? "";
-                                        controller.webLoginmobileCtrl.text = row["mobile"] ?? "";
-                                        controller.webLogintelephoneCtrl.text = row["telephone"] ?? "";
+                                        controller.addressCtrl.text = row["address"] ?? "";
+
                                       });
                                     },
                                   ),
@@ -188,11 +159,8 @@ class WebLoginAlert {
                                         rows.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
-                                          controller.webLoginaccountCtrl.clear();
-                                          controller.webLoginusernameCtrl.clear();
-                                          controller.webLoginpasswordCtrl.clear();
-                                          controller.webLoginmobileCtrl.clear();
-                                          controller.webLogintelephoneCtrl.clear();
+                                          controller.addressCtrl.clear();
+
                                         }
                                       });
                                     },

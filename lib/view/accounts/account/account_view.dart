@@ -1,4 +1,8 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/accounts/CompanyAddressAlert.dart';
+import 'package:dashboard_new1/view/accounts/ContactAlert.dart';
+import 'package:dashboard_new1/view/accounts/DepartmentAlert.dart';
+import 'package:dashboard_new1/view/accounts/OrderAlert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
@@ -106,6 +110,9 @@ class _AccountViewState extends State<AccountView> {
                                           fontSize: 10,
                                           color: DynamicColors.whiteClr
                                         ),
+                                        onTap: (){
+                                          DepartmentAlert.show();
+                                        },
                                       ),
                                     ),
                                     CustomButton(
@@ -118,6 +125,10 @@ class _AccountViewState extends State<AccountView> {
                                         fontSize: 10,
                                         color: DynamicColors.whiteClr
                                       ),
+                                      onTap: (){
+                                        ContactAlert.show();
+
+                                      },
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -131,7 +142,11 @@ class _AccountViewState extends State<AccountView> {
                                           fontSize: 10,
                                           color: DynamicColors.whiteClr
                                         ),
+                                        onTap: (){
+                                          OrderAlert.show();
+                                        },
                                       ),
+
                                     ),
                                     CustomButton(
                                       verticalPadding: 0.0,
@@ -143,6 +158,9 @@ class _AccountViewState extends State<AccountView> {
                                         fontSize: 10,
                                         color: DynamicColors.whiteClr
                                       ),
+                                      onTap: (){
+                                        CompanyAddressAlert.show();
+                                      },
                                     ),
                                   ],
                                 ),
@@ -153,7 +171,7 @@ class _AccountViewState extends State<AccountView> {
                                 children: [
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerNameController,
+                                    controller: controller.accountNameController,
                                     width: fieldWidth/3,
                                     hintText: AppText.name,
                                     columnText: true,
@@ -161,7 +179,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerCodeController,
+                                    controller: controller.accountCodeController,
                                     width: fieldWidth/3,
                                     hintText: AppText.code,
                                     columnText: true,
@@ -169,7 +187,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerEmailController,
+                                    controller: controller.accountEmailController,
                                     width: fieldWidth/3,
                                     hintText: AppText.email,
                                     columnText: true,
@@ -177,7 +195,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerPasswordController,
+                                    controller: controller.accountPasswordController,
                                     width: fieldWidth/3,
                                     hintText: AppText.password,
                                     columnText: true,
@@ -228,7 +246,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerMobileController,
+                                    controller: controller.accountMobileController,
                                     width: fieldWidth/3,
                                     hintText: AppText.mobile,
                                     columnText: true,
@@ -236,7 +254,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerTelephoneController,
+                                    controller: controller.accountTelController,
                                     width: fieldWidth/3,
                                     hintText: AppText.tel,
                                     columnText: true,
@@ -244,7 +262,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerFaxController,
+                                    controller: controller.accountFaxController,
                                     width: fieldWidth/3,
                                     hintText: AppText.fax,
                                     columnText: true,
@@ -252,7 +270,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerWebsiteController,
+                                    controller: controller.accountWebSiteController,
                                     width: fieldWidth/3,
                                     hintText: AppText.website,
                                     columnText: true,
@@ -260,7 +278,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerAccountNumberController,
+                                    controller: controller.accountNumberController,
                                     width: fieldWidth/3,
                                     hintText: AppText.accountNumber,
                                     columnText: true,
@@ -268,7 +286,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerCreditCardController,
+                                    controller: controller.accountCreditCardController,
                                     width: fieldWidth/3,
                                     hintText: AppText.creditCard,
                                     columnText: true,
@@ -276,7 +294,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerAddressController,
+                                    controller: controller.accountAddressController,
                                     width: fieldWidth/3,
                                     hintText: AppText.address,
                                     columnText: true,
@@ -307,7 +325,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerInformationController,
+                                    controller: controller.accountInformationController,
                                     width: fieldWidth/3,
                                     hintText: AppText.information,
                                     columnText: true,
@@ -317,7 +335,7 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
-                                    controller: controller.customerContactNameController,
+                                    controller: controller.accountContactNameController,
                                     width: fieldWidth/3,
                                     hintText: AppText.contactName,
                                     columnText: true,
@@ -359,7 +377,8 @@ class _AccountViewState extends State<AccountView> {
                                                 content: SingleChildScrollView(
                                                   child: ColorPicker(
                                                     pickerColor: controller.foregroundClr,
-                                                    onColorChanged: controller.foregroundColor,
+                                                    onColorChanged: controller.
+                                                    foregroundColor,
                                                   ),
                                                 ),
                                                 actions: <Widget>[
