@@ -125,6 +125,7 @@ class _AccountViewState extends State<AccountView> {
                                         fontSize: 10,
                                         color: DynamicColors.whiteClr
                                       ),
+
                                       onTap: (){
                                         ContactAlert.show();
 
