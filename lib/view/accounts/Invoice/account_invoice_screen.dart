@@ -7,12 +7,12 @@ import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.da
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../component/color.dart';
-import '../../../component/datatable_widget.dart';
-import '../../../component/textStyle.dart';
-import '../../../component/text_field.dart';
-import '../../../component/text_widget.dart';
-import '../../dashboard_view/Controller/dashboard_controller.dart';
+import '../../../../component/color.dart';
+import '../../../../component/datatable_widget.dart';
+import '../../../../component/textStyle.dart';
+import '../../../../component/text_field.dart';
+import '../../../../component/text_widget.dart';
+import '../../../dashboard_view/Controller/dashboard_controller.dart';
 
 class CreateAccountInvoiceScreen extends StatefulWidget {
   const CreateAccountInvoiceScreen({super.key});

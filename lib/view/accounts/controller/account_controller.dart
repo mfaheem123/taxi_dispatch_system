@@ -253,20 +253,18 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-/// ........................................model object
+/// ........................................ model object
 ListOfAccountModel? listofAccount;
+///------------------------------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 5; 
-
   RxBool isLoadingListOfAccount = false.obs;
-  
 
 /// >>>>>>>>>>>>>>>>>>>>> Search Work
 
-   RxList<Account> AccountList = <Account>[].obs;
+  RxList<Account> AccountList = <Account>[].obs;
   RxList<Account> filteredAccount = <Account>[].obs;
-
   // search fields
   RxString searchName = ''.obs;
   RxString searchAccountType = ''.obs;
@@ -276,7 +274,6 @@ ListOfAccountModel? listofAccount;
   RxString searchTelephone = ''.obs;
   RxString searchcontactName = ''.obs;
   RxString searchSubsiDiary = ''.obs;
-
 
  Future<void> listOFAccount() async {
   try {
@@ -289,9 +286,8 @@ ListOfAccountModel? listofAccount;
     if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
     if (searchMobile.value.isNotEmpty) query += '&mobile=${searchMobile.value}';
     if (searchTelephone.value.isNotEmpty) query += '&telephone=${searchTelephone.value}';
-    if (searchcontactName.value.isNotEmpty) query += '&contactName=${searchcontactName.value}';
+    if (searchcontactName.value.isNotEmpty) query += '&contact_name=${searchcontactName.value}';
     if (searchSubsiDiary.value.isNotEmpty) query += '&subsidiary=${searchSubsiDiary.value}';
-
     print("API Query: accounts/get?$query");
 
     /// --------------------- Api Hit
