@@ -66,6 +66,9 @@ class AccountController extends GetxController {
   RxBool confirmSmsCheckBox = false.obs;
   RxBool arrivalSmsCheckBox = false.obs;
   RxBool clearJobSmsCheckBox = false.obs;
+  ///====String
+  String? bankAccount;
+  String? AccountType;
 
 
 
@@ -78,7 +81,7 @@ class AccountController extends GetxController {
     var response = await Api().post(
       {
         "subsidiary_id": 1,
-        "account_type": "cash",
+        "account_type": AccountType,
         "closed": false,
         "name": accountNameController.text,
         "code": accountCodeController.text,
@@ -125,8 +128,12 @@ class AccountController extends GetxController {
           }
         ],
 
-        "departments":dpartmentCtrl.text,
 
+        "departments": [
+          {
+            "name": dpartmentCtrl.text
+          },
+        ],
         "contacts": [
           {
             "name": contactAlertNameCtrl.text,
@@ -137,9 +144,14 @@ class AccountController extends GetxController {
           }
         ],
 
-        "order_numbers": orderCtrl.text,
+        "order_numbers": [
+          { "order_number": orderCtrl.text, },
 
-        "company_addresses":addressCtrl.text,
+        ],
+
+        "company_addresses": [
+          { "address":addressCtrl.text, }
+        ]
       },
       'accounts/add',
       auth: true,
@@ -148,7 +160,6 @@ class AccountController extends GetxController {
     if (response.statusCode == 200) {
       print("✅ Account Created Successfully");
       print(response.data);
-
       accountNameController.clear();
       accountCodeController.clear();
       accountEmailController.clear();

@@ -1576,40 +1576,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         // SizedBox(height: 12),
                         // 🔽 Address suggestion dropdown with keyboard support
                         Obx(() {
-                          if(controller.selectedTextFieldsValue.value == "VIA") return SizedBox();
+                          if (controller.selectedTextFieldsValue.value == "via") return const SizedBox();
                           if (controller.allAddressesData.isEmpty) return const SizedBox();
-                          final GlobalKey<State<StatefulWidget>>? activeKey =
-                              controller.activeFieldKey.value;
-                          final RenderBox? fieldBox =
-                          activeKey?.currentContext?.findRenderObject() as RenderBox?;
-                          final RenderBox? stackBox =
-                          controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
+
+                          final activeKey = controller.activeFieldKey.value;
+                          final fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
+                          final stackBox = controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
 
                           double top = 0.0;
                           double left = 0.0;
-                          double width = screenWidth;
+                          double width = screenWidth; // define early
 
                           if (fieldBox != null && stackBox != null) {
-                            final Offset localOffset =
-                            fieldBox.localToGlobal(Offset.zero, ancestor: stackBox);
-                            final double fieldHeight = fieldBox.size.height;
+                            final localOffset = fieldBox.localToGlobal(Offset.zero, ancestor: stackBox);
                             width = fieldBox.size.width;
-                            top = localOffset.dy + fieldHeight;
+                            top = localOffset.dy + fieldBox.size.height;
                             left = localOffset.dx;
                           }
-
-                          // ensure RawKeyboardListener gets focus when suggestions appear
-                          // WidgetsBinding.instance.addPostFrameCallback((_) {
-                          //   if (controller.allAddressesData.isNotEmpty &&
-                          //       !controller.suggestionFocusNode.hasFocus) {
-                          //     FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                          //     if(shortCutKeyValue.value == "PICKUP LOCATION"){
-                          //       FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
-                          //     }else{
-                          //       FocusScope.of(context).requestFocus(controller.dropOffTextFieldFocusNode);
-                          //     }
-                          //   }
-                          // });
 
                           return Positioned(
                             top: top,
@@ -1622,17 +1605,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                 if (event is RawKeyDownEvent) {
                                   if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                                     controller.moveHighlightDown();
-                                    return;
                                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                                     controller.moveHighlightUp();
-                                    return;
-                                  }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                                  } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                                     controller.tapSelect(controller.suggestionSelectedIndex.value);
-                                    print("enter press");
+                                    print("Enter pressed");
                                   }
-
-
-                                  // Enter intentionally ignored so it does not select anything
                                 }
                               },
                               child: Container(
@@ -1644,33 +1622,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                     BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
                                   ],
                                 ),
-
-                                // Rebuild list when highlightedIndex or data changes
                                 child: Obx(() => ListView.builder(
                                   key: controller.suggestionListKey,
                                   controller: controller.suggestionScrollController,
                                   itemCount: controller.allAddressesData.length,
-                                  padding: EdgeInsets.only(top: 15),
+                                  padding: const EdgeInsets.only(top: 15),
                                   itemBuilder: (context, index) {
                                     final item = controller.allAddressesData[index];
                                     final isHighlighted = controller.highlightedIndex.value == index;
-                                    controller.suggestionSelectedIndex.value = index;
-                                    print("controller.highlightedIndex.value");
-                                    print(controller.highlightedIndex.value);
-                                    print(index);
-                                    print("controller.highlightedIndex.value");
 
-                                    return Obx(
-                                      () {
-                                        final isHighlighted = controller.highlightedIndex.value == index;
-                                       return Container(
+                                    return Obx(() {
+                                      final isHighlighted = controller.highlightedIndex.value == index;
+                                      return Container(
                                         key: controller.suggestionItemKeys[index],
-                                        // optional background highlight
                                         color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
                                         child: ListTile(
                                           dense: true,
                                           visualDensity: VisualDensity.compact,
-                                          // Animated text style so color/weight changes step-by-step
                                           title: AnimatedDefaultTextStyle(
                                             duration: const Duration(milliseconds: 120),
                                             style: TextStyle(
@@ -1683,13 +1651,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                           onTap: () => controller.tapSelect(index),
                                         ),
                                       );
-                                        });
+                                    });
                                   },
                                 )),
                               ),
                             ),
                           );
                         }),
+
                       ],
                     ),
                   ],

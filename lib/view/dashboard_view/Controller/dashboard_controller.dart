@@ -713,6 +713,7 @@ class DashboardController extends GetxController {
   }
 
   final GlobalKey suggestionListKey = GlobalKey();
+  final GlobalKey suggestionListKeyVia = GlobalKey();
 
 
 // change move functions to scroll after change:
@@ -740,7 +741,9 @@ class DashboardController extends GetxController {
       if (i < 0 || i >= suggestionItemKeys.length) return;
 
       final itemCtx = suggestionItemKeys[i].currentContext;
-      final listCtx = suggestionListKey.currentContext;
+
+      final listCtx = selectedTextFieldsValue.value !=
+          "via"? suggestionListKey.currentContext:suggestionListKeyVia.currentContext;
 
       if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;

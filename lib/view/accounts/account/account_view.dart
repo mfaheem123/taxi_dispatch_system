@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/accounts/CompanyAddressAlert.dart';
 import 'package:dashboard_new1/view/accounts/ContactAlert.dart';
 import 'package:dashboard_new1/view/accounts/DepartmentAlert.dart';
@@ -228,21 +229,37 @@ class _AccountViewState extends State<AccountView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.accountType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/2.5,
-                                        // height: 35,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "SELECT ACCOUNT",
-                                        driversList: [
-                                          "SELECT ACCOUNT 01",
-                                          "SELECT ACCOUNT 02",
-                                          "SELECT ACCOUNT 03",
-                                          "SELECT ACCOUNT 04",
+                                      CustomDropdownField<String>(
+                                        label: "SELECT ACCOUNT",
+                                        width: Get.width / 6,
+                                        height: 30,
+                                        items: [
+                                          "Cash",
+                                          "Account",
                                         ],
+                                        value: controller.AccountType,
+                                        itemLabel: (templateList) =>
+                                        templateList,
+                                        onChanged: (val) {
+                                          controller.AccountType = val;
+                                          controller.update();
+                                        },
                                       ),
+                                      // RestrictedDrivers(
+                                      //   width: fieldWidth/2.5,
+                                      //   // height: 35,
+                                      //   padding: 0.0,
+                                      //   border: Border.all(
+                                      //     color: DynamicColors.gryClr,
+                                      //   ),
+                                      //   titleText: "SELECT ACCOUNT",
+                                      //   driversList: [
+                                      //     "SELECT ACCOUNT 01",
+                                      //     "SELECT ACCOUNT 02",
+                                      //     "SELECT ACCOUNT 03",
+                                      //     "SELECT ACCOUNT 04",
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
                                   CustomTextField(
@@ -307,21 +324,39 @@ class _AccountViewState extends State<AccountView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.paymentType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/2.5,
-                                        // height: 35,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "",
-                                        driversList: [
-                                          "CASH",
-                                          "CREDIT CARD",
-                                          "ACCOUNT",
-                                          "CREDIT CARD PAID",
+                                      CustomDropdownField<String>(
+                                        label: "Bank Account",
+                                        width: Get.width / 6,
+                                        height: 30,
+                                        items: [
+                                          "BANK ACCOUNT 01",
+                                          "BANK ACCOUNT 02",
+                                          "BANK ACCOUNT 03",
+                                          "BANK ACCOUNT 04",
                                         ],
+                                        value: controller.bankAccount,
+                                        itemLabel: (templateList) =>
+                                        templateList,
+                                        onChanged: (val) {
+                                          controller.bankAccount = val;
+                                          controller.update();
+                                        },
                                       ),
+                                      // RestrictedDrivers(
+                                      //   width: fieldWidth/2.5,
+                                      //   // height: 35,
+                                      //   padding: 0.0,
+                                      //   border: Border.all(
+                                      //     color: DynamicColors.gryClr,
+                                      //   ),
+                                      //   titleText: "",
+                                      //   driversList: [
+                                      //     "CASH",
+                                      //     "CREDIT CARD",
+                                      //     "ACCOUNT",
+                                      //     "CREDIT CARD PAID",
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
                                   CustomTextField(
@@ -416,21 +451,40 @@ class _AccountViewState extends State<AccountView> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.bankAccount, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/2.5,
-                                        // height: 35,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "",
-                                        driversList: [
+
+                                      CustomDropdownField<String>(
+                                        label: "Bank Account",
+                                        width: Get.width / 6,
+                                        height: 30,
+                                        items: [
                                           "BANK ACCOUNT 01",
                                           "BANK ACCOUNT 02",
                                           "BANK ACCOUNT 03",
                                           "BANK ACCOUNT 04",
                                         ],
+                                        value: controller.bankAccount,
+                                        itemLabel: (templateList) =>
+                                        templateList,
+                                        onChanged: (val) {
+                                          controller.bankAccount = val;
+                                          controller.update();
+                                        },
                                       ),
+                                      // RestrictedDrivers(
+                                      //   width: fieldWidth/2.5,
+                                      //   // height: 35,
+                                      //   padding: 0.0,
+                                      //   border: Border.all(
+                                      //     color: DynamicColors.gryClr,
+                                      //   ),
+                                      //   titleText: "",
+                                      //   driversList: [
+                                      //     "BANK ACCOUNT 01",
+                                      //     "BANK ACCOUNT 02",
+                                      //     "BANK ACCOUNT 03",
+                                      //     "BANK ACCOUNT 04",
+                                      //   ],
+                                      // ),
                                     ],
                                   ),
                                 ],
@@ -867,6 +921,9 @@ class _AccountViewState extends State<AccountView> {
                   btnText: AppText.save,
                   verticalPadding: 0.0,
                   fontSize: 13,
+                  onTap: (){
+                    controller.postAccount();
+                  },
                 ),
                 SizedBox(
                   height: 10,
