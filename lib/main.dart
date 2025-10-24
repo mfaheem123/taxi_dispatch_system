@@ -13,7 +13,7 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   disableInspect();
-  html.document.documentElement?.requestFullscreen();
+  html.document. documentElement?.requestFullscreen();
 
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',

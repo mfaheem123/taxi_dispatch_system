@@ -148,18 +148,61 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                           child: DatatableWidget(
                               columns: [
                                 buildHeaderWithSearch(
-                                    title: "NAME",
-                                    onChanged: (v) {
-                                      controller.searchName.value = v;
-                                      controller.applyFilter();
-                                    }),
-                                buildHeaderWithSearch(title: "ACCOUNT TYPE"),
-                                buildHeaderWithSearch(title: "ADDRESS"),
-                                buildHeaderWithSearch(title: "EMAIL"),
-                                buildHeaderWithSearch(title: "MOBILE"),
-                                buildHeaderWithSearch(title: "TELEPHONE"),
-                                buildHeaderWithSearch(title: "CONTACT NAME"),
-                                buildHeaderWithSearch(title: "SUBSIDIARY"),
+                                  title: "NAME",
+                                  onChanged: (value) {
+                                    controller.searchName.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "ACCOUNT TYPE",
+                                  onChanged: (value) {
+                                    controller.searchAccountType.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "ADDRESS",
+                                  onChanged: (value) {
+                                    controller.searchAddress.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "EMAIL",
+                                  onChanged: (value) {
+                                    controller.searchEmail.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "MOBILE",
+                                  onChanged: (value) {
+                                    controller.searchMobile.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "TELEPHONE",
+                                  onChanged: (value) {
+                                    controller.searchTelephone.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "CONTACT NAME",
+                                  onChanged: (value) {
+                                    controller.searchcontactName.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
+                                buildHeaderWithSearch(
+                                  title: "SUBSIDIARY",
+                                  onChanged: (value) {
+                                    controller.searchSubsiDiary.value = value;
+                                    controller.onSearchChanged();
+                                  },
+                                ),
                                 buildHeaderWithSearch(
                                     title: "ACTIONS", removeSearching: true),
                               ],
@@ -227,14 +270,11 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                               }).toList()),
                         ),
                       ),
-                Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: NumberPagination(
-                      onPageChanged: controller.onPageChange,
-                      totalPages: controller.totalPages.value,
-                      currentPage: controller.currentPage.value,
-                      visiblePagesCount: 4,
-                    )),
+                PaginationWidget(
+                  currentPage: controller.currentPage.value,
+                  totalPages: controller.totalPages.value,
+                  onPageChange: controller.onPageChange,
+                ),
               ],
             ),
           );

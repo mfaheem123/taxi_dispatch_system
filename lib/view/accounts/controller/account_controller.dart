@@ -253,97 +253,74 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-  RxList<Account> AccountList = <Account>[].obs;
+/// ........................................model object
+ListOfAccountModel? listofAccount;
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 5; 
+
+  RxBool isLoadingListOfAccount = false.obs;
+  
+
+/// >>>>>>>>>>>>>>>>>>>>> Search Work
+
+   RxList<Account> AccountList = <Account>[].obs;
   RxList<Account> filteredAccount = <Account>[].obs;
 
-// ye search fields hain
+  // search fields
   RxString searchName = ''.obs;
   RxString searchAccountType = ''.obs;
   RxString searchAddress = ''.obs;
   RxString searchEmail = ''.obs;
   RxString searchMobile = ''.obs;
   RxString searchTelephone = ''.obs;
-  RxString searchContactName = ''.obs;
+  RxString searchcontactName = ''.obs;
   RxString searchSubsiDiary = ''.obs;
 
 
-  var currentPage = 1.obs;
-  var totalPages = 5.obs;
-  final int limit = 4;
+ Future<void> listOFAccount() async {
+  try {
+    isLoadingListOfAccount.value = true;
 
-  RxBool isLoadingListOfAccount = false.obs;
+    String query = 'page=${currentPage.value}&limit=$limit';
+    if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
+    if (searchAccountType.value.isNotEmpty) query += '&accountType=${searchAccountType.value}';
+    if (searchAddress.value.isNotEmpty) query += '&address=${searchAddress.value}';
+    if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
+    if (searchMobile.value.isNotEmpty) query += '&mobile=${searchMobile.value}';
+    if (searchTelephone.value.isNotEmpty) query += '&telephone=${searchTelephone.value}';
+    if (searchcontactName.value.isNotEmpty) query += '&contactName=${searchcontactName.value}';
+    if (searchSubsiDiary.value.isNotEmpty) query += '&subsidiary=${searchSubsiDiary.value}';
 
-  ListOfAccountModel? listofAccount;
+    print("API Query: accounts/get?$query");
 
-  Future<void> listOFAccount() async {
-    try {
-      isLoadingListOfAccount.value = true;
-      var response = await Api()
-          .get('accounts/get?page=${currentPage.value}&limit=${limit}');
-      if (response.statusCode == 200) {
-        listofAccount = ListOfAccountModel.fromJson(response.data);
-        totalPages.value = listofAccount?.totalPages ?? 1;
-                AccountList.value = listofAccount?.accounts ?? [];
-        filteredAccount.value = AccountList;
-        // print("Response data: ${response.data}");
-        print(
-            'List of Account Error ------------------------------ ${listofAccount}');
-        print("Status Code Error-------${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error in List of Account: $e");
-    } finally {
-      isLoadingListOfAccount.value = false;
-      update();
+    /// --------------------- Api Hit
+    var response = await Api().get('accounts/get?$query');
+    if (response.statusCode == 200) {
+      listofAccount = ListOfAccountModel.fromJson(response.data);
+      totalPages.value = listofAccount?.totalPages ?? 1;
+      AccountList.value = listofAccount?.accounts ?? [];
+      filteredAccount.value = AccountList;
     }
+  } catch (e) {
+    print("Error in List of Account: $e");
+  } finally {
+    isLoadingListOfAccount.value = false;
+    update();
   }
+}
 
+// --------------------------------Search changes function
+void onSearchChanged() {
+  currentPage.value = 1; 
+  listOFAccount();
+}
+
+
+/// ------------------------------------- pagination function
   void onPageChange(int page) {
     currentPage.value = page;
-    listOFAccount();
-  }
-
-// ye function filter lagayega
-  void applyFilter() {
-    if (searchName.value.isEmpty &&
-        searchAccountType.value.isEmpty &&
-        searchAddress.value.isEmpty &&
-        searchEmail.value.isEmpty &&
-        searchMobile.value.isEmpty &&
-        searchTelephone.value.isEmpty
-        // searchContactName.value.isEmpty 
-        &&
-        searchSubsiDiary.value.isEmpty
-  
-  
-  ) {
-      filteredAccount.clear(); // koi filter nahi
-      update();
-      return;
-    }
-
-    filteredAccount.value = AccountList.where((item) {
-      final name = item.name?.toLowerCase() ?? '';
-      final accountType = item.accountType?.toString() ?? '';
-      final address = item.address?.toString() ?? '';
-      final email = item.email?.toString() ?? '';
-      final mobile = item.mobile?.toString() ?? '';
-      final telephone = item.telephone?.toString() ?? '';
-      final contactName = item.contactName?.toString() ?? '';
-      final subsiDiary = item.subsidiary?.toString() ?? '';
-
-      return name.contains(searchName.value.toLowerCase()) &&
-          accountType.contains(searchAccountType.value) &&
-          address.contains(searchAddress.value) &&
-          email.contains(searchEmail.value) &&
-          mobile.contains(searchMobile.value) &&
-          telephone.contains(searchTelephone.value)&&
-    contactName.contains(searchContactName.value) &&
-          subsiDiary.contains(searchSubsiDiary.value);
-    }).toList();
-
-    print("filter chal rha hai");
-    update();
+    listOFAccount(); 
   }
 
 
