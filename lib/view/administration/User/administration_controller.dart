@@ -60,6 +60,7 @@ class AdministrationController extends GetxController {
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
         print('User data ${UserModel}');
+        print('User data ${response.data}');
       }
     } catch (e) {
       print("Error in User: $e");
@@ -147,7 +148,19 @@ class AdministrationController extends GetxController {
 
     var response = await Api().post(formData, 'subsidiaries/add', auth: true);
     if (response.statusCode == 200) {
-      
+      nameController.clear();
+      emailController.clear();
+      faxController.clear();
+      websiteController.clear();
+      telephoneController.clear();
+      emergencyContactController.clear();
+      backgroundColorrController.clear();
+      foregroundColorController.clear();
+      companyController.clear();
+      currencyController.clear();
+      addressController.clear();
+      balanceController.clear();
+      update();
       Text("Saved Successfully");
       print("response of body -------------------------${response.data}");
     }

@@ -92,7 +92,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                 Row(
                   children: [
                     Text(
-                      "ACCOUNTS (7)",
+                      "ACCOUNTS" + " (${controller.listofAccount?.count})",
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w800, fontSize: 17),
                     ),

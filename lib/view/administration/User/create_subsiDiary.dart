@@ -81,7 +81,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                           ? null
                           : DecorationImage(
                               image: MemoryImage(controller
-                                  .profileImg!.bytes), // ✅ correct provider
+                                  .profileImg!.bytes),
                               fit: BoxFit.fill,
                             ),
                     ),

@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
@@ -64,187 +65,148 @@ class _UserListscreenState extends State<UserListscreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<AdministrationController>(builder: (controller) {
-        final users = controller.userModel?.employees ?? [];
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "USER (7)",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Checkbox(
-                      value: controller.inActive.value,
-                      onChanged: (v) {
-                        controller.inActive.value = v!;
-                        controller.update();
-                      }),
-                  Text(
-                    AppText.inactive,
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: DynamicColors.redClr),
-                  ),
-                  SizedBox(
-                    width: 60,
-                  ),
-                  CustomButton(
-                    height: 40,
-                    width: 80,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                      child: Icon(
-                        Icons.refresh,
-                        color: DynamicColors.whiteClr,
-                        size: 25,
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+                  ? maxWidth / 2
+                  : maxWidth / 4;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "USER" + "(${controller.userModel?.count})",
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800, fontSize: 17),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Checkbox(
+                        value: controller.inActive.value,
+                        onChanged: (v) {
+                          controller.inActive.value = v!;
+                          controller.update();
+                        }),
+                    Text(
+                      AppText.inactive,
+                      style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: DynamicColors.redClr),
+                    ),
+                    SizedBox(
+                      width: 60,
+                    ),
+                    CustomButton(
+                      height: 40,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                        child: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              controller.userLoading == true
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                          headingRowColor:
-                              MaterialStateProperty.all(Colors.grey[200]),
-                          dataRowMinHeight: 48,
-                          dataRowMaxHeight: 56,
-                          headingTextStyle: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 13,
-                          ),
-                          dataTextStyle: TextStyle(
-                            fontSize: 10,
-                          ),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(
-                                  color:
-                                      DynamicColors.textClr.withOpacity(0.5))),
-                          columns: [
-                            buildHeaderWithSearch(title: "USERNAME"),
-                            buildHeaderWithSearch(title: "EMAIL"),
-                            buildHeaderWithSearch(title: "PHONE #"),
-                            buildHeaderWithSearch(title: "FAX"),
-                            buildHeaderWithSearch(title: "ROLE"),
-                            buildHeaderWithSearch(title: "SUBSIDIARY"),
-                            buildHeaderWithSearch(
-                                title: "ACTIONS", removeSearching: true),
-                          ],
-                          rows: List.generate(users.length, (index) {
-                            final user = users[index];
-
-                            return DataRow(
-                              cells: [
-                                DataCell(Center(
-                                  child: Text(
-                                    user.username ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(Center(
-                                  child: Text(
-                                    user.email ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(Center(
-                                  child: Text(
-                                    user.phone ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(Center(
-                                  child: Text(
-                                    user.fax! ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(Center(
-                                  child: Text(
-                                    user.role!.name ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(Center(
-                                  child: Text(
-                                    user.subsidiary!.name ?? 'no data',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                )),
-                                DataCell(
-                                  Row(
-                                    children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(
-                                          Icons.edit_calendar,
-                                          size: 28,
-                                        ),
+                  ],
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                controller.userLoading.value == true
+                    ? Center(child: CircularProgressIndicator())
+                    : (controller.userModel?.employees == null ||
+                            controller.userModel!.employees!.isEmpty)
+                        ? const Center(child: Text("No users found"))
+                        : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: SizedBox(
+                              width: Get.width,
+                              child: DatatableWidget(
+                                columns: [
+                                  DataColumn(
+                                    label: Center(
+                                      child: Checkbox(
+                                        value: controller
+                                            .subsDiaryAllSelection.value,
+                                        onChanged: (v) {
+                                          controller
+                                              .subsDiaryAllSelection.value = v!;
+                                          controller.update();
+                                        },
                                       ),
-                                      Text("|"),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(
-                                          Icons.delete_forever,
-                                          size: 28,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          })),
-                    )
-            ],
-          ),
-        );
+                                  buildHeaderWithSearch(title: "USERNAME"),
+                                  buildHeaderWithSearch(title: "EMAIL"),
+                                  buildHeaderWithSearch(title: "PHONE #"),
+                                  buildHeaderWithSearch(title: "FAX"),
+                                  buildHeaderWithSearch(title: "ROLE"),
+                                  buildHeaderWithSearch(title: "SUBSIDIARY"),
+                                  buildHeaderWithSearch(
+                                      title: "ACTIONS", removeSearching: true),
+                                ],
+                                totalRow:
+                                    controller.userModel!.employees!.length,
+                                rows: controller.userModel!.employees!
+                                    .map((item) {
+                                  return DataRow(cells: [
+                                    DataCell(Center(
+                                      child: Text(item.username ?? 'no data'),
+                                    )),
+                                    DataCell(Center(
+                                      child: Text(item.email ?? 'no data'),
+                                    )),
+                                    DataCell(Center(
+                                      child: Text(item.phone ?? 'no data'),
+                                    )),
+                                    DataCell(Center(
+                                      child: Text(item.fax ?? 'no data'),
+                                    )),
+                                    DataCell(Center(
+                                      child: Text(item.role?.name ?? 'no data'),
+                                    )),
+                                    DataCell(Center(
+                                      child: Text(
+                                          item.subsidiary?.name ?? 'no data'),
+                                    )),
+                                    DataCell(Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.edit_calendar),
+                                          onPressed: () {},
+                                        ),
+                                        const Text("|"),
+                                        IconButton(
+                                          icon:
+                                              const Icon(Icons.delete_forever),
+                                          onPressed: () {},
+                                        ),
+                                      ],
+                                    )),
+                                  ]);
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+              ],
+            ),
+          );
+        });
       }),
     );
   }
