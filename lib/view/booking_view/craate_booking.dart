@@ -260,29 +260,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           width: fieldWidth,
                                           height: 30,
                                           child: RawKeyboardListener(
-                                            focusNode: controller
-                                                .pickupKeyboardFocusNode,
-                                            // onKey: (event) {
-                                            //   if (event is RawKeyDownEvent) {
-                                            //     if (event.logicalKey ==
-                                            //             LogicalKeyboardKey.arrowDown &&
-                                            //         controller.highlightedIndex.value <
-                                            //             controller.suggestions.length -
-                                            //                 1) {
-                                            //       controller.highlightedIndex.value++;
-                                            //     } else if (event.logicalKey ==
-                                            //             LogicalKeyboardKey.arrowUp &&
-                                            //         controller.highlightedIndex.value >
-                                            //             0) {
-                                            //       controller.highlightedIndex.value--;
-                                            //     } else if (event.logicalKey ==
-                                            //         LogicalKeyboardKey.enter) {
-                                            //       final selected =
-                                            //           controller.suggestions[controller.highlightedIndex.value].name;
-                                            //       controller.selectSuggestion(selected);
-                                            //     }
-                                            //   }
-                                            // },
+                                            focusNode: controller.pickupKeyboardFocusNode,
                                             onKey: (event) {
                                               if (event is RawKeyDownEvent) {
                                                 if (event.logicalKey ==
@@ -534,28 +512,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           child: RawKeyboardListener(
                                             focusNode: controller
                                                 .dropOffKeyboardFocusNode,
-                                            // onKey: (event) {
-                                            //   if (event is RawKeyDownEvent) {
-                                            //     if (event.logicalKey ==
-                                            //             LogicalKeyboardKey.arrowDown &&
-                                            //         controller.highlightedIndex.value <
-                                            //             controller.suggestions.length -
-                                            //                 1) {
-                                            //       controller.highlightedIndex.value++;
-                                            //     } else if (event.logicalKey ==
-                                            //             LogicalKeyboardKey.arrowUp &&
-                                            //         controller.highlightedIndex.value >
-                                            //             0) {
-                                            //       controller.highlightedIndex.value--;
-                                            //     } else if (event.logicalKey ==
-                                            //         LogicalKeyboardKey.enter) {
-                                            //       final selected =
-                                            //           controller.suggestions[controller
-                                            //               .highlightedIndex.value];
-                                            //       // controller.selectSuggestion(selected);
-                                            //     }
-                                            //   }
-                                            // },
                                             onKey: (event) {
                                               if (event is RawKeyDownEvent) {
                                                 if (event.logicalKey ==
@@ -1871,9 +1827,12 @@ class _CreateBookingState extends State<CreateBooking> {
 
                           Obx(() {
                             if (controller.selectedTextFieldsValue.value ==
-                                "VIA") return SizedBox();
-                            if (controller.allAddressesData.isEmpty)
+                                "via") {
+                              return SizedBox();
+                            }
+                            if (controller.allAddressesData.isEmpty) {
                               return const SizedBox();
+                            }
                             final GlobalKey<State<StatefulWidget>>? activeKey =
                                 controller.activeFieldKey.value;
                             final RenderBox? fieldBox =
