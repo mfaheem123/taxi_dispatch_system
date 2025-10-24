@@ -717,7 +717,7 @@ class DashboardController extends GetxController {
 
 
 // change move functions to scroll after change:
-  void moveHighlightDown() {
+  void moveHighlightDown({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
     highlightedIndex.value =
         (highlightedIndex.value + 1) % allAddressesData.length;
@@ -725,25 +725,25 @@ class DashboardController extends GetxController {
     _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
   }
 
-  void moveHighlightUp() {
+  void moveHighlightUp({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
     highlightedIndex.value =
         (highlightedIndex.value - 1 + allAddressesData.length) %
             allAddressesData.length;
     highlightedIndex.refresh();
-    _scrollToHighlighted(scrollDown: false); // 👈 scroll to top when up
+    _scrollToHighlighted(scrollDown: false, viaCondition: viaConditionValue); // 👈 scroll to top when up
   }
 
 
-  void _scrollToHighlighted({bool scrollDown = true}) {
+  void _scrollToHighlighted({bool scrollDown = true, bool viaCondition = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final i = highlightedIndex.value;
       if (i < 0 || i >= suggestionItemKeys.length) return;
 
       final itemCtx = suggestionItemKeys[i].currentContext;
 
-      final listCtx = selectedTextFieldsValue.value !=
-          "via"? suggestionListKey.currentContext:suggestionListKeyVia.currentContext;
+      final listCtx = /*selectedTextFieldsValue.value !=
+          "via"?*/ suggestionListKey.currentContext/*:suggestionListKeyVia.currentContext*/;
 
       if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;

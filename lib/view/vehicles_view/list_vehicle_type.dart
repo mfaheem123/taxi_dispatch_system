@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,11 +50,9 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
 
     return GetBuilder<VehicleController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
-        
-    //     final listToShow = controller.filteredVehicleTypes.isNotEmpty
-    // ? controller.filteredVehicleTypes
-    // : controller.allVehicleTypes;
-
+        final listToShow = controller.filteredVehicleTypes.isNotEmpty
+            ? controller.filteredVehicleTypes
+            : controller.allVehicleTypes;
 
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -120,61 +119,54 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                           columns: [
                             buildHeaderWithSearch(
                                 title: AppText.vehicleType,
-                                // onChanged: (v) {
-                                //   controller.searchName.value = v;
-                                //   controller.applyFilter();
-                                 
-                                // }
-                                ),
+                                onChanged: (v) {
+                                  controller.searchName.value = v;
+                                  controller.onSearchChanged();
+                                }),
                             buildHeaderWithSearch(
                                 title: "PASSENGERS",
-                                // onChanged: (v) {
-                                //   controller.searchPassengers.value = v;
-                                //   controller.applyFilter();
-                                // }
-                                ),
+                                onChanged: (v) {
+                                  controller.searchPassengers.value = v;
+                                  controller.onSearchChanged();
+                                }),
                             buildHeaderWithSearch(
                                 title: "LUGGAGES",
-                                // onChanged: (v) {
-                                //   controller.searchLuggages.value = v;
-                                //   controller.applyFilter();
-                                // }
-                                ),
+                                onChanged: (v) {
+                                  controller.searchLuggages.value = v;
+                                  controller.onSearchChanged();
+                                }),
                             buildHeaderWithSearch(
-                                title: "HAND LUGGAGES",
-                                // onChanged: (v) {
-                                //   controller.searchHandLuggages.value = v;
-                                //   controller.applyFilter();
-                                // },
-                                ),
+                              title: "HAND LUGGAGES",
+                              onChanged: (v) {
+                                controller.searchHandLuggages.value = v;
+                                controller.onSearchChanged();
+                              },
+                            ),
                             buildHeaderWithSearch(
-                                title: "MINIMUM FARES",
-                                // onChanged: (v) {
-                                //   controller.searchMinFare.value = v;
-                                //   controller.applyFilter();
-                                // },
-                                ),
+                              title: "MINIMUM FARES",
+                              onChanged: (v) {
+                                controller.searchMinFare.value = v;
+                                controller.onSearchChanged();
+                              },
+                            ),
                             buildHeaderWithSearch(
-                                title: "MINIMUM MILES",
-                                // onChanged: (v) {
-                                //   controller.searchMinMiles.value = v;
-                                //   controller.applyFilter();
-                                // },
-                                ),
+                              title: "MINIMUM MILES",
+                              onChanged: (v) {
+                                controller.searchMinMiles.value = v;
+                                controller.onSearchChanged();
+                              },
+                            ),
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
-
-
-                          totalRow: controller.vehicleTypeModel?.vehicleTypes?.length ??
-                              0,
-                          rows:
-                              (controller.vehicleTypeModel?.vehicleTypes ?? [])
-                                  .map(
+                          totalRow: listToShow.length ?? 0,
+                          rows: (listToShow ?? []).map(
                             (item) {
                               return DataRow(cells: [
                                 DataCell(Center(
-                                    child: Text(item.name ?? 'No Data'))),
+                                  child:
+                                      Text(item.name.toString() ?? 'No Data'),
+                                )),
                                 DataCell(Center(
                                     child: Text(item.passengers.toString() ??
                                         'No Data'))),
@@ -204,16 +196,26 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             side: BorderSide.none,
                                           ),
                                           onPressed: () {
-                                            controller.vehicleDataBinding(item: item);
-                                            int index = _controller.selectedMenuItems.indexWhere(
-                                                    (element) => element.title == "CREATE VEHICLE TYPE");
+                                            controller.vehicleDataBinding(
+                                                item: item);
+                                            int index = _controller
+                                                .selectedMenuItems
+                                                .indexWhere((element) =>
+                                                    element.title ==
+                                                    "CREATE VEHICLE TYPE");
                                             if (index != -1) {
-                                              _controller.selectedMenuItems[index].selectedItem = true;
-                                              _controller.currentPage.value = CreateVehicleTypes();
-                                            }else{
-                                              _controller.currentPage.value = CreateVehicleTypes();
+                                              _controller
+                                                  .selectedMenuItems[index]
+                                                  .selectedItem = true;
+                                              _controller.currentPage.value =
+                                                  CreateVehicleTypes();
+                                            } else {
+                                              _controller.currentPage.value =
+                                                  CreateVehicleTypes();
                                               _controller.menuBarRefresh(
-                                                  title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
+                                                  title: "CREATE VEHICLE TYPE",
+                                                  pageName:
+                                                      CreateVehicleTypes());
                                             }
                                             controller.update();
                                           },
@@ -244,14 +246,10 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                         ),
                       ),
                     ),
-                     Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child:  NumberPagination(
-                  onPageChanged: controller.onPageChange,
-                  totalPages: controller.totalPages.value,
-                  currentPage: controller.currentPage.value,
-                  visiblePagesCount: 5,
-                )),
+                    PaginationWidget(
+                        currentPage: controller.currentPage.value,
+                        totalPages: controller.totalPages.value,
+                        onPageChange: controller.onPageChange)
                   ],
                 ),
               );

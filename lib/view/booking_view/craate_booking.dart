@@ -1827,9 +1827,12 @@ class _CreateBookingState extends State<CreateBooking> {
 
                           Obx(() {
                             if (controller.selectedTextFieldsValue.value ==
-                                "via") return SizedBox();
-                            if (controller.allAddressesData.isEmpty)
+                                "via") {
+                              return SizedBox();
+                            }
+                            if (controller.allAddressesData.isEmpty) {
                               return const SizedBox();
+                            }
                             final GlobalKey<State<StatefulWidget>>? activeKey =
                                 controller.activeFieldKey.value;
                             final RenderBox? fieldBox =

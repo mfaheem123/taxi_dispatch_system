@@ -27,11 +27,11 @@ class _BookingTableState extends State<BookingTable> {
   @override
   Widget build(BuildContext context) {
 
-    if(controller.allAddressesData.isNotEmpty){
-      totalRows = 4;
-    }else{
-      totalRows = 10;
-    }
+    // if(controller.allAddressesData.isNotEmpty){
+    //   totalRows = 4;
+    // }else{
+    //   totalRows = 10;
+    // }
 
     return GetBuilder<DashboardController>(
       builder: (controller) {
@@ -258,7 +258,7 @@ class _BookingTableState extends State<BookingTable> {
                                     contentWidget: Center(child: Text("Testing"),),
                                   );
                                 },
-                                child: Icon(Icons.delete_forever, color: Colors.green, size: 20),
+                                child: Icon(Icons.delete_forever, color: Colors.red, size: 20),
                               ),
                               Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 1.0),
