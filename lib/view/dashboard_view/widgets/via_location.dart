@@ -214,6 +214,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                           address: controller.selectedModel!.name!,
                                           lat: controller.selectedModel!.lat!,
                                           lng: controller.selectedModel!.lon!));
+                                      addressController.clear();
                                       controller.update();
                                     }else{
                                         BotToast.showText(text: "Only Five VIA Allow");
@@ -433,17 +434,23 @@ class _ViaLocationState extends State<ViaLocation> {
                         onKey: (RawKeyEvent event) {
                           if (event is RawKeyDownEvent) {
                             if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                              controller.moveHighlightDown();
+                              controller.moveHighlightDown(viaConditionValue: false);
                               return;
                             } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                              controller.moveHighlightUp();
+                              controller.moveHighlightUp(viaConditionValue: false);
                               return;
+                            }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                              controller.selectedModel = controller.allAddressesData[controller.suggestionSelectedIndex.value];
+                              addressController.text = "${controller.allAddressesData[controller.suggestionSelectedIndex.value].name} ${controller.allAddressesData[controller.suggestionSelectedIndex.value].postcode}";
+                              controller.allAddressesData.clear();
+                              controller.update();
+                              print("enter press");
                             }
                             // Enter intentionally ignored so it does not select anything
                           }
                         },
                         child: Container(
-                          height: 280,
+                          height: screenHeight * 0.3,
                           // height: screenHeight * 0.3,
                           width: Get.width/4,
                           decoration: BoxDecoration(
@@ -459,8 +466,10 @@ class _ViaLocationState extends State<ViaLocation> {
 
                           // Rebuild list when highlightedIndex or data changes
                           child: Obx(() => ListView.builder(
-                            key: controller.suggestionListKeyVia,
-                            controller: controller.viaSuggestionScrollController,
+                            key: controller.suggestionListKey,
+                            controller: controller.suggestionScrollController,
+                            // key: controller.suggestionListKeyVia,
+                            // controller: controller.viaSuggestionScrollController,
                             itemCount: controller.allAddressesData.length,
                             padding: EdgeInsets.only(top: 15),
                             itemBuilder: (context, index) {
@@ -472,9 +481,10 @@ class _ViaLocationState extends State<ViaLocation> {
 
                               return Obx(
                                     () {
-                                  final isHighlighted = controller.highlightedIndex.value == index;
+                                      final isHighlighted = controller.highlightedIndex.value == index;
                                   return Container(
-                                    key: ValueKey('suggestion_item_$index'),
+                                    key: controller.suggestionItemKeys[index],
+                                    // key: ValueKey('suggestion_item_$index'),
                                     color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
                                     child: ListTile(
                                       dense: true,
