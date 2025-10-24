@@ -1,15 +1,16 @@
-import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class WebLoginAlert {
+class ContactsAlert {
   static void show() {
     final List<Map<String, String>> rows = [];
 
+    final accountCtrl = TextEditingController();
+    final usernameCtrl = TextEditingController();
+    final passwordCtrl = TextEditingController();
+    final mobileCtrl = TextEditingController();
+    final telephoneCtrl = TextEditingController();
 
-    AccountController controller = Get.isRegistered<AccountController>()
-        ? Get.find<AccountController>()
-        : Get.put(AccountController());
     int? editingIndex;
 
     Get.dialog(
@@ -21,39 +22,39 @@ class WebLoginAlert {
           child: StatefulBuilder(
             builder: (context, setState) {
               void saveRow() {
-                if (controller.webLoginaccountCtrl.text.isEmpty &&
-                    controller.webLoginusernameCtrl.text.isEmpty &&
-                    controller.webLoginpasswordCtrl.text.isEmpty &&
-                    controller.webLoginmobileCtrl.text.isEmpty &&
-                    controller.webLogintelephoneCtrl.text.isEmpty) return;
+                if (accountCtrl.text.isEmpty &&
+                    usernameCtrl.text.isEmpty &&
+                    passwordCtrl.text.isEmpty &&
+                    mobileCtrl.text.isEmpty &&
+                    telephoneCtrl.text.isEmpty) return;
 
                 setState(() {
                   if (editingIndex == null) {
 
                     rows.add({
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
+                      "account": accountCtrl.text,
+                      "username": usernameCtrl.text,
+                      "password": passwordCtrl.text,
+                      "mobile": mobileCtrl.text,
+                      "telephone": telephoneCtrl.text,
                     });
                   } else {
                     rows[editingIndex!] = {
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
+                      "account": accountCtrl.text,
+                      "username": usernameCtrl.text,
+                      "password": passwordCtrl.text,
+                      "mobile": mobileCtrl.text,
+                      "telephone": telephoneCtrl.text,
                     };
                     editingIndex = null;
                   }
 
                   // clear fields
-                  controller.webLoginaccountCtrl.clear();
-                  controller.webLoginusernameCtrl.clear();
-                  controller.webLoginpasswordCtrl.clear();
-                  controller.webLoginmobileCtrl.clear();
-                  controller.webLogintelephoneCtrl.clear();
+                  accountCtrl.clear();
+                  usernameCtrl.clear();
+                  passwordCtrl.clear();
+                  mobileCtrl.clear();
+                  telephoneCtrl.clear();
                 });
               }
 
@@ -89,20 +90,19 @@ class WebLoginAlert {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 10),
 
                     Row(
                       children: [
-                        _buildField("ACCOUNT #", controller.webLoginaccountCtrl),
+                        _buildField("ACCOUNT #", accountCtrl),
                         const SizedBox(width: 8),
-                        _buildField("USERNAME", controller.webLoginusernameCtrl),
+                        _buildField("USERNAME", usernameCtrl),
                         const SizedBox(width: 8),
-                        _buildField("PASSWORD", controller.webLoginpasswordCtrl),
+                        _buildField("PASSWORD", passwordCtrl),
                         const SizedBox(width: 8),
-                        _buildField("MOBILE", controller.webLoginmobileCtrl),
+                        _buildField("MOBILE", mobileCtrl),
                         const SizedBox(width: 8),
-                        _buildField("TELEPHONE", controller.webLogintelephoneCtrl),
+                        _buildField("TELEPHONE", telephoneCtrl),
                         const SizedBox(width: 8),
                         SizedBox(
                           width: 90,
@@ -135,14 +135,12 @@ class WebLoginAlert {
                       ),
                       child: Row(
                         children: const [
-
                           Expanded(child: Text("ACCOUNT #", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
                           Expanded(child: Text("USERNAME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
                           Expanded(child: Text("PASSWORD", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
                           Expanded(child: Text("MOBILE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
                           Expanded(child: Text("TELEPHONE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
                           Expanded(child: Text("ACTIONS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-
                         ],
                       ),
                     ),
@@ -173,11 +171,11 @@ class WebLoginAlert {
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
-                                        controller.webLoginaccountCtrl.text = row["account"] ?? "";
-                                        controller.webLoginusernameCtrl.text = row["username"] ?? "";
-                                        controller.webLoginpasswordCtrl.text = row["password"] ?? "";
-                                        controller.webLoginmobileCtrl.text = row["mobile"] ?? "";
-                                        controller.webLogintelephoneCtrl.text = row["telephone"] ?? "";
+                                        accountCtrl.text = row["account"] ?? "";
+                                        usernameCtrl.text = row["username"] ?? "";
+                                        passwordCtrl.text = row["password"] ?? "";
+                                        mobileCtrl.text = row["mobile"] ?? "";
+                                        telephoneCtrl.text = row["telephone"] ?? "";
                                       });
                                     },
                                   ),
@@ -188,11 +186,11 @@ class WebLoginAlert {
                                         rows.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
-                                          controller.webLoginaccountCtrl.clear();
-                                          controller.webLoginusernameCtrl.clear();
-                                          controller.webLoginpasswordCtrl.clear();
-                                          controller.webLoginmobileCtrl.clear();
-                                          controller.webLogintelephoneCtrl.clear();
+                                          accountCtrl.clear();
+                                          usernameCtrl.clear();
+                                          passwordCtrl.clear();
+                                          mobileCtrl.clear();
+                                          telephoneCtrl.clear();
                                         }
                                       });
                                     },

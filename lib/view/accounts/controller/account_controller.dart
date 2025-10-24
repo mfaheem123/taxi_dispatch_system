@@ -9,6 +9,177 @@ class AccountController extends GetxController {
   /// RxBool variable
   RxBool activeDrivers = false.obs;
 
+  final accountNameController = TextEditingController();
+  final accountCodeController = TextEditingController();
+  final accountEmailController = TextEditingController();
+  final accountPasswordController = TextEditingController();
+  final accountMobileController = TextEditingController();
+  final accountTelController = TextEditingController();
+  final accountFaxController = TextEditingController();
+  final accountWebSiteController = TextEditingController();
+  final accountNumberController = TextEditingController();
+  final accountCreditCardController = TextEditingController();
+  final accountAddressController = TextEditingController();
+  final accountInformationController = TextEditingController();
+  final accountContactNameController = TextEditingController();
+
+  ///====FeeSection
+
+  final accountAdminFeeController = TextEditingController();
+  final accountAccountFeeController = TextEditingController();
+
+  ///====Agent Commission
+
+  final accountAgentCommissionController = TextEditingController();
+  ///====WebLogin
+  final webLoginaccountCtrl = TextEditingController();
+  final webLoginusernameCtrl = TextEditingController();
+  final webLoginpasswordCtrl = TextEditingController();
+  final webLoginmobileCtrl = TextEditingController();
+  final webLogintelephoneCtrl = TextEditingController();
+  ///====ContactAlert
+  final contactAlertNameCtrl = TextEditingController();
+  final contactAlertEmailCtrl = TextEditingController();
+  final contactAlertPasswordCtrl = TextEditingController();
+  final contactAlertMobileCtrl = TextEditingController();
+  final contactAlertTelephoneCtrl = TextEditingController();
+  ///DepartmentAlert
+  final dpartmentCtrl = TextEditingController();
+  ///OderAlert
+  final orderCtrl = TextEditingController();
+  ///CompanyAddressAlert
+  final addressCtrl = TextEditingController();
+
+
+  ///Information Control
+  RxBool orderCheckBox = false.obs;
+  RxBool bookedByCheckBox = false.obs;
+  RxBool escoptCheckBox = false.obs;
+  RxBool fareControllerCheckBox = false.obs;
+  RxBool bankInfoCheckBox = false.obs;
+  ///Charges Control
+  RxBool adminFeeCheckBox = false.obs;
+  RxBool accountFeeCheckBox = false.obs;
+  RxBool vatCheckBox = false.obs;
+  ///SMS Control
+  RxBool dispatchSmsCheckBox = false.obs;
+  RxBool confirmSmsCheckBox = false.obs;
+  RxBool arrivalSmsCheckBox = false.obs;
+  RxBool clearJobSmsCheckBox = false.obs;
+
+
+
+
+  RxBool postAccountDetailsLoader = false.obs;
+
+  postAccount() async {
+    postAccountDetailsLoader(true);
+
+    var response = await Api().post(
+      {
+        "subsidiary_id": 1,
+        "account_type": "cash",
+        "closed": false,
+        "name": accountNameController.text,
+        "code": accountCodeController.text,
+        "email": accountEmailController.text,
+        "password": accountPasswordController.text,
+        "mobile": accountMobileController.text,
+        "telephone": accountTelController.text,
+        "fax": accountFaxController.text,
+        "website": accountWebSiteController.text,
+        "account_number": accountNumberController.text,
+        "credit_card": accountCreditCardController.text,
+        "address": accountAddressController.text,
+        // "payment_types": paymentTypeValue,
+        "information": accountInformationController.text,
+        "contact_name": accountContactNameController.text,
+        "background_color": null,
+        "foreground_color": null,
+        // "agent_commission_type": agentCommissionTypeValue,
+        "agent_commission": accountAgentCommissionController.text,
+        // "admin_fees_type": adminFeesTypeValue,
+        "admin_fees": accountAdminFeeController.text,
+        // "account_fees_type": accountFeesTypeValue,
+        "account_fees": accountAccountFeeController.text,
+        "has_booked_by": bookedByCheckBox.value,
+        "fare_controller": fareControllerCheckBox.value,
+        "has_escort": escoptCheckBox.value,
+        "has_vat": vatCheckBox.value,
+        "admin_fees_vat": adminFeeCheckBox.value,
+        "account_fees_vat": accountFeeCheckBox.value,
+        "has_order_number": orderCheckBox.value,
+        "dispatch_customer_text": dispatchSmsCheckBox.value,
+        "confirmation_text": confirmSmsCheckBox.value,
+        "arrival_text": arrivalSmsCheckBox.value,
+        "clear_job_text": clearJobSmsCheckBox.value,
+        "bank_information": bankInfoCheckBox.value,
+
+        "web_logins": [
+          {
+            "account_number": webLoginaccountCtrl.text,
+            "username": webLoginusernameCtrl.text,
+            "password": webLoginpasswordCtrl.text,
+            "mobile": webLoginmobileCtrl.text,
+            "telephone": webLogintelephoneCtrl.text,
+          }
+        ],
+
+        "departments":dpartmentCtrl.text,
+
+        "contacts": [
+          {
+            "name": contactAlertNameCtrl.text,
+            "email": contactAlertEmailCtrl.text,
+            "password": contactAlertPasswordCtrl.text,
+            "mobile": contactAlertMobileCtrl.text,
+            "telephone": contactAlertTelephoneCtrl.text,
+          }
+        ],
+
+        "order_numbers": orderCtrl.text,
+
+        "company_addresses":addressCtrl.text,
+      },
+      'accounts/add',
+      auth: true,
+    );
+
+    if (response.statusCode == 200) {
+      print("✅ Account Created Successfully");
+      print(response.data);
+
+      accountNameController.clear();
+      accountCodeController.clear();
+      accountEmailController.clear();
+      accountPasswordController.clear();
+      accountMobileController.clear();
+      accountTelController.clear();
+      accountFaxController.clear();
+      accountWebSiteController.clear();
+      accountNumberController.clear();
+      accountCreditCardController.clear();
+      accountAddressController.clear();
+      accountInformationController.clear();
+      accountContactNameController.clear();
+      accountAdminFeeController.clear();
+      accountAccountFeeController.clear();
+      webLoginaccountCtrl.clear();
+      webLoginusernameCtrl.clear();
+      webLoginpasswordCtrl.clear();
+      webLoginmobileCtrl.clear();
+      webLogintelephoneCtrl.clear();
+      orderCheckBox=false.obs;
+
+      update();
+    } else {
+      print("❌ Error Creating Account");
+      print(response);
+    }
+  }
+
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo CUSTOMER INVOICE functionality
@@ -25,19 +196,18 @@ class AccountController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo AccountView functionality
   /// RxBool variable
-  RxBool orderCheckBox = false.obs;
-  RxBool bookedByCheckBox = false.obs;
-  RxBool escoptCheckBox = false.obs;
-  RxBool fareControllerCheckBox = false.obs;
-  RxBool bankInfoCheckBox = false.obs;
-  RxBool adminFeeCheckBox = false.obs;
-  RxBool accountFeeCheckBox = false.obs;
-  RxBool vatCheckBox = false.obs;
-  RxBool dispatchSmsCheckBox = false.obs;
-  RxBool confirmSmsCheckBox = false.obs;
-  RxBool arrivalSmsCheckBox = false.obs;
-  RxBool clearJobSmsCheckBox = false.obs;
-
+  // RxBool orderCheckBox = false.obs;
+  // RxBool bookedByCheckBox = false.obs;
+  // RxBool escoptCheckBox = false.obs;
+  // RxBool fareControllerCheckBox = false.obs;
+  // RxBool bankInfoCheckBox = false.obs;
+  // RxBool adminFeeCheckBox = false.obs;
+  // RxBool accountFeeCheckBox = false.obs;
+  // RxBool vatCheckBox = false.obs;
+  // RxBool dispatchSmsCheckBox = false.obs;
+  // RxBool confirmSmsCheckBox = false.obs;
+  // RxBool arrivalSmsCheckBox = false.obs;
+  // RxBool clearJobSmsCheckBox = false.obs;
   /// controllers for text fields
   final customerCodeController = TextEditingController();
   final customerPasswordController = TextEditingController();
@@ -83,97 +253,74 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-  RxList<Account> AccountList = <Account>[].obs;
+/// ........................................model object
+ListOfAccountModel? listofAccount;
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 5; 
+
+  RxBool isLoadingListOfAccount = false.obs;
+  
+
+/// >>>>>>>>>>>>>>>>>>>>> Search Work
+
+   RxList<Account> AccountList = <Account>[].obs;
   RxList<Account> filteredAccount = <Account>[].obs;
 
-// ye search fields hain
+  // search fields
   RxString searchName = ''.obs;
   RxString searchAccountType = ''.obs;
   RxString searchAddress = ''.obs;
   RxString searchEmail = ''.obs;
   RxString searchMobile = ''.obs;
   RxString searchTelephone = ''.obs;
-  RxString searchContactName = ''.obs;
+  RxString searchcontactName = ''.obs;
   RxString searchSubsiDiary = ''.obs;
 
 
-  var currentPage = 1.obs;
-  var totalPages = 5.obs;
-  final int limit = 4;
+ Future<void> listOFAccount() async {
+  try {
+    isLoadingListOfAccount.value = true;
 
-  RxBool isLoadingListOfAccount = false.obs;
+    String query = 'page=${currentPage.value}&limit=$limit';
+    if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
+    if (searchAccountType.value.isNotEmpty) query += '&accountType=${searchAccountType.value}';
+    if (searchAddress.value.isNotEmpty) query += '&address=${searchAddress.value}';
+    if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
+    if (searchMobile.value.isNotEmpty) query += '&mobile=${searchMobile.value}';
+    if (searchTelephone.value.isNotEmpty) query += '&telephone=${searchTelephone.value}';
+    if (searchcontactName.value.isNotEmpty) query += '&contactName=${searchcontactName.value}';
+    if (searchSubsiDiary.value.isNotEmpty) query += '&subsidiary=${searchSubsiDiary.value}';
 
-  ListOfAccountModel? listofAccount;
+    print("API Query: accounts/get?$query");
 
-  Future<void> listOFAccount() async {
-    try {
-      isLoadingListOfAccount.value = true;
-      var response = await Api()
-          .get('accounts/get?page=${currentPage.value}&limit=${limit}');
-      if (response.statusCode == 200) {
-        listofAccount = ListOfAccountModel.fromJson(response.data);
-        totalPages.value = listofAccount?.totalPages ?? 1;
-                AccountList.value = listofAccount?.accounts ?? [];
-        filteredAccount.value = AccountList;
-        // print("Response data: ${response.data}");
-        print(
-            'List of Account Error ------------------------------ ${listofAccount}');
-        print("Status Code Error-------${response.statusCode}");
-      }
-    } catch (e) {
-      print("Error in List of Account: $e");
-    } finally {
-      isLoadingListOfAccount.value = false;
-      update();
+    /// --------------------- Api Hit
+    var response = await Api().get('accounts/get?$query');
+    if (response.statusCode == 200) {
+      listofAccount = ListOfAccountModel.fromJson(response.data);
+      totalPages.value = listofAccount?.totalPages ?? 1;
+      AccountList.value = listofAccount?.accounts ?? [];
+      filteredAccount.value = AccountList;
     }
+  } catch (e) {
+    print("Error in List of Account: $e");
+  } finally {
+    isLoadingListOfAccount.value = false;
+    update();
   }
+}
 
+// --------------------------------Search changes function
+void onSearchChanged() {
+  currentPage.value = 1; 
+  listOFAccount();
+}
+
+
+/// ------------------------------------- pagination function
   void onPageChange(int page) {
     currentPage.value = page;
-    listOFAccount();
-  }
-
-// ye function filter lagayega
-  void applyFilter() {
-    if (searchName.value.isEmpty &&
-        searchAccountType.value.isEmpty &&
-        searchAddress.value.isEmpty &&
-        searchEmail.value.isEmpty &&
-        searchMobile.value.isEmpty &&
-        searchTelephone.value.isEmpty
-        // searchContactName.value.isEmpty 
-        &&
-        searchSubsiDiary.value.isEmpty
-  
-  
-  ) {
-      filteredAccount.clear(); // koi filter nahi
-      update();
-      return;
-    }
-
-    filteredAccount.value = AccountList.where((item) {
-      final name = item.name?.toLowerCase() ?? '';
-      final accountType = item.accountType?.toString() ?? '';
-      final address = item.address?.toString() ?? '';
-      final email = item.email?.toString() ?? '';
-      final mobile = item.mobile?.toString() ?? '';
-      final telephone = item.telephone?.toString() ?? '';
-      final contactName = item.contactName?.toString() ?? '';
-      final subsiDiary = item.subsidiary?.toString() ?? '';
-
-      return name.contains(searchName.value.toLowerCase()) &&
-          accountType.contains(searchAccountType.value) &&
-          address.contains(searchAddress.value) &&
-          email.contains(searchEmail.value) &&
-          mobile.contains(searchMobile.value) &&
-          telephone.contains(searchTelephone.value)&&
-    contactName.contains(searchContactName.value) &&
-          subsiDiary.contains(searchSubsiDiary.value);
-    }).toList();
-
-    print("filter chal rha hai");
-    update();
+    listOFAccount(); 
   }
 
 

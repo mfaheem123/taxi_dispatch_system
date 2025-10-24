@@ -150,7 +150,7 @@ class Account {
       address: json['address'],
       paymentTypes: json['payment_types'],
       information: json['information'],
-      contactName: json['contact_name'],
+      contactName: json['contact_name']  ?? json['contactName'],
       backgroundColor: json['background_color'],
       foregroundColor: json['foreground_color'],
       agentCommissionType: json['agent_commission_type'],
