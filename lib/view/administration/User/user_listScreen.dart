@@ -129,9 +129,9 @@ class _UserListscreenState extends State<UserListscreen> {
                 ),
                 controller.userLoading.value == true
                     ? Center(child: CircularProgressIndicator())
-                    : (controller.userModel?.employees == null ||
-                            controller.userModel!.employees!.isEmpty)
-                        ? const Center(child: Text("No users found"))
+                    // : (controller.userModel?.employees == null ||
+                    //         controller.userModel!.employees!.isEmpty)
+                    //     ? const Center(child: Text("No users found"))
                         : SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: SizedBox(
@@ -164,41 +164,37 @@ class _UserListscreenState extends State<UserListscreen> {
                                     controller.userModel!.employees!.length,
                                 rows: controller.userModel!.employees!
                                     .map((item) {
-                                  return DataRow(cells: [
-                                    DataCell(Center(
-                                      child: Text(item.username ?? 'no data'),
-                                    )),
-                                    DataCell(Center(
-                                      child: Text(item.email ?? 'no data'),
-                                    )),
-                                    DataCell(Center(
-                                      child: Text(item.phone ?? 'no data'),
-                                    )),
-                                    DataCell(Center(
-                                      child: Text(item.fax ?? 'no data'),
-                                    )),
-                                    DataCell(Center(
-                                      child: Text(item.role?.name ?? 'no data'),
-                                    )),
-                                    DataCell(Center(
-                                      child: Text(
-                                          item.subsidiary?.name ?? 'no data'),
-                                    )),
-                                    DataCell(Row(
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(Icons.edit_calendar),
-                                          onPressed: () {},
-                                        ),
-                                        const Text("|"),
-                                        IconButton(
-                                          icon:
-                                              const Icon(Icons.delete_forever),
-                                          onPressed: () {},
-                                        ),
-                                      ],
-                                    )),
-                                  ]);
+                                  return 
+                                  DataRow(cells: [
+  DataCell(
+    Center(
+      child: Checkbox(
+        value: false,
+        onChanged: (v) {},
+      ),
+    ),
+  ),
+  DataCell(Center(child: Text(item.username ?? 'no data'))),
+  DataCell(Center(child: Text(item.email ?? 'no data'))),
+  DataCell(Center(child: Text(item.phone ?? 'no data'))),
+  DataCell(Center(child: Text(item.fax ?? 'no data'))),
+  DataCell(Center(child: Text(item.role?.name ?? 'no data'))),
+  DataCell(Center(child: Text(item.subsidiary?.name ?? 'no data'))),
+  DataCell(Row(
+    children: [
+      IconButton(
+        icon: Icon(Icons.edit_calendar),
+        onPressed: () {},
+      ),
+      const Text("|"),
+      IconButton(
+        icon: Icon(Icons.delete_forever),
+        onPressed: () {},
+      ),
+    ],
+  )),
+])
+;
                                 }).toList(),
                               ),
                             ),
