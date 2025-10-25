@@ -106,7 +106,8 @@ class LocationForm extends StatelessWidget {
                                   isNumeric: true)),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: CustomDropdownField<ZoneObject>(
+                            child: 
+                            CustomDropdownField<ZoneObject>(
                               label: "Select Zone",
                               width: Get.width / 5,
                               height: 35,

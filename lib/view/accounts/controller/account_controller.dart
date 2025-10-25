@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
-import 'package:dashboard_new1/view/accounts/model/listof_account.dart';
+import 'package:dashboard_new1/view/accounts/model/listof_account.dart' hide Subsidiary;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -31,25 +32,29 @@ class AccountController extends GetxController {
   ///====Agent Commission
 
   final accountAgentCommissionController = TextEditingController();
+
   ///====WebLogin
   final webLoginaccountCtrl = TextEditingController();
   final webLoginusernameCtrl = TextEditingController();
   final webLoginpasswordCtrl = TextEditingController();
   final webLoginmobileCtrl = TextEditingController();
   final webLogintelephoneCtrl = TextEditingController();
+
   ///====ContactAlert
   final contactAlertNameCtrl = TextEditingController();
   final contactAlertEmailCtrl = TextEditingController();
   final contactAlertPasswordCtrl = TextEditingController();
   final contactAlertMobileCtrl = TextEditingController();
   final contactAlertTelephoneCtrl = TextEditingController();
+
   ///DepartmentAlert
   final dpartmentCtrl = TextEditingController();
+
   ///OderAlert
   final orderCtrl = TextEditingController();
+
   ///CompanyAddressAlert
   final addressCtrl = TextEditingController();
-
 
   ///Information Control
   RxBool orderCheckBox = false.obs;
@@ -57,18 +62,25 @@ class AccountController extends GetxController {
   RxBool escoptCheckBox = false.obs;
   RxBool fareControllerCheckBox = false.obs;
   RxBool bankInfoCheckBox = false.obs;
+
   ///Charges Control
   RxBool adminFeeCheckBox = false.obs;
   RxBool accountFeeCheckBox = false.obs;
   RxBool vatCheckBox = false.obs;
+
   ///SMS Control
   RxBool dispatchSmsCheckBox = false.obs;
   RxBool confirmSmsCheckBox = false.obs;
   RxBool arrivalSmsCheckBox = false.obs;
   RxBool clearJobSmsCheckBox = false.obs;
 
-
-
+  ///====String
+  String? bankAccount;
+  String? accountType;
+  String? paymentType;
+  String? adminFeesDropDown;
+  String? accountTypeDropDown;
+  String? commissionDropDown;
 
   RxBool postAccountDetailsLoader = false.obs;
 
@@ -78,7 +90,7 @@ class AccountController extends GetxController {
     var response = await Api().post(
       {
         "subsidiary_id": 1,
-        "account_type": "cash",
+        "account_type": accountType,
         "closed": false,
         "name": accountNameController.text,
         "code": accountCodeController.text,
@@ -91,16 +103,16 @@ class AccountController extends GetxController {
         "account_number": accountNumberController.text,
         "credit_card": accountCreditCardController.text,
         "address": accountAddressController.text,
-        // "payment_types": paymentTypeValue,
+        "payment_types": paymentType,
         "information": accountInformationController.text,
         "contact_name": accountContactNameController.text,
         "background_color": null,
         "foreground_color": null,
-        // "agent_commission_type": agentCommissionTypeValue,
+        "agent_commission_type": commissionDropDown,
         "agent_commission": accountAgentCommissionController.text,
-        // "admin_fees_type": adminFeesTypeValue,
+        "admin_fees_type": adminFeesDropDown,
         "admin_fees": accountAdminFeeController.text,
-        // "account_fees_type": accountFeesTypeValue,
+        "account_fees_type": accountTypeDropDown,
         "account_fees": accountAccountFeeController.text,
         "has_booked_by": bookedByCheckBox.value,
         "fare_controller": fareControllerCheckBox.value,
@@ -114,7 +126,6 @@ class AccountController extends GetxController {
         "arrival_text": arrivalSmsCheckBox.value,
         "clear_job_text": clearJobSmsCheckBox.value,
         "bank_information": bankInfoCheckBox.value,
-
         "web_logins": [
           {
             "account_number": webLoginaccountCtrl.text,
@@ -124,9 +135,9 @@ class AccountController extends GetxController {
             "telephone": webLogintelephoneCtrl.text,
           }
         ],
-
-        "departments":dpartmentCtrl.text,
-
+        "departments": [
+          {"name": dpartmentCtrl.text},
+        ],
         "contacts": [
           {
             "name": contactAlertNameCtrl.text,
@@ -136,10 +147,16 @@ class AccountController extends GetxController {
             "telephone": contactAlertTelephoneCtrl.text,
           }
         ],
-
-        "order_numbers": orderCtrl.text,
-
-        "company_addresses":addressCtrl.text,
+        "order_numbers": [
+          {
+            "order_number": orderCtrl.text,
+          },
+        ],
+        "company_addresses": [
+          {
+            "address": addressCtrl.text,
+          }
+        ]
       },
       'accounts/add',
       auth: true,
@@ -148,7 +165,6 @@ class AccountController extends GetxController {
     if (response.statusCode == 200) {
       print("✅ Account Created Successfully");
       print(response.data);
-
       accountNameController.clear();
       accountCodeController.clear();
       accountEmailController.clear();
@@ -169,7 +185,7 @@ class AccountController extends GetxController {
       webLoginpasswordCtrl.clear();
       webLoginmobileCtrl.clear();
       webLogintelephoneCtrl.clear();
-      orderCheckBox=false.obs;
+      orderCheckBox = false.obs;
 
       update();
     } else {
@@ -178,7 +194,20 @@ class AccountController extends GetxController {
     }
   }
 
+  SubsidairyBankModel? subsidairyBankModel;
+  Subsidiary? subsidiaryStoreValue;
 
+  RxBool SubsdairyBankLoader = false.obs;
+
+  getSubsdairyBank() async {
+    SubsdairyBankLoader(true);
+    var response = await Api().get("locations");
+    if (response.statusCode == 200) {
+      subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
+      SubsdairyBankLoader(false);
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
 
@@ -253,15 +282,16 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-/// ........................................ model object
-ListOfAccountModel? listofAccount;
-///------------------------------------------- Pagination
+  /// ........................................ model object
+  ListOfAccountModel? listofAccount;
+
+  ///------------------------------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 5; 
+  final int limit = 5;
   RxBool isLoadingListOfAccount = false.obs;
 
-/// >>>>>>>>>>>>>>>>>>>>> Search Work
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
 
   RxList<Account> AccountList = <Account>[].obs;
   RxList<Account> filteredAccount = <Account>[].obs;
@@ -275,51 +305,54 @@ ListOfAccountModel? listofAccount;
   RxString searchcontactName = ''.obs;
   RxString searchSubsiDiary = ''.obs;
 
- Future<void> listOFAccount() async {
-  try {
-    isLoadingListOfAccount.value = true;
+  Future<void> listOFAccount() async {
+    try {
+      isLoadingListOfAccount.value = true;
 
-    String query = 'page=${currentPage.value}&limit=$limit';
-    if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
-    if (searchAccountType.value.isNotEmpty) query += '&accountType=${searchAccountType.value}';
-    if (searchAddress.value.isNotEmpty) query += '&address=${searchAddress.value}';
-    if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
-    if (searchMobile.value.isNotEmpty) query += '&mobile=${searchMobile.value}';
-    if (searchTelephone.value.isNotEmpty) query += '&telephone=${searchTelephone.value}';
-    if (searchcontactName.value.isNotEmpty) query += '&contact_name=${searchcontactName.value}';
-    if (searchSubsiDiary.value.isNotEmpty) query += '&subsidiary=${searchSubsiDiary.value}';
-    print("API Query: accounts/get?$query");
+      String query = 'page=${currentPage.value}&limit=$limit';
+      if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
+      if (searchAccountType.value.isNotEmpty)
+        query += '&accountType=${searchAccountType.value}';
+      if (searchAddress.value.isNotEmpty)
+        query += '&address=${searchAddress.value}';
+      if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
+      if (searchMobile.value.isNotEmpty)
+        query += '&mobile=${searchMobile.value}';
+      if (searchTelephone.value.isNotEmpty)
+        query += '&telephone=${searchTelephone.value}';
+      if (searchcontactName.value.isNotEmpty)
+        query += '&contact_name=${searchcontactName.value}';
+      if (searchSubsiDiary.value.isNotEmpty)
+        query += '&subsidiary=${searchSubsiDiary.value}';
+      print("API Query: accounts/get?$query");
 
-    /// --------------------- Api Hit
-    var response = await Api().get('accounts/get?$query');
-    if (response.statusCode == 200) {
-      listofAccount = ListOfAccountModel.fromJson(response.data);
-      totalPages.value = listofAccount?.totalPages ?? 1;
-      AccountList.value = listofAccount?.accounts ?? [];
-      filteredAccount.value = AccountList;
+      /// --------------------- Api Hit
+      var response = await Api().get('accounts/get?$query');
+      if (response.statusCode == 200) {
+        listofAccount = ListOfAccountModel.fromJson(response.data);
+        totalPages.value = listofAccount?.totalPages ?? 1;
+        AccountList.value = listofAccount?.accounts ?? [];
+        filteredAccount.value = AccountList;
+      }
+    } catch (e) {
+      print("Error in List of Account: $e");
+    } finally {
+      isLoadingListOfAccount.value = false;
+      update();
     }
-  } catch (e) {
-    print("Error in List of Account: $e");
-  } finally {
-    isLoadingListOfAccount.value = false;
-    update();
   }
-}
 
 // --------------------------------Search changes function
-void onSearchChanged() {
-  currentPage.value = 1; 
-  listOFAccount();
-}
-
-
-/// ------------------------------------- pagination function
-  void onPageChange(int page) {
-    currentPage.value = page;
-    listOFAccount(); 
+  void onSearchChanged() {
+    currentPage.value = 1;
+    listOFAccount();
   }
 
-
+  /// ------------------------------------- pagination function
+  void onPageChange(int page) {
+    currentPage.value = page;
+    listOFAccount();
+  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
 
