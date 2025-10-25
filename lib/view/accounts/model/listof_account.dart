@@ -4,7 +4,7 @@ class ListOfAccountModel {
   int? limit;
   int? totalPages;
   int? count;
-  List<Account>? accounts;
+  List<AccountObject>? accounts;
 
   ListOfAccountModel({
     this.status,
@@ -24,7 +24,7 @@ class ListOfAccountModel {
       totalPages: int.tryParse(json['total_pages']?.toString() ?? '0'),
       count: int.tryParse(json['count']?.toString() ?? '0'),
       accounts: (json['accounts'] as List?)
-          ?.map((e) => Account.fromJson(e))
+          ?.map((e) => AccountObject.fromJson(e))
           .toList(),
     );
   }
@@ -39,7 +39,7 @@ class ListOfAccountModel {
       };
 }
 
-class Account {
+class AccountObject {
   int? id;
   int? subsidiaryId;
   dynamic subsidiaryBankAccountId;
@@ -84,7 +84,7 @@ class Account {
   List<Department>? departments;
   Subsidiary? subsidiary;
 
-  Account({
+  AccountObject({
     this.id,
     this.subsidiaryId,
     this.subsidiaryBankAccountId,
@@ -130,8 +130,8 @@ class Account {
     this.subsidiary,
   });
 
-  factory Account.fromJson(Map<String, dynamic> json) {
-    return Account(
+  factory AccountObject.fromJson(Map<String, dynamic> json) {
+    return AccountObject(
       id: int.tryParse(json['id']?.toString() ?? '0'),
       subsidiaryId: int.tryParse(json['subsidiary_id']?.toString() ?? '0'),
       subsidiaryBankAccountId: json['subsidiary_bank_account_id'],
@@ -161,27 +161,27 @@ class Account {
       accountFeesType: json['account_fees_type'],
       accountFees: json['account_fees'],
       hasBookedBy: json['has_booked_by'] == true ||
-          json['has_booked_by'] == 'true',
+          json['has_booked_by'] == true,
       fareController: json['fare_controller'] == true ||
-          json['fare_controller'] == 'true',
-      hasEscort: json['has_escort'] == true || json['has_escort'] == 'true',
-      hasVat: json['has_vat'] == true || json['has_vat'] == 'true',
+          json['fare_controller'] == true,
+      hasEscort: json['has_escort'] == true || json['has_escort'] == true,
+      hasVat: json['has_vat'] == true || json['has_vat'] == true,
       adminFeesVat:
-          json['admin_fees_vat'] == true || json['admin_fees_vat'] == 'true',
+          json['admin_fees_vat'] == true || json['admin_fees_vat'] == true,
       accountFeesVat:
-          json['account_fees_vat'] == true || json['account_fees_vat'] == 'true',
+          json['account_fees_vat'] == true || json['account_fees_vat'] == true,
       hasOrderNumber: json['has_order_number'] == true ||
-          json['has_order_number'] == 'true',
+          json['has_order_number'] == true,
       dispatchCustomerText: json['dispatch_customer_text'] == true ||
-          json['dispatch_customer_text'] == 'true',
+          json['dispatch_customer_text'] == true,
       confirmationText: json['confirmation_text'] == true ||
-          json['confirmation_text'] == 'true',
+          json['confirmation_text'] == true,
       arrivalText:
-          json['arrival_text'] == true || json['arrival_text'] == 'true',
+          json['arrival_text'] == true || json['arrival_text'] == true,
       clearJobText:
-          json['clear_job_text'] == true || json['clear_job_text'] == 'true',
+          json['clear_job_text'] == true || json['clear_job_text'] == true,
       bankInformation:
-          json['bank_information'] == true || json['bank_information'] == 'true',
+          json['bank_information'] == true || json['bank_information'] == true,
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
       departments: (json['departments'] as List?)

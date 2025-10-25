@@ -6,10 +6,10 @@ class WebLoginAlert {
   static void show() {
     final List<Map<String, String>> rows = [];
 
-
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
         : Get.put(AccountController());
+
     int? editingIndex;
 
     Get.dialog(
@@ -29,7 +29,13 @@ class WebLoginAlert {
 
                 setState(() {
                   if (editingIndex == null) {
-
+                    controller.webLoginDataList.add(WebLoginClass(
+                      account: controller.webLoginaccountCtrl.text,
+                      userName: controller.webLoginusernameCtrl.text,
+                      password: controller.webLoginpasswordCtrl.text,
+                      mobile: controller.webLoginmobileCtrl.text,
+                      telphone: controller.webLogintelephoneCtrl.text,
+                    ));
                     rows.add({
                       "account": controller.webLoginaccountCtrl.text,
                       "username": controller.webLoginusernameCtrl.text,
@@ -38,6 +44,13 @@ class WebLoginAlert {
                       "telephone": controller.webLogintelephoneCtrl.text,
                     });
                   } else {
+                    controller.webLoginDataList.add(WebLoginClass(
+                      account: controller.webLoginaccountCtrl.text,
+                      userName: controller.webLoginusernameCtrl.text,
+                      password: controller.webLoginpasswordCtrl.text,
+                      mobile: controller.webLoginmobileCtrl.text,
+                      telphone: controller.webLogintelephoneCtrl.text,
+                    ));
                     rows[editingIndex!] = {
                       "account": controller.webLoginaccountCtrl.text,
                       "username": controller.webLoginusernameCtrl.text,
@@ -48,7 +61,7 @@ class WebLoginAlert {
                     editingIndex = null;
                   }
 
-                  // clear fields
+                  // Clear fields
                   controller.webLoginaccountCtrl.clear();
                   controller.webLoginusernameCtrl.clear();
                   controller.webLoginpasswordCtrl.clear();
@@ -76,22 +89,31 @@ class WebLoginAlert {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           "WEB LOGINS",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         InkWell(
                           onTap: () => Get.back(),
-                          child: const Icon(Icons.close, size: 20, color: Colors.black54),
+                          child: const Icon(
+                            Icons.close,
+                            size: 20,
+                            color: Colors.black54,
+                          ),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 10),
 
+                    // Input Fields Row
                     Row(
                       children: [
                         _buildField("ACCOUNT #", controller.webLoginaccountCtrl),
@@ -109,50 +131,108 @@ class WebLoginAlert {
                           height: 34,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: editingIndex == null ? const Color(0xFF43489A) : Colors.orange,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                              backgroundColor: editingIndex == null
+                                  ? const Color(0xFF43489A)
+                                  : Colors.orange,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
+                              ),
                             ),
                             onPressed: saveRow,
                             child: Text(
                               editingIndex == null ? "SAVE" : "UPDATE",
-                              style: const TextStyle(fontSize: 13, color: Colors.white),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
                       ],
                     ),
 
-
-
                     const SizedBox(height: 12),
 
                     // Table Header
                     Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6,
+                        horizontal: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade100,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
                         children: const [
-
-                          Expanded(child: Text("ACCOUNT #", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("USERNAME", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("PASSWORD", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("MOBILE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("TELEPHONE", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-                          Expanded(child: Text("ACTIONS", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold))),
-
+                          Expanded(
+                            child: Text(
+                              "ACCOUNT #",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              "USERNAME",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              "PASSWORD",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              "MOBILE",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              "TELEPHONE",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(
+                              "ACTIONS",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
 
                     // Table Body
-                    ...rows.asMap().entries.map((entry) {
+                    ...controller.webLoginDataList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
+
                       return Container(
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 4,
+                        ),
                         decoration: BoxDecoration(
                           border: Border(
                             bottom: BorderSide(color: Colors.grey.shade200),
@@ -160,29 +240,42 @@ class WebLoginAlert {
                         ),
                         child: Row(
                           children: [
-                            Expanded(child: Text(row["account"] ?? "")),
-                            Expanded(child: Text(row["username"] ?? "")),
-                            Expanded(child: Text(row["password"] ?? "")),
-                            Expanded(child: Text(row["mobile"] ?? "")),
-                            Expanded(child: Text(row["telephone"] ?? "")),
+                            Expanded(child: Text(row.account ?? "")),
+                            Expanded(child: Text(row.userName ?? "")),
+                            Expanded(child: Text(row.password ?? "")),
+                            Expanded(child: Text(row.mobile ?? "")),
+                            Expanded(child: Text(row.telphone ?? "")),
                             Expanded(
                               child: Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      size: 18,
+                                      color: Color(0xFF43489A),
+                                    ),
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
-                                        controller.webLoginaccountCtrl.text = row["account"] ?? "";
-                                        controller.webLoginusernameCtrl.text = row["username"] ?? "";
-                                        controller.webLoginpasswordCtrl.text = row["password"] ?? "";
-                                        controller.webLoginmobileCtrl.text = row["mobile"] ?? "";
-                                        controller.webLogintelephoneCtrl.text = row["telephone"] ?? "";
+                                        controller.webLoginaccountCtrl.text =
+                                            row.account ?? "";
+                                        controller.webLoginusernameCtrl.text =
+                                            row.userName ?? "";
+                                        controller.webLoginpasswordCtrl.text =
+                                            row.password ?? "";
+                                        controller.webLoginmobileCtrl.text =
+                                            row.mobile ?? "";
+                                        controller.webLogintelephoneCtrl.text =
+                                            row.telphone ?? "";
                                       });
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, size: 18, color: Colors.red),
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 18,
+                                      color: Colors.red,
+                                    ),
                                     onPressed: () {
                                       setState(() {
                                         rows.removeAt(index);
@@ -228,11 +321,13 @@ class WebLoginAlert {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 4,
+            ),
           ),
         ),
       ),
     );
   }
-
 }
