@@ -1,14 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dashboard_new1/component/networks/api.dart';
-
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
     hide VehicleType;
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
-
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart'
     as type;
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -126,8 +123,8 @@ class VehicleController extends GetxController {
     }
   }
 
-  VehicleObject? singleVehicleData;
-  companyDataBinding({VehicleObject? data}) async {
+  Vehicles? singleVehicleData;
+  companyDataBinding({Vehicles? data}) async {
     vehicleMakeController.text = data!.make.toString();
     vehicleModelController.text = data.model.toString();
     colorController.text = data.color.toString();
@@ -221,24 +218,66 @@ class VehicleController extends GetxController {
   RxBool isCompanyVehicle = false.obs;
 
   CompanyVehicleModel? companyVehicleModel;
+
   // Fetch company vehicles
+  RxList<VehicleTypes> companyAllVehicle = <VehicleTypes>[].obs;
+  RxList<VehicleTypes> filteredCompanyVehicle = <VehicleTypes>[].obs;
+
+  // ye search fields hain
+  RxString searchVehicle = ''.obs;
+  RxString searchVehicleType = ''.obs;
+  RxString searchOwner = ''.obs;
+  RxString searchMake = ''.obs;
+  RxString searchModel = ''.obs;
+  RxString searchColor = ''.obs;
+
+//   ///------------------------------------------- Pagination
+  var companycurrentPage = 1.obs;
+  var companytotalPages = 1.obs;
+  final int companylimit = 5;
+
   Future<void> companyVehicle() async {
     try {
+      String query = 'page=${companycurrentPage.value}&limit=$companylimit';
+      if (searchVehicle.value.isNotEmpty)
+        query += '&vehicle_number=${searchVehicle.value}';
+      if (searchVehicleType.value.isNotEmpty)
+        query += '&vehicle_type=${searchVehicleType.value}';
+      if (searchOwner.value.isNotEmpty) query += '&owner=${searchOwner.value}';
+      if (searchMake.value.isNotEmpty) query += '&make=${searchMake.value}';
+      if (searchModel.value.isNotEmpty) query += '&model=${searchModel.value}';
+      if (searchColor.value.isNotEmpty) query += '&color=${searchColor.value}';
+
+      print("API Query: company-vehicles/ge?$query");
+
       isCompanyVehicle.value = true;
-      final response = await Api().get('company-vehicles');
+      final response = await Api().get('company-vehicles/get?$query');
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
-        // companyallVehicle.value = companyVehicleModel?.vehicles ?? <Vehicle>[];
-        // companyfilteredVehicle.value = companyallVehicle;
+        totalPages.value = vehicleTypeModel?.totalPages ?? 1;
+        companyAllVehicle.value = vehicleTypeModel?.vehicleTypes ?? [];
+        filteredCompanyVehicle.value = companyAllVehicle;
         print(
             'Company Vehicles: ${companyVehicleModel?.vehicles?.length ?? 0}');
       }
     } catch (e) {
-      print("Error in companyVehicle(): $e");
+      print("Error in companyVehicle: $e");
     } finally {
       isCompanyVehicle.value = false;
       update();
     }
+  }
+
+// // --------------------------------Search changes function
+  void SearchingOnCompany() {
+    companycurrentPage.value = 1;
+    companyVehicle();
+  }
+
+//   /// ------------------------------------- pagination function
+  void PageOnCompany(int page) {
+    companycurrentPage.value = page;
+    companyVehicle();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type

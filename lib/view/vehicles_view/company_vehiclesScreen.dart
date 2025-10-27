@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
@@ -65,9 +66,9 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<VehicleController>(builder: (controller) {
-        // final listToShow = controller.companyfilteredVehicle.isNotEmpty
-        //     ? controller.companyfilteredVehicle
-        //     : controller.companyallVehicle;
+        final listToShow = controller.filteredCompanyVehicle.isNotEmpty
+            ? controller.filteredCompanyVehicle
+            : controller.companyAllVehicle;
 
         return controller.isCompanyVehicle.value == true
             ? Center(child: CircularProgressIndicator())
@@ -114,51 +115,49 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                         columns: [
                           buildHeaderWithSearch(
                             title: "VEHICLE #",
-                            // onChanged: (v) {
-                            //   controller.searchVehicle.value = v;
-                            //   controller.companyApplyFilter();
-                            // },
+                            onChanged: (v) {
+                              controller.searchVehicle.value = v;
+                              controller.SearchingOnCompany();
+                            },
                           ),
                           buildHeaderWithSearch(
                               title: "VEHICLE TYPE",
-                              // onChanged: (v) {
-                              //   controller.searchVehicleType.value = v;
-                              //   controller.companyApplyFilter();
-                              // }
-                              ),
+                              onChanged: (v) {
+                                controller.searchVehicleType.value = v;
+                                controller.SearchingOnCompany();
+                              }),
                           buildHeaderWithSearch(
                               title: "OWNER",
-                              // onChanged: (v) {
-                              //   controller.searchOwner.value = v;
-                              //   controller.companyApplyFilter();
-                              // }
-                              ),
+                              onChanged: (v) {
+                                controller.searchOwner.value = v;
+                                controller.SearchingOnCompany();
+                              }),
                           buildHeaderWithSearch(
                               title: "MAKE",
-                              // onChanged: (v) {
-                              //   controller.searchMake.value = v;
-                              //   controller.companyApplyFilter();
-                              // }
-                              ),
+                              onChanged: (v) {
+                                controller.searchMake.value = v;
+                                controller.SearchingOnCompany();
+                              }),
                           buildHeaderWithSearch(
                               title: "MODEL",
-                              // onChanged: (v) {
-                              //   controller.searchModel.value = v;
-                              //   controller.companyApplyFilter();
-                              // }
-                              ),
+                              onChanged: (v) {
+                                controller.searchModel.value = v;
+                                controller.SearchingOnCompany();
+                              }),
                           buildHeaderWithSearch(
                               title: "COLOR",
-                              // onChanged: (v) {
-                              //   controller.searchColor.value = v;
-                              //   controller.companyApplyFilter();
-                              // }
-                              ),
+                              onChanged: (v) {
+                                controller.searchColor.value = v;
+                                controller.SearchingOnCompany();
+                              }),
                           buildHeaderWithSearch(
                               title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow: controller.companyVehicleModel?.vehicles?.length ?? 0,
-                        rows: (controller.companyVehicleModel?.vehicles ?? []).map((item) {
+                        totalRow:
+                            controller.companyVehicleModel?.vehicles?.length ??
+                                0,
+                        rows: (controller.companyVehicleModel?.vehicles ?? [])
+                            .map((item) {
                           return DataRow(
                             cells: [
                               DataCell(Center(
@@ -191,17 +190,26 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                           ), // border color & thickness
                                         ),
                                         onPressed: () {
-                                          controller.companyDataBinding(data: item);
+                                          controller.companyDataBinding(
+                                              data: item);
                                           // controller.bindLocationUpdateLocation(locationUpdate: item);
-                                          int index = _controller.selectedMenuItems.indexWhere(
-                                                  (element) => element.title == "LocationForm");
+                                          int index = _controller
+                                              .selectedMenuItems
+                                              .indexWhere((element) =>
+                                                  element.title ==
+                                                  "LocationForm");
                                           if (index != -1) {
-                                            _controller.selectedMenuItems[index].selectedItem = true;
-                                            _controller.currentPage.value = CreateCompanyVehicle();
-                                          }else{
-                                            _controller.currentPage.value = CreateCompanyVehicle();
+                                            _controller.selectedMenuItems[index]
+                                                .selectedItem = true;
+                                            _controller.currentPage.value =
+                                                CreateCompanyVehicle();
+                                          } else {
+                                            _controller.currentPage.value =
+                                                CreateCompanyVehicle();
                                             _controller.menuBarRefresh(
-                                                title: "CREATE COMPANY VEHICLE", pageName: CreateCompanyVehicle());
+                                                title: "CREATE COMPANY VEHICLE",
+                                                pageName:
+                                                    CreateCompanyVehicle());
                                           }
                                           controller.update();
                                         },
@@ -217,12 +225,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                             color: Colors.transparent,
                                           ), // border color & thickness
                                         ),
-
-                                        onPressed: () {
-
-
-
-                                        },
+                                        onPressed: () {},
                                         child: Icon(
                                           Icons.delete_forever,
                                           color: DynamicColors.redClr,
@@ -237,57 +240,13 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                           );
                         }).toList(),
 
-                        //  rows:
-                        //               (controller.companyVehicleModel!.vehicles ?? [])
-                        //                   .map((item) {
-                        //             return DataRow(cells: [
-                        //           DataCell(Center(child: Text(item.make!.toString()))),
-                        //           DataCell(Center(child: Text("SALOON"))),
-                        //           DataCell(Center(child: Text("Faheem"))),
-                        //           DataCell(Center(child: Text("Honda"))),
-                        //           DataCell(Center(child: Text("2025"))),
-                        //           DataCell(Center(child: Text("Black"))),
-                        //           DataCell(
-                        //             Center(
-                        //               child: Row(
-                        //                 mainAxisAlignment: MainAxisAlignment.center,
-                        //                 children: [
-                        //                   OutlinedButton(
-                        //                     style: OutlinedButton.styleFrom(
-                        //                       side: BorderSide(
-                        //                         color: Colors.transparent,
-                        //                       ), // border color & thickness
-                        //                     ),
-                        //                     onPressed: () {},
-                        //                     child: Icon(
-                        //                       Icons.search,
-                        //                       size: 28,
-                        //                     ),
-                        //                   ),
-                        //                   Text("|"),
-                        //                   OutlinedButton(
-                        //                     style: OutlinedButton.styleFrom(
-                        //                       side: BorderSide(
-                        //                         color: Colors.transparent,
-                        //                       ), // border color & thickness
-                        //                     ),
-                        //                     onPressed: () {},
-                        //                     child: Icon(
-                        //                       Icons.delete_forever,
-                        //                       color: DynamicColors.redClr,
-                        //                       size: 28,
-                        //                     ),
-                        //                   ),
-                        //                 ],
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //       );
-                        //     },
-                        //   ),
+                      
                       ),
                     ),
+                    PaginationWidget(
+                        currentPage: controller.companycurrentPage.value,
+                        totalPages: controller.companytotalPages.value,
+                        onPageChange: controller.onPageChange)
                   ],
                 ),
               );
