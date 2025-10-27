@@ -45,10 +45,14 @@ class _AccountViewState extends State<AccountView> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
-      initState() {
-        controller.getSubsdairyBank();
-      }
+    return GetBuilder<AccountController>(
+       initState: (v){
+         controller.getSubsdairyBank();
+       },
+
+
+
+        builder: (controller) {
 
       return controller.SubsdairyBankLoader.value == true
                   ? SizedBox.shrink()
@@ -221,21 +225,21 @@ class _AccountViewState extends State<AccountView> {
                                 controller.update();
                               },
                             ),
-                                  RestrictedDrivers(
-                                    width: fieldWidth / 2.5,
-                                    // height: 35,
-                                    padding: 0.0,
-                                    border: Border.all(
-                                      color: DynamicColors.gryClr,
-                                    ),
-                                    titleText: "DEMO COMPANY",
-                                    driversList: [
-                                      "DEMO COMPANY 01",
-                                      "DEMO COMPANY 02",
-                                      "DEMO COMPANY 03",
-                                      "DEMO COMPANY 04",
-                                    ],
-                                  ),
+                                  // RestrictedDrivers(
+                                  //   width: fieldWidth / 2.5,
+                                  //   // height: 35,
+                                  //   padding: 0.0,
+                                  //   border: Border.all(
+                                  //     color: DynamicColors.gryClr,
+                                  //   ),
+                                  //   titleText: "DEMO COMPANY",
+                                  //   driversList: [
+                                  //     "DEMO COMPANY 01",
+                                  //     "DEMO COMPANY 02",
+                                  //     "DEMO COMPANY 03",
+                                  //     "DEMO COMPANY 04",
+                                  //   ],
+                                  // ),
                                 ],
                               ),
                               Column(
@@ -478,47 +482,43 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                 ],
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(AppText.bankAccount,
-                                      style: mozillaTextSemiBoldText(
-                                          context: context, fontSize: 13)),
-
-                                  CustomDropdownField<String>(
-                                    label: "Bank Account",
-                                    width: Get.width / 6,
-                                    height: 30,
-                                    items: [
-                                      "BANK ACCOUNT 01",
-                                      "BANK ACCOUNT 02",
-                                      "BANK ACCOUNT 03",
-                                      "BANK ACCOUNT 04",
-                                    ],
-                                    value: controller.bankAccount,
-                                    itemLabel: (templateList) => templateList,
-                                    onChanged: (val) {
-                                      controller.bankAccount = val;
-                                      controller.update();
-                                    },
-                                  ),
-                                  // RestrictedDrivers(
-                                  //   width: fieldWidth/2.5,
-                                  //   // height: 35,
-                                  //   padding: 0.0,
-                                  //   border: Border.all(
-                                  //     color: DynamicColors.gryClr,
-                                  //   ),
-                                  //   titleText: "",
-                                  //   driversList: [
-                                  //     "BANK ACCOUNT 01",
-                                  //     "BANK ACCOUNT 02",
-                                  //     "BANK ACCOUNT 03",
-                                  //     "BANK ACCOUNT 04",
-                                  //   ],
-                                  // ),
-                                ],
-                              ),
+                              // Column(
+                              //   crossAxisAlignment: CrossAxisAlignment.start,
+                              //   children: [
+                              //     Text(AppText.bankAccount,
+                              //         style: mozillaTextSemiBoldText(
+                              //             context: context, fontSize: 13)),
+                              //
+                              //     CustomDropdownField<Subsidiary>(
+                              //       label: "Select Subsidiary",
+                              //       width: Get.width / 5,
+                              //       height: 35,
+                              //       items: controller.subsidairyBankModel!.subsidiariesList!,
+                              //       value: controller.subsidiaryStoreValue,
+                              //       itemLabel: (templateList) =>
+                              //       templateList.name!,
+                              //       onChanged: (val) {
+                              //         controller.subsidiaryStoreValue = val;
+                              //         controller.update();
+                              //       },
+                              //     ),
+                              //     // RestrictedDrivers(
+                              //     //   width: fieldWidth/2.5,
+                              //     //   // height: 35,
+                              //     //   padding: 0.0,
+                              //     //   border: Border.all(
+                              //     //     color: DynamicColors.gryClr,
+                              //     //   ),
+                              //     //   titleText: "",
+                              //     //   driversList: [
+                              //     //     "BANK ACCOUNT 01",
+                              //     //     "BANK ACCOUNT 02",
+                              //     //     "BANK ACCOUNT 03",
+                              //     //     "BANK ACCOUNT 04",
+                              //     //   ],
+                              //     // ),
+                              //   ],
+                              // ),
                             ],
                           )
                         ],
@@ -557,7 +557,6 @@ class _AccountViewState extends State<AccountView> {
                                 width: Get.width / 6,
                                 height: 30,
                                 items: [
-                                  "SELECT ADMIN FEES TYPE",
                                   "PERCENTAGE",
                                   "AMOUNT",
                                 ],
@@ -568,25 +567,11 @@ class _AccountViewState extends State<AccountView> {
                                   controller.update();
                                 },
                               ),
-                              // RestrictedDrivers(
-                              //   width: fieldWidth / 2.5,
-                              //   // height: 35,
-                              //   padding: 0.0,
-                              //   border: Border.all(
-                              //     color: DynamicColors.gryClr,
-                              //   ),
-                              //   titleText: "",
-                              //   driversList: [
-                              //     "SELECT ADMIN FEES TYPE",
-                              //     "PERCENTAGE",
-                              //     "AMOUNT",
-                              //   ],
-                              // ),
                             ],
                           ),
                           CustomTextField(
                             borderRadius: 4,
-                            controller: controller.customerAdminFeeController,
+                            controller: controller.accountAdminFeeController,
                             width: fieldWidth / 3,
                             hintText: AppText.adminFee,
                             columnText: true,
@@ -604,7 +589,6 @@ class _AccountViewState extends State<AccountView> {
                                 width: Get.width / 6,
                                 height: 30,
                                 items: [
-                                  "SELECT ACCOUNT TYPE",
                                   "PERCENTAGE",
                                   "AMOUNT",
                                 ],
@@ -619,7 +603,7 @@ class _AccountViewState extends State<AccountView> {
                           ),
                           CustomTextField(
                             borderRadius: 4,
-                            controller: controller.customerAccountFeeController,
+                            controller: controller.accountAccountFeeController,
                             width: fieldWidth / 3,
                             hintText: AppText.accountFee,
                             columnText: true,
@@ -664,7 +648,6 @@ class _AccountViewState extends State<AccountView> {
                                 width: Get.width / 6,
                                 height: 30,
                                 items: [
-                                  "SELECT COMMISSION TYPE",
                                   "PERCENTAGE",
                                   "AMOUNT",
                                 ],
@@ -680,7 +663,7 @@ class _AccountViewState extends State<AccountView> {
                           CustomTextField(
                             borderRadius: 4,
                             controller:
-                                controller.customerAgentCommissionController,
+                                controller.accountAgentCommissionController,
                             width: fieldWidth / 2,
                             hintText: AppText.agentCommission,
                             columnText: true,
@@ -974,7 +957,7 @@ class _AccountViewState extends State<AccountView> {
             CustomButton(
               height: 30,
               borderRadius: 4,
-              btnText: AppText.save,
+              btnText: controller.accountObjectData != null?"Update": AppText.save,
               verticalPadding: 0.0,
               fontSize: 13,
               onTap: () {

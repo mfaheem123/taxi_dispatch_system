@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/accounts/account/account_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -57,6 +58,8 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
       }
     }
   }
+
+  final DashboardController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -242,9 +245,22 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                                   color: Colors.transparent,
                                                 ), // border color & thickness
                                               ),
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                controller.bindAccountUpdateValue(data: item);
+                                                int index = _controller.selectedMenuItems.indexWhere(
+                                                        (element) => element.title == "CREATE ACCOUNT");
+                                                if (index != -1) {
+                                                  _controller.selectedMenuItems[index].selectedItem = true;
+                                                  _controller.currentPage.value = AccountView();
+                                                }else{
+                                                  _controller.currentPage.value = AccountView();
+                                                  _controller.menuBarRefresh(
+                                                      title: "CREATE ACCOUNT", pageName: AccountView());
+                                                }
+                                                controller.update();
+                                              },
                                               child: Icon(
-                                                Icons.search,
+                                                Icons.edit_calendar,
                                                 size: 28,
                                               ),
                                             ),

@@ -23,6 +23,8 @@ class AccountController extends GetxController {
   final accountAddressController = TextEditingController();
   final accountInformationController = TextEditingController();
   final accountContactNameController = TextEditingController();
+  Color pickerColor = Colors.blue; // currently selected color inside picker
+  Color foregroundClr = Colors.blue;
 
   ///====FeeSection
 
@@ -39,6 +41,8 @@ class AccountController extends GetxController {
   final webLoginpasswordCtrl = TextEditingController();
   final webLoginmobileCtrl = TextEditingController();
   final webLogintelephoneCtrl = TextEditingController();
+
+  List<WebLoginClass> webLoginDataList = [];
 
   ///====ContactAlert
   final contactAlertNameCtrl = TextEditingController();
@@ -87,84 +91,105 @@ class AccountController extends GetxController {
   postAccount() async {
     postAccountDetailsLoader(true);
 
+    List webLoginsTemp= [];
+
+    for (var action in webLoginDataList) {
+      webLoginsTemp.add({
+        "account_number": action.account,
+        "username": action.userName,
+        "password": action.password,
+        "mobile": action.mobile,
+        "telephone": action.telphone,
+      });
+    }
+
+    var formData = {
+      "subsidiary_id": subsidiaryStoreValue!.id,
+      "account_type": accountType,
+      "closed": false,
+      "name": accountNameController.text,
+      "code": accountCodeController.text,
+      "email": accountEmailController.text,
+      "password": accountPasswordController.text,
+      "mobile": accountMobileController.text,
+      "telephone": accountTelController.text,
+      "fax": accountFaxController.text,
+      "website": accountWebSiteController.text,
+      "account_number": accountNumberController.text,
+      "credit_card": accountCreditCardController.text,
+      "address": accountAddressController.text,
+      "payment_types": paymentType,
+      "information": accountInformationController.text,
+      "contact_name": accountContactNameController.text,
+      "background_color": pickerColor,
+      "foreground_color": foregroundClr,
+      "agent_commission_type": commissionDropDown,
+      "agent_commission": accountAgentCommissionController.text,
+      "admin_fees_type": adminFeesDropDown,
+      "admin_fees": accountAdminFeeController.text,
+      "account_fees_type": accountTypeDropDown,
+      "account_fees": accountAccountFeeController.text,
+      "has_booked_by": bookedByCheckBox.value,
+      "fare_controller": fareControllerCheckBox.value,
+      "has_escort": escoptCheckBox.value,
+      "has_vat": vatCheckBox.value,
+      "admin_fees_vat": adminFeeCheckBox.value,
+      "account_fees_vat": accountFeeCheckBox.value,
+      "has_order_number": orderCheckBox.value,
+      "dispatch_customer_text": dispatchSmsCheckBox.value,
+      "confirmation_text": confirmSmsCheckBox.value,
+      "arrival_text": arrivalSmsCheckBox.value,
+      "clear_job_text": clearJobSmsCheckBox.value,
+      "bank_information": bankInfoCheckBox.value,
+      "web_logins": webLoginsTemp,
+      "departments": [
+        {"name": dpartmentCtrl.text},
+      ],
+      "contacts": [
+        {
+          "name": contactAlertNameCtrl.text,
+          "email": contactAlertEmailCtrl.text,
+          "password": contactAlertPasswordCtrl.text,
+          "mobile": contactAlertMobileCtrl.text,
+          "telephone": contactAlertTelephoneCtrl.text,
+        }
+      ],
+      "order_numbers": [
+        {
+          "order_number": orderCtrl.text,
+        },
+      ],
+      "company_addresses": [
+        {
+          "address": addressCtrl.text,
+        }
+      ]
+    };
+    print(formData);
+
     var response = await Api().post(
-      {
-        "subsidiary_id": 1,
-        "account_type": accountType,
-        "closed": false,
-        "name": accountNameController.text,
-        "code": accountCodeController.text,
-        "email": accountEmailController.text,
-        "password": accountPasswordController.text,
-        "mobile": accountMobileController.text,
-        "telephone": accountTelController.text,
-        "fax": accountFaxController.text,
-        "website": accountWebSiteController.text,
-        "account_number": accountNumberController.text,
-        "credit_card": accountCreditCardController.text,
-        "address": accountAddressController.text,
-        "payment_types": paymentType,
-        "information": accountInformationController.text,
-        "contact_name": accountContactNameController.text,
-        "background_color": null,
-        "foreground_color": null,
-        "agent_commission_type": commissionDropDown,
-        "agent_commission": accountAgentCommissionController.text,
-        "admin_fees_type": adminFeesDropDown,
-        "admin_fees": accountAdminFeeController.text,
-        "account_fees_type": accountTypeDropDown,
-        "account_fees": accountAccountFeeController.text,
-        "has_booked_by": bookedByCheckBox.value,
-        "fare_controller": fareControllerCheckBox.value,
-        "has_escort": escoptCheckBox.value,
-        "has_vat": vatCheckBox.value,
-        "admin_fees_vat": adminFeeCheckBox.value,
-        "account_fees_vat": accountFeeCheckBox.value,
-        "has_order_number": orderCheckBox.value,
-        "dispatch_customer_text": dispatchSmsCheckBox.value,
-        "confirmation_text": confirmSmsCheckBox.value,
-        "arrival_text": arrivalSmsCheckBox.value,
-        "clear_job_text": clearJobSmsCheckBox.value,
-        "bank_information": bankInfoCheckBox.value,
-        "web_logins": [
-          {
-            "account_number": webLoginaccountCtrl.text,
-            "username": webLoginusernameCtrl.text,
-            "password": webLoginpasswordCtrl.text,
-            "mobile": webLoginmobileCtrl.text,
-            "telephone": webLogintelephoneCtrl.text,
-          }
-        ],
-        "departments": [
-          {"name": dpartmentCtrl.text},
-        ],
-        "contacts": [
-          {
-            "name": contactAlertNameCtrl.text,
-            "email": contactAlertEmailCtrl.text,
-            "password": contactAlertPasswordCtrl.text,
-            "mobile": contactAlertMobileCtrl.text,
-            "telephone": contactAlertTelephoneCtrl.text,
-          }
-        ],
-        "order_numbers": [
-          {
-            "order_number": orderCtrl.text,
-          },
-        ],
-        "company_addresses": [
-          {
-            "address": addressCtrl.text,
-          }
-        ]
-      },
-      'accounts/add',
+    formData,
+      accountObjectData != null?"url add": 'accounts/add',
       auth: true,
     );
 
     if (response.statusCode == 200) {
       print("✅ Account Created Successfully");
-      print(response.data);
+      accountObjectData = null;
+      escoptCheckBox.value=false;
+      arrivalSmsCheckBox.value=false;
+      clearJobSmsCheckBox.value=false;
+      bankInfoCheckBox.value=false;
+      dpartmentCtrl.clear();
+      contactAlertNameCtrl.clear();
+      contactAlertEmailCtrl.clear();
+      contactAlertPasswordCtrl.clear();
+      contactAlertMobileCtrl.clear();
+      contactAlertTelephoneCtrl.clear();
+      orderCtrl.clear();
+      accountType=null;
+      subsidiaryStoreValue=null;
+      addressCtrl.clear();
       accountNameController.clear();
       accountCodeController.clear();
       accountEmailController.clear();
@@ -185,7 +210,7 @@ class AccountController extends GetxController {
       webLoginpasswordCtrl.clear();
       webLoginmobileCtrl.clear();
       webLogintelephoneCtrl.clear();
-      orderCheckBox = false.obs;
+      // orderCheckBox = false.obs;
 
       update();
     } else {
@@ -201,9 +226,14 @@ class AccountController extends GetxController {
 
   getSubsdairyBank() async {
     SubsdairyBankLoader(true);
-    var response = await Api().get("locations");
+    var response = await Api().get("subsidiaries/with-bank-details");
     if (response.statusCode == 200) {
       subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
+
+      if(accountObjectData !=null){
+        int index = subsidairyBankModel!.subsidiariesList!.indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
+        subsidiaryStoreValue = subsidairyBankModel!.subsidiariesList![index];
+      }
       SubsdairyBankLoader(false);
       update();
     }
@@ -252,8 +282,7 @@ class AccountController extends GetxController {
   final customerAgentCommissionController = TextEditingController();
 
   // Initialize both variables so "pickerColor" is defined
-  Color pickerColor = Colors.blue; // currently selected color inside picker
-  Color foregroundClr = Colors.blue; // currently selected color inside picker
+  // currently selected color inside picker
   Color currentColor = Colors.blue; // applied color on the UI
   Color foregroundCurrentColor = Colors.blue; // applied color on the UI
 
@@ -293,8 +322,8 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
 
-  RxList<Account> AccountList = <Account>[].obs;
-  RxList<Account> filteredAccount = <Account>[].obs;
+  RxList<AccountObject> AccountList = <AccountObject>[].obs;
+  RxList<AccountObject> filteredAccount = <AccountObject>[].obs;
   // search fields
   RxString searchName = ''.obs;
   RxString searchAccountType = ''.obs;
@@ -304,6 +333,8 @@ class AccountController extends GetxController {
   RxString searchTelephone = ''.obs;
   RxString searchcontactName = ''.obs;
   RxString searchSubsiDiary = ''.obs;
+
+  AccountObject? accountObjectData;
 
   Future<void> listOFAccount() async {
     try {
@@ -340,6 +371,48 @@ class AccountController extends GetxController {
       isLoadingListOfAccount.value = false;
       update();
     }
+  }
+
+
+  bindAccountUpdateValue({AccountObject? data}) async{
+    accountObjectData = data;
+    accountType = data!.accountType!.toString().capitalize;
+    accountNameController.text = data.name.toString();
+    accountCodeController.text = data.code.toString();
+    accountEmailController.text = data.email.toString();
+    accountPasswordController.text = data.password.toString();
+    accountMobileController.text = data.mobile.toString();
+    accountTelController.text = data.telephone.toString();
+    accountFaxController.text = data.fax.toString();
+    accountWebSiteController.text = data.website.toString();
+    accountNumberController.text = data.accountNumber.toString();
+    accountCreditCardController.text = data.creditCard.toString();
+    accountAddressController.text = data.address.toString();
+    paymentType = data.paymentTypes.toString().capitalize;
+    accountInformationController.text = data.information.toString();
+accountContactNameController.text = data.contactName.toString();
+
+    commissionDropDown = data.agentCommissionType!.toUpperCase().toString();
+    accountAgentCommissionController.text = data.agentCommission.toString();
+    adminFeesDropDown = data.adminFeesType!.toUpperCase().toString();
+    accountAdminFeeController.text = data.adminFees.toString();
+    accountTypeDropDown = data.accountFeesType!.toUpperCase().toString();
+    accountAccountFeeController.text = data.accountFees.toString();
+    bookedByCheckBox.value = data.hasBookedBy!;
+    fareControllerCheckBox.value = data.fareController!;
+    escoptCheckBox.value = data.hasEscort!;
+    vatCheckBox.value = data.hasVat!;
+    adminFeeCheckBox.value = data.adminFeesVat!;
+    accountFeeCheckBox.value = data.accountFeesVat!;
+    orderCheckBox.value = data.hasOrderNumber!;
+    dispatchSmsCheckBox.value = data.dispatchCustomerText!;
+    confirmSmsCheckBox.value = data.confirmationText!;
+    arrivalSmsCheckBox.value = data.arrivalText!;
+    clearJobSmsCheckBox.value = data.clearJobText!;
+    bankInfoCheckBox.value = data.bankInformation!;
+    // webLoginDataList.addAll(data.web_logins)
+    update();
+
   }
 
 // --------------------------------Search changes function
@@ -385,4 +458,15 @@ class AccountController extends GetxController {
   String? department;
   String? subDiary;
   String? status;
+}
+
+
+class WebLoginClass{
+  String? account;
+  String? userName;
+  String? password;
+  String? mobile;
+  String? telphone;
+
+  WebLoginClass({this.mobile,this.password,this.account,this.telphone,this.userName});
 }
