@@ -7,6 +7,7 @@ import '../../../Model/driver_model.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../Model/image_model.dart';
+import '../driver/create_driver_form/driver_form.dart';
 
 
 class DriverController extends GetxController {
@@ -18,6 +19,15 @@ class DriverController extends GetxController {
   RxBool rentPaid = false.obs;
   RxBool isActive = false.obs;
   RxBool vehicleInformation = false.obs;
+
+  String? driverType;
+  String? companyType;
+  String? selectCompanyVehicle;
+  String? vehicleType;
+  String? dateCreate;
+  String? startDate;
+  String? endDate;
+
 
 
   /// text editing controller
@@ -39,17 +49,88 @@ class DriverController extends GetxController {
   final vehicleOwnerController = TextEditingController();
   final vehicleLogBookController = TextEditingController();
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>table data
+  var rows = <DocumentRow>[
+    DocumentRow(
+      batchNo: "PHC VEHICLE",
+      documentTitle: "PHC VEHICLE"
+    ),
+    DocumentRow(
+      batchNo: "PHC DRIVER",
+      documentTitle: "PHC DRIVER",
+
+    ),
+    DocumentRow(
+      batchNo: "MOT",
+      documentTitle: "MOT",
+
+    ),
+    DocumentRow(
+      batchNo: "MOT 2",
+      documentTitle: "MOT 2",
+
+    ),
+    DocumentRow(
+      batchNo: "INSURANCE",
+      documentTitle: "INSURANCE",
+
+    ),
+    DocumentRow(
+      batchNo: "LICENSE",
+      documentTitle: "LICENSE",
+
+
+    ),
+    DocumentRow(
+      batchNo: "ROAD TAX",
+      documentTitle: "ROAD TAX",
+
+    ),
+    DocumentRow(
+      batchNo: "V5 REGISTRATION",
+      documentTitle: "V5 REGISTRATION",
+
+    ),
+    DocumentRow(
+      batchNo: "RENTAL AGREEMENT",
+      documentTitle: "RENTAL AGREEMENT",
+
+    ),
+  ].obs;
+
+  void addEmptyRow() {
+    rows.add(DocumentRow());
+  }
+
+  void updateExpiryDate(int index, DateTime date) {
+    rows[index].expiryDate = date;
+    rows.refresh();
+  }
+
+  void updateExpiryTime(int index, time) {
+    rows[index].expiryTime = time;
+    rows.refresh();
+  }
+
+  void addDocument(int index) async{
+    await pickImage(singleImg: "profileImg", docImg: "docImg");
+    rows[index].fileName = docImgg;
+    rows.refresh();
+  }
+
 
   /// Rx String variable
   RxString? fileName;
   ImageModel? profileImg;
+  ImageModel? docImgg;
+
 
   /// List variables
   List<ImageModel> imageList = [];
 
   Uint8List? imageBytes;
 
-  Future<void> pickImage({singleImg}) async {
+  Future<void> pickImage({singleImg, docImg}) async {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.image,
       );
@@ -64,16 +145,61 @@ class DriverController extends GetxController {
               )
           );
         }else{
-          profileImg = ImageModel(
-              name: result.files.single.name,
-              bytes: result.files.single.bytes!,
-              path: result.files.single.path
-          );
+          if(docImg == "docImg"){
+            docImgg = ImageModel(
+                name: result.files.single.name,
+                bytes: result.files.single.bytes!,
+                path: result.files.single.path
+            );
+          }else{
+            profileImg = ImageModel(
+                name: result.files.single.name,
+                bytes: result.files.single.bytes!,
+                path: result.files.single.path
+            );
+          }
         }
       }
       update();
 
   }
+
+
+  addDriverFtn() async {
+    var formData = {
+      "hasPDA": hasPDA.value,
+      "rentPaid": rentPaid.value,
+      "active": isActive.value,
+      "VEHICLE TYPE": companyType,
+      "userName": driverUserNameController.text,
+      "password": driverPasswordController.text,
+      "driver_full": driverFullNameController.text,
+      "create_date": dateCreate,
+      "email": driverEmailController.text,
+      "mobile": driverMobileController.text,
+      "tel": driverTelController.text,
+      "driverNL": driverNLController.text,
+      "DRIVER TYPE": driverType,
+      "commission": driverCommissionController.text,
+      "rentLimit": driverRendLimitController.text,
+      "balance": driverBalanceController.text,
+      "address": driverAddressController.text,
+      "user_company_vehicle": vehicleInformation.value,
+      "SELECT COMPANY VEHICLE": selectCompanyVehicle,
+      "start_date": startDate,
+      "end_date": endDate,
+      "vehicle_name": vehicleNameController.text,
+      "make": vehicleMakeController.text,
+      "model": vehicleModelController.text,
+      "vehicle_Color": vehicleColorController.text,
+      "owner": vehicleOwnerController.text,
+      "log_book": vehicleLogBookController.text,
+      "vehicle type": vehicleType,
+
+    };
+  }
+
+
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
+import '../../../../component/dropdown_button.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
@@ -73,15 +74,20 @@ class VehicleInformation extends StatelessWidget {
                   Text(AppText.usedCompanyVehicle),
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(19),
-                    child: RestrictedDrivers(
-                      width: fieldWidth / 1.4,
-                      border: Border(
-                        bottom: BorderSide(
-                          color: DynamicColors.gryClr, // border color
-                          width: 2.0, // border thickness
-                        ),
-                      ),
-                      driversList: ['Demo Company', "Other Company"],
+                    child: CustomDropdownField<String>(
+                      label: "SELECT COMPANY VEHICLE",
+                      width: fieldWidth/2,
+                      height: 35,
+                      items: ['SELECT COMPANY VEHICLE 01', "SELECT COMPANY VEHICLE 02"],
+                      // items: controller.locationtypezoneModel!
+                      //     .zonesList!,
+                      value: controller.selectCompanyVehicle,
+                      itemLabel: (templateList) =>
+                      templateList,
+                      onChanged: (val) {
+                        controller.selectCompanyVehicle = val;
+                        controller.update();
+                      },
                     ),
                   ),
                   FocusTraversalOrder(
@@ -92,7 +98,20 @@ class VehicleInformation extends StatelessWidget {
                         label: AppText.startDate,
                         width: fieldWidth / 1.4,
                         child:
-                            SizedBox(height: 30, child: KeyboardDatePicker()),
+                            SizedBox(height: 30, child: KeyboardDatePicker(
+                              initialDate: DateTime.now(),
+                              onChanged: (date) {
+                                // jab bhi user change kare
+                                controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                print(date);
+                              },
+                              onSubmitted: (date) {
+                                // jab user enter press kare
+                                controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                print("User pressed enter: $date");
+                              },
+                            )
+                            ),
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -103,7 +122,19 @@ class VehicleInformation extends StatelessWidget {
                         label: AppText.endDate,
                         width: fieldWidth / 1.4,
                         child:
-                            SizedBox(height: 30, child: KeyboardDatePicker()),
+                            SizedBox(height: 30, child: KeyboardDatePicker(
+                              initialDate: DateTime.now(),
+                              onChanged: (date) {
+                                // jab bhi user change kare
+                                controller.endDate = "${date.year}-${date.month}-${date.day}";
+                                print(date);
+                              },
+                              onSubmitted: (date) {
+                                // jab user enter press kare
+                                controller.endDate = "${date.year}-${date.month}-${date.day}";
+                                print("User pressed enter: $date");
+                              },
+                            )),
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -156,15 +187,21 @@ class VehicleInformation extends StatelessWidget {
                   ),
                   FocusTraversalOrder(
                     order: NumericFocusOrder(28),
-                    child: RestrictedDrivers(
-                      width: fieldWidth / 1.4,
-                      // border: Border(
-                      //   bottom: BorderSide(
-                      //     color: DynamicColors.gryClr, // border color
-                      //     width: 2.0,        // border thickness
-                      //   ),
-                      // ),
-                      driversList: ['Saloon', "SUV", "Van"],
+                    child:
+                    CustomDropdownField<String>(
+                      label: "VEHICLE TYPE",
+                      width: fieldWidth/2,
+                      height: 35,
+                      items: ['VEHICLE TYPE 01', "VEHICLE TYPE 02" , "VEHICLE TYPE 03"],
+                      // items: controller.locationtypezoneModel!
+                      //     .zonesList!,
+                      value: controller.vehicleType,
+                      itemLabel: (templateList) =>
+                      templateList,
+                      onChanged: (val) {
+                        controller.vehicleType = val;
+                        controller.update();
+                      },
                     ),
                   ),
                   SizedBox(

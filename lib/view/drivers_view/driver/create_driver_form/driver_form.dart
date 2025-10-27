@@ -4,6 +4,7 @@ import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/perso
 import 'package:dashboard_new1/view/drivers_view/driver/create_driver_form/vehicle_information.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../../Model/image_model.dart';
 import '../../../../alert/shift_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
@@ -138,7 +139,7 @@ class _DriverFormState extends State<DriverForm> {
                     VehicleInformation(),
                   ],
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 Wrap(
                   children: [
                     DatatableWidget(
@@ -150,32 +151,58 @@ class _DriverFormState extends State<DriverForm> {
                         buildHeaderWithSearch(title: "FILE"),
                       ],
                       totalRow: 7,
-                      cells: [
-                        DataCell(
-                            KeyboardDatePicker(),
-                        ),
-                        DataCell(CustomTimePicker()),
-                        DataCell(Center(
-                          child: CustomTextField(
-                            width: 150,
-                            borderRadius: 4,
-                            controller: TextEditingController(),
-                            hintText: "PHC VEHICLE",
-                          ),
-                        )),
-                        const DataCell(Text("PHC VEHICLE")),
-                        DataCell(    OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: DynamicColors.primaryClr),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "Documents",
-                            style: TextStyle(color: DynamicColors.primaryClr),
-                          ),
-                        ),
-                        ),
-                      ],
+                      rows: List.generate(controller.rows.length, (index) {
+                        final row = controller.rows[index];
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              KeyboardDatePicker(
+                                initialDate: row.expiryDate ?? DateTime.now(),
+                                onChanged: (date) {
+                                  controller.updateExpiryDate(index, date);
+                                },
+                              ),
+                            ),
+                            DataCell(
+
+                        CustomTimePicker(
+                        controller: row.expiryTime, // optional
+                        onTimeSelected: (time) {
+                        print(row.expiryTime!.text);
+                        controller.updateExpiryTime(index, time);
+                        },
+                        )
+                            ),
+                            DataCell(
+                              CustomTextField(
+                                width: 150,
+                                borderRadius: 4,
+                                controller: TextEditingController(text: row.batchNo ?? ""),
+                                hintText: "Batch #",
+                                onChanged: (val) {
+                                  row.batchNo = val;
+                                  controller.update();
+                                  },
+                              ),
+                            ),
+                            DataCell(Text(row.documentTitle ?? "PHC VEHICLE")),
+                            DataCell(
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: DynamicColors.primaryClr),
+                                ),
+                                onPressed: () {
+                                  controller.addDocument(index);
+                                },
+                                child: Text(
+                                  row.fileName != null? "Documents (1)": "Documents",
+                                  style: TextStyle(color: DynamicColors.primaryClr),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                     ),
                     _buildValidityTable(),
                   ],
@@ -204,74 +231,6 @@ class _DriverFormState extends State<DriverForm> {
           ),
         );
       }),
-    );
-  }
-
-  // LEFT TABLE
-  Widget _buildDocumentsTable() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade400, width: 1),
-      ),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: DataTable(
-        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-        dataRowMinHeight: 48,
-        dataRowMaxHeight: 56,
-        headingTextStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
-          color: Colors.black,
-        ),
-        columns: const [
-          DataColumn(label: Text("Expiry Date")),
-          DataColumn(label: Text("Batch #")),
-          DataColumn(label: Text("Document Title")),
-          DataColumn(label: Text("File")),
-        ],
-        rows: [
-          DataRow(
-            cells: [
-              const DataCell(Text("20/10/2025")),
-              const DataCell(Text("#PHC VEHICLE")),
-              const DataCell(Text("PHC VEHICLE")),
-              DataCell(
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.green),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Documents",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          DataRow(
-            cells: [
-              const DataCell(Text("15/11/2026")),
-              const DataCell(Text("#PHC DRIVER")),
-              const DataCell(Text("PHC DRIVER")),
-              DataCell(
-                OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: Colors.green),
-                  ),
-                  onPressed: () {},
-                  child: const Text(
-                    "Documents",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 
@@ -352,112 +311,20 @@ class _DriverFormState extends State<DriverForm> {
     );
   }
 
-  // Card Builder
-  Widget _buildCard(String title, List<Widget> children, {Widget? footer}) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey.shade400, width: 1),
-      ),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const Divider(height: 1),
+}
 
-          // Body
-          Padding(
-            padding: const EdgeInsets.all(14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: children,
-            ),
-          ),
+class DocumentRow {
+  DateTime? expiryDate;
+  TextEditingController? expiryTime;
+  String? batchNo;
+  String? documentTitle;
+  ImageModel? fileName;
 
-          if (footer != null) const Divider(height: 1),
-          if (footer != null) footer,
-        ],
-      ),
-    );
-  }
-
-  Widget _textField(String label, Function(String?)? onSaved) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        TextFormField(
-          onSaved: onSaved,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            isDense: true,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Helper dropdown
-  Widget _dropdownField(
-    String label,
-    List<String> items,
-    Function(String?)? onChanged,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 5),
-        DropdownButtonFormField<String>(
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            isDense: true,
-          ),
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(String label, Color color) {
-    return SizedBox(
-      height: 40,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        ),
-        onPressed: () {
-          if (label == "Shifts") {
-            debugPrint("Shifts button clicked");
-          } else if (label == "Notes") {
-            debugPrint("Notes button clicked");
-          }
-        },
-        child: Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-        ),
-      ),
-    );
-  }
+  DocumentRow({
+    this.expiryDate,
+    this.expiryTime,
+    this.batchNo,
+    this.documentTitle,
+    this.fileName,
+  });
 }

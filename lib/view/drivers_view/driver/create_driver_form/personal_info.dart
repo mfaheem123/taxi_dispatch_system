@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
+import '../../../../component/dropdown_button.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/driver_controller.dart';
@@ -118,15 +119,21 @@ class DriverPersonalInfo extends StatelessWidget {
                    ),
                    FocusTraversalOrder(
                      order: NumericFocusOrder(4),
-                     child: RestrictedDrivers(
+                     child:
+                     CustomDropdownField<String>(
+                       label: "COMPANY TYPE",
                        width: fieldWidth/2,
-                       border: Border(
-                         bottom: BorderSide(
-                           color: DynamicColors.gryClr, // border color
-                           width: 2.0,        // border thickness
-                         ),
-                       ),
-                       driversList: ['Demo Company', "Other Company"],
+                       height: 35,
+                       items: ['Demo Company', "Other Company"],
+                       // items: controller.locationtypezoneModel!
+                       //     .zonesList!,
+                       value: controller.companyType,
+                       itemLabel: (templateList) =>
+                       templateList,
+                       onChanged: (val) {
+                         controller.companyType = val;
+                         controller.update();
+                       },
                      ),
                    ),
 
@@ -165,7 +172,20 @@ class DriverPersonalInfo extends StatelessWidget {
                          isMobile: isMobile,
                          label: AppText.date,
                          width: fieldWidth/1.4,
-                         child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                         child: SizedBox(height: 30, child: KeyboardDatePicker(
+                           initialDate: DateTime.now(),
+                           onChanged: (date) {
+                             // jab bhi user change kare
+                               controller.dateCreate = "${date.year}-${date.month}-${date.day}";
+                               print(date);
+                           },
+                           onSubmitted: (date) {
+                             // jab user enter press kare
+                               controller.dateCreate = "${date.year}-${date.month}-${date.day}";
+                             print("User pressed enter: $date");
+                           },
+                         )
+                         ),
                          column: true
                      ),
                    ),
@@ -219,15 +239,31 @@ class DriverPersonalInfo extends StatelessWidget {
                      child: labeledField(
                          context: context,
                          isMobile: isMobile,
-                         label: "",
+                         label: "DRIVER TYPE",
                          width: fieldWidth/1.4,
                          child: SizedBox(
                            width: fieldWidth,
                            // height: 30,
-                           child: RestrictedDrivers(
-                             width: fieldWidth,
-                             driversList: ['Commission', "Other Driver"],
+                           child:
+                           CustomDropdownField<String>(
+                             label: "DRIVER TYPE",
+                             width: Get.width / 5,
+                             height: 35,
+                             items: ['Commission', "Other Driver"],
+                             // items: controller.locationtypezoneModel!
+                             //     .zonesList!,
+                             value: controller.driverType,
+                             itemLabel: (templateList) =>
+                             templateList,
+                             onChanged: (val) {
+                               controller.driverType = val;
+                               controller.update();
+                             },
                            ),
+                           // RestrictedDrivers(
+                           //   width: fieldWidth,
+                           //   driversList: ['Commission', "Other Driver"],
+                           // ),
                          ),
                          column: true
                      ),
