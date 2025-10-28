@@ -374,6 +374,18 @@ class AccountController extends GetxController {
       update();
     }
   }
+  
+// -----------Search changes function
+  void onSearchChanged() {
+    currentPage.value = 1;
+    listOFAccount();
+  }
+
+  /// ------- pagination function
+  void onPageChange(int page) {
+    currentPage.value = page;
+    listOFAccount();
+  }
 
   bindAccountUpdateValue({AccountObject? data}) async {
     accountObjectData = data;
@@ -415,17 +427,6 @@ class AccountController extends GetxController {
     update();
   }
 
-// -----------Search changes function
-  void onSearchChanged() {
-    currentPage.value = 1;
-    listOFAccount();
-  }
-
-  /// ------- pagination function
-  void onPageChange(int page) {
-    currentPage.value = page;
-    listOFAccount();
-  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
   EscortModel? listEscortModel;

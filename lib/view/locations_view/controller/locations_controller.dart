@@ -1,16 +1,13 @@
-
-
-
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
-import 'package:dio/dio.dart' show Dio, BaseOptions;
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-class LocationController extends GetxController{
+import '../Model/zoneListModel.dart';
 
+class LocationController extends GetxController {
   final List<Postcode> _postcodes = [
     Postcode("NW7"),
     Postcode("N3"),
@@ -38,22 +35,20 @@ class LocationController extends GetxController{
     update();
   }
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LIST OF LOCATIONS Functionality
 
   /// bool variables
   RxBool blackList = false.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>LIST OF LOCATIONS Functionality
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
-final locationNameCtrl=TextEditingController();
-final longitudeCtrl=TextEditingController();
-final postcodeCtrl=TextEditingController();
-final shortcutCtrl=TextEditingController();
-final extraChargesCtrl=TextEditingController();
-final latitudeCtrl=TextEditingController();
-final addressCtrl=TextEditingController();
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
+  final locationNameCtrl = TextEditingController();
+  final longitudeCtrl = TextEditingController();
+  final postcodeCtrl = TextEditingController();
+  final shortcutCtrl = TextEditingController();
+  final extraChargesCtrl = TextEditingController();
+  final latitudeCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
 
   ZoneObject? zoneValue;
   LocationTypeObject? locationTypeValue;
@@ -61,14 +56,16 @@ final addressCtrl=TextEditingController();
   RxBool getLocationTypeZoneLoader = false.obs;
   LocationtypezoneModel? locationtypezoneModel;
 
-  getLocationTypeZone({selectedZoneId, selectedLocationTypeId})async{
+  getLocationTypeZone({selectedZoneId, selectedLocationTypeId}) async {
     getLocationTypeZoneLoader(true);
     var response = await Api().get("locationtype/zone");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
-      if(updateLocationValue.value == true){
-        int index = locationtypezoneModel!.zonesList!.indexWhere((test) => test.id == selectedZoneId);
-        int indexx = locationtypezoneModel!.locationTypesList!.indexWhere((testt) => testt.id == selectedLocationTypeId);
+      if (updateLocationValue.value == true) {
+        int index = locationtypezoneModel!.zonesList!
+            .indexWhere((test) => test.id == selectedZoneId);
+        int indexx = locationtypezoneModel!.locationTypesList!
+            .indexWhere((testt) => testt.id == selectedLocationTypeId);
         zoneValue = locationtypezoneModel!.zonesList![index];
         locationTypeValue = locationtypezoneModel!.locationTypesList![index];
       }
@@ -79,15 +76,15 @@ final addressCtrl=TextEditingController();
 
   RxBool postLocationForm = false.obs;
 
-  postLocation()async{
+  postLocation() async {
     postLocationForm(true);
     var formData = {
-      "name":locationNameCtrl.text,
+      "name": locationNameCtrl.text,
       "location_type_id": locationTypeValue!.id,
       "address": addressCtrl.text,
       "postcode": postcodeCtrl.text,
       "zone_id": zoneValue!.id,
-      "shortcut":shortcutCtrl.text,
+      "shortcut": shortcutCtrl.text,
       "background_color": null,
       "foreground_color": null,
       "extra_charges": extraChargesCtrl.text,
@@ -98,7 +95,12 @@ final addressCtrl=TextEditingController();
       "longitude": longitudeCtrl.text,
     };
     print(locationUpdateId.value);
-      var response = await Api().post(formData,updateLocationValue.value == false? 'locations':'locations/${locationUpdateId.value}', auth: true);
+    var response = await Api().post(
+        formData,
+        updateLocationValue.value == false
+            ? 'locations'
+            : 'locations/${locationUpdateId.value}',
+        auth: true);
     if (response.statusCode == 200) {
       locationNameCtrl.clear();
       longitudeCtrl.clear();
@@ -112,18 +114,16 @@ final addressCtrl=TextEditingController();
 
       update();
       print(response);
-    }else{
+    } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
       print(response);
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Location List
 
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Location List 
-
- RxList<Locations> locationsAll = <Locations>[].obs;
+  RxList<Locations> locationsAll = <Locations>[].obs;
   RxList<Locations> locationsFiltered = <Locations>[].obs;
   RxString searchLocationName = ''.obs;
   RxString searchPostCode = ''.obs;
@@ -137,9 +137,9 @@ final addressCtrl=TextEditingController();
   final int locationLimit = 20;
   LocationListModel? locationListModel;
   RxBool getLocationLoader = false.obs;
-  getLocationList() async{
-try{
-  String query = 'page=${locationCurrentPage.value}&limit=${locationLimit}';
+  getLocationList() async {
+    try {
+      String query = 'page=${locationCurrentPage.value}&limit=${locationLimit}';
       if (searchLocationName.value.isNotEmpty)
         query += '&name=${searchLocationName.value}';
       if (searchPostCode.value.isNotEmpty)
@@ -150,21 +150,20 @@ try{
         query += '&address=${searchAddress.value}';
       if (searchLocationType.value.isNotEmpty)
         query += '&location_type=${searchLocationType.value}';
-      if (searchZone.value.isNotEmpty)
-        query += '&zone=${searchZone.value}';
+      if (searchZone.value.isNotEmpty) query += '&zone=${searchZone.value}';
       print("API Query: locations/get?$query");
 
-    getLocationLoader(true);
-    var response = await Api().get("locations/get?$query");
-    if(response.statusCode == 200){
-      locationListModel = LocationListModel.fromJson(response.data);
+      getLocationLoader(true);
+      var response = await Api().get("locations/get?$query");
+      if (response.statusCode == 200) {
+        locationListModel = LocationListModel.fromJson(response.data);
         locationTotalPages.value = locationListModel?.totalPages ?? 1;
         locationsAll.value = locationListModel?.locations ?? [];
         locationsFiltered.value = locationsAll;
-      getLocationLoader(false);
-      update();
-    }
-}catch (e) {
+        getLocationLoader(false);
+        update();
+      }
+    } catch (e) {
       print("Error in Location List: $e");
     } finally {
       getLocationLoader.value = false;
@@ -172,7 +171,7 @@ try{
     }
   }
 
- // --------Search changes function
+  // --------Search changes function
   void SearchEscort() {
     locationCurrentPage.value = 1;
     getLocationList();
@@ -185,7 +184,7 @@ try{
 
   RxBool updateLocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
-  bindLocationUpdateLocation({Locations? locationUpdate}) async{
+  bindLocationUpdateLocation({Locations? locationUpdate}) async {
     locationUpdateId.value = locationUpdate!.id!;
     locationNameCtrl.text = locationUpdate.name!;
     longitudeCtrl.text = locationUpdate.longitude!;
@@ -195,12 +194,14 @@ try{
     latitudeCtrl.text = locationUpdate.latitude!;
     addressCtrl.text = locationUpdate.address!;
     updateLocationValue(true);
-    getLocationTypeZone(selectedZoneId: locationUpdate.zoneId, selectedLocationTypeId: locationUpdate.locationTypeId);
+    getLocationTypeZone(
+        selectedZoneId: locationUpdate.zoneId,
+        selectedLocationTypeId: locationUpdate.locationTypeId);
   }
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
 
   // class Postcode {
   // final String code;
@@ -250,60 +251,68 @@ try{
   //   update();
   // }
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
 
-
-
-  ZoneModel? ZoneListModel;
- RxList<Zone> zoneAll = <Zone>[].obs;
-  RxList<Zone> zoneFiltered = <Zone>[].obs;
+  ZoneModel? zoneListModel;
+  RxList<Zones> zoneAll = <Zones>[].obs;
+  RxList<Zones> zoneFiltered = <Zones>[].obs;
   RxString searchZoneName = ''.obs;
   RxString searchShortName = ''.obs;
   RxString searchType = ''.obs;
-  RxString searchCategory = ''.obs; 
-
-//   ///------------------------- Pagination
+  RxString searchCategory = ''.obs;
   var zoneCurrentPage = 1.obs;
   var zoneTotalPages = 1.obs;
-  final int zoneLimit = 20;
+  final int zoneLimit = 2;
 
   RxBool getZoneLoader = false.obs;
-  getZoneList() async{
-    getZoneLoader(true);
 
-
- String query = 'page=${zoneCurrentPage.value}&limit=${zoneLimit}';
+  Future<void> getZoneList() async {
+    try {
+      getZoneLoader(true);
+      String query = 'page=${zoneCurrentPage.value}&limit=$zoneLimit';
       if (searchZoneName.value.isNotEmpty)
         query += '&name=${searchZoneName.value}';
       if (searchShortName.value.isNotEmpty)
-        query += '&postcode=${searchShortName.value}';
-      if (searchType.value.isNotEmpty)
-        query += '&shortcut=${searchType.value}';
+        query += '&secondary_name=${searchShortName.value}';
+      if (searchType.value.isNotEmpty) query += '&type=${searchType.value}';
       if (searchCategory.value.isNotEmpty)
-        query += '&address=${searchCategory.value}';
-     
-      print("API Query: locations/get?$query");
+        query += '&category=${searchCategory.value}';
 
+      print("API Query: zones/get?$query");
 
+      var response = await Api().get("zones/get?$query");
 
-
-    var response = await Api().get("zones/get?$query");
-    if(response.statusCode == 200){
-      ZoneListModel = ZoneModel.fromJson(response.data);
+      if (response.statusCode == 200) {
+        zoneListModel = ZoneModel.fromJson(response.data);
+        zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
+        zoneAll.value = zoneListModel?.zones ?? [];
+        zoneFiltered.value = zoneAll;
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception in getZoneList: $e");
+    } finally {
       getZoneLoader(false);
       update();
     }
   }
 
+// -----------Search changes function
+  void onSearchChanged() {
+    zoneCurrentPage.value = 1;
+    getZoneList();
+  }
 
+  /// ------- pagination function
+  void zonePageChange(int page) {
+    zoneCurrentPage.value = page;
+    getZoneList();
+  }
 
-
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
 
   // deleteZoneList(int? id, ) async{
   //
@@ -316,14 +325,8 @@ try{
   //   }
   // }
 
-
-
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
 }
-
 
 class DashBoardBindings implements Bindings {
   @override

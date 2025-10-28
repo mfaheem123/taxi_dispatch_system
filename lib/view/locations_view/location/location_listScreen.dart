@@ -8,7 +8,6 @@ import 'package:get/get.dart';
 import '../../../component/datatable_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
-import '../../drivers_view/controller/driver_controller.dart';
 import '../controller/locations_controller.dart';
 import 'location_formScreen.dart';
 
