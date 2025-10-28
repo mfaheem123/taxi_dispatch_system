@@ -12,7 +12,7 @@ import '../../../component/datatable_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../drivers_view/controller/driver_controller.dart';
-import '../controller/lacations_controller.dart';
+import '../controller/locations_controller.dart';
 
 class ZoneListScreen extends StatefulWidget {
   ZoneListScreen({super.key});
@@ -97,8 +97,8 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                           buildHeaderWithSearch(title: "CATEGORY"),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        totalRow:  controller.getZoneListModel!.zones!.length,
-                        rows: controller.getZoneListModel!.zones!.map((item) {
+                        totalRow:  controller.ZoneListModel!.zones!.length,
+                        rows: controller.ZoneListModel!.zones!.map((item) {
                           return DataRow(
                             cells: [
                               DataCell(Center(child: Text(item.name ?? '—'))),

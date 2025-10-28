@@ -1,6 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
-import 'package:dashboard_new1/view/locations_view/controller/lacations_controller.dart';
+import 'package:dashboard_new1/view/locations_view/controller/locations_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';

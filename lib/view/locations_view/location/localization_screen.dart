@@ -156,7 +156,6 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
                           ],
                         ),
 
-                        // 📌 Data rows from API
                         ...postcodes.map((postcode) {
                           return TableRow(
                             decoration: const BoxDecoration(

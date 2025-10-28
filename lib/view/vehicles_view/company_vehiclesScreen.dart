@@ -79,7 +79,8 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                     Row(
                       children: [
                         Text(
-                          "COMPANY VEHICLES" + " (0)",
+                          "COMPANY VEHICLES" +
+                              " (${controller.companyVehicleModel?.count})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -239,14 +240,12 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                             ],
                           );
                         }).toList(),
-
-                      
                       ),
                     ),
                     PaginationWidget(
                         currentPage: controller.companycurrentPage.value,
                         totalPages: controller.companytotalPages.value,
-                        onPageChange: controller.onPageChange)
+                        onPageChange: controller.PageOnCompany)
                   ],
                 ),
               );

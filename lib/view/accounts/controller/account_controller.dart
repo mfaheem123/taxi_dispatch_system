@@ -1,7 +1,8 @@
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
-import 'package:dashboard_new1/view/accounts/model/listof_account.dart' hide Subsidiary;
+import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
+    hide Subsidiary;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -91,7 +92,7 @@ class AccountController extends GetxController {
   postAccount() async {
     postAccountDetailsLoader(true);
 
-    List webLoginsTemp= [];
+    List webLoginsTemp = [];
 
     for (var action in webLoginDataList) {
       webLoginsTemp.add({
@@ -168,18 +169,18 @@ class AccountController extends GetxController {
     print(formData);
 
     var response = await Api().post(
-    formData,
-      accountObjectData != null?"url add": 'accounts/add',
+      formData,
+      accountObjectData != null ? "url add" : 'accounts/add',
       auth: true,
     );
 
     if (response.statusCode == 200) {
       print("✅ Account Created Successfully");
       accountObjectData = null;
-      escoptCheckBox.value=false;
-      arrivalSmsCheckBox.value=false;
-      clearJobSmsCheckBox.value=false;
-      bankInfoCheckBox.value=false;
+      escoptCheckBox.value = false;
+      arrivalSmsCheckBox.value = false;
+      clearJobSmsCheckBox.value = false;
+      bankInfoCheckBox.value = false;
       dpartmentCtrl.clear();
       contactAlertNameCtrl.clear();
       contactAlertEmailCtrl.clear();
@@ -187,8 +188,8 @@ class AccountController extends GetxController {
       contactAlertMobileCtrl.clear();
       contactAlertTelephoneCtrl.clear();
       orderCtrl.clear();
-      accountType=null;
-      subsidiaryStoreValue=null;
+      accountType = null;
+      subsidiaryStoreValue = null;
       addressCtrl.clear();
       accountNameController.clear();
       accountCodeController.clear();
@@ -230,8 +231,9 @@ class AccountController extends GetxController {
     if (response.statusCode == 200) {
       subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
 
-      if(accountObjectData !=null){
-        int index = subsidairyBankModel!.subsidiariesList!.indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
+      if (accountObjectData != null) {
+        int index = subsidairyBankModel!.subsidiariesList!
+            .indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
         subsidiaryStoreValue = subsidairyBankModel!.subsidiariesList![index];
       }
       SubsdairyBankLoader(false);
@@ -373,8 +375,7 @@ class AccountController extends GetxController {
     }
   }
 
-
-  bindAccountUpdateValue({AccountObject? data}) async{
+  bindAccountUpdateValue({AccountObject? data}) async {
     accountObjectData = data;
     accountType = data!.accountType!.toString().capitalize;
     accountNameController.text = data.name.toString();
@@ -390,7 +391,7 @@ class AccountController extends GetxController {
     accountAddressController.text = data.address.toString();
     paymentType = data.paymentTypes.toString().capitalize;
     accountInformationController.text = data.information.toString();
-accountContactNameController.text = data.contactName.toString();
+    accountContactNameController.text = data.contactName.toString();
 
     commissionDropDown = data.agentCommissionType!.toUpperCase().toString();
     accountAgentCommissionController.text = data.agentCommission.toString();
@@ -412,44 +413,78 @@ accountContactNameController.text = data.contactName.toString();
     bankInfoCheckBox.value = data.bankInformation!;
     // webLoginDataList.addAll(data.web_logins)
     update();
-
   }
 
-// --------------------------------Search changes function
+// -----------Search changes function
   void onSearchChanged() {
     currentPage.value = 1;
     listOFAccount();
   }
 
-  /// ------------------------------------- pagination function
+  /// ------- pagination function
   void onPageChange(int page) {
     currentPage.value = page;
     listOFAccount();
   }
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
-
-  ListEscortModel? listEscortModel;
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
+  EscortModel? listEscortModel;
   RxBool listEscortLoding = false.obs;
+  RxList<Escorts> escortAll = <Escorts>[].obs;
+  RxList<Escorts> escortFiltered = <Escorts>[].obs;
+  // ye search fields hain
+  RxString searchEscortName = ''.obs;
+  RxString searchEscortSafeguarding = ''.obs;
+  RxString searchEscortPAT = ''.obs;
+  RxString searchEscortFirstAid = ''.obs;
+  RxString searchEscortDBS = ''.obs;
+
+//   ///------------------------- Pagination
+  var escortCurrentPage = 1.obs;
+  var escortTotalPages = 1.obs;
+  final int escortLimit = 20;
   Future<void> listEscort() async {
     try {
+      String query = 'page=${escortCurrentPage.value}&limit=${escortLimit}';
+      if (searchEscortName.value.isNotEmpty)
+        query += '&name=${searchEscortName.value}';
+      if (searchEscortSafeguarding.value.isNotEmpty)
+        query += '&safeguarding_expiry=${searchEscortSafeguarding.value}';
+      if (searchEscortPAT.value.isNotEmpty)
+        query += '&pat_expiry=${searchEscortPAT.value}';
+      if (searchEscortFirstAid.value.isNotEmpty)
+        query += '&firstaid_expiry=${searchEscortFirstAid.value}';
+      if (searchEscortDBS.value.isNotEmpty)
+        query += '&dbs_expiry=${searchEscortDBS.value}';
+      print("API Query: escorts/get?$query");
+
       listEscortLoding.value = true;
-      var response = await Api().get('escorts/get');
-
+      final response = await Api().get('escorts/get?$query');
       if (response.statusCode == 200) {
-        listEscortModel = ListEscortModel.fromJson(response.data);
-
-        print(
-            'List of Account Error ------------------------------ $listEscortModel');
-      } else {
-        print("Status Code Error-------${response.statusCode}");
+        listEscortModel = EscortModel.fromJson(response.data);
+        escortTotalPages.value = listEscortModel?.totalPages ?? 1;
+        escortAll.value = listEscortModel?.escorts ?? [];
+        escortFiltered.value = escortAll;
+        print('escorts: ${listEscortModel?.escorts?.length ?? 0}');
       }
     } catch (e) {
-      print("Error in List of Account: $e");
+      print("Error in escorts: $e");
     } finally {
       listEscortLoding.value = false;
       update();
     }
+  }
+
+// // --------Search changes function
+  void SearchEscort() {
+    escortCurrentPage.value = 1;
+    listEscort();
+  }
+
+//   /// ---------- pagination function
+  void PageEscort(int page) {
+    escortCurrentPage.value = page;
+    listEscort();
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
@@ -460,13 +495,13 @@ accountContactNameController.text = data.contactName.toString();
   String? status;
 }
 
-
-class WebLoginClass{
+class WebLoginClass {
   String? account;
   String? userName;
   String? password;
   String? mobile;
   String? telphone;
 
-  WebLoginClass({this.mobile,this.password,this.account,this.telphone,this.userName});
+  WebLoginClass(
+      {this.mobile, this.password, this.account, this.telphone, this.userName});
 }

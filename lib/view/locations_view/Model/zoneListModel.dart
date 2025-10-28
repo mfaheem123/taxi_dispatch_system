@@ -1,105 +1,126 @@
-// To parse this JSON data, do
-//
-//     final getZoneListModel = getZoneListModelFromJson(jsonString);
-
-import 'dart:convert';
-
-GetZoneListModel getZoneListModelFromJson(String str) => GetZoneListModel.fromJson(json.decode(str));
-
-String getZoneListModelToJson(GetZoneListModel data) => json.encode(data.toJson());
-
-class GetZoneListModel {
+class ZoneModel {
   bool? status;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
   int? count;
-  List<Zone>? zones;
+  List<Zones>? zones;
 
-  GetZoneListModel({
-    this.status,
-    this.count,
-    this.zones,
-  });
+  ZoneModel(
+      {this.status,
+      this.page,
+      this.limit,
+      this.total,
+      this.totalPages,
+      this.count,
+      this.zones});
 
-  factory GetZoneListModel.fromJson(Map<String, dynamic> json) => GetZoneListModel(
-    status: json["status"],
-    count: json["count"],
-    zones: json["zones"] == null ? [] : List<Zone>.from(json["zones"]!.map((x) => Zone.fromJson(x))),
-  );
+  ZoneModel.fromJson(Map<String, dynamic> json) {
+    status = json['status'];
+    page = json['page'];
+    limit = json['limit'];
+    total = json['total'];
+    totalPages = json['total_pages'];
+    count = json['count'];
+    if (json['zones'] != null) {
+      zones = <Zones>[];
+      json['zones'].forEach((v) {
+        zones!.add(new Zones.fromJson(v));
+      });
+    }
+  }
 
-  Map<String, dynamic> toJson() => {
-    "status": status,
-    "count": count,
-    "zones": zones == null ? [] : List<dynamic>.from(zones!.map((x) => x.toJson())),
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['status'] = this.status;
+    data['page'] = this.page;
+    data['limit'] = this.limit;
+    data['total'] = this.total;
+    data['total_pages'] = this.totalPages;
+    data['count'] = this.count;
+    if (this.zones != null) {
+      data['zones'] = this.zones!.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
 }
 
-class Zone {
+class Zones {
   int? id;
   String? name;
   String? secondaryName;
   String? type;
   String? category;
-  List<Vertex>? vertices;
+  List<Vertices>? vertices;
   bool? base;
   String? overlay;
   String? createdAt;
   String? updatedAt;
 
-  Zone({
-    this.id,
-    this.name,
-    this.secondaryName,
-    this.type,
-    this.category,
-    this.vertices,
-    this.base,
-    this.overlay,
-    this.createdAt,
-    this.updatedAt,
-  });
+  Zones(
+      {this.id,
+      this.name,
+      this.secondaryName,
+      this.type,
+      this.category,
+      this.vertices,
+      this.base,
+      this.overlay,
+      this.createdAt,
+      this.updatedAt});
 
-  factory Zone.fromJson(Map<String, dynamic> json) => Zone(
-    id: json["id"],
-    name: json["name"],
-    secondaryName: json["secondary_name"],
-    type: json["type"],
-    category: json["category"],
-    vertices: json["vertices"] == null ? [] : List<Vertex>.from(json["vertices"]!.map((x) => Vertex.fromJson(x))),
-    base: json["base"],
-    overlay: json["overlay"],
-    createdAt: json["created_at"],
-    updatedAt: json["updated_at"],
-  );
+  Zones.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    secondaryName = json['secondary_name'];
+    type = json['type'];
+    category = json['category'];
+    if (json['vertices'] != null) {
+      vertices = <Vertices>[];
+      json['vertices'].forEach((v) {
+        vertices!.add(new Vertices.fromJson(v));
+      });
+    }
+    base = json['base'];
+    overlay = json['overlay'];
+    createdAt = json['created_at'];
+    updatedAt = json['updated_at'];
+  }
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "secondary_name": secondaryName,
-    "type": type,
-    "category": category,
-    "vertices": vertices == null ? [] : List<dynamic>.from(vertices!.map((x) => x.toJson())),
-    "base": base,
-    "overlay": overlay,
-    "created_at": createdAt,
-    "updated_at": updatedAt,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['name'] = this.name;
+    data['secondary_name'] = this.secondaryName;
+    data['type'] = this.type;
+    data['category'] = this.category;
+    if (this.vertices != null) {
+      data['vertices'] = this.vertices!.map((v) => v.toJson()).toList();
+    }
+    data['base'] = this.base;
+    data['overlay'] = this.overlay;
+    data['created_at'] = this.createdAt;
+    data['updated_at'] = this.updatedAt;
+    return data;
+  }
 }
 
-class Vertex {
+class Vertices {
   double? latitude;
   double? longitude;
 
-  Vertex({
-    this.latitude,
-    this.longitude,
-  });
+  Vertices({this.latitude, this.longitude});
 
-  factory Vertex.fromJson(Map<String, dynamic> json) => Vertex(
-    latitude: json["latitude"]?.toDouble(),
-    longitude: json["longitude"]?.toDouble(),
-  );
+  Vertices.fromJson(Map<String, dynamic> json) {
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+  }
 
-  Map<String, dynamic> toJson() => {
-    "latitude": latitude,
-    "longitude": longitude,
-  };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['latitude'] = this.latitude;
+    data['longitude'] = this.longitude;
+    return data;
+  }
 }

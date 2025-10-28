@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
@@ -42,6 +43,10 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
 
     return GetBuilder<AccountController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
+        final listToShow = controller.escortFiltered.isNotEmpty
+            ? controller.escortFiltered
+            : controller.escortAll;
+
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -103,26 +108,50 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                               onChanged: (val) {},
                             ),
                           ),
-                          buildHeaderWithSearch(title: "NAME"),
-                          buildHeaderWithSearch(title: "SAFEGUARDING EXPIRY"),
-                          buildHeaderWithSearch(title: "PAT EXPIRY"),
-                          buildHeaderWithSearch(title: "FIRSTAID EXPIRY"),
-                          buildHeaderWithSearch(title: "	DBS EXPIRY"),
+                          buildHeaderWithSearch(
+                            title: "NAME",
+                            onChanged: (v) {
+                              controller.searchEscortName.value = v;
+                              controller.SearchEscort();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "SAFEGUARDING EXPIRY",
+                            onChanged: (v) {
+                              controller.searchEscortSafeguarding.value = v;
+                              controller.SearchEscort();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "PAT EXPIRY",
+                            onChanged: (v) {
+                              controller.searchEscortPAT.value = v;
+                              controller.SearchEscort();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                              title: "FIRSTAID EXPIRY",
+                              onChanged: (v) {
+                                controller.searchEscortFirstAid.value = v;
+                                controller.SearchEscort();
+                              }),
+                          buildHeaderWithSearch(
+                              title: "DBS EXPIRY",
+                              onChanged: (v) {
+                                controller.searchEscortDBS.value = v;
+                                controller.SearchEscort();
+                              }),
                           buildHeaderWithSearch(
                               title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow:
-                            controller.listEscortModel!.escorts!.length ?? 0,
-                        rows: (controller.listEscortModel!.escorts ?? [])
-                            .map((item) {
+                        totalRow: listToShow.length ?? 0,
+                        rows: (listToShow ?? []).map((item) {
                           return DataRow(
                             cells: [
                               DataCell(
                                 Checkbox(
-                                  value: false, // ✅ controlled by your state
-                                  onChanged: (val) {
-                                    // update your selected index or list here
-                                  },
+                                  value: false,
+                                  onChanged: (val) {},
                                 ),
                               ),
                               DataCell(Center(child: Text(item.name!))),
@@ -133,37 +162,36 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                   Center(child: Text(item.firstaidExpiry!))),
                               DataCell(Center(child: Text(item.dbsExpiry!))),
                               DataCell(
-                                Center(
-                                  child: Row(
-                                    children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(
-                                          Icons.edit,
-                                          size: 28,
-                                          color: DynamicColors.primaryClr,
-                                        ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
                                       ),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {},
-                                        child: Icon(
-                                          Icons.delete,
-                                          size: 28,
-                                          color: DynamicColors.redClr,
-                                        ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 28,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.delete,
+                                        size: 28,
+                                        color: DynamicColors.redClr,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -172,6 +200,10 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                       ),
                     ),
                   ),
+            PaginationWidget(
+                currentPage: controller.escortCurrentPage.value,
+                totalPages: controller.escortTotalPages.value,
+                onPageChange: controller.PageEscort)
           ],
         );
       });

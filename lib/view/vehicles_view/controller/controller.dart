@@ -193,7 +193,7 @@ class VehicleController extends GetxController {
         filteredVehicleTypes.value = allVehicleTypes;
       }
     } catch (e) {
-      print("Error in getVehicleTypes(): $e");
+      print("Error in getVehicleType: $e");
     } finally {
       isLoading.value = false;
       update();
@@ -216,13 +216,10 @@ class VehicleController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Company VEHICLE Model
   RxBool isCompanyVehicle = false.obs;
-
   CompanyVehicleModel? companyVehicleModel;
-
   // Fetch company vehicles
-  RxList<VehicleTypes> companyAllVehicle = <VehicleTypes>[].obs;
-  RxList<VehicleTypes> filteredCompanyVehicle = <VehicleTypes>[].obs;
-
+  RxList<Vehicles> companyAllVehicle = <Vehicles>[].obs;
+  RxList<Vehicles> filteredCompanyVehicle = <Vehicles>[].obs;
   // ye search fields hain
   RxString searchVehicle = ''.obs;
   RxString searchVehicleType = ''.obs;
@@ -230,15 +227,13 @@ class VehicleController extends GetxController {
   RxString searchMake = ''.obs;
   RxString searchModel = ''.obs;
   RxString searchColor = ''.obs;
-
-//   ///------------------------------------------- Pagination
+//   ///------------------------- Pagination
   var companycurrentPage = 1.obs;
   var companytotalPages = 1.obs;
-  final int companylimit = 5;
-
+  final int companylimit = 20;
   Future<void> companyVehicle() async {
     try {
-      String query = 'page=${companycurrentPage.value}&limit=$companylimit';
+      String query = 'page=${companycurrentPage.value}&limit=${companylimit}';
       if (searchVehicle.value.isNotEmpty)
         query += '&vehicle_number=${searchVehicle.value}';
       if (searchVehicleType.value.isNotEmpty)
@@ -247,15 +242,13 @@ class VehicleController extends GetxController {
       if (searchMake.value.isNotEmpty) query += '&make=${searchMake.value}';
       if (searchModel.value.isNotEmpty) query += '&model=${searchModel.value}';
       if (searchColor.value.isNotEmpty) query += '&color=${searchColor.value}';
-
       print("API Query: company-vehicles/ge?$query");
-
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles/get?$query');
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
-        totalPages.value = vehicleTypeModel?.totalPages ?? 1;
-        companyAllVehicle.value = vehicleTypeModel?.vehicleTypes ?? [];
+        companytotalPages.value = companyVehicleModel?.totalPages ?? 1;
+        companyAllVehicle.value = companyVehicleModel?.vehicles ?? [];
         filteredCompanyVehicle.value = companyAllVehicle;
         print(
             'Company Vehicles: ${companyVehicleModel?.vehicles?.length ?? 0}');
