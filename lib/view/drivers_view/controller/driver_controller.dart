@@ -1,4 +1,5 @@
 
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
@@ -8,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../../Model/image_model.dart';
 import '../driver/create_driver_form/driver_form.dart';
+import '../model/driver_form_model.dart';
 
 
 class DriverController extends GetxController {
@@ -21,10 +23,7 @@ class DriverController extends GetxController {
   RxBool vehicleInformation = false.obs;
 
   String? driverType;
-  String? companyType;
-  String? selectCompanyVehicle;
-  String? vehicleType;
-  String? dateCreate;
+  String? dobDate;
   String? startDate;
   String? endDate;
 
@@ -118,6 +117,11 @@ class DriverController extends GetxController {
     rows.refresh();
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>shift alert controllers
+  List shiftList = <ShiftAlertClass>[].obs;
+  List noteList = <NoteAlertClass>[].obs;
+  final notesCtrl = TextEditingController();
+
 
   /// Rx String variable
   RxString? fileName;
@@ -161,41 +165,78 @@ class DriverController extends GetxController {
         }
       }
       update();
+  }
 
+
+  DriverFormModel? getCombineVehicleData;
+  SubsidiaryObject? companyType;
+  SubsidiaryObject? selectCompanyVehicle;
+  CompanyVehicleObject? vehicleType;
+
+  RxBool getCombineVehicleLoading = false.obs;
+  getCombineVehicle() async {
+    getCombineVehicleLoading(true);
+    var response = await Api().get("driver-combine/get");
+    if(response.statusCode == 200){
+      getCombineVehicleData = DriverFormModel.fromJson(response.data);
+      getCombineVehicleLoading(false);
+      update();
+    }
   }
 
 
   addDriverFtn() async {
     var formData = {
-      "hasPDA": hasPDA.value,
-      "rentPaid": rentPaid.value,
+      "has_pda": hasPDA.value,
+      "rent_paid": rentPaid.value,
       "active": isActive.value,
-      "VEHICLE TYPE": companyType,
-      "userName": driverUserNameController.text,
+      "subsidiary_id": companyType,
+      "username": driverUserNameController.text,
       "password": driverPasswordController.text,
-      "driver_full": driverFullNameController.text,
-      "create_date": dateCreate,
+      "name": driverFullNameController.text,
+      "dob": dobDate,
       "email": driverEmailController.text,
       "mobile": driverMobileController.text,
-      "tel": driverTelController.text,
-      "driverNL": driverNLController.text,
-      "DRIVER TYPE": driverType,
-      "commission": driverCommissionController.text,
-      "rentLimit": driverRendLimitController.text,
+      "telephone": driverTelController.text,
+      "driver_type": driverType,
+      "driver_commission": driverCommissionController.text,
+      "rent_limit": driverRendLimitController.text,
       "balance": driverBalanceController.text,
       "address": driverAddressController.text,
-      "user_company_vehicle": vehicleInformation.value,
+      "use_company_vehicle": vehicleInformation.value,
       "SELECT COMPANY VEHICLE": selectCompanyVehicle,
       "start_date": startDate,
       "end_date": endDate,
       "vehicle_name": vehicleNameController.text,
-      "make": vehicleMakeController.text,
-      "model": vehicleModelController.text,
-      "vehicle_Color": vehicleColorController.text,
-      "owner": vehicleOwnerController.text,
-      "log_book": vehicleLogBookController.text,
-      "vehicle type": vehicleType,
+      // "make": vehicleMakeController.text,
+      // "model": vehicleModelController.text,
+      // "vehicle_Color": vehicleColorController.text,
+      // "owner": vehicleOwnerController.text,
+      // "log_book": vehicleLogBookController.text,
+      // "vehicle type": vehicleType,
 
+      "ni": driverNLController.text,
+      "notes": noteList,
+      "shifts": shiftList,
+
+      "licence_number": rows[5].batchNo,
+      "licence_expiry": rows[5].expiryDate,
+      "phc_driver_number": rows[1].batchNo,
+      "phc_driver_expiry": rows[1].expiryDate,
+      "insurance_number": rows[4].batchNo,
+      "insurance_expiry": rows[4].expiryDate,
+      "rental_agreement_number": rows[8].batchNo,
+      "rental_agreement_expiry": rows[8].expiryDate,
+      "road_tax_number": rows[6].batchNo,
+      "road_tax_expiry": rows[6].expiryDate,
+      "v5_registration_number": rows[7].batchNo,
+      "v5_registration_expiry": rows[7].expiryDate,
+      "mot_number": rows[2].batchNo,
+      "mot_expiry": rows[2].expiryDate,
+      "mot2_number": rows[3].batchNo,
+      "mot2_expiry": rows[3].expiryDate,
+      "phc_vehicle_number": rows[0].batchNo,
+      "phc_vehicle_expiry": rows[0].expiryDate,
     };
   }
 

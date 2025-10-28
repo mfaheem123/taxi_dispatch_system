@@ -51,8 +51,15 @@ class _DriverFormState extends State<DriverForm> {
       policy: OrderedTraversalPolicy(),
       // ensures NumericFocusOrder works globally
 
-      child: GetBuilder<DriverController>(builder: (controller) {
-        return SingleChildScrollView(
+      child: GetBuilder<DriverController>(
+          initState: (v){
+            controller.getCombineVehicle();
+          },
+          builder: (controller) {
+        return controller.getCombineVehicleLoading.value == true?Center(
+          child: CircularProgressIndicator(color: DynamicColors.primaryClr,),
+        ):
+        SingleChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Form(
             key: _formKey,
@@ -89,6 +96,9 @@ class _DriverFormState extends State<DriverForm> {
                           verticalPadding: 0.0,
                           btnText: AppText.note,
                           borderRadius: 4,
+                          onTap: (){
+                            NoteAlert.show();
+                          },
                           style: mozillaTextRegularText(
                               fontSize: 14, color: DynamicColors.whiteClr),
                         ),
@@ -327,4 +337,20 @@ class DocumentRow {
     this.documentTitle,
     this.fileName,
   });
+}
+
+class ShiftAlertClass{
+  TextEditingController? shiftTitle;
+  String? startTime;
+  String? endTime;
+  ShiftAlertClass({this.shiftTitle,this.endTime,this.startTime});
+}
+
+class NoteAlertClass{
+
+  TextEditingController? notesTitle;
+  String? createdItTime;
+  String? nameValue;
+
+  NoteAlertClass({this.nameValue,this.createdItTime,this.notesTitle});
 }

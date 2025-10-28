@@ -8,6 +8,7 @@ import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../model/driver_form_model.dart';
 
 class VehicleInformation extends StatelessWidget {
   VehicleInformation({super.key});
@@ -74,16 +75,16 @@ class VehicleInformation extends StatelessWidget {
                   Text(AppText.usedCompanyVehicle),
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(19),
-                    child: CustomDropdownField<String>(
+                    child: CustomDropdownField<SubsidiaryObject>(
                       label: "SELECT COMPANY VEHICLE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: ['SELECT COMPANY VEHICLE 01', "SELECT COMPANY VEHICLE 02"],
+                      items: controller.getCombineVehicleData!.vehicleTypes!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.selectCompanyVehicle,
                       itemLabel: (templateList) =>
-                      templateList,
+                      templateList.name!,
                       onChanged: (val) {
                         controller.selectCompanyVehicle = val;
                         controller.update();
@@ -188,16 +189,16 @@ class VehicleInformation extends StatelessWidget {
                   FocusTraversalOrder(
                     order: NumericFocusOrder(28),
                     child:
-                    CustomDropdownField<String>(
+                    CustomDropdownField<CompanyVehicleObject>(
                       label: "VEHICLE TYPE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: ['VEHICLE TYPE 01', "VEHICLE TYPE 02" , "VEHICLE TYPE 03"],
+                      items: controller.getCombineVehicleData!.companyVehicles!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.vehicleType,
                       itemLabel: (templateList) =>
-                      templateList,
+                      templateList.vehicleTypeName!,
                       onChanged: (val) {
                         controller.vehicleType = val;
                         controller.update();

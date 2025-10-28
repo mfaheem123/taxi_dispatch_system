@@ -15,6 +15,7 @@ import '../../../../component/dropdown_button.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/driver_controller.dart';
+import '../../model/driver_form_model.dart';
 
 class DriverPersonalInfo extends StatelessWidget {
   DriverPersonalInfo({super.key});
@@ -120,16 +121,16 @@ class DriverPersonalInfo extends StatelessWidget {
                    FocusTraversalOrder(
                      order: NumericFocusOrder(4),
                      child:
-                     CustomDropdownField<String>(
+                     CustomDropdownField<SubsidiaryObject>(
                        label: "COMPANY TYPE",
                        width: fieldWidth/2,
                        height: 35,
-                       items: ['Demo Company', "Other Company"],
+                       items: controller.getCombineVehicleData!.subsidiaries!,
                        // items: controller.locationtypezoneModel!
                        //     .zonesList!,
                        value: controller.companyType,
                        itemLabel: (templateList) =>
-                       templateList,
+                       templateList.name!,
                        onChanged: (val) {
                          controller.companyType = val;
                          controller.update();
@@ -170,18 +171,18 @@ class DriverPersonalInfo extends StatelessWidget {
                      child: labeledField(
                          context: context,
                          isMobile: isMobile,
-                         label: AppText.date,
+                         label: "DATE OF BIRTH",
                          width: fieldWidth/1.4,
                          child: SizedBox(height: 30, child: KeyboardDatePicker(
                            initialDate: DateTime.now(),
                            onChanged: (date) {
                              // jab bhi user change kare
-                               controller.dateCreate = "${date.year}-${date.month}-${date.day}";
+                               controller.dobDate = "${date.year}-${date.month}-${date.day}";
                                print(date);
                            },
                            onSubmitted: (date) {
                              // jab user enter press kare
-                               controller.dateCreate = "${date.year}-${date.month}-${date.day}";
+                               controller.dobDate = "${date.year}-${date.month}-${date.day}";
                              print("User pressed enter: $date");
                            },
                          )
@@ -249,7 +250,7 @@ class DriverPersonalInfo extends StatelessWidget {
                              label: "DRIVER TYPE",
                              width: Get.width / 5,
                              height: 35,
-                             items: ['Commission', "Other Driver"],
+                             items: ['Commission', "Rent/Week"],
                              // items: controller.locationtypezoneModel!
                              //     .zonesList!,
                              value: controller.driverType,
