@@ -28,12 +28,11 @@ class DriverPersonalInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<DriverController>(
       builder: (controller) {
-
         return LayoutBuilder(
             builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
-              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
               // Instead of fixed width, we calculate flexible field widths
               final double fieldWidth = isMobile
@@ -64,6 +63,7 @@ class DriverPersonalInfo extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   Divider(height: 1),
 
                Wrap(
