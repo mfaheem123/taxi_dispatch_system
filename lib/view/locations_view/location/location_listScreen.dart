@@ -234,15 +234,22 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                             side: BorderSide(
                                                 color: Colors.transparent),
                                           ),
-                                          onPressed: () {
-                                                showDialog(
-                                    context: context,
-                                    builder: (_) =>   DeletePermissionAlert(),
-                                  );
-                                          },
-                                          
-                                          
-                                        
+                                          onPressed: () => controller
+                                              .deleteLocationList(item.id),
+
+                                          //  DeletePermissionAlert(
+                                          //       deleteFunctionName: controller
+                                          //           .deleteLocationList(
+                                          //               item.id),
+                                          //     ),
+
+                                          // () {
+                                          //   showDialog(
+                                          //     context: context,
+                                          //     builder: (_) =>
+
+                                          //   );
+                                          // },
                                           child: Icon(Icons.delete_forever,
                                               size: 28),
                                         ),

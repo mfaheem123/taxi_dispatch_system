@@ -178,7 +178,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            // controller.deleteZoneList(item.id);
+                                            controller.deleteZoneList(item.id);
                                           },
                                           child: Icon(Icons.delete_forever,
                                               size: 28),
