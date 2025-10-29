@@ -14,9 +14,12 @@ import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
+import '../../../component/dropdown_button.dart' show CustomDropdownField;
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
+import '../../locations_view/Model/location_types_zoneModel.dart';
+import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
 import '../widgets/pickup_widget.dart';
@@ -43,7 +46,6 @@ class ByDefaultDashboard extends StatefulWidget {
 class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   FocusNode _focusNode = FocusNode();
-
   final FocusNode swap1FN = FocusNode();
   final FocusNode clearPic = FocusNode();
   final FocusNode clearDrop = FocusNode();
@@ -57,7 +59,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   Timer? _debounce;
 
   DashboardController controller = Get.find();
-
+  LocationController _controller = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>()
+      : Get.put(LocationController());
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +71,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<DashboardController>(
+        initState: (v) {
+          if (_controller.updateLocationValue.value == false) {
+            _controller.getLocationTypeZone();
+          }
+        },
       builder: (controller) {
         return LayoutBuilder(
+
             builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
@@ -94,7 +104,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   }
                 }
               },
-              child: SingleChildScrollView(
+              child: _controller.getLocationTypeZoneLoader.value == true
+                  ? SizedBox.shrink()
+                  :SingleChildScrollView(
                 physics: controller.allAddressesData.isNotEmpty
                     ? const NeverScrollableScrollPhysics() // 👈 disable scrolling
                     : const BouncingScrollPhysics(),       // 👈 enable normal scrolling
@@ -194,9 +206,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          child: SizedBox(
                                                            width: 20,
                                                            height: 20,
-                                                           child: Center(
-                                                             child: CircularProgressIndicator(),
-                                                           ),
+                                                           child:  CircularProgressIndicator(),
                                                          ),
                                                        ),
                                                        ),
@@ -294,7 +304,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                       controller.markers.clear();
                                                                       controller.polyLineMarkerInfo.clear();
-                                                                       controller.pickupController.clear();
+                                                                      controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
@@ -334,13 +344,20 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                                          child: FocusTraversalOrder(
                                                            order: const NumericFocusOrder(2),
-                                                           child: RestrictedDrivers(
-                                                             width: fieldWidth / 3,
-                                                             height: 30,
-                                                             padding: 0.0,
-                                                             titleText: "SELECT PLOT",
-                                                             driversList: ["BASE NE7", "WILLESDEN"],
-                                                           ),
+                                                           child: CustomDropdownField<ZoneObject>(
+                                                           label: "Select Zone",
+                                                         width: Get.width / 9,
+                                                         height: 35,
+                                                         items: _controller.locationtypezoneModel!
+                                                             .zonesList!,
+                                                         value: _controller.zoneValue,
+                                                             itemLabel: (templateList) =>
+                                                         templateList.name!,
+                                                         onChanged: (val) {
+                                                           _controller.zoneValue = val;
+                                                           controller.update();
+                                                         },
+                                                       ),
                                                          ),
                                                        ),
 
@@ -391,9 +408,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          child: SizedBox(
                                                            width: 20,
                                                            height: 20,
-                                                           child: Center(
-                                                             child: CircularProgressIndicator(),
-                                                           ),
+                                                           child: CircularProgressIndicator(),
                                                          ),
                                                        ),
                                                        ),
@@ -479,14 +494,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    KbdActivatable(
                                                                      focusNode: swap2FN,
                                                                      onActivate: () {
-                                                                       String tempPic =
-                                                                           controller.pickupController.text;
-                                                                       String tempDrop =
-                                                                           controller.dropOffController.text;
-                                                                       controller.pickupController.text =
-                                                                           tempDrop;
-                                                                       controller.dropOffController.text =
-                                                                           tempPic;
+                                                                       String tempPic = controller.pickupController.text;
+                                                                       String tempDrop = controller.dropOffController.text;
+                                                                       controller.pickupController.text = tempDrop;
+                                                                       controller.dropOffController.text = tempPic;
                                                                        controller.update();
                                                                      },
                                                                      child: const Icon(Icons.swap_vert,

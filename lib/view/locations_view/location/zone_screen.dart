@@ -7,20 +7,20 @@ import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-
 
 enum DrawMode { navigate, freehand, rectangle, points, edit }
 
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
 
 enum _RectDragSource { liveDraft, savedRect, none }
+
 class _RectBounds {
   double minLat, maxLat, minLng, maxLng;
   _RectBounds(this.minLat, this.maxLat, this.minLng, this.maxLng);
 }
+
 _RectBounds _boundsFromTwo(LatLng a, LatLng b) {
   return _RectBounds(
     math.min(a.latitude, b.latitude),
@@ -29,6 +29,7 @@ _RectBounds _boundsFromTwo(LatLng a, LatLng b) {
     math.max(a.longitude, b.longitude),
   );
 }
+
 Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
   final midLat = (b.minLat + b.maxLat) / 2;
   final midLng = (b.minLng + b.maxLng) / 2;
@@ -45,14 +46,11 @@ Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
 }
 
 class ZoneScreen extends StatefulWidget {
-
-
   @override
   State<ZoneScreen> createState() => _ZoneScreenState();
 }
 
 class _ZoneScreenState extends State<ZoneScreen> {
-
   TextEditingController zonenameContoller = TextEditingController();
   TextEditingController secondarynamezoneController = TextEditingController();
   TextEditingController searchController = TextEditingController();
@@ -78,9 +76,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
   DrawMode mode = DrawMode.navigate;
   bool get _lockMapGestures =>
       mode == DrawMode.freehand ||
-          mode == DrawMode.rectangle ||
-          mode == DrawMode.points ||
-          mode == DrawMode.edit;
+      mode == DrawMode.rectangle ||
+      mode == DrawMode.points ||
+      mode == DrawMode.edit;
 
   final Map<String, List<LatLng>> _polyPoints = {};
   _RectDragSource _activeDragSource = _RectDragSource.none;
@@ -100,20 +98,19 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final h = _hav(dLat) + math.cos(lat1) * math.cos(lat2) * _hav(dLon);
     return 2 * r * math.asin(math.min(1, math.sqrt(h)));
   }
+
   void _cancelActiveRectDrag() {
     _activeDragSource = _RectDragSource.none;
     _activeHandle = null;
     _draggingCenter = false;
     _activeStartBounds = null;
   }
+
   void _onPanEnd() {
     _isDragging = false;
     _cancelActiveRectDrag();
     setState(() {});
   }
-
-
-
 
   List<LatLng>? _currentVertices() {
     // Selected saved polygon
@@ -142,7 +139,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
     return null;
   }
 
-
   bool isEditing = false;
 
   void submitForm() {
@@ -160,8 +156,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
       registerzoneForm();
     }
   }
-
-
 
   clearTextFields() {
     if (mounted) {
@@ -183,13 +177,11 @@ class _ZoneScreenState extends State<ZoneScreen> {
         .showToastMessage(msg: "Data posted Succesfully!", context: context);
   }
 
-
   List<Map<String, double>> _toApiVertices(List<LatLng> pts) {
     return pts
         .map((p) => {"latitude": p.latitude, "longitude": p.longitude})
         .toList();
   }
-
 
   void registerZoneForm() async {
     // 1) Collect vertices from the current selection/draft
@@ -212,7 +204,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       // "userId": storedUserId,
       "name": zonenameContoller.text.trim(),
       "secondary_name": secondarynamezoneController.text.trim(),
-      "type": zoneValue, // e.g., "restricted" / "Major" / "Minor" — whatever your UI sets
+      "type":
+          zoneValue, // e.g., "restricted" / "Major" / "Minor" — whatever your UI sets
       "category": categoryValue, // e.g., "security" / "Inner" / "Outer"
       "base": false,
       "vertices": vertices,
@@ -304,13 +297,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
   }
 
-
-
-
-
-
-
-
   void _onPanUpdate(Offset global) async {
     if (!_isDragging) return;
     final p = await _screenToLatLng(global);
@@ -393,6 +379,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }),
     );
   }
+
   Future<void> _goToPostcode(String postcode) async {
     if (postcode.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -432,11 +419,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
   }
 
 
-
-
-
-
-
   Future<({RectHandle? handle, bool isCenter})?> _nearestRectGripAt(
       Offset global, _RectBounds b,
       {int thresholdPx = 28}) async {
@@ -446,7 +428,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     Future<Offset?> _latLngToScreen(LatLng latLng) async {
       final ctrl = await _ctrl.future;
-      final renderBox = _mapKey.currentContext?.findRenderObject() as RenderBox?;
+      final renderBox =
+          _mapKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null || !renderBox.hasSize) return null;
       final origin = renderBox.localToGlobal(Offset.zero);
       try {
@@ -456,6 +439,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         return null;
       }
     }
+
     // Handles
     final hp = _handlePositions(b);
     for (final e in hp.entries) {
@@ -484,12 +468,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
     return null;
   }
+
   List<LatLng> _ptsFromBounds(_RectBounds b) => <LatLng>[
-    LatLng(b.minLat, b.minLng), // SW
-    LatLng(b.minLat, b.maxLng), // SE
-    LatLng(b.maxLat, b.maxLng), // NE
-    LatLng(b.maxLat, b.minLng), // NW
-  ];
+        LatLng(b.minLat, b.minLng), // SW
+        LatLng(b.minLat, b.maxLng), // SE
+        LatLng(b.maxLat, b.maxLng), // NE
+        LatLng(b.maxLat, b.minLng), // NW
+      ];
   bool _isDragging = false;
   Future<LatLng?> _screenToLatLng(Offset global) async {
     final ctrl = await _ctrl.future;
@@ -504,6 +489,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       return null;
     }
   }
+
   void _onPanStart(Offset global) async {
     _isDragging = true;
     final p = await _screenToLatLng(global);
@@ -562,6 +548,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       });
     }
   }
+
   _RectBounds _boundsFromPts(List<LatLng> pts) {
     double minLat = double.infinity, maxLat = -double.infinity;
     double minLng = double.infinity, maxLng = -double.infinity;
@@ -573,7 +560,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
     return _RectBounds(minLat, maxLat, minLng, maxLng);
   }
-
 
   List<LatLng> _rectFromDiagonal(LatLng a, LatLng b) {
     final minLat = math.min(a.latitude, b.latitude);
@@ -587,7 +573,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
       LatLng(maxLat, minLng),
     ];
   }
-
 
   _RectBounds _boundsWithDraggedHandle(
       _RectBounds b, RectHandle h, LatLng newPos) {
@@ -643,7 +628,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final b = _boundsFromPts(pts);
     final set = pts
         .map((p) =>
-    '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
+            '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
         .toSet();
     final corners = {
       '${b.minLat.toStringAsFixed(6)},${b.minLng.toStringAsFixed(6)}',
@@ -653,6 +638,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     };
     return set.length == 4 && set.containsAll(corners);
   }
+
   Set<Polygon> _buildPolygonsForRender() {
     final set = <Polygon>{};
 
@@ -737,7 +723,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           draggable: true,
           zIndex: 4,
           icon:
-          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           onDragEnd: (newPos) => setState(() => _pointsDraft[i] = newPos),
           onTap: () {
             if (_pointsDraft.length > 1) {
@@ -804,7 +790,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           final pos = entry.value;
           markers.add(Marker(
             markerId:
-            MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
+                MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
             position: pos,
             draggable: true,
             zIndex: 6,
@@ -897,10 +883,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
     return markers;
   }
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
     final polygons = _buildPolygonsForRender();
@@ -911,8 +893,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       child: Container(
         color: Colors.grey[200],
         child: Row(
-
-          crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure all children stretch to full height
+          crossAxisAlignment: CrossAxisAlignment
+              .stretch, // Ensure all children stretch to full height
           children: [
             // Form Section
             Expanded(
@@ -931,13 +913,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         labelText: 'NAME',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
-                        // ),
+                          // ),
+                        ),
                       ),
-                    ),
                     ),
                     SizedBox(height: 15),
                     TextField(
-                     controller:  secondarynamezoneController,
+                      controller: secondarynamezoneController,
                       decoration: InputDecoration(
                         labelText: 'SHORT NAME',
                         border: OutlineInputBorder(
@@ -973,8 +955,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           onPressed: () {},
                           child: Text('CLEAR'),
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.red[700],
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.red[700],
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
@@ -986,8 +970,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           },
                           child: Text('SAVE'),
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.green[700],
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green[700],
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
@@ -1002,8 +988,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
             // Map Placeholder
             Expanded(
               flex: 3, // More space for map
-              child:  Container(
-                  color:DynamicColors.whiteClr,
+              child: Container(
+                  color: DynamicColors.whiteClr,
                   width: MediaQuery.of(context).size.width * 0.7,
                   height: MediaQuery.of(context).size.height * 0.55,
                   child: Stack(children: [
@@ -1028,29 +1014,23 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               setState(() => _selectedPolyId = null);
                             }
                           },
-                        )
-                    ),
+                        )),
 
                     // Gesture layer for drag modes
-                    if (mode == DrawMode.freehand ||
-                        mode == DrawMode.rectangle)
+                    if (mode == DrawMode.freehand || mode == DrawMode.rectangle)
                       Positioned.fill(
                           child: Listener(
                               behavior: HitTestBehavior.opaque,
-                              onPointerDown: (e) =>
-                                  _onPanStart(e.position),
-                              onPointerMove: (e) =>
-                                  _onPanUpdate(e.position),
+                              onPointerDown: (e) => _onPanStart(e.position),
+                              onPointerMove: (e) => _onPanUpdate(e.position),
                               onPointerUp: (_) => _onPanEnd(),
                               onPointerCancel: (_) => _onPanEnd())),
 
-                    if ((mode == DrawMode.freehand &&
-                        _draft.isNotEmpty) ||
+                    if ((mode == DrawMode.freehand && _draft.isNotEmpty) ||
                         (mode == DrawMode.rectangle &&
                             (_rectStart != null && _rectCurrent != null ||
                                 _selectedPolyId != null)) ||
-                        (mode == DrawMode.points &&
-                            _pointsDraft.isNotEmpty))
+                        (mode == DrawMode.points && _pointsDraft.isNotEmpty))
                       Positioned(
                           left: 12,
                           bottom: 16,
@@ -1063,64 +1043,65 @@ class _ZoneScreenState extends State<ZoneScreen> {
                                       horizontal: 12, vertical: 8),
                                   child: Text(
                                       "Tip: In Rectangle mode, drag corners/edges or the center to resize/move — even before saving.",
-                                      style: TextStyle(
-                                          color: Colors.white))))),
+                                      style: TextStyle(color: Colors.white))))),
                     Container(
-                      decoration: BoxDecoration(
-                          color: DynamicColors.whiteClr,
-                          border: Border(
-                              top: BorderSide(
-                                  color: DynamicColors.gryClr),
-                              bottom: BorderSide(
-                                  color: DynamicColors.gryClr))),
-                      height: 45,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // 🔹 Post Code TextField
-                          SizedBox(
-                            width: 160,
-                            child: TextField(
-                              controller: _postcodeController,
-                              decoration: InputDecoration(
-                                labelText: "Post Code",
-                                hintText: "e.g. SW1A 1AA",
-                                border: OutlineInputBorder(),
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        decoration: BoxDecoration(
+                            color: DynamicColors.whiteClr,
+                            border: Border(
+                                top: BorderSide(color: DynamicColors.gryClr),
+                                bottom:
+                                    BorderSide(color: DynamicColors.gryClr))),
+                        height: 45,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // 🔹 Post Code TextField
+                            SizedBox(
+                              width: 160,
+                              child: TextField(
+                                controller: _postcodeController,
+                                decoration: InputDecoration(
+                                  labelText: "Post Code",
+                                  hintText: "e.g. SW1A 1AA",
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 8),
+                                ),
+                                onSubmitted: (value) {
+                                  if (value.isNotEmpty) {
+                                    _goToPostcode(value);
+                                  }
+                                },
                               ),
-                              onSubmitted: (value) {
-                                if (value.isNotEmpty) {
-                                  _goToPostcode(value);
-                                }
-                              },
                             ),
-                          ),
-                          const SizedBox(width: 10),
+                            const SizedBox(width: 10),
 
-                          // 🔹 Mode buttons
-                          _modeButton(DrawMode.navigate, Icons.pan_tool_alt, "Navigate"),
-                          _modeButton(DrawMode.freehand, Icons.gesture, "Freehand"),
-                          _modeButton(DrawMode.rectangle, Icons.crop_square, "Rectangle"),
-                          _modeButton(DrawMode.points, Icons.more_horiz, "Points"),
-                          _modeButton(DrawMode.edit, Icons.edit, "Edit"),
-                          IconButton(
-                            tooltip: "Clear all",
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => setState(() {
-                              _draft.clear();
-                              _rectStart = null;
-                              _rectCurrent = null;
-                              _pointsDraft.clear();
-                              _polyPoints.clear();
-                              _selectedPolyId = null;
-                              _cancelActiveRectDrag();
-                            }),
-                          ),
-                        ],
-                      )
-
-                    ),
+                            // 🔹 Mode buttons
+                            _modeButton(DrawMode.navigate, Icons.pan_tool_alt,
+                                "Navigate"),
+                            _modeButton(
+                                DrawMode.freehand, Icons.gesture, "Freehand"),
+                            _modeButton(DrawMode.rectangle, Icons.crop_square,
+                                "Rectangle"),
+                            _modeButton(
+                                DrawMode.points, Icons.more_horiz, "Points"),
+                            _modeButton(DrawMode.edit, Icons.edit, "Edit"),
+                            IconButton(
+                              tooltip: "Clear all",
+                              icon: const Icon(Icons.delete_outline),
+                              onPressed: () => setState(() {
+                                _draft.clear();
+                                _rectStart = null;
+                                _rectCurrent = null;
+                                _pointsDraft.clear();
+                                _polyPoints.clear();
+                                _selectedPolyId = null;
+                                _cancelActiveRectDrag();
+                              }),
+                            ),
+                          ],
+                        )),
                   ])),
             ),
           ],

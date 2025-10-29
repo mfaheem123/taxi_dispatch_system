@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -233,7 +234,15 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                             side: BorderSide(
                                                 color: Colors.transparent),
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                                showDialog(
+                                    context: context,
+                                    builder: (_) =>   DeletePermissionAlert(),
+                                  );
+                                          },
+                                          
+                                          
+                                        
                                           child: Icon(Icons.delete_forever,
                                               size: 28),
                                         ),
