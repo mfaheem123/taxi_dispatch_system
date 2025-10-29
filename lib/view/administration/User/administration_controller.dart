@@ -29,15 +29,40 @@ class AdministrationController extends GetxController {
 
   SubsDiaryModel? subsDiaryModel;
   RxBool subsDiaryLoading = false.obs;
+  var subsiCurrentPage = 1.obs;
+  var subsiTotalPages = 1.obs;
+  final int subsiiLimit = 20;
+  RxList<Subsidiaries> subsiDiaryAll = <Subsidiaries>[].obs;
+  RxList<Subsidiaries> filteredSubsiDiary = <Subsidiaries>[].obs;
+  // search fields
+  RxString searchSubsiDiaryName = ''.obs;
+  RxString searchSubsiDiaryEmail = ''.obs;
+  RxString searchSubsiDiaryTelephone = ''.obs;
+  RxString searchSubsiDiaryAddress = ''.obs;
+  RxString searchSibsiDiaryFax = ''.obs;
 
   Future<void> listSubsDiary() async {
     try {
       subsDiaryLoading.value = true;
-      final response = await Api().get('subsidiaries/get');
-
+      String query = 'page=${subsiCurrentPage.value}&limit=$subsiiLimit';
+      if (searchSubsiDiaryName.value.isNotEmpty)
+        query += '&name=${searchSubsiDiaryName.value}';
+      if (searchSubsiDiaryEmail.value.isNotEmpty)
+        query += '&email=${searchSubsiDiaryEmail.value}';
+      if (searchSubsiDiaryTelephone.value.isNotEmpty)
+        query += '&telephone_number=${searchSubsiDiaryTelephone.value}';
+      if (searchSubsiDiaryAddress.value.isNotEmpty)
+        query += '&address=${searchSubsiDiaryAddress.value}';
+      if (searchSibsiDiaryFax.value.isNotEmpty)
+        query += '&fax=${searchSibsiDiaryFax.value}';
+      print("API Query: subsidiaries/get?$query");
+      final response = await Api().get('subsidiaries/get?$query');
       if (response.statusCode == 200) {
         subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-        print('Company ${SubsDiaryModel}');
+        subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
+        subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
+        filteredSubsiDiary.value = subsiDiaryAll;
+        print('SubsiDiary ${SubsDiaryModel}');
       }
     } catch (e) {
       print("Error in subsDiary: $e");
@@ -47,18 +72,57 @@ class AdministrationController extends GetxController {
     }
   }
 
-//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User subsDiary api
+// -----------Search changes function
+  void subsiDiarySearchChanged() {
+    subsiCurrentPage.value = 1;
+    listSubsDiary();
+  }
+
+  /// ------- pagination function
+  void onPageChange(int page) {
+    subsiCurrentPage.value = page;
+    listSubsDiary();
+  }
+
+//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  api
 
   UserModel? userModel;
   RxBool userLoading = false.obs;
 
+  var userCurrentPage = 1.obs;
+  var userTotalPage = 1.obs;
+  final int userLlimit = 20;
+  RxList<Employees> userAll = <Employees>[].obs;
+  RxList<Employees> userFliter = <Employees>[].obs;
+  RxString searchUserName = ''.obs;
+  RxString searchUserEmail = ''.obs;
+  RxString searchUserPhone = ''.obs;
+  RxString searchUserFax = ''.obs;
+  RxString searchUserRole = ''.obs;
+  RxString searchUserSubsiDiary = ''.obs;
   Future<void> userData() async {
     try {
       userLoading.value = true;
-      final response = await Api().get('employees/get');
-
+      String query = 'page=${userCurrentPage.value}&limit=$userLlimit';
+      if (searchUserName.value.isNotEmpty)
+        query += '&username=${searchUserName.value}';
+      if (searchUserEmail.value.isNotEmpty)
+        query += '&email=${searchUserEmail.value}';
+      if (searchUserPhone.value.isNotEmpty)
+        query += '&phone=${searchUserPhone.value}';
+      if (searchUserFax.value.isNotEmpty)
+        query += '&fax=${searchUserFax.value}';
+      if (searchUserRole.value.isNotEmpty)
+        query += '&role=${searchUserRole.value}';
+      if (searchUserSubsiDiary.value.isNotEmpty)
+        query += '&subsidiary=${searchUserSubsiDiary.value}';
+      print("API Query: employees/get?$query");
+      final response = await Api().get('employees/get?$query');
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
+        userTotalPage.value = userModel?.totalPages ?? 1;
+        userAll.value = userModel?.employees ?? [];
+        userFliter.value = userAll;
         print('User data ${UserModel}');
         print('User data ${response.data}');
       }
@@ -68,6 +132,14 @@ class AdministrationController extends GetxController {
       userLoading.value = false;
       update();
     }
+  }
+  void userSearch() {
+    userCurrentPage.value = 1;
+    userData();
+  }
+  void userPage(int page) {
+    userCurrentPage.value = page;
+    userData();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary Controller

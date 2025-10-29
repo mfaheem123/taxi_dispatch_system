@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +42,10 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AdministrationController>(builder: (controller) {
+      final listToShow = controller.filteredSubsiDiary.isNotEmpty
+          ? controller.filteredSubsiDiary
+          : controller.subsiDiaryAll;
+
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -101,42 +106,62 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                       child: DatatableWidget(
                         columns: [
                           DataColumn(
-                            label: Center(
-                              child: Checkbox(
-                                  value: controller.subsDiaryAllSelection.value,
-                                  onChanged: (v) {
-                                    controller.subsDiaryAllSelection.value = v!;
-                                    controller.update();
-                                  }),
-                            ),
+                            label: Checkbox(
+                                value: controller.subsDiaryAllSelection.value,
+                                onChanged: (v) {
+                                  controller.subsDiaryAllSelection.value = v!;
+                                  controller.update();
+                                }),
                           ),
-                          buildHeaderWithSearch(title: "NAME"),
-                          buildHeaderWithSearch(title: "EMAIL"),
-                          buildHeaderWithSearch(title: "TELEPHONE"),
-                          buildHeaderWithSearch(title: "ADDRESS"),
-                          buildHeaderWithSearch(title: "FAX"),
+                          buildHeaderWithSearch(
+                            title: "NAME",
+                            onChanged: (v) {
+                              controller.searchSubsiDiaryName.value = v;
+                              controller.subsiDiarySearchChanged();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "EMAIL",
+                            onChanged: (v) {
+                              controller.searchSubsiDiaryName.value = v;
+                              controller.subsiDiarySearchChanged();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "TELEPHONE",
+                            onChanged: (v) {
+                              controller.searchSubsiDiaryTelephone.value = v;
+                              controller.subsiDiarySearchChanged();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "ADDRESS",
+                            onChanged: (v) {
+                              controller.searchSubsiDiaryAddress.value = v;
+                              controller.subsiDiarySearchChanged();
+                            },
+                          ),
+                          buildHeaderWithSearch(
+                            title: "FAX",
+                            onChanged: (v) {
+                              controller.searchSibsiDiaryFax.value = v;
+                              controller.subsiDiarySearchChanged();
+                            },
+                          ),
                           buildHeaderWithSearch(
                               title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow:
-                            controller.subsDiaryModel!.subsidiaries!.length ??
-                                0,
-                        rows: (controller.subsDiaryModel!.subsidiaries ?? [])
-                            .map((item) {
+                        totalRow: listToShow.length ?? 0,
+                        rows: (listToShow ?? []).map((item) {
                           return DataRow(
                             cells: [
                               DataCell(
-
-                                Center(
-                                  child: Checkbox(
-                                      value:
-                                          controller.subsDiarySelection.value,
-                                      onChanged: (v) {
-                                        controller.subsDiarySelection.value =
-                                            v!;
-                                        controller.update();
-                                      }),
-                                ),
+                                Checkbox(
+                                    value: controller.subsDiarySelection.value,
+                                    onChanged: (v) {
+                                      controller.subsDiarySelection.value = v!;
+                                      controller.update();
+                                    }),
                               ),
                               DataCell(Center(child: Text(item.name!))),
                               DataCell(Center(child: Text(item.email!))),
@@ -152,7 +177,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                           color: Colors.transparent,
-                                        ), // border color & thickness
+                                        ), 
                                       ),
                                       onPressed: () {},
                                       child: Icon(
@@ -183,6 +208,10 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                       ),
                     ),
                   ),
+            PaginationWidget(
+                currentPage: controller.subsiCurrentPage.value,
+                totalPages: controller.subsiTotalPages.value,
+                onPageChange: controller.onPageChange)
           ],
         );
       });

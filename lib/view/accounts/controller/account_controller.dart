@@ -313,17 +313,14 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 
-  /// ........................................ model object
-  ListOfAccountModel? listofAccount;
 
-  ///------------------------------------------- Pagination
+  ListOfAccountModel? listofAccount;
+  ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 5;
   RxBool isLoadingListOfAccount = false.obs;
-
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
-
   RxList<AccountObject> AccountList = <AccountObject>[].obs;
   RxList<AccountObject> filteredAccount = <AccountObject>[].obs;
   // search fields
