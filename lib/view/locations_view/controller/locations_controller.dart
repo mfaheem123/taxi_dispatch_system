@@ -121,7 +121,7 @@ class LocationController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Location List
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  todo List Location Work
 
   RxList<Locations> locationsAll = <Locations>[].obs;
   RxList<Locations> locationsFiltered = <Locations>[].obs;
@@ -199,7 +199,18 @@ class LocationController extends GetxController {
         selectedLocationTypeId: locationUpdate.locationTypeId);
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Location List Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
+
+  deleteLocationList(int? id) async {
+    var response = await Api().delete("locations/delete/$id");
+      print("locations/delete/$id");
+    if (response.statusCode == 200) {
+      getLocationList();
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
 
@@ -263,10 +274,8 @@ class LocationController extends GetxController {
   RxString searchCategory = ''.obs;
   var zoneCurrentPage = 1.obs;
   var zoneTotalPages = 1.obs;
-  final int zoneLimit = 2;
-
+  final int zoneLimit = 20;
   RxBool getZoneLoader = false.obs;
-
   Future<void> getZoneList() async {
     try {
       getZoneLoader(true);
@@ -278,11 +287,8 @@ class LocationController extends GetxController {
       if (searchType.value.isNotEmpty) query += '&type=${searchType.value}';
       if (searchCategory.value.isNotEmpty)
         query += '&category=${searchCategory.value}';
-
       print("API Query: zones/get?$query");
-
       var response = await Api().get("zones/get?$query");
-
       if (response.statusCode == 200) {
         zoneListModel = ZoneModel.fromJson(response.data);
         zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
@@ -299,7 +305,7 @@ class LocationController extends GetxController {
     }
   }
 
-// -----------Search changes function
+// -----------Search function
   void onSearchChanged() {
     zoneCurrentPage.value = 1;
     getZoneList();
@@ -311,19 +317,19 @@ class LocationController extends GetxController {
     getZoneList();
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zone Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
 
-  // deleteZoneList(int? id, ) async{
-  //
-  //   var response = await Api().delete("zones/delete/$id");
-  //   if(response.statusCode == 200){
-  //
-  //     getZoneList();
-  //
-  //     update();
-  //   }
-  // }
+  deleteZoneList(
+    int? id,
+  ) async {
+    var response = await Api().delete("zones/delete/$id");
+    if (response.statusCode == 200) {
+      getZoneList();
+
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
 }

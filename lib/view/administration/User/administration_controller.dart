@@ -88,7 +88,6 @@ class AdministrationController extends GetxController {
 
   UserModel? userModel;
   RxBool userLoading = false.obs;
-
   var userCurrentPage = 1.obs;
   var userTotalPage = 1.obs;
   final int userLlimit = 20;
@@ -163,9 +162,8 @@ class AdministrationController extends GetxController {
     update();
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Subsidiaries Controller
+  
 
-// String?
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
 
