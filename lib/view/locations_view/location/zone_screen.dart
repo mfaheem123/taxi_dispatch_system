@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -55,6 +56,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
   TextEditingController zonenameContoller = TextEditingController();
   TextEditingController secondarynamezoneController = TextEditingController();
   TextEditingController searchController = TextEditingController();
+  final TextEditingController _postcodeController = TextEditingController();
+  GoogleMapController? _mapController;
   String categoryValue = 'Select Category';
   var categoryItems = ['Select Category', 'Inner', 'Outer'];
   String zoneValue = 'Select Zone Type';
@@ -390,6 +393,50 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }),
     );
   }
+  Future<void> _goToPostcode(String postcode) async {
+    if (postcode.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a postcode")),
+      );
+      return;
+    }
+
+    try {
+      // Wait for the GoogleMapController
+      final controller = await _ctrl.future;
+
+      // Replace with your Google Maps API key
+      const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
+
+      // Call Google Maps Geocoding API
+      final url =
+          "https://maps.googleapis.com/maps/api/geocode/json?address=$postcode&key=$apiKey";
+      final response = await http.get(Uri.parse(url));
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+        final loc = data['results'][0]['geometry']['location'];
+        final target = LatLng(loc['lat'], loc['lng']);
+
+        await controller.animateCamera(
+          CameraUpdate.newCameraPosition(
+            CameraPosition(target: target, zoom: 15),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No location found for '$postcode'")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: ${e.toString()}")),
+      );
+    }
+  }
+
+
+
 
 
   Future<({RectHandle? handle, bool isCenter})?> _nearestRectGripAt(
@@ -1030,31 +1077,51 @@ class _ZoneScreenState extends State<ZoneScreen> {
                                   color: DynamicColors.gryClr))),
                       height: 45,
                       child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            _modeButton(DrawMode.navigate,
-                                Icons.pan_tool_alt, "Navigate"),
-                            _modeButton(DrawMode.freehand, Icons.gesture,
-                                "Freehand"),
-                            _modeButton(DrawMode.rectangle,
-                                Icons.crop_square, "Rectangle"),
-                            _modeButton(DrawMode.points, Icons.more_horiz,
-                                "Points"),
-                            _modeButton(
-                                DrawMode.edit, Icons.edit, "Edit"),
-                            IconButton(
-                                tooltip: "Clear all",
-                                icon: const Icon(Icons.delete_outline),
-                                onPressed: () => setState(() {
-                                  _draft.clear();
-                                  _rectStart = null;
-                                  _rectCurrent = null;
-                                  _pointsDraft.clear();
-                                  _polyPoints.clear();
-                                  _selectedPolyId = null;
-                                  _cancelActiveRectDrag();
-                                })),
-                          ]),
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          // 🔹 Post Code TextField
+                          SizedBox(
+                            width: 160,
+                            child: TextField(
+                              controller: _postcodeController,
+                              decoration: InputDecoration(
+                                labelText: "Post Code",
+                                hintText: "e.g. SW1A 1AA",
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                              ),
+                              onSubmitted: (value) {
+                                if (value.isNotEmpty) {
+                                  _goToPostcode(value);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+
+                          // 🔹 Mode buttons
+                          _modeButton(DrawMode.navigate, Icons.pan_tool_alt, "Navigate"),
+                          _modeButton(DrawMode.freehand, Icons.gesture, "Freehand"),
+                          _modeButton(DrawMode.rectangle, Icons.crop_square, "Rectangle"),
+                          _modeButton(DrawMode.points, Icons.more_horiz, "Points"),
+                          _modeButton(DrawMode.edit, Icons.edit, "Edit"),
+                          IconButton(
+                            tooltip: "Clear all",
+                            icon: const Icon(Icons.delete_outline),
+                            onPressed: () => setState(() {
+                              _draft.clear();
+                              _rectStart = null;
+                              _rectCurrent = null;
+                              _pointsDraft.clear();
+                              _polyPoints.clear();
+                              _selectedPolyId = null;
+                              _cancelActiveRectDrag();
+                            }),
+                          ),
+                        ],
+                      )
+
                     ),
                   ])),
             ),
