@@ -1,11 +1,6 @@
-
-
-
-
 import 'package:dashboard_new1/alert/restrict_drivers_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../component/color.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
@@ -15,11 +10,9 @@ import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class DispatchBookingAlert extends StatefulWidget {
   const DispatchBookingAlert({super.key});
-
   @override
   State<DispatchBookingAlert> createState() => _DispatchBookingAlertState();
 }
-
 class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
   final dashBoardCntrl = Get.find<DashboardController>();
 
