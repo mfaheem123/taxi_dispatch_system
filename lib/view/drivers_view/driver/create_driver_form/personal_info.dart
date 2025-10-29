@@ -1,7 +1,5 @@
 
 
-
-
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -330,6 +328,9 @@ class DriverPersonalInfo extends StatelessWidget {
                           width: fieldWidth/1.4,
                           borderRadius: 4,
                           height: 35,
+                        onTap: (){
+                            controller.addDriverFtn();
+                        },
                         style: mozillaTextSemiBoldText(
                           fontSize: 16,
                           color: DynamicColors.whiteClr
