@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
@@ -59,6 +60,9 @@ class _UserListscreenState extends State<UserListscreen> {
     double width = WidgetsBinding
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final listToShow = controller.userFliter.isNotEmpty
+        ? controller.userFliter
+        : controller.userAll;
 
     return RawKeyboardListener(
       autofocus: true,
@@ -84,7 +88,7 @@ class _UserListscreenState extends State<UserListscreen> {
                 Row(
                   children: [
                     Text(
-                      "USER" + "(${controller.userModel?.count})",
+                      "USER" + " (${controller.userModel?.count})",
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w800, fontSize: 17),
                     ),
@@ -132,73 +136,117 @@ class _UserListscreenState extends State<UserListscreen> {
                     // : (controller.userModel?.employees == null ||
                     //         controller.userModel!.employees!.isEmpty)
                     //     ? const Center(child: Text("No users found"))
-                        : SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: SizedBox(
-                              width: Get.width,
-                              child: DatatableWidget(
-                                columns: [
-                                  DataColumn(
-                                    label: Center(
-                                      child: Checkbox(
-                                        value: controller
-                                            .subsDiaryAllSelection.value,
-                                        onChanged: (v) {
-                                          controller
-                                              .subsDiaryAllSelection.value = v!;
-                                          controller.update();
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  buildHeaderWithSearch(title: "USERNAME"),
-                                  buildHeaderWithSearch(title: "EMAIL"),
-                                  buildHeaderWithSearch(title: "PHONE #"),
-                                  buildHeaderWithSearch(title: "FAX"),
-                                  buildHeaderWithSearch(title: "ROLE"),
-                                  buildHeaderWithSearch(title: "SUBSIDIARY"),
-                                  buildHeaderWithSearch(
-                                      title: "ACTIONS", removeSearching: true),
-                                ],
-                                totalRow:
-                                    controller.userModel!.employees!.length,
-                                rows: controller.userModel!.employees!
-                                    .map((item) {
-                                  return 
-                                  DataRow(cells: [
-  DataCell(
-    Center(
-      child: Checkbox(
-        value: false,
-        onChanged: (v) {},
-      ),
-    ),
-  ),
-  DataCell(Center(child: Text(item.username ?? 'no data'))),
-  DataCell(Center(child: Text(item.email ?? 'no data'))),
-  DataCell(Center(child: Text(item.phone ?? 'no data'))),
-  DataCell(Center(child: Text(item.fax ?? 'no data'))),
-  DataCell(Center(child: Text(item.role?.name ?? 'no data'))),
-  DataCell(Center(child: Text(item.subsidiary?.name ?? 'no data'))),
-  DataCell(Row(
-    children: [
-      IconButton(
-        icon: Icon(Icons.edit_calendar),
-        onPressed: () {},
-      ),
-      const Text("|"),
-      IconButton(
-        icon: Icon(Icons.delete_forever),
-        onPressed: () {},
-      ),
-    ],
-  )),
-])
-;
-                                }).toList(),
+                    : SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SizedBox(
+                          width: Get.width,
+                          child: DatatableWidget(
+                            columns: [
+                              DataColumn(
+                                label: Checkbox(
+                                  value: controller.subsDiaryAllSelection.value,
+                                  onChanged: (v) {
+                                    controller.subsDiaryAllSelection.value = v!;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                            ),
+                              buildHeaderWithSearch(
+                                title: "USERNAME",
+                                onChanged: (v) {
+                                  controller.searchUserName.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "EMAIL",
+                                onChanged: (v) {
+                                  controller.searchUserEmail.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "PHONE #",
+                                onChanged: (v) {
+                                  controller.searchUserPhone.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "FAX",
+                                onChanged: (v) {
+                                  controller.searchUserFax.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "ROLE",
+                                onChanged: (v) {
+                                  controller.searchUserRole.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                title: "SUBSIDIARY",
+                                onChanged: (v) {
+                                  controller.searchUserSubsiDiary.value = v;
+                                  controller.userSearch();
+                                },
+                              ),
+                              buildHeaderWithSearch(
+                                  title: "ACTIONS", removeSearching: true),
+                            ],
+                            totalRow: listToShow.length,
+                            rows: listToShow.map((item) {
+                              return DataRow(cells: [
+                                DataCell(
+                                  Checkbox(
+                                    value: false,
+                                    onChanged: (v) {},
+                                  ),
+                                ),
+                                DataCell(Center(
+                                    child: Text(item.username ?? 'no data'))),
+                                DataCell(Center(
+                                    child: Text(item.email ?? 'no data'))),
+                                DataCell(Center(
+                                    child: Text(item.phone ?? 'no data'))),
+                                DataCell(
+                                    Center(child: Text(item.fax ?? 'no data'))),
+                                DataCell(Center(
+                                    child: Text(item.role?.name ?? 'no data'))),
+                                DataCell(Center(
+                                    child: Text(
+                                        item.subsidiary?.name ?? 'no data'))),
+                                DataCell(Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.edit_calendar,
+                                        color: DynamicColors.redClr,
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    const Text("|"),
+                                    IconButton(
+                                      icon: Icon(
+                                        Icons.delete_forever,
+                                        color: DynamicColors.redClr,
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                  ],
+                                )),
+                              ]);
+                            }).toList(),
                           ),
+                        ),
+                      ),
+                        PaginationWidget(
+                currentPage: controller.userCurrentPage.value,
+                totalPages: controller.userTotalPage.value,
+                onPageChange: controller.userPage),
               ],
             ),
           );
