@@ -7,7 +7,8 @@ import 'package:get/get.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class DeletePermissionAlert extends StatefulWidget {
-  const DeletePermissionAlert({super.key});
+  final Function deleteFunctionName;
+  DeletePermissionAlert({super.key, required this.deleteFunctionName});
   @override
   State<DeletePermissionAlert> createState() => _DeletePermissionAlertState();
 }
@@ -52,9 +53,10 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
                   btnText: "Yes",
                   style: mozillaTextRegularText(
                       fontSize: 10, color: DynamicColors.whiteClr),
-                      onTap: () {
-                        
-                      },
+                  onTap: () {
+                    widget.deleteFunctionName;
+                    Navigator.pop(context);
+                  },
                 ),
                 SizedBox(width: 30),
                 CustomButton(
@@ -65,7 +67,7 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
                   btnText: "No",
                   style: mozillaTextRegularText(
                       fontSize: 10, color: DynamicColors.whiteClr),
-                  onTap:() => Navigator.pop(context),
+                  onTap: () => Navigator.pop(context),
                 ),
               ],
             )
