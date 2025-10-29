@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -201,14 +204,45 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
-  deleteLocationList(int? id) async {
-    var response = await Api().delete("locations/delete/$id");
-      print("locations/delete/$id");
+  deleteLocationList(String? id) async {
+
+    var response = await Api().delete("/locations/delete/$id");
+    
+    print("------------------------------------------locations/delete/$id");
     if (response.statusCode == 200) {
+       print(json.encode(response.data));
       getLocationList();
       update();
-    }
+    }else {
+  print(response.statusMessage);
+}
   }
+
+// deleteLocationList(int? id) async {
+//   if (id == null) return;
+
+//   try {
+//     final response = await Api().delete("locations/delete/$id");
+//     print("Delete response: ${response.statusCode}");
+//     if (response.statusCode == 200) {
+//       getLocationList();
+//       update();
+//     } else {
+//       // handle server message, show Snackbar etc
+//       final msg = response.data != null ? response.data.toString() : 'Delete failed';
+//       Get.snackbar('Error', msg);
+//     }
+//   } on DioException catch (e) {
+//     // network-level error (no response)
+//     Get.snackbar('Network Error', e.message ?? 'Something went wrong');
+//   } catch (e) {
+//     print(e);
+//   }
+// }
+
+
+
+  
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
