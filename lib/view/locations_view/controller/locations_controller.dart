@@ -173,14 +173,12 @@ class LocationController extends GetxController {
       update();
     }
   }
-
   // --------Search changes function
-  void SearchEscort() {
+  void SearchLocation() {
     locationCurrentPage.value = 1;
     getLocationList();
   }
-
-  void PageEscort(int page) {
+  void PageLocation(int page) {
     locationCurrentPage.value = page;
     getLocationList();
   }
@@ -204,45 +202,16 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
-  deleteLocationList(String? id) async {
 
-    var response = await Api().delete("/locations/delete/$id");
-    
-    print("------------------------------------------locations/delete/$id");
-    if (response.statusCode == 200) {
-       print(json.encode(response.data));
-      getLocationList();
-      update();
-    }else {
-  print(response.statusMessage);
-}
+  deleteLocation(int? id) async {
+    var response = await Api().delete("locations/delete/$id");
+ if (response.statusCode == 200) {
+        getLocationList();
+        print("✅ Location deleted successfully!");
+        print(json.encode(response.data));
+      }
+
   }
-
-// deleteLocationList(int? id) async {
-//   if (id == null) return;
-
-//   try {
-//     final response = await Api().delete("locations/delete/$id");
-//     print("Delete response: ${response.statusCode}");
-//     if (response.statusCode == 200) {
-//       getLocationList();
-//       update();
-//     } else {
-//       // handle server message, show Snackbar etc
-//       final msg = response.data != null ? response.data.toString() : 'Delete failed';
-//       Get.snackbar('Error', msg);
-//     }
-//   } on DioException catch (e) {
-//     // network-level error (no response)
-//     Get.snackbar('Network Error', e.message ?? 'Something went wrong');
-//   } catch (e) {
-//     print(e);
-//   }
-// }
-
-
-
-  
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
@@ -338,13 +307,11 @@ class LocationController extends GetxController {
       update();
     }
   }
-
 // -----------Search function
   void onSearchChanged() {
     zoneCurrentPage.value = 1;
     getZoneList();
   }
-
   /// ------- pagination function
   void zonePageChange(int page) {
     zoneCurrentPage.value = page;

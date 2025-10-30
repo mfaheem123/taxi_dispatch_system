@@ -3,7 +3,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
-import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
+import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';

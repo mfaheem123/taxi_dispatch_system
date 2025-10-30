@@ -1,7 +1,7 @@
-
 import 'dart:convert';
 
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -16,9 +16,7 @@ import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
 
-
 class DriverController extends GetxController {
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
   /// RxBool variable
@@ -31,8 +29,6 @@ class DriverController extends GetxController {
   String? dobDate;
   String? startDate;
   String? endDate;
-
-
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -58,69 +54,68 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>table data
   var rows = <DocumentRow>[
     DocumentRow(
-      batchNo: "PHC VEHICLE",
-      documentTitle: "PHC VEHICLE",
-      paramTitle: "PHC_VEHICLE",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-      expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "PHC VEHICLE",
+        documentTitle: "PHC VEHICLE",
+        paramTitle: "PHC_VEHICLE",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "PHC DRIVER",
-      documentTitle: "PHC DRIVER",
-      paramTitle: "PHC_DRIVER",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-      expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "PHC DRIVER",
+        documentTitle: "PHC DRIVER",
+        paramTitle: "PHC_DRIVER",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "MOT",
-      documentTitle: "MOT",
-      paramTitle: "MOT",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-      expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "MOT",
+        documentTitle: "MOT",
+        paramTitle: "MOT",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "MOT 2",
-      documentTitle: "MOT 2",
-      paramTitle: "MOT2",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "MOT 2",
+        documentTitle: "MOT 2",
+        paramTitle: "MOT2",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "INSURANCE",
-      documentTitle: "INSURANCE",
-      paramTitle: "INSURANCE",
-        expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-        expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "INSURANCE",
+        documentTitle: "INSURANCE",
+        paramTitle: "INSURANCE",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "LICENSE",
-      documentTitle: "LICENSE",
-      paramTitle: "LICENCE",
-        expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-              expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "LICENSE",
+        documentTitle: "LICENSE",
+        paramTitle: "LICENCE",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "ROAD TAX",
-      documentTitle: "ROAD TAX",
-      paramTitle: "ROAD_TAX",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-              expiryTime: TextEditingController(text: "09:08 AM")
-
-    ),
+        batchNo: "ROAD TAX",
+        documentTitle: "ROAD TAX",
+        paramTitle: "ROAD_TAX",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "V5 REGISTRATION",
-      documentTitle: "V5 REGISTRATION",
-      paramTitle: "V5_REGISTRATION",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-      expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "V5 REGISTRATION",
+        documentTitle: "V5 REGISTRATION",
+        paramTitle: "V5_REGISTRATION",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-      batchNo: "RENTAL AGREEMENT",
-      documentTitle: "RENTAL AGREEMENT",
-      paramTitle: "RENTAL_AGREEMENT",
-      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
-      expiryTime: TextEditingController(text: "09:08 AM")
-    ),
+        batchNo: "RENTAL AGREEMENT",
+        documentTitle: "RENTAL AGREEMENT",
+        paramTitle: "RENTAL_AGREEMENT",
+        expiryDate: DateFormat("yyyy-MM-dd")
+            .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")),
   ].obs;
 
   void addEmptyRow() {
@@ -137,7 +132,7 @@ class DriverController extends GetxController {
     rows.refresh();
   }
 
-  void addDocument(int index) async{
+  void addDocument(int index) async {
     await pickImage(singleImg: "profileImg", docImg: "docImg");
     rows[index].fileName = docImgg;
     rows.refresh();
@@ -148,12 +143,10 @@ class DriverController extends GetxController {
   List noteList = <NoteAlertClass>[].obs;
   final notesCtrl = TextEditingController();
 
-
   /// Rx String variable
   RxString? fileName;
   ImageModel? profileImg;
   ImageModel? docImgg;
-
 
   /// List variables
   List<ImageModel> imageList = [];
@@ -161,38 +154,32 @@ class DriverController extends GetxController {
   Uint8List? imageBytes;
 
   Future<void> pickImage({singleImg, docImg}) async {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-      );
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
 
-      if (result != null && result.files.single.bytes != null) {
-        if(singleImg ==null){
-          imageList.add(
-              ImageModel(
-                  name: result.files.single.name,
-                  bytes: result.files.single.bytes!,
-                  path: result.files.single.path
-              )
-          );
-        }else{
-          if(docImg == "docImg"){
-            docImgg = ImageModel(
-                name: result.files.single.name,
-                bytes: result.files.single.bytes!,
-                path: result.files.single.path
-            );
-          }else{
-            profileImg = ImageModel(
-                name: result.files.single.name,
-                bytes: result.files.single.bytes!,
-                path: result.files.single.path
-            );
-          }
+    if (result != null && result.files.single.bytes != null) {
+      if (singleImg == null) {
+        imageList.add(ImageModel(
+            name: result.files.single.name,
+            bytes: result.files.single.bytes!,
+            path: result.files.single.path));
+      } else {
+        if (docImg == "docImg") {
+          docImgg = ImageModel(
+              name: result.files.single.name,
+              bytes: result.files.single.bytes!,
+              path: result.files.single.path);
+        } else {
+          profileImg = ImageModel(
+              name: result.files.single.name,
+              bytes: result.files.single.bytes!,
+              path: result.files.single.path);
         }
       }
-      update();
+    }
+    update();
   }
-
 
   DriverFormModel? getCombineVehicleData;
   SubsidiaryObject? companyType;
@@ -203,13 +190,12 @@ class DriverController extends GetxController {
   getCombineVehicle() async {
     getCombineVehicleLoading(true);
     var response = await Api().get("driver-combine/get");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
       getCombineVehicleLoading(false);
       update();
     }
   }
-
 
   addDriverFtn() async {
     try {
@@ -218,7 +204,8 @@ class DriverController extends GetxController {
 
       for (final action in rows) {
         if (action.fileName != null) {
-          rowsImageList["${action.paramTitle}_DOCUMENT"] = await dio.MultipartFile.fromBytes(
+          rowsImageList["${action.paramTitle}_DOCUMENT"] =
+              await dio.MultipartFile.fromBytes(
             action.fileName!.bytes,
             filename: action.fileName!.name,
           );
@@ -249,8 +236,8 @@ class DriverController extends GetxController {
         "end_date": endDate,
         "vehicle_name": vehicleNameController.text.trim(),
         "ni": driverNLController.text.trim(),
-        if(noteList.isNotEmpty)"notes": noteList,
-        if(shiftList.isNotEmpty)"shifts": shiftList,
+        if (noteList.isNotEmpty) "notes": noteList,
+        if (shiftList.isNotEmpty) "shifts": shiftList,
         // "vehicle":
       };
 
@@ -258,10 +245,9 @@ class DriverController extends GetxController {
       for (final action in rows) {
         final Map<String, dynamic> rowJson = {
           "${action.paramTitle!.toLowerCase()}_number": action.batchNo,
-          "${action.paramTitle!.toLowerCase()}_expiry":
-          DateFormat("yyyy-MM-dd").format(DateTime.parse(action.expiryDate.toString())),
-          "${action.paramTitle!.toLowerCase()}_time":
-          action.expiryTime!.text,
+          "${action.paramTitle!.toLowerCase()}_expiry": DateFormat("yyyy-MM-dd")
+              .format(DateTime.parse(action.expiryDate.toString())),
+          "${action.paramTitle!.toLowerCase()}_time": action.expiryTime!.text,
         };
 
         // 🔹 Encode to JSON string so it doesn't flatten
@@ -280,8 +266,8 @@ class DriverController extends GetxController {
         print("${field.key}: ${field.value}");
       });
 
-      var response = await Api().post(formData, "drivers/add",multiPart: true);
-      if(response.statusCode == 200){
+      var response = await Api().post(formData, "drivers/add", multiPart: true);
+      if (response.statusCode == 200) {
         print(response.data);
       }
     } catch (e, stack) {
@@ -290,17 +276,91 @@ class DriverController extends GetxController {
     }
   }
 
-
-
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 
   /// RxBool variable
   RxBool activeDrivers = false.obs;
+
+  GetDriverModel? listDriverModel;
+
+  RxBool driverLoading = false.obs;
+  var driverCurrentPage = 1.obs;
+  var driverTotalPage = 1.obs;
+  final int driverLlimit = 20;
+  RxList<Drivers> driverAll = <Drivers>[].obs;
+  RxList<Drivers> driverFliter = <Drivers>[].obs;
+
+  RxString searchDriverName = ''.obs;
+  RxString searchDriverUserName = ''.obs;
+  RxString searchVehicleName = ''.obs;
+  RxString searchDriverExpiry = ''.obs;
+  RxString searchVehicheExpiry = ''.obs;
+  RxString searchMOTExpiry = ''.obs;
+  RxString searchMOT2Expiry = ''.obs;
+  RxString searchInsuranceExpiry = ''.obs;
+  RxString searchLicenseExpiry = ''.obs;
+  RxString searchMobile = ''.obs;
+  RxString searchSubsiDiary = ''.obs;
+
+  Future<void> getDriverList() async {
+    try {
+      driverLoading.value = true;
+      String query = 'page=${driverCurrentPage.value}&limit=$driverLlimit';
+      if (searchDriverName.value.isNotEmpty)
+        query += '&name=${searchDriverName.value}';
+      if (searchDriverUserName.value.isNotEmpty)
+        query += '&username=${searchDriverUserName.value}';
+
+      if (searchVehicleName.value.isNotEmpty)
+        query += '&name=${searchVehicleName.value}';
+
+      if (searchDriverExpiry.value.isNotEmpty)
+        query += '&phone=${searchDriverExpiry.value}';
+      if (searchVehicheExpiry.value.isNotEmpty)
+        query += '&fax=${searchVehicheExpiry.value}';
+      if (searchMOTExpiry.value.isNotEmpty)
+        query += '&role=${searchMOTExpiry.value}';
+      if (searchMOT2Expiry.value.isNotEmpty)
+        query += '&subsidiary=${searchMOT2Expiry.value}';
+      if (searchInsuranceExpiry.value.isNotEmpty)
+        query += '&subsidiary=${searchInsuranceExpiry.value}';
+      if (searchLicenseExpiry.value.isNotEmpty)
+        query += '&subsidiary=${searchLicenseExpiry.value}';
+      if (searchMobile.value.isNotEmpty)
+        query += '&subsidiary=${searchMobile.value}';
+      if (searchSubsiDiary.value.isNotEmpty)
+        query += '&subsidiary=${searchSubsiDiary.value}';
+      print("API Query: drivers/get?$query");
+      final response = await Api().get('drivers/get?$query');
+      if (response.statusCode == 200) {
+        listDriverModel = GetDriverModel.fromJson(response.data);
+        driverTotalPage.value = listDriverModel?.totalPages ?? 1;
+        driverAll.value = listDriverModel?.drivers ?? [];
+        driverFliter.value = driverAll;
+        print('User data ${GetDriverModel}');
+        print('User data ${response.data}');
+      }
+    } catch (e) {
+      print("Error in User: $e");
+    } finally {
+      driverLoading.value = false;
+      update();
+    }
+  }
+  void driverSearch() {
+    driverCurrentPage.value = 1;
+    getDriverList();
+  }
+  void driverPage(int page) {
+    driverCurrentPage.value = page;
+    getDriverList();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
   RxBool loggedOut = false.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
@@ -346,29 +406,29 @@ class DriverController extends GetxController {
   final commentsController = TextEditingController();
   final breakController = TextEditingController();
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
 
   /// TextEditingControllers
   final commissionController = TextEditingController();
   final pdaRentController = TextEditingController();
+
   /// RxBool variable
   RxBool ptValue = false.obs;
   RxBool cashValue = false.obs;
   RxBool creditCardValue = false.obs;
   RxBool accountValue = false.obs;
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
   /// TextEditingControllers
   final emailSubjectController = TextEditingController();
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
 
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
 
   /// RxBool variable
   final creditValue = ValueNotifier<bool>(false);
@@ -379,17 +439,16 @@ class DriverController extends GetxController {
   final amountController = TextEditingController();
   final descriptionController = TextEditingController();
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER COMMISSION PAY functionality
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
 
   /// TextEditingControllers
   final recoverJobController = TextEditingController();
   final rejectJobController = TextEditingController();
   final ignoreJobController = TextEditingController();
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
 }
 
 // class DriverBindings implements Bindings {

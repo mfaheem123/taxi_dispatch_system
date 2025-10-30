@@ -2,7 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/color_picker_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_field.dart';
-import 'package:dashboard_new1/view/administration/User/administration_controller.dart';
+import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard_new1/component/customButton.dart';

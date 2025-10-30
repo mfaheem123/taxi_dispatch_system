@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -133,42 +134,42 @@ class _LocationListScreenState extends State<LocationListScreen> {
                               title: "Name",
                               onChanged: (v) {
                                 controller.searchLocationName.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
                               title: "PostCode",
                               onChanged: (v) {
                                 controller.searchPostCode.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
                               title: "ShortCuts",
                               onChanged: (v) {
                                 controller.searchShortCuts.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
                               title: "Address",
                               onChanged: (v) {
                                 controller.searchAddress.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
                               title: "Location Type",
                               onChanged: (v) {
                                 controller.searchLocationType.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
                               title: "Zone",
                               onChanged: (v) {
                                 controller.searchZone.value = v;
-                                controller.SearchEscort();
+                                controller.SearchLocation();
                               },
                             ),
                             buildHeaderWithSearch(
@@ -235,8 +236,15 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            controller.deleteLocationList(
-                                                item.id.toString());
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  DeletePermissionAlert(
+                                                deleteFunctionName: () =>
+                                                    controller.deleteLocation(
+                                                        item.id!),
+                                              ),
+                                            );
                                           },
                                           child: Icon(Icons.delete_forever,
                                               size: 28),
@@ -251,6 +259,10 @@ class _LocationListScreenState extends State<LocationListScreen> {
                         ),
                       ),
                     ),
+                    PaginationWidget(
+                        currentPage: controller.locationCurrentPage.value,
+                        totalPages: controller.locationTotalPages.value,
+                        onPageChange: controller.PageLocation),
                   ],
                 ),
               );
