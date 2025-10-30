@@ -213,6 +213,7 @@ class _CreateBookingState extends State<CreateBooking> {
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 8),
 
                         Stack(key: controller.stackKey, children: [

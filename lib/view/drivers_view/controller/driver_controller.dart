@@ -1,8 +1,11 @@
 
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
+import 'package:intl/intl.dart';
 
 import '../../../Model/driver_model.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,6 +13,8 @@ import 'package:file_picker/file_picker.dart';
 import '../../../Model/image_model.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../model/driver_form_model.dart';
+import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
 
 
 class DriverController extends GetxController {
@@ -48,52 +53,73 @@ class DriverController extends GetxController {
   final vehicleOwnerController = TextEditingController();
   final vehicleLogBookController = TextEditingController();
 
+  String formatted = DateFormat("yyyy-MM-dd").format(DateTime.now());
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>table data
   var rows = <DocumentRow>[
     DocumentRow(
       batchNo: "PHC VEHICLE",
-      documentTitle: "PHC VEHICLE"
+      documentTitle: "PHC VEHICLE",
+      paramTitle: "PHC_VEHICLE",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+      expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "PHC DRIVER",
       documentTitle: "PHC DRIVER",
-
+      paramTitle: "PHC_DRIVER",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+      expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "MOT",
       documentTitle: "MOT",
-
+      paramTitle: "MOT",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+      expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "MOT 2",
       documentTitle: "MOT 2",
-
+      paramTitle: "MOT2",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "INSURANCE",
       documentTitle: "INSURANCE",
-
+      paramTitle: "INSURANCE",
+        expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+        expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "LICENSE",
       documentTitle: "LICENSE",
-
-
+      paramTitle: "LICENCE",
+        expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+              expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "ROAD TAX",
       documentTitle: "ROAD TAX",
+      paramTitle: "ROAD_TAX",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+              expiryTime: TextEditingController(text: "09:08 AM")
 
     ),
     DocumentRow(
       batchNo: "V5 REGISTRATION",
       documentTitle: "V5 REGISTRATION",
-
+      paramTitle: "V5_REGISTRATION",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+      expiryTime: TextEditingController(text: "09:08 AM")
     ),
     DocumentRow(
       batchNo: "RENTAL AGREEMENT",
       documentTitle: "RENTAL AGREEMENT",
-
+      paramTitle: "RENTAL_AGREEMENT",
+      expiryDate: DateFormat("yyyy-MM-dd").parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
+      expiryTime: TextEditingController(text: "09:08 AM")
     ),
   ].obs;
 
@@ -186,59 +212,85 @@ class DriverController extends GetxController {
 
 
   addDriverFtn() async {
-    var formData = {
-      "has_pda": hasPDA.value,
-      "rent_paid": rentPaid.value,
-      "active": isActive.value,
-      "subsidiary_id": companyType,
-      "username": driverUserNameController.text,
-      "password": driverPasswordController.text,
-      "name": driverFullNameController.text,
-      "dob": dobDate,
-      "email": driverEmailController.text,
-      "mobile": driverMobileController.text,
-      "telephone": driverTelController.text,
-      "driver_type": driverType,
-      "driver_commission": driverCommissionController.text,
-      "rent_limit": driverRendLimitController.text,
-      "balance": driverBalanceController.text,
-      "address": driverAddressController.text,
-      "use_company_vehicle": vehicleInformation.value,
-      "SELECT COMPANY VEHICLE": selectCompanyVehicle,
-      "start_date": startDate,
-      "end_date": endDate,
-      "vehicle_name": vehicleNameController.text,
-      // "make": vehicleMakeController.text,
-      // "model": vehicleModelController.text,
-      // "vehicle_Color": vehicleColorController.text,
-      // "owner": vehicleOwnerController.text,
-      // "log_book": vehicleLogBookController.text,
-      // "vehicle type": vehicleType,
+    try {
+      // 🧩 Step 1: Prepare multipart image files
+      final Map<String, dio.MultipartFile> rowsImageList = {};
 
-      "ni": driverNLController.text,
-      "notes": noteList,
-      "shifts": shiftList,
+      for (final action in rows) {
+        if (action.fileName != null) {
+          rowsImageList["${action.paramTitle}_DOCUMENT"] = await dio.MultipartFile.fromBytes(
+            action.fileName!.bytes,
+            filename: action.fileName!.name,
+          );
+        }
+      }
 
-      "licence_number": rows[5].batchNo,
-      "licence_expiry": rows[5].expiryDate,
-      "phc_driver_number": rows[1].batchNo,
-      "phc_driver_expiry": rows[1].expiryDate,
-      "insurance_number": rows[4].batchNo,
-      "insurance_expiry": rows[4].expiryDate,
-      "rental_agreement_number": rows[8].batchNo,
-      "rental_agreement_expiry": rows[8].expiryDate,
-      "road_tax_number": rows[6].batchNo,
-      "road_tax_expiry": rows[6].expiryDate,
-      "v5_registration_number": rows[7].batchNo,
-      "v5_registration_expiry": rows[7].expiryDate,
-      "mot_number": rows[2].batchNo,
-      "mot_expiry": rows[2].expiryDate,
-      "mot2_number": rows[3].batchNo,
-      "mot2_expiry": rows[3].expiryDate,
-      "phc_vehicle_number": rows[0].batchNo,
-      "phc_vehicle_expiry": rows[0].expiryDate,
-    };
+      // 🧾 Step 2: Prepare base data (normal form fields)
+      final Map<String, dynamic> baseData = {
+        "has_pda": hasPDA.value,
+        "rent_paid": rentPaid.value,
+        "active": isActive.value,
+        "subsidiary_id": companyType,
+        "username": driverUserNameController.text.trim(),
+        "password": driverPasswordController.text.trim(),
+        "name": driverFullNameController.text.trim(),
+        "dob": dobDate,
+        "email": driverEmailController.text.trim(),
+        "mobile": driverMobileController.text.trim(),
+        "telephone": driverTelController.text.trim(),
+        "driver_type": driverType,
+        "driver_commission": driverCommissionController.text.trim(),
+        "rent_limit": driverRendLimitController.text.trim(),
+        "balance": driverBalanceController.text.trim(),
+        "address": driverAddressController.text.trim(),
+        "use_company_vehicle": vehicleInformation.value,
+        "SELECT_COMPANY_VEHICLE": selectCompanyVehicle,
+        "start_date": startDate,
+        "end_date": endDate,
+        "vehicle_name": vehicleNameController.text.trim(),
+        "ni": driverNLController.text.trim(),
+        if(noteList.isNotEmpty)"notes": noteList,
+        if(shiftList.isNotEmpty)"shifts": shiftList,
+        // "vehicle":
+      };
+
+      // 🧠 Step 3: Convert each row into JSON string (to preserve structure)
+      for (final action in rows) {
+        final Map<String, dynamic> rowJson = {
+          "${action.paramTitle!.toLowerCase()}_number": action.batchNo,
+          "${action.paramTitle!.toLowerCase()}_expiry":
+          DateFormat("yyyy-MM-dd").format(DateTime.parse(action.expiryDate.toString())),
+          "${action.paramTitle!.toLowerCase()}_time":
+          action.expiryTime!.text,
+        };
+
+        // 🔹 Encode to JSON string so it doesn't flatten
+        baseData[action.paramTitle.toString()] = jsonEncode(rowJson);
+      }
+
+      // 🖼️ Step 4: Merge image files
+      baseData.addAll(rowsImageList);
+
+      // 📦 Step 5: Create FormData
+      final formData = dio.FormData.fromMap(baseData);
+
+      // 🧭 Debug log
+      print("✅ Final FormData:");
+      formData.fields.forEach((field) {
+        print("${field.key}: ${field.value}");
+      });
+
+      var response = await Api().post(formData, "drivers/add",multiPart: true);
+      if(response.statusCode == 200){
+        print(response.data);
+      }
+    } catch (e, stack) {
+      print("❌ Error in addDriverFtn: $e");
+      print(stack);
+    }
   }
+
+
 
 
 

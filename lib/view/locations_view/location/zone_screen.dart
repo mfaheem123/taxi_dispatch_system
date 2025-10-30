@@ -71,7 +71,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   String zoneID = "";
   static const _initialCamera = CameraPosition(
     target: LatLng(37.7749, -122.4194),
-    zoom: 12,
+    zoom: 18,
   );
   DrawMode mode = DrawMode.navigate;
   bool get _lockMapGestures =>
@@ -403,7 +403,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         final target = LatLng(lat, lng);
         await controller.animateCamera(
           CameraUpdate.newCameraPosition(
-            CameraPosition(target: target, zoom: 15),
+            CameraPosition(target: target, zoom: 16),
           ),
         );
       } else {

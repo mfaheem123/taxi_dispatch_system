@@ -329,6 +329,7 @@ class DocumentRow {
   String? batchNo;
   String? documentTitle;
   ImageModel? fileName;
+  String? paramTitle;
 
   DocumentRow({
     this.expiryDate,
@@ -336,6 +337,7 @@ class DocumentRow {
     this.batchNo,
     this.documentTitle,
     this.fileName,
+    this.paramTitle,
   });
 }
 

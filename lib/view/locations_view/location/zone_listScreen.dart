@@ -130,16 +130,12 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                             return DataRow(
                               cells: [
                                 DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(Center(
-                                    child: Text(item.secondaryName ?? '—'))),
+                                DataCell(Center(child: Text(item.secondaryName ?? '—'))),
                                 DataCell(Center(child: Text(item.type ?? '—'))),
-                                DataCell(
-                                    Center(child: Text(item.category ?? '—'))),
-                                DataCell(
-                                  Center(
+                                DataCell(Center(child: Text(item.category ?? '—'))),
+                                DataCell(Center(
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         OutlinedButton(
                                           style: OutlinedButton.styleFrom(

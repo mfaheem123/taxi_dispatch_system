@@ -72,6 +72,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
     return GetBuilder<DashboardController>(
         initState: (v) {
+          controller.seeZoneOnMapp();
           if (_controller.updateLocationValue.value == false) {
             _controller.getLocationTypeZone();
           }
@@ -426,8 +427,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  if (event.logicalKey ==
                                                                      LogicalKeyboardKey.arrowDown &&
                                                                      controller.highlightedIndex.value <
-                                                                         controller.suggestions.length -
-                                                                             1) {
+                                                                         controller.suggestions.length - 1) {
                                                                    controller.highlightedIndex.value++;
                                                                  } else if (event.logicalKey ==
                                                                      LogicalKeyboardKey.arrowUp &&
@@ -494,12 +494,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    KbdActivatable(
                                                                      focusNode: swap2FN,
                                                                      onActivate: () {
+
                                                                        String tempPic = controller.pickupController.text;
                                                                        String tempDrop = controller.dropOffController.text;
                                                                        controller.pickupController.text = tempDrop;
                                                                        controller.dropOffController.text = tempPic;
                                                                        controller.update();
+
                                                                      },
+
                                                                      child: const Icon(Icons.swap_vert,
                                                                          color: Color(0xFF575797), size: 20),
                                                                    ),
