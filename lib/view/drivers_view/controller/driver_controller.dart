@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -26,9 +27,11 @@ class DriverController extends GetxController {
   RxBool vehicleInformation = false.obs;
 
   String? driverType;
-  String? dobDate;
-  String? startDate;
-  String? endDate;
+  String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? vehicleStartDate;
+  String? vehicleEndeDate;
+  DateTime? startDate;
+  DateTime? endDate;
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -54,63 +57,63 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>table data
   var rows = <DocumentRow>[
     DocumentRow(
-        batchNo: "PHC VEHICLE",
+        batchNo: "",
         documentTitle: "PHC VEHICLE",
         paramTitle: "PHC_VEHICLE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "PHC DRIVER",
+        batchNo: "",
         documentTitle: "PHC DRIVER",
         paramTitle: "PHC_DRIVER",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "MOT",
+        batchNo: "",
         documentTitle: "MOT",
         paramTitle: "MOT",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "MOT 2",
+        batchNo: "",
         documentTitle: "MOT 2",
         paramTitle: "MOT2",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "INSURANCE",
+        batchNo: "",
         documentTitle: "INSURANCE",
         paramTitle: "INSURANCE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "LICENSE",
+        batchNo: "",
         documentTitle: "LICENSE",
         paramTitle: "LICENCE",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "ROAD TAX",
+        batchNo: "",
         documentTitle: "ROAD TAX",
         paramTitle: "ROAD_TAX",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "V5 REGISTRATION",
+        batchNo: "",
         documentTitle: "V5 REGISTRATION",
         paramTitle: "V5_REGISTRATION",
         expiryDate: DateFormat("yyyy-MM-dd")
             .parse(DateFormat("yyyy-MM-dd").format(DateTime.now())),
         expiryTime: TextEditingController(text: "09:08 AM")),
     DocumentRow(
-        batchNo: "RENTAL AGREEMENT",
+        batchNo: "",
         documentTitle: "RENTAL AGREEMENT",
         paramTitle: "RENTAL_AGREEMENT",
         expiryDate: DateFormat("yyyy-MM-dd")
@@ -160,10 +163,16 @@ class DriverController extends GetxController {
 
     if (result != null && result.files.single.bytes != null) {
       if (singleImg == null) {
-        imageList.add(ImageModel(
+        imageList.clear();
+        imageList.insert(0, ImageModel(
             name: result.files.single.name,
             bytes: result.files.single.bytes!,
-            path: result.files.single.path));
+            path: result.files.single.path)
+        );
+        // imageList.add(ImageModel(
+        //     name: result.files.single.name,
+        //     bytes: result.files.single.bytes!,
+        //     path: result.files.single.path));
       } else {
         if (docImg == "docImg") {
           docImgg = ImageModel(
@@ -202,22 +211,43 @@ class DriverController extends GetxController {
       // 🧩 Step 1: Prepare multipart image files
       final Map<String, dio.MultipartFile> rowsImageList = {};
 
-      for (final action in rows) {
-        if (action.fileName != null) {
-          rowsImageList["${action.paramTitle}_DOCUMENT"] =
-              await dio.MultipartFile.fromBytes(
-            action.fileName!.bytes,
-            filename: action.fileName!.name,
-          );
+      var profileImage;
+      var docImages;
+
+      if(profileImg != null){
+        profileImage = await dio.MultipartFile.fromBytes(
+          profileImg!.bytes,
+          filename: profileImg!.name,
+        );
+      }
+
+      if(vehicleInformation.value == false){
+        for (final action in rows) {
+          if (action.fileName != null) {
+            rowsImageList["${action.paramTitle}_DOCUMENT"] =
+            await dio.MultipartFile.fromBytes(
+              action.fileName!.bytes,
+              filename: action.fileName!.name,
+            );
+          }
         }
+      }
+
+      if(imageList.isNotEmpty){
+        docImages = await dio.MultipartFile.fromBytes(
+          imageList[0].bytes,
+          filename: imageList[0].name,
+        );
       }
 
       // 🧾 Step 2: Prepare base data (normal form fields)
       final Map<String, dynamic> baseData = {
+        "image": profileImage,
+        "log_book_document": docImages,
         "has_pda": hasPDA.value,
         "rent_paid": rentPaid.value,
         "active": isActive.value,
-        "subsidiary_id": companyType,
+        if(companyType != null)"subsidiary_id": companyType!.id,
         "username": driverUserNameController.text.trim(),
         "password": driverPasswordController.text.trim(),
         "name": driverFullNameController.text.trim(),
@@ -225,37 +255,80 @@ class DriverController extends GetxController {
         "email": driverEmailController.text.trim(),
         "mobile": driverMobileController.text.trim(),
         "telephone": driverTelController.text.trim(),
-        "driver_type": driverType,
+        if(driverType != null)"driver_type": driverType,
         "driver_commission": driverCommissionController.text.trim(),
         "rent_limit": driverRendLimitController.text.trim(),
         "balance": driverBalanceController.text.trim(),
         "address": driverAddressController.text.trim(),
         "use_company_vehicle": vehicleInformation.value,
-        "SELECT_COMPANY_VEHICLE": selectCompanyVehicle,
         "start_date": startDate,
         "end_date": endDate,
-        "vehicle_name": vehicleNameController.text.trim(),
         "ni": driverNLController.text.trim(),
         if (noteList.isNotEmpty) "notes": noteList,
-        if (shiftList.isNotEmpty) "shifts": shiftList,
-        // "vehicle":
+       if(vehicleInformation.value == false) "vehicle": {
+         if(selectCompanyVehicle != null) "vehicle_type_id": selectCompanyVehicle!.id,
+          "vehicle_number": vehicleNameController.text,
+          "make": vehicleMakeController.text,
+          "model": vehicleModelController.text,
+          "color": vehicleColorController.text,
+          "owner": vehicleOwnerController.text,
+          "start_date": vehicleStartDate,
+          "end_date": vehicleEndeDate,
+          "log_book_number": vehicleLogBookController.text
+        },
+        if(vehicleInformation.value)"company_vehicle_id": vehicleType!.id,
       };
 
       // 🧠 Step 3: Convert each row into JSON string (to preserve structure)
-      for (final action in rows) {
-        final Map<String, dynamic> rowJson = {
-          "${action.paramTitle!.toLowerCase()}_number": action.batchNo,
-          "${action.paramTitle!.toLowerCase()}_expiry": DateFormat("yyyy-MM-dd")
-              .format(DateTime.parse(action.expiryDate.toString())),
-          "${action.paramTitle!.toLowerCase()}_time": action.expiryTime!.text,
-        };
+         if(vehicleInformation.value == false) {
+        for (final action in rows) {
+          final Map<String, dynamic> rowJson = {
+            "${action.paramTitle!.toLowerCase()}_number": action.batchNo,
+            "${action.paramTitle!.toLowerCase()}_expiry":
+                DateFormat("yyyy-MM-dd")
+                    .format(DateTime.parse(action.expiryDate.toString())),
+            "${action.paramTitle!.toLowerCase()}_expiry_time": action.expiryTime!.text,
+          };
 
-        // 🔹 Encode to JSON string so it doesn't flatten
-        baseData[action.paramTitle.toString()] = jsonEncode(rowJson);
+          // 🔹 Encode to JSON string so it doesn't flatten
+          baseData[action.paramTitle.toString()] = jsonEncode(rowJson);
+        }
+
+        // 🖼️ Step 4: Merge image files
+        baseData.addAll(rowsImageList);
       }
 
-      // 🖼️ Step 4: Merge image files
-      baseData.addAll(rowsImageList);
+
+         print(shiftList);
+      if(shiftList.isNotEmpty){
+        List<Map<String, dynamic>> allShifts = [];
+
+        for (final action in shiftList) {
+          final Map<String, dynamic> rowJson = {
+            "name": action.shiftTitle,
+            "start_time": action.startTime,
+            "end_time": action.endTime,
+          };
+
+          allShifts.add(rowJson);
+        }
+      }
+
+      if(noteList.isNotEmpty){
+        List<Map<String, dynamic>> allNotes = [];
+
+        for (final action in noteList) {
+          final Map<String, dynamic> rowJson = {
+            "note": action.notesTitle,
+            "created_at": action.createdItTime,
+            "created_by": action.createdByTime,
+          };
+
+          allNotes.add(rowJson);
+        }
+
+        baseData["notes"] = jsonEncode(allNotes);
+      }
 
       // 📦 Step 5: Create FormData
       final formData = dio.FormData.fromMap(baseData);
@@ -268,12 +341,38 @@ class DriverController extends GetxController {
 
       var response = await Api().post(formData, "drivers/add", multiPart: true);
       if (response.statusCode == 200) {
+        clearAddDriverData();
+        BotToast.showText(text: response.data['message']);
         print(response.data);
       }
     } catch (e, stack) {
       print("❌ Error in addDriverFtn: $e");
       print(stack);
     }
+  }
+
+
+  clearAddDriverData() async{
+    driverRendLimitController.clear();
+    driverBalanceController.clear();
+    driverAddressController.clear();
+    vehicleNameController.clear();
+    vehicleMakeController.clear();
+    vehicleModelController.clear();
+    vehicleColorController.clear();
+    vehicleOwnerController.clear();
+    driverUserNameController.clear();
+    driverPasswordController.clear();
+    driverFullNameController.clear();
+    driverEmailController.clear();
+    driverMobileController.clear();
+    driverTelController.clear();
+    driverCommissionController.clear();
+    hasPDA.value = false;
+    rentPaid.value = false;
+    isActive.value = false;
+    shiftList.clear();
+    noteList.clear();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality

@@ -187,6 +187,7 @@ class _DriverFormState extends State<DriverForm> {
                               CustomTextField(
                                 width: 150,
                                 borderRadius: 4,
+
                                 controller: TextEditingController(text: row.batchNo ?? ""),
                                 hintText: "Batch #",
                                 onChanged: (val) {
@@ -265,55 +266,26 @@ class _DriverFormState extends State<DriverForm> {
         columns: const [
           DataColumn(label: Text("Start Date")),
           DataColumn(label: Text("End Date")),
-          DataColumn(label: Text("Actions")),
         ],
         rows: [
           DataRow(
             cells: [
-              const DataCell(Text("10/01/2025")),
-              const DataCell(Text("15/12/2025")),
-              DataCell(
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () {
-                        debugPrint("Edit row 1");
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        debugPrint("Delete row 1");
-                      },
-                    ),
-                  ],
-                ),
+              DataCell( KeyboardDatePicker(
+                initialDate: controller.startDate ?? DateTime.now(),
+                onChanged: (date) {
+                  controller.startDate = date;
+                  controller.update();
+                },
+              ),),
+              DataCell(KeyboardDatePicker(
+                initialDate: controller.endDate ?? DateTime.now(),
+                onChanged: (date) {
+                  controller.endDate = date;
+                  controller.update();
+                },
+              )
               ),
-            ],
-          ),
-          DataRow(
-            cells: [
-              const DataCell(Text("01/03/2026")),
-              const DataCell(Text("20/08/2026")),
-              DataCell(
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit, color: Colors.blue),
-                      onPressed: () {
-                        debugPrint("Edit row 2");
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () {
-                        debugPrint("Delete row 2");
-                      },
-                    ),
-                  ],
-                ),
-              ),
+
             ],
           ),
         ],
@@ -342,17 +314,19 @@ class DocumentRow {
 }
 
 class ShiftAlertClass{
-  TextEditingController? shiftTitle;
+  String? shiftTitle;
   String? startTime;
   String? endTime;
+
+
   ShiftAlertClass({this.shiftTitle,this.endTime,this.startTime});
 }
 
 class NoteAlertClass{
 
-  TextEditingController? notesTitle;
+  String? notesTitle;
   String? createdItTime;
-  String? nameValue;
+  String? createdByTime;
 
-  NoteAlertClass({this.nameValue,this.createdItTime,this.notesTitle});
+  NoteAlertClass({this.createdByTime,this.createdItTime,this.notesTitle});
 }
