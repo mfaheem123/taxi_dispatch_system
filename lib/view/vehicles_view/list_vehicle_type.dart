@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/vehicle_type_model.dart';
@@ -220,7 +221,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             controller.update();
                                           },
                                           child: Icon(Icons.edit_calendar,
-                                              size: 20),
+                                              size: 28),
                                         ),
                                         const SizedBox(width: 4),
                                         OutlinedButton(
@@ -229,10 +230,20 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             minimumSize: Size(24, 24),
                                             side: BorderSide.none,
                                           ),
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  DeletePermissionAlert(
+                                                deleteFunctionName: () =>
+                                                     controller.deleteVehicleType(item.id!),
+                                              ),
+                                            );
+                                         
+                                          },
                                           child: Icon(
                                             Icons.delete_forever,
-                                            size: 20,
+                                            size: 28,
                                             color: DynamicColors.redClr,
                                           ),
                                         ),

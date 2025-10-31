@@ -127,7 +127,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
-                        width: Get.width,
+                        width: MediaQuery.of(context).size.width,
                         child: DatatableWidget(
                           columns: [
                             buildHeaderWithSearch(

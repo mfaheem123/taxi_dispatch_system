@@ -180,6 +180,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
+                  
                   width: MediaQuery.of(context).size.width,
                   child: DatatableWidget(
                     columns: [

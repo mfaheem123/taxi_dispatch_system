@@ -139,7 +139,9 @@ class _UserListscreenState extends State<UserListscreen> {
                     : SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width,
+                       width: isMobile || isTablet
+                                  ? Get.width + 700
+                                  : Get.width,
                           child: DatatableWidget(
                             columns: [
                               DataColumn(
