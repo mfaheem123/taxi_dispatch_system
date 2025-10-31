@@ -105,7 +105,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                           },
                         ),
                         Text(
-                          AppText.active ,
+                          "In_Active",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w700,
                               fontSize: 14,

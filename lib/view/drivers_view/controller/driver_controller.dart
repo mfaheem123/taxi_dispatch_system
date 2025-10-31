@@ -380,7 +380,7 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 
   /// ye bool batata hai ke active drivers chahiye ya nahi
-  RxBool activeDrivers = true.obs;
+  RxBool activeDrivers = false.obs;
   GetDriverModel? listDriverModel;
   RxBool driverLoading = false.obs;
   var driverCurrentPage = 1.obs;
@@ -405,7 +405,7 @@ class DriverController extends GetxController {
     try {
       driverLoading.value = true;
 
-      String check = 'active=${activeDrivers.value}';
+   
 
       final response = await Api().get('drivers/get?',
       queryParameters: {
