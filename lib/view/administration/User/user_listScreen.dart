@@ -102,7 +102,7 @@ class _UserListscreenState extends State<UserListscreen> {
                           controller.update();
                         }),
                     Text(
-                      AppText.inactive,
+                      AppText.active,
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,

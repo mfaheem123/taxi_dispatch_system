@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:intl/intl.dart';
 
-import '../../../Model/driver_model.dart';
+import '../../../Model/driver_model.dart' hide Driver;
 import 'package:file_picker/file_picker.dart';
 
 import '../../../Model/image_model.dart';
@@ -280,23 +280,28 @@ class DriverController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 
-  /// RxBool variable
-  RxBool activeDrivers = false.obs;
+  /// ye bool batata hai ke active drivers chahiye ya nahi
+  RxBool activeDrivers = true.obs;
 
+  /// ye model list ke data ko store karega
   GetDriverModel? listDriverModel;
 
+  /// ye loading indicator ke liye hai
   RxBool driverLoading = false.obs;
+
+  /// pagination ke liye
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
-  final int driverLlimit = 20;
-  RxList<Drivers> driverAll = <Drivers>[].obs;
-  RxList<Drivers> driverFliter = <Drivers>[].obs;
+  final int driverLimit = 15;
+  RxList<Driver> driverAll = <Driver>[].obs;
+  RxList<Driver> driverFilter = <Driver>[].obs;
 
+  /// ye sab search ke fields hain
   RxString searchDriverName = ''.obs;
   RxString searchDriverUserName = ''.obs;
   RxString searchVehicleName = ''.obs;
   RxString searchDriverExpiry = ''.obs;
-  RxString searchVehicheExpiry = ''.obs;
+  RxString searchVehicleExpiry = ''.obs;
   RxString searchMOTExpiry = ''.obs;
   RxString searchMOT2Expiry = ''.obs;
   RxString searchInsuranceExpiry = ''.obs;
@@ -307,46 +312,37 @@ class DriverController extends GetxController {
   Future<void> getDriverList() async {
     try {
       driverLoading.value = true;
-      String query = 'page=${driverCurrentPage.value}&limit=$driverLlimit';
-      if (searchDriverName.value.isNotEmpty)
-        query += '&name=${searchDriverName.value}';
-      if (searchDriverUserName.value.isNotEmpty)
-        query += '&username=${searchDriverUserName.value}';
 
-      if (searchVehicleName.value.isNotEmpty)
-        query += '&name=${searchVehicleName.value}';
+      String check = 'active=${activeDrivers.value}';
 
-      if (searchDriverExpiry.value.isNotEmpty)
-        query += '&phone=${searchDriverExpiry.value}';
-      if (searchVehicheExpiry.value.isNotEmpty)
-        query += '&fax=${searchVehicheExpiry.value}';
-      if (searchMOTExpiry.value.isNotEmpty)
-        query += '&role=${searchMOTExpiry.value}';
-      if (searchMOT2Expiry.value.isNotEmpty)
-        query += '&subsidiary=${searchMOT2Expiry.value}';
-      if (searchInsuranceExpiry.value.isNotEmpty)
-        query += '&subsidiary=${searchInsuranceExpiry.value}';
-      if (searchLicenseExpiry.value.isNotEmpty)
-        query += '&subsidiary=${searchLicenseExpiry.value}';
-      if (searchMobile.value.isNotEmpty)
-        query += '&subsidiary=${searchMobile.value}';
-      if (searchSubsiDiary.value.isNotEmpty)
-        query += '&subsidiary=${searchSubsiDiary.value}';
-      print("API Query: drivers/get?$query");
-      final response = await Api().get('drivers/get?$query');
+      final response = await Api().get('drivers/get?$check',
+      queryParameters: {
+        "name" : searchDriverName.value.toLowerCase(),
+        "username" : searchDriverUserName.value.toLowerCase(),
+        "vehicle_type" : searchVehicleName.value.toLowerCase(),
+        "driver_end_date" : searchDriverExpiry.value.toLowerCase(),
+        "vehicle_end_date" : searchVehicleExpiry.value.toLowerCase(),
+        "mot_expiry" : searchMOTExpiry.value.toLowerCase(),
+        "mot2_expiry" : searchMOT2Expiry.value.toLowerCase(),
+        "insurance_expiry" : searchInsuranceExpiry.value.toLowerCase(),
+        "licence_expiry" : searchLicenseExpiry.value.toLowerCase(),
+        "mobile" : searchMobile.value.toLowerCase(),
+        "subsidiary" : searchSubsiDiary.value.toLowerCase(),
+      }
+      );
       if (response.statusCode == 200) {
         listDriverModel = GetDriverModel.fromJson(response.data);
         driverTotalPage.value = listDriverModel?.totalPages ?? 1;
         driverAll.value = listDriverModel?.drivers ?? [];
-        driverFliter.value = driverAll;
-        print('User data ${GetDriverModel}');
-        print('User data ${response.data}');
-      }
+        driverFilter.value = driverAll;
+        print('✅ Driver Data Loaded Successfully');
+        print('API  ${response.statusCode}');
+      } 
     } catch (e) {
-      print("Error in User: $e");
+      print("⚠️ Error in getDriverList : $e");
     } finally {
       driverLoading.value = false;
-      update();
+      update(); 
     }
   }
   void driverSearch() {
@@ -357,6 +353,7 @@ class DriverController extends GetxController {
     driverCurrentPage.value = page;
     getDriverList();
   }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 

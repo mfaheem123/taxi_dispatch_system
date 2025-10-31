@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -63,6 +64,9 @@ class _DriverListScreenState extends State<DriverListScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<DriverController>(builder: (controller) {
+        final listToShow = controller.driverFilter.isNotEmpty
+            ? controller.driverFilter
+            : controller.driverAll;
         return SingleChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -78,13 +82,14 @@ class _DriverListScreenState extends State<DriverListScreen> {
                     width: 20,
                   ),
                   Checkbox(
-                      value: controller.listDriverModel?.status,
-                      onChanged: (v) {
-                        controller.listDriverModel?.status = v!;
-                        controller.update();
-                      }),
+                    value: controller.activeDrivers.value,
+                    onChanged: (v) {
+                      controller.activeDrivers.value = v!;
+                      controller.getDriverList();
+                    },
+                  ),
                   Text(
-                    AppText.inactive,
+                    AppText.active,
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
@@ -96,6 +101,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: CustomButton(
+                      onTap: () => controller.getDriverList(),
                       height: 40,
                       width: 80,
                       verticalPadding: 0.0,
@@ -116,113 +122,174 @@ class _DriverListScreenState extends State<DriverListScreen> {
               SizedBox(
                 height: 12,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: Get.width,
-                  child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(
-                        title: "USERNAME",
-                        onChanged: (v) {
-                          controller.searchDriverUserName.value = v;
-                          controller.driverSearch();
-                        },
-                      ),
-                      buildHeaderWithSearch(title: "NAME",    onChanged: (v) {
-                          controller.searchDriverName.value = v;
-                          controller.driverSearch();
-                        }, ),
-                      buildHeaderWithSearch(title: "VEHICLE",    onChanged: (v) {
-                          controller.searchDriverName.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "VEHICLE EXPIRY",    onChanged: (v) {
-                          controller.searchVehicheExpiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "DRIVER EXPIRY",    onChanged: (v) {
-                          controller.searchDriverExpiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "MOT EXPIRY",    onChanged: (v) {
-                          controller.searchMOTExpiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "MOT2 EXPIRY",    onChanged: (v) {
-                          controller.searchMOT2Expiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "INSURANCE EXPIRY",    onChanged: (v) {
-                          controller.searchInsuranceExpiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "LICENSE EXPIRY",    onChanged: (v) {
-                          controller.searchLicenseExpiry.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "MOBILE #",    onChanged: (v) {
-                          controller.searchMobile.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(title: "SUBSIDIARY",    onChanged: (v) {
-                          controller.searchSubsiDiary.value = v;
-                          controller.driverSearch();
-                        },),
-                      buildHeaderWithSearch(
-                          title: "ACTIONS", removeSearching: true),
-                    ],
-                    totalRow: totalRows,
-                    cells: [
-                      DataCell(Center(child: Text("20/10/2025"))),
-                      DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      DataCell(Center(child: Text("PHC VEHICLE"))),
-                      DataCell(Center(child: Text("20/10/2025"))),
-                      DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      DataCell(Center(child: Text("PHC VEHICLE"))),
-                      DataCell(Center(child: Text("20/10/2025"))),
-                      DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      DataCell(Center(child: Text("20/10/2025"))),
-                      DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      DataCell(Center(child: Text("PHC VEHICLE"))),
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
+              controller.driverLoading == true
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: Get.width,
+                        child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(
+                              title: "USERNAME",
+                              onChanged: (v) {
+                                controller.searchDriverUserName.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "NAME",
+                              onChanged: (v) {
+                                controller.searchDriverName.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "VEHICLE",
+                              onChanged: (v) {
+                                controller.searchVehicleName.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "VEHICLE EXPIRY",
+                              onChanged: (v) {
+                                controller.searchVehicleExpiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "DRIVER EXPIRY",
+                              onChanged: (v) {
+                                controller.searchDriverExpiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "MOT EXPIRY",
+                              onChanged: (v) {
+                                controller.searchMOTExpiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "MOT2 EXPIRY",
+                              onChanged: (v) {
+                                controller.searchMOT2Expiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "INSURANCE EXPIRY",
+                              onChanged: (v) {
+                                controller.searchInsuranceExpiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "LICENSE EXPIRY",
+                              onChanged: (v) {
+                                controller.searchLicenseExpiry.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "MOBILE #",
+                              onChanged: (v) {
+                                controller.searchMobile.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "SUBSIDIARY",
+                              onChanged: (v) {
+                                controller.searchSubsiDiary.value = v;
+                                controller.driverSearch();
+                              },
+                            ),
+                            buildHeaderWithSearch(
+                                title: "ACTIONS", removeSearching: true),
+                          ],
+                          totalRow: listToShow.length ?? 0,
+                          rows: listToShow.map((item) {
+                            return DataRow(
+                              cells: [
+                                DataCell(Center(
+                                    child: Text(item.username ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(item.name ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(
+                                        item.vehicle?.vehicleType?.name ??
+                                            "no data"))),
+                                DataCell(Center(
+                                    child: Text(
+                                        item.vehicle?.endDate ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(item.endDate ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(item.motExpiry ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(item.mot2Expiry ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(
+                                        item.insuranceExpiry ?? "no data"))),
+                                DataCell(Center(
+                                    child:
+                                        Text(item.licenceExpiry ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(item.mobile ?? "no data"))),
+                                DataCell(Center(
+                                    child: Text(
+                                        item.subsidiary?.name ?? "no data"))),
+                                DataCell(
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(
+                                              color: Colors.transparent,
+                                            ), // border color & thickness
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(
+                                            Icons.edit_calendar,
+                                            size: 28,
+                                          ),
+                                        ),
+                                        Text("|"),
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(
+                                              color: Colors.transparent,
+                                            ), // border color & thickness
+                                          ),
+                                          onPressed: () {},
+                                          child: Icon(
+                                            Icons.delete_forever,
+                                            size: 28,
+                                            color: DynamicColors.redClr,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.edit_calendar,
-                                  size: 28,
-                                ),
-                              ),
-                              Text("|"),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            );
+                          }).toList(),
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+              PaginationWidget(
+                currentPage: controller.driverCurrentPage.value,
+                totalPages: controller.driverTotalPage.value,
+                onPageChange: controller.driverPage,
               ),
             ],
           ),

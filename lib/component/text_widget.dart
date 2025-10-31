@@ -84,7 +84,7 @@ class AppText {
   static get color => "Color";
   static get owner => "Owner";
   static get logBook => "Log Book";
-  static get inactive => "INACTIVE";
+  static get active => "ACTIVE";
   static get loggedInDrivers => "LOGGED IN DRIVERS";
   static get loggedOut => "LOGGED OUT";
   static get currentVersion => "CURRENT VERSION";

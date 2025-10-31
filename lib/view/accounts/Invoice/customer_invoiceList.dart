@@ -96,7 +96,7 @@ class _CustomerInvoiceListState extends State<CustomerInvoiceList> {
                             controller.update();
                           }),
 
-                      Text(AppText.inactive,
+                      Text(AppText.active,
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
