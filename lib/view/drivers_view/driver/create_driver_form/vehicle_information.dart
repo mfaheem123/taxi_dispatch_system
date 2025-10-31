@@ -75,18 +75,18 @@ class VehicleInformation extends StatelessWidget {
                   Text(AppText.usedCompanyVehicle),
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(19),
-                    child: CustomDropdownField<SubsidiaryObject>(
+                    child: CustomDropdownField<CompanyVehicleObject>(
                       label: "SELECT COMPANY VEHICLE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.getCombineVehicleData!.vehicleTypes!,
+                      items: controller.getCombineVehicleData!.companyVehicles!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
-                      value: controller.selectCompanyVehicle,
+                      value: controller.vehicleType,
                       itemLabel: (templateList) =>
-                      templateList.name!,
+                      templateList.vehicleTypeName!,
                       onChanged: (val) {
-                        controller.selectCompanyVehicle = val;
+                        controller.vehicleType = val;
                         controller.update();
                       },
                     ),
@@ -103,12 +103,12 @@ class VehicleInformation extends StatelessWidget {
                               initialDate: DateTime.now(),
                               onChanged: (date) {
                                 // jab bhi user change kare
-                                controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
                                 print(date);
                               },
                               onSubmitted: (date) {
                                 // jab user enter press kare
-                                controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                controller.vehicleStartDate = "${date.year}-${date.month}-${date.day}";
                                 print("User pressed enter: $date");
                               },
                             )
@@ -127,12 +127,12 @@ class VehicleInformation extends StatelessWidget {
                               initialDate: DateTime.now(),
                               onChanged: (date) {
                                 // jab bhi user change kare
-                                controller.endDate = "${date.year}-${date.month}-${date.day}";
+                                controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
                                 print(date);
                               },
                               onSubmitted: (date) {
                                 // jab user enter press kare
-                                controller.endDate = "${date.year}-${date.month}-${date.day}";
+                                controller.vehicleEndeDate = "${date.year}-${date.month}-${date.day}";
                                 print("User pressed enter: $date");
                               },
                             )),
@@ -189,25 +189,25 @@ class VehicleInformation extends StatelessWidget {
                   FocusTraversalOrder(
                     order: NumericFocusOrder(28),
                     child:
-                    CustomDropdownField<CompanyVehicleObject>(
+                    CustomDropdownField<SubsidiaryObject>(
                       label: "VEHICLE TYPE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.getCombineVehicleData!.companyVehicles!,
+                      items: controller.getCombineVehicleData!.vehicleTypes!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
-                      value: controller.vehicleType,
+                      value: controller.selectCompanyVehicle,
                       itemLabel: (templateList) =>
-                      templateList.vehicleTypeName!,
+                      templateList.name!,
                       onChanged: (val) {
-                        controller.vehicleType = val;
+                        controller.selectCompanyVehicle = val;
                         controller.update();
                       },
                     ),
                   ),
                   SizedBox(
                     width: Get.width / 6,
-                    height: 60,
+                    height: 150,
                     child: ListView.builder(
                         itemCount: controller.imageList.length,
                         shrinkWrap: true,
@@ -219,12 +219,13 @@ class VehicleInformation extends StatelessWidget {
                             child: Stack(
                               children: [
                                 SizedBox(
-                                  height: 300,
-                                  width: 150,
+                                  height: 150,
+                                  width: Get.width / 6,
+                                  // width: 150,
                                   child: Image.memory(
                                     controller.imageList[index].bytes,
-                                    width: 200,
-                                    height: 200,
+                                    width: 500,
+                                    height: 150,
                                     fit: BoxFit.fill,
                                   ),
                                 ),
