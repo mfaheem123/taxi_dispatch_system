@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../view/dashboard_view/widgets/time_picker_widget.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
 import '../view/drivers_view/driver/create_driver_form/driver_form.dart';
 
@@ -27,32 +28,7 @@ class ShiftAlert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-              void saveShift() {
-                if (shiftCtrl.text.isEmpty ||
-                    startTimeCtrl.text.isEmpty ||
-                    endTimeCtrl.text.isEmpty) return;
 
-                setState(() {
-                  // if (editingIndex == null) {
-                  //   shifts.add({
-                  //     "shift": shiftCtrl.text,
-                  //     "start": startTimeCtrl.text,
-                  //     "end": endTimeCtrl.text,
-                  //   });
-                  // } else {
-                  //   shifts[editingIndex!] = {
-                  //     "shift": shiftCtrl.text,
-                  //     "start": startTimeCtrl.text,
-                  //     "end": endTimeCtrl.text,
-                  //   };
-                  //   editingIndex = null;
-                  // }
-
-                  shiftCtrl.clear();
-                  startTimeCtrl.clear();
-                  endTimeCtrl.clear();
-                });
-              }
 
               return GetBuilder<DriverController>(
                 builder: (controller) {
@@ -84,7 +60,10 @@ class ShiftAlert {
                                   fontSize: 15, fontWeight: FontWeight.bold),
                             ),
                             InkWell(
-                              onTap: () => Get.back(),
+                              onTap: () {
+                                print(controller.shiftList);
+                                Get.back();
+                                },
                               child: const Icon(Icons.close,
                                   size: 20, color: Colors.black54),
                             ),
@@ -99,11 +78,37 @@ class ShiftAlert {
                             const SizedBox(width: 8),
                             Expanded(
                                 flex: 2,
-                                child: _buildField("START TIME", startTimeCtrl)),
+                                child:
+                                SizedBox(
+                                  height: 30,
+                                  child: CustomTimePicker(
+                                    controller: startTimeCtrl, // optional
+                                    onTimeSelected: (time) {
+                                      print(time);
+                                      print(startTimeCtrl.text);
+                                      // print(row.expiryTime!.text);
+                                      // controller.updateExpiryTime(index, time);
+                                    },
+                                  ),
+                                ),
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                                 flex: 2,
-                                child: _buildField("END TIME", endTimeCtrl)),
+                                child:
+                                SizedBox(
+                                  height: 30,
+                                  child: CustomTimePicker(
+                                    controller: endTimeCtrl, // optional
+                                    onTimeSelected: (time) {
+                                      print(time);
+                                      print(startTimeCtrl.text);
+                                      // print(row.expiryTime!.text);
+                                      // controller.updateExpiryTime(index, time);
+                                    },
+                                  ),
+                                ),
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               flex: 2,
@@ -119,7 +124,7 @@ class ShiftAlert {
                                       fontSize: 14, color: DynamicColors.whiteClr),
                                   onTap: () {
                                     controller.shiftList.add(ShiftAlertClass(
-                                      shiftTitle: shiftCtrl,
+                                      shiftTitle: shiftCtrl.text,
                                       endTime: startTimeCtrl.text,
                                       startTime: endTimeCtrl.text,
                                     ));
@@ -192,7 +197,7 @@ class ShiftAlert {
                             ),
                             child: Row(
                               children: [
-                                Expanded(flex: 2, child: Text(row.shiftTitle.text)),
+                                Expanded(flex: 2, child: Text(row.shiftTitle)),
                                 Expanded(flex: 2, child: Text(row.startTime ?? "")),
                                 Expanded(flex: 2, child: Text(row.endTime ?? "")),
                                 Expanded(
@@ -350,9 +355,9 @@ class NoteAlert {
                                         fontSize: 14, color: DynamicColors.whiteClr),
                                     onTap: () {
                                       controller.noteList.add(NoteAlertClass(
-                                        notesTitle: controller.notesCtrl,
+                                        notesTitle: controller.notesCtrl.text,
                                         createdItTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
-                                        nameValue: controller.driverUserNameController.text
+                                        createdByTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"
                                       ));
                                       controller.notesCtrl.clear();
                                       controller.update();
@@ -421,9 +426,9 @@ class NoteAlert {
                               ),
                               child: Row(
                                 children: [
-                                  Expanded(flex: 2, child: Text(row.notesTitle.text)),
+                                  Expanded(flex: 2, child: Text(row.notesTitle)),
                                   Expanded(flex: 2, child: Text(row.createdItTime ?? "")),
-                                  Expanded(flex: 2, child: Text(row.nameValue ?? "")),
+                                  Expanded(flex: 2, child: Text(row.createdByTime ?? "")),
                                   Expanded(
                                     flex: 2,
                                     child: Row(

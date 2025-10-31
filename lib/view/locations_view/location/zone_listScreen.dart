@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
@@ -174,7 +175,15 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            controller.deleteZoneList(item.id);
+                                            showDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  DeletePermissionAlert(
+                                                deleteFunctionName: () =>
+                                                    controller.deleteZoneList(
+                                                        item.id!),
+                                              ),
+                                            );
                                           },
                                           child: Icon(Icons.delete_forever,
                                               size: 28),
@@ -190,9 +199,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                       ),
                     ),
                     PaginationWidget(
-                     currentPage: controller.zoneCurrentPage.value,
-                     totalPages: controller.zoneTotalPages.value,
-                     onPageChange: controller.zonePageChange),
+                        currentPage: controller.zoneCurrentPage.value,
+                        totalPages: controller.zoneTotalPages.value,
+                        onPageChange: controller.zonePageChange),
                   ],
                 ),
               );

@@ -198,8 +198,7 @@ class _AccountViewState extends State<AccountView> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller:
-                                    controller.accountPasswordController,
+                                controller: controller.accountPasswordController,
                                 width: fieldWidth / 3,
                                 hintText: AppText.password,
                                 columnText: true,

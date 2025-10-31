@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -171,14 +174,12 @@ class LocationController extends GetxController {
       update();
     }
   }
-
   // --------Search changes function
-  void SearchEscort() {
+  void SearchLocation() {
     locationCurrentPage.value = 1;
     getLocationList();
   }
-
-  void PageEscort(int page) {
+  void PageLocation(int page) {
     locationCurrentPage.value = page;
     getLocationList();
   }
@@ -202,13 +203,15 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
-  deleteLocationList(int? id) async {
+
+  deleteLocation(int? id) async {
     var response = await Api().delete("locations/delete/$id");
-      print("locations/delete/$id");
-    if (response.statusCode == 200) {
-      getLocationList();
-      update();
-    }
+ if (response.statusCode == 200) {
+        getLocationList();
+        print("✅ Location deleted successfully!");
+        print(json.encode(response.data));
+      }
+
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
@@ -305,14 +308,12 @@ class LocationController extends GetxController {
       update();
     }
   }
-
 // -----------Search function
 
   void onSearchChanged() {
     zoneCurrentPage.value = 1;
     getZoneList();
   }
-
   /// ------- pagination function
   void zonePageChange(int page) {
     zoneCurrentPage.value = page;

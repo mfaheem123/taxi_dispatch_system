@@ -53,10 +53,10 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
                   btnText: "Yes",
                   style: mozillaTextRegularText(
                       fontSize: 10, color: DynamicColors.whiteClr),
-                  onTap: () {
-                    widget.deleteFunctionName;
-                    Navigator.pop(context);
-                  },
+                onTap: () {
+  widget.deleteFunctionName(); 
+  Navigator.pop(context);
+}
                 ),
                 SizedBox(width: 30),
                 CustomButton(

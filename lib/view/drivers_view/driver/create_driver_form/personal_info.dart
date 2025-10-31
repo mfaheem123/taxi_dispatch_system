@@ -1,5 +1,6 @@
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -273,6 +274,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      child: labeledTextField(context,
                          isMobile,
                          AppText.commission,
+                         formatDigitsOnly: true,
                          controller.driverCommissionController,
                          width: fieldWidth/1.4,
                          column: true,
@@ -286,9 +288,9 @@ class DriverPersonalInfo extends StatelessWidget {
                          controller.driverRendLimitController,
                          width: fieldWidth/1.4,
                          column: true,
+                         formatDigitsOnly: true,
                          textInputAction: TextInputAction.next,
-                         keyboardType: TextInputType.phone,
-                         formatDigitsOnly: false),
+                         keyboardType: TextInputType.phone,),
                    ),
 
                    FocusTraversalOrder(
@@ -300,7 +302,7 @@ class DriverPersonalInfo extends StatelessWidget {
                          column: true,
                          textInputAction: TextInputAction.next,
                          keyboardType: TextInputType.phone,
-                         formatDigitsOnly: false),
+                         formatDigitsOnly: true),
                    ),
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(17),
@@ -329,7 +331,14 @@ class DriverPersonalInfo extends StatelessWidget {
                           borderRadius: 4,
                           height: 35,
                         onTap: (){
-                            controller.addDriverFtn();
+                            if(controller.driverUserNameController.text.isEmpty
+                                || controller.driverPasswordController.text.isEmpty || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty
+                            ){
+                              BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number,");
+                            }else{
+                              controller.addDriverFtn();
+                            }
+
                         },
                         style: mozillaTextSemiBoldText(
                           fontSize: 16,
