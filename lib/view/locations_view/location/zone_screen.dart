@@ -71,7 +71,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   String zoneID = "";
   static const _initialCamera = CameraPosition(
     target: LatLng(37.7749, -122.4194),
-    zoom: 12,
+    zoom: 18,
   );
   DrawMode mode = DrawMode.navigate;
   bool get _lockMapGestures =>
@@ -389,25 +389,21 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
 
     try {
-      // Wait for the GoogleMapController
       final controller = await _ctrl.future;
 
-      // Replace with your Google Maps API key
-      const apiKey = "YOUR_GOOGLE_MAPS_API_KEY";
-
-      // Call Google Maps Geocoding API
       final url =
-          "https://maps.googleapis.com/maps/api/geocode/json?address=$postcode&key=$apiKey";
+          "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
       final response = await http.get(Uri.parse(url));
       final data = jsonDecode(response.body);
 
-      if (data['status'] == 'OK' && data['results'].isNotEmpty) {
-        final loc = data['results'][0]['geometry']['location'];
-        final target = LatLng(loc['lat'], loc['lng']);
+      if (data.isNotEmpty) {
+        final lat = double.parse(data[0]['lat']);
+        final lng = double.parse(data[0]['lon']);
 
+        final target = LatLng(lat, lng);
         await controller.animateCamera(
           CameraUpdate.newCameraPosition(
-            CameraPosition(target: target, zoom: 15),
+            CameraPosition(target: target, zoom: 16),
           ),
         );
       } else {
@@ -421,6 +417,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       );
     }
   }
+
 
   Future<({RectHandle? handle, bool isCenter})?> _nearestRectGripAt(
       Offset global, _RectBounds b,

@@ -140,6 +140,7 @@ class LocationController extends GetxController {
   final int locationLimit = 20;
   LocationListModel? locationListModel;
   RxBool getLocationLoader = false.obs;
+
   getLocationList() async {
     try {
       String query = 'page=${locationCurrentPage.value}&limit=${locationLimit}';
@@ -308,6 +309,7 @@ class LocationController extends GetxController {
     }
   }
 // -----------Search function
+
   void onSearchChanged() {
     zoneCurrentPage.value = 1;
     getZoneList();

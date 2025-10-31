@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/dashboard_view/models/seeZoneOnMap.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,20 +11,35 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:polyline_codec/polyline_codec.dart';
-
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
 import '../../../component/marker_class.dart';
 import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
-
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 
+
+
+
+
 class DashboardController extends GetxController {
+  ///===========================================================>See Zone On Map
 
+  SeeZoneOnMapModel? seeZoneOnMapModel ;
 
+  seeZoneOnMapp() async {
+    var response = await Api().get("zones/get");
 
+    if (response.statusCode == 200) {
+      seeZoneOnMapModel = SeeZoneOnMapModel.fromJson(response.data);
+        update();
+    } else {
+      print("Error in Location List");
+    }
+  }
+
+  ///===========================================================>See Zone On Map
 
   ///Todo menu bar functionality
   // Widget? currentPage;
@@ -32,7 +47,6 @@ class DashboardController extends GetxController {
   final Rx<Widget?> currentPage = Rx<Widget?>(null);
 
   List<SelectedDropdown> selectedMenuItems = [];
-
 
   ///refresh function for menu bar
   menuBarRefresh({title, pageName}) {
@@ -82,7 +96,6 @@ class DashboardController extends GetxController {
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = false.obs;
 
-  
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
@@ -100,7 +113,6 @@ class DashboardController extends GetxController {
   int selectedIndex = 0;
   int dropdownIndex = 0;
   RxInt selectionMenuBtn = 0.obs;
-
 
   ///Todo booking form data
 
@@ -261,7 +273,8 @@ class DashboardController extends GetxController {
   RxString selectedTextFieldsValue = "".obs;
 
   // 👇 ye function har baar text change hone par call hoga
-  Future<void> onChangeHandler({required String fieldName, required String searchingText}) async {
+  Future<void> onChangeHandler(
+      {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
     selectedTextFieldsValue.value = fieldName;
     // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
@@ -292,7 +305,7 @@ class DashboardController extends GetxController {
   getAddresses({fieldsName, searchingText}) async {
     if (fieldsName == "PICKUP LOCATION") {
       getPickupAddressesLoader(false);
-    }else if (fieldsName == "PICKUP LOCATION"){
+    } else if (fieldsName == "PICKUP LOCATION") {
       getDropAddressesLoader(false);
     }
     var response = await Api().get(
@@ -301,8 +314,9 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
-        allAddressesData.addAll(
-          (response.data['result'] as List).map((e) => AllAddressesModel.fromJson(e)).toList());
+        allAddressesData.addAll((response.data['result'] as List)
+            .map((e) => AllAddressesModel.fromJson(e))
+            .toList());
         updateKeys();
         inputText.value = searchingText;
         if (searchingText.isEmpty) {
@@ -330,7 +344,7 @@ class DashboardController extends GetxController {
         method: 'GET',
       ),
     );
- 
+
     if (response.statusCode == 200) {
       allAddressesData.clear();
       pickLocationAddress(response.data['result']['latitude'],
@@ -377,163 +391,10 @@ class DashboardController extends GetxController {
   List<LatLng> polylinePointsCoordinate = [];
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
-
   RxString totalDistance = "0".obs;
   RxString totalTimeDuration = "0".obs;
 
-  /// ✅ Step 2: Fetch real road route from OSRM (OpenStreetMap)
-  // Future<void> fetchRouteFromOSRM() async {
-  //   // if (polylinePoints.length < 2) return;
-  //   markers.clear();
-  //   List<LatLng> tempPoints = [];
-  //   for (var item in viaPoints) {
-  //     tempPoints.add(LatLng(item.lat, item.lng));
-  //       markers.add(
-  //           CustomMarker(
-  //             type: "via",
-  //             child: Icon(Icons.location_pin,color: DynamicColors.primaryClr,size: 30,),
-  //             point: LatLng(item.lat, item.lng),
-  //             width: 30, height: 30,
-  //           ),
-  //     );
-  //   }
-  //  if(polyLineMarkerInfo.isNotEmpty) {
-  //     for (var item in polyLineMarkerInfo) {
-  //       if (item.markerType == "PICKUP LOCATION") {
-  //         print(markers);
-  //         tempPoints.add(LatLng(item.lat, item.lng));
-  //         markers.add(
-  //             CustomMarker(
-  //               type: "pickup",
-  //                 point: LatLng(item.lat, item.lng),
-  //                 child: Icon(
-  //                   Icons.location_pin,
-  //                   color: DynamicColors.greenClr,
-  //                   size: 30,
-  //                 ),
-  //                 width: 30,
-  //                 height: 30
-  //             ),);
-  //         mapController.camera.focusedZoomCenter(Offset.zero, 14);
-  //         // CameraFit cameraFit = CameraFit.bounds(bounds: polyLineMarkerInfo.);
-  //         // mapController.fitCamera(cameraFit);
-  //       }
-  //       else if(item.markerType == "DROP LOCATION") {
-  //         tempPoints.add(LatLng(item.lat, item.lng));
-  //         markers.add(
-  //             CustomMarker(
-  //                 type: "dropOff",
-  //                 point: LatLng(item.lat, item.lng),
-  //                 child: Icon(
-  //                   Icons.location_pin,
-  //                   color: DynamicColors.redClr,
-  //                   size: 30,
-  //                 ),
-  //                 width: 30,
-  //                 height: 30
-  //             ),
-  //         );
-  //       }
-  //       else if (item.markerType == "Create Booking PICKUP"){
-  //         tempPoints.add(LatLng(item.lat, item.lng));
-  //         markers.add(
-  //           CustomMarker(
-  //               type: "Create Booking PICKUP",
-  //               point: LatLng(item.lat, item.lng),
-  //               child: Icon(
-  //                 Icons.location_pin,
-  //                 color: DynamicColors.greenClr,
-  //                 size: 30,
-  //               ),
-  //               width: 30,
-  //               height: 30
-  //           ),
-  //         );
-  //       }
-  //       else if (item.markerType == "Create Booking DROP LOCATION"){
-  //         tempPoints.add(LatLng(item.lat, item.lng));
-  //         markers.add(
-  //           CustomMarker(
-  //               type: "Create Booking DROP LOCATION",
-  //               point: LatLng(item.lat, item.lng),
-  //               child: Icon(
-  //                 Icons.location_pin,
-  //                 color: DynamicColors.redClr,
-  //                 size: 30,
-  //               ),
-  //               width: 30,
-  //               height: 30
-  //           ),
-  //         );
-  //       }
-  //     }
-  //   }
-  //
-  //
-  //
-  //  update();
-  //
-  //   final coordinates = tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
-  //
-  //   final url = Uri.parse(
-  //     'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full',
-  //   );
-  //
-  //   final res = await Dio().getUri(url);
-  //
-  //   if (res.statusCode == 200) {
-  //     polylinePointsCoordinate.clear();
-  //     final data = res.data;
-  //     final encodedPolyline = data['routes'][0]['geometry'];
-  //     // PolylinePoints polylinePoints = PolylinePoints(apiKey: 'AIzaSyBaXpJ2zz_aelMDtgyfAVP9Xsb9e9MxRIA');
-  //     List<PointLatLng> result =
-  //     PolylinePoints.decodePolyline(encodedPolyline);
-  //     List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
-  //
-  //     polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
-  //
-  //     if (polylinePointsCoordinate.isNotEmpty) {
-  //       polylines.add(Polyline(
-  //           points: polylinePointsCoordinate, color: DynamicColors.primaryClr, strokeWidth: 2.0));
-  //
-  //       LatLngBounds bounds = calculateBounds(polylinePointsCoordinate);
-  //
-  //       // Replacing fitBounds with fitCamera using CameraFit.bounds
-  //       CameraFit cameraFit = CameraFit.bounds(bounds: bounds);
-  //       mapController.fitCamera(cameraFit);
-  //     }
-  //     update();
-  //   } else {
-  //     print("❌ OSRM error: ${res.statusCode}");
-  //   }
-  // }
-  //
-  // LatLngBounds calculateBounds(List<LatLng> coordinates) {
-  //   double minLat = coordinates[0].latitude;
-  //   double maxLat = coordinates[0].latitude;
-  //   double minLng = coordinates[0].longitude;
-  //   double maxLng = coordinates[0].longitude;
-  //
-  //   for (LatLng coordinate in coordinates) {
-  //     if (coordinate.latitude < minLat) {
-  //       minLat = coordinate.latitude;
-  //     }
-  //     if (coordinate.latitude > maxLat) {
-  //       maxLat = coordinate.latitude;
-  //     }
-  //     if (coordinate.longitude < minLng) {
-  //       minLng = coordinate.longitude;
-  //     }
-  //     if (coordinate.longitude > maxLng) {
-  //       maxLng = coordinate.longitude;
-  //     }
-  //   }
-  //
-  //   return LatLngBounds(LatLng(minLat, minLng), LatLng(maxLat, maxLng));
-  // }
 
-  // helper: bounds calculate karne ke liye
-// helper: bounds calculate karne ke liye (using fromPoints)
 
   LatLngBounds calculateBounds(List<LatLng> points) {
     assert(points.isNotEmpty);
@@ -576,7 +437,8 @@ class DashboardController extends GetxController {
       markers.add(
         CustomMarker(
           type: "via",
-          child: Icon(Icons.location_pin, color: DynamicColors.primaryClr, size: 30),
+          child: Icon(Icons.location_pin,
+              color: DynamicColors.primaryClr, size: 30),
           point: p,
           width: 30,
           height: 30,
@@ -596,7 +458,8 @@ class DashboardController extends GetxController {
             CustomMarker(
               type: "pickup",
               point: p,
-              child: Icon(Icons.location_pin, color: DynamicColors.greenClr, size: 30),
+              child: Icon(Icons.location_pin,
+                  color: DynamicColors.greenClr, size: 30),
               width: 30,
               height: 30,
             ),
@@ -608,7 +471,8 @@ class DashboardController extends GetxController {
             CustomMarker(
               type: "dropOff",
               point: p,
-              child: Icon(Icons.location_pin, color: DynamicColors.redClr, size: 30),
+              child: Icon(Icons.location_pin,
+                  color: DynamicColors.redClr, size: 30),
               width: 30,
               height: 30,
             ),
@@ -616,15 +480,18 @@ class DashboardController extends GetxController {
         }
       }
     }
+
     ///  jab hum ek address enter karte hai tu polyline banane k lye neche wala api hit nahe hogha yaha per ruk jaygha
-    if(polyLineMarkerInfo.length == 1){
+    if (polyLineMarkerInfo.length == 1) {
       return;
     }
     update();
 
     // --------- MULTI-POINT: request route from OSRM ----------
-    final coordinates = tempPoints.map((p) => "${p.longitude },${p.latitude}").join(";");
-    final url = Uri.parse('https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
+    final coordinates =
+        tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+    final url = Uri.parse(
+        'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
 
     final res = await Dio().getUri(url);
 
@@ -644,7 +511,8 @@ class DashboardController extends GetxController {
 // (Optional) format nicely
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
+      totalTimeDuration.value =
+          formatDuration(durationInMinutes); // e.g. "443.3"
 
       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
       List<LatLng> polylinePointss = result
@@ -663,16 +531,19 @@ class DashboardController extends GetxController {
         ));
 
         // build bounds from the route or from markers (choose whichever you prefer)
-        final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
+        final List<LatLng> focusPoints =
+            tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
         LatLngBounds bounds;
         if (focusPoints.length == 1) {
-          bounds = LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
+          bounds =
+              LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
         } else {
           bounds = calculateBounds(focusPoints); // your existing helper
         }
 
-        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        final cameraFit =
+            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
 
@@ -682,7 +553,7 @@ class DashboardController extends GetxController {
     }
   }
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> make function for mints and hours
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> make function for mints and hours
   String formatDuration(double minutes) {
     final int totalMinutes = minutes.round();
     final int hours = totalMinutes ~/ 60;
@@ -697,7 +568,6 @@ class DashboardController extends GetxController {
     }
   }
 
-
 // inside your controller
   final suggestionFocusNode = FocusNode();
   final suggestionScrollController = ScrollController();
@@ -709,12 +579,12 @@ class DashboardController extends GetxController {
   List<GlobalKey> suggestionItemKeys = [];
 
   void updateKeys() {
-    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
+    suggestionItemKeys =
+        List.generate(allAddressesData.length, (_) => GlobalKey());
   }
 
   final GlobalKey suggestionListKey = GlobalKey();
   final GlobalKey suggestionListKeyVia = GlobalKey();
-
 
 // change move functions to scroll after change:
   void moveHighlightDown({bool viaConditionValue = false}) {
@@ -731,11 +601,13 @@ class DashboardController extends GetxController {
         (highlightedIndex.value - 1 + allAddressesData.length) %
             allAddressesData.length;
     highlightedIndex.refresh();
-    _scrollToHighlighted(scrollDown: false, viaCondition: viaConditionValue); // 👈 scroll to top when up
+    _scrollToHighlighted(
+        scrollDown: false,
+        viaCondition: viaConditionValue); // 👈 scroll to top when up
   }
 
-
-  void _scrollToHighlighted({bool scrollDown = true, bool viaCondition = false}) {
+  void _scrollToHighlighted(
+      {bool scrollDown = true, bool viaCondition = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final i = highlightedIndex.value;
       if (i < 0 || i >= suggestionItemKeys.length) return;
@@ -743,13 +615,18 @@ class DashboardController extends GetxController {
       final itemCtx = suggestionItemKeys[i].currentContext;
 
       final listCtx = /*selectedTextFieldsValue.value !=
-          "via"?*/ suggestionListKey.currentContext/*:suggestionListKeyVia.currentContext*/;
+          "via"?*/
+          suggestionListKey
+              .currentContext /*:suggestionListKeyVia.currentContext*/;
 
-      if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
+      if (itemCtx != null &&
+          listCtx != null &&
+          suggestionScrollController.hasClients) {
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
-        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final Offset itemOffset =
+            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
         final double itemTopLocal = itemOffset.dy;
         final double itemBottomLocal = itemTopLocal + itemBox.size.height;
 
@@ -832,8 +709,6 @@ class DashboardController extends GetxController {
       );
     }
   }
-
-
 
   // void _scrollToHighlighted({bool scrollDown = true}) {
   //   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -935,7 +810,6 @@ class DashboardController extends GetxController {
   //   );
   // }
 
-
   RxInt suggestionSelectedIndex = 0.obs;
 
   void tapSelect(int index) {
@@ -944,31 +818,30 @@ class DashboardController extends GetxController {
     final suggestion = selected.name!;
     final postCode = selected.postcode!;
     if (selectedTextFieldsValue.value == "PICKUP LOCATION") {
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "PICKUP LOCATION");
-      if(index != -1){
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "PICKUP LOCATION");
+      if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
       polylinePoints.add(
-        LatLng(selected.lat!,
-            selected.lon!),
+        LatLng(selected.lat!, selected.lon!),
       );
       polyLineMarkerInfo.add(ViaPoint(
         lat: selected.lat!,
-          lng: selected.lon!,
+        lng: selected.lon!,
         markerType: "PICKUP LOCATION",
         address: '',
       ));
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    }
-    else if(selectedTextFieldsValue.value == "DROP LOCATION") {
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "DROP LOCATION");
-      if(index != -1){
+    } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "DROP LOCATION");
+      if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
       polylinePoints.add(
-        LatLng(selected.lat!,
-            selected.lon!),
+        LatLng(selected.lat!, selected.lon!),
       );
       polyLineMarkerInfo.add(ViaPoint(
         lat: selected.lat!,
@@ -978,15 +851,14 @@ class DashboardController extends GetxController {
       ));
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    }
-    else if(selectedTextFieldsValue.value == "Create Booking PICKUP"){
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking PICKUP");
-      if(index != -1){
+    } else if (selectedTextFieldsValue.value == "Create Booking PICKUP") {
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "Create Booking PICKUP");
+      if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
       polylinePoints.add(
-        LatLng(selected.lat!,
-            selected.lon!),
+        LatLng(selected.lat!, selected.lon!),
       );
       polyLineMarkerInfo.add(ViaPoint(
         lat: selected.lat!,
@@ -996,15 +868,15 @@ class DashboardController extends GetxController {
       ));
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    }
-    else if(selectedTextFieldsValue.value == "Create Booking DROP LOCATION"){
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking DROP LOCATION");
-      if(index != -1){
+    } else if (selectedTextFieldsValue.value ==
+        "Create Booking DROP LOCATION") {
+      int index = polyLineMarkerInfo.indexWhere(
+          (test) => test.markerType == "Create Booking DROP LOCATION");
+      if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
       polylinePoints.add(
-        LatLng(selected.lat!,
-            selected.lon!),
+        LatLng(selected.lat!, selected.lon!),
       );
       polyLineMarkerInfo.add(ViaPoint(
         lat: selected.lat!,
@@ -1017,7 +889,7 @@ class DashboardController extends GetxController {
     }
     allAddressesData.clear();
     highlightedIndex.value = 0;
-  update();
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality
@@ -1072,11 +944,10 @@ class DashboardController extends GetxController {
   String? cash;
   String? selectDriver;
 
-      RxBool returnTrip = false.obs;
+  RxBool returnTrip = false.obs;
   final FocusNode returnTripNode = FocusNode();
 
   final weeks = TextEditingController();
-
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 

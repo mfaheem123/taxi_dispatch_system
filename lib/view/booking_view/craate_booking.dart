@@ -62,6 +62,9 @@ class _CreateBookingState extends State<CreateBooking> {
     } else {
       print("Controller already exists, not re-initializing ♻️");
     }
+    final params = Uri.base.queryParameters;
+    print(params.length);
+    print("value value 111");
     Future.delayed(Duration(milliseconds: 300), () {
       FocusScope.of(context).requestFocus(dropdownFocusNode);
     });
@@ -73,6 +76,8 @@ class _CreateBookingState extends State<CreateBooking> {
     calendarFN.dispose();
     dropdownFocusNode.dispose();
   }
+
+  DashboardController controller =Get.put(DashboardController());
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +92,13 @@ class _CreateBookingState extends State<CreateBooking> {
       Get.put(DashboardController());
     }
 
+
     return Scaffold(
       backgroundColor: DynamicColors.whiteClr,
       body: GetBuilder<DashboardController>(
+        initState: (v){
+          // controller.seeZoneOnMapp();
+        },
         builder: (controller) {
           return LayoutBuilder(
             builder: (context, constraints) {
@@ -154,34 +163,34 @@ class _CreateBookingState extends State<CreateBooking> {
                               SizedBox(
                                 width: 15,
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (_) =>
-                                          ViaLocation());
-                                },
-                                child: Container(
-                                  // margin: EdgeInsets.symmetric(
-                                  //     horizontal: 16, vertical: 3),
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 3),
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    // color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                                    borderRadius:
-                                    BorderRadius.circular(10),
-                                  ),
-                                  child: Text(
-                                    'VIA (${controller.viaPoints.length})',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // GestureDetector(
+                              //   onTap: () {
+                              //     showDialog(
+                              //         context: context,
+                              //         builder: (_) =>
+                              //             ViaLocation());
+                              //   },
+                              //   child: Container(
+                              //     // margin: EdgeInsets.symmetric(
+                              //     //     horizontal: 16, vertical: 3),
+                              //     padding: EdgeInsets.symmetric(
+                              //         horizontal: 8, vertical: 3),
+                              //     decoration: BoxDecoration(
+                              //       color: Colors.black,
+                              //       // color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                              //       borderRadius:
+                              //       BorderRadius.circular(10),
+                              //     ),
+                              //     child: Text(
+                              //       'VIA (${controller.viaPoints.length})',
+                              //       style: TextStyle(
+                              //         color: Colors.white,
+                              //         fontSize: 13,
+                              //         fontWeight: FontWeight.bold,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                               SizedBox(
                                 width: fieldWidth / 3,
                               ),
@@ -213,6 +222,7 @@ class _CreateBookingState extends State<CreateBooking> {
                             ],
                           ),
                         ),
+
                         const SizedBox(height: 8),
 
                         Stack(key: controller.stackKey, children: [
@@ -299,8 +309,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             },
                                             child: CustomTextField(
                                               key: controller.pickupFieldKey,
-                                              controller:
-                                                  controller.pickupController,
+                                              controller: controller.pickupController,
                                               focusNode: controller
                                                   .pickupTextFieldFocusNode,
                                               hintText: 'PICKUP LOCATION',
@@ -616,21 +625,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   KbdActivatable(
                                                     focusNode: swap2FN,
                                                     onActivate: () {
-                                                      String tempPic =
-                                                          controller.pickupController.text;
-                                                      String tempDrop =
-                                                          controller.dropOffController
-                                                              .text;
-                                                      controller
-                                                          .pickupController
-                                                          .text = tempDrop;
-                                                      controller
-                                                          .dropOffController
-                                                          .text = tempPic;
-                                                      controller.update();
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (_) =>
+                                                              ViaLocation());
                                                     },
                                                     child: const Icon(
-                                                        Icons.swap_vert,
+                                                        Icons.my_location,
                                                         color:
                                                             Color(0xFF575797),
                                                         size: 20),
