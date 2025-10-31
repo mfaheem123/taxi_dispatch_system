@@ -9,11 +9,13 @@ import '../../../component/textStyle.dart';
 class CustomTimePicker extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onTimeSelected;
+  bool readOnly = true;
 
-  const CustomTimePicker({
+  CustomTimePicker({
     Key? key,
     this.controller,
     this.onTimeSelected,
+    this.readOnly = true,
   }) : super(key: key);
 
   @override
@@ -141,7 +143,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
           return InkWell(
             onTap: () => _selectAndClose(period: period),
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: EdgeInsets.all(12),
               color: isSelected ? Colors.blue : null,
               child: Center(
                 child: Text(
@@ -178,7 +180,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
         width: 150,
         child: TextFormField(
           controller: _timeController,
-          readOnly: true,
+          readOnly: widget.readOnly,
           onTap: _toggleTimeDropdown,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),

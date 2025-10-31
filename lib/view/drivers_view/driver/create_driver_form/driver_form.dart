@@ -176,6 +176,7 @@ class _DriverFormState extends State<DriverForm> {
                             DataCell(
 
                         CustomTimePicker(
+                          readOnly: true,
                         controller: row.expiryTime, // optional
                         onTimeSelected: (time) {
                         print(row.expiryTime!.text);
@@ -187,9 +188,9 @@ class _DriverFormState extends State<DriverForm> {
                               CustomTextField(
                                 width: 150,
                                 borderRadius: 4,
-
+                                readOnly: controller.vehicleInformation.value,
                                 controller: TextEditingController(text: row.batchNo ?? ""),
-                                hintText: "Batch #",
+                                hintText: "${row.documentTitle}",
                                 onChanged: (val) {
                                   row.batchNo = val;
                                   controller.update();

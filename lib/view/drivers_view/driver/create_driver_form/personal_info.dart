@@ -336,7 +336,11 @@ class DriverPersonalInfo extends StatelessWidget {
                             ){
                               BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number,");
                             }else{
-                              controller.addDriverFtn();
+                              if(controller.vehicleInformation.value && controller.vehicleType == null){
+                                BotToast.showText(text: "Please select the company vehicle type");
+                              }else{
+                                controller.addDriverFtn();
+                              }
                             }
 
                         },
