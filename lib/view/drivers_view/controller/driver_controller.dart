@@ -30,8 +30,8 @@ class DriverController extends GetxController {
   String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? vehicleStartDate;
   String? vehicleEndeDate;
-  DateTime? startDate;
-  DateTime? endDate;
+  DateTime? startDate = DateTime.now();
+  DateTime? endDate = DateTime.now();
 
   /// text editing controller
   final driverUserNameController = TextEditingController();
@@ -261,8 +261,8 @@ class DriverController extends GetxController {
         "balance": driverBalanceController.text.trim(),
         "address": driverAddressController.text.trim(),
         "use_company_vehicle": vehicleInformation.value,
-        "start_date": startDate,
-        "end_date": endDate,
+        "start_date": "${startDate!.year}-${startDate!.month}-${startDate!.day}",
+        "end_date": "${endDate!.year}-${endDate!.month}-${endDate!.day}",
         "ni": driverNLController.text.trim(),
         if (noteList.isNotEmpty) "notes": noteList,
        if(vehicleInformation.value == false) "vehicle": {
@@ -312,6 +312,7 @@ class DriverController extends GetxController {
 
           allShifts.add(rowJson);
         }
+        baseData["shifts"] = jsonEncode(allShifts);
       }
 
       if(noteList.isNotEmpty){
@@ -343,7 +344,6 @@ class DriverController extends GetxController {
       if (response.statusCode == 200) {
         clearAddDriverData();
         BotToast.showText(text: response.data['message']);
-        print(response.data);
       }
     } catch (e, stack) {
       print("❌ Error in addDriverFtn: $e");
@@ -368,12 +368,25 @@ class DriverController extends GetxController {
     driverMobileController.clear();
     driverTelController.clear();
     driverCommissionController.clear();
+    driverNLController.clear();
     hasPDA.value = false;
     rentPaid.value = false;
     isActive.value = false;
+    vehicleInformation.value = false;
     shiftList.clear();
     noteList.clear();
+    companyType = null;
+    driverType = null;
+    vehicleType = null;
+    profileImg = null;
+    vehicleInformation.value = false;
+    imageList.clear();
+    for (var action in rows) {
+      action.fileName = null;
+    }
+    update();
   }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
 
