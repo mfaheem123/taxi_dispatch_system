@@ -146,7 +146,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
                           width: isMobile || isTablet
-                              ? Get.width + 300
+                              ? Get.width + 600
                               : Get.width, // give extra space for last column
                           child: DatatableWidget(
                               columns: [

@@ -102,7 +102,9 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: Get.width,
+                     width: isMobile || isTablet
+                                  ? Get.width + 700
+                                  : Get.width,
                       child: DatatableWidget(
                         columns: [
                           DataColumn(

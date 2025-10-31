@@ -99,7 +99,9 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                 : SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: Get.width,
+                    width: isMobile || isTablet
+                                  ? Get.width + 600
+                                  : Get.width,
                       child: DatatableWidget(
                         columns: [
                           DataColumn(

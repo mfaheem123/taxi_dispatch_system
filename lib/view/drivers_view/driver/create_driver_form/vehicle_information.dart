@@ -79,7 +79,7 @@ class VehicleInformation extends StatelessWidget {
                       label: "SELECT COMPANY VEHICLE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.getCombineVehicleData!.companyVehicles!,
+                      items: controller.vehicleInformation.value ==false?[]: controller.getCombineVehicleData!.companyVehicles!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.vehicleType,
@@ -144,6 +144,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleNameController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderWidth: controller.vehicleInformation.value?0:2,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -152,6 +155,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleMakeController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderWidth: controller.vehicleInformation.value?0:2,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -160,6 +166,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleModelController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderWidth: controller.vehicleInformation.value?0:2,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -168,6 +177,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleColorController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderWidth: controller.vehicleInformation.value?0:2,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -176,6 +188,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleOwnerController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                        borderWidth: controller.vehicleInformation.value?0:2,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -184,6 +199,9 @@ class VehicleInformation extends StatelessWidget {
                         controller.vehicleLogBookController,
                         width: fieldWidth / 1.4,
                         textInputAction: TextInputAction.next,
+                        readOnly:controller.vehicleInformation.value,
+                        borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
+                        borderWidth: controller.vehicleInformation.value?0:2,
                         column: true),
                   ),
                   FocusTraversalOrder(
@@ -193,7 +211,7 @@ class VehicleInformation extends StatelessWidget {
                       label: "VEHICLE TYPE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.getCombineVehicleData!.vehicleTypes!,
+                      items: controller.vehicleInformation.value?[]: controller.getCombineVehicleData!.vehicleTypes!,
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.selectCompanyVehicle,
@@ -267,7 +285,9 @@ class VehicleInformation extends StatelessWidget {
                         // Choose File
                         GestureDetector(
                           onTap: () {
-                            controller.pickImage();
+                            if(controller.vehicleInformation.value == false){
+                              controller.pickImage();
+                            }
                           },
                           child: Container(
                             height: double.infinity,

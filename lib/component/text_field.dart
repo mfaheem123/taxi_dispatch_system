@@ -33,6 +33,7 @@ class CustomTextField extends StatelessWidget {
     this.width,
     this.columnText = false,
     this.readOnly = false,
+    this.borderWidth = 2
   });
 
   String? labelText;
@@ -57,6 +58,7 @@ class CustomTextField extends StatelessWidget {
   double? width;
   Color? fillColor;
   bool columnText = false;
+  double borderWidth = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +112,7 @@ class CustomTextField extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(borderRadius??20),
-                    borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: 2),
+                    borderSide: BorderSide(color: borderColor ?? DynamicColors.primaryClr, width: borderWidth),
                   ),
                 ),
               )

@@ -102,7 +102,7 @@ class _UserListscreenState extends State<UserListscreen> {
                           controller.update();
                         }),
                     Text(
-                      AppText.inactive,
+                      AppText.active,
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -139,7 +139,9 @@ class _UserListscreenState extends State<UserListscreen> {
                     : SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width,
+                       width: isMobile || isTablet
+                                  ? Get.width + 700
+                                  : Get.width,
                           child: DatatableWidget(
                             columns: [
                               DataColumn(
