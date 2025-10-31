@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
@@ -226,7 +227,26 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                             color: Colors.transparent,
                                           ), // border color & thickness
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          // showDialog(
+                                          //   context: context,
+                                          //   builder: (_) => DeletePermissionAlert(
+                                          //       deleteFunctionName: controller
+                                          //           .deleteCompanyVehicle(
+                                          //               item.id!)),
+                                          // );
+
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) =>
+                                                DeletePermissionAlert(
+                                              deleteFunctionName: () =>
+                                                  controller
+                                                      .deleteCompanyVehicle(
+                                                          item.id!),
+                                            ),
+                                          );
+                                        },
                                         child: Icon(
                                           Icons.delete_forever,
                                           color: DynamicColors.redClr,

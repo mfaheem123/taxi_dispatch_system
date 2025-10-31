@@ -116,7 +116,7 @@ class VehicleController extends GetxController {
       phcVehicleNumberController.clear();
       motNumberController.clear();
       mot2NumberController.clear();
-
+      vehicleNumberController.clear();
       insuranceNumberController.clear();
     } else {
       print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
@@ -148,10 +148,8 @@ class VehicleController extends GetxController {
 
   VehicleTypeModel? vehicleTypeModel;
   RxBool isLoading = false.obs;
-
   RxList<VehicleTypes> allVehicleTypes = <VehicleTypes>[].obs;
   RxList<VehicleTypes> filteredVehicleTypes = <VehicleTypes>[].obs;
-
 // // ye search fields hain
   RxString searchName = ''.obs;
   RxString searchPassengers = ''.obs;
@@ -160,11 +158,10 @@ class VehicleController extends GetxController {
   RxString searchMinFare = ''.obs;
   RxString searchMinMiles = ''.obs;
 
-  ///------------------------------------------- Pagination
+  /// Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 5;
-
   getVehicleTypes() async {
     try {
       isLoading.value = true;
@@ -200,16 +197,25 @@ class VehicleController extends GetxController {
     }
   }
 
-// --------------------------------Search changes function
+// Search changes function
   void onSearchChanged() {
     currentPage.value = 1;
     getVehicleTypes();
   }
 
-  /// ------------------------------------- pagination function
+  ///  pagination function
   void onPageChange(int page) {
     currentPage.value = page;
     getVehicleTypes();
+  }
+
+  deleteVehicleType(int? id) async {
+    var response = await Api().delete('vehicle-type/delete/$id');
+    if (response.statusCode == 200) {
+      getVehicleTypes();
+      print("✅ VehicleType deleted successfully!");
+      print(json.encode(response.data));
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>VEHICLE TYPES Model
@@ -261,16 +267,25 @@ class VehicleController extends GetxController {
     }
   }
 
-// // --------------------------------Search changes function
+  // -Search changes function
   void SearchingOnCompany() {
     companycurrentPage.value = 1;
     companyVehicle();
   }
 
-//   /// ------------------------------------- pagination function
+  ///  pagination function
   void PageOnCompany(int page) {
     companycurrentPage.value = page;
     companyVehicle();
+  }
+
+  deleteCompanyVehicle(int? id) async {
+    var response = await Api().delete('company-vehicles/delete/$id');
+    if (response.statusCode == 200) {
+      companyVehicle();
+      print("Company Vehicle deleted successfully!");
+      print(json.encode(response.data));
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type

@@ -381,21 +381,14 @@ class DriverController extends GetxController {
 
   /// ye bool batata hai ke active drivers chahiye ya nahi
   RxBool activeDrivers = true.obs;
-
-  /// ye model list ke data ko store karega
   GetDriverModel? listDriverModel;
-
-  /// ye loading indicator ke liye hai
   RxBool driverLoading = false.obs;
-
-  /// pagination ke liye
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
   final int driverLimit = 15;
+
   RxList<Driver> driverAll = <Driver>[].obs;
   RxList<Driver> driverFilter = <Driver>[].obs;
-
-  /// ye sab search ke fields hain
   RxString searchDriverName = ''.obs;
   RxString searchDriverUserName = ''.obs;
   RxString searchVehicleName = ''.obs;
@@ -414,8 +407,10 @@ class DriverController extends GetxController {
 
       String check = 'active=${activeDrivers.value}';
 
-      final response = await Api().get('drivers/get?$check',
+      final response = await Api().get('drivers/get?',
       queryParameters: {
+        'active': activeDrivers.value,
+        'limit': driverLimit,
         "name" : searchDriverName.value.toLowerCase(),
         "username" : searchDriverUserName.value.toLowerCase(),
         "vehicle_type" : searchVehicleName.value.toLowerCase(),
