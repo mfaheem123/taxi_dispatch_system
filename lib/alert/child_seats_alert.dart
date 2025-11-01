@@ -109,7 +109,6 @@ class _ChildSeatsAlertState extends State<ChildSeatsAlert> {
                 Expanded(
                   child: CustomTextField(
                       borderRadius: 0,
-
                       hintText: "AGE",
                       controller: dashBoardCntrl.childAge
                   ),
