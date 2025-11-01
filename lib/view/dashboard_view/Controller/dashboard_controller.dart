@@ -27,13 +27,17 @@ class DashboardController extends GetxController {
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel ;
-
+  RxBool seeZoneOnMappLoader=false.obs;
   seeZoneOnMapp() async {
+    seeZoneOnMappLoader(true);
+
     var response = await Api().get("zones/get");
 
     if (response.statusCode == 200) {
       seeZoneOnMapModel = SeeZoneOnMapModel.fromJson(response.data);
-        update();
+      seeZoneOnMappLoader(false);
+      update();
+
     } else {
       print("Error in Location List");
     }

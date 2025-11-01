@@ -281,7 +281,16 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   @override
   void initState() {
     super.initState();
-    poligonFun(); // ✅ call once when widget loads
+    poligonFun();
+  }
+
+  methodHit() async{
+    await controller.seeZoneOnMapp();
+    poligonFun();
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //
+    // });
+
   }
 
   /// ✅ FIXED — now loops through all zones, not just [0]
@@ -313,6 +322,9 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    if(controller.seeZoneOnMapModel == null){
+      methodHit();
+    }
 
     final List<LatLng> polylinePoints =
     controller.polylinePoints.isNotEmpty
@@ -391,6 +403,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                               ),
                             ],
                           ),
+
 
                         /// 🟩 Zones polygons (multiple)
                         PolygonLayer(

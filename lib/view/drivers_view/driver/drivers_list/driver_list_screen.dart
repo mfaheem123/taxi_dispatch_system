@@ -56,6 +56,9 @@ class _DriverListScreenState extends State<DriverListScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+    final listToShow = controller.driverFilter.isNotEmpty
+        ? controller.driverFilter
+        : controller.driverAll;
     double width = WidgetsBinding
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
@@ -79,81 +82,77 @@ class _DriverListScreenState extends State<DriverListScreen> {
             focusNode: FocusNode(),
             onKey: _handleKey,
             child: GetBuilder<DriverController>(builder: (controller) {
-              final listToShow = controller.driverFilter.isNotEmpty
-                  ? controller.driverFilter
-                  : controller.driverAll;
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          AppText.drivers +
-                              " (${controller.listDriverModel?.count})",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Checkbox(
-                          value: controller.activeDrivers.value,
-                          onChanged: (v) {
-                            controller.activeDrivers.value = v!;
-                            controller.getDriverList();
-                          },
-                        ),
-                        Text(
-                          "In_Active",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              color: DynamicColors.redClr),
-                        ),
-                        Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: CustomButton(
-                            onTap: () {
-                              // await Future.delayed(Duration(seconds: 15));
-                              controller.getDriverList();
-                              print("---------------------------- refresh");
-                            },
-                            height: 40,
-                            width: 80,
-                            verticalPadding: 0.0,
-                            borderRadius: 4,
-                            widget: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 0.0),
-                              child: controller.driverLoading.value
-                                  ? SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Icon(
-                                      Icons.refresh,
-                                      color: DynamicColors.whiteClr,
-                                      size: 25,
-                                    ),
-                            ),
+              return controller.driverLoading.value == true
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                AppText.drivers +
+                                    " (${controller.listDriverModel?.count})",
+                                style: mozillaTextSemiBoldText(
+                                    fontWeight: FontWeight.w800, fontSize: 17),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Checkbox(
+                                value: controller.activeDrivers.value,
+                                onChanged: (v) {
+                                  controller.activeDrivers.value = v!;
+                                  controller.getDriverList();
+                                },
+                              ),
+                              Text(
+                                "IN-ACTIVE",
+                                style: mozillaTextSemiBoldText(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    color: DynamicColors.redClr),
+                              ),
+                              Spacer(),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: CustomButton(
+                                  onTap: () {
+                                    controller.getDriverList();
+                                  },
+                                  height: 40,
+                                  width: 80,
+                                  verticalPadding: 0.0,
+                                  borderRadius: 4,
+                                  widget: AnimatedSwitcher(
+                                    duration: Duration(milliseconds: 300),
+                                    child: controller.driverLoading.value
+                                        ? SizedBox(
+                                            key: ValueKey('loader'),
+                                            width: 20,
+                                            height: 20,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2,
+                                            ),
+                                          )
+                                        : Icon(
+                                            key: ValueKey('icon'),
+                                            Icons.refresh,
+                                            color: Colors.white,
+                                            size: 25,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    controller.driverLoading.value == true
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : SingleChildScrollView(
+                          SizedBox(
+                            height: 12,
+                          ),
+                          SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: SizedBox(
                               width: isMobile || isTablet
@@ -321,14 +320,14 @@ class _DriverListScreenState extends State<DriverListScreen> {
                               ),
                             ),
                           ),
-                    PaginationWidget(
-                      currentPage: controller.driverCurrentPage.value,
-                      totalPages: controller.driverTotalPage.value,
-                      onPageChange: controller.driverPage,
-                    ),
-                  ],
-                ),
-              );
+                          PaginationWidget(
+                            currentPage: controller.driverCurrentPage.value,
+                            totalPages: controller.driverTotalPage.value,
+                            onPageChange: controller.driverPage,
+                          ),
+                        ],
+                      ),
+                    );
             }),
           );
         }));

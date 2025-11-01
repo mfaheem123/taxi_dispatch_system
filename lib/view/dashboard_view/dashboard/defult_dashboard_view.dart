@@ -73,7 +73,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
     return GetBuilder<DashboardController>(
         initState: (v) {
           controller.seeZoneOnMapp();
-          if (_controller.updateLocationValue.value == false) {
+          if (_controller.locationtypezoneModel == null) {
             _controller.getLocationTypeZone();
           }
         },
@@ -341,24 +341,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
 
-                                                       Padding(
-                                                         padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                                                         child: FocusTraversalOrder(
-                                                           order: const NumericFocusOrder(2),
-                                                           child: CustomDropdownField<ZoneObject>(
-                                                           label: "Select Zone",
-                                                         width: Get.width / 9,
-                                                         height: 35,
-                                                         items: _controller.locationtypezoneModel!
-                                                             .zonesList!,
-                                                         value: _controller.zoneValue,
-                                                             itemLabel: (templateList) =>
-                                                         templateList.name!,
-                                                         onChanged: (val) {
-                                                           _controller.zoneValue = val;
-                                                           controller.update();
-                                                         },
-                                                       ),
+                                                       Obx(
+                                                         () =>Padding(
+                                                           padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                                           child: FocusTraversalOrder(
+                                                             order: const NumericFocusOrder(2),
+                                                             child: CustomDropdownField<ZoneObject>(
+                                                             label: "Select Zone",
+                                                           width: Get.width / 9,
+                                                           height: 35,
+                                                           items: _controller.updateLocationValue.value == true?[]: _controller.locationtypezoneModel!
+                                                               .zonesList!,
+                                                           value: _controller.zoneValue,
+                                                               itemLabel: (templateList) =>
+                                                           templateList.name!,
+                                                           onChanged: (val) {
+                                                             _controller.zoneValue = val;
+                                                             controller.update();
+                                                           },
+                                                         ),
+                                                           ),
                                                          ),
                                                        ),
 

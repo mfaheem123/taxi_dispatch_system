@@ -392,17 +392,15 @@ class DriverController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 
-  /// ye bool batata hai ke active drivers chahiye ya nahi
   RxBool activeDrivers = false.obs;
   GetDriverModel? listDriverModel;
   RxBool driverLoading = false.obs;
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
   final int driverLimit = 15;
-
   RxList<Driver> driverAll = <Driver>[].obs;
   RxList<Driver> driverFilter = <Driver>[].obs;
-  RxString searchDriverName = ''.obs;
+  RxString searchDriverName = ''.obs;     
   RxString searchDriverUserName = ''.obs;
   RxString searchVehicleName = ''.obs;
   RxString searchDriverExpiry = ''.obs;
@@ -417,12 +415,9 @@ class DriverController extends GetxController {
   Future<void> getDriverList() async {
     try {
       driverLoading.value = true;
-
-   
-
       final response = await Api().get('drivers/get?',
       queryParameters: {
-        'active': activeDrivers.value,
+        'active': activeDrivers.value == true?false:true,
         'limit': driverLimit,
         "name" : searchDriverName.value.toLowerCase(),
         "username" : searchDriverUserName.value.toLowerCase(),
@@ -442,11 +437,11 @@ class DriverController extends GetxController {
         driverTotalPage.value = listDriverModel?.totalPages ?? 1;
         driverAll.value = listDriverModel?.drivers ?? [];
         driverFilter.value = driverAll;
-        print('✅ Driver Data Loaded Successfully');
+        print('Driver Data Loaded Successfully');
         print('API  ${response.statusCode}');
       } 
     } catch (e) {
-      print("⚠️ Error in getDriverList : $e");
+      print("Error in getDriverList : $e");
     } finally {
       driverLoading.value = false;
       update(); 
@@ -470,7 +465,6 @@ class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
-
   /// RxBool variable
   RxBool selectAllDrivers = false.obs;
   RxBool showCustomerValue = false.obs;
