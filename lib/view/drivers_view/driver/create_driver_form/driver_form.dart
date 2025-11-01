@@ -134,7 +134,7 @@ class _DriverFormState extends State<DriverForm> {
                                 ? Image.memory(
                               controller.profileImg!.bytes,
                               fit: BoxFit.fill,
-                            )
+                            ):controller.singleDriverData != null?Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
                                 : Text(
                               AppText.uploadImage,
                               style: TextStyle(

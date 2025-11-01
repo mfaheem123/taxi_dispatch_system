@@ -8,9 +8,10 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:intl/intl.dart';
 
-import '../../../Model/driver_model.dart' hide Driver;
+import '../../../Model/driver_models/driver_model.dart' hide Driver;
 import 'package:file_picker/file_picker.dart';
 
+import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../model/driver_form_model.dart';
@@ -379,12 +380,69 @@ class DriverController extends GetxController {
     driverType = null;
     vehicleType = null;
     profileImg = null;
+    selectCompanyVehicle = null;
     vehicleInformation.value = false;
     imageList.clear();
     for (var action in rows) {
       action.fileName = null;
     }
     update();
+  }
+
+
+  singleDriver.SingleDriverModel? singleDriverData;
+  RxBool driverDataBindingLoading = false.obs;
+  driverDataBinding(id) async{
+    driverDataBindingLoading(true);
+    var response = await Api().get("drivers/getbyid/$id");
+    if(response.statusCode == 200){
+      print(response.data);
+      singleDriverData = singleDriver.SingleDriverModel.fromJson(response.data);
+      ///todo hit for to assign dropdown data
+      if(getCombineVehicleData == null){
+       await getCombineVehicle();
+      }
+      ///todo hit for to assign dropdown data
+      driverRendLimitController.text = singleDriverData!.driver!.rentLimit!;
+      driverBalanceController.text = singleDriverData!.driver!.balance.toString();
+      driverAddressController.text = singleDriverData!.driver!.address.toString();
+      if(singleDriverData!.driver!.useCompanyVehicle == false){
+        vehicleNameController.text =
+            singleDriverData!.driver!.vehicle!.vehicleNumber.toString();
+        vehicleMakeController.text =
+            singleDriverData!.driver!.vehicle!.make.toString();
+        vehicleModelController.text =
+            singleDriverData!.driver!.vehicle!.model.toString();
+        vehicleColorController.text =
+            singleDriverData!.driver!.vehicle!.color.toString();
+        vehicleOwnerController.text =
+            singleDriverData!.driver!.vehicle!.owner.toString();
+        vehicleLogBookController.text =
+            singleDriverData!.driver!.vehicle!.logBook!.logBookNumber.toString();
+        int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
+        selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
+      }else{
+        int indexx = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.companyVehicleId);
+        vehicleType = getCombineVehicleData!.companyVehicles![indexx];
+      }
+      driverUserNameController.text = singleDriverData!.driver!.username.toString();
+      driverPasswordController.text = singleDriverData!.driver!.password.toString();
+      driverFullNameController.text = singleDriverData!.driver!.name.toString();
+      driverEmailController.text = singleDriverData!.driver!.email.toString();
+      driverMobileController.text = singleDriverData!.driver!.mobile.toString();
+      driverTelController.text = singleDriverData!.driver!.telephone.toString();
+      driverCommissionController.text = singleDriverData!.driver!.driverCommission.toString();
+      driverNLController.text = singleDriverData!.driver!.ni.toString();
+      driverType = singleDriverData!.driver!.driverType.toString();
+      hasPDA.value = singleDriverData!.driver!.hasPda!;
+      rentPaid.value = singleDriverData!.driver!.rentPaid!;
+      isActive.value = singleDriverData!.driver!.active!;
+      vehicleInformation.value = singleDriverData!.driver!.useCompanyVehicle!;
+      int companyTypeIndex = getCombineVehicleData!.subsidiaries!.indexWhere((test) => test.id == singleDriverData!.driver!.subsidiaryId);
+      companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+      driverDataBindingLoading(false);
+      update();
+    }
   }
 
 
