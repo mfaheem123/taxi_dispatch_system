@@ -206,8 +206,7 @@ class VehicleInformation extends StatelessWidget {
                   ),
                   FocusTraversalOrder(
                     order: NumericFocusOrder(28),
-                    child:
-                    CustomDropdownField<SubsidiaryObject>(
+                    child: CustomDropdownField<SubsidiaryObject>(
                       label: "VEHICLE TYPE",
                       width: fieldWidth/2,
                       height: 35,
@@ -226,47 +225,86 @@ class VehicleInformation extends StatelessWidget {
                   SizedBox(
                     width: Get.width / 6,
                     height: 150,
-                    child: ListView.builder(
-                        itemCount: controller.imageList.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Stack(
-                              children: [
-                                SizedBox(
-                                  height: 150,
-                                  width: Get.width / 6,
-                                  // width: 150,
-                                  child: Image.memory(
-                                    controller.imageList[index].bytes,
-                                    width: 500,
-                                    height: 150,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    controller.imageList
-                                        .remove(controller.imageList[index]);
-                                    controller.update();
-                                  },
-                                  child: CircleAvatar(
-                                    radius: 10,
-                                    backgroundColor: DynamicColors.whiteClr,
-                                    child: Icon(
-                                      Icons.close,
-                                      color: DynamicColors.primaryClr,
-                                      size: 15,
-                                    ),
-                                  ),
-                                )
-                              ],
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Stack(
+                        children: [
+                          SizedBox(
+                            height: 150,
+                            width: Get.width / 6,
+                            // width: 150,
+                            child:
+        (controller.imageList.isEmpty) || ((controller.singleDriverData != null)||
+            (controller.singleDriverData!.driver != null)||(controller.singleDriverData!.driver!.vehicle != null)
+            || (controller.singleDriverData!.driver!.vehicle!.logBook == null))?SizedBox.shrink():
+                            controller.imageList.isNotEmpty? Image.memory(
+                              controller.imageList[0].bytes,
+                              width: 500,
+                              height: 150,
+                              fit: BoxFit.fill,
+                            ):Image(image: NetworkImage(controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!)),
+                          ),
+                          controller.imageList.isEmpty?SizedBox.shrink():
+                          GestureDetector(
+                            onTap: () {
+                              controller.imageList
+                                  .remove(controller.imageList[0]);
+                              controller.update();
+                            },
+                            child: CircleAvatar(
+                              radius: 10,
+                              backgroundColor: DynamicColors.whiteClr,
+                              child: Icon(
+                                Icons.close,
+                                color: DynamicColors.primaryClr,
+                                size: 15,
+                              ),
                             ),
-                          );
-                        }),
+                          )
+                        ],
+                      ),
+                    ),
+                    // child: ListView.builder(
+                    //     itemCount: controller.imageList.length,
+                    //     shrinkWrap: true,
+                    //     scrollDirection: Axis.horizontal,
+                    //     physics: AlwaysScrollableScrollPhysics(),
+                    //     itemBuilder: (BuildContext context, index) {
+                    //       return Padding(
+                    //         padding: const EdgeInsets.all(8.0),
+                    //         child: Stack(
+                    //           children: [
+                    //             SizedBox(
+                    //               height: 150,
+                    //               width: Get.width / 6,
+                    //               // width: 150,
+                    //               child: Image.memory(
+                    //                 controller.imageList[index].bytes,
+                    //                 width: 500,
+                    //                 height: 150,
+                    //                 fit: BoxFit.fill,
+                    //               ),
+                    //             ),
+                    //             GestureDetector(
+                    //               onTap: () {
+                    //                 controller.imageList
+                    //                     .remove(controller.imageList[index]);
+                    //                 controller.update();
+                    //               },
+                    //               child: CircleAvatar(
+                    //                 radius: 10,
+                    //                 backgroundColor: DynamicColors.whiteClr,
+                    //                 child: Icon(
+                    //                   Icons.close,
+                    //                   color: DynamicColors.primaryClr,
+                    //                   size: 15,
+                    //                 ),
+                    //               ),
+                    //             )
+                    //           ],
+                    //         ),
+                    //       );
+                    //     }),
                   )
                 ],
               ),

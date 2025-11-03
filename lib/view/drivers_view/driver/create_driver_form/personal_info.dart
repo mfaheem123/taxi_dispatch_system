@@ -349,7 +349,7 @@ class DriverPersonalInfo extends StatelessWidget {
                           color: DynamicColors.whiteClr
                         ),
                           btnColor: DynamicColors.primaryClr,
-                          btnText: AppText.save,
+                          btnText: controller.singleDriverData ==null? AppText.save:AppText.update,
                         )
                       ],
                     ),

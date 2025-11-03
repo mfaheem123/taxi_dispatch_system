@@ -3,7 +3,7 @@
 import 'dart:typed_data';
 
 class ImageModel {
-  final String name;
+  String name;
   final Uint8List bytes;
   final String? path;
 

@@ -27,6 +27,13 @@ class DriverController extends GetxController {
   RxBool isActive = false.obs;
   RxBool vehicleInformation = false.obs;
 
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    super.onInit();
+    getCombineVehicle();
+  }
+
   String? driverType;
   String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? vehicleStartDate;
@@ -224,7 +231,7 @@ class DriverController extends GetxController {
 
       if(vehicleInformation.value == false){
         for (final action in rows) {
-          if (action.fileName != null) {
+          if (action.fileName != null && action.fileName!.bytes.isNotEmpty) {
             rowsImageList["${action.paramTitle}_DOCUMENT"] =
             await dio.MultipartFile.fromBytes(
               action.fileName!.bytes,
@@ -243,8 +250,8 @@ class DriverController extends GetxController {
 
       // 🧾 Step 2: Prepare base data (normal form fields)
       final Map<String, dynamic> baseData = {
-        "image": profileImage,
-        "log_book_document": docImages,
+       if(profileImage != null) "image": profileImage,
+       if(docImages != null) "log_book_document": docImages,
         "has_pda": hasPDA.value,
         "rent_paid": rentPaid.value,
         "active": isActive.value,
@@ -340,8 +347,10 @@ class DriverController extends GetxController {
       formData.fields.forEach((field) {
         print("${field.key}: ${field.value}");
       });
-
-      var response = await Api().post(formData, "drivers/add", multiPart: true);
+      var response = await Api().post(formData,
+          singleDriverData != null?
+         "drivers/edit/${singleDriverData!.driver!.id}":
+          "drivers/add", multiPart: true);
       if (response.statusCode == 200) {
         clearAddDriverData();
         BotToast.showText(text: response.data['message']);
@@ -377,6 +386,7 @@ class DriverController extends GetxController {
     shiftList.clear();
     noteList.clear();
     companyType = null;
+    singleDriverData = null;
     driverType = null;
     vehicleType = null;
     profileImg = null;
@@ -399,9 +409,9 @@ class DriverController extends GetxController {
       print(response.data);
       singleDriverData = singleDriver.SingleDriverModel.fromJson(response.data);
       ///todo hit for to assign dropdown data
-      if(getCombineVehicleData == null){
-       await getCombineVehicle();
-      }
+      // if(getCombineVehicleData == null){
+      //  await getCombineVehicle();
+      // }
       ///todo hit for to assign dropdown data
       driverRendLimitController.text = singleDriverData!.driver!.rentLimit!;
       driverBalanceController.text = singleDriverData!.driver!.balance.toString();
@@ -421,7 +431,59 @@ class DriverController extends GetxController {
             singleDriverData!.driver!.vehicle!.logBook!.logBookNumber.toString();
         int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
         selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
+        for (var action in rows) {
+          switch (action.documentTitle) {
+            case 'PHC VEHICLE':
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleNumber!;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!;
+              break;
+            case 'PHC DRIVER':
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!;
+              break;
+            case "MOT":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot!.motExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot!.motExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.mot!.motNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.mot!.motDocument!;
+            case "MOT 2":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot2!.mot2Expiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot2!.mot2ExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.mot2!.mot2Number;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.mot2!.mot2Document!;
+            case "INSURANCE":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!;
+            case "LICENSE":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.licence!.licenceExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.licence!.licenceExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.licence!.licenceNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.licence!.licenceDocument!;
+            case "ROAD TAX":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
+            case "V5 REGISTRATION":
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
+            default:
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiry!);
+              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiryTime!;
+              action.batchNo = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementNumber;
+              action.fileName!.name = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!;
+          }
+        }
       }else{
+        // selectCompanyVehicle = null;
         int indexx = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.companyVehicleId);
         vehicleType = getCombineVehicleData!.companyVehicles![indexx];
       }

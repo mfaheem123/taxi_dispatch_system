@@ -154,11 +154,12 @@ class _DriverFormState extends State<DriverForm> {
                   children: [
                     DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(title: "EXPIRY DATE"),
-                        buildHeaderWithSearch(title: "EXPIRY TIME"),
-                        buildHeaderWithSearch(title: "BATCH #"),
-                        buildHeaderWithSearch(title: "DOCUMENT TITLE"),
-                        buildHeaderWithSearch(title: "FILE"),
+                        buildHeaderWithSearch(title: "EXPIRY DATE", removeSearching: true),
+                        buildHeaderWithSearch(title: "EXPIRY TIME", removeSearching: true),
+                        buildHeaderWithSearch(title: "BATCH #", removeSearching: true),
+                        buildHeaderWithSearch(title: "DOCUMENT TITLE", removeSearching: true),
+                        buildHeaderWithSearch(title: "FILE", removeSearching: true),
+                        buildHeaderWithSearch(title: "Document", removeSearching: true),
                       ],
                       totalRow: 7,
                       rows: List.generate(controller.rows.length, (index) {
@@ -209,6 +210,19 @@ class _DriverFormState extends State<DriverForm> {
                                 child: Text(
                                   row.fileName != null? "Documents (1)": "Documents",
                                   style: TextStyle(color: DynamicColors.primaryClr),
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                child:
+                                row.fileName == null?SizedBox.shrink():
+                                row.fileName!.bytes.isNotEmpty
+                                    ? Image.memory(row.fileName!.bytes,
+                                  fit: BoxFit.fill,
+                                )
+                                    : Image(
+                                  image: NetworkImage(row.fileName!.name),
                                 ),
                               ),
                             ),
