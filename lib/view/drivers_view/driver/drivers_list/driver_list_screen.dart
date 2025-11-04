@@ -12,6 +12,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
+import '../create_driver_form/driver_form.dart';
 
 class DriverListScreen extends StatefulWidget {
   DriverListScreen({super.key});
@@ -54,7 +55,6 @@ class _DriverListScreenState extends State<DriverListScreen> {
     }
   }
 
-  final DashboardController _controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -284,26 +284,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                   ), // border color & thickness
                                                 ),
                                                 onPressed: () {
-                                                  controller.driverDataBinding(item.id);
-                                                  int index = _controller
-                                                      .selectedMenuItems
-                                                      .indexWhere((element) =>
-                                                  element.title ==
-                                                      "ADD DRIVER");
-                                                  if (index != -1) {
-                                                    _controller
-                                                        .selectedMenuItems[index]
-                                                        .selectedItem = true;
-                                                    _controller.currentPage.value =
-                                                        DriverForm();
-                                                  } else {
-                                                    _controller.currentPage.value =
-                                                        DriverForm();
-                                                    _controller.menuBarRefresh(
-                                                        title: "ADD DRIVER",
-                                                        pageName: DriverForm());
-                                                  }
-                                                  controller.update();
+                                                   controller.getCombineVehicle(id: item.id);
                                                 },
                                                 child: Icon(
                                                   Icons.edit_calendar,

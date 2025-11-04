@@ -234,9 +234,7 @@ class VehicleInformation extends StatelessWidget {
                             width: Get.width / 6,
                             // width: 150,
                             child:
-        (controller.imageList.isEmpty) || ((controller.singleDriverData != null)||
-            (controller.singleDriverData!.driver != null)||(controller.singleDriverData!.driver!.vehicle != null)
-            || (controller.singleDriverData!.driver!.vehicle!.logBook == null))?SizedBox.shrink():
+        (controller.imageList.isEmpty) && ((controller.singleDriverData == null)||(controller.singleDriverData!.driver!.vehicle == null))?SizedBox.shrink():
                             controller.imageList.isNotEmpty? Image.memory(
                               controller.imageList[0].bytes,
                               width: 500,
