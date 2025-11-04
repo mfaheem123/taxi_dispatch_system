@@ -16,14 +16,11 @@ import 'controller/customer_controller.dart';
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
 
-
   @override
   State<CustomersScreen> createState() => _CustomersScreenState();
 }
 
 class _CustomersScreenState extends State<CustomersScreen> {
-
-
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
@@ -33,10 +30,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "customersScreen";
+    controller.getCustomer();
   }
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
   @override
   Widget build(BuildContext context) {
@@ -78,23 +76,23 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     width: 60,
                   ),
                   Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: CustomButton(
-                        height: 40,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                          child: Icon(
-                            Icons.refresh,
-                            color: DynamicColors.whiteClr,
-                            size: 25,
-                          ),
+                    padding: const EdgeInsets.only(top: 12),
+                    child: CustomButton(
+                      height: 40,
+                      width: 80,
+                      verticalPadding: 0.0,
+                      borderRadius: 4,
+                      widget: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                        child: Icon(
+                          Icons.refresh,
+                          color: DynamicColors.whiteClr,
+                          size: 25,
                         ),
                       ),
                     ),
+                  ),
                 ],
               ),
               SizedBox(
@@ -108,7 +106,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   CustomTextField(
                     borderRadius: 4,
                     controller: controller.keyWordsController,
-                    width: fieldWidth/1.2,
+                    width: fieldWidth / 1.2,
                     hintText: "ENTER KEYWORDS",
                     columnText: true,
                   ),
@@ -116,12 +114,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     children: [
                       CustomDropdownField<String>(
                         text: "SELECT TYPE",
-                        width: fieldWidth/1.5,
+                        width: fieldWidth / 1.5,
                         label: "SELECT TYPE",
-                        items:[
-                        "MOBILE",
-                        "EMAIL",
-                        "SMS",],
+                        items: [
+                          "MOBILE",
+                          "EMAIL",
+                          "SMS",
+                        ],
                         value: controller.selectFilterType,
                         itemLabel: (val) => val, // just show the string
                         onChanged: (val) {
@@ -139,17 +138,17 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     width: 20,
                     child: Checkbox(
                         value: controller.blackList.value,
-                        onChanged: (v){
+                        onChanged: (v) {
                           controller.blackList.value = v!;
                           controller.update();
                         }),
                   ),
-                  Text(AppText.blackList,
+                  Text(
+                    AppText.blackList,
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w700,
                         fontSize: 14,
-                        color: DynamicColors.redClr
-                    ),
+                        color: DynamicColors.redClr),
                   ),
                   SizedBox(
                     width: 20,
@@ -176,82 +175,91 @@ class _CustomersScreenState extends State<CustomersScreen> {
               SizedBox(
                 height: 10,
               ),
-
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  
                   width: MediaQuery.of(context).size.width,
                   child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(title: "NAME"),
-                      buildHeaderWithSearch(title: "MOBILE"),
-                      buildHeaderWithSearch(title: "TELEPHONE"),
-                      buildHeaderWithSearch(title: "EMAIL"),
-                      buildHeaderWithSearch(title: "ADDRESS"),
-                      buildHeaderWithSearch(title: "ACTIONS",
-                          customWidget: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      columns: [
+                        buildHeaderWithSearch(title: "NAME"),
+                        buildHeaderWithSearch(title: "MOBILE"),
+                        buildHeaderWithSearch(title: "TELEPHONE"),
+                        buildHeaderWithSearch(title: "EMAIL"),
+                        buildHeaderWithSearch(title: "ADDRESS"),
+                        buildHeaderWithSearch(
+                            title: "ACTIONS",
+                            customWidget: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(
+                                    Icons.search,
+                                    size: 28,
+                                  ),
+                                ),
+                                Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(
+                                    Icons.close,
+                                    size: 28,
+                                    color: DynamicColors.redClr,
+                                  ),
+                                ),
+                              ],
+                            )),
+                      ],
+                      totalRow: totalRows,
+                      cells: [
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("20/10/2025")),
+                        const DataCell(Text("#PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        const DataCell(Text("PHC VEHICLE")),
+                        DataCell(
+                          Row(
                             children: [
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ), // border color & thickness
                                 ),
                                 onPressed: () {},
-                                child: Icon(Icons.search,
+                                child: Icon(
+                                  Icons.edit_calendar,
                                   size: 28,
                                 ),
                               ),
                               Text("|"),
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.transparent,), // border color & thickness
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ), // border color & thickness
                                 ),
                                 onPressed: () {},
-                                child: Icon(Icons.close,
+                                child: Icon(
+                                  Icons.delete_forever,
                                   size: 28,
                                   color: DynamicColors.redClr,
                                 ),
                               ),
                             ],
-                          )
-                      ),
-                    ],
-                    totalRow: totalRows,
-                    cells: [
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("20/10/2025")),
-                      const DataCell(Text("#PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      const DataCell(Text("PHC VEHICLE")),
-                      DataCell(
-                        Row(
-                          children: [
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.transparent,), // border color & thickness
-                              ),
-                              onPressed: () {},
-                              child: Icon(Icons.edit_calendar,
-                                size: 28,
-                              ),
-                            ),
-                            Text("|"),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: Colors.transparent,), // border color & thickness
-                              ),
-                              onPressed: () {},
-                              child: Icon(Icons.delete_forever,
-                                size: 28,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ]
-                  ),
+                      ]),
                 ),
               ),
             ],

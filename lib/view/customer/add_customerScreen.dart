@@ -1,4 +1,4 @@
-import 'package:dashboard_new1/alert/send_email_alert.dart';
+import 'package:dashboard_new1/alert/restricted_driver.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +18,9 @@ class CustomerFormScreen extends StatefulWidget {
 }
 
 class _CustomerFormScreenState extends State<CustomerFormScreen> {
-
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
-
 
   @override
   void initState() {
@@ -31,195 +29,206 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
     shortCutKeyValue.value = "customerFormScreen";
   }
 
+// Example API se data aaya
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(
-        builder: (controller) {
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return GetBuilder<CustomerController>(builder: (controller) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isMobile = maxWidth < 600;
+        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
+        // Instead of fixed width, we calculate flexible field widths
+        final double fieldWidth = isMobile
+            ? maxWidth // full width
+            : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-              return Container(
-              color: Colors.grey[200],
-              alignment: Alignment.center,
-              child: SingleChildScrollView(
+        return Container(
+          color: Colors.grey[200],
+          alignment: Alignment.center,
+          child: SingleChildScrollView(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 1100),
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                // crossAxisAlignment: CrossAxisAlignment.stretch,
 
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 1100),
-                  margin: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300),
+                children: [
+                  Container(
+                    color: DynamicColors.secondaryClr,
+                    padding: const EdgeInsets.all(12),
+                    child: Center(
+                        child: Text(AppText.customer, style: titleDesign())),
                   ),
-                  child: Column(
-                    // crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                    children: [
-                      Container(
-                        color: DynamicColors.secondaryClr,
-                        padding: const EdgeInsets.all(12),
-                        child: Center(child: Text(AppText.customer, style: titleDesign())),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            bool isWide = constraints.maxWidth > 600;
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        bool isWide = constraints.maxWidth > 600;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Row(
-                                  children: [
-                                    Checkbox(value: controller.enableSms.value, onChanged: (v) {
+                                Checkbox(
+                                    value: controller.enableSms.value,
+                                    onChanged: (v) {
                                       controller.enableSms.value = v!;
                                       controller.update();
                                     }),
-                                    Text(AppText.enableSms),
-
-                                    const Spacer(),
-                                    GestureDetector(
-                                 onTap:(){
-                                   showDialog(
-                                     context: context,
-                                     builder: (_) =>
-                                         SendEmailAlert(),
-                                   );
-                                 },
-                                      child: CustomButton(
-                                        height: 30,
-                                        width: 160,
-                                        verticalPadding: 0.0,
-                                        btnText: AppText.restrictionDrivers,
-                                        borderRadius: 4,
-                                        fontSize: 11,
+                                Text(AppText.enableSms),
+                                const Spacer(),
+                                GestureDetector(
+                                  onTap: () async {
+                                    await controller
+                                        .getRestricDriver(); // ensure API call
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => RestrictedDriversDialog(
+                                        drivers: controller.apiDriversList
+                                            .map((e) => {
+                                                  'id': e['id'].toString(),
+                                                  'username':
+                                                      e['username'].toString(),
+                                                  'name': e['name'].toString(),
+                                                })
+                                            .toList(),
                                       ),
-                                    )
-                                  ],
+                                    );
+                                  },
+                                  child: CustomButton(
+                                    height: 30,
+                                    width: 160,
+                                    verticalPadding: 0.0,
+                                    btnText: AppText.restrictionDrivers,
+                                    borderRadius: 4,
+                                    fontSize: 11,
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: fieldWidth / 5.5, // horizontal space
+                              runSpacing: 16,
+                              children: [
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.nameController,
+                                  width: fieldWidth,
+                                  hintText: AppText.name,
+                                  columnText: true,
                                 ),
-
-                                const SizedBox(height: 16),
-                                Wrap(
-                                  spacing: fieldWidth/5.5, // horizontal space
-                                  runSpacing: 16,
-                                  children: [
-                                    CustomTextField(
-                                      borderRadius: 4,
-                                      controller: controller.nameController,
-                                      width: fieldWidth,
-                                      hintText: AppText.name,
-                                      columnText: true,
-                                    ),
-                                    CustomTextField(
-                                      borderRadius: 4,
-                                      controller: controller.emailController,
-                                      width: fieldWidth,
-                                      hintText: AppText.email,
-                                      columnText: true,
-                                    ),
-                                    CustomTextField(
-                                      borderRadius: 4,
-                                      controller: controller.mobileController,
-                                      width: fieldWidth,
-                                      hintText: AppText.mobile,
-                                      columnText: true,
-                                    ),
-                                    CustomTextField(
-                                      borderRadius: 4,
-                                      controller: controller.telController,
-                                      width: fieldWidth,
-                                      hintText: AppText.tel,
-                                      columnText: true,
-                                    ),
-                                  ],
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.emailController,
+                                  width: fieldWidth,
+                                  hintText: AppText.email,
+                                  columnText: true,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.mobileController,
+                                  width: fieldWidth,
+                                  hintText: AppText.mobile,
+                                  columnText: true,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.telController,
+                                  width: fieldWidth,
+                                  hintText: AppText.tel,
+                                  columnText: true,
                                 ),
                               ],
-                            );
-                          },
-                        ),
-                      ),
-                      Container(
-                        color: DynamicColors.secondaryClr,
-                        padding: const EdgeInsets.all(12),
-                        child: Center(child: Text(AppText.other, style: titleDesign())),
-                      ),
-
-                      Wrap(
-                        spacing: fieldWidth/5.5, // horizontal space
-                        runSpacing: 16,
-                        children: [
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.doorController,
-                            width: fieldWidth,
-                            hintText: AppText.door,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.noteController,
-                            width: fieldWidth,
-                            hintText: AppText.note,
-                            columnText: true,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.address1Controller,
-                            width: fieldWidth,
-                            hintText: AppText.address1,
-                            columnText: true,
-                            height: 80,
-                            maxLines: 5,
-                            contentPadding: EdgeInsets.only(top: 15,left: 6),
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.address2Controller,
-                            width: fieldWidth,
-                            hintText: AppText.address2,
-                            columnText: true,
-                            height: 80,
-                            maxLines: 5,
-                            contentPadding: EdgeInsets.only(top: 15,left: 6),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      CustomButton(
-                        height: 35,
-                        fontSize: 12,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    color: DynamicColors.secondaryClr,
+                    padding: const EdgeInsets.all(12),
+                    child: Center(
+                        child: Text(AppText.other, style: titleDesign())),
+                  ),
+                  Wrap(
+                    spacing: fieldWidth / 5.5, // horizontal space
+                    runSpacing: 16,
+                    children: [
+                      CustomTextField(
                         borderRadius: 4,
-                        width: fieldWidth*1.5,
-                        btnText: AppText.save,
-                        verticalPadding: 0.0,
+                        controller: controller.doorController,
+                        width: fieldWidth,
+                        hintText: AppText.door,
+                        columnText: true,
                       ),
-                      SizedBox(
-                        height: 10,
+                      CustomTextField(
+                        borderRadius: 4,
+                        controller: controller.noteController,
+                        width: fieldWidth,
+                        hintText: AppText.note,
+                        columnText: true,
+                      ),
+                      CustomTextField(
+                        borderRadius: 4,
+                        controller: controller.address1Controller,
+                        width: fieldWidth,
+                        hintText: AppText.address1,
+                        columnText: true,
+                        height: 80,
+                        maxLines: 5,
+                        contentPadding: EdgeInsets.only(top: 15, left: 6),
+                      ),
+                      CustomTextField(
+                        borderRadius: 4,
+                        controller: controller.address2Controller,
+                        width: fieldWidth,
+                        hintText: AppText.address2,
+                        columnText: true,
+                        height: 80,
+                        maxLines: 5,
+                        contentPadding: EdgeInsets.only(top: 15, left: 6),
                       ),
                     ],
                   ),
-                ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  CustomButton(
+                    onTap: () {
+                      controller.postCustomer();
+                    },
+                    height: 35,
+                    fontSize: 12,
+                    borderRadius: 4,
+                    width: fieldWidth * 1.5,
+                    btnText: AppText.save,
+                    verticalPadding: 0.0,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
               ),
-                      );
-            }
-          );
-      }
-    );
+            ),
+          ),
+        );
+      });
+    });
   }
 }
