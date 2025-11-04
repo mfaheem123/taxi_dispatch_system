@@ -283,26 +283,26 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                   ), // border color & thickness
                                                 ),
                                                 onPressed: () {
-                                                  // controller.driverDataBinding(item.id);
-                                                  // int index = _controller
-                                                  //     .selectedMenuItems
-                                                  //     .indexWhere((element) =>
-                                                  // element.title ==
-                                                  //     "ADD DRIVER");
-                                                  // if (index != -1) {
-                                                  //   _controller
-                                                  //       .selectedMenuItems[index]
-                                                  //       .selectedItem = true;
-                                                  //   _controller.currentPage.value =
-                                                  //       DriverForm();
-                                                  // } else {
-                                                  //   _controller.currentPage.value =
-                                                  //       DriverForm();
-                                                  //   _controller.menuBarRefresh(
-                                                  //       title: "ADD DRIVER",
-                                                  //       pageName: DriverForm());
-                                                  // }
-                                                  // controller.update();
+                                                  controller.driverDataBinding(item.id);
+                                                  int index = _controller
+                                                      .selectedMenuItems
+                                                      .indexWhere((element) =>
+                                                  element.title ==
+                                                      "ADD DRIVER");
+                                                  if (index != -1) {
+                                                    _controller
+                                                        .selectedMenuItems[index]
+                                                        .selectedItem = true;
+                                                    _controller.currentPage.value =
+                                                        DriverForm();
+                                                  } else {
+                                                    _controller.currentPage.value =
+                                                        DriverForm();
+                                                    _controller.menuBarRefresh(
+                                                        title: "ADD DRIVER",
+                                                        pageName: DriverForm());
+                                                  }
+                                                  controller.update();
                                                 },
                                                 child: Icon(
                                                   Icons.edit_calendar,
