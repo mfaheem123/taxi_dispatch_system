@@ -335,8 +335,7 @@ class AccountController extends GetxController {
   RxString searchSubsiDiary = ''.obs;
 
   AccountObject? accountObjectData;
-
-  Future<void> listOFAccount() async {
+ listOFAccount() async {
     try {
       isLoadingListOfAccount.value = true;
 
