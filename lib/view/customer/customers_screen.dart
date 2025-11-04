@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -45,6 +46,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<CustomerController>(builder: (controller) {
+      final listToShow = controller.filteredCustomer.isNotEmpty
+          ? controller.filteredCustomer
+          : controller.customerListAll;
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -68,7 +72,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
               Row(
                 children: [
                   Text(
-                    AppText.customer + " (10)",
+                    AppText.customer +
+                        "(${controller.getCustomerModel?.count})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
@@ -78,6 +83,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: CustomButton(
+                      onTap: () {
+                        controller.getCustomer();
+                      },
                       height: 40,
                       width: 80,
                       verticalPadding: 0.0,
@@ -103,33 +111,38 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 runSpacing: 16,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  CustomTextField(
-                    borderRadius: 4,
-                    controller: controller.keyWordsController,
-                    width: fieldWidth / 1.2,
-                    hintText: "ENTER KEYWORDS",
-                    columnText: true,
-                  ),
-                  Column(
-                    children: [
-                      CustomDropdownField<String>(
-                        text: "SELECT TYPE",
-                        width: fieldWidth / 1.5,
-                        label: "SELECT TYPE",
-                        items: [
-                          "MOBILE",
-                          "EMAIL",
-                          "SMS",
-                        ],
-                        value: controller.selectFilterType,
-                        itemLabel: (val) => val, // just show the string
-                        onChanged: (val) {
-                          controller.selectFilterType = val!;
-                          controller.update();
-                        },
-                      ),
-                    ],
-                  ),
+                  // CustomTextField(
+                  //   onChanged: (value) {
+
+                  //   },
+                  //   borderRadius: 4,
+                  //   controller: controller.keyWordsController,
+                  //   width: fieldWidth / 1.2,
+                  //   hintText: "ENTER KEYWORDS",
+                  //   columnText: true,
+                  // ),
+                  // Column(
+                  //   children: [
+                  //     CustomDropdownField<String>(
+                  //       text: "SELECT TYPE",
+                  //       width: fieldWidth / 1.5,
+                  //       label: "SELECT TYPE",
+                  //       items: [
+                  //         "NAME",
+                  //         "MOBILE",
+                  //         "TELEPHONE",
+                  //         "EMAIL",
+                  //         "ADDRESS",
+                  //       ],
+                  //       value: controller.selectFilterType,
+                  //       itemLabel: (val) => val, // just show the string
+                  //       onChanged: (val) {
+                  //         controller.selectFilterType = val!;
+                  //         controller.update();
+                  //       },
+                  //     ),
+                  //   ],
+                  // ),
                   SizedBox(
                     width: 20,
                   ),
@@ -140,6 +153,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                         value: controller.blackList.value,
                         onChanged: (v) {
                           controller.blackList.value = v!;
+                          controller.getCustomer();
                           controller.update();
                         }),
                   ),
@@ -150,26 +164,26 @@ class _CustomersScreenState extends State<CustomersScreen> {
                         fontSize: 14,
                         color: DynamicColors.redClr),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  CustomButton(
-                    height: 30,
-                    verticalPadding: 0.0,
-                    width: 100,
-                    btnText: AppText.clear,
-                    borderRadius: 4,
-                    fontSize: 11,
-                    btnColor: DynamicColors.redClr,
-                  ),
-                  CustomButton(
-                    height: 30,
-                    verticalPadding: 0.0,
-                    width: 100,
-                    fontSize: 11,
-                    btnText: AppText.search,
-                    borderRadius: 4,
-                  ),
+                  // SizedBox(
+                  //   width: 20,
+                  // ),
+                  // CustomButton(
+                  //   height: 30,
+                  //   verticalPadding: 0.0,
+                  //   width: 100,
+                  //   btnText: AppText.clear,
+                  //   borderRadius: 4,
+                  //   fontSize: 11,
+                  //   btnColor: DynamicColors.redClr,
+                  // ),
+                  // CustomButton(
+                  //   height: 30,
+                  //   verticalPadding: 0.0,
+                  //   width: 100,
+                  //   fontSize: 11,
+                  //   btnText: AppText.search,
+                  //   borderRadius: 4,
+                  // ),
                 ],
               ),
               SizedBox(
@@ -180,55 +194,46 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   child: DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "NAME"),
-                        buildHeaderWithSearch(title: "MOBILE"),
-                        buildHeaderWithSearch(title: "TELEPHONE"),
-                        buildHeaderWithSearch(title: "EMAIL"),
-                        buildHeaderWithSearch(title: "ADDRESS"),
-                        buildHeaderWithSearch(
-                            title: "ACTIONS",
-                            customWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(
-                                    Icons.search,
-                                    size: 28,
-                                  ),
-                                ),
-                                Text("|"),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: Colors.transparent,
-                                    ), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(
-                                    Icons.close,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ],
-                      totalRow: totalRows,
-                      cells: [
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("20/10/2025")),
-                        const DataCell(Text("#PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        const DataCell(Text("PHC VEHICLE")),
-                        DataCell(
-                          Row(
+                    columns: [
+                      buildHeaderWithSearch(
+                        title: "NAME",
+                        onChanged: (v) {
+                          controller.searchName.value = v;
+                          controller.onSearchCustomer();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "MOBILE",
+                        onChanged: (v) {
+                          controller.searchMobile.value = v;
+                          controller.onSearchCustomer();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "TELEPHONE",
+                        onChanged: (v) {
+                          controller.searchTele.value = v;
+                          controller.onSearchCustomer();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "EMAIL",
+                        onChanged: (v) {
+                          controller.searchEmail.value = v;
+                          controller.onSearchCustomer();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "ADDRESS",
+                        onChanged: (v) {
+                          controller.searchAddress.value = v;
+                          controller.onSearchCustomer();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                          title: "ACTIONS",
+                          customWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               OutlinedButton(
                                 style: OutlinedButton.styleFrom(
@@ -237,6 +242,53 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                   ), // border color & thickness
                                 ),
                                 onPressed: () {},
+                                child: Icon(
+                                  Icons.search,
+                                  size: 28,
+                                ),
+                              ),
+                              Text("|"),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ), // border color & thickness
+                                ),
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.close,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                    totalRow: listToShow.length ?? 0,
+                    rows: (listToShow ?? []).map((item) {
+                      return DataRow(cells: [
+                        DataCell(Center(child: Text(item.name ?? "no data"))),
+                        DataCell(Center(child: Text(item.mobile ?? "no data"))),
+                        DataCell(
+                            Center(child: Text(item.telephone ?? "no data"))),
+                        DataCell(Center(child: Text(item.email ?? "no data"))),
+                        DataCell(
+                            Center(child: Text(item.address1 ?? "no data"))),
+                        DataCell(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ), // border color & thickness
+                                ),
+                                onPressed: () {
+                                  controller.customerUpdate(
+                                      customerUpdate: item);
+                                },
                                 child: Icon(
                                   Icons.edit_calendar,
                                   size: 28,
@@ -259,9 +311,16 @@ class _CustomersScreenState extends State<CustomersScreen> {
                             ],
                           ),
                         ),
-                      ]),
+                      ]);
+                    }).toList(),
+                  ),
                 ),
               ),
+              // PaginationWidget(
+              //   currentPage: controller.currentPage.value,
+              //   totalPages: controller.totalPages.value,
+              //   onPageChange: controller.onPageCustomer,
+              // )
             ],
           ),
         );

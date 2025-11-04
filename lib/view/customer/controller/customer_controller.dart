@@ -93,8 +93,16 @@ class CustomerController extends GetxController {
   String? selectFilterType;
   RxBool blackList = false.obs;
 
-    RxString searchName = ''.obs;
-    RxString searchMobile = ''.obs;
+  ///--------------------- Pagination
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 20;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<Customer> customerListAll = <Customer>[].obs;
+  RxList<Customer> filteredCustomer = <Customer>[].obs;
+  RxString searchName = ''.obs;
+  RxString searchMobile = ''.obs;
   RxString searchTele = ''.obs;
   RxString searchEmail = ''.obs;
   RxString searchAddress = ''.obs;
@@ -103,23 +111,59 @@ class CustomerController extends GetxController {
   final keyWordsController = TextEditingController();
 
   getCustomer() async {
-    customerLoader(true);
-    var response = await Api().get("customers/get", auth: true, queryParameters: {
-        'blacklist': blackList.value == true?false:true,
-        // 'limit': driverLimit,
- 
-      "name" : searchName.value.toLowerCase(),
-      "mobile" : searchMobile.value.toLowerCase(),
-      "telephone" : searchTele.value.toLowerCase(),
-      "email" : searchEmail.value.toLowerCase(),
-      "address1" : searchAddress.value.toLowerCase(),
-    });
-    if (response.statusCode == 200) {
-      getCustomerModel = GetCustomerModel.fromJson(response.data);
-
-      customerLoader(false);
-      update();
+    try {
+      customerLoader(true);
+      var response =
+          await Api().get("customers/get?",
+           auth: true, 
+           queryParameters: {
+        'blacklist': blackList.value,
+        'limit': limit,
+        "name": searchName.value.toLowerCase(),
+        "mobile": searchMobile.value.toLowerCase(),
+        "telephone": searchTele.value.toLowerCase(),
+        "email": searchEmail.value.toLowerCase(),
+        "address1": searchAddress.value.toLowerCase(),
+      });
+      if (response.statusCode == 200) {
+        getCustomerModel = GetCustomerModel.fromJson(response.data);
+        totalPages.value = getCustomerModel?.totalPages ?? 1;
+        customerListAll.value = getCustomerModel?.customers ?? [];
+        filteredCustomer.value = customerListAll;
+        customerLoader(false);
+        update();
+      }
+    } catch (e) {
+      print("Error in GEt Customer $e");
     }
+  }
+
+  // -----------Search changes function
+  void onSearchCustomer() {
+    currentPage.value = 1;
+    getCustomer();
+  }
+
+  /// ------- pagination function
+  void onPageCustomer(int page) {
+    currentPage.value = page;
+    getCustomer();
+  }
+
+  RxBool updateCustomerValue = false.obs;
+  RxInt locationUpdateId = 0.obs;
+  customerUpdate({Customer? customerUpdate}) async {
+    locationUpdateId.value = customerUpdate!.id!;
+    nameController.text = customerUpdate.name!;
+    emailController.text = customerUpdate.email!;
+    mobileController.text = customerUpdate.mobile!;
+    telController.text = customerUpdate.telephone!;
+    doorController.text = customerUpdate.doorNumber!;
+    noteController.text = customerUpdate.notes!;
+    address1Controller.text = customerUpdate.address1!;
+    address2Controller.text = customerUpdate.address2!;
+
+    updateCustomerValue(true);
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality

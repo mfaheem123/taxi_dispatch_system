@@ -143,22 +143,17 @@ class LocationController extends GetxController {
 
   getLocationList() async {
     try {
-      String query = 'page=${locationCurrentPage.value}&limit=${locationLimit}';
-      if (searchLocationName.value.isNotEmpty)
-        query += '&name=${searchLocationName.value}';
-      if (searchPostCode.value.isNotEmpty)
-        query += '&postcode=${searchPostCode.value}';
-      if (searchShortCuts.value.isNotEmpty)
-        query += '&shortcut=${searchShortCuts.value}';
-      if (searchAddress.value.isNotEmpty)
-        query += '&address=${searchAddress.value}';
-      if (searchLocationType.value.isNotEmpty)
-        query += '&location_type=${searchLocationType.value}';
-      if (searchZone.value.isNotEmpty) query += '&zone=${searchZone.value}';
-      print("API Query: locations/get?$query");
-
       getLocationLoader(true);
-      var response = await Api().get("locations/get?$query");
+      var response = await Api().get("locations/get?",queryParameters: {
+        'page': locationCurrentPage.value,
+        "limit": locationLimit,
+        "name": searchLocationName.value.toLowerCase(),
+        "postcode": searchPostCode.value.toLowerCase(),
+        "shortcut": searchShortCuts.value.toLowerCase(),
+        "address": searchAddress.value.toLowerCase(),
+        "location_type": searchLocationType.value.toLowerCase(),
+        "zone": searchZone.value.toLowerCase(),
+      });
       if (response.statusCode == 200) {
         locationListModel = LocationListModel.fromJson(response.data);
         locationTotalPages.value = locationListModel?.totalPages ?? 1;
@@ -174,11 +169,13 @@ class LocationController extends GetxController {
       update();
     }
   }
+
   // --------Search changes function
   void SearchLocation() {
     locationCurrentPage.value = 1;
     getLocationList();
   }
+
   void PageLocation(int page) {
     locationCurrentPage.value = page;
     getLocationList();
@@ -203,15 +200,13 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
-
   deleteLocation(int? id) async {
     var response = await Api().delete("locations/delete/$id");
- if (response.statusCode == 200) {
-        getLocationList();
-        print("✅ Location deleted successfully!");
-        print(json.encode(response.data));
-      }
-
+    if (response.statusCode == 200) {
+      getLocationList();
+      print("✅ Location deleted successfully!");
+      print(json.encode(response.data));
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
@@ -314,6 +309,7 @@ class LocationController extends GetxController {
     zoneCurrentPage.value = 1;
     getZoneList();
   }
+
   /// ------- pagination function
   void zonePageChange(int page) {
     zoneCurrentPage.value = page;

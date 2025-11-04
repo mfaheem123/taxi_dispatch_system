@@ -535,7 +535,7 @@ class DriverController extends GetxController {
   Future<void> getDriverList() async {
     try {
       driverLoading.value = true;
-      final response = await Api().get('drivers/get?',
+      final response = await Api().get(auth: true, 'drivers/get?',
       queryParameters: {
         'active': activeDrivers.value == true?false:true,
         'limit': driverLimit,
