@@ -13,6 +13,7 @@ import 'package:file_picker/file_picker.dart';
 
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
@@ -27,12 +28,6 @@ class DriverController extends GetxController {
   RxBool isActive = false.obs;
   RxBool vehicleInformation = false.obs;
 
-  @override
-  void onInit() {
-    // TODO: implement onInit
-    super.onInit();
-    getCombineVehicle();
-  }
 
   String? driverType;
   String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
@@ -204,11 +199,14 @@ class DriverController extends GetxController {
   CompanyVehicleObject? vehicleType;
 
   RxBool getCombineVehicleLoading = false.obs;
-  getCombineVehicle() async {
+  getCombineVehicle({id}) async {
     getCombineVehicleLoading(true);
     var response = await Api().get("driver-combine/get");
     if (response.statusCode == 200) {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
+      if(id != null){
+        driverDataBinding(id);
+      }
       getCombineVehicleLoading(false);
       update();
     }
@@ -409,9 +407,6 @@ class DriverController extends GetxController {
       print(response.data);
       singleDriverData = singleDriver.SingleDriverModel.fromJson(response.data);
       ///todo hit for to assign dropdown data
-      // if(getCombineVehicleData == null){
-      //  await getCombineVehicle();
-      // }
       ///todo hit for to assign dropdown data
       driverRendLimitController.text = singleDriverData!.driver!.rentLimit!;
       driverBalanceController.text = singleDriverData!.driver!.balance.toString();
@@ -432,59 +427,56 @@ class DriverController extends GetxController {
         int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
         selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
         for (var action in rows) {
-          switch (action.documentTitle) {
-            case 'PHC VEHICLE':
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleNumber!;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!;
-              break;
-            case 'PHC DRIVER':
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!;
-              break;
-            case "MOT":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot!.motExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot!.motExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.mot!.motNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.mot!.motDocument!;
-            case "MOT 2":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot2!.mot2Expiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot2!.mot2ExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.mot2!.mot2Number;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.mot2!.mot2Document!;
-            case "INSURANCE":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!;
-            case "LICENSE":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.licence!.licenceExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.licence!.licenceExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.licence!.licenceNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.licence!.licenceDocument!;
-            case "ROAD TAX":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
-            case "V5 REGISTRATION":
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
-            default:
-              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiry!);
-              action.expiryTime!.text = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiryTime!;
-              action.batchNo = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementNumber;
-              action.fileName!.name = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!;
+          if(action.documentTitle == "PHC VEHICLE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!;
+          }else if (action.documentTitle == "PHC DRIVER"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!;
+          }else if (action.documentTitle == "MOT"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot!.motExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot!.motExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.mot!.motNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot!.motDocument!;
+          }else if (action.documentTitle == "MOT 2"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot2!.mot2Expiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot2!.mot2ExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.mot2!.mot2Number??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot2!.mot2Document!;
+          }else if (action.documentTitle == "INSURANCE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!;
+          }else if (action.documentTitle == "LICENSE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.licence!.licenceExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.licence!.licenceExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.licence!.licenceNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.licence!.licenceDocument!;
+          }else if (action.documentTitle == "ROAD TAX"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
+          }else if (action.documentTitle == "V5 REGISTRATION"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
+          }else{
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!;
           }
         }
       }else{
         // selectCompanyVehicle = null;
-        int indexx = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.companyVehicleId);
+        int indexx = getCombineVehicleData!.companyVehicles!.indexWhere((test) => test.id == singleDriverData!.driver!.companyVehicleId);
         vehicleType = getCombineVehicleData!.companyVehicles![indexx];
       }
       driverUserNameController.text = singleDriverData!.driver!.username.toString();
@@ -502,6 +494,48 @@ class DriverController extends GetxController {
       vehicleInformation.value = singleDriverData!.driver!.useCompanyVehicle!;
       int companyTypeIndex = getCombineVehicleData!.subsidiaries!.indexWhere((test) => test.id == singleDriverData!.driver!.subsidiaryId);
       companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+
+      print(singleDriverData!.driver);
+      if(singleDriverData!.driver!.shifts!.isNotEmpty){
+        for (var action in singleDriverData!.driver!.shifts!) {
+          shiftList.add(ShiftAlertClass(
+            startTime: action.startTime,
+            endTime: action.endTime,
+            shiftTitle: action.name,
+          ));
+        }
+      }
+      if(singleDriverData!.driver!.notes!.isNotEmpty){
+        for (var action in singleDriverData!.driver!.notes!) {
+          noteList.add(NoteAlertClass(
+            notesTitle: action.note,
+            createdByTime:
+                "${action.createdAt!.day}-${action.createdAt!.month}-${action.createdAt!.year}",
+            createdItTime: action.createdBy,
+          ));
+        }
+      }
+
+      final DashboardController _controller = Get.find();
+      int index = _controller
+          .selectedMenuItems
+          .indexWhere((element) =>
+      element.title ==
+          "ADD DRIVER");
+      if (index != -1) {
+        _controller
+            .selectedMenuItems[index]
+            .selectedItem = true;
+        _controller.currentPage.value =
+            DriverForm();
+      } else {
+        _controller.currentPage.value =
+            DriverForm();
+        _controller.menuBarRefresh(
+            title: "ADD DRIVER",
+            pageName: DriverForm());
+      }
+
       driverDataBindingLoading(false);
       update();
     }

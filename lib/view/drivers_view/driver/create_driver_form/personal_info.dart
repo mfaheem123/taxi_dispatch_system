@@ -23,6 +23,7 @@ class DriverPersonalInfo extends StatelessWidget {
       ? Get.find<DriverController>()
       : Get.put(DriverController());
 
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DriverController>(

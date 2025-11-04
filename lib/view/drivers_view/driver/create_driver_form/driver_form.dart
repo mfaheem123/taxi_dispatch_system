@@ -24,7 +24,10 @@ class DriverForm extends StatefulWidget {
 
 class _DriverFormState extends State<DriverForm> {
   final _formKey = GlobalKey<FormState>();
-  final DriverController controller = Get.put(DriverController());
+
+  DriverController controller = Get.isRegistered<DriverController>()
+      ? Get.find<DriverController>()
+      : Get.put(DriverController());
 
   @override
   void initState() {
@@ -53,8 +56,10 @@ class _DriverFormState extends State<DriverForm> {
 
       child: GetBuilder<DriverController>(
           initState: (v){
-            controller.getCombineVehicle();
-          },
+          if(controller.getCombineVehicleData == null)  {
+          controller.getCombineVehicle();
+        }
+      },
           builder: (controller) {
         return controller.getCombineVehicleLoading.value == true?Center(
           child: CircularProgressIndicator(color: DynamicColors.primaryClr,),
