@@ -24,7 +24,10 @@ class DriverForm extends StatefulWidget {
 
 class _DriverFormState extends State<DriverForm> {
   final _formKey = GlobalKey<FormState>();
-  final DriverController controller = Get.put(DriverController());
+
+  DriverController controller = Get.isRegistered<DriverController>()
+      ? Get.find<DriverController>()
+      : Get.put(DriverController());
 
   @override
   void initState() {
@@ -53,8 +56,10 @@ class _DriverFormState extends State<DriverForm> {
 
       child: GetBuilder<DriverController>(
           initState: (v){
-            controller.getCombineVehicle();
-          },
+          if(controller.getCombineVehicleData == null)  {
+          controller.getCombineVehicle();
+        }
+      },
           builder: (controller) {
         return controller.getCombineVehicleLoading.value == true?Center(
           child: CircularProgressIndicator(color: DynamicColors.primaryClr,),
@@ -134,7 +139,7 @@ class _DriverFormState extends State<DriverForm> {
                                 ? Image.memory(
                               controller.profileImg!.bytes,
                               fit: BoxFit.fill,
-                            )
+                            ):controller.singleDriverData != null?Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
                                 : Text(
                               AppText.uploadImage,
                               style: TextStyle(
@@ -154,11 +159,12 @@ class _DriverFormState extends State<DriverForm> {
                   children: [
                     DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(title: "EXPIRY DATE"),
-                        buildHeaderWithSearch(title: "EXPIRY TIME"),
-                        buildHeaderWithSearch(title: "BATCH #"),
-                        buildHeaderWithSearch(title: "DOCUMENT TITLE"),
-                        buildHeaderWithSearch(title: "FILE"),
+                        buildHeaderWithSearch(title: "EXPIRY DATE", removeSearching: true),
+                        buildHeaderWithSearch(title: "EXPIRY TIME", removeSearching: true),
+                        buildHeaderWithSearch(title: "BATCH #", removeSearching: true),
+                        buildHeaderWithSearch(title: "DOCUMENT TITLE", removeSearching: true),
+                        buildHeaderWithSearch(title: "FILE", removeSearching: true),
+                        buildHeaderWithSearch(title: "Document", removeSearching: true),
                       ],
                       totalRow: 7,
                       rows: List.generate(controller.rows.length, (index) {
@@ -209,6 +215,19 @@ class _DriverFormState extends State<DriverForm> {
                                 child: Text(
                                   row.fileName != null? "Documents (1)": "Documents",
                                   style: TextStyle(color: DynamicColors.primaryClr),
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                child:
+                                row.fileName == null?SizedBox.shrink():
+                                row.fileName!.bytes.isNotEmpty
+                                    ? Image.memory(row.fileName!.bytes,
+                                  fit: BoxFit.fill,
+                                )
+                                    : Image(
+                                  image: NetworkImage(row.fileName!.name),
                                 ),
                               ),
                             ),

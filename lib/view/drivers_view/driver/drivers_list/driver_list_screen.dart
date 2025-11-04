@@ -11,6 +11,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
+import '../create_driver_form/driver_form.dart';
 
 class DriverListScreen extends StatefulWidget {
   DriverListScreen({super.key});
@@ -32,6 +33,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
+       controller.getDriverList();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -51,6 +53,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -128,22 +131,11 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                   borderRadius: 4,
                                   widget: AnimatedSwitcher(
                                     duration: Duration(milliseconds: 300),
-                                    child: controller.driverLoading.value
-                                        ? SizedBox(
-                                            key: ValueKey('loader'),
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              color: Colors.white,
-                                              strokeWidth: 2,
-                                            ),
-                                          )
-                                        : Icon(
-                                            key: ValueKey('icon'),
-                                            Icons.refresh,
-                                            color: Colors.white,
-                                            size: 25,
-                                          ),
+                                    child: Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                      size: 25,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -290,7 +282,9 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                     color: Colors.transparent,
                                                   ), // border color & thickness
                                                 ),
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                   controller.getCombineVehicle(id: item.id);
+                                                },
                                                 child: Icon(
                                                   Icons.edit_calendar,
                                                   size: 28,

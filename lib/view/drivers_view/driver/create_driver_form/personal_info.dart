@@ -23,6 +23,7 @@ class DriverPersonalInfo extends StatelessWidget {
       ? Get.find<DriverController>()
       : Get.put(DriverController());
 
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<DriverController>(
@@ -349,7 +350,7 @@ class DriverPersonalInfo extends StatelessWidget {
                           color: DynamicColors.whiteClr
                         ),
                           btnColor: DynamicColors.primaryClr,
-                          btnText: AppText.save,
+                          btnText: controller.singleDriverData ==null? AppText.save:AppText.update,
                         )
                       ],
                     ),

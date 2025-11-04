@@ -8,10 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:intl/intl.dart';
 
-import '../../../Model/driver_model.dart' hide Driver;
+import '../../../Model/driver_models/driver_model.dart' hide Driver;
 import 'package:file_picker/file_picker.dart';
 
+import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
@@ -25,6 +27,7 @@ class DriverController extends GetxController {
   RxBool rentPaid = false.obs;
   RxBool isActive = false.obs;
   RxBool vehicleInformation = false.obs;
+
 
   String? driverType;
   String? dobDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
@@ -196,11 +199,14 @@ class DriverController extends GetxController {
   CompanyVehicleObject? vehicleType;
 
   RxBool getCombineVehicleLoading = false.obs;
-  getCombineVehicle() async {
+  getCombineVehicle({id}) async {
     getCombineVehicleLoading(true);
     var response = await Api().get("driver-combine/get");
     if (response.statusCode == 200) {
       getCombineVehicleData = DriverFormModel.fromJson(response.data);
+      if(id != null){
+        driverDataBinding(id);
+      }
       getCombineVehicleLoading(false);
       update();
     }
@@ -223,7 +229,7 @@ class DriverController extends GetxController {
 
       if(vehicleInformation.value == false){
         for (final action in rows) {
-          if (action.fileName != null) {
+          if (action.fileName != null && action.fileName!.bytes.isNotEmpty) {
             rowsImageList["${action.paramTitle}_DOCUMENT"] =
             await dio.MultipartFile.fromBytes(
               action.fileName!.bytes,
@@ -242,8 +248,8 @@ class DriverController extends GetxController {
 
       // 🧾 Step 2: Prepare base data (normal form fields)
       final Map<String, dynamic> baseData = {
-        "image": profileImage,
-        "log_book_document": docImages,
+       if(profileImage != null) "image": profileImage,
+       if(docImages != null) "log_book_document": docImages,
         "has_pda": hasPDA.value,
         "rent_paid": rentPaid.value,
         "active": isActive.value,
@@ -339,8 +345,10 @@ class DriverController extends GetxController {
       formData.fields.forEach((field) {
         print("${field.key}: ${field.value}");
       });
-
-      var response = await Api().post(formData, "drivers/add", multiPart: true);
+      var response = await Api().post(formData,
+          singleDriverData != null?
+         "drivers/edit/${singleDriverData!.driver!.id}":
+          "drivers/add", multiPart: true);
       if (response.statusCode == 200) {
         clearAddDriverData();
         BotToast.showText(text: response.data['message']);
@@ -376,15 +384,161 @@ class DriverController extends GetxController {
     shiftList.clear();
     noteList.clear();
     companyType = null;
+    singleDriverData = null;
     driverType = null;
     vehicleType = null;
     profileImg = null;
+    selectCompanyVehicle = null;
     vehicleInformation.value = false;
     imageList.clear();
     for (var action in rows) {
       action.fileName = null;
     }
     update();
+  }
+
+
+  singleDriver.SingleDriverModel? singleDriverData;
+  RxBool driverDataBindingLoading = false.obs;
+  driverDataBinding(id) async{
+    driverDataBindingLoading(true);
+    var response = await Api().get("drivers/getbyid/$id");
+    if(response.statusCode == 200){
+      print(response.data);
+      singleDriverData = singleDriver.SingleDriverModel.fromJson(response.data);
+      ///todo hit for to assign dropdown data
+      ///todo hit for to assign dropdown data
+      driverRendLimitController.text = singleDriverData!.driver!.rentLimit!;
+      driverBalanceController.text = singleDriverData!.driver!.balance.toString();
+      driverAddressController.text = singleDriverData!.driver!.address.toString();
+      if(singleDriverData!.driver!.useCompanyVehicle == false){
+        vehicleNameController.text =
+            singleDriverData!.driver!.vehicle!.vehicleNumber.toString();
+        vehicleMakeController.text =
+            singleDriverData!.driver!.vehicle!.make.toString();
+        vehicleModelController.text =
+            singleDriverData!.driver!.vehicle!.model.toString();
+        vehicleColorController.text =
+            singleDriverData!.driver!.vehicle!.color.toString();
+        vehicleOwnerController.text =
+            singleDriverData!.driver!.vehicle!.owner.toString();
+        vehicleLogBookController.text =
+            singleDriverData!.driver!.vehicle!.logBook!.logBookNumber.toString();
+        int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
+        selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
+        for (var action in rows) {
+          if(action.documentTitle == "PHC VEHICLE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcVehicle!.phcVehicleDocument!;
+          }else if (action.documentTitle == "PHC DRIVER"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.phcDriver!.phcDriverDocument!;
+          }else if (action.documentTitle == "MOT"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot!.motExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot!.motExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.mot!.motNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot!.motDocument!;
+          }else if (action.documentTitle == "MOT 2"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.mot2!.mot2Expiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.mot2!.mot2ExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.mot2!.mot2Number??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.mot2!.mot2Document!;
+          }else if (action.documentTitle == "INSURANCE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.insurance!.insuranceExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.insurance!.insuranceNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.insurance!.insuranceDocument!;
+          }else if (action.documentTitle == "LICENSE"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.licence!.licenceExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.licence!.licenceExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.licence!.licenceNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.licence!.licenceDocument!;
+          }else if (action.documentTitle == "ROAD TAX"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
+          }else if (action.documentTitle == "V5 REGISTRATION"){
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
+          }else{
+            action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiry!);
+            action.expiryTime!.text = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementExpiryTime!;
+            action.batchNo = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementNumber??"";
+            // action.fileName!.name = singleDriverData!.driver!.vehicle!.rentalAgreement!.rentalAgreementDocument!;
+          }
+        }
+      }else{
+        // selectCompanyVehicle = null;
+        int indexx = getCombineVehicleData!.companyVehicles!.indexWhere((test) => test.id == singleDriverData!.driver!.companyVehicleId);
+        vehicleType = getCombineVehicleData!.companyVehicles![indexx];
+      }
+      driverUserNameController.text = singleDriverData!.driver!.username.toString();
+      driverPasswordController.text = singleDriverData!.driver!.password.toString();
+      driverFullNameController.text = singleDriverData!.driver!.name.toString();
+      driverEmailController.text = singleDriverData!.driver!.email.toString();
+      driverMobileController.text = singleDriverData!.driver!.mobile.toString();
+      driverTelController.text = singleDriverData!.driver!.telephone.toString();
+      driverCommissionController.text = singleDriverData!.driver!.driverCommission.toString();
+      driverNLController.text = singleDriverData!.driver!.ni.toString();
+      driverType = singleDriverData!.driver!.driverType.toString();
+      hasPDA.value = singleDriverData!.driver!.hasPda!;
+      rentPaid.value = singleDriverData!.driver!.rentPaid!;
+      isActive.value = singleDriverData!.driver!.active!;
+      vehicleInformation.value = singleDriverData!.driver!.useCompanyVehicle!;
+      int companyTypeIndex = getCombineVehicleData!.subsidiaries!.indexWhere((test) => test.id == singleDriverData!.driver!.subsidiaryId);
+      companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+
+      print(singleDriverData!.driver);
+      if(singleDriverData!.driver!.shifts!.isNotEmpty){
+        for (var action in singleDriverData!.driver!.shifts!) {
+          shiftList.add(ShiftAlertClass(
+            startTime: action.startTime,
+            endTime: action.endTime,
+            shiftTitle: action.name,
+          ));
+        }
+      }
+      if(singleDriverData!.driver!.notes!.isNotEmpty){
+        for (var action in singleDriverData!.driver!.notes!) {
+          noteList.add(NoteAlertClass(
+            notesTitle: action.note,
+            createdByTime:
+                "${action.createdAt!.day}-${action.createdAt!.month}-${action.createdAt!.year}",
+            createdItTime: action.createdBy,
+          ));
+        }
+      }
+
+      final DashboardController _controller = Get.find();
+      int index = _controller
+          .selectedMenuItems
+          .indexWhere((element) =>
+      element.title ==
+          "ADD DRIVER");
+      if (index != -1) {
+        _controller
+            .selectedMenuItems[index]
+            .selectedItem = true;
+        _controller.currentPage.value =
+            DriverForm();
+      } else {
+        _controller.currentPage.value =
+            DriverForm();
+        _controller.menuBarRefresh(
+            title: "ADD DRIVER",
+            pageName: DriverForm());
+      }
+
+      driverDataBindingLoading(false);
+      update();
+    }
   }
 
 
