@@ -1,6 +1,9 @@
 
 
+import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 class FareController extends GetxController {
@@ -58,6 +61,24 @@ class FareController extends GetxController {
   final activeWaitingController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+  Account? accountValue;
+  VehicleType? vehicleValue;
+  FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
+  RxBool getFareGetVehicleTypeAccountLoader = false.obs;
+  getFareGetVehicleTypeAccount()async{
+    getFareGetVehicleTypeAccountLoader(true);
+    var response = await Api().get("combined/vehicle-type-accounts");
+    if (response.statusCode == 200) {
+      fareGetVehicleTypeAccount = FareGetVehicleTypeAccount.fromJson(response.data);
+      getFareGetVehicleTypeAccountLoader(false);
+      update();
+    }
+  }
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
 
 }

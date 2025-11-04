@@ -1,11 +1,8 @@
-
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/dropdown_button.dart';
+import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
@@ -43,8 +40,17 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
-      return LayoutBuilder(
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getFareGetVehicleTypeAccount();
+        },
+
+
+
+        builder: (controller) {
+          return controller.getFareGetVehicleTypeAccountLoader.value == true
+              ? SizedBox.shrink()
+              : LayoutBuilder(
           builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
@@ -81,7 +87,6 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 color: DynamicColors.whiteClr,
                               ),
                               child: RestrictedDrivers(
-
                                 width: fieldWidth/1.5,
                                 height: 35,
                                 padding: 0.0,
@@ -90,13 +95,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 ),
                                 titleText: "NORMAL DAY",
                                 driversList: [
-                                  "Sunday",
-                                  "Monday",
-                                  "Tuesday",
-                                  "Wednesday",
-                                  "Thursday",
-                                  "Friday",
-                                  "Saturday",
+                                  "Special Day",
                                 ],
                               ),
                             ),
@@ -114,21 +113,19 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                              RestrictedDrivers(
-
-                                width: fieldWidth/1.5,
-                                // height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: "VEHICLE TYPE",
-                                driversList: [
-                                  "25 GEORGE HAMPTON",
-                                  "26 PAUL DOUBLEDAY",
-                                  "27 RICHARD HARDWICK",
-                                  "28 LANRE OKERJO",
-                                ],
+                              CustomDropdownField<VehicleType>(
+                                label: "Select Vehicle",
+                                width: Get.width / 5,
+                                height: 35,
+                                items: controller.fareGetVehicleTypeAccount!
+                                    .vehicleTypes!,
+                                value: controller.vehicleValue,
+                                itemLabel: (templateList) =>
+                                templateList.name!,
+                                onChanged: (val) {
+                                  controller.vehicleValue = val;
+                                  controller.update();
+                                },
                               ),
                             ],
                           ),
@@ -136,23 +133,19 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                              RestrictedDrivers(
-                                width: fieldWidth/1.5,
-                                // height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: "ACCOUNT",
-                                driversList: [
-                                  "Sunday",
-                                  "Monday",
-                                  "Tuesday",
-                                  "Wednesday",
-                                  "Thursday",
-                                  "Friday",
-                                  "Saturday",
-                                ],
+                              CustomDropdownField<Account>(
+                                label: "Select Account",
+                                width: Get.width / 5,
+                                height: 35,
+                                items: controller.fareGetVehicleTypeAccount!
+                                    .accounts!,
+                                value: controller.accountValue,
+                                itemLabel: (templateList) =>
+                                templateList.name!,
+                                onChanged: (val) {
+                                  controller.accountValue = val;
+                                  controller.update();
+                                },
                               ),
                             ],
                           ),
@@ -167,9 +160,13 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+
                             children: [
+
                               Text(AppText.fromDay, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                               RestrictedDrivers(
+
                                 width: fieldWidth/1.5,
                                 // height: 35,
                                 padding: 0.0,
@@ -193,6 +190,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.today, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                               RestrictedDrivers(
                                 width: fieldWidth/1.5,
                                 // height: 35,
@@ -241,9 +239,11 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                           ),
                         ],
                       ),
+
                       SizedBox(
                         height: 6,
                       ),
+
                       Wrap(
                         verticalDirection: VerticalDirection.down,
                         spacing: fieldWidth/2,
@@ -256,6 +256,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.startingMilesController,

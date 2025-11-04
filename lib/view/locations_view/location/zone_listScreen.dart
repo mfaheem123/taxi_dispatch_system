@@ -29,6 +29,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
   final DashboardController _controller = Get.find();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -44,8 +45,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+          selectedRowIndex = (selectedRowIndex - 1 + totalRows) % totalRows; // move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam
@@ -61,9 +61,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         : controller.zoneAll;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
@@ -86,9 +84,11 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                         ),
                       ],
                     ),
+
                     SizedBox(
                       height: 12,
                     ),
+
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(

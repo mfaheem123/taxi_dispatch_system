@@ -23,7 +23,6 @@ void showShortcutDialog(BuildContext context,{
 }) {
   final dashBoardCntrl = Get.find<DashboardController>();
   shortCutKeyValue.value = "alert";
-
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -35,7 +34,6 @@ void showShortcutDialog(BuildContext context,{
         //     color: DynamicColors.whiteClr,
         //     borderRadius: BorderRadius.circular(12)
         // ),
-
         backgroundColor: DynamicColors.whiteClr,
         contentPadding: EdgeInsets.all(20),
         title: Row(
@@ -75,7 +73,6 @@ void showShortcutDialog(BuildContext context,{
 
 class F3AlertWidget extends StatelessWidget {
   F3AlertWidget({super.key});
-
   List<String> list = [
     "Apple",
     "Banana",
@@ -85,7 +82,6 @@ class F3AlertWidget extends StatelessWidget {
     "Fig",
     "Grape"
   ];
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -109,7 +105,6 @@ class F3AlertWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(),
@@ -196,7 +191,6 @@ class F3AlertWidget extends StatelessWidget {
 
 class F4AlertWidget extends StatelessWidget {
   F4AlertWidget({super.key});
-
   List<String> list = [
     "SELECT DRIVER",
     "25 GEORGE HAMPTON",
@@ -209,7 +203,6 @@ class F4AlertWidget extends StatelessWidget {
     "TEST TEST DRIVER",
     "X1 ANDRE",
   ];
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -257,16 +250,12 @@ class F4AlertWidget extends StatelessWidget {
               ),
             ],
           ),
-
-
-
           Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(),

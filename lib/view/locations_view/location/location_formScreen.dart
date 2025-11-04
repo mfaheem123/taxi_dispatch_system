@@ -4,7 +4,6 @@ import 'package:dashboard_new1/view/locations_view/controller/locations_controll
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
 import '../../../component/dropdown_button.dart';
 
 class LocationForm extends StatelessWidget {
