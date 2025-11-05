@@ -217,7 +217,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                     fontSize: 12,
                     borderRadius: 4,
                     width: fieldWidth * 1.5,
-                    btnText: AppText.save,
+                    btnText: controller.updateCustomerValue.value == false
+                        ? AppText.save
+                        : "UPDATE",
                     verticalPadding: 0.0,
                   ),
                   SizedBox(

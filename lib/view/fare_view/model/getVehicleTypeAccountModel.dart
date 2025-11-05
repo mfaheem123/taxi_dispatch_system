@@ -86,7 +86,7 @@ final accountTypeValues = EnumValues({
   "cash": AccountType.CASH
 });
 
-class VehicleType {
+class  VehicleType {
   int? id;
   String? name;
 

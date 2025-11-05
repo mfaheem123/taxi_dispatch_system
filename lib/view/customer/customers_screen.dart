@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
+import 'package:dashboard_new1/view/customer/add_customerScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -25,6 +26,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
+  final DashboardController _controller = Get.find();
 
   @override
   void initState() {
@@ -288,6 +290,23 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                 onPressed: () {
                                   controller.customerUpdate(
                                       customerUpdate: item);
+
+                                  int index = _controller.selectedMenuItems
+                                      .indexWhere((element) =>
+                                          element.title == "CustomerAdd");
+                                  if (index != -1) {
+                                    _controller.selectedMenuItems[index]
+                                        .selectedItem = true;
+                                    _controller.currentPage.value =
+                                        CustomerFormScreen();
+                                  } else {
+                                    _controller.currentPage.value =
+                                        CustomerFormScreen();
+                                    _controller.menuBarRefresh(
+                                        title: "CustomerAdd",
+                                        pageName: CustomerFormScreen());
+                                  }
+                                  controller.update();
                                 },
                                 child: Icon(
                                   Icons.edit_calendar,

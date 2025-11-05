@@ -86,17 +86,31 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 borderRadius: BorderRadius.circular(4),
                                 color: DynamicColors.whiteClr,
                               ),
-                              child: RestrictedDrivers(
-                                width: fieldWidth/1.5,
+                              child:
+                              // RestrictedDrivers(
+                              //   width: fieldWidth/1.5,
+                              //   height: 35,
+                              //   padding: 0.0,
+                              //   border: Border.all(
+                              //     color: DynamicColors.gryClr,
+                              //   ),
+                              //   titleText: "NORMAL DAY",
+                              //   driversList: [
+                              //     "Special Day",
+                              //   ],
+                              // ),
+                              CustomDropdownField<Account>(
+                                label: "Select Account",
+                                width: Get.width / 5,
                                 height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: "NORMAL DAY",
-                                driversList: [
-                                  "Special Day",
-                                ],
+                                items: controller.fareGetVehicleTypeAccount!.accounts!,
+                                value: controller.accountValue,
+                                itemLabel: (templateList) =>
+                                templateList.name!,
+                                onChanged: (val) {
+                                  controller.accountValue = val;
+                                  controller.update();
+                                },
                               ),
                             ),
                           ],
@@ -117,8 +131,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 label: "Select Vehicle",
                                 width: Get.width / 5,
                                 height: 35,
-                                items: controller.fareGetVehicleTypeAccount!
-                                    .vehicleTypes!,
+                                items: controller.fareGetVehicleTypeAccount!.vehicleTypes!,
                                 value: controller.vehicleValue,
                                 itemLabel: (templateList) =>
                                 templateList.name!,
@@ -137,8 +150,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 label: "Select Account",
                                 width: Get.width / 5,
                                 height: 35,
-                                items: controller.fareGetVehicleTypeAccount!
-                                    .accounts!,
+                                items: controller.fareGetVehicleTypeAccount!.accounts!,
                                 value: controller.accountValue,
                                 itemLabel: (templateList) =>
                                 templateList.name!,
@@ -186,6 +198,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               ),
                             ],
                           ),
+
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
