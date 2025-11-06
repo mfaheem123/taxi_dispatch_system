@@ -65,6 +65,7 @@ class FareController extends GetxController {
   Account? accountValue;
   VehicleType? vehicleValue;
   FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
+  String? fareConfiguration;
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
   getFareGetVehicleTypeAccount()async{
     getFareGetVehicleTypeAccountLoader(true);

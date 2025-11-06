@@ -55,6 +55,7 @@ class VehicleInformation extends StatelessWidget {
                   ),
                 ),
               ),
+
               Divider(height: 1),
 
               Wrap(

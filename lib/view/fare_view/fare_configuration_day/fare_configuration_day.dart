@@ -99,16 +99,18 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               //     "Special Day",
                               //   ],
                               // ),
-                              CustomDropdownField<Account>(
-                                label: "Select Account",
-                                width: Get.width / 5,
-                                height: 35,
-                                items: controller.fareGetVehicleTypeAccount!.accounts!,
-                                value: controller.accountValue,
-                                itemLabel: (templateList) =>
-                                templateList.name!,
+                              CustomDropdownField<String>(
+                                label: "SELECT FARE CONFIGURATION",
+                                width: Get.width / 6,
+                                height: 30,
+                                items: [
+                                  "NORMAL",
+                                  "SPECIAL",
+                                ],
+                                value: controller.fareConfiguration,
+                                itemLabel: (templateList) => templateList,
                                 onChanged: (val) {
-                                  controller.accountValue = val;
+                                  controller.fareConfiguration = val;
                                   controller.update();
                                 },
                               ),
