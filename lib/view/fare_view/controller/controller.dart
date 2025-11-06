@@ -1,5 +1,6 @@
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,9 +21,6 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
-  /// TextEditingControllers
-  final startingFareController = TextEditingController();
-  final startingMilesController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
@@ -62,10 +60,34 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+
+
+  String? fromDayValue;
+  String? toDayValue;
+  String? startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? fareConfiguration = "NORMAL";
+
+  /// TextEditingControllers
+  final fromDayController = TextEditingController(text: "09:08 AM");
+  final toDayController = TextEditingController(text: "09:08 AM");
+  final startingFareController = TextEditingController();
+  final startingMilesController = TextEditingController();
+  final titleController = TextEditingController();
+
+  List<String> weekDayList = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
   Account? accountValue;
   VehicleType? vehicleValue;
   FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
-  String? fareConfiguration;
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
   getFareGetVehicleTypeAccount()async{
     getFareGetVehicleTypeAccountLoader(true);
@@ -75,6 +97,43 @@ class FareController extends GetxController {
       getFareGetVehicleTypeAccountLoader(false);
       update();
     }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> create fare setting
+  createFareSetting() async{
+    var formData = {
+      "vehicle_type_id": vehicleValue!.id,
+      "account_id": accountValue!.id,
+      "from_day": fromDayValue,
+      "to_day": toDayValue,
+      "from_time": fromDayController.text,
+      "to_time": toDayController.text,
+      "minimum_fares": startingFareController.text,
+      "minimum_miles": startingMilesController.text,
+     if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
+     if(fareConfiguration != "NORMAL") "from_date": startDate,
+      if(fareConfiguration != "NORMAL") "to_date": endDate,
+    };
+    print(formData);
+    var response = await Api().post(formData, "faresconfiguration/add");
+    if(response.statusCode == 200){
+      print(response.data);
+      BotToast.showText(text: "Fare configuration is successfully added");
+      refreshCreateFareFields();
+    }
+  }
+
+  refreshCreateFareFields() async{
+    vehicleValue = null;
+    accountValue = null;
+    fromDayValue = null;
+    toDayValue = null;
+    fromDayController.clear();
+    toDayController.clear();
+    startingFareController.clear();
+    startingMilesController.clear();
+    titleController.clear();
+    update();
   }
 
 

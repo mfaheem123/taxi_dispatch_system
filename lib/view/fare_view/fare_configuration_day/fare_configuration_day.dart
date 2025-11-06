@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
@@ -42,14 +43,15 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
   Widget build(BuildContext context) {
     return GetBuilder<FareController>(
         initState: (v){
-          controller.getFareGetVehicleTypeAccount();
+          if(controller.fareGetVehicleTypeAccount == null){
+            controller.getFareGetVehicleTypeAccount();
+          }
         },
-
-
-
         builder: (controller) {
-          return controller.getFareGetVehicleTypeAccountLoader.value == true
-              ? SizedBox.shrink()
+          return controller.getFareGetVehicleTypeAccountLoader.value
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
               : LayoutBuilder(
           builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -131,7 +133,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               CustomDropdownField<VehicleType>(
                                 label: "Select Vehicle",
-                                width: Get.width / 5,
+                                width: fieldWidth,
                                 height: 35,
                                 items: controller.fareGetVehicleTypeAccount!.vehicleTypes!,
                                 value: controller.vehicleValue,
@@ -150,7 +152,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               CustomDropdownField<Account>(
                                 label: "Select Account",
-                                width: Get.width / 5,
+                                width: fieldWidth,
                                 height: 35,
                                 items: controller.fareGetVehicleTypeAccount!.accounts!,
                                 value: controller.accountValue,
@@ -168,7 +170,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                       SizedBox(
                         height: 6,
                       ),
-                      Wrap(
+                      controller.fareConfiguration == "NORMAL"? Wrap(
                         verticalDirection: VerticalDirection.down,
                         spacing: fieldWidth/2,
                         children: [
@@ -179,25 +181,37 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
 
                               Text(AppText.fromDay, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
 
-                              RestrictedDrivers(
-
-                                width: fieldWidth/1.5,
-                                // height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: AppText.fromDay,
-                                driversList: [
-                                  "Sunday",
-                                  "Monday",
-                                  "Tuesday",
-                                  "Wednesday",
-                                  "Thursday",
-                                  "Friday",
-                                  "Saturday",
-                                ],
+                              CustomDropdownField<String>(
+                                label: "",
+                                width: fieldWidth,
+                                height: 35,
+                                items: controller.weekDayList,
+                                value: controller.fromDayValue,
+                                itemLabel: (day) => day,
+                                onChanged: (val) {
+                                  controller.fromDayValue = val;
+                                  controller.update();
+                                },
                               ),
+                              // RestrictedDrivers(
+                              //
+                              //   width: fieldWidth/1.5,
+                              //   // height: 35,
+                              //   padding: 0.0,
+                              //   border: Border.all(
+                              //     color: DynamicColors.gryClr,
+                              //   ),
+                              //   titleText: AppText.fromDay,
+                              //   driversList: [
+                              //     "Sunday",
+                              //     "Monday",
+                              //     "Tuesday",
+                              //     "Wednesday",
+                              //     "Thursday",
+                              //     "Friday",
+                              //     "Saturday",
+                              //   ],
+                              // ),
                             ],
                           ),
 
@@ -205,25 +219,90 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.today, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-
-                              RestrictedDrivers(
-                                width: fieldWidth/1.5,
-                                // height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: AppText.today,
-                                driversList: [
-                                  "Sunday",
-                                  "Monday",
-                                  "Tuesday",
-                                  "Wednesday",
-                                  "Thursday",
-                                  "Friday",
-                                  "Saturday",
-                                ],
+                              CustomDropdownField<String>(
+                                label: "",
+                                width: fieldWidth,
+                                height: 35,
+                                items: controller.weekDayList,
+                                value: controller.toDayValue,
+                                itemLabel: (day) => day,
+                                onChanged: (val) {
+                                  controller.toDayValue = val;
+                                  controller.update();
+                                },
                               ),
+                              // RestrictedDrivers(
+                              //   width: fieldWidth/1.5,
+                              //   // height: 35,
+                              //   padding: 0.0,
+                              //   border: Border.all(
+                              //     color: DynamicColors.gryClr,
+                              //   ),
+                              //   titleText: AppText.today,
+                              //   driversList: [
+                              //     "Sunday",
+                              //     "Monday",
+                              //     "Tuesday",
+                              //     "Wednesday",
+                              //     "Thursday",
+                              //     "Friday",
+                              //     "Saturday",
+                              //   ],
+                              // ),
+                            ],
+                          ),
+                        ],
+                      ):
+                      Wrap(
+                        verticalDirection: VerticalDirection.down,
+                        spacing: fieldWidth/2,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+
+                              Text("Start Date", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                              SizedBox(
+                                width: fieldWidth,
+                                child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    // jab bhi user change kare
+                                    controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                    print(date);
+                                  },
+                                  onSubmitted: (date) {
+                                    // jab user enter press kare
+                                    controller.startDate = "${date.year}-${date.month}-${date.day}";
+                                    print("User pressed enter: $date");
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("End Date", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
+                  SizedBox(
+                    width: fieldWidth,
+                    child: KeyboardDatePicker(
+                      initialDate: DateTime.now(),
+                      onChanged: (date) {
+                        // jab bhi user change kare
+                        controller.endDate = "${date.year}-${date.month}-${date.day}";
+                        print(date);
+                      },
+                      onSubmitted: (date) {
+                        // jab user enter press kare
+                        controller.endDate = "${date.year}-${date.month}-${date.day}";
+                        print("User pressed enter: $date");
+                      },
+                    ),
+                  ),
                             ],
                           ),
                         ],
@@ -241,7 +320,13 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             label: AppText.fromTime,
                             width: fieldWidth,
                             column: true,
-                            child: SizedBox(height: 30, child: CustomTimePicker()),
+                            child: SizedBox(height: 30, child: CustomTimePicker(
+                              controller: controller.fromDayController, // optional
+                              onTimeSelected: (time) {
+                                controller.fromDayController.text = time;
+                                controller.update();
+                              },
+                            )),
                           ),
 
                           labeledField(
@@ -250,7 +335,13 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             label: AppText.toTime,
                             width: fieldWidth,
                             column: true,
-                            child: SizedBox(height: 30, child: CustomTimePicker()),
+                            child: SizedBox(height: 30, child: CustomTimePicker(
+                              controller: controller.toDayController, // optional
+                              onTimeSelected: (time) {
+                                controller.toDayController.text = time;
+                                controller.update();
+                              },
+                            )),
                           ),
                         ],
                       ),
@@ -270,6 +361,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             hintText: AppText.startingFare,
                             columnText: true,
                             height: 35,
+                            keyboardType: TextInputType.number,
                           ),
 
                           CustomTextField(
@@ -277,8 +369,21 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             controller: controller.startingMilesController,
                             width: fieldWidth,
                             hintText: AppText.startingMiles,
+                            keyboardType: TextInputType.number,
                             columnText: true,
                             height: 35,
+                          ),
+
+                          Visibility(
+                            visible: controller.fareConfiguration != "NORMAL"?true:false,
+                            child: CustomTextField(
+                              borderRadius: 4,
+                              controller: controller.titleController,
+                              width: fieldWidth,
+                              hintText: "Title",
+                              columnText: true,
+                              height: 35,
+                            ),
                           ),
                         ],
                       ),
@@ -286,6 +391,28 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: CustomButton(
                           height: 30,
+                          onTap: (){
+                            if(controller.accountValue == null ||
+                            controller.vehicleValue == null){
+                              BotToast.showText(text: "Please select account and vehicle");
+                              return;
+                            }
+                            if(controller.fareConfiguration != "NORMAL" && controller.titleController.text.isEmpty){
+                              BotToast.showText(text: "Please write the title");
+                              return;
+                            }
+                            if(controller.fareConfiguration == "NORMAL" && (controller.fromDayValue == null ||
+                                controller.toDayValue == null)){
+                              BotToast.showText(text: "Please select from-to day");
+                              return;
+                            }
+                            if(controller.startingFareController.text.isEmpty ||
+                            controller.startingMilesController.text.isEmpty){
+                              BotToast.showText(text: "Please write starting fare and starting miles");
+                              return;
+                            }
+                            controller.createFareSetting();
+                          },
                           width: fieldWidth,
                           btnText: AppText.save,
                           verticalPadding: 0.0,
