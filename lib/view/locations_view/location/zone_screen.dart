@@ -204,8 +204,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       // "userId": storedUserId,
       "name": zonenameContoller.text.trim(),
       "secondary_name": secondarynamezoneController.text.trim(),
-      "type":
-          zoneValue, // e.g., "restricted" / "Major" / "Minor" — whatever your UI sets
+      "type": zoneValue, // e.g., "restricted" / "Major" / "Minor" — whatever your UI sets
       "category": categoryValue, // e.g., "security" / "Inner" / "Outer"
       "base": false,
       "vertices": vertices,
@@ -649,8 +648,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         points: pts,
         strokeWidth: 3,
         strokeColor: id == _selectedPolyId ? Colors.orange : Colors.green,
-        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green)
-            .withOpacity(0.18),
+        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green).withOpacity(0.18),
         geodesic: true,
         consumeTapEvents: true,
         zIndex: id == _selectedPolyId ? 2 : 1,

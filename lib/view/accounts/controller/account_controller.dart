@@ -166,11 +166,12 @@ class AccountController extends GetxController {
         }
       ]
     };
+
     print(formData);
 
     var response = await Api().post(
       formData,
-      accountObjectData != null ? "url add" : 'accounts/add',
+      accountObjectData != null ? "accounts/edit/26" : 'accounts/add',
       auth: true,
     );
 
@@ -219,6 +220,7 @@ class AccountController extends GetxController {
       print(response);
     }
   }
+
 
   SubsidairyBankModel? subsidairyBankModel;
   Subsidiary? subsidiaryStoreValue;
@@ -282,7 +284,6 @@ class AccountController extends GetxController {
   final customerAdminFeeController = TextEditingController();
   final customerAccountFeeController = TextEditingController();
   final customerAgentCommissionController = TextEditingController();
-
   // Initialize both variables so "pickerColor" is defined
   // currently selected color inside picker
   Color currentColor = Colors.blue; // applied color on the UI

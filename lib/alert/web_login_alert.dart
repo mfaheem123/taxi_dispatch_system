@@ -85,6 +85,7 @@ class WebLoginAlert {
                     ),
                   ],
                 ),
+
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,6 +101,7 @@ class WebLoginAlert {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
                         InkWell(
                           onTap: () => Get.back(),
                           child: const Icon(
@@ -111,7 +113,7 @@ class WebLoginAlert {
                       ],
                     ),
 
-                    const SizedBox(height: 10),
+                     SizedBox(height: 10),
 
                     // Input Fields Row
                     Row(
@@ -150,6 +152,7 @@ class WebLoginAlert {
                         ),
                       ],
                     ),
+
 
                     const SizedBox(height: 12),
 

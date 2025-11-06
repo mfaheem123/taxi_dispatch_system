@@ -20,10 +20,8 @@ class ResponsivePassengerScreen extends StatelessWidget {
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
             final isMobile = w < 820;
-
             final leftWidth  = isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
             final rightWidth = isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
-
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -58,7 +56,7 @@ class _WideLayout extends StatelessWidget {
         // CENTER
         Expanded(child: _CenterArea()),
         // VERTICAL DIVIDER
-        Container(width: 2, color: const Color(0xFFE1E7F0)),
+        Container(width: 2, color:  Color(0xFFE1E7F0)),
         // RIGHT SIDEBAR
         SizedBox(width: rightWidth, child: _RightSidebar()),
       ],
@@ -78,9 +76,9 @@ class _MobileLayout extends StatelessWidget {
     return Column(
       children: [
         SizedBox(width: double.infinity, child: _LeftSidebar()),
-        const Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
+         Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
         _CenterArea(),
-        const Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
+         Divider(height: 2, thickness: 2, color: Color(0xFFE1E7F0)),
         SizedBox(width: double.infinity, child: _RightSidebar()),
       ],
     );
@@ -92,16 +90,16 @@ class _LeftSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF5C7EA6), // slate-blue similar to screenshot
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+      color:  Color(0xFF5C7EA6), // slate-blue similar to screenshot
+      padding:  EdgeInsets.fromLTRB(20, 24, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top brand row
           Row(
             children: [
-              const Icon(Icons.local_taxi, color: Colors.yellow, size: 28),
-              const SizedBox(width: 8),
+               Icon(Icons.local_taxi, color: Colors.yellow, size: 28),
+               SizedBox(width: 8),
               Text(
                 "SEA CARZ",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -110,11 +108,13 @@ class _LeftSidebar extends StatelessWidget {
                   letterSpacing: 1.1,
                 ),
               ),
-              const Spacer(),
-              const Icon(Icons.close, color: Colors.white70),
+               Spacer(),
+               Icon(Icons.close, color: Colors.white70),
             ],
           ),
-          const SizedBox(height: 28),
+
+
+           SizedBox(height: 28),
 
           // Profile Card
           Container(
@@ -130,7 +130,7 @@ class _LeftSidebar extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: Icon(Icons.person, size: 36, color: Color(0xFF5C7EA6)),
                 ),
-                const SizedBox(height: 12),
+                 SizedBox(height: 12),
                 Text(
                   "Mr Mareevan",
                   style: Theme.of(context)
@@ -138,7 +138,7 @@ class _LeftSidebar extends StatelessWidget {
                       .titleMedium
                       ?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
-                const SizedBox(height: 8),
+                 SizedBox(height: 8),
                 Text(
                   "04:08 PM",
                   style: Theme.of(context)
@@ -150,7 +150,7 @@ class _LeftSidebar extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
+           SizedBox(height: 16),
 
           // Table headers for recent rides (left column labels)
           Row(
@@ -162,7 +162,8 @@ class _LeftSidebar extends StatelessWidget {
                       ?.copyWith(color: Colors.white70)),
             ],
           ),
-          const SizedBox(height: 12),
+
+           SizedBox(height: 12),
 
           // Tiny preview thumb (placeholder)
           ClipRRect(
@@ -171,10 +172,10 @@ class _LeftSidebar extends StatelessWidget {
               height: 26,
               width: 26,
               color: Colors.white24,
-              child: const Icon(Icons.image, size: 18, color: Colors.white70),
+              child:  Icon(Icons.image, size: 18, color: Colors.white70),
             ),
           ),
-          const Spacer(),
+           Spacer(),
         ],
       ),
     );
@@ -182,6 +183,11 @@ class _LeftSidebar extends StatelessWidget {
 }
 
 /// --------- CENTER AREA ----------
+
+
+
+
+
 /// --------- CENTER AREA ----------
 class _CenterArea extends StatelessWidget {
   @override
@@ -202,7 +208,7 @@ class _CenterArea extends StatelessWidget {
               letterSpacing: .2,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Text(
             "07795116925",
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -210,7 +216,7 @@ class _CenterArea extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           // Status
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -221,13 +227,13 @@ class _CenterArea extends StatelessWidget {
                       .bodyMedium
                       ?.copyWith(color: Colors.black54)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding:  EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE9F5FF),
+                  color:  Color(0xFFE9F5FF),
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFF94C8FF)),
+                  border: Border.all(color:  Color(0xFF94C8FF)),
                 ),
-                child: const Text(
+                child:  Text(
                   "In Use",
                   style: TextStyle(
                     color: Color(0xFF2376D9),
@@ -237,29 +243,29 @@ class _CenterArea extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+           SizedBox(height: 16),
           // Search
           SizedBox(
             height: 44,
             child: TextField(
               decoration: InputDecoration(
                 hintText: "Search",
-                prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                prefixIcon:  Icon(Icons.search),
+                contentPadding:  EdgeInsets.symmetric(horizontal: 16),
                 filled: true,
-                fillColor: const Color(0xFFF2F5F9),
+                fillColor:  Color(0xFFF2F5F9),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  borderSide:  BorderSide(color: Color(0xFFE2E8F0)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                  borderSide:  BorderSide(color: Color(0xFFE2E8F0)),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 28),
+          SizedBox(height: 28),
 
           // Recent Rides header row
           Row(
@@ -274,15 +280,15 @@ class _CenterArea extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
 
           // Table header
           Container(
             height: 34,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding:  EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF7FAFE),
-              border: Border.all(color: const Color(0xFFE3E9F2)),
+              color:  Color(0xFFF7FAFE),
+              border: Border.all(color:  Color(0xFFE3E9F2)),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
