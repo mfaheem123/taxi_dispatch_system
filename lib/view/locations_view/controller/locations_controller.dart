@@ -195,7 +195,7 @@ class LocationController extends GetxController {
     updateLocationValue(true);
     getLocationTypeZone(
         selectedZoneId: locationUpdate.zoneId,
-        selectedLocationTypeId: locationUpdate.locationTypeId);
+        selectedLocationTypeId: locationUpdate.locationTypeId);  //-------------------------------------------------------------------
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work

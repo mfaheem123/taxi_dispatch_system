@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
@@ -34,7 +35,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-       controller.getDriverList();
+    controller.getDriverList();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -54,7 +55,6 @@ class _DriverListScreenState extends State<DriverListScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +284,8 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                   ), // border color & thickness
                                                 ),
                                                 onPressed: () {
-                                                   controller.getCombineVehicle(id: item.id);
+                                                  controller.getCombineVehicle(
+                                                      id: item.id);
                                                 },
                                                 child: Icon(
                                                   Icons.edit_calendar,
@@ -298,7 +299,16 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                     color: Colors.transparent,
                                                   ), // border color & thickness
                                                 ),
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                   showDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  DeletePermissionAlert(
+                                                deleteFunctionName: () =>
+                                                    controller.deleteDriver(item.id!),
+                                              ),
+                                            );
+                                                },
                                                 child: Icon(
                                                   Icons.delete_forever,
                                                   size: 28,
