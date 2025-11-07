@@ -65,9 +65,9 @@ class CustomerController extends GetxController {
     print(formData);
     var response = await Api().post(
       formData,
-   updateCustomerValue.value == false
-            ? "customers/add"
-            : 'customers/edit/${customerUpdateId.value}',
+      updateCustomerValue.value == false
+          ? "customers/add"
+          : 'customers/edit/${customerUpdateId.value}',
       auth: true,
     );
     if (response.statusCode == 200) {
@@ -111,41 +111,35 @@ class CustomerController extends GetxController {
   RxString searchEmail = ''.obs;
   RxString searchAddress = ''.obs;
 
-
   /// text fields controllers
   final keyWordsController = TextEditingController();
   getCustomer() async {
-    try {
-      customerLoader(true);
-      var response =
-          await Api().get("customers/get?",
-           auth: true, 
-           queryParameters: {
-        'blacklist': blackList.value,
-        'limit': limit,
-        "name": searchName.value.toLowerCase(),
-        "mobile": searchMobile.value.toLowerCase(),
-        "telephone": searchTele.value.toLowerCase(),
-        "email": searchEmail.value.toLowerCase(),
-        "address1": searchAddress.value.toLowerCase(),
-      });
-      if (response.statusCode == 200) {
-        getCustomerModel = GetCustomerModel.fromJson(response.data);
-        totalPages.value = getCustomerModel?.totalPages ?? 1;
-        customerListAll.value = getCustomerModel?.customers ?? [];
-        filteredCustomer.value = customerListAll;
-        customerLoader(false);
-        update();
-      }
-    } catch (e) {
-      print("Error in GEt Customer $e");
+    customerLoader(true);
+    var response = await Api().get("customers/get?", queryParameters: {
+      'blacklist': blackList.value,
+      'limit': limit,
+      "name": searchName.value.toLowerCase(),
+      "mobile": searchMobile.value.toLowerCase(),
+      "telephone": searchTele.value.toLowerCase(),
+      "email": searchEmail.value.toLowerCase(),
+      "address1": searchAddress.value.toLowerCase(),
+    });
+    if (response.statusCode == 200) {
+      getCustomerModel = GetCustomerModel.fromJson(response.data);
+      totalPages.value = getCustomerModel?.totalPages ?? 1;
+      customerListAll.value = getCustomerModel?.customers ?? [];
+      filteredCustomer.value = customerListAll;
+      customerLoader(false);
+      update();
     }
   }
+
   // -----------Search changes function
   void onSearchCustomer() {
     currentPage.value = 1;
     getCustomer();
   }
+
   /// ------- pagination function
   void onPageCustomer(int page) {
     currentPage.value = page;
@@ -168,7 +162,6 @@ class CustomerController extends GetxController {
     updateCustomerValue(true);
   }
 
-
   deleteCustomer(int? id) async {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
@@ -177,7 +170,6 @@ class CustomerController extends GetxController {
       print(json.encode(response.data));
     }
   }
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
 

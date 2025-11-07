@@ -39,14 +39,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(
-      
-      
-      
-      builder: (controller) {
-
-
-
+    return GetBuilder<CustomerController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -101,7 +94,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                 GestureDetector(
                                   onTap: () async {
                                     await controller
-                                        .getRestricDriver(); // ensure API call
+                                        .getRestricDriver(); // load API data
                                     showDialog(
                                       context: context,
                                       builder: (_) => RestrictedDriversDialog(

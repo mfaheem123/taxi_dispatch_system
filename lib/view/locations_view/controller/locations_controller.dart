@@ -184,7 +184,7 @@ class LocationController extends GetxController {
 
   RxBool updateLocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
-  bindLocationUpdateLocation({Locations? locationUpdate}) async {
+  bindLocationUpdateLocation(Set<dynamic> set, {Locations? locationUpdate  }) async {
     locationUpdateId.value = locationUpdate!.id!;
     locationNameCtrl.text = locationUpdate.name!;
     longitudeCtrl.text = locationUpdate.longitude!;
@@ -268,6 +268,8 @@ class LocationController extends GetxController {
   ZoneModel? zoneListModel;
   RxList<Zones> zoneAll = <Zones>[].obs;
   RxList<Zones> zoneFiltered = <Zones>[].obs;
+    // --- store currently editing zone
+  Rx<Zones?> selectedZone = Rx<Zones?>(null);
   RxString searchZoneName = ''.obs;
   RxString searchShortName = ''.obs;
   RxString searchType = ''.obs;
@@ -279,16 +281,19 @@ class LocationController extends GetxController {
   Future<void> getZoneList() async {
     try {
       getZoneLoader(true);
-      String query = 'page=${zoneCurrentPage.value}&limit=$zoneLimit';
-      if (searchZoneName.value.isNotEmpty)
-        query += '&name=${searchZoneName.value}';
-      if (searchShortName.value.isNotEmpty)
-        query += '&secondary_name=${searchShortName.value}';
-      if (searchType.value.isNotEmpty) query += '&type=${searchType.value}';
-      if (searchCategory.value.isNotEmpty)
-        query += '&category=${searchCategory.value}';
-      print("API Query: zones/get?$query");
-      var response = await Api().get("zones/get?$query");
+  
+      print("API Query: zones/get");
+      var response = await Api().get("zones/get?",
+      auth: true,
+       queryParameters: {
+      "page" : zoneCurrentPage.value,
+      "limit": zoneLimit,
+      "name": searchZoneName.value,
+      "secondary_name" : searchShortName.value,
+      "type": searchType.value,
+      "category" : searchCategory.value,
+       }
+      );
       if (response.statusCode == 200) {
         zoneListModel = ZoneModel.fromJson(response.data);
         zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
@@ -304,27 +309,24 @@ class LocationController extends GetxController {
       update();
     }
   }
-
-
-
-
-
-
-
-
-
 // -----------Search function
 
   void onSearchChanged() {
     zoneCurrentPage.value = 1;
     getZoneList();
   }
-
   /// ------- pagination function
   void zonePageChange(int page) {
     zoneCurrentPage.value = page;
     getZoneList();
   }
+
+    // --- bind zone data for edit
+  void bindZoneUpdate({Zones? zoneUpdate}) {
+    selectedZone.value = zoneUpdate;
+    print("Editing Zone: ${zoneUpdate?.name}");
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zone Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work
