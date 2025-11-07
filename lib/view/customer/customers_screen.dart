@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/alert/delete_permission_alert.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/view/customer/add_customerScreen.dart';
@@ -320,7 +321,16 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                     color: Colors.transparent,
                                   ), // border color & thickness
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => DeletePermissionAlert(
+                                      deleteFunctionName: () =>
+                                          controller.deleteCustomer(item.id!),
+                                    ),
+                                  );
+                              
+                                },
                                 child: Icon(
                                   Icons.delete_forever,
                                   size: 28,

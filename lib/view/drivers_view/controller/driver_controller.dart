@@ -655,6 +655,17 @@ class DriverController extends GetxController {
   }
 
 
+//------------------------------------------------------------------------- Delete
+
+  deleteDriver(int? id) async {
+    var response = await Api().delete("drivers/delete/$id");
+    if (response.statusCode == 200) {
+      getDriverList();
+      print("Driver deleted successfully!");
+      print(json.encode(response.data));
+    }
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver list screen and login drivers screen functionality

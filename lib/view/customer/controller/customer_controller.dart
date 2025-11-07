@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -63,7 +65,9 @@ class CustomerController extends GetxController {
     print(formData);
     var response = await Api().post(
       formData,
-      "customers/add",
+   updateCustomerValue.value == false
+            ? "customers/add"
+            : 'customers/edit/${customerUpdateId.value}',
       auth: true,
     );
     if (response.statusCode == 200) {
@@ -107,9 +111,9 @@ class CustomerController extends GetxController {
   RxString searchEmail = ''.obs;
   RxString searchAddress = ''.obs;
 
+
   /// text fields controllers
   final keyWordsController = TextEditingController();
-
   getCustomer() async {
     try {
       customerLoader(true);
@@ -137,13 +141,11 @@ class CustomerController extends GetxController {
       print("Error in GEt Customer $e");
     }
   }
-
   // -----------Search changes function
   void onSearchCustomer() {
     currentPage.value = 1;
     getCustomer();
   }
-
   /// ------- pagination function
   void onPageCustomer(int page) {
     currentPage.value = page;
@@ -151,9 +153,9 @@ class CustomerController extends GetxController {
   }
 
   RxBool updateCustomerValue = false.obs;
-  RxInt locationUpdateId = 0.obs;
+  RxInt customerUpdateId = 0.obs;
   customerUpdate({Customer? customerUpdate}) async {
-    locationUpdateId.value = customerUpdate!.id!;
+    customerUpdateId.value = customerUpdate!.id!;
     nameController.text = customerUpdate.name!;
     emailController.text = customerUpdate.email!;
     mobileController.text = customerUpdate.mobile!;
@@ -165,6 +167,17 @@ class CustomerController extends GetxController {
 
     updateCustomerValue(true);
   }
+
+
+  deleteCustomer(int? id) async {
+    var response = await Api().delete("customers/delete/$id");
+    if (response.statusCode == 200) {
+      getCustomer();
+      print("Customer deleted successfully!");
+      print(json.encode(response.data));
+    }
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
 
