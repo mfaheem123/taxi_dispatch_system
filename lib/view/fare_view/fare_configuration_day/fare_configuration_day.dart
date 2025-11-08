@@ -428,9 +428,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 }
                                 if (controller.fareConfiguration == "NORMAL" &&
                                     (controller.fromDayValue == null ||
-                                        controller.toDayValue == null)) {
+                                        controller.toDayValue == null || controller.fromDayController.text.isEmpty||
+                                        controller.toDayController.text.isEmpty)) {
                                   BotToast.showText(
-                                      text: "Please select from-to day");
+                                      text: "Please select from-to day and start time and end time");
                                   return;
                                 }
                                 if (controller
@@ -440,6 +441,12 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   BotToast.showText(
                                       text:
                                           "Please write starting fare and starting miles");
+                                  return;
+                                }
+                                if(controller.fareConfiguration != "NORMAL" && controller.fromDayController.text.isEmpty|| controller.toDayController.text.isEmpty){
+                                  BotToast.showText(
+                                      text:
+                                      "Please select start and end time");
                                   return;
                                 }
                                 controller.createFareSetting();
@@ -464,9 +471,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                           buildHeaderWithSearch(
                               title: "ACCOUNT", removeSearching: true),
                           buildHeaderWithSearch(
-                              title: "FROM DAY", removeSearching: true),
+                              title: controller.fareConfiguration != "NORMAL"?"Start Date":"FROM DAY", removeSearching: true),
                           buildHeaderWithSearch(
-                              title: "TO DAY", removeSearching: true),
+                              title: controller.fareConfiguration != "NORMAL"?"End Date": "TO DAY", removeSearching: true),
                           buildHeaderWithSearch(
                               title: "FROM TIME", removeSearching: true),
                           buildHeaderWithSearch(
@@ -489,8 +496,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   cells: [
                                     DataCell(Text(fare.vehicleType!.name ?? "")),
                                     DataCell(Text(fare.account!.name ?? "")),
-                                    DataCell(Text(fare.fromDay ?? "")),
-                                    DataCell(Text(fare.toDay ?? "")),
+                                    DataCell(Text(controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??"")),
+                                    DataCell(Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? "")),
                                     DataCell(Text(fare.fromTime ?? "")),
                                     DataCell(Text(fare.toTime ?? "")),
                                     DataCell(

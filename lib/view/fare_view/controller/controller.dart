@@ -119,7 +119,7 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "faresconfiguration/add");
     if(response.statusCode == 200){
-      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data));
+      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
       refreshCreateFareFields();

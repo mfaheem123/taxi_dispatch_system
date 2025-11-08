@@ -16,7 +16,8 @@ import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
 
 class DriverForm extends StatefulWidget {
-  const DriverForm({Key? key}) : super(key: key);
+  DriverForm({Key? key, this.driverUpdateFlow = false}) : super(key: key);
+  bool driverUpdateFlow = false;
 
   @override
   State<DriverForm> createState() => _DriverFormState();
@@ -59,6 +60,9 @@ class _DriverFormState extends State<DriverForm> {
           if(controller.getCombineVehicleData == null)  {
           controller.getCombineVehicle();
         }
+          if(widget.driverUpdateFlow == false){
+            controller.clearAddDriverData();
+          }
       },
           builder: (controller) {
         return controller.getCombineVehicleLoading.value == true?Center(

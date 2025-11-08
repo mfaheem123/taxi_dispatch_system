@@ -570,10 +570,10 @@ class DriverController extends GetxController {
             .selectedMenuItems[index]
             .selectedItem = true;
         _controller.currentPage.value =
-            DriverForm();
+            DriverForm(driverUpdateFlow: true,);
       } else {
         _controller.currentPage.value =
-            DriverForm();
+            DriverForm(driverUpdateFlow: true,);
         _controller.menuBarRefresh(
             title: "ADD DRIVER",
             pageName: DriverForm());
