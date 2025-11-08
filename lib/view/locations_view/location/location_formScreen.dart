@@ -176,6 +176,7 @@ class LocationForm extends StatelessWidget {
                               controller.latitudeCtrl,
                               isNumeric: true),
                         ],
+
                       )
                           : Row(
                         children: [

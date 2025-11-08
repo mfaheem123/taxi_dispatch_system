@@ -306,13 +306,6 @@ class LocationController extends GetxController {
   }
 
 
-
-
-
-
-
-
-
 // -----------Search function
 
   void onSearchChanged() {

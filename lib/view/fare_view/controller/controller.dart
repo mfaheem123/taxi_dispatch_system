@@ -2,6 +2,7 @@
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -59,6 +60,42 @@ class FareController extends GetxController {
   final activeWaitingController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
+
+
+
+
+  VehicleTypeFixed? vehicleTypesFixedvalue;
+  LocationType?locationTypevalue;
+
+  FixedFareVehicleLocationTypeModel? fixedFareVehicleLocationTypeModel;
+  RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
+  getFixedFareVehicleLocationType()async{
+    getFixedFareVehicleLocationTypeLoader(true);
+    var response = await Api().get("combined/vehicle-location-types");
+    if (response.statusCode == 200) {
+      fixedFareVehicleLocationTypeModel = FixedFareVehicleLocationTypeModel.fromJson(response.data);
+      getFixedFareVehicleLocationTypeLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
 

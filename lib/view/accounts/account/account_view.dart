@@ -41,15 +41,14 @@ class _AccountViewState extends State<AccountView> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(
        initState: (v){
-         controller.getSubsdairyBank();
-       },
 
+         controller.getSubsdairyBank();
+
+       },
 
 
         builder: (controller) {
@@ -89,7 +88,7 @@ class _AccountViewState extends State<AccountView> {
                             padding: EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 12),
                             color: DynamicColors.gryClr.withOpacity(0.5),
-                            child: Row(
+                              child: Row(
                               children: [
                                 Text(AppText.account, style: titleDesign()),
                                 Spacer(),

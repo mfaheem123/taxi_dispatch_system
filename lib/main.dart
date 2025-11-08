@@ -12,7 +12,9 @@ import 'component/networks/Url.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+
   disableInspect();
+
   html.document.documentElement?.requestFullscreen();
 
   const String environment = String.fromEnvironment(
@@ -32,6 +34,7 @@ class MyApp extends StatelessWidget {
       title: "Nexus Tech",
       theme: ThemeData(
       ),
+
       initialRoute: AppPages.initial,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
@@ -42,6 +45,7 @@ class MyApp extends StatelessWidget {
         // return child;
         return child;
       },
+
       navigatorObservers: [BotToastNavigatorObserver()],
       getPages: AppPages.routes,
     );

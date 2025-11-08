@@ -1,3 +1,5 @@
+import 'package:dashboard_new1/component/dropdown_button.dart';
+import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -36,8 +38,19 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
+    return GetBuilder<FareController>(
+
+        initState: (v){
+         controller.getFixedFareVehicleLocationType();
+        },
+
+
+        builder: (controller) {
+      return controller.getFixedFareVehicleLocationTypeLoader.value
+          ? Center(
+        child: CircularProgressIndicator(),
+      )
+          : LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -62,9 +75,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                 color: DynamicColors.gryClr.withOpacity(0.5),
                 child: Text(AppText.fixedFare, style: titleDesign()),
               ),
+
               SizedBox(
                 height: 10,
               ),
+
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Wrap(
@@ -80,20 +95,18 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           Text(AppText.vehicleType,
                               style: mozillaTextSemiBoldText(
                                   context: context, fontSize: 13)),
-                          RestrictedDrivers(
-                            width: fieldWidth,
+                          CustomDropdownField<VehicleTypeFixed>(
+                            label: "Select Subsidiary",
+                            width: Get.width / 5,
                             height: 35,
-                            padding: 0.0,
-                            border: Border.all(
-                              color: DynamicColors.gryClr,
-                            ),
-                            titleText: "SELECT VEHICLE TYPE",
-                            driversList: [
-                              "25 GEORGE HAMPTON",
-                              "26 PAUL DOUBLEDAY",
-                              "27 RICHARD HARDWICK",
-                              "28 LANRE OKERJO",
-                            ],
+                            items: controller.fixedFareVehicleLocationTypeModel!.vehicleTypesFixed!,
+                            value: controller.vehicleTypesFixedvalue,
+                            itemLabel: (templateList) =>
+                            templateList.name!,
+                            onChanged: (val) {
+                              controller.vehicleTypesFixedvalue = val;
+                              controller.update();
+                            },
                           ),
                         ],
                       ),
@@ -127,20 +140,18 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           Text(AppText.fromLocationType,
                               style: mozillaTextSemiBoldText(
                                   context: context, fontSize: 13)),
-                          RestrictedDrivers(
-                            width: fieldWidth,
+                          CustomDropdownField<LocationType>(
+                            label: "Select Location Type",
+                            width: Get.width / 5,
                             height: 35,
-                            padding: 0.0,
-                            border: Border.all(
-                              color: DynamicColors.gryClr,
-                            ),
-                            titleText: "ADDRESS",
-                            driversList: [
-                              "25 GEORGE HAMPTON",
-                              "26 PAUL DOUBLEDAY",
-                              "27 RICHARD HARDWICK",
-                              "28 LANRE OKERJO",
-                            ],
+                            items: controller.fixedFareVehicleLocationTypeModel!.locationTypes!,
+                            value: controller.locationTypevalue,
+                            itemLabel: (templateList) =>
+                            templateList.name!,
+                            onChanged: (val) {
+                              controller.locationTypevalue = val;
+                              controller.update();
+                            },
                           ),
                         ],
                       ),
@@ -154,20 +165,18 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           Text(AppText.toLocationType,
                               style: mozillaTextSemiBoldText(
                                   context: context, fontSize: 13)),
-                          RestrictedDrivers(
-                            width: fieldWidth,
+                          CustomDropdownField<LocationType>(
+                            label: "Select Location Type",
+                            width: Get.width / 5,
                             height: 35,
-                            padding: 0.0,
-                            border: Border.all(
-                              color: DynamicColors.gryClr,
-                            ),
-                            titleText: "ADDRESS",
-                            driversList: [
-                              "25 GEORGE HAMPTON",
-                              "26 PAUL DOUBLEDAY",
-                              "27 RICHARD HARDWICK",
-                              "28 LANRE OKERJO",
-                            ],
+                            items: controller.fixedFareVehicleLocationTypeModel!.locationTypes!,
+                            value: controller.locationTypevalue,
+                            itemLabel: (templateList) =>
+                            templateList.name!,
+                            onChanged: (val) {
+                              controller.locationTypevalue = val;
+                              controller.update();
+                            },
                           ),
                         ],
                       ),
@@ -195,7 +204,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(AppText.fromPlot,
+                                Text("From Location",
                                     style: mozillaTextSemiBoldText(
                                         context: context, fontSize: 13)),
                                 RestrictedDrivers(
@@ -218,31 +227,25 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           ),
                           OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                minimumSize:
-                                    const Size(43, 42), // width & height
+                                minimumSize: const Size(43, 42), // width & height
                                 padding: EdgeInsets.zero,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      4), // <-- border radius here
+                                  borderRadius: BorderRadius.circular(4), // <-- border radius here
                                 ),
                                 side: BorderSide(
-                                    color: DynamicColors
-                                        .gryClr), // optional border color
+                                    color: DynamicColors.gryClr), // optional border color
                               ),
                               onPressed: () {},
                               child: Icon(Icons.add)),
                           OutlinedButton(
                               style: OutlinedButton.styleFrom(
-                                minimumSize:
-                                    const Size(43, 42), // width & height
+                                minimumSize: const Size(43, 42), // width & height
                                 padding: EdgeInsets.zero,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      4), // <-- border radius here
+                                  borderRadius: BorderRadius.circular(4), // <-- border radius here
                                 ),
                                 side: BorderSide(
-                                    color: DynamicColors
-                                        .gryClr), // optional border color
+                                    color: DynamicColors.gryClr), // optional border color
                               ),
                               onPressed: () {},
                               child: Icon(
@@ -264,7 +267,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(AppText.fromPlot,
+                                Text("To Location ",
                                     style: mozillaTextSemiBoldText(
                                         context: context, fontSize: 13)),
                                 RestrictedDrivers(
@@ -395,8 +398,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                       buildHeaderWithSearch(title: "FROM LOCATION"),
                       buildHeaderWithSearch(title: "TO LOCATION"),
                       buildHeaderWithSearch(title: "FARES"),
-                      buildHeaderWithSearch(
-                          title: "ACTIONS", removeSearching: true),
+                      buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                     ],
                     totalRow: totalRows,
                     cells: [
