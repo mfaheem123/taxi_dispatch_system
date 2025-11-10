@@ -2,7 +2,6 @@ import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
@@ -42,6 +41,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
 
         initState: (v){
          controller.getFixedFareVehicleLocationType();
+         controller.getAllFixedFare();
         },
 
 

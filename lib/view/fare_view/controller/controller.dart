@@ -2,11 +2,9 @@
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
-
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
-
+import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -86,7 +84,18 @@ class FareController extends GetxController {
 
 
 
+  GetAllFixedFareModel? getAllFixedFareModel;
+  RxBool getAllFixedFareLoader = false.obs;
 
+  getAllFixedFare()async{
+    getFixedFareVehicleLocationTypeLoader(true);
+    var response = await Api().get("fixedfares/get");
+    if (response.statusCode == 200) {
+      getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
+      getAllFixedFareLoader(false);
+      update();
+    }
+  }
 
 
 
@@ -195,6 +204,7 @@ class FareController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+
 
 
 }

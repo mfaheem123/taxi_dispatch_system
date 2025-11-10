@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-
 import '../../../Model/zone_model.dart';
 import 'dart:async';
 import 'dart:convert';
