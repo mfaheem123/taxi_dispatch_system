@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
 import 'package:dashboard_new1/view/locations_view/location/zone_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +30,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
   final DashboardController _controller = Get.find();
+  final ZoneController zonrController = Get.find();
 
   @override
   void initState() {
@@ -148,15 +150,15 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                             side: BorderSide(
                                                 color: Colors.transparent),
                                           ),
-                                          onPressed: () {
-                                            controller.bindZoneUpdate(
-                                                zoneUpdate: item); 
+                                          onPressed: () async {
+                                            await zonrController
+                                                .updateZone(context);
 
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>
                                                     element.title ==
-                                                    "ZoneForm");
+                                                    "CREATE ZONE");
 
                                             if (index != -1) {
                                               _controller
@@ -168,9 +170,8 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                               _controller.currentPage.value =
                                                   ZoneScreen();
                                               _controller.menuBarRefresh(
-                                                title: "EDIT ZONE",
-                                                pageName: ZoneScreen(),
-                                              );
+                                                  title: "UPDATE ZONE",
+                                                  pageName: ZoneScreen());
                                             }
 
                                             controller.update();

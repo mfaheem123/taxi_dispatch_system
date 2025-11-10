@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../../Model/zone_model.dart';
 import 'dart:async';
@@ -42,22 +41,12 @@ import 'package:http/http.dart' as http;
 //     );
 //   }
 
-
-
-
-
-
-  
 // }
 
-
-
-
-
-
-
 enum DrawMode { navigate, freehand, rectangle, points, edit }
+
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
+
 enum RectDragSource { liveDraft, savedRect, none }
 
 class RectBounds {
@@ -66,9 +55,6 @@ class RectBounds {
 }
 
 class ZoneController extends GetxController {
-
-
-
   // -------- Text Controllers --------
   final zonenameContoller = TextEditingController();
   final secondarynamezoneController = TextEditingController();
@@ -173,6 +159,28 @@ class ZoneController extends GetxController {
       registerZoneForm(context);
     }
   }
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  void bindZoneUpdate({required dynamic zoneUpdate}) {
+    isEditing.value = true; // Edit mode ON
+    zoneID.value = zoneUpdate['id']; // Zone ID set karo
+
+    // Text fields fill karo
+    zonenameContoller.text = zoneUpdate['name'] ?? '';
+    secondarynamezoneController.text = zoneUpdate['secondary_name'] ?? '';
+    zoneValue.value = zoneUpdate['type'] ?? 'Select Zone Type';
+    categoryValue.value = zoneUpdate['category'] ?? 'Select Category';
+    base.value = zoneUpdate['base'] ?? false;
+
+    // Agar map points hain to wo bhi load kar lo
+    if (zoneUpdate['vertices'] != null) {
+      List vertices = zoneUpdate['vertices'];
+      polyPoints['editedZone'] =
+          vertices.map((v) => LatLng(v['latitude'], v['longitude'])).toList();
+      selectedPolyId.value = 'editedZone';
+    }
+
+    update();
+  }
 
   Future<void> registerZoneForm(BuildContext context) async {
     final pts = currentVertices();
@@ -187,8 +195,8 @@ class ZoneController extends GetxController {
     final vertices = toApiVertices(pts);
     const url = "http://192.168.110.4:5000/api/zones";
     final data = {
-      "name": zonenameContoller.text.trim(),
-      "secondary_name": secondarynamezoneController.text.trim(),
+      "name": zonenameContoller.text,
+      "secondary_name": secondarynamezoneController.text,
       "type": zoneValue.value,
       "category": categoryValue.value,
       "base": false,
@@ -198,7 +206,8 @@ class ZoneController extends GetxController {
 
     try {
       final res = await http.post(Uri.parse(url),
-          body: json.encode(data), headers: {"Content-Type": "application/json"});
+          body: json.encode(data),
+          headers: {"Content-Type": "application/json"});
       if (res.statusCode >= 200 && res.statusCode < 300) {
         Prompts().showToastMessage(
             msg: "Zone saved successfully!", context: context);
@@ -214,6 +223,8 @@ class ZoneController extends GetxController {
     }
   }
 
+  ///---------------------------------------------------------------------------------------------- Update
+
   Future<void> updateZone(BuildContext context) async {
     final pts = currentVertices();
     if (pts == null || pts.length < 3) {
@@ -227,7 +238,6 @@ class ZoneController extends GetxController {
     final vertices = toApiVertices(pts);
     final url = "http://192.168.110.4:5000/api/zones/edit/${zoneID.value}";
     final storedUserId = html.window.localStorage['key'];
-
     final data = {
       "userId": storedUserId,
       "name": zonenameContoller.text.trim(),
@@ -237,10 +247,11 @@ class ZoneController extends GetxController {
       "base": base.value,
       "vertices": vertices,
     };
-    
+
     try {
       final res = await http.put(Uri.parse(url),
-          body: json.encode(data), headers: {"Content-Type": "application/json"});
+          body: json.encode(data),
+          headers: {"Content-Type": "application/json"});
       if (res.statusCode == 200) {
         clearTextFields();
         localZoneData = null;
@@ -285,10 +296,6 @@ class ZoneController extends GetxController {
       selectedPolyId.value = null;
     }
   }
-
-
-
-
 
 
 }
