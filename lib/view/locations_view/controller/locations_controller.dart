@@ -281,7 +281,6 @@ class LocationController extends GetxController {
   Future<void> getZoneList() async {
     try {
       getZoneLoader(true);
-  
       print("API Query: zones/get");
       var response = await Api().get("zones/get?",
       auth: true,
@@ -309,6 +308,7 @@ class LocationController extends GetxController {
       update();
     }
   }
+
 // -----------Search function
 
   void onSearchChanged() {

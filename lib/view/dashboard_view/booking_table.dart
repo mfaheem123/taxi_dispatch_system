@@ -85,6 +85,7 @@ class _BookingTableState extends State<BookingTable> {
                                     color: DynamicColors.textClr
                                 ),
                               ),
+
                               underline: const SizedBox(),
                               items: tabList[index].dropDownList.map((item) {
                                 return DropdownMenuItem<String>(
@@ -97,12 +98,14 @@ class _BookingTableState extends State<BookingTable> {
                                   ),
                                 );
                               }).toList(),
+
                               onChanged: (value) {
                                 int selectedIndex =
                                 tabList.indexWhere((test) => test.selectedClr!.value == true);
                                 if (selectedIndex != -1) {
                                   tabList[selectedIndex].selectedClr!.value = false;
                                 }
+
                                 setState(() {
                                   tabList[index].selectedDropDownValue = value;
                                   tabList[index].selectedClr!.value = true; // <-- fix selection

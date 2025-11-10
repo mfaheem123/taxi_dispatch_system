@@ -234,8 +234,7 @@ class VehicleInformation extends StatelessWidget {
                             height: 150,
                             width: Get.width / 6,
                             // width: 150,
-                            child:
-        (controller.imageList.isEmpty) && ((controller.singleDriverData == null)||(controller.singleDriverData!.driver!.vehicle == null))?SizedBox.shrink():
+                            child: (controller.imageList.isEmpty) && ((controller.singleDriverData == null)||(controller.singleDriverData!.driver!.vehicle == null))?SizedBox.shrink():
                             controller.imageList.isNotEmpty? Image.memory(
                               controller.imageList[0].bytes,
                               width: 500,
@@ -246,8 +245,7 @@ class VehicleInformation extends StatelessWidget {
                           controller.imageList.isEmpty?SizedBox.shrink():
                           GestureDetector(
                             onTap: () {
-                              controller.imageList
-                                  .remove(controller.imageList[0]);
+                              controller.imageList.remove(controller.imageList[0]);
                               controller.update();
                             },
                             child: CircleAvatar(
