@@ -37,8 +37,8 @@ class _CustomersScreenState extends State<CustomersScreen> {
     controller.getCustomer();
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  // int selectedRowIndex = 0; // currently selected row
+  // final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
   @override
   Widget build(BuildContext context) {

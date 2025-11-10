@@ -16,7 +16,8 @@ import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
 
 class DriverForm extends StatefulWidget {
-  const DriverForm({Key? key}) : super(key: key);
+  DriverForm({Key? key, this.driverUpdateFlow = false}) : super(key: key);
+  bool driverUpdateFlow = false;
 
   @override
   State<DriverForm> createState() => _DriverFormState();
@@ -59,6 +60,9 @@ class _DriverFormState extends State<DriverForm> {
           if(controller.getCombineVehicleData == null)  {
           controller.getCombineVehicle();
         }
+          if(widget.driverUpdateFlow == false){
+            controller.clearAddDriverData();
+          }
       },
           builder: (controller) {
         return controller.getCombineVehicleLoading.value == true?Center(
@@ -139,7 +143,9 @@ class _DriverFormState extends State<DriverForm> {
                                 ? Image.memory(
                               controller.profileImg!.bytes,
                               fit: BoxFit.fill,
-                            ):controller.singleDriverData != null?Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
+                            ):
+                            ((controller.singleDriverData != null) && (controller.singleDriverData!.driver!.image != null))?
+                            Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
                                 : Text(
                               AppText.uploadImage,
                               style: TextStyle(
@@ -185,7 +191,6 @@ class _DriverFormState extends State<DriverForm> {
                           readOnly: true,
                         controller: row.expiryTime, // optional
                         onTimeSelected: (time) {
-                        print(row.expiryTime!.text);
                         controller.updateExpiryTime(index, time);
                         },
                         )
@@ -194,12 +199,12 @@ class _DriverFormState extends State<DriverForm> {
                               CustomTextField(
                                 width: 150,
                                 borderRadius: 4,
-                                readOnly: controller.vehicleInformation.value,
-                                controller: TextEditingController(text: row.batchNo ?? ""),
+                                // readOnly: controller.vehicleInformation.value,
+                                controller: row.batchNo,
                                 hintText: "${row.documentTitle}",
                                 onChanged: (val) {
-                                  row.batchNo = val;
-                                  controller.update();
+                                  // row.batchNo.text = val;
+                                  // controller.update();
                                   },
                               ),
                             ),
@@ -317,16 +322,16 @@ class _DriverFormState extends State<DriverForm> {
 
 class DocumentRow {
   DateTime? expiryDate;
-  TextEditingController? expiryTime;
-  String? batchNo;
+  TextEditingController expiryTime = TextEditingController();
+  TextEditingController batchNo = TextEditingController();
   String? documentTitle;
   ImageModel? fileName;
   String? paramTitle;
 
   DocumentRow({
     this.expiryDate,
-    this.expiryTime,
-    this.batchNo,
+    required this.expiryTime,
+    required this.batchNo,
     this.documentTitle,
     this.fileName,
     this.paramTitle,

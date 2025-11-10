@@ -2,7 +2,11 @@
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
+
+import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
+
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -131,6 +135,7 @@ class FareController extends GetxController {
     var response = await Api().get("combined/vehicle-type-accounts");
     if (response.statusCode == 200) {
       fareGetVehicleTypeAccount = FareGetVehicleTypeAccount.fromJson(response.data);
+     await getAllFareConfiguration();
       getFareGetVehicleTypeAccountLoader(false);
       update();
     }
@@ -154,6 +159,7 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "faresconfiguration/add");
     if(response.statusCode == 200){
+      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
       refreshCreateFareFields();
@@ -171,6 +177,19 @@ class FareController extends GetxController {
     startingMilesController.clear();
     titleController.clear();
     update();
+  }
+  
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare view 
+  RxBool getAllFareViewLoader = false.obs;
+  GetAllFareConfigurationModel? getAllFareConfigurationData;
+  getAllFareConfiguration() async{
+    getAllFareViewLoader(true);
+    var response = await Api().get("faresconfiguration/get?title=$fareConfiguration");
+    if(response.statusCode == 200){
+      getAllFareConfigurationData = GetAllFareConfigurationModel.fromJson(response.data);
+      getAllFareViewLoader(false);
+      update();
+    }
   }
 
 

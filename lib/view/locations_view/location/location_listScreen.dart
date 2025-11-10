@@ -203,9 +203,9 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            controller
-                                                .bindLocationUpdateLocation(
-                                                    locationUpdate: item);
+                                            // controller
+                                            //     .bindLocationUpdateLocation(
+                                            //         locationUpdate: item.id!);
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>

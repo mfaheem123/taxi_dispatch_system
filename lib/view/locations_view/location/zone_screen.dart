@@ -6,7 +6,9 @@ import 'dart:html' as html;
 import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
+import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -51,6 +53,10 @@ class ZoneScreen extends StatefulWidget {
 }
 
 class _ZoneScreenState extends State<ZoneScreen> {
+ ZoneController controller = Get.isRegistered<ZoneController>()
+      ? Get.find<ZoneController>()
+      : Get.put(ZoneController());
+
   TextEditingController zonenameContoller = TextEditingController();
   TextEditingController secondarynamezoneController = TextEditingController();
   TextEditingController searchController = TextEditingController();
@@ -68,6 +74,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
   final List<LatLng> _pointsDraft = [];
   final Completer<GoogleMapController> _ctrl = Completer();
   final GlobalKey _mapKey = GlobalKey();
+
+
+
   String zoneID = "";
   static const _initialCamera = CameraPosition(
     target: LatLng(37.7749, -122.4194),
@@ -89,15 +98,16 @@ class _ZoneScreenState extends State<ZoneScreen> {
   String? _selectedPolyId;
   double _rad(double d) => d * math.pi / 180.0;
   double _hav(double t) => (1 - math.cos(t)) / 2;
-  double _distanceMeters(LatLng a, LatLng b) {
-    const r = 6371000.0;
-    final dLat = _rad(b.latitude - a.latitude);
-    final dLon = _rad(b.longitude - a.longitude);
-    final lat1 = _rad(a.latitude);
-    final lat2 = _rad(b.latitude);
-    final h = _hav(dLat) + math.cos(lat1) * math.cos(lat2) * _hav(dLon);
-    return 2 * r * math.asin(math.min(1, math.sqrt(h)));
-  }
+
+  // double _distanceMeters(LatLng a, LatLng b) {
+  //   const r = 6371000.0;
+  //   final dLat = _rad(b.latitude - a.latitude);
+  //   final dLon = _rad(b.longitude - a.longitude);
+  //   final lat1 = _rad(a.latitude);
+  //   final lat2 = _rad(b.latitude);
+  //   final h = _hav(dLat) + math.cos(lat1) * math.cos(lat2) * _hav(dLon);
+  //   return 2 * r * math.asin(math.min(1, math.sqrt(h)));
+  // }
 
   void _cancelActiveRectDrag() {
     _activeDragSource = _RectDragSource.none;
@@ -112,189 +122,76 @@ class _ZoneScreenState extends State<ZoneScreen> {
     setState(() {});
   }
 
-  List<LatLng>? _currentVertices() {
-    // Selected saved polygon
-    if (_selectedPolyId != null) {
-      final pts = _polyPoints[_selectedPolyId!];
-      if (pts != null && pts.length >= 3) return List<LatLng>.from(pts);
-    }
+  // List<LatLng>? _currentVertices() {
+  //   // Selected saved polygon
+  //   if (_selectedPolyId != null) {
+  //     final pts = _polyPoints[_selectedPolyId!];
+  //     if (pts != null && pts.length >= 3) return List<LatLng>.from(pts);
+  //   }
 
-    // Live rectangle draft
-    if (mode == DrawMode.rectangle &&
-        _rectStart != null &&
-        _rectCurrent != null) {
-      return _rectFromDiagonal(_rectStart!, _rectCurrent!);
-    }
+  //   // Live rectangle draft
+  //   if (mode == DrawMode.rectangle &&
+  //       _rectStart != null &&
+  //       _rectCurrent != null) {
+  //     return _rectFromDiagonal(_rectStart!, _rectCurrent!);
+  //   }
 
-    // Live freehand draft
-    if (mode == DrawMode.freehand && _draft.length >= 3) {
-      return List<LatLng>.from(_draft);
-    }
+  //   // Live freehand draft
+  //   if (mode == DrawMode.freehand && _draft.length >= 3) {
+  //     return List<LatLng>.from(_draft);
+  //   }
 
-    // Live points draft
-    if (mode == DrawMode.points && _pointsDraft.length >= 3) {
-      return List<LatLng>.from(_pointsDraft);
-    }
+  //   // Live points draft
+  //   if (mode == DrawMode.points && _pointsDraft.length >= 3) {
+  //     return List<LatLng>.from(_pointsDraft);
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
-  bool isEditing = false;
+  // bool isEditing = false;
 
-  void submitForm() {
-    final pts = _currentVertices();
-    if (pts == null || pts.length < 3) {
-      Prompts().showErrorMessage(
-        msg: "Please draw/select a zone first (need at least 3 points).",
-        context: context,
-      );
-      return;
-    }
-    if (isEditing) {
-      updateZone();
-    } else {
-      registerzoneForm();
-    }
-  }
+  // void submitForm() {
+  //   final pts = _currentVertices();
+  //   if (pts == null || pts.length < 3) {
+  //     Prompts().showErrorMessage(
+  //       msg: "Please draw/select a zone first (need at least 3 points).",
+  //       context: context,
+  //     );
+  //     return;
+  //   }
+  //   if (isEditing) {
+  //    controller.updateZone(context);
+  //   } else {
+  //     registerzoneForm();
+  //   }
+  // }
 
-  clearTextFields() {
-    if (mounted) {
-      setState(() {
-        zonenameContoller.clear();
-        secondarynamezoneController.clear();
-        searchController.clear();
-        zoneValue = 'Select Zone Type';
-        categoryValue = 'Select Category';
-        // base = false;
-      });
-    }
-  }
+  // clearTextFields() {
+  //   if (mounted) {
+  //     setState(() {
+  //       zonenameContoller.clear();
+  //       secondarynamezoneController.clear();
+  //       searchController.clear();
+  //       zoneValue = 'Select Zone Type';
+  //       categoryValue = 'Select Category';
+  //       // base = false;
+  //     });
+  //   }
+  // }
 
   registerzoneForm() {
-    registerZoneForm();
-    clearTextFields();
+   controller.registerZoneForm(context);
+    controller.clearTextFields();
     Prompts()
         .showToastMessage(msg: "Data posted Succesfully!", context: context);
   }
 
-  List<Map<String, double>> _toApiVertices(List<LatLng> pts) {
-    return pts
-        .map((p) => {"latitude": p.latitude, "longitude": p.longitude})
-        .toList();
-  }
-
-  void registerZoneForm() async {
-    // 1) Collect vertices from the current selection/draft
-    final pts = _currentVertices();
-    if (pts == null || pts.length < 3) {
-      Prompts().showErrorMessage(
-        msg: "Please draw/select a zone (at least 3 points) before saving.",
-        context: context,
-      );
-      return;
-    }
-
-    final vertices = _toApiVertices(pts);
-
-    // 2) Build request body
-    const url = "http://192.168.110.4:5000/api/zones";
-    // final storedUserId = html.window.localStorage['key'];
-
-    final data = {
-      // "userId": storedUserId,
-      "name": zonenameContoller.text.trim(),
-      "secondary_name": secondarynamezoneController.text.trim(),
-      "type": zoneValue, // e.g., "restricted" / "Major" / "Minor" — whatever your UI sets
-      "category": categoryValue, // e.g., "security" / "Inner" / "Outer"
-      "base": false,
-      "vertices": vertices,
-      "overlay": "rectangle",
-    };
-
-    try {
-      final res = await http.post(
-        Uri.parse(url),
-        body: json.encode(data),
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (res.statusCode >= 200 && res.statusCode < 300) {
-        print(jsonDecode(res.body));
-        Prompts().showToastMessage(
-            msg: "Zone saved successfully!", context: context);
-        clearTextFields();
-        // Optional: keep selection or clear shapes; your call.
-        // setState(() { _polyPoints.clear(); _selectedPolyId = null; });
-      } else {
-        Prompts().showErrorMessage(
-          msg: "Save failed (${res.statusCode}): ${res.body}",
-          context: context,
-        );
-      }
-    } catch (e) {
-      Prompts().showErrorMessage(msg: "Network error: $e", context: context);
-    }
-  }
-
-  Future<void> updateZone() async {
-    final pts = _currentVertices();
-    if (pts == null || pts.length < 3) {
-      Prompts().showErrorMessage(
-        msg: "Please draw/select a zone (at least 3 points) before updating.",
-        context: context,
-      );
-      return;
-    }
-
-    final vertices = _toApiVertices(pts);
-
-    final url = "http://192.168.110.4:5000/api/zones/edit/$zoneID";
-    final storedUserId = html.window.localStorage['key'];
-
-    final data = {
-      "userId": storedUserId,
-      "name": zonenameContoller.text.trim(),
-      "secondaryName": secondarynamezoneController.text.trim(),
-      "type": zoneValue,
-      "category": categoryValue,
-      "base": base,
-      "vertices": vertices,
-    };
-
-    try {
-      final res = await http.put(
-        Uri.parse(url),
-        body: json.encode(data),
-        headers: {"Content-Type": "application/json"},
-      );
-
-      if (res.statusCode == 200) {
-        if (mounted) {
-          setState(() {
-            clearTextFields();
-            localZoneData = null;
-            isEditing = false;
-          });
-        }
-
-        // widget.onUpdateComplete?.call();
-
-        Prompts().showToastMessage(
-          msg: "Zone updated successfully",
-          context: context,
-        );
-      } else {
-        if (mounted) clearTextFields();
-        Prompts().showErrorMessage(
-          msg: "Error updating zone (${res.statusCode}): ${res.body}",
-          context: context,
-        );
-      }
-    } catch (e) {
-      if (mounted) clearTextFields();
-      Prompts().showErrorMessage(msg: "Network error: $e", context: context);
-    }
-  }
+  // List<Map<String, double>> toApiVertices(List<LatLng> pts) {
+  //   return pts
+  //       .map((p) => {"latitude": p.latitude, "longitude": p.longitude})
+  //       .toList();
+  // }
 
   void _onPanUpdate(Offset global) async {
     if (!_isDragging) return;
@@ -302,7 +199,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (p == null) return;
 
     if (mode == DrawMode.freehand) {
-      if (_draft.isEmpty || _distanceMeters(_draft.last, p) > 3) {
+      if (_draft.isEmpty || controller.distanceMeters(_draft.last, p) > 3) {
         setState(() => _draft.add(p));
       }
       return;
@@ -386,19 +283,15 @@ class _ZoneScreenState extends State<ZoneScreen> {
       );
       return;
     }
-
     try {
       final controller = await _ctrl.future;
-
       final url =
           "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
       final response = await http.get(Uri.parse(url));
       final data = jsonDecode(response.body);
-
       if (data.isNotEmpty) {
         final lat = double.parse(data[0]['lat']);
         final lng = double.parse(data[0]['lon']);
-
         final target = LatLng(lat, lng);
         await controller.animateCamera(
           CameraUpdate.newCameraPosition(
@@ -964,7 +857,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            submitForm();
+                          controller.submitForm(context);
                           },
                           child: Text('SAVE'),
                           style: ElevatedButton.styleFrom(
@@ -1108,3 +1001,5 @@ class _ZoneScreenState extends State<ZoneScreen> {
     );
   }
 }
+
+

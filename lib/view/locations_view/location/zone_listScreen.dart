@@ -45,7 +45,8 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex = (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+          selectedRowIndex =
+              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam
@@ -61,7 +62,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         : controller.zoneAll;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
@@ -84,11 +87,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                         ),
                       ],
                     ),
-
                     SizedBox(
                       height: 12,
                     ),
-
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
@@ -131,12 +132,16 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                             return DataRow(
                               cells: [
                                 DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(Center(child: Text(item.secondaryName ?? '—'))),
-                                DataCell(Center(child: Text(item.type ?? '—'))),
-                                DataCell(Center(child: Text(item.category ?? '—'))),
                                 DataCell(Center(
+                                    child: Text(item.secondaryName ?? '—'))),
+                                DataCell(Center(child: Text(item.type ?? '—'))),
+                                DataCell(
+                                    Center(child: Text(item.category ?? '—'))),
+                                DataCell(
+                                  Center(
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         OutlinedButton(
                                           style: OutlinedButton.styleFrom(
@@ -144,12 +149,15 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            // controller.bindLocationUpdateLocation(locationUpdate: item);
+                                            controller.bindZoneUpdate(
+                                                zoneUpdate: item); 
+
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>
                                                     element.title ==
-                                                    "LocationForm");
+                                                    "ZoneForm");
+
                                             if (index != -1) {
                                               _controller
                                                   .selectedMenuItems[index]
@@ -160,9 +168,11 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                               _controller.currentPage.value =
                                                   ZoneScreen();
                                               _controller.menuBarRefresh(
-                                                  title: "CREATE ZONE",
-                                                  pageName: ZoneScreen());
+                                                title: "EDIT ZONE",
+                                                pageName: ZoneScreen(),
+                                              );
                                             }
+
                                             controller.update();
                                           },
                                           child: Icon(Icons.edit_calendar,
