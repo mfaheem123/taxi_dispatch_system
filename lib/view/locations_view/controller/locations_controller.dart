@@ -321,11 +321,7 @@ class LocationController extends GetxController {
     getZoneList();
   }
 
-    // --- bind zone data for edit
-  void bindZoneUpdate({Zones? zoneUpdate}) {
-    selectedZone.value = zoneUpdate;
-    print("Editing Zone: ${zoneUpdate?.name}");
-  }
+
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zone Work

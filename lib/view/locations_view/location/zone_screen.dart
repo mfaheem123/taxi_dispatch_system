@@ -53,29 +53,27 @@ class ZoneScreen extends StatefulWidget {
 }
 
 class _ZoneScreenState extends State<ZoneScreen> {
- ZoneController controller = Get.isRegistered<ZoneController>()
+  ZoneController controller = Get.isRegistered<ZoneController>()
       ? Get.find<ZoneController>()
       : Get.put(ZoneController());
 
-  TextEditingController zonenameContoller = TextEditingController();
-  TextEditingController secondarynamezoneController = TextEditingController();
-  TextEditingController searchController = TextEditingController();
-  final TextEditingController _postcodeController = TextEditingController();
-  GoogleMapController? _mapController;
-  String categoryValue = 'Select Category';
-  var categoryItems = ['Select Category', 'Inner', 'Outer'];
-  String zoneValue = 'Select Zone Type';
-  var zoneItems = ['Select Zone Type', 'Major', 'Minor'];
-  LatLng? _rectStart; // live rectangle start
-  LatLng? _rectCurrent;
+  // TextEditingController zonenameContoller = TextEditingController();
+  // TextEditingController secondarynamezoneController = TextEditingController();
+  // TextEditingController searchController = TextEditingController();
+  // final TextEditingController _postcodeController = TextEditingController();
+  // GoogleMapController? _mapController;
+  // String categoryValue = 'Select Category';
+  // var categoryItems = ['Select Category', 'Inner', 'Outer'];
+  // String zoneValue = 'Select Zone Type';
+  // var zoneItems = ['Select Zone Type', 'Major', 'Minor'];
+  // LatLng? _rectStart; // live rectangle start
+  // LatLng? _rectCurrent;
   // final VoidCallback? onUpdateComplete;
-  bool base = false;
-  final List<LatLng> _draft = [];
-  final List<LatLng> _pointsDraft = [];
-  final Completer<GoogleMapController> _ctrl = Completer();
-  final GlobalKey _mapKey = GlobalKey();
-
-
+  // bool base = false;
+  // final List<LatLng> _draft = [];
+  // final List<LatLng> _pointsDraft = [];
+  // final Completer<GoogleMapController> _ctrl = Completer();
+  // final GlobalKey _mapKey = GlobalKey();
 
   String zoneID = "";
   static const _initialCamera = CameraPosition(
@@ -96,8 +94,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
   _RectBounds? _activeStartBounds;
   List<dynamic>? localZoneData;
   String? _selectedPolyId;
-  double _rad(double d) => d * math.pi / 180.0;
-  double _hav(double t) => (1 - math.cos(t)) / 2;
+  // double _rad(double d) => d * math.pi / 180.0;
+  // double _hav(double t) => (1 - math.cos(t)) / 2;
 
   // double _distanceMeters(LatLng a, LatLng b) {
   //   const r = 6371000.0;
@@ -181,7 +179,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   // }
 
   registerzoneForm() {
-   controller.registerZoneForm(context);
+    controller.registerZoneForm(context);
     controller.clearTextFields();
     Prompts()
         .showToastMessage(msg: "Data posted Succesfully!", context: context);
@@ -199,8 +197,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (p == null) return;
 
     if (mode == DrawMode.freehand) {
-      if (_draft.isEmpty || controller.distanceMeters(_draft.last, p) > 3) {
-        setState(() => _draft.add(p));
+      if (controller.draft.isEmpty || controller.distanceMeters(controller.draft.last, p) > 3) {
+        setState(() => controller.draft.add(p));
       }
       return;
     }
@@ -216,14 +214,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
           final dLng = p.longitude - center0.longitude;
           final moved = _translateBounds(b0, dLat, dLng);
           setState(() {
-            _rectStart = LatLng(moved.minLat, moved.minLng);
-            _rectCurrent = LatLng(moved.maxLat, moved.maxLng);
+            controller.rectStart = LatLng(moved.minLat, moved.minLng);
+            controller.rectCurrent = LatLng(moved.maxLat, moved.maxLng);
           });
         } else if (_activeHandle != null) {
           final nb = _boundsWithDraggedHandle(b0, _activeHandle!, p);
           setState(() {
-            _rectStart = LatLng(nb.minLat, nb.minLng);
-            _rectCurrent = LatLng(nb.maxLat, nb.maxLng);
+            controller.rectStart = LatLng(nb.minLat, nb.minLng);
+            controller.rectCurrent = LatLng(nb.maxLat, nb.maxLng);
           });
         }
         return;
@@ -248,10 +246,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }
 
       // If not dragging grips, update live draft corners while drawing
-      if (_rectStart != null &&
-          _rectCurrent != null &&
+      if ( controller.rectStart != null &&
+          controller.rectCurrent != null &&
           _selectedPolyId == null) {
-        setState(() => _rectCurrent = p);
+        setState(() => controller.rectCurrent = p);
       }
     }
   }
@@ -264,10 +262,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
           color: active ? Theme.of(context).colorScheme.primary : null),
       onPressed: () => setState(() {
         mode = m;
-        _draft.clear();
-        _rectStart = null;
-        _rectCurrent = null;
-        _pointsDraft.clear();
+        controller.draft.clear();
+        controller.rectStart = null;
+        controller.rectCurrent = null;
+        controller.pointsDraft.clear();
         if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
           _selectedPolyId = null;
         }
@@ -284,7 +282,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       return;
     }
     try {
-      final controller = await _ctrl.future;
+      final controllers = await controller.ctrl.future;
       final url =
           "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
       final response = await http.get(Uri.parse(url));
@@ -293,7 +291,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         final lat = double.parse(data[0]['lat']);
         final lng = double.parse(data[0]['lon']);
         final target = LatLng(lat, lng);
-        await controller.animateCamera(
+        await controllers.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(target: target, zoom: 16),
           ),
@@ -310,7 +308,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
   }
 
-
   Future<({RectHandle? handle, bool isCenter})?> _nearestRectGripAt(
       Offset global, _RectBounds b,
       {int thresholdPx = 28}) async {
@@ -319,9 +316,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
     bool bestIsCenter = false;
 
     Future<Offset?> _latLngToScreen(LatLng latLng) async {
-      final ctrl = await _ctrl.future;
+      final ctrl = await controller.ctrl.future;
       final renderBox =
-          _mapKey.currentContext?.findRenderObject() as RenderBox?;
+          controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null || !renderBox.hasSize) return null;
       final origin = renderBox.localToGlobal(Offset.zero);
       try {
@@ -369,8 +366,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       ];
   bool _isDragging = false;
   Future<LatLng?> _screenToLatLng(Offset global) async {
-    final ctrl = await _ctrl.future;
-    final renderBox = _mapKey.currentContext?.findRenderObject() as RenderBox?;
+    final ctrl = await controller.ctrl.future;
+    final renderBox = controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.hasSize) return null;
     final origin = renderBox.localToGlobal(Offset.zero);
     final local = global - origin;
@@ -389,7 +386,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     if (mode == DrawMode.freehand) {
       setState(() {
-        _draft
+        controller.draft
           ..clear()
           ..add(p);
       });
@@ -416,8 +413,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }
 
       // 2) Else try live rectangle’s grips (unsaved)
-      if (_rectStart != null && _rectCurrent != null) {
-        final b = _boundsFromTwo(_rectStart!, _rectCurrent!);
+      if (controller.rectStart != null && controller.rectCurrent != null) {
+        final b = _boundsFromTwo(controller.rectStart!, controller.rectCurrent!);
         final hit = await _nearestRectGripAt(global, b);
         if (hit != null) {
           setState(() {
@@ -433,8 +430,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       // 3) If we didn’t hit any grip and no live rect, start a brand-new draft
       setState(() {
         if (_selectedPolyId == null) {
-          _rectStart = p;
-          _rectCurrent = p;
+          controller.rectStart = p;
+          controller.rectCurrent = p;
           _cancelActiveRectDrag();
         }
       });
@@ -541,7 +538,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
         points: pts,
         strokeWidth: 3,
         strokeColor: id == _selectedPolyId ? Colors.orange : Colors.green,
-        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green).withOpacity(0.18),
+        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green)
+            .withOpacity(0.18),
         geodesic: true,
         consumeTapEvents: true,
         zIndex: id == _selectedPolyId ? 2 : 1,
@@ -557,10 +555,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
     });
 
     // Live freehand preview
-    if (mode == DrawMode.freehand && _draft.length >= 2) {
+    if (mode == DrawMode.freehand && controller.draft.length >= 2) {
       set.add(Polygon(
         polygonId: const PolygonId('live'),
-        points: _draft,
+        points: controller.draft,
         strokeWidth: 3,
         strokeColor: Colors.blue,
         fillColor: Colors.blue.withOpacity(0.18),
@@ -571,9 +569,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     // Live rectangle preview
     if (mode == DrawMode.rectangle &&
-        _rectStart != null &&
-        _rectCurrent != null) {
-      final rectPts = _rectFromDiagonal(_rectStart!, _rectCurrent!);
+        controller.rectStart != null &&
+        controller.rectCurrent != null) {
+      final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
       set.add(Polygon(
         polygonId: const PolygonId('live_rect'),
         points: rectPts,
@@ -586,10 +584,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
 
     // Live points preview
-    if (mode == DrawMode.points && _pointsDraft.length >= 2) {
+    if (mode == DrawMode.points && controller.pointsDraft.length >= 2) {
       set.add(Polygon(
         polygonId: const PolygonId('live_points'),
-        points: _pointsDraft,
+        points: controller.pointsDraft,
         strokeWidth: 3,
         strokeColor: Colors.blue,
         fillColor: Colors.blue.withOpacity(0.18),
@@ -605,9 +603,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final markers = <Marker>{};
 
     // Draft dots (Points mode)
-    if (mode == DrawMode.points && _pointsDraft.isNotEmpty) {
-      for (int i = 0; i < _pointsDraft.length; i++) {
-        final p = _pointsDraft[i];
+    if (mode == DrawMode.points && controller.pointsDraft.isNotEmpty) {
+      for (int i = 0; i < controller.pointsDraft.length; i++) {
+        final p = controller.pointsDraft[i];
         markers.add(Marker(
           markerId: MarkerId('draft_$i'),
           position: p,
@@ -615,10 +613,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
           zIndex: 4,
           icon:
               BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          onDragEnd: (newPos) => setState(() => _pointsDraft[i] = newPos),
+          onDragEnd: (newPos) => setState(() => controller.pointsDraft[i] = newPos),
           onTap: () {
-            if (_pointsDraft.length > 1) {
-              setState(() => _pointsDraft.removeAt(i));
+            if (controller.pointsDraft.length > 1) {
+              setState(() => controller.pointsDraft.removeAt(i));
             }
           },
         ));
@@ -627,9 +625,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
     // Live rectangle handles during drawing
     if (mode == DrawMode.rectangle &&
-        _rectStart != null &&
-        _rectCurrent != null) {
-      final b = _boundsFromTwo(_rectStart!, _rectCurrent!);
+        controller.rectStart != null &&
+        controller.rectCurrent != null) {
+      final b = _boundsFromTwo(controller.rectStart!, controller.rectCurrent!);
       final hp = _handlePositions(b);
       for (final entry in hp.entries) {
         final handle = entry.key;
@@ -643,8 +641,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
           onDragEnd: (newPos) {
             setState(() {
               final nb = _boundsWithDraggedHandle(b, handle, newPos);
-              _rectStart = LatLng(nb.minLat, nb.minLng);
-              _rectCurrent = LatLng(nb.maxLat, nb.maxLng);
+              controller.rectStart = LatLng(nb.minLat, nb.minLng);
+              controller.rectCurrent = LatLng(nb.maxLat, nb.maxLng);
             });
           },
         ));
@@ -662,8 +660,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
             final dLat = newCenter.latitude - center.latitude;
             final dLng = newCenter.longitude - center.longitude;
             final moved = _translateBounds(b, dLat, dLng);
-            _rectStart = LatLng(moved.minLat, moved.minLng);
-            _rectCurrent = LatLng(moved.maxLat, moved.maxLng);
+            controller.rectStart = LatLng(moved.minLat, moved.minLng);
+            controller.rectCurrent = LatLng(moved.maxLat, moved.maxLng);
           });
         },
       ));
@@ -799,18 +797,17 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   children: [
                     SizedBox(height: 15),
                     TextField(
-                      controller: zonenameContoller,
+                      controller: controller.zonenameContoller,
                       decoration: InputDecoration(
                         labelText: 'NAME',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(5),
-                          // ),
                         ),
                       ),
                     ),
                     SizedBox(height: 15),
                     TextField(
-                      controller: secondarynamezoneController,
+                      controller: controller.secondarynamezoneController,
                       decoration: InputDecoration(
                         labelText: 'SHORT NAME',
                         border: OutlineInputBorder(
@@ -821,21 +818,21 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     SizedBox(height: 15),
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
-                      items: zoneItems,
-                      selecteditem: zoneValue,
+                      items: controller.zoneItems,
+                      selecteditem: controller.zoneValue.value,
                       onchanged: (String? newValue) {
                         setState(() {
-                          zoneValue = newValue!;
+                          controller.zoneValue.value = newValue!;
                         });
                       },
                     ),
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
-                        items: categoryItems,
-                        selecteditem: categoryValue,
+                        items: controller.categoryItems,
+                        selecteditem: controller.categoryValue.value,
                         onchanged: (String? newValue) {
                           setState(() {
-                            categoryValue = newValue!;
+                            controller.categoryValue.value = newValue!;
                           });
                         }),
                     SizedBox(height: 20),
@@ -857,7 +854,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                          controller.submitForm(context);
+                            controller.submitForm(context);
                           },
                           child: Text('SAVE'),
                           style: ElevatedButton.styleFrom(
@@ -885,10 +882,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   height: MediaQuery.of(context).size.height * 0.55,
                   child: Stack(children: [
                     RepaintBoundary(
-                        key: _mapKey,
+                        key: controller.mapKey,
                         child: GoogleMap(
                           initialCameraPosition: _initialCamera,
-                          onMapCreated: (c) => _ctrl.complete(c),
+                          onMapCreated: (c) => controller.ctrl.complete(c),
                           scrollGesturesEnabled: !_lockMapGestures,
                           zoomGesturesEnabled: !_lockMapGestures,
                           rotateGesturesEnabled: !_lockMapGestures,
@@ -900,7 +897,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           compassEnabled: false,
                           onTap: (latLng) async {
                             if (mode == DrawMode.points) {
-                              setState(() => _pointsDraft.add(latLng));
+                              setState(() => controller.pointsDraft.add(latLng));
                             } else if (mode == DrawMode.edit) {
                               setState(() => _selectedPolyId = null);
                             }
@@ -917,11 +914,11 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               onPointerUp: (_) => _onPanEnd(),
                               onPointerCancel: (_) => _onPanEnd())),
 
-                    if ((mode == DrawMode.freehand && _draft.isNotEmpty) ||
+                    if ((mode == DrawMode.freehand && controller.draft.isNotEmpty) ||
                         (mode == DrawMode.rectangle &&
-                            (_rectStart != null && _rectCurrent != null ||
+                            (controller.rectStart != null && controller.rectCurrent != null ||
                                 _selectedPolyId != null)) ||
-                        (mode == DrawMode.points && _pointsDraft.isNotEmpty))
+                        (mode == DrawMode.points && controller.pointsDraft.isNotEmpty))
                       Positioned(
                           left: 12,
                           bottom: 16,
@@ -950,7 +947,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             SizedBox(
                               width: 160,
                               child: TextField(
-                                controller: _postcodeController,
+                                controller: controller.postcodeController,
                                 decoration: InputDecoration(
                                   labelText: "Post Code",
                                   hintText: "e.g. SW1A 1AA",
@@ -982,10 +979,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               tooltip: "Clear all",
                               icon: const Icon(Icons.delete_outline),
                               onPressed: () => setState(() {
-                                _draft.clear();
-                                _rectStart = null;
-                                _rectCurrent = null;
-                                _pointsDraft.clear();
+                                controller.draft.clear();
+                                controller.rectStart = null;
+                                controller.rectCurrent = null;
+                                controller.pointsDraft.clear();
                                 _polyPoints.clear();
                                 _selectedPolyId = null;
                                 _cancelActiveRectDrag();
@@ -1001,5 +998,3 @@ class _ZoneScreenState extends State<ZoneScreen> {
     );
   }
 }
-
-
