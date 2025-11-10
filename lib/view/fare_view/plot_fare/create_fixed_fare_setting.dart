@@ -71,7 +71,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
               Container(
                 width: Get.width,
                 padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                     EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                 color: DynamicColors.gryClr.withOpacity(0.5),
                 child: Text(AppText.fixedFare, style: titleDesign()),
               ),
@@ -391,58 +391,60 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: Get.width,
+                  width: Get.width/2,
                   child: DatatableWidget(
                     columns: [
-                      buildHeaderWithSearch(title: "VEHICLE"),
-                      buildHeaderWithSearch(title: "FROM LOCATION"),
-                      buildHeaderWithSearch(title: "TO LOCATION"),
-                      buildHeaderWithSearch(title: "FARES"),
+                      buildHeaderWithSearch(title: "VEHICLE", removeSearching: true),
+                      buildHeaderWithSearch(title: "FROM LOCATION", removeSearching: true),
+                      buildHeaderWithSearch(title: "TO LOCATION", removeSearching: true),
+                      buildHeaderWithSearch(title: "FARES", removeSearching: true),
                       buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                     ],
-                    totalRow: totalRows,
-                    cells: [
-                      const DataCell(Center(child: Text("SALOON"))),
-                      const DataCell(Center(child: Text("NW7"))),
-                      const DataCell(
-                          Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                      const DataCell(Center(child: Text("£55.00"))),
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
+                    rows: controller
+                        .getAllFixedFareModel!.fixedFares!
+                        .map((farefixed) => DataRow(
+                        cells: [
+                          DataCell(Text(farefixed.vehicleTypeName ?? "")),
+                          DataCell(Text(farefixed.area1 ?? "")),
+                          DataCell(Text(farefixed.area2 ?? "")),
+                          DataCell(Text(farefixed.fares ?? "")),
+                        DataCell(Center(child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(
+                                    Icons.edit_calendar,
+                                    size: 28,
+                                    color: DynamicColors.primaryClr,
+                                  ),
                                 ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.edit_calendar,
-                                  size: 28,
-                                  color: DynamicColors.primaryClr,
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {},
+                                  child: Icon(
+                                    Icons.delete_forever,
+                                    size: 28,
+                                    color: DynamicColors.redClr,
+                                  ),
                                 ),
-                              ),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ))
+                        .toList(),
+
                   ),
                 ),
               ),
