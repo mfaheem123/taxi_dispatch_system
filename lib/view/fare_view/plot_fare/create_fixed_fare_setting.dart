@@ -330,20 +330,75 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     Text("To Location ",
                                         style: mozillaTextSemiBoldText(
                                             context: context, fontSize: 13)),
-                                    RestrictedDrivers(
-                                      width: fieldWidth,
-                                      height: 35,
-                                      padding: 0.0,
-                                      border: Border.all(
-                                        color: DynamicColors.gryClr,
+                                    // RestrictedDrivers(
+                                    //   width: fieldWidth,
+                                    //   height: 35,
+                                    //   padding: 0.0,
+                                    //   border: Border.all(
+                                    //     color: DynamicColors.gryClr,
+                                    //   ),
+                                    //   titleText: "SELECT PLOT",
+                                    //   driversList: [
+                                    //     "25 GEORGE HAMPTON",
+                                    //     "26 PAUL DOUBLEDAY",
+                                    //     "27 RICHARD HARDWICK",
+                                    //     "28 LANRE OKERJO",
+                                    //   ],
+                                    // ),
+                                    RawKeyboardListener(
+                                      focusNode: controller
+                                          .searchingAddress1ViaFocusNode,
+                                      onKey: (event) {
+                                        if (event is RawKeyDownEvent) {
+                                          if (event.logicalKey ==
+                                              LogicalKeyboardKey.arrowDown &&
+                                              controller.highlightedIndex1.value <
+                                                  controller.suggestions1.length -
+                                                      1) {
+                                            controller.highlightedIndex1.value++;
+                                          } else if (event.logicalKey ==
+                                              LogicalKeyboardKey.arrowUp &&
+                                              controller.highlightedIndex1.value >
+                                                  0) {
+                                            controller.highlightedIndex1.value--;
+                                          } else if (event.logicalKey ==
+                                              LogicalKeyboardKey.enter) {
+                                            final selected = controller.suggestions1[controller.highlightedIndex1.value].name;
+                                            controller.selectSuggestion(selected);
+                                          }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
+                                            FocusScope.of(Get.context!).requestFocus(controller.viaFocusNode1);
+                                          }
+                                          // }else if(event.logicalKey == LogicalKeyboardKey.tab){
+                                          //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                          // }
+                                        }
+                                      },
+                                      child: SizedBox(
+                                        width: Get.width/4,
+                                        height: 35,
+                                        child: TextField(
+                                            focusNode: controller.viaFieldFocusNode1,
+                                            controller: controller.addressController1,
+                                            style: mozillaTextSemiBoldText(
+                                                context: context,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w800
+                                            ),
+                                            onTap: (){
+                                            },
+                                            onChanged: (v){
+                                              controller.onChangeHandler1(
+                                                  fieldName:
+                                                  "via",
+                                                  searchingText: v);
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: "Search Address",
+                                              border: OutlineInputBorder(),
+                                              isDense: true,
+                                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                                            )),
                                       ),
-                                      titleText: "SELECT PLOT",
-                                      driversList: [
-                                        "25 GEORGE HAMPTON",
-                                        "26 PAUL DOUBLEDAY",
-                                        "27 RICHARD HARDWICK",
-                                        "28 LANRE OKERJO",
-                                      ],
                                     ),
                                   ],
                                 ),
@@ -431,6 +486,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           borderRadius: 4,
                           style: mozillaTextRegularText(
                               fontSize: 13, color: DynamicColors.whiteClr),
+                          onTap: (){
+                            controller.postFixedFare();
+                          },
                         ),
                         CustomButton(
                           height: 35,
@@ -451,7 +509,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: Get.width,
+                      width: Get.width/2,
                       child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(title: "VEHICLE"),
@@ -460,53 +518,102 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           buildHeaderWithSearch(title: "FARES"),
                           buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("SALOON"))),
-                          const DataCell(Center(child: Text("NW7"))),
-                          const DataCell(
-                              Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                          const DataCell(Center(child: Text("£55.00"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
+                        rows: controller
+                            .getAllFixedFareModel!.fixedFares!
+                            .map((farefxed) => DataRow(
+                          cells: [
+                            DataCell(Text(farefxed.vehicleTypeName! ?? "")),
+                            DataCell(Text(farefxed.area1! ?? "")),
+                            DataCell(Text(farefxed.area2! ?? "")),
+                            DataCell(Text(farefxed.fares! ?? "")),
+                            DataCell(
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(32, 32),
+                                        side: const BorderSide(
+                                            color: Colors.transparent),
+                                      ),
+                                      onPressed: () {
+                                        // 🟢 Edit action
+                                      },
+                                      child: Icon(Icons.edit_calendar,
+                                          size: 20,
+                                          color:
+                                          DynamicColors.primaryClr),
                                     ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.edit_calendar,
-                                      size: 28,
-                                      color: DynamicColors.primaryClr,
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(32, 32),
+                                        side: const BorderSide(
+                                            color: Colors.transparent),
+                                      ),
+                                      onPressed: () {
+                                        // 🔴 Delete action
+                                      },
+                                      child: Icon(Icons.delete_forever,
+                                          size: 20,
+                                          color: DynamicColors.redClr),
                                     ),
-                                  ),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      size: 28,
-                                      color: DynamicColors.redClr,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ))
+                            .toList(),
+                      //   totalRow: 2,
+                      //   cells: [
+                      //     const DataCell(Center(child: Text("SALOON"))),
+                      //     const DataCell(Center(child: Text("NW7"))),
+                      //     const DataCell(
+                      //         Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                      //     const DataCell(Center(child: Text("£55.00"))),
+                      //     DataCell(
+                      //       Center(
+                      //         child: Row(
+                      //           mainAxisAlignment: MainAxisAlignment.center,
+                      //           children: [
+                      //             OutlinedButton(
+                      //               style: OutlinedButton.styleFrom(
+                      //                 side: BorderSide(
+                      //                   color: Colors.transparent,
+                      //                 ), // border color & thickness
+                      //               ),
+                      //               onPressed: () {},
+                      //               child: Icon(
+                      //                 Icons.edit_calendar,
+                      //                 size: 28,
+                      //                 color: DynamicColors.primaryClr,
+                      //               ),
+                      //             ),
+                      //             OutlinedButton(
+                      //               style: OutlinedButton.styleFrom(
+                      //                 side: BorderSide(
+                      //                   color: Colors.transparent,
+                      //                 ), // border color & thickness
+                      //               ),
+                      //               onPressed: () {},
+                      //               child: Icon(
+                      //                 Icons.delete_forever,
+                      //                 size: 28,
+                      //                 color: DynamicColors.redClr,
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
                     ),
                   ),
-                ],
+                  )],
               ),
               Obx(() {
                 if (controller.allAddressesData.isEmpty) {

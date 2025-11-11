@@ -102,17 +102,51 @@ class FareController extends GetxController {
     }
   }
 
+  RxBool postFixedFareLoader = false.obs;
+
+  postFixedFare() async {
+    postFixedFareLoader(true);
+    var formData = {
+      "vehicle_type_id": "70",
+      "area1": "Islamabad",
+      "area2": "Lahore",
+      "fares": "20",
+      "from_location_id": "1",
+      "to_location_id": "24",
+
+    };
+
+    var response = await Api().post(
+        formData,
+        'fixedfares/add',
+        auth: true);
+    if (response.statusCode == 200) {
+
+      getAllFixedFare();
+      update();
+      print(response);
+    } else {
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+      print(response);
+    }
+  }
 
 
 /// todo testing location ???????????????????????????????????????????????????????????????????????
   final FocusNode searchingAddressViaFocusNode = FocusNode();
+  final FocusNode searchingAddress1ViaFocusNode = FocusNode();
   final highlightedIndex = 0.obs;
+  final highlightedIndex1 = 0.obs;
   List<AllAddressesModel> suggestions = <AllAddressesModel>[].obs;
+  List<AllAddressesModel> suggestions1 = <AllAddressesModel>[].obs;
   final viaLocation2Controller = TextEditingController();
   var inputText = ''.obs;
   final viaFocusNode = FocusNode();
+  final viaFocusNode1 = FocusNode();
   final FocusNode viaFieldFocusNode = FocusNode();
+  final FocusNode viaFieldFocusNode1 = FocusNode();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController addressController1 = TextEditingController();
   final activeFieldKey = Rx<GlobalKey?>(null);
   final stackKey = GlobalKey();
   final GlobalKey suggestionListKey = GlobalKey();
@@ -124,8 +158,7 @@ class FareController extends GetxController {
 
   void selectSuggestion(String? value) {
     viaLocation2Controller.text = value!;
-    viaLocation2Controller.selection =
-        TextSelection.collapsed(offset: value.length);
+    viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
     inputText.value = value;
     suggestions.clear();
   }
@@ -134,6 +167,18 @@ class FareController extends GetxController {
 
   // 👇 ye function har baar text change hone par call hoga
   Future<void> onChangeHandler(
+      {required String fieldName, required String searchingText}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay
+    // selectedTextFieldsValue.value = fieldName;
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _debounce = Timer(duration, () {
+      _stopTyping(fieldName: fieldName, searchingText: searchingText);
+    });
+  }
+  Future<void> onChangeHandler1(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
     // selectedTextFieldsValue.value = fieldName;
