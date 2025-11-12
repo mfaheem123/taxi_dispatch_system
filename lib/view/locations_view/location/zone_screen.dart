@@ -181,8 +181,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   registerzoneForm() {
     controller.registerZoneForm(context);
     controller.clearTextFields();
-    Prompts()
-        .showToastMessage(msg: "Data posted Succesfully!", context: context);
+    Prompts().showToastMessage(msg: "Data posted Succesfully!", context: context);
   }
 
   // List<Map<String, double>> toApiVertices(List<LatLng> pts) {
@@ -283,8 +282,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
     try {
       final controllers = await controller.ctrl.future;
-      final url =
-          "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
+      final url = "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
       final response = await http.get(Uri.parse(url));
       final data = jsonDecode(response.body);
       if (data.isNotEmpty) {
@@ -815,7 +813,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
+
                     SizedBox(height: 15),
+
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
                       items: controller.zoneItems,
@@ -826,6 +826,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         });
                       },
                     ),
+
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
                         items: controller.categoryItems,
@@ -835,7 +836,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             controller.categoryValue.value = newValue!;
                           });
                         }),
+
                     SizedBox(height: 20),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -852,6 +855,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             ),
                           ),
                         ),
+
                         ElevatedButton(
                           onPressed: () {
                             controller.submitForm(context);
@@ -963,6 +967,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                                 },
                               ),
                             ),
+
                             const SizedBox(width: 10),
 
                             // 🔹 Mode buttons

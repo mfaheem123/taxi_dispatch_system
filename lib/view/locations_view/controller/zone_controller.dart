@@ -159,6 +159,7 @@ class ZoneController extends GetxController {
       registerZoneForm(context);
     }
   }
+
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   void bindZoneUpdate({required dynamic zoneUpdate}) {
     isEditing.value = true; // Edit mode ON
