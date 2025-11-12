@@ -1,22 +1,14 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart'
     hide Zone;
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-
-import '../../../Model/zone_model.dart' hide Zone;
-=======
-import '../../../Model/zone_model.dart';
->>>>>>> 37148c98a40a96dd171d0675b31ec9740800fcff
-import 'dart:async';
-import 'dart:convert';
-import 'dart:math' as math;
-import 'dart:html' as html;
-import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
+
 // class ZoneControllerA {
 //   Zone zone = Zone();
 
