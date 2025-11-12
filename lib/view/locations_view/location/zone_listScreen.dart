@@ -1,9 +1,6 @@
 import 'package:dashboard_new1/alert/delete_permission_alert.dart';
-import 'package:dashboard_new1/component/color.dart';
-import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/pagination.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
-import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
 import 'package:dashboard_new1/view/locations_view/location/zone_screen.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +9,6 @@ import 'package:get/get.dart';
 import '../../../component/datatable_widget.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
-import '../../drivers_view/controller/driver_controller.dart';
 import '../controller/locations_controller.dart';
 
 class ZoneListScreen extends StatefulWidget {
@@ -37,6 +33,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
+      controller.getZoneList();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -59,9 +56,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final listToShow = controller.zoneFiltered.isNotEmpty
-        ? controller.zoneFiltered
-        : controller.zoneAll;
+   
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
@@ -72,27 +67,33 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<LocationController>(initState: (v) {
-        controller.getZoneList();
+      
+
       }, builder: (controller) {
-        return controller.getZoneLoader.value == true
-            ? SizedBox.shrink()
-            : SingleChildScrollView(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Zones",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SingleChildScrollView(
+         final listToShow = controller.zoneFiltered.isNotEmpty
+        ? controller.zoneFiltered
+        : controller.zoneAll;
+        return SingleChildScrollView(
+          padding: EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "Zones",
+                    style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w800, fontSize: 17),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              controller.getZoneLoader.value == false
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: SizedBox(
                         width: Get.width,
@@ -150,9 +151,18 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                             side: BorderSide(
                                                 color: Colors.transparent),
                                           ),
-                                          onPressed: () async {
-                                            await zonrController
-                                                .updateZone(context);
+                                          onPressed: () {
+                                            zonrController.bindUpdateZone({
+                                              item.base,
+                                              item.category,
+                                              // item.createdAt,
+                                              item.name,
+                                              item.overlay,
+                                              item.secondaryName,
+                                              item.id,
+                                              item.type,
+                                              item.vertices,
+                                            }, zoneUpdate: item);
 
                                             int index = _controller
                                                 .selectedMenuItems
@@ -209,13 +219,13 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                         ),
                       ),
                     ),
-                    PaginationWidget(
-                        currentPage: controller.zoneCurrentPage.value,
-                        totalPages: controller.zoneTotalPages.value,
-                        onPageChange: controller.zonePageChange),
-                  ],
-                ),
-              );
+              PaginationWidget(
+                  currentPage: controller.zoneCurrentPage.value,
+                  totalPages: controller.zoneTotalPages.value,
+                  onPageChange: controller.zonePageChange),
+            ],
+          ),
+        );
       }),
     );
   }
