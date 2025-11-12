@@ -66,8 +66,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
 
         return Container(
           width: Get.width / 1.5,
-          decoration:
-              BoxDecoration(border: Border.all(color: DynamicColors.gryClr)),
+          decoration: BoxDecoration(border: Border.all(color: DynamicColors.gryClr)),
           child: Stack(
             children: [
               Column(
@@ -141,9 +140,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(AppText.fromLocationType,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
+                              Text(AppText.fromLocationType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               CustomDropdownField<LocationType>(
                                 label: "Select Location Type",
                                 width: Get.width / 5,
@@ -167,8 +164,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.toLocationType,
-                                  style: mozillaTextSemiBoldText(
-                                      context: context, fontSize: 13)),
+                                  style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                               CustomDropdownField<LocationType>(
                                 label: "Select Location Type",
                                 width: Get.width / 5,
@@ -208,9 +204,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text("From Location",
-                                        style: mozillaTextSemiBoldText(
-                                            context: context, fontSize: 13)),
+                                    Text("From Location", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                     // RestrictedDrivers(
                                     //   width: fieldWidth,
                                     //   height: 35,
@@ -227,24 +221,17 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     //   ],
                                     // ),
                                     RawKeyboardListener(
-                                      focusNode: controller
-                                          .searchingAddressViaFocusNode,
+                                      focusNode: controller.searchingAddressViaFocusNode,
 
                                       onKey: (event) {
                                         if (event is RawKeyDownEvent) {
                                           if (event.logicalKey ==
-                                              LogicalKeyboardKey.arrowDown &&
-                                              controller.highlightedIndex.value <
-                                                  controller.suggestions.length -
-                                                      1) {
+                                              LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
                                             controller.highlightedIndex.value++;
-                                          } else if (event.logicalKey ==
-                                              LogicalKeyboardKey.arrowUp &&
-                                              controller.highlightedIndex.value >
+                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value >
                                                   0) {
                                             controller.highlightedIndex.value--;
-                                          } else if (event.logicalKey ==
-                                              LogicalKeyboardKey.enter) {
+                                          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                                             final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                             controller.selectSuggestion(selected);
                                           }else if(event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab){
@@ -358,8 +345,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                             controller.highlightedIndex1.value++;
                                           } else if (event.logicalKey ==
                                               LogicalKeyboardKey.arrowUp &&
-                                              controller.highlightedIndex1.value >
-                                                  0) {
+                                              controller.highlightedIndex1.value > 0) {
                                             controller.highlightedIndex1.value--;
                                           } else if (event.logicalKey ==
                                               LogicalKeyboardKey.enter) {
@@ -627,7 +613,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                 final RenderBox? stackBox = controller
                     .stackKey.currentContext
                     ?.findRenderObject() as RenderBox?;
-
                 double top = 0.0;
                 double left = 0.0;
                 double width = Get.width/4;
@@ -636,7 +621,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                   final Offset localOffset = fieldBox.localToGlobal(
                       Offset.zero,
                       ancestor: stackBox);
-
                   final double fieldHeight = fieldBox.size.height;
                   width = fieldBox.size.width;
                   top = localOffset.dy + fieldHeight;

@@ -102,7 +102,9 @@ class FareController extends GetxController {
     }
   }
 
+
   RxBool postFixedFareLoader = false.obs;
+
 
   postFixedFare() async {
     postFixedFareLoader(true);

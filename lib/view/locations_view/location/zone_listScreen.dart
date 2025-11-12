@@ -64,9 +64,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         : controller.zoneAll;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
