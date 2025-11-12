@@ -133,18 +133,14 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppText.vehicleType,
-                                      style: mozillaTextSemiBoldText(
-                                          context: context, fontSize: 13)),
+                                  Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                   CustomDropdownField<VehicleType>(
                                     label: "Select Vehicle",
                                     width: fieldWidth,
                                     height: 35,
-                                    items: controller
-                                        .fareGetVehicleTypeAccount!.vehicleTypes!,
+                                    items: controller.fareGetVehicleTypeAccount!.vehicleTypes!,
                                     value: controller.vehicleValue,
-                                    itemLabel: (templateList) =>
-                                        templateList.name!,
+                                    itemLabel: (templateList) => templateList.name!,
                                     onChanged: (val) {
                                       controller.vehicleValue = val;
                                       controller.update();
@@ -155,18 +151,14 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppText.account,
-                                      style: mozillaTextSemiBoldText(
-                                          context: context, fontSize: 13)),
+                                  Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                   CustomDropdownField<Account>(
                                     label: "Select Account",
                                     width: fieldWidth,
                                     height: 35,
-                                    items: controller
-                                        .fareGetVehicleTypeAccount!.accounts!,
+                                    items: controller.fareGetVehicleTypeAccount!.accounts!,
                                     value: controller.accountValue,
-                                    itemLabel: (templateList) =>
-                                        templateList.name!,
+                                    itemLabel: (templateList) => templateList.name!,
                                     onChanged: (val) {
                                       controller.accountValue = val;
                                       controller.update();
@@ -191,7 +183,6 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                         Text(AppText.fromDay,
                                             style: mozillaTextSemiBoldText(
                                                 context: context, fontSize: 13)),
-
                                         CustomDropdownField<String>(
                                           label: "",
                                           width: fieldWidth,
@@ -229,9 +220,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(AppText.today,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                        Text(AppText.today, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         CustomDropdownField<String>(
                                           label: "",
                                           width: fieldWidth,
@@ -271,26 +260,21 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   spacing: fieldWidth / 2,
                                   children: [
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("Start Date",
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                        Text("Start Date", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         SizedBox(
                                           width: fieldWidth,
                                           child: KeyboardDatePicker(
                                             initialDate: DateTime.now(),
                                             onChanged: (date) {
                                               // jab bhi user change kare
-                                              controller.startDate =
-                                                  "${date.year}-${date.month}-${date.day}";
+                                              controller.startDate = "${date.year}-${date.month}-${date.day}";
                                               print(date);
                                             },
                                             onSubmitted: (date) {
                                               // jab user enter press kare
-                                              controller.startDate =
-                                                  "${date.year}-${date.month}-${date.day}";
+                                              controller.startDate = "${date.year}-${date.month}-${date.day}";
                                               print("User pressed enter: $date");
                                             },
                                           ),
@@ -298,20 +282,16 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       ],
                                     ),
                                     Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("End Date",
-                                            style: mozillaTextSemiBoldText(
-                                                context: context, fontSize: 13)),
+                                        Text("End Date", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         SizedBox(
                                           width: fieldWidth,
                                           child: KeyboardDatePicker(
                                             initialDate: DateTime.now(),
                                             onChanged: (date) {
                                               // jab bhi user change kare
-                                              controller.endDate =
-                                                  "${date.year}-${date.month}-${date.day}";
+                                              controller.endDate = "${date.year}-${date.month}-${date.day}";
                                               print(date);
                                             },
                                             onSubmitted: (date) {
@@ -342,8 +322,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 child: SizedBox(
                                     height: 30,
                                     child: CustomTimePicker(
-                                      controller: controller
-                                          .fromDayController, // optional
+                                      controller: controller.fromDayController, // optional
                                       onTimeSelected: (time) {
                                         controller.fromDayController.text = time;
                                         controller.update();
@@ -359,8 +338,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 child: SizedBox(
                                     height: 30,
                                     child: CustomTimePicker(
-                                      controller:
-                                          controller.toDayController, // optional
+                                      controller: controller.toDayController, // optional
                                       onTimeSelected: (time) {
                                         controller.toDayController.text = time;
                                         controller.update();
@@ -416,37 +394,26 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               onTap: () {
                                 if (controller.accountValue == null ||
                                     controller.vehicleValue == null) {
-                                  BotToast.showText(
-                                      text: "Please select account and vehicle");
+                                  BotToast.showText(text: "Please select account and vehicle");
                                   return;
                                 }
-                                if (controller.fareConfiguration != "NORMAL" &&
-                                    controller.titleController.text.isEmpty) {
-                                  BotToast.showText(
-                                      text: "Please write the title");
+                                if (controller.fareConfiguration != "NORMAL" && controller.titleController.text.isEmpty) {
+                                  BotToast.showText(text: "Please write the title");
                                   return;
                                 }
                                 if (controller.fareConfiguration == "NORMAL" &&
                                     (controller.fromDayValue == null ||
                                         controller.toDayValue == null || controller.fromDayController.text.isEmpty||
                                         controller.toDayController.text.isEmpty)) {
-                                  BotToast.showText(
-                                      text: "Please select from-to day and start time and end time");
+                                  BotToast.showText(text: "Please select from-to day and start time and end time");
                                   return;
                                 }
-                                if (controller
-                                        .startingFareController.text.isEmpty ||
-                                    controller
-                                        .startingMilesController.text.isEmpty) {
-                                  BotToast.showText(
-                                      text:
-                                          "Please write starting fare and starting miles");
+                                if (controller.startingFareController.text.isEmpty || controller.startingMilesController.text.isEmpty) {
+                                  BotToast.showText(text: "Please write starting fare and starting miles");
                                   return;
                                 }
                                 if(controller.fareConfiguration != "NORMAL" && controller.fromDayController.text.isEmpty|| controller.toDayController.text.isEmpty){
-                                  BotToast.showText(
-                                      text:
-                                      "Please select start and end time");
+                                  BotToast.showText(text: "Please select start and end time");
                                   return;
                                 }
                                 controller.createFareSetting();
@@ -456,7 +423,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               style: mozillaTextRegularText(
-                                  fontSize: 13, color: DynamicColors.whiteClr),
+                                  fontSize: 13,
+                                  color: DynamicColors.whiteClr
+                              ),
                             ),
                           ),
                         ],
@@ -482,13 +451,11 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               title: "MINIMUM FARES", removeSearching: true),
                           buildHeaderWithSearch(
                               title: "MINIMUM MILES", removeSearching: true),
-
                           if(controller.fareConfiguration != "NORMAL") buildHeaderWithSearch(
                               title: "TITLE", removeSearching: true),
                           buildHeaderWithSearch(
                               title: "ACTIONS", removeSearching: true),
                         ],
-
                         // 🔹 Dynamically create rows
                         rows: controller
                             .getAllFareConfigurationData!.fareConfigurations!
@@ -500,16 +467,13 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     DataCell(Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? "")),
                                     DataCell(Text(fare.fromTime ?? "")),
                                     DataCell(Text(fare.toTime ?? "")),
-                                    DataCell(
-                                        Text("£ ${fare.minimumFares ?? '0.00'}")),
-                                    DataCell(
-                                        Text("${fare.minimumMiles ?? '0.0'} MI")),
+                                    DataCell(Text("£ ${fare.minimumFares ?? '0.00'}")),
+                                    DataCell(Text("${fare.minimumMiles ?? '0.0'} MI")),
                                    if(controller.fareConfiguration != "NORMAL") DataCell(Text(fare.title ?? "")),
                                     DataCell(
                                       Center(
                                         child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
                                             OutlinedButton(
                                               style: OutlinedButton.styleFrom(

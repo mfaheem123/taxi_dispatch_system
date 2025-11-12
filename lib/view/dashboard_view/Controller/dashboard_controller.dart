@@ -28,6 +28,7 @@ class DashboardController extends GetxController {
 
   SeeZoneOnMapModel? seeZoneOnMapModel ;
   RxBool seeZoneOnMappLoader=false.obs;
+
   seeZoneOnMapp() async {
     seeZoneOnMappLoader(true);
 
@@ -515,40 +516,42 @@ class DashboardController extends GetxController {
 // (Optional) format nicely
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value =
-          formatDuration(durationInMinutes); // e.g. "443.3"
+      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
 
       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
-      List<LatLng> polylinePointss = result
-          .map((PointLatLng point) => LatLng(point.latitude, point.longitude))
-          .toList();
 
-      polylinePointsCoordinate = polylinePointss
-          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble()))
-          .toList();
+      List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
+
+      polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
 
       if (polylinePointsCoordinate.isNotEmpty) {
+
         polylines.add(Polyline(
+
           points: polylinePointsCoordinate,
+
           color: DynamicColors.primaryClr,
+
           strokeWidth: 2.0,
+
         ));
 
         // build bounds from the route or from markers (choose whichever you prefer)
-        final List<LatLng> focusPoints =
-            tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
+        final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
         LatLngBounds bounds;
+
         if (focusPoints.length == 1) {
-          bounds =
-              LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
+
+          bounds = LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
+
         } else {
+
           bounds = calculateBounds(focusPoints); // your existing helper
+
         }
 
-        final cameraFit =
-            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
-        mapController.fitCamera(cameraFit);
+        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));mapController.fitCamera(cameraFit);
       }
 
       update();
@@ -583,8 +586,7 @@ class DashboardController extends GetxController {
   List<GlobalKey> suggestionItemKeys = [];
 
   void updateKeys() {
-    suggestionItemKeys =
-        List.generate(allAddressesData.length, (_) => GlobalKey());
+    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
   }
 
   final GlobalKey suggestionListKey = GlobalKey();
@@ -613,7 +615,9 @@ class DashboardController extends GetxController {
   void _scrollToHighlighted(
       {bool scrollDown = true, bool viaCondition = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
       final i = highlightedIndex.value;
+
       if (i < 0 || i >= suggestionItemKeys.length) return;
 
       final itemCtx = suggestionItemKeys[i].currentContext;
@@ -625,40 +629,57 @@ class DashboardController extends GetxController {
 
       if (itemCtx != null &&
           listCtx != null &&
+
           suggestionScrollController.hasClients) {
+
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
+
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
-        final Offset itemOffset =
-            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+
         final double itemTopLocal = itemOffset.dy;
+
         final double itemBottomLocal = itemTopLocal + itemBox.size.height;
 
         final double viewportHeight = listBox.size.height;
+
         final double currentOffset = suggestionScrollController.offset;
 
         double targetOffset = currentOffset;
+
         const double edgeMargin = 8.0;
 
         if (itemBottomLocal > viewportHeight - edgeMargin) {
+
           final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
+
           targetOffset = (currentOffset + delta).clamp(
+
             suggestionScrollController.position.minScrollExtent,
             suggestionScrollController.position.maxScrollExtent,
+
           );
         } else if (itemTopLocal < edgeMargin) {
+
           final double delta = itemTopLocal - edgeMargin; // negative
+
           targetOffset = (currentOffset + delta).clamp(
+
             suggestionScrollController.position.minScrollExtent,
             suggestionScrollController.position.maxScrollExtent,
+
           );
         } else {
           return; // already visible
         }
 
         _instantOrSmoothScroll(targetOffset, currentOffset);
+
       } else {
+
         _fallbackScroll(i, scrollDown);
+
       }
     });
   }
@@ -970,15 +991,15 @@ class DashboardController extends GetxController {
       await getAddresses(fieldsName: "VIA", searchingText: query);
 
       // ✅ Prepare list after data fetched
-      final list = allAddressesData
-          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
-          .toList();
+      final list = allAddressesData.map((m) => "${m.name ?? ''} ${m.postcode ?? ''}").toList();
 
       completer.complete(list); // mark as finished
+
     });
 
     // ✅ Wait until completer completes
     return completer.future;
+
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking

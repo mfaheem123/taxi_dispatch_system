@@ -250,8 +250,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  if (event.logicalKey ==
                                                                      LogicalKeyboardKey.arrowDown &&
                                                                      controller.highlightedIndex.value <
-                                                                         controller.suggestions.length -
-                                                                             1) {
+                                                                         controller.suggestions.length - 1) {
                                                                    controller.highlightedIndex.value++;
                                                                  } else if (event.logicalKey ==
                                                                      LogicalKeyboardKey.arrowUp &&
@@ -273,8 +272,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              child: CustomTextField(
                                                                key: controller.pickupFieldKey,
                                                                controller: controller.pickupController,
-                                                               focusNode:
-                                                               controller.pickupTextFieldFocusNode,
+                                                               focusNode: controller.pickupTextFieldFocusNode,
                                                                hintText: 'PICKUP LOCATION',
                                                                borderRadius: 4,
                                                                prefixIcon: const Icon(
@@ -289,8 +287,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
                                                                },
-                                                               onSubmitted: (_) =>
-                                                                   FocusScope.of(context).nextFocus(),
+                                                               onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                suffixIcon: Row(
                                                                  mainAxisAlignment: MainAxisAlignment.end,
                                                                  mainAxisSize: MainAxisSize.min,
@@ -350,11 +347,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              label: "Select Zone",
                                                            width: Get.width / 9,
                                                            height: 35,
-                                                           items: _controller.updateLocationValue.value == true?[]: _controller.locationtypezoneModel!
-                                                               .zonesList!,
-                                                           value: _controller.zoneValue,
-                                                               itemLabel: (templateList) =>
-                                                           templateList.name!,
+                                                           items: _controller.updateLocationValue.value == true?[]: _controller.locationtypezoneModel!.zonesList!,
+                                                           value: _controller.zoneValue, itemLabel: (templateList) => templateList.name!,
                                                            onChanged: (val) {
                                                              _controller.zoneValue = val;
                                                              controller.update();
@@ -431,22 +425,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      controller.highlightedIndex.value <
                                                                          controller.suggestions.length - 1) {
                                                                    controller.highlightedIndex.value++;
-                                                                 } else if (event.logicalKey ==
+                                                                 }
+                                                                 else if (event.logicalKey ==
                                                                      LogicalKeyboardKey.arrowUp &&
                                                                      controller.highlightedIndex.value >
                                                                          0) {
                                                                    controller.highlightedIndex.value--;
-                                                                 } else if (event.logicalKey ==
-                                                                     LogicalKeyboardKey.enter) {
-                                                                   final selected =
-                                                                   controller.suggestions[controller
-                                                                       .highlightedIndex.value].name;
+                                                                 }
+                                                                 else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                                                   final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                                                    controller.selectSuggestion(selected);
-                                                                 }else if(event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab){
+                                                                 }
+                                                                 else if(event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab){
                                                                    FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                  }
                                                                }
                                                              },
+
                                                              child: CustomTextField(
                                                                key: controller.dropOffFieldKey,
                                                                controller: controller.dropOffController,
@@ -496,13 +491,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    KbdActivatable(
                                                                      focusNode: swap2FN,
                                                                      onActivate: () {
-
                                                                        String tempPic = controller.pickupController.text;
                                                                        String tempDrop = controller.dropOffController.text;
                                                                        controller.pickupController.text = tempDrop;
                                                                        controller.dropOffController.text = tempPic;
                                                                        controller.update();
-
                                                                      },
 
                                                                      child: const Icon(Icons.swap_vert,
@@ -599,17 +592,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        controller.highlightedIndex
                                                                            .value >
                                                                            0) {
-                                                                     controller
-                                                                         .highlightedIndex.value--;
+                                                                     controller.highlightedIndex.value--;
                                                                    } else if (event.logicalKey ==
                                                                        LogicalKeyboardKey.enter) {
                                                                      final selected =
-                                                                     controller.suggestions[
-                                                                     controller
-                                                                         .highlightedIndex
-                                                                         .value].name;
-                                                                     controller
-                                                                         .selectSuggestion(selected);
+                                                                     controller.suggestions[controller.highlightedIndex.value].name;
+                                                                     controller.selectSuggestion(selected);
                                                                    }
                                                                  }
                                                                },
@@ -636,14 +624,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  suffixIcon: KbdActivatable(
                                                                    focusNode: swap1FN,
                                                                    onActivate: () {
-                                                                     String tempPic = controller
-                                                                         .viaLocation1Controller.text;
-                                                                     String tempDrop = controller
-                                                                         .viaLocation2Controller.text;
-                                                                     controller.viaLocation1Controller
-                                                                         .text = tempDrop;
-                                                                     controller.viaLocation2Controller
-                                                                         .text = tempPic;
+                                                                     String tempPic = controller.viaLocation1Controller.text;
+                                                                     String tempDrop = controller.viaLocation2Controller.text;
+                                                                     controller.viaLocation1Controller.text = tempDrop;
+                                                                     controller.viaLocation2Controller.text = tempPic;
                                                                      controller.update();
                                                                    },
                                                                    child: const Icon(Icons.swap_vert,
@@ -657,7 +641,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                          SizedBox(
                                                              width: isMobile ? 0 : 10,
-                                                             height: isMobile ? 10 : 0),
+                                                             height: isMobile ? 10 : 0
+                                                         ),
 
                                                          // (2) Select plot button
                                                          FocusTraversalOrder(
@@ -673,7 +658,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                          SizedBox(
                                                              width: isMobile ? 0 : 10,
-                                                             height: isMobile ? 10 : 0),
+                                                             height: isMobile ? 10 : 0
+                                                         ),
 
                                                          // (3) Pickup notes
                                                          FocusTraversalOrder(
@@ -725,25 +711,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              width: fieldWidth,
                                                              height: 30,
                                                              child: RawKeyboardListener(
-                                                               focusNode:
-                                                               controller.via2KeyboardFocusNode,
+                                                               focusNode: controller.via2KeyboardFocusNode,
                                                                onKey: (event) {
                                                                  if (event is RawKeyDownEvent) {
-                                                                   if (event.logicalKey ==
-                                                                       LogicalKeyboardKey
-                                                                           .arrowDown &&
-                                                                       controller.highlightedIndex
-                                                                           .value <
-                                                                           controller.suggestions
-                                                                               .length -
-                                                                               1) {
-                                                                     controller
-                                                                         .highlightedIndex.value++;
+                                                                   if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
+                                                                       controller.highlightedIndex.value < controller.suggestions.length - 1) {
+                                                                     controller.highlightedIndex.value++;
                                                                    } else if (event.logicalKey ==
-                                                                       LogicalKeyboardKey
-                                                                           .arrowUp &&
-                                                                       controller.highlightedIndex
-                                                                           .value >
+                                                                       LogicalKeyboardKey.arrowUp &&
+                                                                       controller.highlightedIndex.value >
                                                                            0) {
                                                                      controller
                                                                          .highlightedIndex.value--;

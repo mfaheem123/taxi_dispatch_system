@@ -51,7 +51,6 @@ class LocationController extends GetxController {
   final postcodeCtrl = TextEditingController();
   final shortcutCtrl = TextEditingController();
   final extraChargesCtrl = TextEditingController();
-
   final latitudeCtrl = TextEditingController();
   final addressCtrl = TextEditingController();
 
@@ -323,7 +322,6 @@ class LocationController extends GetxController {
     var response = await Api().delete("zones/delete/$id");
     if (response.statusCode == 200) {
       getZoneList();
-
       update();
     }
   }

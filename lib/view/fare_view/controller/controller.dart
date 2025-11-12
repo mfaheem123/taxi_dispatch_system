@@ -1,16 +1,19 @@
 
 
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
-
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
-
+import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+
+import '../../dashboard_view/models/all_addresses_model.dart';
 
 class FareController extends GetxController {
 
@@ -86,11 +89,325 @@ class FareController extends GetxController {
 
 
 
+  GetAllFixedFareModel? getAllFixedFareModel;
+  RxBool getAllFixedFareLoader = false.obs;
+
+  getAllFixedFare()async{
+    getFixedFareVehicleLocationTypeLoader(true);
+    var response = await Api().get("fixedfares/get");
+    if (response.statusCode == 200) {
+      getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
+      getAllFixedFareLoader(false);
+      update();
+    }
+  }
 
 
+  RxBool postFixedFareLoader = false.obs;
 
 
+  postFixedFare() async {
+    postFixedFareLoader(true);
+    var formData = {
+      "vehicle_type_id": "70",
+      "area1": "Islamabad",
+      "area2": "Lahore",
+      "fares": "20",
+      "from_location_id": "1",
+      "to_location_id": "24",
 
+    };
+
+    var response = await Api().post(
+        formData,
+        'fixedfares/add',
+        auth: true);
+    if (response.statusCode == 200) {
+
+      getAllFixedFare();
+      update();
+      print(response);
+    } else {
+      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
+      print(response);
+    }
+  }
+
+
+/// todo testing location ???????????????????????????????????????????????????????????????????????
+  final FocusNode searchingAddressViaFocusNode = FocusNode();
+  final FocusNode searchingAddress1ViaFocusNode = FocusNode();
+  final highlightedIndex = 0.obs;
+  final highlightedIndex1 = 0.obs;
+  List<AllAddressesModel> suggestions = <AllAddressesModel>[].obs;
+  List<AllAddressesModel> suggestions1 = <AllAddressesModel>[].obs;
+  final viaLocation2Controller = TextEditingController();
+  var inputText = ''.obs;
+  final viaFocusNode = FocusNode();
+  final viaFocusNode1 = FocusNode();
+  final FocusNode viaFieldFocusNode = FocusNode();
+  final FocusNode viaFieldFocusNode1 = FocusNode();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController addressController1 = TextEditingController();
+  final activeFieldKey = Rx<GlobalKey?>(null);
+  final stackKey = GlobalKey();
+  final GlobalKey suggestionListKey = GlobalKey();
+  final GlobalKey suggestionListKeyVia = GlobalKey();
+  final suggestionScrollController = ScrollController();
+  AllAddressesModel? selectedModel;
+  RxInt suggestionSelectedIndex = 0.obs;
+
+
+  void selectSuggestion(String? value) {
+    viaLocation2Controller.text = value!;
+    viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
+    inputText.value = value;
+    suggestions.clear();
+  }
+
+  Timer? _debounce;
+
+  // 👇 ye function har baar text change hone par call hoga
+  Future<void> onChangeHandler(
+      {required String fieldName, required String searchingText}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay
+    // selectedTextFieldsValue.value = fieldName;
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _debounce = Timer(duration, () {
+      _stopTyping(fieldName: fieldName, searchingText: searchingText);
+    });
+  }
+  Future<void> onChangeHandler1(
+      {required String fieldName, required String searchingText}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay
+    // selectedTextFieldsValue.value = fieldName;
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _debounce = Timer(duration, () {
+      _stopTyping(fieldName: fieldName, searchingText: searchingText);
+    });
+  }
+
+  void _stopTyping({required String fieldName, required String searchingText}) {
+    // 👇 Yahan API call ya search function call karna hai
+    getAddresses(fieldsName: fieldName, searchingText: searchingText);
+  }
+
+  List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
+  getAddresses({fieldsName, searchingText}) async {
+    var response = await Api().get(
+        "services/search?search=${searchingText.toString().toUpperCase()}",
+        auth: true);
+    if (response.statusCode == 200) {
+      if (response.data.isNotEmpty) {
+        allAddressesData.clear();
+        allAddressesData.addAll((response.data['result'] as List)
+            .map((e) => AllAddressesModel.fromJson(e))
+            .toList());
+        updateKeys();
+        inputText.value = searchingText;
+        if (searchingText.isEmpty) {
+          suggestions.clear();
+        } else {
+          suggestions = allAddressesData
+              .where((loc) =>
+              loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
+              .toList();
+          highlightedIndex.value = 0;
+        }
+        update();
+      } else {
+        openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
+      }
+    }
+  }
+
+  openStreetMapApi({searchingText}) async {
+    var dio = Dio();
+    var response = await dio.request(
+      'https://api.postcodes.io/postcodes/$searchingText',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      allAddressesData.clear();
+      pickLocationAddress(response.data['result']['latitude'],
+          response.data['result']['longitude']);
+    }
+  }
+
+  pickLocationAddress(lat, lng) async {
+    var dio = Dio();
+    var response = await dio.request(
+      'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&addressdetails=1',
+      options: Options(
+        method: 'GET',
+      ),
+    );
+    if (response.statusCode == 200) {
+      final addressObject = [
+        {
+          "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
+          "postcode": response.data['address']
+          ['postcode'], // e.g. Brondesbury Park, Brent
+          "lat": double.parse(response.data['lat']), // 51.542059
+          "lon": double.parse(response.data['lon']), // -0.212545
+        }
+      ];
+
+      allAddressesData.addAll(
+        (addressObject as List)
+            .map((e) => AllAddressesModel.fromJson(e))
+            .toList(),
+      );
+      updateKeys();
+    }
+  }
+
+  List<GlobalKey> suggestionItemKeys = [];
+
+  void updateKeys() {
+    suggestionItemKeys =
+        List.generate(allAddressesData.length, (_) => GlobalKey());
+    update();
+  }
+
+  // change move functions to scroll after change:
+  void moveHighlightDown({bool viaConditionValue = false}) {
+    if (allAddressesData.isEmpty) return;
+    highlightedIndex.value =
+        (highlightedIndex.value + 1) % allAddressesData.length;
+    highlightedIndex.refresh();
+    _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
+  }
+
+  void moveHighlightUp({bool viaConditionValue = false}) {
+    if (allAddressesData.isEmpty) return;
+
+    highlightedIndex.value =
+        (highlightedIndex.value - 1 + allAddressesData.length) %
+            allAddressesData.length;
+    highlightedIndex.refresh();
+    _scrollToHighlighted(
+        scrollDown: false,
+        viaCondition: viaConditionValue); // 👈 scroll to top when up
+  }
+
+  void _scrollToHighlighted(
+      {bool scrollDown = true, bool viaCondition = false}) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final i = highlightedIndex.value;
+      if (i < 0 || i >= suggestionItemKeys.length) return;
+
+      final itemCtx = suggestionItemKeys[i].currentContext;
+
+      final listCtx = suggestionListKey.currentContext;
+
+      if (itemCtx != null &&
+          listCtx != null &&
+          suggestionScrollController.hasClients) {
+        final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
+        final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
+
+        final Offset itemOffset =
+        itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final double itemTopLocal = itemOffset.dy;
+        final double itemBottomLocal = itemTopLocal + itemBox.size.height;
+
+        final double viewportHeight = listBox.size.height;
+        final double currentOffset = suggestionScrollController.offset;
+
+        double targetOffset = currentOffset;
+        const double edgeMargin = 8.0;
+
+        if (itemBottomLocal > viewportHeight - edgeMargin) {
+          final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        } else if (itemTopLocal < edgeMargin) {
+          final double delta = itemTopLocal - edgeMargin; // negative
+          targetOffset = (currentOffset + delta).clamp(
+            suggestionScrollController.position.minScrollExtent,
+            suggestionScrollController.position.maxScrollExtent,
+          );
+        } else {
+          return; // already visible
+        }
+
+        _instantOrSmoothScroll(targetOffset, currentOffset);
+      } else {
+        _fallbackScroll(i, scrollDown);
+      }
+    });
+  }
+
+  void _fallbackScroll(int index, bool scrollDown) {
+    if (!suggestionScrollController.hasClients) return;
+
+    const double itemHeight = 48.0;
+    const double topPadding = 15.0;
+    final currentOffset = suggestionScrollController.offset;
+    final viewport = suggestionScrollController.position.viewportDimension;
+    final visibleStart = currentOffset;
+    final visibleEnd = currentOffset + viewport;
+
+    final itemTop = topPadding + index * itemHeight;
+    final itemBottom = itemTop + itemHeight;
+
+    double target = currentOffset;
+    const double margin = itemHeight * 0.12;
+
+    if (itemBottom > visibleEnd) {
+      target = itemBottom - viewport + margin;
+    } else if (itemTop < visibleStart) {
+      target = itemTop - margin;
+    } else {
+      return;
+    }
+
+    target = target.clamp(
+      suggestionScrollController.position.minScrollExtent,
+      suggestionScrollController.position.maxScrollExtent,
+    );
+
+    _instantOrSmoothScroll(target, currentOffset);
+  }
+
+  void _instantOrSmoothScroll(double targetOffset, double currentOffset) {
+    if (!suggestionScrollController.hasClients) return;
+
+    // difference between current & target
+    final double diff = (targetOffset - currentOffset).abs();
+
+    // if small distance -> jump instantly
+    if (diff < 60) {
+      suggestionScrollController.jumpTo(targetOffset);
+    } else {
+      // if bigger move -> smooth scroll
+      suggestionScrollController.animateTo(
+        targetOffset,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  ///  todo testing location ???????????????????????????????????????????????????????????????????????
 
 
 
@@ -195,6 +512,7 @@ class FareController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+
 
 
 }
