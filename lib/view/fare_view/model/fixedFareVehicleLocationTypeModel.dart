@@ -68,7 +68,7 @@ class LocationType {
   };
 }
 
-class VehicleTypeFixed {
+class  VehicleTypeFixed {
   int? id;
   String? name;
 
