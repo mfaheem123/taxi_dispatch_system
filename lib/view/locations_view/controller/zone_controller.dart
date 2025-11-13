@@ -151,6 +151,149 @@ class ZoneController extends GetxController {
     return null;
   }
 
+
+
+ postZone(context) async {
+    print("Draw mode: ${mode.value}");
+    print("Draft points: ${draft.length}");
+    print("Points draft: ${pointsDraft.length}");
+    print("Rect start: $rectStart, Rect end: $rectCurrent");
+  
+    List<Vertices> vertices = [];
+
+    // Handle polygon/freehand draw
+    if (draft.isNotEmpty) {
+      vertices = draft
+          .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
+          .toList();
+    } 
+    // Handle rectangle draw
+    else if (rectStart != null && rectCurrent != null) {
+      vertices = [
+        Vertices(latitude: rectStart!.latitude, longitude: rectStart!.longitude),
+        Vertices(latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
+        Vertices(latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
+        Vertices(latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
+      ];
+    }
+
+    if (vertices.length < 3) {
+      Get.snackbar('Error', 'Please draw/select a zone (at least 3 points)');
+      return;
+    }
+
+
+  var formData = {
+  if (updateZone.value) "id": zoneUpdateId.value, 
+  "name": zonenameContoller.text.trim(),
+  "secondary_name": secondarynamezoneController.text.trim(),
+  "type": zoneValue.value,
+  "category": categoryValue.value,
+  "base": base.value,
+  "vertices": vertices.map((v) => v.toJson()).toList(),
+  "overlay": mode.value == DrawMode.rectangle ? "rectangle" : "polygon",
+};
+
+
+  final response = await Api().post(
+    formData,
+    updateZone.value ? 'zones/edit' : 'zones',
+    auth: true,
+  );
+
+  if (response.statusCode == 200) {
+
+    clearZoneForm();
+    update();
+    print("Zone saved: ${response}");
+    print("FormData saved: ${formData}");
+
+  } else {
+    print("Error saving zone: $response", );
+  }
+}
+
+  RxBool updateZone = false.obs;
+  RxInt zoneUpdateId = 0.obs;
+bindUpdateZone(Set<dynamic> set, {Zone? zoneUpdate}) async {
+  if (zoneUpdate == null) return;
+
+  // --- 1️⃣ Basic info load
+  zoneUpdateId.value = zoneUpdate.id ?? 0;
+  zonenameContoller.text = zoneUpdate.name ?? '';
+  secondarynamezoneController.text = zoneUpdate.secondaryName ?? '';
+  zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
+  categoryValue.value = zoneUpdate.category ?? 'Select Category';
+  base.value = zoneUpdate.base ?? false;
+
+  // --- 2️⃣ Clear previous drafts
+  draft.clear();
+  pointsDraft.clear();
+  rectStart = null;
+  rectCurrent = null;
+
+  // --- 3️⃣ Vertices load (for polygon or rectangle)
+  if (zoneUpdate.vertices != null && zoneUpdate.vertices!.isNotEmpty) {
+    List<LatLng> loadedVertices = zoneUpdate.vertices!
+        .map((v) => LatLng(v.latitude!, v.longitude!))
+        .toList();
+
+    // --- 4️⃣ Identify shape type (rectangle or polygon)
+    if (loadedVertices.length == 4 &&
+        _isRectangle(loadedVertices)) {
+      rectStart = loadedVertices.first;
+      rectCurrent = loadedVertices[2];
+      mode.value = DrawMode.rectangle;
+      print("Detected Rectangle zone for editing ✅");
+    } else {
+      draft.assignAll(loadedVertices);
+      pointsDraft.assignAll(loadedVertices);
+      mode.value = DrawMode.freehand;
+      print("Detected Polygon zone for editing ✅");
+    }
+  }
+
+  // --- 5️⃣ Update UI
+  isEditing.value = true;
+  updateZone(true);
+  update();
+}
+
+bool _isRectangle(List<LatLng> pts) {
+  if (pts.length != 4) return false;
+  final lats = pts.map((e) => e.latitude).toSet();
+  final lngs = pts.map((e) => e.longitude).toSet();
+  return lats.length == 2 && lngs.length == 2;
+}
+
+
+
+  List<LatLng> rectFromDiagonal(LatLng a, LatLng b) {
+    final minLat = math.min(a.latitude, b.latitude);
+    final maxLat = math.max(a.latitude, b.latitude);
+    final minLng = math.min(a.longitude, b.longitude);
+    final maxLng = math.max(a.longitude, b.longitude);
+    return [
+      LatLng(minLat, minLng),
+      LatLng(minLat, maxLng),
+      LatLng(maxLat, maxLng),
+      LatLng(maxLat, minLng),
+    ];
+  }
+
+  void changeMode(DrawMode m) {
+    mode.value = m;
+    draft.clear();
+    pointsDraft.clear();
+    rectStart = null;
+    rectCurrent = null;
+    if (mode.value != DrawMode.edit && mode.value != DrawMode.rectangle) {
+      selectedPolyId.value = null;
+    }
+  }
+
+
+
   //  List<LatLng>? _currentVertices() {
   //   // Selected saved polygon
   //   if (selectedPolyId.value != null) {
@@ -351,120 +494,6 @@ class ZoneController extends GetxController {
   //     Prompts().showErrorMessage(msg: "Network error: $e", context: context);
   //   }
   // }
-
- postZone(context) async {
-    print("=== DEBUG: Zone Save Attempt ===");
-    print("Draw mode: ${mode.value}");
-    print("Draft points: ${draft.length}");
-    print("Points draft: ${pointsDraft.length}");
-    print("Rect start: $rectStart, Rect end: $rectCurrent");
-    print("===============================");
-    List<Vertices> vertices = [];
-
-    // Handle polygon/freehand draw
-    if (draft.isNotEmpty) {
-      vertices = draft
-          .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
-          .toList();
-    } 
-    // Handle rectangle draw
-    else if (rectStart != null && rectCurrent != null) {
-      vertices = [
-        Vertices(latitude: rectStart!.latitude, longitude: rectStart!.longitude),
-        Vertices(latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
-      ];
-    }
-
-    if (vertices.length < 3) {
-      Get.snackbar('Error', 'Please draw/select a zone (at least 3 points)');
-      return;
-    }
-
-
-  var formData = {
-    "name": zonenameContoller.text.trim(),
-    "secondary_name": secondarynamezoneController.text.trim(),
-    "type": zoneValue.value,
-    "category": categoryValue.value,
-    "base": base.value,
-    "vertices": vertices.map((v) => v.toJson()).toList(), // <-- send lat/lng here
-    "overlay": "rectangle", // or whatever type
-  };
-
-  final response = await Api().post(
-    formData,
-    updateZone.value ? 'zones/edit' : 'zones',
-    auth: true,
-  );
-
-  if (response.statusCode == 200) {
-
-    clearZoneForm();
-    update();
-    print("Zone saved: ${response}");
-    print("FormData saved: ${formData}");
-
-  } else {
-    print("Error saving zone: $response", );
-  }
-}
-
-  RxBool updateZone = false.obs;
-  RxInt zoneUpdateId = 0.obs;
-  bindUpdateZone(Set<dynamic> set, {Zone? zoneUpdate}) async {
-    if (zoneUpdate == null) return;
-
-    // 1️⃣ Set basic zone info
-    zoneUpdateId.value = zoneUpdate.id!;
-    zonenameContoller.text = zoneUpdate.name ?? '';
-    secondarynamezoneController.text = zoneUpdate.secondaryName ?? '';
-    zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
-    categoryValue.value = zoneUpdate.category ?? 'Select Category';
-    base.value = zoneUpdate.base ?? false;
-
-    // 2️⃣ Convert server vertices to LatLng
-    if (zoneUpdate.vertices != null && zoneUpdate.vertices!.isNotEmpty) {
-      final pts = zoneUpdate.vertices!
-          .map((v) => LatLng(v.latitude ?? 0, v.longitude ?? 0))
-          .toList();
-
-      // 3️⃣ Set controller map points
-      activeVertices = pts;
-      pointsDraft.clear();
-      draft.clear();
-      rectStart = null;
-      rectCurrent = null;
-
-      // Optional: polyPoints for edit mode
-      polyPoints['editZone'] = pts;
-      selectedPolyId.value = 'editZone';
-
-      // 4️⃣ Move map camera safely (Flutter Web safe)
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mapController != null) {
-          final bounds = LatLngBounds(
-            southwest: LatLng(
-              pts.map((p) => p.latitude).reduce(math.min),
-              pts.map((p) => p.longitude).reduce(math.min),
-            ),
-            northeast: LatLng(
-              pts.map((p) => p.latitude).reduce(math.max),
-              pts.map((p) => p.longitude).reduce(math.max),
-            ),
-          );
-          mapController!
-              .animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
-        }
-      });
-    }
-
-    // 5️⃣ Notify UI
-    isEditing.value = true;
-    updateZone(true);
-  }
-
   ///---------------------------------------------------------------------------------------------- Update
 
   // Future<void> updateZone(BuildContext context) async {
@@ -513,27 +542,5 @@ class ZoneController extends GetxController {
   //   }
   // }
 
-  List<LatLng> rectFromDiagonal(LatLng a, LatLng b) {
-    final minLat = math.min(a.latitude, b.latitude);
-    final maxLat = math.max(a.latitude, b.latitude);
-    final minLng = math.min(a.longitude, b.longitude);
-    final maxLng = math.max(a.longitude, b.longitude);
-    return [
-      LatLng(minLat, minLng),
-      LatLng(minLat, maxLng),
-      LatLng(maxLat, maxLng),
-      LatLng(maxLat, minLng),
-    ];
-  }
 
-  void changeMode(DrawMode m) {
-    mode.value = m;
-    draft.clear();
-    pointsDraft.clear();
-    rectStart = null;
-    rectCurrent = null;
-    if (mode.value != DrawMode.edit && mode.value != DrawMode.rectangle) {
-      selectedPolyId.value = null;
-    }
-  }
 }

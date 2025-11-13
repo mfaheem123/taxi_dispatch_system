@@ -859,23 +859,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {
-                            controller.postZone(context);
-                            
-                            print("Save Button is working");
-
-                            // if (controller.mode.value == DrawMode.freehand &&
-                            //     controller.draft.isEmpty) return;
-                            // if (controller.mode.value == DrawMode.points &&
-                            //     controller.pointsDraft.isEmpty) return;
-                            // if (controller.mode.value == DrawMode.rectangle &&
-                            //     (controller.rectStart == null ||
-                            //         controller.rectCurrent == null)) return;
-
-                            // WidgetsBinding.instance.addPostFrameCallback((_) {
-
-                            // });
-                          },
+                          onPressed: () async {
+  await controller.postZone(context);
+  Get.snackbar('Saved', 'Zone data submitted successfully');
+},
                           child: const Text("SAVE"),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,

@@ -26,7 +26,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
   final DashboardController _controller = Get.find();
-  final ZoneController zonrController = Get.find();
+  final ZoneController zoneController = Get.find();
 
   @override
   void initState() {
@@ -150,18 +150,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                            zonrController.bindUpdateZone({
-                                              item.base,
-                                              item.category,
-                                              // item.createdAt,
-                                              item.name,
-                                              item.overlay,
-                                              item.secondaryName,
-                                              item.id,
-                                              item.type,
-                                              item.vertices,
-                                            }, zoneUpdate: item);
-
+                                           zoneController.bindUpdateZone({}, zoneUpdate: item);
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>
