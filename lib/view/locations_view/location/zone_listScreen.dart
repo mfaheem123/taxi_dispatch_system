@@ -33,7 +33,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-      controller.getZoneList();
+    // controller.getZoneList();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -56,21 +56,21 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
 
   @override
   Widget build(BuildContext context) {
-   
+    final listToShow = controller.zoneFiltered.isNotEmpty
+        ? controller.zoneFiltered
+        : controller.zoneAll;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<LocationController>(initState: (v) {
-      
-
+        controller.getZoneList();
       }, builder: (controller) {
-         final listToShow = controller.zoneFiltered.isNotEmpty
-        ? controller.zoneFiltered
-        : controller.zoneAll;
         return SingleChildScrollView(
           padding: EdgeInsets.all(12),
           child: Column(
@@ -150,7 +150,8 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
-                                           zoneController.bindUpdateZone({}, zoneUpdate: item);
+                                            zoneController.bindUpdateZone({},
+                                                zoneUpdate: item);
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>

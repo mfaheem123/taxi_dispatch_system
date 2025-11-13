@@ -44,7 +44,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 // }
 
-enum DrawMode { navigate, freehand, rectangle, points, edit }
+enum DrawMode {
+  navigate,
+  freehand,
+  rectangle,
+  points,
+  edit,
+  polygon,
+}
 
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
 
@@ -71,8 +78,13 @@ class ZoneController extends GetxController {
   var isEditing = false.obs;
   var base = false.obs;
   var selectedPolyId = RxnString();
-  var mode = DrawMode.navigate.obs;
-
+  // var mode = DrawMode.navigate.obs;
+  RxList<Marker> editMarkers = <Marker>[].obs;
+  RxList<LatLng> pointsDraft = <LatLng>[].obs;
+  RxList<LatLng> draft = <LatLng>[].obs;
+  Rx<DrawMode> mode = DrawMode.navigate.obs;
+  LatLng? rectStart;
+  LatLng? rectCurrent;
   final categoryItems = ['Select Category', 'Inner', 'Outer'];
   final zoneItems = ['Select Zone Type', 'Major', 'Minor'];
 
@@ -80,13 +92,7 @@ class ZoneController extends GetxController {
   final Completer<GoogleMapController> ctrl = Completer();
   GoogleMapController? mapController;
   final mapKey = GlobalKey();
-
-  final draft = <LatLng>[].obs;
-  final pointsDraft = <LatLng>[].obs;
   final polyPoints = <String, List<LatLng>>{}.obs;
-  LatLng? rectStart;
-  LatLng? rectCurrent;
-
   final zoneID = 0.obs;
   List<dynamic>? localZoneData;
 
@@ -115,7 +121,7 @@ class ZoneController extends GetxController {
     return 2 * r * math.asin(math.min(1, math.sqrt(h)));
   }
 
-    void clearZoneForm() {
+  void clearZoneForm() {
     zonenameContoller.clear();
     secondarynamezoneController.clear();
     zoneValue.value = 'Select Value';
@@ -131,7 +137,8 @@ class ZoneController extends GetxController {
     return pts
         .map((p) => {"latitude": p.latitude, "longitude": p.longitude})
         .toList();
-  } 
+  }
+
   List<LatLng>? currentVertices() {
     if (selectedPolyId.value != null) {
       final pts = polyPoints[selectedPolyId.value];
@@ -151,29 +158,30 @@ class ZoneController extends GetxController {
     return null;
   }
 
-
-
- postZone(context) async {
+  postZone(context) async {
     print("Draw mode: ${mode.value}");
     print("Draft points: ${draft.length}");
     print("Points draft: ${pointsDraft.length}");
     print("Rect start: $rectStart, Rect end: $rectCurrent");
-  
-    List<Vertices> vertices = [];
 
+    List<Vertices> vertices = [];
     // Handle polygon/freehand draw
     if (draft.isNotEmpty) {
       vertices = draft
           .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
           .toList();
-    } 
+    }
     // Handle rectangle draw
     else if (rectStart != null && rectCurrent != null) {
       vertices = [
-        Vertices(latitude: rectStart!.latitude, longitude: rectStart!.longitude),
-        Vertices(latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
+        Vertices(
+            latitude: rectStart!.latitude, longitude: rectStart!.longitude),
+        Vertices(
+            latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
+        Vertices(
+            latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
+        Vertices(
+            latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
       ];
     }
 
@@ -182,91 +190,107 @@ class ZoneController extends GetxController {
       return;
     }
 
+    var formData = {
+      if (updateZone.value) 
+      "id": zoneUpdateId.value,
+      "name": zonenameContoller.text.trim(),
+      "secondary_name": secondarynamezoneController.text.trim(),
+      "type": zoneValue.value,
+      "category": categoryValue.value,
+      "base": base.value,
+      "vertices": vertices.map((v) => v.toJson()).toList(),
+      "overlay": mode.value == DrawMode.rectangle ? "rectangle" : "polygon",
+    };
 
-  var formData = {
-  if (updateZone.value) "id": zoneUpdateId.value, 
-  "name": zonenameContoller.text.trim(),
-  "secondary_name": secondarynamezoneController.text.trim(),
-  "type": zoneValue.value,
-  "category": categoryValue.value,
-  "base": base.value,
-  "vertices": vertices.map((v) => v.toJson()).toList(),
-  "overlay": mode.value == DrawMode.rectangle ? "rectangle" : "polygon",
-};
+    final response = await Api().post(
+      formData,
+      updateZone.value ? 'zones/edit/${zoneUpdateId.value}' : 'zones',
+    );
 
-
-  final response = await Api().post(
-    formData,
-    updateZone.value ? 'zones/edit' : 'zones',
-    auth: true,
-  );
-
-  if (response.statusCode == 200) {
-
-    clearZoneForm();
-    update();
-    print("Zone saved: ${response}");
-    print("FormData saved: ${formData}");
-
-  } else {
-    print("Error saving zone: $response", );
-  }
-}
-
-  RxBool updateZone = false.obs;
-  RxInt zoneUpdateId = 0.obs;
-bindUpdateZone(Set<dynamic> set, {Zone? zoneUpdate}) async {
-  if (zoneUpdate == null) return;
-
-  // --- 1️⃣ Basic info load
-  zoneUpdateId.value = zoneUpdate.id ?? 0;
-  zonenameContoller.text = zoneUpdate.name ?? '';
-  secondarynamezoneController.text = zoneUpdate.secondaryName ?? '';
-  zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
-  categoryValue.value = zoneUpdate.category ?? 'Select Category';
-  base.value = zoneUpdate.base ?? false;
-
-  // --- 2️⃣ Clear previous drafts
-  draft.clear();
-  pointsDraft.clear();
-  rectStart = null;
-  rectCurrent = null;
-
-  // --- 3️⃣ Vertices load (for polygon or rectangle)
-  if (zoneUpdate.vertices != null && zoneUpdate.vertices!.isNotEmpty) {
-    List<LatLng> loadedVertices = zoneUpdate.vertices!
-        .map((v) => LatLng(v.latitude!, v.longitude!))
-        .toList();
-
-    // --- 4️⃣ Identify shape type (rectangle or polygon)
-    if (loadedVertices.length == 4 &&
-        _isRectangle(loadedVertices)) {
-      rectStart = loadedVertices.first;
-      rectCurrent = loadedVertices[2];
-      mode.value = DrawMode.rectangle;
-      print("Detected Rectangle zone for editing ✅");
+    if (response.statusCode == 200) {
+      update();
+      clearZoneForm();
+      print("FormData saved: ${response.statusCode}");
+      print("Zone saved: ${response.data}");
+      print("FormData saved: ${formData}");
     } else {
-      draft.assignAll(loadedVertices);
-      pointsDraft.assignAll(loadedVertices);
-      mode.value = DrawMode.freehand;
-      print("Detected Polygon zone for editing ✅");
+      print(
+        "Error saving zone: $response",
+      );
     }
   }
 
-  // --- 5️⃣ Update UI
-  isEditing.value = true;
-  updateZone(true);
-  update();
-}
+ Zone? currentZoneBeingEdited;
 
-bool _isRectangle(List<LatLng> pts) {
-  if (pts.length != 4) return false;
-  final lats = pts.map((e) => e.latitude).toSet();
-  final lngs = pts.map((e) => e.longitude).toSet();
-  return lats.length == 2 && lngs.length == 2;
-}
+  RxBool updateZone = false.obs;
+  RxInt zoneUpdateId = 0.obs;
 
+  bindUpdateZone(Set<dynamic> set, {Zone? zoneUpdate}) async {
+    if (zoneUpdate == null) return;
 
+    zoneUpdateId.value = zoneUpdate.id ?? 0;
+    zonenameContoller.text = zoneUpdate.name ?? '';
+    secondarynamezoneController.text = zoneUpdate.secondaryName ?? '';
+    zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
+    categoryValue.value = zoneUpdate.category ?? 'Select Category';
+    base.value = zoneUpdate.base ?? false;
+    //  Clear previous state
+    draft.clear();
+    pointsDraft.clear();
+    rectStart = null;
+    rectCurrent = null;
+    editMarkers.clear();
+
+    if (zoneUpdate.vertices != null && zoneUpdate.vertices!.isNotEmpty) {
+      final loadedVertices = zoneUpdate.vertices!
+          .map((v) => LatLng(v.latitude!, v.longitude!))
+          .toList();
+
+      print("Loaded Vertices: ${loadedVertices.length}");
+      for (final v in loadedVertices) {
+        print(" → ${v.latitude}, ${v.longitude}");
+      }
+
+      // Detect shape
+      if (loadedVertices.length == 4 && _isRectangle(loadedVertices)) {
+        rectStart = loadedVertices.first;
+        rectCurrent = loadedVertices[2];
+        mode.value = DrawMode.rectangle;
+        print(" Detected Rectangle zone for editing");
+      } else {
+        draft.assignAll(loadedVertices);
+        pointsDraft.assignAll(loadedVertices);
+        mode.value = DrawMode.polygon;
+        print(" Detected Polygon zone for editing");
+      }
+
+      //  Add markers
+      for (int i = 0; i < loadedVertices.length; i++) {
+        editMarkers.add(
+          Marker(
+            markerId: MarkerId("edit_marker_$i"),
+            position: loadedVertices[i],
+            icon:
+                BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          ),
+        );
+      }
+    } else {
+      print(" No vertices found for this zone");
+    }
+
+    isEditing.value = true;
+    updateZone(true);
+    update();
+  }
+
+  /// ====== RECTANGLE DETECTION ======
+  bool _isRectangle(List<LatLng> pts) {
+    if (pts.length != 4) return false;
+    final lats = pts.map((e) => e.latitude).toSet();
+    final lngs = pts.map((e) => e.longitude).toSet();
+    return lats.length == 2 && lngs.length == 2;
+  }
 
   List<LatLng> rectFromDiagonal(LatLng a, LatLng b) {
     final minLat = math.min(a.latitude, b.latitude);
@@ -291,8 +315,6 @@ bool _isRectangle(List<LatLng> pts) {
       selectedPolyId.value = null;
     }
   }
-
-
 
   //  List<LatLng>? _currentVertices() {
   //   // Selected saved polygon
@@ -337,7 +359,7 @@ bool _isRectangle(List<LatLng> pts) {
   //   }
   // }
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   // void bindZoneUpdate({required dynamic zoneUpdate}) {
   //   isEditing.value = true; // Edit mode ON
   //   zoneID.value = zoneUpdate['id']; // Zone ID set karo
@@ -541,6 +563,4 @@ bool _isRectangle(List<LatLng> pts) {
   //     Prompts().showErrorMessage(msg: "Network error: $e", context: context);
   //   }
   // }
-
-
 }

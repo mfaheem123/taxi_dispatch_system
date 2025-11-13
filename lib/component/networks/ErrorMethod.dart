@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 
 dynamic returnResponse(Response? responseData) {
   if (responseData == null) {
-    // BotToast.showText(text: 'Internet Error');
+    BotToast.showText(text: 'Internet Error');
   }
 
   ///video delete

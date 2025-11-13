@@ -101,18 +101,23 @@ class Zone {
 }
 
 class Vertex {
-    double? latitude;
-    double? longitude;
+    dynamic latitude;
+    dynamic longitude;
 
     Vertex({
         this.latitude,
         this.longitude,
     });
 
-    factory Vertex.fromJson(Map<String, dynamic> json) => Vertex(
-        latitude: json["latitude"]?.toDouble(),
-        longitude: json["longitude"]?.toDouble(),
-    );
+ factory Vertex.fromJson(Map<String, dynamic> json) => Vertex(
+  latitude: json["latitude"] is String
+      ? double.tryParse(json["latitude"]) ?? 0.0
+      : (json["latitude"]?.toDouble() ?? 0.0),
+  longitude: json["longitude"] is String
+      ? double.tryParse(json["longitude"]) ?? 0.0
+      : (json["longitude"]?.toDouble() ?? 0.0),
+);
+
 
     Map<String, dynamic> toJson() => {
         "latitude": latitude,

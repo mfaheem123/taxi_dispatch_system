@@ -266,52 +266,64 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+// ------------------ Zone Controller Logic ------------------
 
-  ZoneModel? zoneListModel;
-  RxList<Zone> zoneAll = <Zone>[].obs;
-  RxList<Zone> zoneFiltered = <Zone>[].obs;
-  // Rx<Zone?> selectedZone = Rx<Zone?>(null);
-  RxString searchZoneName = ''.obs;
-  RxString searchShortName = ''.obs;
-  RxString searchType = ''.obs;
-  RxString searchCategory = ''.obs;
-  var zoneCurrentPage = 1.obs;
-  var zoneTotalPages = 1.obs;
-  final int zoneLimit = 20;
-  RxBool getZoneLoader = false.obs;
-  Future<void> getZoneList() async {
+ZoneModel? zoneListModel;
+RxList<Zone> zoneAll = <Zone>[].obs;
+RxList<Zone> zoneFiltered = <Zone>[].obs;
+
+RxString searchZoneName = ''.obs;
+RxString searchShortName = ''.obs;
+RxString searchType = ''.obs;
+RxString searchCategory = ''.obs;
+
+var zoneCurrentPage = 1.obs;
+var zoneTotalPages = 1.obs;
+final int zoneLimit = 20;
+RxBool getZoneLoader = false.obs;
+
+getZoneList() async {
     getZoneLoader(true);
-    print("API Query: zones/get");
-    var response = await Api().get("zones/get?", auth: true, queryParameters: {
-      "page": zoneCurrentPage.value,
-      "limit": zoneLimit,
-      "name": searchZoneName.value,
-      "secondary_name": searchShortName.value,
-      "type": searchType.value,
-      "category": searchCategory.value,
-    });
+    print("📡 API Request: zones/get");
+
+    var response = await Api().get(
+  "zones/get",
+ 
+      queryParameters: {
+        "page": zoneCurrentPage.value,
+        "limit": zoneLimit,
+        "name": searchZoneName.value,
+        "secondary_name": searchShortName.value,
+        "type": searchType.value,
+        "category": searchCategory.value,
+      },
+    );
+
     if (response.statusCode == 200) {
       zoneListModel = ZoneModel.fromJson(response.data);
-      zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
       zoneAll.value = zoneListModel?.zones ?? [];
       zoneFiltered.value = zoneAll;
-      getZoneLoader(false);
-    } else {
-      print("Error: ${response.statusCode}");
+      zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
+      print("✅ Zones Loaded: ${zoneAll.length}");
+    } else{
+      print("❌ Failed to load zones: ${response.statusCode}");
+
     }
-  }
 
-// -----------Search function
-  void onSearchChanged() {
-    zoneCurrentPage.value = 1;
-    getZoneList();
-  }
+}
 
-  /// ------- pagination function
-  void zonePageChange(int page) {
-    zoneCurrentPage.value = page;
-    getZoneList();
-  }
+/// -----------Search function
+void onSearchChanged() {
+  zoneCurrentPage.value = 1;
+  getZoneList();
+}
+
+/// ------- Pagination function
+void zonePageChange(int page) {
+  zoneCurrentPage.value = page;
+  getZoneList();
+}
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zone Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Delete Work

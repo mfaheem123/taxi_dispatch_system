@@ -1,9 +1,5 @@
-import 'dart:async' show Completer;
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:ui' as html hide window;
-import 'dart:html' as html;
-import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
@@ -45,7 +41,9 @@ Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
     RectHandle.sw: LatLng(b.minLat, b.minLng),
     RectHandle.w: LatLng(midLat, b.minLng),
   };
+  
 }
+
 
 class ZoneScreen extends StatefulWidget {
   @override
@@ -56,6 +54,23 @@ class _ZoneScreenState extends State<ZoneScreen> {
   ZoneController controller = Get.isRegistered<ZoneController>()
       ? Get.find<ZoneController>()
       : Get.put(ZoneController());
+
+@override
+void initState() {
+  super.initState();
+
+  controller.rectStart;
+  controller.rectCurrent;
+
+  // 👇 Add this small check
+  if (controller.updateZone.value == true && controller.zoneUpdateId.value != 0) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await controller.bindUpdateZone({}, zoneUpdate: controller.currentZoneBeingEdited);
+      setState(() {}); // 👈 force UI refresh to show vertices
+    });
+  }
+}
+
 
   // TextEditingController zonenameContoller = TextEditingController();
   // TextEditingController secondarynamezoneController = TextEditingController();
@@ -860,10 +875,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
-  await controller.postZone(context);
-  Get.snackbar('Saved', 'Zone data submitted successfully');
-},
-                          child: const Text("SAVE"),
+                            await controller.postZone(context);
+                            Get.snackbar(
+                                'Saved', 'Zone data submitted successfully');
+                          },
+                          child: Text(
+                              controller.updateZone.value ? "EDIT" :  "SAVE"),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.green[700],
