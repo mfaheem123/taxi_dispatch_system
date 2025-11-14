@@ -41,9 +41,7 @@ Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
     RectHandle.sw: LatLng(b.minLat, b.minLng),
     RectHandle.w: LatLng(midLat, b.minLng),
   };
-  
 }
-
 
 class ZoneScreen extends StatefulWidget {
   @override
@@ -55,22 +53,30 @@ class _ZoneScreenState extends State<ZoneScreen> {
       ? Get.find<ZoneController>()
       : Get.put(ZoneController());
 
-@override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  controller.rectStart;
-  controller.rectCurrent;
+    if (controller.updateZone.value == true &&
+        controller.zoneUpdateId.value != 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await controller
+            .bindUpdateZone({}, zoneUpdate: controller.currentZoneBeingEdited);
 
-  // 👇 Add this small check
-  if (controller.updateZone.value == true && controller.zoneUpdateId.value != 0) {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await controller.bindUpdateZone({}, zoneUpdate: controller.currentZoneBeingEdited);
-      setState(() {}); // 👈 force UI refresh to show vertices
-    });
+        /// WAIT UNTIL POLYGON POINTS LOADED
+        if (mounted) {
+          Future.delayed(Duration(milliseconds: 150), () {
+            if (mounted && _polyPoints.isNotEmpty) {
+              setState(() {
+                mode = DrawMode.edit;
+                _selectedPolyId = controller.zoneUpdateId.value.toString();
+              });
+            }
+          });
+        }
+      });
+    }
   }
-}
-
 
   // TextEditingController zonenameContoller = TextEditingController();
   // TextEditingController secondarynamezoneController = TextEditingController();
@@ -790,11 +796,29 @@ void initState() {
       }
     }
 
+   
+
     return markers;
   }
+  Set<Polygon> polygons = {};
+  List<LatLng> _ppolyPoints = [];
 
+  void _rebuildPolygons() {
+    setState(() {
+      polygons = {
+        Polygon(
+          polygonId: PolygonId("active"),
+          points: _ppolyPoints,
+          strokeColor: Colors.red,
+          strokeWidth: 2,
+          fillColor: Colors.red.withOpacity(0.2),
+        )
+      };
+    });
+  }
   @override
   Widget build(BuildContext context) {
+      
     final polygons = _buildPolygonsForRender();
     final markers = _buildMarkersForRender();
     return SizedBox(
@@ -880,7 +904,7 @@ void initState() {
                                 'Saved', 'Zone data submitted successfully');
                           },
                           child: Text(
-                              controller.updateZone.value ? "EDIT" :  "SAVE"),
+                              controller.updateZone.value ? "EDIT" : "SAVE"),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.green[700],
@@ -897,6 +921,7 @@ void initState() {
                 ),
               ),
             ),
+
             // Map Placeholder
             Expanded(
               flex: 3, // More space for map
@@ -908,8 +933,14 @@ void initState() {
                     RepaintBoundary(
                         key: controller.mapKey,
                         child: GoogleMap(
+                          key: ValueKey("main-map"),
                           initialCameraPosition: _initialCamera,
-                          onMapCreated: (c) => controller.ctrl.complete(c),
+                          onMapCreated: (c) {
+                            controller.ctrl.complete(c);
+
+                            /// Yahan map listener safe ho jata hai
+                            if (mounted) setState(() {});
+                          },
                           scrollGesturesEnabled: !_lockMapGestures,
                           zoomGesturesEnabled: !_lockMapGestures,
                           rotateGesturesEnabled: !_lockMapGestures,
@@ -996,6 +1027,7 @@ void initState() {
                             // 🔹 Mode buttons
                             _modeButton(DrawMode.navigate, Icons.pan_tool_alt,
                                 "Navigate"),
+
                             _modeButton(
                                 DrawMode.freehand, Icons.gesture, "Freehand"),
                             _modeButton(DrawMode.rectangle, Icons.crop_square,

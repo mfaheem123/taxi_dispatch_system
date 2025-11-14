@@ -288,7 +288,7 @@ getZoneList() async {
 
     var response = await Api().get(
   "zones/get",
- 
+ auth: true,
       queryParameters: {
         "page": zoneCurrentPage.value,
         "limit": zoneLimit,
