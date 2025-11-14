@@ -83,9 +83,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
   DrawMode mode = DrawMode.navigate;
   bool get _lockMapGestures =>
       mode == DrawMode.freehand ||
-      mode == DrawMode.rectangle ||
-      mode == DrawMode.points ||
-      mode == DrawMode.edit;
+          mode == DrawMode.rectangle ||
+          mode == DrawMode.points ||
+          mode == DrawMode.edit;
 
   final Map<String, List<LatLng>> _polyPoints = {};
   _RectDragSource _activeDragSource = _RectDragSource.none;
@@ -318,7 +318,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     Future<Offset?> _latLngToScreen(LatLng latLng) async {
       final ctrl = await controller.ctrl.future;
       final renderBox =
-          controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
+      controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null || !renderBox.hasSize) return null;
       final origin = renderBox.localToGlobal(Offset.zero);
       try {
@@ -359,11 +359,11 @@ class _ZoneScreenState extends State<ZoneScreen> {
   }
 
   List<LatLng> _ptsFromBounds(_RectBounds b) => <LatLng>[
-        LatLng(b.minLat, b.minLng), // SW
-        LatLng(b.minLat, b.maxLng), // SE
-        LatLng(b.maxLat, b.maxLng), // NE
-        LatLng(b.maxLat, b.minLng), // NW
-      ];
+    LatLng(b.minLat, b.minLng), // SW
+    LatLng(b.minLat, b.maxLng), // SE
+    LatLng(b.maxLat, b.maxLng), // NE
+    LatLng(b.maxLat, b.minLng), // NW
+  ];
   bool _isDragging = false;
   Future<LatLng?> _screenToLatLng(Offset global) async {
     final ctrl = await controller.ctrl.future;
@@ -517,7 +517,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final b = _boundsFromPts(pts);
     final set = pts
         .map((p) =>
-            '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
+    '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
         .toSet();
     final corners = {
       '${b.minLat.toStringAsFixed(6)},${b.minLng.toStringAsFixed(6)}',
@@ -612,7 +612,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           draggable: true,
           zIndex: 4,
           icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           onDragEnd: (newPos) => setState(() => controller.pointsDraft[i] = newPos),
           onTap: () {
             if (controller.pointsDraft.length > 1) {
@@ -679,7 +679,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           final pos = entry.value;
           markers.add(Marker(
             markerId:
-                MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
+            MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
             position: pos,
             draggable: true,
             zIndex: 6,
@@ -938,7 +938,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             border: Border(
                                 top: BorderSide(color: DynamicColors.gryClr),
                                 bottom:
-                                    BorderSide(color: DynamicColors.gryClr))),
+                                BorderSide(color: DynamicColors.gryClr))),
                         height: 45,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,

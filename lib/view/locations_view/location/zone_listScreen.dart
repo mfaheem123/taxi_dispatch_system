@@ -75,145 +75,145 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
         return controller.getZoneLoader.value == true
             ? SizedBox.shrink()
             : SingleChildScrollView(
-                padding: EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "Zones",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: Get.width,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(
-                              title: "NAME",
-                              onChanged: (v) {
-                                controller.searchZoneName.value = v;
-                                controller.onSearchChanged();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "SHORT NAME",
-                              onChanged: (v) {
-                                controller.searchShortName.value = v;
-                                controller.onSearchChanged();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "TYPES",
-                              onChanged: (v) {
-                                controller.searchType.value = v;
-                                controller.onSearchChanged();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                              title: "CATEGORY",
-                              onChanged: (v) {
-                                controller.searchCategory.value = v;
-                                controller.onSearchChanged();
-                              },
-                            ),
-                            buildHeaderWithSearch(
-                                title: "ACTIONS", removeSearching: true),
-                          ],
-                          totalRow: listToShow.length,
-                          rows: listToShow.map((item) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(Center(
-                                    child: Text(item.secondaryName ?? '—'))),
-                                DataCell(Center(child: Text(item.type ?? '—'))),
-                                DataCell(
-                                    Center(child: Text(item.category ?? '—'))),
-                                DataCell(
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(
-                                                color: Colors.transparent),
-                                          ),
-                                          onPressed: () async {
-                                            await zonrController
-                                                .updateZone(context);
-
-                                            int index = _controller
-                                                .selectedMenuItems
-                                                .indexWhere((element) =>
-                                                    element.title ==
-                                                    "CREATE ZONE");
-
-                                            if (index != -1) {
-                                              _controller
-                                                  .selectedMenuItems[index]
-                                                  .selectedItem = true;
-                                              _controller.currentPage.value =
-                                                  ZoneScreen();
-                                            } else {
-                                              _controller.currentPage.value =
-                                                  ZoneScreen();
-                                              _controller.menuBarRefresh(
-                                                  title: "UPDATE ZONE",
-                                                  pageName: ZoneScreen());
-                                            }
-
-                                            controller.update();
-                                          },
-                                          child: Icon(Icons.edit_calendar,
-                                              size: 28),
-                                        ),
-                                        Text("|"),
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(
-                                                color: Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (_) =>
-                                                  DeletePermissionAlert(
-                                                deleteFunctionName: () =>
-                                                    controller.deleteZoneList(
-                                                        item.id!),
-                                              ),
-                                            );
-                                          },
-                                          child: Icon(Icons.delete_forever,
-                                              size: 28),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
+          padding: EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "Zones",
+                    style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w800, fontSize: 17),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: Get.width,
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(
+                        title: "NAME",
+                        onChanged: (v) {
+                          controller.searchZoneName.value = v;
+                          controller.onSearchChanged();
+                        },
                       ),
-                    ),
-                    PaginationWidget(
-                        currentPage: controller.zoneCurrentPage.value,
-                        totalPages: controller.zoneTotalPages.value,
-                        onPageChange: controller.zonePageChange),
-                  ],
+                      buildHeaderWithSearch(
+                        title: "SHORT NAME",
+                        onChanged: (v) {
+                          controller.searchShortName.value = v;
+                          controller.onSearchChanged();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "TYPES",
+                        onChanged: (v) {
+                          controller.searchType.value = v;
+                          controller.onSearchChanged();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                        title: "CATEGORY",
+                        onChanged: (v) {
+                          controller.searchCategory.value = v;
+                          controller.onSearchChanged();
+                        },
+                      ),
+                      buildHeaderWithSearch(
+                          title: "ACTIONS", removeSearching: true),
+                    ],
+                    totalRow: listToShow.length,
+                    rows: listToShow.map((item) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Center(child: Text(item.name ?? '—'))),
+                          DataCell(Center(
+                              child: Text(item.secondaryName ?? '—'))),
+                          DataCell(Center(child: Text(item.type ?? '—'))),
+                          DataCell(
+                              Center(child: Text(item.category ?? '—'))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                          color: Colors.transparent),
+                                    ),
+                                    onPressed: () async {
+                                      await zonrController
+                                          .updateZone(context);
+
+                                      int index = _controller
+                                          .selectedMenuItems
+                                          .indexWhere((element) =>
+                                      element.title ==
+                                          "CREATE ZONE");
+
+                                      if (index != -1) {
+                                        _controller
+                                            .selectedMenuItems[index]
+                                            .selectedItem = true;
+                                        _controller.currentPage.value =
+                                            ZoneScreen();
+                                      } else {
+                                        _controller.currentPage.value =
+                                            ZoneScreen();
+                                        _controller.menuBarRefresh(
+                                            title: "UPDATE ZONE",
+                                            pageName: ZoneScreen());
+                                      }
+
+                                      controller.update();
+                                    },
+                                    child: Icon(Icons.edit_calendar,
+                                        size: 28),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                          color: Colors.transparent),
+                                    ),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) =>
+                                            DeletePermissionAlert(
+                                              deleteFunctionName: () =>
+                                                  controller.deleteZoneList(
+                                                      item.id!),
+                                            ),
+                                      );
+                                    },
+                                    child: Icon(Icons.delete_forever,
+                                        size: 28),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
+                  ),
                 ),
-              );
+              ),
+              PaginationWidget(
+                  currentPage: controller.zoneCurrentPage.value,
+                  totalPages: controller.zoneTotalPages.value,
+                  onPageChange: controller.zonePageChange),
+            ],
+          ),
+        );
       }),
     );
   }

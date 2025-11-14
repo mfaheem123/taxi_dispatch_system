@@ -94,9 +94,9 @@ class ZoneController extends GetxController {
   // -------- Helper Getters --------
   bool get lockMapGestures =>
       mode.value == DrawMode.freehand ||
-      mode.value == DrawMode.rectangle ||
-      mode.value == DrawMode.points ||
-      mode.value == DrawMode.edit;
+          mode.value == DrawMode.rectangle ||
+          mode.value == DrawMode.points ||
+          mode.value == DrawMode.edit;
 
   // -------- Utility Methods --------
   double _rad(double d) => d * math.pi / 180.0;
@@ -159,7 +159,7 @@ class ZoneController extends GetxController {
       registerZoneForm(context);
     }
   }
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
   void bindZoneUpdate({required dynamic zoneUpdate}) {
     isEditing.value = true; // Edit mode ON
     zoneID.value = zoneUpdate['id']; // Zone ID set karo

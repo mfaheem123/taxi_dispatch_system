@@ -195,7 +195,7 @@ class FareController extends GetxController {
   }
 
 
-/// todo testing location ???????????????????????????????????????????????????????????????????????
+  /// todo testing location ???????????????????????????????????????????????????????????????????????
   final FocusNode searchingAddressViaFocusNode = FocusNode();
   final FocusNode searchingAddress1ViaFocusNode = FocusNode();
   final highlightedIndex = 0.obs;
@@ -506,7 +506,7 @@ class FareController extends GetxController {
     var response = await Api().get("combined/vehicle-type-accounts");
     if (response.statusCode == 200) {
       fareGetVehicleTypeAccount = FareGetVehicleTypeAccount.fromJson(response.data);
-     await getAllFareConfiguration();
+      await getAllFareConfiguration();
       getFareGetVehicleTypeAccountLoader(false);
       update();
     }
@@ -523,8 +523,8 @@ class FareController extends GetxController {
       "to_time": toDayController.text,
       "minimum_fares": startingFareController.text,
       "minimum_miles": startingMilesController.text,
-     if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
-     if(fareConfiguration != "NORMAL") "from_date": startDate,
+      if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
+      if(fareConfiguration != "NORMAL") "from_date": startDate,
       if(fareConfiguration != "NORMAL") "to_date": endDate,
     };
     print(formData);
@@ -549,8 +549,8 @@ class FareController extends GetxController {
     titleController.clear();
     update();
   }
-  
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare view 
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare view
   RxBool getAllFareViewLoader = false.obs;
   GetAllFareConfigurationModel? getAllFareConfigurationData;
   getAllFareConfiguration() async{
@@ -565,7 +565,7 @@ class FareController extends GetxController {
 
 
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
 
 

@@ -44,6 +44,8 @@ class FareGetVehicleTypeAccount {
   };
 }
 
+
+
 class Account {
   int? id;
   String? name;

@@ -67,7 +67,7 @@ class LocationForm extends StatelessWidget {
                         ],
                       ),
 
-                      const SizedBox(height: 15),
+                       SizedBox(height: 15),
 
                       isMobile
                           ? Column(

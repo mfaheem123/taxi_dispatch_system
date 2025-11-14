@@ -19,6 +19,7 @@ class Prompts {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+
                   const SizedBox(height: 30),
                   Text(
                     'Are you sure you want to remove?',

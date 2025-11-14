@@ -103,3 +103,4 @@ class VehicleType {
     "name": name,
   };
 }
+

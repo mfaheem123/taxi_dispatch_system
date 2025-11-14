@@ -86,4 +86,5 @@ class Zonee {
     "name": name,
     "secondary_name": secondaryName,
   };
+
 }
