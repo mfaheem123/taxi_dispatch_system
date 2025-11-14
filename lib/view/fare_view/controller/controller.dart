@@ -4,10 +4,12 @@ import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
 import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
+import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
@@ -19,10 +21,69 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
+
   final vehicleTypeController = TextEditingController();
   final fareController = TextEditingController();
   final fareDescriptionController = TextEditingController();
   final fareDescription2ndController = TextEditingController();
+  final fareValueVehicleController = TextEditingController();
+
+
+  VehicleTypee? plotVehicleTypevalue;
+  Zonee? Zoneevalue;
+  Zonee? Zonee1value;
+  PlotVehicleTypeModel? plotVehicleTypeModel;
+  RxBool getPlotVehicleTypeLoader = false.obs;
+  getPlotVehicleType()async{
+    getPlotVehicleTypeLoader(true);
+    var response = await Api().get("combined/zone-vehicle-types");
+    if (response.statusCode == 200) {
+      plotVehicleTypeModel = PlotVehicleTypeModel.fromJson(response.data);
+      getPlotVehicleTypeLoader(false);
+      update();
+    }
+  }
+
+  postPlotFare() async{
+    var formData = {
+      "vehicle_type_id": plotVehicleTypevalue!.id,
+      "pickup_plot_id": Zoneevalue!.id,
+      "dropoff_plot_id": Zonee1value!.id,
+      "fares": fareController.text,
+
+    };
+    print(formData);
+    var response = await Api().post(formData, "plotfares/add");
+    if(response.statusCode == 200){
+
+      print(response.data);
+      BotToast.showText(text: "Plot Fare successfully added");
+
+    }
+  }
+
+
+
+  AllPlotFareModel? allPlotFareModel;
+  RxBool getAllPlotFareLoader = false.obs;
+  getAllPlotFare()async{
+    getAllPlotFareLoader(true);
+    var response = await Api().get("plotfares/get");
+    if (response.statusCode == 200) {
+      allPlotFareModel = AllPlotFareModel.fromJson(response.data);
+      getAllPlotFareLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
@@ -35,7 +96,7 @@ class FareController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
   /// TextEditingControllers
-  final fareValueVehicleController = TextEditingController();
+  // final fareValueVehicleController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
@@ -244,6 +305,7 @@ class FareController extends GetxController {
   }
 
   pickLocationAddress(lat, lng) async {
+
     var dio = Dio();
     var response = await dio.request(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&addressdetails=1',
@@ -282,22 +344,19 @@ class FareController extends GetxController {
   // change move functions to scroll after change:
   void moveHighlightDown({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
-    highlightedIndex.value =
-        (highlightedIndex.value + 1) % allAddressesData.length;
-    highlightedIndex.refresh();
-    _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
+    highlightedIndex.value = (highlightedIndex.value + 1) % allAddressesData.length;
+    highlightedIndex.refresh();_scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
   }
 
   void moveHighlightUp({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
 
-    highlightedIndex.value =
-        (highlightedIndex.value - 1 + allAddressesData.length) %
-            allAddressesData.length;
+    highlightedIndex.value = (highlightedIndex.value - 1 + allAddressesData.length) % allAddressesData.length;
     highlightedIndex.refresh();
     _scrollToHighlighted(
         scrollDown: false,
-        viaCondition: viaConditionValue); // 👈 scroll to top when up
+        viaCondition: viaConditionValue
+    ); // 👈 scroll to top when up
   }
 
   void _scrollToHighlighted(
@@ -310,8 +369,7 @@ class FareController extends GetxController {
 
       final listCtx = suggestionListKey.currentContext;
 
-      if (itemCtx != null &&
-          listCtx != null &&
+      if (itemCtx != null && listCtx != null &&
           suggestionScrollController.hasClients) {
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
@@ -411,11 +469,6 @@ class FareController extends GetxController {
 
 
 
-
-
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
@@ -444,10 +497,11 @@ class FareController extends GetxController {
   ];
 
   Account? accountValue;
-  VehicleType? vehicleValue;
+  VehicleTypeConfiguration? vehicleValue;
   FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
-  getFareGetVehicleTypeAccount()async{
+  getFareGetVehicleTypeAccount()
+  async{
     getFareGetVehicleTypeAccountLoader(true);
     var response = await Api().get("combined/vehicle-type-accounts");
     if (response.statusCode == 200) {
