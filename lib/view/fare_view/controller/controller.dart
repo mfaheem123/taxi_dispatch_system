@@ -2,10 +2,12 @@
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
 import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
+import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -18,19 +20,60 @@ class FareController extends GetxController {
   final fareController = TextEditingController();
   final fareDescriptionController = TextEditingController();
   final fareDescription2ndController = TextEditingController();
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
-  /// TextEditingControllers
   final fareValueVehicleController = TextEditingController();
+
+
+  VehicleTypee? plotVehicleTypevalue;
+  Zonee? Zoneevalue;
+  Zonee? Zonee1value;
+  PlotVehicleTypeModel? plotVehicleTypeModel;
+  RxBool getPlotVehicleTypeLoader = false.obs;
+  getPlotVehicleType()async{
+    getPlotVehicleTypeLoader(true);
+    var response = await Api().get("combined/zone-vehicle-types");
+    if (response.statusCode == 200) {
+      plotVehicleTypeModel = PlotVehicleTypeModel.fromJson(response.data);
+      getPlotVehicleTypeLoader(false);
+      update();
+    }
+  }
+
+  postPlotFare() async{
+    var formData = {
+      "vehicle_type_id": plotVehicleTypevalue!.id,
+      "pickup_plot_id": Zoneevalue!.id,
+      "dropoff_plot_id": Zonee1value!.id,
+      "fares": fareController.text,
+
+    };
+    print(formData);
+    var response = await Api().post(formData, "plotfares/add");
+    if(response.statusCode == 200){
+
+      print(response.data);
+      BotToast.showText(text: "Plot Fare successfully added");
+
+    }
+  }
+
+
+
+  AllPlotFareModel? allPlotFareModel;
+  RxBool getAllPlotFareLoader = false.obs;
+  getAllPlotFare()async{
+    getAllPlotFareLoader(true);
+    var response = await Api().get("plotfares/get");
+    if (response.statusCode == 200) {
+      allPlotFareModel = AllPlotFareModel.fromJson(response.data);
+      getAllPlotFareLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
@@ -109,6 +152,7 @@ class FareController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
 
@@ -136,7 +180,7 @@ class FareController extends GetxController {
   ];
 
   Account? accountValue;
-  VehicleType? vehicleValue;
+  VehicleTypeConfiguration? vehicleValue;
   FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
   getFareGetVehicleTypeAccount()async{

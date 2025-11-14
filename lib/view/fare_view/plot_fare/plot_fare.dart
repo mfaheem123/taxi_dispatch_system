@@ -2,6 +2,8 @@
 
 
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/dropdown_button.dart';
+import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -40,8 +42,15 @@ class _PlotFareState extends State<PlotFare> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
-      return LayoutBuilder(
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getPlotVehicleType();
+          controller.getAllPlotFare();
+        },
+
+
+        builder: (controller) {
+      return controller.getPlotVehicleTypeLoader==true?CircularProgressIndicator(): LayoutBuilder(
           builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
@@ -83,20 +92,18 @@ class _PlotFareState extends State<PlotFare> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                              RestrictedDrivers(
-                                width: fieldWidth,
+                              CustomDropdownField<VehicleTypee>(
+                                label: "Select Subsidiary",
+                                width: Get.width / 5,
                                 height: 35,
-                                padding: 0.0,
-                                border: Border.all(
-                                  color: DynamicColors.gryClr,
-                                ),
-                                titleText: "SELECT VEHICLE TYPE",
-                                driversList: [
-                                  "25 GEORGE HAMPTON",
-                                  "26 PAUL DOUBLEDAY",
-                                  "27 RICHARD HARDWICK",
-                                  "28 LANRE OKERJO",
-                                ],
+                                items: controller.plotVehicleTypeModel!.vehicleTypes!,
+                                value: controller.plotVehicleTypevalue,
+                                itemLabel: (templateList) =>
+                                templateList.name!,
+                                onChanged: (val) {
+                                  controller.plotVehicleTypevalue = val;
+                                  controller.update();
+                                },
                               ),
                             ],
                           ),
@@ -133,20 +140,18 @@ class _PlotFareState extends State<PlotFare> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(AppText.fromPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                    RestrictedDrivers(
-                                      width: fieldWidth,
+                                    CustomDropdownField<Zonee>(
+                                      label: "Select Subsidiary",
+                                      width: Get.width / 5,
                                       height: 35,
-                                      padding: 0.0,
-                                      border: Border.all(
-                                        color: DynamicColors.gryClr,
-                                      ),
-                                      titleText: "SELECT PLOT",
-                                      driversList: [
-                                        "25 GEORGE HAMPTON",
-                                        "26 PAUL DOUBLEDAY",
-                                        "27 RICHARD HARDWICK",
-                                        "28 LANRE OKERJO",
-                                      ],
+                                      items: controller.plotVehicleTypeModel!.zones!,
+                                      value: controller.Zoneevalue,
+                                      itemLabel: (templateList) =>
+                                      templateList.name!,
+                                      onChanged: (val) {
+                                        controller.Zoneevalue = val;
+                                        controller.update();
+                                      },
                                     ),
                                   ],
                                 ),
@@ -195,20 +200,18 @@ class _PlotFareState extends State<PlotFare> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(AppText.fromPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                RestrictedDrivers(
-                                  width: fieldWidth,
+                                CustomDropdownField<Zonee>(
+                                  label: "Select Subsidiary",
+                                  width: Get.width / 5,
                                   height: 35,
-                                  padding: 0.0,
-                                  border: Border.all(
-                                    color: DynamicColors.gryClr,
-                                  ),
-                                  titleText: "SELECT PLOT",
-                                  driversList: [
-                                    "25 GEORGE HAMPTON",
-                                    "26 PAUL DOUBLEDAY",
-                                    "27 RICHARD HARDWICK",
-                                    "28 LANRE OKERJO",
-                                  ],
+                                  items: controller.plotVehicleTypeModel!.zones!,
+                                  value: controller.Zonee1value,
+                                  itemLabel: (templateList) =>
+                                  templateList.name!,
+                                  onChanged: (val) {
+                                    controller.Zonee1value = val;
+                                    controller.update();
+                                  },
                                 ),
                               ],
                             ),
@@ -282,6 +285,9 @@ class _PlotFareState extends State<PlotFare> {
                       spacing: fieldWidth/2,
                       children: [
                         CustomButton(
+                          onTap: (){
+                            controller.postPlotFare();
+                          },
                           height: 35,
                           width: fieldWidth,
                           btnText: AppText.save,
@@ -313,51 +319,64 @@ class _PlotFareState extends State<PlotFare> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
-                      width: Get.width,
+                      width: Get.width/2,
                       child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "VEHICLE"),
-                          buildHeaderWithSearch(title: "FROM PLOT"),
-                          buildHeaderWithSearch(title: "TO PLOT"),
-                          buildHeaderWithSearch(title: "FARES"),
+                          buildHeaderWithSearch(title: "VEHICLE",removeSearching: true),
+                          buildHeaderWithSearch(title: "FROM PLOT",removeSearching: true),
+                          buildHeaderWithSearch(title: "TO PLOT",removeSearching: true),
+                          buildHeaderWithSearch(title: "FARES",removeSearching: true),
                           buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
+                        rows: controller
+                            .allPlotFareModel!.plotFares!
+                            .map((plot) => DataRow(
+                          cells: [
+                            DataCell(Text(plot.vehicleType!.name ?? "")),
+                            DataCell(Text(plot.pickupPlot!.name ?? "")),
+                            DataCell(Text(plot.dropoffPlot!.name ?? "")),
+                            DataCell(Text(plot.fares ?? "")),
+                            DataCell(
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(32, 32),
+                                        side: const BorderSide(
+                                            color: Colors.transparent),
+                                      ),
+                                      onPressed: () {
+                                        // 🟢 Edit action
+                                      },
+                                      child: Icon(Icons.edit_calendar,
+                                          size: 20,
+                                          color:
+                                          DynamicColors.primaryClr),
                                     ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.search,
-                                      size: 28,
-                                      color: DynamicColors.primaryClr,
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(32, 32),
+                                        side: const BorderSide(
+                                            color: Colors.transparent),
+                                      ),
+                                      onPressed: () {
+                                        // 🔴 Delete action
+                                      },
+                                      child: Icon(Icons.delete_forever,
+                                          size: 20,
+                                          color: DynamicColors.redClr),
                                     ),
-                                  ),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.clear,
-                                      size: 28,
-                                      color: DynamicColors.redClr,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ))
+                            .toList(),
                       ),
                     ),
                   ),

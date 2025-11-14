@@ -134,7 +134,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                  CustomDropdownField<VehicleType>(
+                                  CustomDropdownField<VehicleTypeConfiguration>(
                                     label: "Select Vehicle",
                                     width: fieldWidth,
                                     height: 35,

@@ -13,7 +13,7 @@ class FareGetVehicleTypeAccount {
   String? message;
   int? vehicleTypesCount;
   int? accountsCount;
-  List<VehicleType>? vehicleTypes;
+  List<VehicleTypeConfiguration>? vehicleTypes;
   List<Account>? accounts;
 
   FareGetVehicleTypeAccount({
@@ -30,7 +30,7 @@ class FareGetVehicleTypeAccount {
     message: json["message"],
     vehicleTypesCount: json["vehicle_types_count"],
     accountsCount: json["accounts_count"],
-    vehicleTypes: json["vehicle_types"] == null ? [] : List<VehicleType>.from(json["vehicle_types"]!.map((x) => VehicleType.fromJson(x))),
+    vehicleTypes: json["vehicle_types"] == null ? [] : List<VehicleTypeConfiguration>.from(json["vehicle_types"]!.map((x) => VehicleTypeConfiguration.fromJson(x))),
     accounts: json["accounts"] == null ? [] : List<Account>.from(json["accounts"]!.map((x) => Account.fromJson(x))),
   );
 
@@ -43,6 +43,8 @@ class FareGetVehicleTypeAccount {
     "accounts": accounts == null ? [] : List<dynamic>.from(accounts!.map((x) => x.toJson())),
   };
 }
+
+
 
 class Account {
   int? id;
@@ -86,16 +88,16 @@ final accountTypeValues = EnumValues({
   "cash": AccountType.CASH
 });
 
-class  VehicleType {
+class  VehicleTypeConfiguration {
   int? id;
   String? name;
 
-  VehicleType({
+  VehicleTypeConfiguration({
     this.id,
     this.name,
   });
 
-  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+  factory VehicleTypeConfiguration.fromJson(Map<String, dynamic> json) => VehicleTypeConfiguration(
     id: json["id"],
     name: json["name"],
   );

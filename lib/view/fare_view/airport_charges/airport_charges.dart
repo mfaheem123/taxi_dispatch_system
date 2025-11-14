@@ -66,7 +66,6 @@ class _AirportChargesState extends State<AirportCharges> {
                     color: DynamicColors.gryClr.withOpacity(0.5),
                     child: Text(AppText.airportCharges, style: titleDesign()),
                   ),
-
                   SizedBox(
                     height: 10,
                   ),

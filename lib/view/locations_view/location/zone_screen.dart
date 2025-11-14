@@ -609,8 +609,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           position: p,
           draggable: true,
           zIndex: 4,
-          icon:
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           onDragEnd: (newPos) => setState(() => controller.pointsDraft[i] = newPos),
           onTap: () {
             if (controller.pointsDraft.length > 1) {

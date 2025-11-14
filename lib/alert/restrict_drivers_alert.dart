@@ -245,8 +245,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
             if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 setState(() {
-                  _selectedIndex =
-                      (_selectedIndex + 1) % items.length; // cycle forward
+                  _selectedIndex = (_selectedIndex + 1) % items.length; // cycle forward
                 });
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 setState(() {
