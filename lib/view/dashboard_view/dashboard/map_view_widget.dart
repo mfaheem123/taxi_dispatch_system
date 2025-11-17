@@ -248,10 +248,6 @@
 //
 // }
 //
-
-
-
-
 import 'dart:math';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
@@ -264,6 +260,8 @@ import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
+
+
 
 class MapViewWidget extends StatefulWidget {
   MapViewWidget({super.key, this.createBooking = false});
@@ -295,11 +293,14 @@ class _MapViewWidgetState extends State<MapViewWidget> {
 
   /// ✅ FIXED — now loops through all zones, not just [0]
   Future<void> poligonFun() async {
+
     zonePolygons.clear();
 
     final zones = controller.seeZoneOnMapModel?.zones ?? [];
+
     for (var zone in zones) {
       if (zone.vertices != null && zone.vertices!.isNotEmpty) {
+
         zonePolygons.add(
           Polygon(
             points: zone.vertices!
@@ -315,6 +316,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     }
 
     print('✅ Total polygons added: ${zonePolygons.length}');
+
     setState(() {}); // redraw map
   }
 
@@ -356,6 +358,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                     color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
               ],
             ),
+
             child: Stack(
               children: [
                 /// MAP VIEW
@@ -384,6 +387,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                           }
                         },
                       ),
+
                       children: [
                         /// 🗺️ Base map
                         TileLayer(

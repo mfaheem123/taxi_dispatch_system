@@ -63,7 +63,8 @@ class KbdActivatable extends StatelessWidget {
 
 // ================== YOUR WIDGET (with keyboard support) ==================
 class UserInfoWidget extends StatefulWidget {
-  const UserInfoWidget({super.key});
+  const
+  UserInfoWidget({super.key});
 
   @override
   State<UserInfoWidget> createState() => _UserInfoWidgetState();

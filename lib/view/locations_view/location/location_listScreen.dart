@@ -204,8 +204,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                           ),
                                           onPressed: () {
                                             // controller
-                                            //     .bindLocationUpdateLocation(
-                                            //         locationUpdate: item.id!);
+                                                // .bindLocationUpdateLocation(locationUpdate: item.id!);
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>

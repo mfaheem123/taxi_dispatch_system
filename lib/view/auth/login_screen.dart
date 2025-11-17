@@ -148,7 +148,7 @@ AuthController controller = Get.put(AuthController());
                       CustomTextField(
                         hintText: AppText.password,
                         fillColor: Colors.white,
-                        controller: controller. passwordController,
+                        controller: controller.passwordController,
                         // obscureText: true,
                         prefixIcon: const Icon(Icons.lock),
                       ),

@@ -83,9 +83,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
   DrawMode mode = DrawMode.navigate;
   bool get _lockMapGestures =>
       mode == DrawMode.freehand ||
-      mode == DrawMode.rectangle ||
-      mode == DrawMode.points ||
-      mode == DrawMode.edit;
+          mode == DrawMode.rectangle ||
+          mode == DrawMode.points ||
+          mode == DrawMode.edit;
 
   final Map<String, List<LatLng>> _polyPoints = {};
   _RectDragSource _activeDragSource = _RectDragSource.none;
@@ -181,7 +181,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
   registerzoneForm() {
     controller.registerZoneForm(context);
     controller.clearTextFields();
-    Prompts().showToastMessage(msg: "Data posted Succesfully!", context: context);
+    Prompts()
+        .showToastMessage(msg: "Data posted Succesfully!", context: context);
   }
 
   // List<Map<String, double>> toApiVertices(List<LatLng> pts) {
@@ -282,7 +283,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
     try {
       final controllers = await controller.ctrl.future;
-      final url = "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
+      final url =
+          "https://nominatim.openstreetmap.org/search?q=${Uri.encodeComponent(postcode)}&format=json&limit=1";
       final response = await http.get(Uri.parse(url));
       final data = jsonDecode(response.body);
       if (data.isNotEmpty) {
@@ -316,7 +318,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     Future<Offset?> _latLngToScreen(LatLng latLng) async {
       final ctrl = await controller.ctrl.future;
       final renderBox =
-          controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
+      controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null || !renderBox.hasSize) return null;
       final origin = renderBox.localToGlobal(Offset.zero);
       try {
@@ -357,11 +359,11 @@ class _ZoneScreenState extends State<ZoneScreen> {
   }
 
   List<LatLng> _ptsFromBounds(_RectBounds b) => <LatLng>[
-        LatLng(b.minLat, b.minLng), // SW
-        LatLng(b.minLat, b.maxLng), // SE
-        LatLng(b.maxLat, b.maxLng), // NE
-        LatLng(b.maxLat, b.minLng), // NW
-      ];
+    LatLng(b.minLat, b.minLng), // SW
+    LatLng(b.minLat, b.maxLng), // SE
+    LatLng(b.maxLat, b.maxLng), // NE
+    LatLng(b.maxLat, b.minLng), // NW
+  ];
   bool _isDragging = false;
   Future<LatLng?> _screenToLatLng(Offset global) async {
     final ctrl = await controller.ctrl.future;
@@ -515,7 +517,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final b = _boundsFromPts(pts);
     final set = pts
         .map((p) =>
-            '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
+    '${p.latitude.toStringAsFixed(6)},${p.longitude.toStringAsFixed(6)}')
         .toSet();
     final corners = {
       '${b.minLat.toStringAsFixed(6)},${b.minLng.toStringAsFixed(6)}',
@@ -609,7 +611,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
           position: p,
           draggable: true,
           zIndex: 4,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon:
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
           onDragEnd: (newPos) => setState(() => controller.pointsDraft[i] = newPos),
           onTap: () {
             if (controller.pointsDraft.length > 1) {
@@ -676,7 +679,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           final pos = entry.value;
           markers.add(Marker(
             markerId:
-                MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
+            MarkerId('rhdl_rectmode_${_selectedPolyId}_${handle.name}'),
             position: pos,
             draggable: true,
             zIndex: 6,
@@ -812,9 +815,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 15),
-
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
                       items: controller.zoneItems,
@@ -825,7 +826,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         });
                       },
                     ),
-
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
                         items: controller.categoryItems,
@@ -835,9 +835,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             controller.categoryValue.value = newValue!;
                           });
                         }),
-
                     SizedBox(height: 20),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -854,7 +852,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             ),
                           ),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             controller.submitForm(context);
@@ -941,7 +938,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             border: Border(
                                 top: BorderSide(color: DynamicColors.gryClr),
                                 bottom:
-                                    BorderSide(color: DynamicColors.gryClr))),
+                                BorderSide(color: DynamicColors.gryClr))),
                         height: 45,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -966,7 +963,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
                                 },
                               ),
                             ),
-
                             const SizedBox(width: 10),
 
                             // 🔹 Mode buttons

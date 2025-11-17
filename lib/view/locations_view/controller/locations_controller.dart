@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:dashboard_new1/component/networks/api.dart';
-import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart';
+import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart'
+    hide Zone;
 import 'package:dashboard_new1/view/locations_view/Model/location_types_zoneModel.dart';
 import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-import '../Model/zoneListModel.dart';
+import '../Model/zoneListModel.dart' hide Zone;
 
 class LocationController extends GetxController {
   final List<Postcode> _postcodes = [
@@ -50,7 +51,6 @@ class LocationController extends GetxController {
   final postcodeCtrl = TextEditingController();
   final shortcutCtrl = TextEditingController();
   final extraChargesCtrl = TextEditingController();
-
   final latitudeCtrl = TextEditingController();
   final addressCtrl = TextEditingController();
 
@@ -145,7 +145,7 @@ class LocationController extends GetxController {
   getLocationList() async {
     try {
       getLocationLoader(true);
-      var response = await Api().get("locations/get?",queryParameters: {
+      var response = await Api().get("locations/get?", queryParameters: {
         'page': locationCurrentPage.value,
         "limit": locationLimit,
         "name": searchLocationName.value.toLowerCase(),
@@ -184,7 +184,8 @@ class LocationController extends GetxController {
 
   RxBool updateLocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
-  bindLocationUpdateLocation(Set<dynamic> set, {Locations? locationUpdate  }) async {
+  bindLocationUpdateLocation(Set<dynamic> set,
+      {Locations? locationUpdate}) async {
     locationUpdateId.value = locationUpdate!.id!;
     locationNameCtrl.text = locationUpdate.name!;
     longitudeCtrl.text = locationUpdate.longitude!;
@@ -196,7 +197,8 @@ class LocationController extends GetxController {
     updateLocationValue(true);
     getLocationTypeZone(
         selectedZoneId: locationUpdate.zoneId,
-        selectedLocationTypeId: locationUpdate.locationTypeId);  //-------------------------------------------------------------------
+        selectedLocationTypeId: locationUpdate
+            .locationTypeId); //-------------------------------------------------------------------
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
@@ -264,64 +266,63 @@ class LocationController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Localization Work
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo zone List Work
+// ------------------ Zone Controller Logic ------------------
 
-  ZoneModel? zoneListModel;
-  RxList<Zones> zoneAll = <Zones>[].obs;
-  RxList<Zones> zoneFiltered = <Zones>[].obs;
-    // --- store currently editing zone
-  Rx<Zones?> selectedZone = Rx<Zones?>(null);
-  RxString searchZoneName = ''.obs;
-  RxString searchShortName = ''.obs;
-  RxString searchType = ''.obs;
-  RxString searchCategory = ''.obs;
-  var zoneCurrentPage = 1.obs;
-  var zoneTotalPages = 1.obs;
-  final int zoneLimit = 20;
-  RxBool getZoneLoader = false.obs;
-  Future<void> getZoneList() async {
-    try {
-      getZoneLoader(true);
-      print("API Query: zones/get");
-      var response = await Api().get("zones/get?",
-      auth: true,
-       queryParameters: {
-      "page" : zoneCurrentPage.value,
-      "limit": zoneLimit,
-      "name": searchZoneName.value,
-      "secondary_name" : searchShortName.value,
-      "type": searchType.value,
-      "category" : searchCategory.value,
-       }
-      );
-      if (response.statusCode == 200) {
-        zoneListModel = ZoneModel.fromJson(response.data);
-        zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
-        zoneAll.value = zoneListModel?.zones ?? [];
-        zoneFiltered.value = zoneAll;
-      } else {
-        print("Error: ${response.statusCode}");
-      }
-    } catch (e) {
-      print("Exception in getZoneList: $e");
-    } finally {
-      getZoneLoader(false);
-      update();
+ZoneModel? zoneListModel;
+RxList<Zone> zoneAll = <Zone>[].obs;
+RxList<Zone> zoneFiltered = <Zone>[].obs;
+
+RxString searchZoneName = ''.obs;
+RxString searchShortName = ''.obs;
+RxString searchType = ''.obs;
+RxString searchCategory = ''.obs;
+
+var zoneCurrentPage = 1.obs;
+var zoneTotalPages = 1.obs;
+final int zoneLimit = 20;
+RxBool getZoneLoader = false.obs;
+
+getZoneList() async {
+    getZoneLoader(true);
+    print("📡 API Request: zones/get");
+
+    var response = await Api().get(
+  "zones/get",
+ auth: true,
+      queryParameters: {
+        "page": zoneCurrentPage.value,
+        "limit": zoneLimit,
+        "name": searchZoneName.value,
+        "secondary_name": searchShortName.value,
+        "type": searchType.value,
+        "category": searchCategory.value,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      zoneListModel = ZoneModel.fromJson(response.data);
+      zoneAll.value = zoneListModel?.zones ?? [];
+      zoneFiltered.value = zoneAll;
+      zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
+      print("✅ Zones Loaded: ${zoneAll.length}");
+    } else{
+      print("❌ Failed to load zones: ${response.statusCode}");
+
     }
-  }
 
-// -----------Search function
+}
 
-  void onSearchChanged() {
-    zoneCurrentPage.value = 1;
-    getZoneList();
-  }
-  /// ------- pagination function
-  void zonePageChange(int page) {
-    zoneCurrentPage.value = page;
-    getZoneList();
-  }
+/// -----------Search function
+void onSearchChanged() {
+  zoneCurrentPage.value = 1;
+  getZoneList();
+}
 
-
+/// ------- Pagination function
+void zonePageChange(int page) {
+  zoneCurrentPage.value = page;
+  getZoneList();
+}
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Zone Work
@@ -333,7 +334,6 @@ class LocationController extends GetxController {
     var response = await Api().delete("zones/delete/$id");
     if (response.statusCode == 200) {
       getZoneList();
-
       update();
     }
   }
