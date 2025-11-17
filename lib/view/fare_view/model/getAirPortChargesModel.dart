@@ -4,6 +4,9 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+
 GetAirPortChargesModel getAirPortChargesModelFromJson(String str) => GetAirPortChargesModel.fromJson(json.decode(str));
 
 String getAirPortChargesModelToJson(GetAirPortChargesModel data) => json.encode(data.toJson());

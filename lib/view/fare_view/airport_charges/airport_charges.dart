@@ -39,7 +39,11 @@ class _AirportChargesState extends State<AirportCharges> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getAllAirPortCharges();
+        },
+        builder: (controller) {
       return LayoutBuilder(
           builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -58,7 +62,9 @@ class _AirportChargesState extends State<AirportCharges> {
               decoration: BoxDecoration(
                   border: Border.all(color: DynamicColors.gryClr)
               ),
-              child: Column(
+              child: controller.getAllAirPortChargesLoader.value== false?Center(
+                child: CircularProgressIndicator(),
+              ): Column(
                 children: [
                   Container(
                     width: Get.width,
@@ -71,120 +77,123 @@ class _AirportChargesState extends State<AirportCharges> {
                   ),
                   SizedBox(
                     width: Get.width,
-                    child: DataTable(
-                        headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                        dataRowMinHeight: 48,
-                        dataRowMaxHeight: 56,
-                        headingTextStyle: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13,
-                        ),
-                        dataTextStyle: TextStyle(
+                    height: Get.height/1.2,
+                    child: SingleChildScrollView(
+                      child: DataTable(
+                          headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                          dataRowMinHeight: 48,
+                          dataRowMaxHeight: 56,
+                          headingTextStyle: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 13,
+                          ),
+                          dataTextStyle: TextStyle(
 
-                        ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
-                        ),
-                        columns: [
-                          buildHeaderWithSearch(title: "AIRPORTS"),
-                          buildHeaderWithSearch(title: "PICKUP CHARGES"),
-                          buildHeaderWithSearch(title: "DROPOFF CHARGES"),
-                          buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                        ],
-                      rows: [
-                        /// 🔍 Search row (only on top)
-                        DataRow(
-                          color: MaterialStateProperty.all(Colors.grey[100]),
-                          cells: [
-                            DataCell(
-                              TextField(
-                                decoration: const InputDecoration(
-                                  hintText: "Airports",
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                                ),
-                                style: const TextStyle(fontSize: 12),
+                          ),
+
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
+                          ),
+                          columns: [
+                            buildHeaderWithSearch(title: "AIRPORTS",removeSearching: true),
+                            buildHeaderWithSearch(title: "PICKUP CHARGES",removeSearching: true),
+                            buildHeaderWithSearch(title: "DROPOFF CHARGES",removeSearching: true),
+                            buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                          ],
+                        rows: [
+                          /// 🔍 Search row (only on top)
+                          DataRow(
+                            color: MaterialStateProperty.all(Colors.grey[100]),
+                            cells: [
+                              DataCell(
+                                Text(""),
                               ),
-                            ),
-                            DataCell(
-                              TextField(
-                                decoration: const InputDecoration(
+                              DataCell(
+                                CustomTextField(
+                                  columnText: true,
+                                  controller: controller.pickUpChargesController,
+                                  width: fieldWidth/2,
                                   hintText: "Pickup",
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
                                 ),
-                                style: const TextStyle(fontSize: 12),
                               ),
-                            ),
-                            DataCell(
-                              TextField(
-                                decoration: const InputDecoration(
-                                  hintText: " Dropoff",
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                              DataCell(
+                                CustomTextField(
+                                  columnText: true,
+                                  controller: controller.dropOffChargesController,
+                                  width: fieldWidth/2,
+                                  hintText: "DropOff",
                                 ),
-                                style: const TextStyle(fontSize: 12),
                               ),
-                            ),
-                            DataCell(
-                              CustomButton(
-                                height: 35,
-                                width: 80,
-                                verticalPadding: 0.0,
-                                borderRadius: 4,
-                                widget: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                                  child:  Text(
-                                    AppText.save,
-                                    style: mozillaTextRegularText(
-                                        fontSize: 12, color: DynamicColors.whiteClr),
+                              DataCell(
+                                CustomButton(
+                                  height: 35,
+                                  width: 80,
+                                  verticalPadding: 0.0,
+                                  borderRadius: 4,
+                                  onTap: (){
+                                    controller.editAirPortCharge();
+                                  },
+                                  widget: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                                    child:  Text(
+                                      AppText.save,
+                                      style: mozillaTextRegularText(
+                                          fontSize: 12, color: DynamicColors.whiteClr),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-
-                        /// 🔽 Normal data rows
-                        ...List.generate(totalRows, (index) {
-                          return DataRow(
-                            cells: [
-                              const DataCell(Text("ABERPORTH AIRPORT")),
-                              const DataCell(Text("0.00")),
-                              const DataCell(Text("0.00")),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(color: Colors.transparent),
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.edit_calendar,
-                                        size: 28,
-                                        color: DynamicColors.primaryClr,
-                                      ),
-                                    ),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: const BorderSide(color: Colors.transparent),
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.clear,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ],
-                          );
-                        }),
-                      ],
+                          ),
+
+                          /// 🔽 Normal data rows
+                          ...List.generate(controller.airportChargesData!.locations!.length, (index) {
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(controller.airportChargesData!.locations![index].name.toString())),
+                                DataCell(Text(controller.airportChargesData!.locations![index].pickupCharges!)),
+                                DataCell(Text(controller.airportChargesData!.locations![index].dropoffCharges!)),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: const BorderSide(color: Colors.transparent),
+                                        ),
+                                        onPressed: () {
+                                          controller.pickUpChargesController.text = controller.airportChargesData!.locations![index].pickupCharges.toString();
+                                          controller.dropOffChargesController.text = controller.airportChargesData!.locations![index].dropoffCharges.toString();
+                                          controller.airPortSelectedItemId = controller.airportChargesData!.locations![index].id;
+                                          controller.update();
+                                        },
+                                        child: Icon(
+                                          Icons.edit_calendar,
+                                          size: 28,
+                                          color: DynamicColors.primaryClr,
+                                        ),
+                                      ),
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          side: const BorderSide(color: Colors.transparent),
+                                        ),
+                                        onPressed: () {
+                                          controller.clearAirPortCharges(controller.airportChargesData!.locations![index].id);
+                                        },
+                                        child: Icon(
+                                          Icons.clear,
+                                          size: 28,
+                                          color: DynamicColors.redClr,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                        ],
+                      ),
                     ),
                     ),
                 ],
