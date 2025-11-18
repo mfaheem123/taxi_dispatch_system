@@ -42,7 +42,13 @@ class _FareChargesState extends State<FareCharges> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getSurcharges();
+        },
+
+
+        builder: (controller) {
 
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -251,6 +257,7 @@ class _FareChargesState extends State<FareCharges> {
                                     ],
                                   ),
                                 ),
+
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller: controller.congestionFareController,
@@ -259,6 +266,7 @@ class _FareChargesState extends State<FareCharges> {
                                   columnText: true,
                                   height: 30,
                                 ),
+
                             labeledField(
                               context: context,
                               isMobile: isMobile,
@@ -267,6 +275,7 @@ class _FareChargesState extends State<FareCharges> {
                               width: fieldWidth/1.8,
                               child: SizedBox(height: 30, child: KeyboardDatePicker()),
                             ),
+
                               ],
                             ),
                           ),
@@ -275,6 +284,7 @@ class _FareChargesState extends State<FareCharges> {
                     ),
                   ],
                 ),
+
                 SizedBox(
                   height: 10,
                 ),
@@ -285,6 +295,7 @@ class _FareChargesState extends State<FareCharges> {
                     width: Get.width,
                     child: DatatableWidget(
                       columns: [
+
                         buildHeaderWithSearch(title: "TYPE"),
                         buildHeaderWithSearch(title: "CONDITION"),
                         buildHeaderWithSearch(title: "POSTCODE"),
@@ -297,50 +308,66 @@ class _FareChargesState extends State<FareCharges> {
                         buildHeaderWithSearch(title: "FROM"),
                         buildHeaderWithSearch(title: "TO"),
                         buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+
                       ],
-                      totalRow: totalRows,
-                      cells: [
-                        const DataCell(Center(child: Text("SALOON"))),
-                        const DataCell(Center(child: Text("NW7"))),
-                        const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                        const DataCell(Center(child: Text("£55.00"))),
-                        const DataCell(Center(child: Text("SALOON"))),
-                        const DataCell(Center(child: Text("NW7"))),
-                        const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                        const DataCell(Center(child: Text("£55.00"))),
-                        const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                        const DataCell(Center(child: Text("£55.00"))),
-                        const DataCell(Center(child: Text("£55.00"))),
-                        DataCell(
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
+                      rows: controller
+                          .getSurchargesModel!.surcharges!
+                          .map((surcharges) => DataRow(
+                        cells: [
+
+                          DataCell(Center(child: Text(surcharges.surchargesType! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.condition! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.postcode! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.fare! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.parkingCharges! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.extraDropCharges! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.congestionCharges! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.duration! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.day ?? ""))),
+                          DataCell(Center(child: Text(surcharges.fromDate!.toString() ?? ""))),
+                          DataCell(Center(child: Text(surcharges.toDate!.toString() ?? ""))),
+
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(32, 32),
+                                      side: const BorderSide(
+                                          color: Colors.transparent),
+                                    ),
+                                    onPressed: () {
+                                      // 🟢 Edit action
+                                    },
+                                    child: Icon(Icons.edit_calendar,
+                                        size: 20,
+                                        color:
+                                        DynamicColors.primaryClr),
                                   ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.search,
-                                    size: 28,
-                                    color: DynamicColors.primaryClr,
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(32, 32),
+                                      side: const BorderSide(
+                                          color: Colors.transparent),
+                                    ),
+                                    onPressed: () {
+                                      // 🔴 Delete action
+                                    },
+                                    child: Icon(Icons.delete_forever,
+                                        size: 20,
+                                        color: DynamicColors.redClr),
                                   ),
-                                ),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.clear,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ))
+                          .toList(),
                     ),
                   ),
                 ),

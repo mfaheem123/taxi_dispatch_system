@@ -76,9 +76,11 @@ class _PlotFareState extends State<PlotFare> {
                         color: DynamicColors.gryClr.withOpacity(0.5),
                         child: Text(AppText.plotFare, style: titleDesign()),
                       ),
+
                       SizedBox(
                         height: 10,
                       ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         child: Wrap(
@@ -91,7 +93,9 @@ class _PlotFareState extends State<PlotFare> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                                   CustomDropdownField<VehicleTypee>(
                                     label: "Select Subsidiary",
                                     width: Get.width / 5,
@@ -105,9 +109,11 @@ class _PlotFareState extends State<PlotFare> {
                                       controller.update();
                                     },
                                   ),
+
                                 ],
                               ),
                             ),
+
                             CustomTextField(
                               borderRadius: 4,
                               controller: controller.fareController,
@@ -116,12 +122,15 @@ class _PlotFareState extends State<PlotFare> {
                               columnText: true,
                               height: 35,
                             ),
+
                           ],
                         ),
                       ),
+
                       SizedBox(
                         height: 10,
                       ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         child: Wrap(
@@ -199,7 +208,9 @@ class _PlotFareState extends State<PlotFare> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+
                                         Text(AppText.fromPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                                         CustomDropdownField<Zonee>(
                                           label: "Select Subsidiary",
                                           width: Get.width / 5,
@@ -213,9 +224,11 @@ class _PlotFareState extends State<PlotFare> {
                                             controller.update();
                                           },
                                         ),
+
                                       ],
                                     ),
                                   ),
+
                                   OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         minimumSize: const Size(43, 42), // width & height
@@ -229,6 +242,7 @@ class _PlotFareState extends State<PlotFare> {
 
                                       }, child: Icon(Icons.add)
                                   ),
+
                                   OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         minimumSize: const Size(43, 42), // width & height
@@ -245,6 +259,7 @@ class _PlotFareState extends State<PlotFare> {
                                     size: 20,
                                   )
                                   ),
+
                                 ],
                               ),
                             ),
@@ -257,6 +272,7 @@ class _PlotFareState extends State<PlotFare> {
                           verticalDirection: VerticalDirection.down,
                           spacing: fieldWidth/2,
                           children: [
+
                             CustomTextField(
                               borderRadius: 4,
                               controller: controller.fareDescriptionController,
@@ -266,6 +282,7 @@ class _PlotFareState extends State<PlotFare> {
                               maxLines: 5,
                               height: 100,
                             ),
+
                             CustomTextField(
                               borderRadius: 4,
                               controller: controller.fareDescription2ndController,
@@ -275,6 +292,7 @@ class _PlotFareState extends State<PlotFare> {
                               maxLines: 5,
                               height: 100,
                             ),
+
                           ],
                         ),
                       ),

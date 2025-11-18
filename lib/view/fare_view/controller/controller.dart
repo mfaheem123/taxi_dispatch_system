@@ -8,6 +8,8 @@ import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
 import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
+import 'package:dashboard_new1/view/fare_view/model/getFareIncrementModel.dart';
+import 'package:dashboard_new1/view/fare_view/model/getSurchargesModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:dio/dio.dart';
@@ -103,7 +105,7 @@ class FareController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
 
   /// TextEditingControllers
-  final  incrementValueVehicleController = TextEditingController();
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
 
@@ -554,11 +556,17 @@ class FareController extends GetxController {
   RxBool getAllFareViewLoader = false.obs;
   GetAllFareConfigurationModel? getAllFareConfigurationData;
   getAllFareConfiguration() async{
+
     getAllFareViewLoader(true);
+
     var response = await Api().get("faresconfiguration/get?title=$fareConfiguration");
+
     if(response.statusCode == 200){
+
       getAllFareConfigurationData = GetAllFareConfigurationModel.fromJson(response.data);
+
       getAllFareViewLoader(false);
+
       update();
     }
   }
@@ -566,6 +574,117 @@ class FareController extends GetxController {
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
+
+
+
+  String? FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? operatorType;
+  final  incrementValueVehicleController = TextEditingController();
+  String selectedType = "fixFare";
+
+  bool isFixedFare = true;
+  bool isMileage = false;
+
+  void selectType(String type) {
+    selectedType = type;
+
+    if (type == "fixFare") {
+      isFixedFare = true;
+      isMileage = false;
+    } else {
+      isFixedFare = false;
+      isMileage = true;
+    }
+
+    update();
+  }
+
+
+
+
+
+
+  postFareIncrement() async{
+    var formData = {
+      "start_date": FareIncrementStart,
+      "end_date": FareIncrementEnd,
+      "operator": operatorType,
+      "amount": incrementValueVehicleController.text,
+      "fix_fare": isFixedFare,
+      "mileage": isMileage,
+
+    };
+    print(formData);
+    var response = await Api().post(formData, "fareincrement/add");
+    if(response.statusCode == 200){
+      print(response.data);
+      BotToast.showText(text: "Fare configuration is successfully added");
+
+    }
+  }
+
+
+
+
+
+
+
+  GetFareIncrementMoodel? getFareIncrementMoodel;
+  RxBool getFareIncrementLoader = false.obs;
+
+  getFareIncrement() async{
+    getFareIncrementLoader(true);
+    var response = await Api().get("fareincrement/get");
+    if(response.statusCode == 200){
+      getFareIncrementMoodel = GetFareIncrementMoodel.fromJson(response.data);
+      getFareIncrementLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
+
+
+
+
+
+  GetSurchargesModel? getSurchargesModel;
+  RxBool getSurchargesLoader = false.obs;
+
+  getSurcharges() async{
+    getSurchargesLoader(true);
+    var response = await Api().get("surcharges/get");
+    if(response.statusCode == 200){
+      getSurchargesModel = GetSurchargesModel.fromJson(response.data);
+      getSurchargesLoader(false);
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
 
 
 

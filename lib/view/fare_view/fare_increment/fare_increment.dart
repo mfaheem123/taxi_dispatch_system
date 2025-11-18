@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -26,9 +27,8 @@ class _FareIncrementState extends State<FareIncrement> {
       ? Get.find<FareController>()
       : Get.put(FareController());
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows =
-      50; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 50;
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -39,18 +39,22 @@ class _FareIncrementState extends State<FareIncrement> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getFareIncrement();
+        },
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
         final double fieldWidth = isMobile
-            ? maxWidth // full width
+            ? maxWidth
             : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+            ? maxWidth / 2
+            : maxWidth / 4;
 
         return Column(
           children: [
@@ -67,60 +71,87 @@ class _FareIncrementState extends State<FareIncrement> {
                     color: DynamicColors.gryClr.withOpacity(0.5),
                     child: Text(AppText.fareIncrement, style: titleDesign()),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
+
+                  /// MAIN INPUT AREA
                   Wrap(
                     verticalDirection: VerticalDirection.down,
                     crossAxisAlignment: WrapCrossAlignment.end,
                     runSpacing: 8,
                     spacing: 20,
                     children: [
+                      /// Start Date
                       labeledField(
                         context: context,
                         isMobile: isMobile,
                         label: AppText.startDate,
                         width: fieldWidth / 2.0,
                         column: true,
-                        child:
-                            SizedBox(height: 30, child: KeyboardDatePicker()),
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: DateTime.now(),
+                            onChanged: (date) {
+                              controller.FareIncrementStart =
+                              "${date.year}-${date.month}-${date.day}";
+                            },
+                            onSubmitted: (date) {
+                              controller.FareIncrementStart =
+                              "${date.year}-${date.month}-${date.day}";
+                            },
+                          ),
+                        ),
                       ),
+
+                      /// End Date
                       labeledField(
                         context: context,
                         isMobile: isMobile,
                         label: AppText.endDate,
                         column: true,
                         width: fieldWidth / 2.0,
-                        child:
-                            SizedBox(height: 30, child: KeyboardDatePicker()),
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: DateTime.now(),
+                            onChanged: (date) {
+                              controller.FareIncrementEnd =
+                              "${date.year}-${date.month}-${date.day}";
+                            },
+                            onSubmitted: (date) {
+                              controller.FareIncrementEnd =
+                              "${date.year}-${date.month}-${date.day}";
+                            },
+                          ),
+                        ),
                       ),
+
+                      /// Operator Dropdown
                       SizedBox(
                         width: fieldWidth / 2.5,
-                        // height: 30,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(AppText.operator,
                                 style: mozillaTextSemiBoldText(
                                     context: context, fontSize: 13)),
-                            RestrictedDrivers(
-                              width: fieldWidth,
-                              height: 35,
-                              padding: 0.0,
-                              border: Border.all(
-                                color: DynamicColors.gryClr,
-                              ),
-                              titleText: "SELECT OPERATOR",
-                              driversList: [
-                                "25 GEORGE HAMPTON",
-                                "26 PAUL DOUBLEDAY",
-                                "27 RICHARD HARDWICK",
-                                "28 LANRE OKERJO",
-                              ],
+                            CustomDropdownField<String>(
+                              label: "Select Operator",
+                              width: Get.width / 6,
+                              height: 30,
+                              items: ["Percentage", "Amount"],
+                              value: controller.operatorType,
+                              itemLabel: (v) => v,
+                              onChanged: (val) {
+                                controller.operatorType = val;
+                                controller.update();
+                              },
                             ),
                           ],
                         ),
                       ),
+
+                      /// Value
                       CustomTextField(
                         borderRadius: 4,
                         controller: controller.incrementValueVehicleController,
@@ -128,141 +159,163 @@ class _FareIncrementState extends State<FareIncrement> {
                         hintText: AppText.value,
                         columnText: true,
                       ),
+
+                      /// FIX FARE Button
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: DynamicColors.primaryClr,
-                          ),
+                          backgroundColor:
+                          controller.selectedType == "fixFare"
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          side: BorderSide(color: DynamicColors.primaryClr),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // 👈 yahan ap radius set karen
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          controller.selectType("fixFare");
+                          controller.update();
+                        },
                         child: Text(
                           AppText.fixeFare,
                           style: mozillaTextRegularText(
-                              fontSize: 12, color: DynamicColors.primaryClr),
+                            fontSize: 12,
+                            color: controller.selectedType == "fixFare"
+                                ? Colors.white
+                                : DynamicColors.primaryClr,
+                          ),
                         ),
                       ),
+
+                      /// MILEAGE Button
                       OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: DynamicColors.primaryClr,
-                          ),
+                          backgroundColor:
+                          controller.selectedType == "mileage"
+                              ? DynamicColors.primaryClr
+                              : Colors.transparent,
+                          side: BorderSide(color: DynamicColors.primaryClr),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8), // 👈 yahan ap radius set karen
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+
+                          controller.selectType("mileage");
+                          controller.update();
+
+                        },
                         child: Text(
                           AppText.mileage,
                           style: mozillaTextRegularText(
-                              fontSize: 12, color: DynamicColors.primaryClr),
+
+                            fontSize: 12,
+                            color: controller.selectedType == "mileage"
+                                ? Colors.white
+                                : DynamicColors.primaryClr,
+
+                          ),
+
                         ),
                       ),
+
+                      /// Save Button
                       CustomButton(
                         height: 35,
                         width: 80,
                         verticalPadding: 0.0,
                         borderRadius: 4,
+                        onTap: () {
+                          controller.postFareIncrement();
+                        },
                         widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child:  Text(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 0.0),
+                          child: Text(
                             AppText.save,
                             style: mozillaTextRegularText(
                                 fontSize: 12, color: DynamicColors.whiteClr),
                           ),
                         ),
                       ),
-                      // OutlinedButton(
-                      //   style: OutlinedButton.styleFrom(
-                      //     backgroundColor: DynamicColors.primaryClr,
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(
-                      //           8), // 👈 yahan ap radius set karen
-                      //     ),
-                      //   ),
-                      //   onPressed: () {},
-                      //   child: Text(
-                      //     AppText.save,
-                      //     style: mozillaTextRegularText(
-                      //         fontSize: 12, color: DynamicColors.whiteClr),
-                      //   ),
-                      // ),
                     ],
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
 
+            /// TABLE
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: Get.width,
                 child: DatatableWidget(
+
                   columns: [
-                    buildHeaderWithSearch(title: "FROM"),
-                    buildHeaderWithSearch(title: "TO"),
-                    buildHeaderWithSearch(title: "OPERATOR"),
-                    buildHeaderWithSearch(title: "VALUE"),
-                    buildHeaderWithSearch(title: "FIX FARE"),
-                    buildHeaderWithSearch(title: "MILEAGE"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
+                    buildHeaderWithSearch(title: "FROM",removeSearching: true),
+                    buildHeaderWithSearch(title: "TO",removeSearching: true),
+                    buildHeaderWithSearch(title: "OPERATOR",removeSearching: true),
+                    buildHeaderWithSearch(title: "VALUE",removeSearching: true),
+                    buildHeaderWithSearch(title: "FIX FARE",removeSearching: true),
+                    buildHeaderWithSearch(title: "MILEAGE",removeSearching: true),
+                    buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow: totalRows,
-                  cells: [
-                    const DataCell(Center(child: Text("SALOON"))),
-                    const DataCell(Center(child: Text("NW7"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    DataCell(
-                      Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                                side: BorderSide.none,
+
+                  rows: controller
+                      .getFareIncrementMoodel!.fareIncrement!
+                      .map((fareIncrement) => DataRow(
+                    cells: [
+                      DataCell(Center(child: Text(fareIncrement.startDate! ?? ""))),
+                      DataCell(Center(child: Text(fareIncrement.endDate! ?? ""))),
+                      DataCell(Center(child: Text(fareIncrement.fareIncrementOperator! ?? ""))),
+                      DataCell(Center(child: Text(fareIncrement.amount! ?? ""))),
+                      fareIncrement.fixFare!.toString()=="true"?
+                      DataCell(Center(child: Icon(Icons.check,color: Colors.green,))):DataCell(Center(child: Icon(Icons.cancel,color: Colors.red,))),
+                      fareIncrement.mileage!.toString()=="true"?
+                      DataCell(Center( child: Icon(Icons.check,color: Colors.green,))):DataCell(Center(child: Icon(Icons.cancel,color: Colors.red,))),
+                      DataCell(
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(32, 32),
+                                  side: const BorderSide(
+                                      color: Colors.transparent),
+                                ),
+                                onPressed: () {
+                                  // 🟢 Edit action
+                                },
+                                child: Icon(Icons.edit_calendar,
+                                    size: 20,
+                                    color:
+                                    DynamicColors.primaryClr),
                               ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.search,
-                                size: 28,
-                                color: DynamicColors.primaryClr,
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(32, 32),
+                                  side: const BorderSide(
+                                      color: Colors.transparent),
+                                ),
+                                onPressed: () {
+                                  // 🔴 Delete action
+                                },
+                                child: Icon(Icons.delete_forever,
+                                    size: 20,
+                                    color: DynamicColors.redClr),
                               ),
-                            ),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                                side: BorderSide.none,
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.clear,
-                                size: 28,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ))
+                      .toList(),
                 ),
               ),
             ),

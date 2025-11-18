@@ -249,8 +249,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
                 });
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 setState(() {
-                  _selectedIndex =
-                      (_selectedIndex - 1 + items.length) % items.length;
+                  _selectedIndex = (_selectedIndex - 1 + items.length) % items.length;
                 });
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                 Navigator.pop(context);
