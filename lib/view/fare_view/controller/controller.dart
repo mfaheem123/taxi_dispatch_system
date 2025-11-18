@@ -20,6 +20,7 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
 import '../airport_charges/airport_model.dart';
+import '../fare_charges/fare_charges.dart';
 
 class FareController extends GetxController {
 
@@ -661,12 +662,63 @@ class FareController extends GetxController {
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
 
 
+String? postCodeWise = "POSTCODE WISE";
+String? selectDateWise = "TIME WISE";
+String? selectOperation = "SELECT OPERATION";
+String? selectPickup = "PICKUP";
+DaysClass? selectedDay;
 
+  DateTime? startDateSurCharges = DateTime.now();
+  DateTime? endDateSurCharges = DateTime.now();
+  TextEditingController startTimeSurCharge = TextEditingController();
+  TextEditingController endTimeSurCharge = TextEditingController();
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post surcharge data
+  postSurchargeData() async{
+    var formData = {
+      "active": true,
+      "condition": selectPickup,
+      if(congestionFareController.text.isNotEmpty) "congestion_charges": congestionFareController.text,
+      "duration": selectDateWise,
+     if(extraDropOffFareController.text.isNotEmpty) "extra_drop_charges": extraDropOffFareController.text,
+      if(surChargesFareController.text.isNotEmpty)"fare": surChargesFareController.text,
+      if(selectDateWise =="DATE WISE") "from_date": "${startDateSurCharges!.year}-${startDateSurCharges!.month}-${startDateSurCharges!.day}",
+     if(startTimeSurCharge.text.isNotEmpty) "from_time": startTimeSurCharge.text,
+      "operator": selectOperation,
+     if(parkingFareController.text.isNotEmpty) "parking_charges": parkingFareController.text,
+      "postcode": postCodeFareController.text,
+      "surcharges_type": postCodeWise,
+      if(selectDateWise =="DATE WISE") "to_date": "${endDateSurCharges!.year}-${endDateSurCharges!.month}-${endDateSurCharges!.day}",
+     if(startTimeSurCharge.text.isNotEmpty) "to_time": startTimeSurCharge.text,
+      if(selectDateWise == "DAY WISE") "day": selectedDay!.dayName,
+    };
+    print(formData);
+    var response = await Api().post(formData, "surcharges/add");
+    if(response.statusCode == 200){
+      getSurchargesModel!.surcharges!.insert(0, SurchargeObject.fromJson(response.data['surcharges']));
+      print(response.data);
+      clearSurchargesData();
+    }
+  }
+
+  clearSurchargesData() async{
+    congestionFareController.clear();
+    extraDropOffFareController.clear();
+    surChargesFareController.clear();
+    startTimeSurCharge.clear();
+    parkingFareController.clear();
+    startTimeSurCharge.clear();
+    postCodeWise = "POSTCODE WISE";
+    selectDateWise = "TIME WISE";
+    selectOperation = "SELECT OPERATION";
+    selectPickup = "PICKUP";
+    selectedDay = null;
+    update();
+  }
 
 
   GetSurchargesModel? getSurchargesModel;
   RxBool getSurchargesLoader = false.obs;
-
   getSurcharges() async{
     getSurchargesLoader(true);
     var response = await Api().get("surcharges/get");
@@ -677,13 +729,20 @@ class FareController extends GetxController {
     }
   }
 
-
-
-
-
-
-
-
+  bindSurChargesData({SurchargeObject? sureChargeData}) async{
+    congestionFareController.text = sureChargeData!.congestionCharges.toString();
+    extraDropOffFareController.text = sureChargeData.extraDropCharges.toString();
+    surChargesFareController.text = sureChargeData.fare.toString();
+    startTimeSurCharge.text = sureChargeData.fromTime.toString();
+    parkingFareController.text = sureChargeData.parkingCharges.toString();
+    startTimeSurCharge.text = sureChargeData.toTime.toString();
+    postCodeWise = sureChargeData.surchargesType.toString();
+    selectDateWise = sureChargeData.duration.toString();
+    // selectOperation = sureChargeData.
+    selectPickup = sureChargeData.condition.toString();
+    // selectedDay = sureChargeData.day.toString();
+    update();
+  }
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality

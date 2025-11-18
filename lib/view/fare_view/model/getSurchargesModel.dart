@@ -11,7 +11,7 @@ String getSurchargesModelToJson(GetSurchargesModel data) => json.encode(data.toJ
 class GetSurchargesModel {
   bool? status;
   int? count;
-  List<Surcharge>? surcharges;
+  List<SurchargeObject>? surcharges;
 
   GetSurchargesModel({
     this.status,
@@ -22,7 +22,7 @@ class GetSurchargesModel {
   factory GetSurchargesModel.fromJson(Map<String, dynamic> json) => GetSurchargesModel(
     status: json["status"],
     count: json["count"],
-    surcharges: json["surcharges"] == null ? [] : List<Surcharge>.from(json["surcharges"]!.map((x) => Surcharge.fromJson(x))),
+    surcharges: json["surcharges"] == null ? [] : List<SurchargeObject>.from(json["surcharges"]!.map((x) => SurchargeObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -32,7 +32,7 @@ class GetSurchargesModel {
   };
 }
 
-class Surcharge {
+class SurchargeObject {
   int? id;
   String? fromDate;
   String? toDate;
@@ -52,7 +52,7 @@ class Surcharge {
   String? createdAt;
   String? updatedAt;
 
-  Surcharge({
+  SurchargeObject({
     this.id,
     this.fromDate,
     this.toDate,
@@ -73,7 +73,7 @@ class Surcharge {
     this.updatedAt,
   });
 
-  factory Surcharge.fromJson(Map<String, dynamic> json) => Surcharge(
+  factory SurchargeObject.fromJson(Map<String, dynamic> json) => SurchargeObject(
     id: json["id"],
     fromDate: json["from_date"],
     toDate: json["to_date"],
