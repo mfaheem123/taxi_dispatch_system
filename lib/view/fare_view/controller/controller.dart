@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
+import 'package:dashboard_new1/view/fare_view/model/getAirPortChargesModel.dart' hide LocationType;
 import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getFareIncrementModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getSurchargesModel.dart';
@@ -18,6 +19,7 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
+import '../airport_charges/airport_model.dart';
 
 class FareController extends GetxController {
 
@@ -685,6 +687,53 @@ class FareController extends GetxController {
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
+
+  AirPortChargesModel? airportChargesData;
+  RxBool getAllAirPortChargesLoader = true.obs;
+  getAllAirPortCharges() async{
+    getAllAirPortChargesLoader(false);
+    var response = await Api().get("airports/get");
+    if(response.statusCode == 200){
+      airportChargesData = AirPortChargesModel.fromJson(response.data);
+      getAllAirPortChargesLoader(true);
+      update();
+    }
+  }
+
+  TextEditingController pickUpChargesController = TextEditingController();
+  TextEditingController dropOffChargesController = TextEditingController();
+  int? airPortSelectedItemId;
+
+  editAirPortCharge() async{
+    var formData = {
+      "pickup_charges": pickUpChargesController.text,
+      "dropoff_charges": dropOffChargesController.text,
+    };
+    var response = await Api().post(formData, "airports/edit/$airPortSelectedItemId");
+    if(response.statusCode == 200){
+      print(response.data);
+      int index = airportChargesData!.locations!.indexWhere((test)=> test.id == airPortSelectedItemId);
+      airportChargesData!.locations![index] = Location.fromJson(response.data['location']);
+      pickUpChargesController.clear();
+      dropOffChargesController.clear();
+      update();
+    }
+  }
+
+  clearAirPortCharges(id) async{
+    var response = await Api().post({}, "airports/clear/$id");
+    if(response.statusCode == 200){
+      int index = airportChargesData!.locations!.indexWhere((test)=> test.id == id);
+      airportChargesData!.locations![index].pickupCharges = "0.0";
+      airportChargesData!.locations![index].dropoffCharges = "0.0";
+    update();
+    }
+  }
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
 
 
 
