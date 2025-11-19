@@ -770,6 +770,17 @@ DaysClass? selectedDay;
     }
     update();
   }
+  
+  
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete sure charge api
+  deleteSureCharge({id}) async{
+    var response = await Api().delete("surcharges/delete/$id");
+    if(response.statusCode == 200){
+      int index = getSurchargesModel!.surcharges!.indexWhere((test) => test.id == id);
+      getSurchargesModel!.surcharges!.remove(getSurchargesModel!.surcharges![index]);
+    update();
+    }
+  }
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality

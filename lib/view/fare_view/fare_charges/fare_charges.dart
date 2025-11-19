@@ -480,7 +480,7 @@ class _FareChargesState extends State<FareCharges> {
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
-                                      // 🔴 Delete action
+                                      controller.deleteSureCharge(id: surcharges.id);
                                     },
                                     child: Icon(Icons.delete_forever,
                                         size: 20,
