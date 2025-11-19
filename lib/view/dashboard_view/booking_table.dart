@@ -337,10 +337,12 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
     label: Expanded(
       child: widget?? Column(
         mainAxisAlignment: MainAxisAlignment.center,
+
         children: [
           Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
               fontSize: fontSize ?? 13
           )),
+
           SizedBox(height: 4),
           title == "TYPE" || removeSearching == true
               ? SizedBox.shrink()

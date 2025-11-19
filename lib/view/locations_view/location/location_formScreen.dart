@@ -35,7 +35,9 @@ class LocationForm extends StatelessWidget {
                     color: Colors.white,
                     border: Border.all(color: Colors.grey.shade300),
                   ),
+
                   child: Column(
+
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _header(),

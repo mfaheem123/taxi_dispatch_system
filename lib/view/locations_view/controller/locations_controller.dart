@@ -197,9 +197,8 @@ class LocationController extends GetxController {
     updateLocationValue(true);
     getLocationTypeZone(
         selectedZoneId: locationUpdate.zoneId,
-        selectedLocationTypeId: locationUpdate
-            .locationTypeId); //-------------------------------------------------------------------
-  }
+        selectedLocationTypeId: locationUpdate.locationTypeId); //-------------------------------------------------------------------
+ }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 
@@ -271,12 +270,10 @@ class LocationController extends GetxController {
 ZoneModel? zoneListModel;
 RxList<Zone> zoneAll = <Zone>[].obs;
 RxList<Zone> zoneFiltered = <Zone>[].obs;
-
 RxString searchZoneName = ''.obs;
 RxString searchShortName = ''.obs;
 RxString searchType = ''.obs;
 RxString searchCategory = ''.obs;
-
 var zoneCurrentPage = 1.obs;
 var zoneTotalPages = 1.obs;
 final int zoneLimit = 20;

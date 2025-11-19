@@ -222,7 +222,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         // ),
                                         RawKeyboardListener(
                                           focusNode: controller.searchingAddressViaFocusNode,
-
                                           onKey: (event) {
                                             if (event is RawKeyDownEvent) {
                                               if (event.logicalKey ==
@@ -504,9 +503,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               buildHeaderWithSearch(title: "FARES"),
                               buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                             ],
-                            rows: controller
-                                .getAllFixedFareModel!.fixedFares!
-                                .map((farefxed) => DataRow(
+                            rows: controller.getAllFixedFareModel!.fixedFares!.map((farefxed) => DataRow(
                               cells: [
                                 DataCell(Text(farefxed.vehicleTypeName! ?? "")),
                                 DataCell(Text(farefxed.area1! ?? "")),
@@ -551,8 +548,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                   ),
                                 ),
                               ],
-                            ))
-                                .toList(),
+                            )).toList(),
                             //   totalRow: 2,
                             //   cells: [
                             //     const DataCell(Center(child: Text("SALOON"))),
@@ -616,7 +612,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                     double top = 0.0;
                     double left = 0.0;
                     double width = Get.width/4;
-
                     if (fieldBox != null && stackBox != null) {
                       final Offset localOffset = fieldBox.localToGlobal(
                           Offset.zero,

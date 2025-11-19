@@ -180,28 +180,18 @@ class _LocationListScreenState extends State<LocationListScreen> {
                             return DataRow(
                               cells: [
                                 DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(
-                                    Center(child: Text(item.postcode ?? '—'))),
-                                DataCell(
-                                    Center(child: Text(item.shortcut ?? '—'))),
-                                DataCell(
-                                    Center(child: Text(item.address ?? '—'))),
-                                DataCell(Center(
-                                    child: Text(
-                                        item.locationType?.name ?? 'N/A'))),
-                                DataCell(Center(
-                                    child: Text(item.zone?.name ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.postcode ?? '—'))),
+                                DataCell(Center(child: Text(item.shortcut ?? '—'))),
+                                DataCell(Center(child: Text(item.address ?? '—'))),
+                                DataCell(Center(child: Text(item.locationType?.name ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.zone?.name ?? 'N/A'))),
                                 DataCell(
                                   Center(
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(
-                                                color: Colors.transparent),
-                                          ),
+                                          style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
                                           onPressed: () {
                                             // controller
                                                 // .bindLocationUpdateLocation(locationUpdate: item.id!);

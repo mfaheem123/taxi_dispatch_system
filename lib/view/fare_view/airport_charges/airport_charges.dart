@@ -1,7 +1,4 @@
 
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +26,7 @@ class _AirportChargesState extends State<AirportCharges> {
       : Get.put(FareController());
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 50;  // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
 
   @override
   void initState() {
@@ -87,6 +84,7 @@ class _AirportChargesState extends State<AirportCharges> {
                             fontWeight: FontWeight.w800,
                             fontSize: 13,
                           ),
+
                           dataTextStyle: TextStyle(
 
                           ),
@@ -95,12 +93,14 @@ class _AirportChargesState extends State<AirportCharges> {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: DynamicColors.textClr.withOpacity(0.5))
                           ),
+
                           columns: [
                             buildHeaderWithSearch(title: "AIRPORTS",removeSearching: true),
                             buildHeaderWithSearch(title: "PICKUP CHARGES",removeSearching: true),
                             buildHeaderWithSearch(title: "DROPOFF CHARGES",removeSearching: true),
                             buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                           ],
+
                         rows: [
                           /// 🔍 Search row (only on top)
                           DataRow(
@@ -117,6 +117,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                   hintText: "Pickup",
                                 ),
                               ),
+
                               DataCell(
                                 CustomTextField(
                                   columnText: true,
@@ -125,6 +126,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                   hintText: "DropOff",
                                 ),
                               ),
+
                               DataCell(
                                 CustomButton(
                                   height: 35,
@@ -144,6 +146,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                   ),
                                 ),
                               ),
+
                             ],
                           ),
 
@@ -151,6 +154,7 @@ class _AirportChargesState extends State<AirportCharges> {
                           ...List.generate(controller.airportChargesData!.locations!.length, (index) {
                             return DataRow(
                               cells: [
+
                                 DataCell(Text(controller.airportChargesData!.locations![index].name.toString())),
                                 DataCell(Text(controller.airportChargesData!.locations![index].pickupCharges!)),
                                 DataCell(Text(controller.airportChargesData!.locations![index].dropoffCharges!)),
@@ -189,6 +193,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                     ],
                                   ),
                                 ),
+
                               ],
                             );
                           }),

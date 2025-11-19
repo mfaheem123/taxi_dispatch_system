@@ -401,7 +401,6 @@ class AccountController extends GetxController {
     paymentType = data.paymentTypes.toString().capitalize;
     accountInformationController.text = data.information.toString();
     accountContactNameController.text = data.contactName.toString();
-
     commissionDropDown = data.agentCommissionType!.toUpperCase().toString();
     accountAgentCommissionController.text = data.agentCommission.toString();
     adminFeesDropDown = data.adminFeesType!.toUpperCase().toString();

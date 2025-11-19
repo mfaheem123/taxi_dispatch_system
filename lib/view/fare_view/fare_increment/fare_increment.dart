@@ -45,7 +45,7 @@ class _FareIncrementState extends State<FareIncrement> {
         },
 
         builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
+      return controller.getFareIncrementLoader==true?CircularProgressIndicator(): LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;

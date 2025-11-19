@@ -317,6 +317,7 @@ class FareController extends GetxController {
         method: 'GET',
       ),
     );
+
     if (response.statusCode == 200) {
       final addressObject = [
         {
@@ -340,8 +341,7 @@ class FareController extends GetxController {
   List<GlobalKey> suggestionItemKeys = [];
 
   void updateKeys() {
-    suggestionItemKeys =
-        List.generate(allAddressesData.length, (_) => GlobalKey());
+    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
     update();
   }
 
@@ -581,12 +581,17 @@ class FareController extends GetxController {
 
 
   String? FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+
   String? FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+
   String? operatorType;
+
   final  incrementValueVehicleController = TextEditingController();
+
   String selectedType = "fixFare";
 
   bool isFixedFare = true;
+
   bool isMileage = false;
 
   void selectType(String type) {
