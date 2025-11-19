@@ -677,11 +677,12 @@ DaysClass? selectedDay;
   DateTime? endDateSurCharges = DateTime.now();
   TextEditingController startTimeSurCharge = TextEditingController();
   TextEditingController endTimeSurCharge = TextEditingController();
+  bool activeStatus = true;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post surcharge data
   postSurchargeData() async{
     var formData = {
-      "active": true,
+      "active": activeStatus,
       "condition": selectPickup,
       if(congestionFareController.text.isNotEmpty) "congestion_charges": congestionFareController.text,
       "duration": selectDateWise,
@@ -694,14 +695,20 @@ DaysClass? selectedDay;
       "postcode": postCodeFareController.text,
       "surcharges_type": postCodeWise,
       if(selectDateWise =="DATE WISE") "to_date": "${endDateSurCharges!.year}-${endDateSurCharges!.month}-${endDateSurCharges!.day}",
-     if(startTimeSurCharge.text.isNotEmpty) "to_time": startTimeSurCharge.text,
+     if(endTimeSurCharge.text.isNotEmpty) "to_time": endTimeSurCharge.text,
       if(selectDateWise == "DAY WISE") "day": selectedDay!.dayName,
     };
-    print(formData);
-    var response = await Api().post(formData, "surcharges/add");
+    var response = await Api().post(formData,
+        sureChargeObject !=null ? "surcharges/edit/${sureChargeObject!.id}": "surcharges/add");
     if(response.statusCode == 200){
-      getSurchargesModel!.surcharges!.insert(0, SurchargeObject.fromJson(response.data['surcharges']));
-      print(response.data);
+      if(sureChargeObject == null){
+        getSurchargesModel!.surcharges!
+            .insert(0, SurchargeObject.fromJson(response.data['surcharges']));
+      }else{
+        int index = getSurchargesModel!.surcharges!.indexWhere((test) => test.id == sureChargeObject!.id);
+        getSurchargesModel!.surcharges![index] = SurchargeObject.fromJson(response.data['surcharges']);
+      }
+      sureChargeObject = null;
       clearSurchargesData();
     }
   }
@@ -710,9 +717,10 @@ DaysClass? selectedDay;
     congestionFareController.clear();
     extraDropOffFareController.clear();
     surChargesFareController.clear();
-    startTimeSurCharge.clear();
     parkingFareController.clear();
+    postCodeFareController.clear();
     startTimeSurCharge.clear();
+    endTimeSurCharge.clear();
     postCodeWise = "POSTCODE WISE";
     selectDateWise = "TIME WISE";
     selectOperation = "SELECT OPERATION";
@@ -728,24 +736,38 @@ DaysClass? selectedDay;
     getSurchargesLoader(true);
     var response = await Api().get("surcharges/get");
     if(response.statusCode == 200){
+      sureChargeObject = null;
       getSurchargesModel = GetSurchargesModel.fromJson(response.data);
       getSurchargesLoader(false);
       update();
     }
   }
 
-  bindSurChargesData({SurchargeObject? sureChargeData}) async{
+  SurchargeObject? sureChargeObject;
+
+  bindSurChargesData({SurchargeObject? sureChargeData, bool changeActiveStatus = false}) async{
+    sureChargeObject = sureChargeData;
     congestionFareController.text = sureChargeData!.congestionCharges.toString();
+    activeStatus = sureChargeData.active!;
     extraDropOffFareController.text = sureChargeData.extraDropCharges.toString();
+    postCodeFareController.text = sureChargeData.postcode.toString();
     surChargesFareController.text = sureChargeData.fare.toString();
     startTimeSurCharge.text = sureChargeData.fromTime.toString();
     parkingFareController.text = sureChargeData.parkingCharges.toString();
-    startTimeSurCharge.text = sureChargeData.toTime.toString();
+    endTimeSurCharge.text = sureChargeData.toTime.toString();
     postCodeWise = sureChargeData.surchargesType.toString();
     selectDateWise = sureChargeData.duration.toString();
-    // selectOperation = sureChargeData.
     selectPickup = sureChargeData.condition.toString();
-    // selectedDay = sureChargeData.day.toString();
+    if(sureChargeData.day != null){
+      selectedDay =
+          DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
+     int index = daysList.indexWhere((test)=> test.dayName == sureChargeData.day);
+      daysList[index] = DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
+    }
+    if(changeActiveStatus == true){
+      activeStatus = !(sureChargeObject!.active ?? false);
+      postSurchargeData();
+    }
     update();
   }
 

@@ -338,7 +338,7 @@ class _FareChargesState extends State<FareCharges> {
                                             for (var action in daysList) {
                                               action.selectedDay!.value = false;
                                             }
-                                            controller.selectedDay!.dayName = item.dayName;
+                                            controller.selectedDay = item;
                                             item.selectedDay!.value = true;
                                           },
                                           child: Chip(
@@ -377,7 +377,7 @@ class _FareChargesState extends State<FareCharges> {
                                   width: fieldWidth/1.8,
                                   height: 30,
                                   borderRadius: 4,
-                                  btnText: AppText.save,
+                                  btnText: controller.sureChargeObject == null ? AppText.save: AppText.update,
                                   btnColor: DynamicColors.primaryClr,
                                   verticalPadding: 0.0,
                                   fontSize: 14,
@@ -440,8 +440,8 @@ class _FareChargesState extends State<FareCharges> {
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
                                       padding: EdgeInsets.zero,
-                                      minimumSize: const Size(32, 32),
-                                      side: const BorderSide(
+                                      minimumSize: Size(32, 32),
+                                      side: BorderSide(
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
@@ -453,11 +453,30 @@ class _FareChargesState extends State<FareCharges> {
                                         color:
                                         DynamicColors.primaryClr),
                                   ),
+                                  Text("| "),
                                   OutlinedButton(
                                     style: OutlinedButton.styleFrom(
                                       padding: EdgeInsets.zero,
-                                      minimumSize: const Size(32, 32),
-                                      side: const BorderSide(
+                                      minimumSize: Size(32, 32),
+                                      side: BorderSide(
+                                          color: Colors.transparent),
+                                      backgroundColor: surcharges.active == true ? DynamicColors.secondaryClr : Colors.transparent,
+                                    ),
+                                    onPressed: () {
+                                      controller.bindSurChargesData(sureChargeData: surcharges, changeActiveStatus: true);
+                                    },
+                                    child: Icon(
+                                      surcharges.active == true ? Icons.check: Icons.close,
+                                        size: 20,
+                                        color: surcharges.active == true ? DynamicColors.greenClr : DynamicColors.redClr,
+                                    ),
+                                  ),
+                                  Text("| "),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: Size(32, 32),
+                                      side: BorderSide(
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
@@ -487,17 +506,17 @@ class _FareChargesState extends State<FareCharges> {
       }
     );
   }
-  List<DaysClass> daysList = [
-    DaysClass(dayName: "MON",selectedDay: false.obs),
-    DaysClass(dayName: "TUES",selectedDay: false.obs),
-    DaysClass(dayName: "WED",selectedDay: false.obs),
-    DaysClass(dayName: "THURS",selectedDay: false.obs),
-    DaysClass(dayName: "FRI",selectedDay: false.obs),
-    DaysClass(dayName: "SAT",selectedDay: false.obs),
-    DaysClass(dayName: "SUN",selectedDay: false.obs),
-  ];
 }
 
+List<DaysClass> daysList = [
+  DaysClass(dayName: "MON",selectedDay: false.obs),
+  DaysClass(dayName: "TUES",selectedDay: false.obs),
+  DaysClass(dayName: "WED",selectedDay: false.obs),
+  DaysClass(dayName: "THURS",selectedDay: false.obs),
+  DaysClass(dayName: "FRI",selectedDay: false.obs),
+  DaysClass(dayName: "SAT",selectedDay: false.obs),
+  DaysClass(dayName: "SUN",selectedDay: false.obs),
+];
 
 class DaysClass {
   String? dayName;
