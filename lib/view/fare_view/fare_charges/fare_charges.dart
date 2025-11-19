@@ -1,12 +1,15 @@
 
 
 
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -90,19 +93,20 @@ class _FareChargesState extends State<FareCharges> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.surChargesType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/1.8,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "POSTCODE WISE",
-                                        driversList: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
+                                      CustomDropdownField<String>(
+                                        label: "POSTCODE WISE",
+                                        width: Get.width / 5,
+                                        height: 35,
+                                        items: [
+                                          "POSTCODE WISE",
                                         ],
+                                        value: controller.postCodeWise,
+                                        itemLabel: (data) =>
+                                        data,
+                                        onChanged: (val) {
+                                          controller.postCodeWise = val;
+                                          controller.update();
+                                        },
                                       ),
                                     ],
                                   ),
@@ -114,6 +118,35 @@ class _FareChargesState extends State<FareCharges> {
                                   hintText: AppText.fare,
                                   columnText: true,
                                   height: 30,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                ),
+
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.postCodeFareController,
+                                  width: fieldWidth/1.8,
+                                  hintText: AppText.postCode,
+                                  columnText: true,
+                                  height: 30,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.extraDropOffFareController,
+                                  width: fieldWidth/1.8,
+                                  hintText: AppText.extraDropOff,
+                                  columnText: true,
+                                  height: 30,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
                                 ),
                                 SizedBox(
                                   width: fieldWidth/1.8,
@@ -121,34 +154,42 @@ class _FareChargesState extends State<FareCharges> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(AppText.timeLine, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/1.8,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "DATE WISE",
-                                        driversList: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
+                                      Text(AppText.operator, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                      CustomDropdownField<String>(
+                                        label: "SELECT OPERATION",
+                                        width: Get.width / 5,
+                                        height: 35,
+                                        items: [
+                                          "SELECT OPERATION",
+                                          "AMOUNT",
+                                          "PERCENTAGE",
                                         ],
+                                        value: controller.selectOperation,
+                                        itemLabel: (data) =>
+                                        data,
+                                        onChanged: (val) {
+                                          controller.selectOperation = val;
+                                          controller.update();
+                                        },
                                       ),
                                     ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15),
-                            child: Wrap(
-                              verticalDirection: VerticalDirection.down,
-                              runSpacing: 10,
-                              spacing: fieldWidth/10,
-                              children: [
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.congestionFareController,
+                                  width: fieldWidth/1.8,
+                                  hintText: AppText.congestion,
+                                  columnText: true,
+                                  height: 30,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                ),
+
                                 SizedBox(
                                   width: fieldWidth/1.8,
                                   // height: 30,
@@ -156,19 +197,22 @@ class _FareChargesState extends State<FareCharges> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.applyCondition, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/1.8,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "PICKUP",
-                                        driversList: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
+                                      CustomDropdownField<String>(
+                                        label: "PICKUP",
+                                        width: Get.width / 5,
+                                        height: 35,
+                                        items: [
+                                          "PICKUP",
+                                          "DROPOFF",
+                                          "BOTH",
                                         ],
+                                        value: controller.selectPickup,
+                                        itemLabel: (data) =>
+                                        data,
+                                        onChanged: (val) {
+                                          controller.selectPickup = val;
+                                          controller.update();
+                                        },
                                       ),
                                     ],
                                   ),
@@ -178,104 +222,169 @@ class _FareChargesState extends State<FareCharges> {
                                   controller: controller.parkingFareController,
                                   width: fieldWidth/1.8,
                                   hintText: AppText.parking,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
                                   columnText: true,
                                   height: 30,
                                 ),
-                                labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.from,
-                                  column: true,
-                                  width: fieldWidth/1.8,
-                                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15,vertical: 15),
-                            child: Wrap(
-                              verticalDirection: VerticalDirection.down,
-                              runSpacing: 10,
-                              spacing: fieldWidth/10,
-                              children: [
-                              CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.postCodeFareController,
-                              width: fieldWidth/1.8,
-                              hintText: AppText.postCode,
-                              columnText: true,
-                              height: 30,
-                            ),
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.extraDropOffFareController,
-                                  width: fieldWidth/1.8,
-                                  hintText: AppText.extraDropOff,
-                                  columnText: true,
-                                  height: 30,
-                                ),
-                                labeledField(
-                                  context: context,
-                                  isMobile: isMobile,
-                                  label: AppText.from,
-                                  column: true,
-                                  width: fieldWidth/1.8,
-                                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 15),
-                            child: Wrap(
-                              verticalDirection: VerticalDirection.down,
-                              runSpacing: 10,
-                              spacing: fieldWidth/10,
-                              children: [
                                 SizedBox(
                                   width: fieldWidth/1.8,
                                   // height: 30,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(AppText.operator, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                      RestrictedDrivers(
-                                        width: fieldWidth/1.8,
-                                        padding: 0.0,
-                                        border: Border.all(
-                                          color: DynamicColors.gryClr,
-                                        ),
-                                        titleText: "SELECT OPERATION",
-                                        driversList: [
-                                          "25 GEORGE HAMPTON",
-                                          "26 PAUL DOUBLEDAY",
-                                          "27 RICHARD HARDWICK",
-                                          "28 LANRE OKERJO",
+                                      Text(AppText.timeLine, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                      CustomDropdownField<String>(
+                                        label: "DATE WISE",
+                                        width: Get.width / 5,
+                                        height: 35,
+                                        items: [
+                                          "DATE WISE",
+                                          "TIME WISE",
+                                          "DAY WISE",
                                         ],
+                                        value: controller.selectDateWise,
+                                        itemLabel: (data) =>
+                                        data,
+                                        onChanged: (val) {
+                                          controller.selectDateWise = val;
+                                          controller.update();
+                                        },
                                       ),
                                     ],
                                   ),
                                 ),
-
-                                CustomTextField(
-                                  borderRadius: 4,
-                                  controller: controller.congestionFareController,
-                                  width: fieldWidth/1.8,
-                                  hintText: AppText.congestion,
-                                  columnText: true,
-                                  height: 30,
+                                Visibility(
+                                  visible: controller.selectDateWise !="DATE WISE"?false:true,
+                                  child: labeledField(
+                                    context: context,
+                                    isMobile: isMobile,
+                                    label: AppText.from,
+                                    column: true,
+                                    width: fieldWidth/1.8,
+                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
+                                      initialDate: controller.startDateSurCharges ?? DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.startDateSurCharges = date;
+                                        controller.update();
+                                      },
+                                    )),
+                                  ),
                                 ),
-
-                            labeledField(
-                              context: context,
-                              isMobile: isMobile,
-                              label: AppText.to,
-                              column: true,
-                              width: fieldWidth/1.8,
-                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                            ),
-
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  column: true,
+                                  label: AppText.from,
+                                  width: fieldWidth/1.8,
+                                  child: SizedBox(height: 30, child: CustomTimePicker(
+                                    controller: controller.startTimeSurCharge, // optional
+                                    onTimeSelected: (time) {
+                                      setState(() {
+                                        print(controller.startTimeSurCharge.text);
+                                        print(time);
+                                      });
+                                    },
+                                  )),
+                                ),
+                                Visibility(
+                                  visible: controller.selectDateWise !="DATE WISE"?false:true,
+                                  child: labeledField(
+                                    context: context,
+                                    isMobile: isMobile,
+                                    label: AppText.to,
+                                    column: true,
+                                    width: fieldWidth/1.8,
+                                    child: SizedBox(height: 30, child: KeyboardDatePicker(
+                                      initialDate: controller.endDateSurCharges ?? DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.endDateSurCharges = date;
+                                        controller.update();
+                                      },
+                                    )),
+                                  ),
+                                ),
+                                 labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  column: true,
+                                  label: AppText.to,
+                                  width: fieldWidth/1.8,
+                                  child: SizedBox(height: 30, child: CustomTimePicker(
+                                    controller: controller.endTimeSurCharge, // optional
+                                    onTimeSelected: (time) {
+                                      setState(() {
+                                        print(controller.endTimeSurCharge.text);
+                                        print(time);
+                                      });
+                                    },
+                                  )),
+                                 ),
+                                Visibility(
+                                  visible: controller.selectDateWise == "DAY WISE"?true:false,
+                                  child: Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: List.generate(
+                                      daysList.length,
+                                          (index) {
+                                        final item = daysList[index];
+                                        return Obx(() => GestureDetector(
+                                          onTap: () {
+                                            for (var action in daysList) {
+                                              action.selectedDay!.value = false;
+                                            }
+                                            controller.selectedDay!.dayName = item.dayName;
+                                            item.selectedDay!.value = true;
+                                          },
+                                          child: Chip(
+                                            padding: EdgeInsets.zero,
+                                            labelPadding: EdgeInsets.symmetric(vertical: 0.0,horizontal: 10),
+                                            backgroundColor: item.selectedDay!.value
+                                                ? DynamicColors.primaryClr
+                                                : Colors.transparent,
+                                            shape: StadiumBorder(
+                                              side: BorderSide(
+                                                color: DynamicColors.primaryClr,
+                                                width: 1,
+                                              ),
+                                            ),
+                                            label: Text(
+                                              item.dayName!,
+                                              style: TextStyle(
+                                                color: item.selectedDay!.value
+                                                    ? Colors.white
+                                                    : DynamicColors.textClr,
+                                              ),
+                                            ),
+                                          ),
+                                        ));
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 40,
+                                ),
+                                CustomButton(
+                                  onTap: (){
+                                    controller.postSurchargeData();
+                                  },
+                                  width: fieldWidth/1.8,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  btnText: AppText.save,
+                                  btnColor: DynamicColors.primaryClr,
+                                  verticalPadding: 0.0,
+                                  fontSize: 14,
+                                ),
+                                SizedBox(
+                                  width: 40,
+                                ),
                               ],
                             ),
                           ),
@@ -284,18 +393,16 @@ class _FareChargesState extends State<FareCharges> {
                     ),
                   ],
                 ),
-
                 SizedBox(
                   height: 10,
                 ),
-
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: Get.width,
-                    child: DatatableWidget(
+                    child: controller.getSurchargesModel == null?SizedBox.shrink():
+                    DatatableWidget(
                       columns: [
-
                         buildHeaderWithSearch(title: "TYPE"),
                         buildHeaderWithSearch(title: "CONDITION"),
                         buildHeaderWithSearch(title: "POSTCODE"),
@@ -314,7 +421,6 @@ class _FareChargesState extends State<FareCharges> {
                           .getSurchargesModel!.surcharges!
                           .map((surcharges) => DataRow(
                         cells: [
-
                           DataCell(Center(child: Text(surcharges.surchargesType! ?? ""))),
                           DataCell(Center(child: Text(surcharges.condition! ?? ""))),
                           DataCell(Center(child: Text(surcharges.postcode! ?? ""))),
@@ -324,9 +430,8 @@ class _FareChargesState extends State<FareCharges> {
                           DataCell(Center(child: Text(surcharges.congestionCharges! ?? ""))),
                           DataCell(Center(child: Text(surcharges.duration! ?? ""))),
                           DataCell(Center(child: Text(surcharges.day ?? ""))),
-                          DataCell(Center(child: Text(surcharges.fromDate!.toString() ?? ""))),
-                          DataCell(Center(child: Text(surcharges.toDate!.toString() ?? ""))),
-
+                          DataCell(Center(child: Text(surcharges.fromDate ?? ""))),
+                          DataCell(Center(child: Text(surcharges.toDate ?? ""))),
                           DataCell(
                             Center(
                               child: Row(
@@ -341,6 +446,7 @@ class _FareChargesState extends State<FareCharges> {
                                     ),
                                     onPressed: () {
                                       // 🟢 Edit action
+                                      controller.bindSurChargesData(sureChargeData: surcharges);
                                     },
                                     child: Icon(Icons.edit_calendar,
                                         size: 20,
@@ -381,4 +487,20 @@ class _FareChargesState extends State<FareCharges> {
       }
     );
   }
+  List<DaysClass> daysList = [
+    DaysClass(dayName: "MON",selectedDay: false.obs),
+    DaysClass(dayName: "TUES",selectedDay: false.obs),
+    DaysClass(dayName: "WED",selectedDay: false.obs),
+    DaysClass(dayName: "THURS",selectedDay: false.obs),
+    DaysClass(dayName: "FRI",selectedDay: false.obs),
+    DaysClass(dayName: "SAT",selectedDay: false.obs),
+    DaysClass(dayName: "SUN",selectedDay: false.obs),
+  ];
+}
+
+
+class DaysClass {
+  String? dayName;
+  RxBool? selectedDay = false.obs;
+  DaysClass({this.dayName,this.selectedDay});
 }
