@@ -46,6 +46,7 @@ class _FareMeterState extends State<FareMeter> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
+
                 ? maxWidth / 2
                 : maxWidth / 4;
 

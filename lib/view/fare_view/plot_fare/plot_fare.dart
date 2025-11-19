@@ -188,7 +188,6 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
-
                                       }, child: Icon(Icons.delete_forever,
                                     color: DynamicColors.redClr,
                                     size: 20,

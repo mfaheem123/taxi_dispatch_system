@@ -452,8 +452,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               title: "MINIMUM MILES", removeSearching: true),
                           if(controller.fareConfiguration != "NORMAL") buildHeaderWithSearch(
                               title: "TITLE", removeSearching: true),
-                          buildHeaderWithSearch(
-                              title: "ACTIONS", removeSearching: true),
+                          buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                         ],
                         // 🔹 Dynamically create rows
                         rows: controller
