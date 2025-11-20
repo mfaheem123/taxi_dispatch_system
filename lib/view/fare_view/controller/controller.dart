@@ -126,9 +126,6 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
 
-  /// bool
-  final meteredSwitch = ValueNotifier<bool>(false);
-  final autoWaitSwitch = ValueNotifier<bool>(false);
 
   /// TextEditingControllers
   final activeWaitingController = TextEditingController();
@@ -836,15 +833,32 @@ DaysClass? selectedDay;
 
 
 
-
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare meter
   GetAllFareMeterRateModel? getAllFareMeterRateModel;
-  RxBool getAllFareMeterRateLoader = true.obs;
   getAllFareMeterRate() async{
-    getAllFareMeterRateLoader(false);
     var response = await Api().get("faremeter/get");
     if(response.statusCode == 200){
       getAllFareMeterRateModel = GetAllFareMeterRateModel.fromJson(response.data);
-      getAllFareMeterRateLoader(true);
+      update();
+    }
+  }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> edit fare mater
+
+  RxBool specialDayValue = false.obs;
+  final FocusNode specialDayNode = FocusNode();
+  String? selectFareMeterDay;
+
+  editFareMeterRate({FareMeterObject? fareMeterObj}) async{
+    var formData = {
+      "has_meter": fareMeterObj!.hasMeter,
+      "waiting_intervals": fareMeterObj.waitingIntervalsController.text,
+    };
+    var response = await Api().post(formData, "faremeter/edit/${fareMeterObj.id}");
+    if(response.statusCode == 200){
+      int index = getAllFareMeterRateModel!.fareMeters!.indexWhere((test) => test.id == fareMeterObj.id);
+      getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['data']);
       update();
     }
   }

@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 GetAllFareMeterRateModel getAllFareMeterRateModelFromJson(String str) => GetAllFareMeterRateModel.fromJson(json.decode(str));
 
 String getAllFareMeterRateModelToJson(GetAllFareMeterRateModel data) => json.encode(data.toJson());
@@ -11,7 +13,7 @@ String getAllFareMeterRateModelToJson(GetAllFareMeterRateModel data) => json.enc
 class GetAllFareMeterRateModel {
   bool? status;
   int? count;
-  List<FareMeter>? fareMeters;
+  List<FareMeterObject>? fareMeters;
 
   GetAllFareMeterRateModel({
     this.status,
@@ -22,7 +24,7 @@ class GetAllFareMeterRateModel {
   factory GetAllFareMeterRateModel.fromJson(Map<String, dynamic> json) => GetAllFareMeterRateModel(
     status: json["status"],
     count: json["count"],
-    fareMeters: json["fareMeters"] == null ? [] : List<FareMeter>.from(json["fareMeters"]!.map((x) => FareMeter.fromJson(x))),
+    fareMeters: json["fareMeters"] == null ? [] : List<FareMeterObject>.from(json["fareMeters"]!.map((x) => FareMeterObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -32,10 +34,10 @@ class GetAllFareMeterRateModel {
   };
 }
 
-class FareMeter {
+class FareMeterObject {
   int? id;
-  bool? hasMeter;
-  bool? autostartWait;
+  bool hasMeter;
+  bool autostartWait;
   int? autostartWaitingSpeedLimit;
   int? autostartWaitingTime;
   int? autostopWaitingSpeedLimit;
@@ -43,11 +45,15 @@ class FareMeter {
   int? waitingIntervals;
   int? vehicleTypeId;
   VehicleType? vehicleType;
+  TextEditingController activeWaitingController = TextEditingController();
+  TextEditingController autostartWaitingTimeController = TextEditingController();
+  TextEditingController waitingIntervalsController = TextEditingController();
 
-  FareMeter({
+
+  FareMeterObject({
     this.id,
-    this.hasMeter,
-    this.autostartWait,
+    this.hasMeter = false,
+    this.autostartWait = false,
     this.autostartWaitingSpeedLimit,
     this.autostartWaitingTime,
     this.autostopWaitingSpeedLimit,
@@ -55,13 +61,19 @@ class FareMeter {
     this.waitingIntervals,
     this.vehicleTypeId,
     this.vehicleType,
+    required this.activeWaitingController,
+    required this.autostartWaitingTimeController,
+    required this.waitingIntervalsController,
   });
 
-  factory FareMeter.fromJson(Map<String, dynamic> json) => FareMeter(
+  factory FareMeterObject.fromJson(Map<String, dynamic> json) => FareMeterObject(
     id: json["id"],
     hasMeter: json["has_meter"],
     autostartWait: json["autostart_wait"],
     autostartWaitingSpeedLimit: json["autostart_waiting_speed_limit"],
+    activeWaitingController: TextEditingController(text: json["autostart_waiting_speed_limit"].toString()),
+    autostartWaitingTimeController: TextEditingController(text: json["autostart_waiting_time"].toString()),
+    waitingIntervalsController: TextEditingController(text: json["waiting_intervals"].toString()),
     autostartWaitingTime: json["autostart_waiting_time"],
     autostopWaitingSpeedLimit: json["autostop_waiting_speed_limit"],
     waitingCharges: json["waiting_charges"] == null ? [] : List<WaitingCharge>.from(json["waiting_charges"]!.map((x) => WaitingCharge.fromJson(x))),

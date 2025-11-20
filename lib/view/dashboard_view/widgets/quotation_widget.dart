@@ -19,6 +19,7 @@ class DynamicSwitch extends StatefulWidget {
   final double focusScale;
   final BorderRadius borderRadius;
   final VoidCallback? onToggle;
+  final ValueChanged? onChanged;
 
   DynamicSwitch({
     super.key,
@@ -30,6 +31,7 @@ class DynamicSwitch extends StatefulWidget {
     this.focusScale = 1.3,
     this.borderRadius = const BorderRadius.all(Radius.circular(15)),
     this.onToggle,
+    this.onChanged,
   });
 
   @override
@@ -81,7 +83,7 @@ class _DynamicSwitchState extends State<DynamicSwitch> {
             borderRadius: widget.borderRadius,
             width: 30,
             height: 15,
-            onChanged: (_) {}, // handled by ValueNotifier + _toggle
+            onChanged: widget.onChanged, // handled by ValueNotifier + _toggle
           ),
         ),
       ),

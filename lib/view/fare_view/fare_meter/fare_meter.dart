@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/fare_view/fare_meter/waiting_configuration_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,10 +40,8 @@ class _FareMeterState extends State<FareMeter> {
         initState: (v){
           controller.getAllFareMeterRate();
         },
-
-
         builder: (controller) {
-      return controller.getAllFareMeterRateLoader==true?CircularProgressIndicator():LayoutBuilder(builder: (context, constraints) {
+      return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -62,7 +61,7 @@ class _FareMeterState extends State<FareMeter> {
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Text(AppText.fareMeterConfiguration, style: titleDesign()),
             ),
-            Scrollbar(
+            controller.getAllFareMeterRateModel == null? CircularProgressIndicator(): Scrollbar(
               controller: _scrollController,
               thumbVisibility: true, // 👈 hamesha visible
               trackVisibility: true,
@@ -131,38 +130,57 @@ class _FareMeterState extends State<FareMeter> {
                         removeSearching: true,
                         fontSize: 13),
                   ],
-                  rows: List.generate(totalRows, (index) {
+                  rows: List.generate(controller.getAllFareMeterRateModel!.fareMeters!.length, (index) {
+
+
+
                     return DataRow(
                       cells: [
-                        const DataCell(Center(child: Text("SALOON"))),
+                        DataCell(Center(child: Text(controller.getAllFareMeterRateModel!.fareMeters![index].vehicleType!.name!))),
                         DataCell(Center(
                           child: DynamicSwitch(
-                            controller: controller.meteredSwitch,
+                            controller: ValueNotifier(controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter),
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
+                            onChanged: (v){
+                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                              controller.update();
+                            },
                             onToggle: () {
+                              controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter =
+                              !controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter;
+                              controller.update();
                               print(
-                                  "Switch toggled: ${controller.meteredSwitch.value}");
+                                  "Switch toggled: ${controller.getAllFareMeterRateModel!.fareMeters![index].hasMeter}");
                             },
                           ),
                         )),
                         DataCell(Center(
                           child: DynamicSwitch(
-                            controller: controller.autoWaitSwitch,
+                            controller: ValueNotifier(controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait),
                             activeColor: DynamicColors.primaryClr,
                             inactiveColor: DynamicColors.gryClr,
                             focusScale: 1.5,
+                            onChanged: (v){
+                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                              controller.update();
+                              },
                             onToggle: () {
+                              controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait =
+                              !controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait;
+                              controller.update();
                               print(
-                                  "Switch toggled: ${controller.autoWaitSwitch.value}");
+                                  "Switch toggled: ${controller.getAllFareMeterRateModel!.fareMeters![index].autostartWait}");
                             },
                           ),
                         )),
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.speed,
-                            controller.activeWaitingController,
+                            controller.getAllFareMeterRateModel!.fareMeters![index].activeWaitingController,
                             width: fieldWidth / 3.9,
                             unitText: "MPH",
                           ),
@@ -178,7 +196,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.speed,
-                            controller.activeWaitingController,
+                            controller.getAllFareMeterRateModel!.fareMeters![index].autostartWaitingTimeController,
                             width: fieldWidth / 3.9,
                             unitText: "MPH",
                           ),
@@ -187,7 +205,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: fieldWidth / 1.9,
                             onTap: () {
-                              print("object");
+                              WaitingConfigurationAlert.show();
                             },
                             height: 30,
                             verticalPadding: 0.0,
@@ -202,7 +220,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.alarm,
-                            controller.activeWaitingController,
+                            controller.getAllFareMeterRateModel!.fareMeters![index].waitingIntervalsController,
                             width: fieldWidth / 3.9,
                             unitText: "SEC",
                           ),
@@ -211,7 +229,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: 60,
                             onTap: () {
-                              print("object");
+                             // controller.editFareMeterRate(fareMeterObj: controller.getAllFareMeterRateModel!.fareMeters![index]);
                             },
                             height: 30,
                             verticalPadding: 0.0,
