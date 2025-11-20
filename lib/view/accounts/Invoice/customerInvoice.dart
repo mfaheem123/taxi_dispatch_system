@@ -236,8 +236,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                     buildHeaderWithSearch(title: "M&G"),
                     buildHeaderWithSearch(title: "Cc"),
                     buildHeaderWithSearch(title: "TOTA"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
+                    buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                   ],
                   totalRow: totalRows,
                   cells: [

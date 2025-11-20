@@ -106,8 +106,7 @@ class VehicleController extends GetxController {
       "insurance_expiry_time": insuranceExpiryTimeController.text,
     };
 
-    var response =
-        await Api().post(formData, 'company-vehicles/add', auth: true);
+    var response = await Api().post(formData, 'company-vehicles/add', auth: true);
     if (response.statusCode == 200) {
       colorController.clear();
       vehicleMakeController.clear();
@@ -150,6 +149,7 @@ class VehicleController extends GetxController {
   RxBool isLoading = false.obs;
   RxList<VehicleTypes> allVehicleTypes = <VehicleTypes>[].obs;
   RxList<VehicleTypes> filteredVehicleTypes = <VehicleTypes>[].obs;
+
 // // ye search fields hain
   RxString searchName = ''.obs;
   RxString searchPassengers = ''.obs;
@@ -297,7 +297,6 @@ class VehicleController extends GetxController {
   /// color pick
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
-
   RxBool isLoadVehicleType = false.obs;
 
   /// text fields editing

@@ -199,6 +199,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                           onPressed: () {
                                             controller.vehicleDataBinding(
                                                 item: item);
+
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>

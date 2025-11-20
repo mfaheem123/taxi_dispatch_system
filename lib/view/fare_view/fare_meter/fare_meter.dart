@@ -24,8 +24,7 @@ class _FareMeterState extends State<FareMeter> {
       : Get.put(FareController());
 
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows =
-      50; // total rows (dynamic list ke hisaab se change hoga)
+  final int totalRows = 50; // total rows (dynamic list ke hisaab se change hoga)
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -36,8 +35,14 @@ class _FareMeterState extends State<FareMeter> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
+    return GetBuilder<FareController>(
+        initState: (v){
+          controller.getAllFareMeterRate();
+        },
+
+
+        builder: (controller) {
+      return controller.getAllFareMeterRateLoader==true?CircularProgressIndicator():LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -46,7 +51,6 @@ class _FareMeterState extends State<FareMeter> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-
                 ? maxWidth / 2
                 : maxWidth / 4;
 

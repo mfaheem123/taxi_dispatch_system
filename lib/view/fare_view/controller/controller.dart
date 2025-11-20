@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/fare_view/model/GetAllFareMeterRateModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
@@ -831,6 +832,37 @@ DaysClass? selectedDay;
   }
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
+
+
+
+
+  GetAllFareMeterRateModel? getAllFareMeterRateModel;
+  RxBool getAllFareMeterRateLoader = true.obs;
+  getAllFareMeterRate() async{
+    getAllFareMeterRateLoader(false);
+    var response = await Api().get("faremeter/get");
+    if(response.statusCode == 200){
+      getAllFareMeterRateModel = GetAllFareMeterRateModel.fromJson(response.data);
+      getAllFareMeterRateLoader(true);
+      update();
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
 
 
 
