@@ -125,6 +125,7 @@ class _FareMeterState extends State<FareMeter> {
                         title: " INTERVALS ",
                         removeSearching: true,
                         fontSize: 13),
+
                     buildHeaderWithSearch(
                         title: " ACTIONS ",
                         removeSearching: true,
