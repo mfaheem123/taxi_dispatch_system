@@ -47,8 +47,8 @@ class FareMeterObject {
   VehicleType? vehicleType;
   TextEditingController activeWaitingController = TextEditingController();
   TextEditingController autostartWaitingTimeController = TextEditingController();
+  TextEditingController suspendWaitingSpeedController = TextEditingController();
   TextEditingController waitingIntervalsController = TextEditingController();
-
 
   FareMeterObject({
     this.id,
@@ -64,6 +64,7 @@ class FareMeterObject {
     required this.activeWaitingController,
     required this.autostartWaitingTimeController,
     required this.waitingIntervalsController,
+    required this.suspendWaitingSpeedController,
   });
 
   factory FareMeterObject.fromJson(Map<String, dynamic> json) => FareMeterObject(
@@ -73,6 +74,7 @@ class FareMeterObject {
     autostartWaitingSpeedLimit: json["autostart_waiting_speed_limit"],
     activeWaitingController: TextEditingController(text: json["autostart_waiting_speed_limit"].toString()),
     autostartWaitingTimeController: TextEditingController(text: json["autostart_waiting_time"].toString()),
+    suspendWaitingSpeedController: TextEditingController(text: json["autostop_waiting_speed_limit"].toString()),
     waitingIntervalsController: TextEditingController(text: json["waiting_intervals"].toString()),
     autostartWaitingTime: json["autostart_waiting_time"],
     autostopWaitingSpeedLimit: json["autostop_waiting_speed_limit"],
@@ -114,7 +116,7 @@ class VehicleType {
 
 class WaitingCharge {
   String? day;
-  int? charge;
+  num? charge;
   String? toTime;
   String? fromTime;
 
@@ -126,8 +128,8 @@ class WaitingCharge {
   });
 
   factory WaitingCharge.fromJson(Map<String, dynamic> json) => WaitingCharge(
-    day: json["day"],
-    charge: json["charge"],
+    day: json["day"].toString(),
+    charge: double.parse(json["charge"].toString()),
     toTime: json["to_time"],
     fromTime: json["from_time"],
   );

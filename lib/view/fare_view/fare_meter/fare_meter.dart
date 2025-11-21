@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/fare_view/fare_meter/waiting_configuration_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/color.dart';
@@ -188,7 +189,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.alarm,
-                            controller.activeWaitingController,
+                            controller.getAllFareMeterRateModel!.fareMeters![index].autostartWaitingTimeController,
                             width: fieldWidth / 3.9,
                             unitText: "SECS",
                           ),
@@ -196,7 +197,7 @@ class _FareMeterState extends State<FareMeter> {
                         DataCell(Center(
                           child: customRow(
                             icons: Icons.speed,
-                            controller.getAllFareMeterRateModel!.fareMeters![index].autostartWaitingTimeController,
+                            controller.getAllFareMeterRateModel!.fareMeters![index].suspendWaitingSpeedController,
                             width: fieldWidth / 3.9,
                             unitText: "MPH",
                           ),
@@ -205,7 +206,9 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: fieldWidth / 1.9,
                             onTap: () {
-                              WaitingConfigurationAlert.show();
+                              WaitingConfigurationAlert.show(
+                                  waitingCharges: controller.getAllFareMeterRateModel!.fareMeters![index].waitingCharges
+                              );
                             },
                             height: 30,
                             verticalPadding: 0.0,
@@ -229,7 +232,7 @@ class _FareMeterState extends State<FareMeter> {
                           child: CustomButton(
                             width: 60,
                             onTap: () {
-                             // controller.editFareMeterRate(fareMeterObj: controller.getAllFareMeterRateModel!.fareMeters![index]);
+                             controller.editFareMeterRate(fareMeterObj: controller.getAllFareMeterRateModel!.fareMeters![index]);
                             },
                             height: 30,
                             verticalPadding: 0.0,
@@ -285,6 +288,11 @@ class _FareMeterState extends State<FareMeter> {
         ),
         CustomTextField(
           borderRadius: 0,
+          inputFormatters: [
+            FilteringTextInputFormatter
+                .digitsOnly
+          ],
+          keyboardType: TextInputType.number,
           controller: controller,
           width: width,
           hintText: "",

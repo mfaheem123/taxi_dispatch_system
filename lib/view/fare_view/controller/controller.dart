@@ -849,30 +849,25 @@ DaysClass? selectedDay;
   RxBool specialDayValue = false.obs;
   final FocusNode specialDayNode = FocusNode();
   String? selectFareMeterDay;
+  DateTime? specialDate = DateTime.now();
 
   editFareMeterRate({FareMeterObject? fareMeterObj}) async{
     var formData = {
       "has_meter": fareMeterObj!.hasMeter,
       "waiting_intervals": fareMeterObj.waitingIntervalsController.text,
+      "autostart_wait": fareMeterObj.autostartWait,
+      "autostart_waiting_speed_limit": fareMeterObj.activeWaitingController.text,
+      "autostart_waiting_time": fareMeterObj.autostartWaitingTimeController.text,
+      "autostop_waiting_speed_limit": fareMeterObj.suspendWaitingSpeedController.text,
     };
+    formData["waiting_charges"] = fareMeterObj.waitingCharges!.map((e) => e.toJson()).toList();
     var response = await Api().post(formData, "faremeter/edit/${fareMeterObj.id}");
     if(response.statusCode == 200){
       int index = getAllFareMeterRateModel!.fareMeters!.indexWhere((test) => test.id == fareMeterObj.id);
-      getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['data']);
+      getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['fareMeter']);
       update();
     }
   }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
