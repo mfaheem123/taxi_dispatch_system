@@ -73,6 +73,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                 SizedBox(
                 height: 8,
               ),
+
             SizedBox(
               width: Get.width,
               child: DatatableWidget(

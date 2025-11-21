@@ -108,10 +108,12 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     label: "SELECT FARE CONFIGURATION",
                                     width: Get.width / 6,
                                     height: 30,
+
                                     items: [
                                       "NORMAL",
                                       "SPECIAL",
                                     ],
+
                                     value: controller.fareConfiguration,
                                     itemLabel: (templateList) => templateList,
                                     onChanged: (val) {
@@ -321,7 +323,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 child: SizedBox(
                                     height: 30,
                                     child: CustomTimePicker(
-                                      controller: controller.fromDayController, // optional
+                                      controller: controller.fromDayController,  // optional
                                       onTimeSelected: (time) {
                                         controller.fromDayController.text = time;
                                         controller.update();
