@@ -55,8 +55,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
           return Container(
                     width: Get.width/1.5,
                       decoration: BoxDecoration(
-            border: Border.all(color: DynamicColors.gryClr)
-                      ),
+            border: Border.all(color: DynamicColors.gryClr)),
             child: Column(
               children: [
                 Container(
