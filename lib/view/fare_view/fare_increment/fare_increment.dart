@@ -126,6 +126,7 @@ class _FareIncrementState extends State<FareIncrement> {
                         ),
                       ),
 
+
                       /// Operator Dropdown
                       SizedBox(
                         width: fieldWidth / 2.5,
