@@ -13,9 +13,12 @@ import 'package:latlong2/latlong.dart';
 import 'package:polyline_codec/polyline_codec.dart';
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
+import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
+import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
+
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
@@ -148,6 +151,8 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
+
+    getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     pickupController.addListener(() {
@@ -735,105 +740,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  // void _scrollToHighlighted({bool scrollDown = true}) {
-  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-  //     final i = highlightedIndex.value;
-  //     if (i < 0 || i >= suggestionItemKeys.length) return;
-  //
-  //     final itemCtx = suggestionItemKeys[i].currentContext;
-  //     final listCtx = suggestionListKey.currentContext;
-  //
-  //     if (itemCtx != null && listCtx != null && suggestionScrollController.hasClients) {
-  //       final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
-  //       final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
-  //
-  //       // item position relative to the ListView viewport
-  //       final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
-  //       final double itemTopLocal = itemOffset.dy;
-  //       final double itemBottomLocal = itemTopLocal + itemBox.size.height;
-  //
-  //       final double viewportHeight = listBox.size.height;
-  //       final double currentOffset = suggestionScrollController.offset;
-  //
-  //       double targetOffset = currentOffset;
-  //
-  //       // small margin so item doesn't hug the edge too tightly
-  //       const double edgeMargin = 8.0;
-  //
-  //       // If item bottom is below visible viewport -> scroll down minimally
-  //       if (itemBottomLocal > viewportHeight - edgeMargin) {
-  //         final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
-  //         targetOffset = (currentOffset + delta).clamp(
-  //           suggestionScrollController.position.minScrollExtent,
-  //           suggestionScrollController.position.maxScrollExtent,
-  //         );
-  //       }
-  //       // If item top is above visible viewport -> scroll up minimally
-  //       else if (itemTopLocal < edgeMargin) {
-  //         final double delta = itemTopLocal - edgeMargin; // negative
-  //         targetOffset = (currentOffset + delta).clamp(
-  //           suggestionScrollController.position.minScrollExtent,
-  //           suggestionScrollController.position.maxScrollExtent,
-  //         );
-  //       } else {
-  //         // already visible enough -> no scroll
-  //         return;
-  //       }
-  //
-  //       // tiny guard to avoid micro animations
-  //       if ((targetOffset - currentOffset).abs() < 0.5) return;
-  //
-  //       suggestionScrollController.animateTo(
-  //         targetOffset,
-  //         duration: const Duration(milliseconds: 80),
-  //         curve: Curves.easeOut,
-  //       );
-  //     } else {
-  //       // fallback if contexts not ready
-  //       _fallbackScroll(i, scrollDown);
-  //     }
-  //   });
-  // }
-  //
-  // void _fallbackScroll(int index, bool scrollDown) {
-  //   if (!suggestionScrollController.hasClients) return;
-  //
-  //   const double itemHeight = 48.0; // adjust if needed
-  //   const double topPadding = 15.0;
-  //   final currentOffset = suggestionScrollController.offset;
-  //   final viewport = suggestionScrollController.position.viewportDimension;
-  //   final visibleStart = currentOffset;
-  //   final visibleEnd = currentOffset + viewport;
-  //
-  //   final itemTop = topPadding + index * itemHeight;
-  //   final itemBottom = itemTop + itemHeight;
-  //
-  //   double target = currentOffset;
-  //   const double margin = itemHeight * 0.12; // small margin
-  //
-  //   if (itemBottom > visibleEnd) {
-  //     // scroll just enough so item bottom is inside viewport with margin
-  //     target = itemBottom - viewport + margin;
-  //   } else if (itemTop < visibleStart) {
-  //     // scroll just enough so item top is inside viewport with margin
-  //     target = itemTop - margin;
-  //   } else {
-  //     return; // visible
-  //   }
-  //
-  //   target = target.clamp(
-  //     suggestionScrollController.position.minScrollExtent,
-  //     suggestionScrollController.position.maxScrollExtent,
-  //   );
-  //
-  //   if ((target - currentOffset).abs() < 0.5) return;
-  //
-  //   suggestionScrollController.animateTo(
-  //     target,
-  //     duration: const Duration(milliseconds: 80),
-  //     curve: Curves.easeOut,
-  //   );
-  // }
 
   RxInt suggestionSelectedIndex = 0.obs;
 
@@ -1000,6 +906,17 @@ class DashboardController extends GetxController {
     // ✅ Wait until completer completes
     return completer.future;
 
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all drivers
+  List driversList = [];
+  RestricDriverModel? allDriverData;
+  getAllDrivers() async {
+    var response = await Api().get("drivers/get");
+    if (response.statusCode == 200) {
+      allDriverData = RestricDriverModel.fromJson(response.data);
+      update();
+    }
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking

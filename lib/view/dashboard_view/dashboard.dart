@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/tabbarview.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/customer_pre_invoice.dart';
+import 'package:dashboard_new1/view/booking_view/multi_booking.dart';
 // import 'package:dashboard_new1/view/Invoice/create_accountinvoice.dart';
 // import 'package:dashboard_new1/view/User/create_userScreen.dart';
 import 'package:dashboard_new1/view/locations_view/location/zone_listScreen.dart';
@@ -222,7 +223,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
             showShortcutDialog(
               context,
               title: AppText.comingSoon,
-              contentWidget: ComingSoonWidget(shotCutKey: "F8"),
+              contentWidget: MultiBooking()
             );
           } else if (key.debugName == "F9") {
             showShortcutDialog(

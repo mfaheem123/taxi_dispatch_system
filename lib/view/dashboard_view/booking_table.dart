@@ -107,10 +107,12 @@ class _BookingTableState extends State<BookingTable> {
                                 }
 
                                 setState(() {
+
                                   tabList[index].selectedDropDownValue = value;
                                   tabList[index].selectedClr!.value = true; // <-- fix selection
 
                                 });
+
                                 controller.update();
                                 // });
                               },
@@ -178,7 +180,6 @@ class _BookingTableState extends State<BookingTable> {
                   ),*/
                   columns: [
                     buildHeaderWithSearch(widget: Checkbox(value: false, onChanged: (v){
-
                     })),
                     buildHeaderWithSearch(title: "TYPE"),
                     buildHeaderWithSearch(title: "REF #"),

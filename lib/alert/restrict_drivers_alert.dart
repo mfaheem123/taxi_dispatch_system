@@ -10,27 +10,32 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:popover/popover.dart';
 
+import '../component/dropdown_button.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../component/color.dart';
 import '../component/keyboard_dropdown_widget.dart';
 
-class RestrictDriversAlert extends StatelessWidget {
+class RestrictDriversAlert extends StatefulWidget {
   RestrictDriversAlert({super.key});
 
-  List<String> driversList = [
-   "25 GEORGE HAMPTON",
-   "26 PAUL DOUBLEDAY",
-   "27 RICHARD HARDWICK",
-   "28 LANRE OKERJO",
-   "29 NICOLAS GREY",
-   "50 NADEEM",
-   "60 EDWARD",
-   "TEST TEST DRIVER",
-   "X1 ANDRE",
-   "SAVE [HOME]",
-  ];
+  @override
+  State<RestrictDriversAlert> createState() => _RestrictDriversAlertState();
+}
+
+class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
 
   final dashBoardCntrl = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(dashBoardCntrl.allDriverData == null){
+      dashBoardCntrl.getAllDrivers();
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,133 +44,82 @@ class RestrictDriversAlert extends StatelessWidget {
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-          height: 350,
-          width: 450,
-        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
+      child: GetBuilder<DashboardController>(
+        builder: (controller) {
+          return Container(
+              height: 350,
+              width: 450,
+            padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(AppText.restrictDrivers,
-                style: mozillaTextSemiBoldText(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 13,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(AppText.restrictDrivers,
+                    style: mozillaTextSemiBoldText(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
+                    ),
+                    GestureDetector(
+                      onTap: (){
+                         Get.back();
+                      },
+                      child: Icon(Icons.close,
+                      color: DynamicColors.textClr,
+                      ),
+                    )
+                  ],
                 ),
+                SizedBox(
+                  height: 15,
                 ),
-                Icon(Icons.close,
-                color: DynamicColors.textClr,
-                )
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
-                decoration: BoxDecoration(
-                  border: const Border(
-                    top: BorderSide(color: Colors.grey),
-                    left: BorderSide(color: Colors.grey),
-                    bottom: BorderSide(color: Colors.grey),
-                    // 👉 right side intentionally remove kiya (no border)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                    decoration: BoxDecoration(
+                      border: const Border(
+                        top: BorderSide(color: Colors.grey),
+                        left: BorderSide(color: Colors.grey),
+                        bottom: BorderSide(color: Colors.grey),
+                        // 👉 right side intentionally remove kiya (no border)
+                      ),
+                    ),
+                    child: Center(
+                      child: Text("#"),
+                    ),
                   ),
-                ),
-                child: Center(
-                  child: Text("#"),
-                ),
-              ),
-                RestrictedDrivers(
-                  driversList: driversList,
-                  width: MediaQuery.of(context).size.width/4,
-                ),
-                GestureDetector(
-                  onTap: (){
-                    Get.back();
-                  },
-                  child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: const Border(
-                          top: BorderSide(color: Colors.grey),
-                          right: BorderSide(color: Colors.grey),
-                          bottom: BorderSide(color: Colors.grey),
-                          // 👉 right side intentionally remove kiya (no border)
-                        ),
-                      ),
-                      child: Center(child: Icon(Icons.remove_circle,
-                        color: DynamicColors.primaryClr,
-                      ))),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 220,
-              child: ListView.builder(
-                  itemCount: driversList.length,
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  physics: AlwaysScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context,index){
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 3.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
-                        decoration: BoxDecoration(
-                          border: const Border(
-                            top: BorderSide(color: Colors.grey),
-                            left: BorderSide(color: Colors.grey),
-                            bottom: BorderSide(color: Colors.grey),
-                            // 👉 right side intentionally remove kiya (no border)
-                          ),
-                        ),
-                        child: Center(
-                          child: Text("${index+1}"),
-                        ),
-                      ),
-                     Container(
-                       width: MediaQuery.of(context).size.width / 6,
-                       padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
-                       decoration: BoxDecoration(
-                         border: Border.all(color: Colors.grey),
-                         // borderRadius: BorderRadius.circular(8),
-                       ),
-                       child: Row(
-                         children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(vertical: 5,horizontal: 6),
-                              color: DynamicColors.primaryClr,
-                              child: Center(
-                                child: Text("$index",
-                                style: mozillaTextSemiBoldText(
-                                  fontSize: 12,
-                                  color: DynamicColors.whiteClr
-                                ),
-                                ),
-                              ),
-                            ),
-                           Padding(
-                             padding: const EdgeInsets.only(left: 8.0),
-                             child: Text(driversList[index],
-                               style: mozillaTextSemiBoldText(
-                                   fontSize: 12,
-                               ),
-                             ),
-                           )
-                         ],
-                       ),
-                     ),
-                      Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                    CustomDropdownField<String>(
+                      label: "SELECT DRIVERS",
+                      width: 300,
+                      height: 35,
+                      items: [
+                        "DRIVERS 01",
+                        "DRIVERS 02",
+                        "DRIVERS 03",
+                      ],
+                      value: controller.selectDriver,
+                      itemLabel: (data) =>
+                      data,
+                      onChanged: (val) {
+                        controller.selectDriver = val;
+                        controller.update();
+                      },
+                    ),
+                    /*RestrictedDrivers(
+                      driversList: driversList,
+                      width: 200,
+                    ),*/
+                    GestureDetector(
+                      onTap: (){
+                        Get.back();
+                      },
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
                           decoration: BoxDecoration(
                             border: const Border(
                               top: BorderSide(color: Colors.grey),
@@ -174,16 +128,93 @@ class RestrictDriversAlert extends StatelessWidget {
                               // 👉 right side intentionally remove kiya (no border)
                             ),
                           ),
-                          child: Center(child: Icon(Icons.delete_forever,
+                          child: Center(child: Icon(Icons.remove_circle,
                             color: DynamicColors.primaryClr,
-                          )))
-                    ],
-                  ),
-                );
-              }),
-            )
-          ],
-        ),
+                          ))),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 220,
+                  child: ListView.builder(
+                      itemCount: controller.driversList.length,
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      physics: AlwaysScrollableScrollPhysics(),
+                      itemBuilder: (BuildContext context,index){
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 3.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 7,horizontal: 10),
+                            decoration: BoxDecoration(
+                              border: const Border(
+                                top: BorderSide(color: Colors.grey),
+                                left: BorderSide(color: Colors.grey),
+                                bottom: BorderSide(color: Colors.grey),
+                                // 👉 right side intentionally remove kiya (no border)
+                              ),
+                            ),
+                            child: Center(
+                              child: Text("${index+1}"),
+                            ),
+                          ),
+                         Container(
+                           width: MediaQuery.of(context).size.width / 6,
+                           padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 4),
+                           decoration: BoxDecoration(
+                             border: Border.all(color: Colors.grey),
+                             // borderRadius: BorderRadius.circular(8),
+                           ),
+                           child: Row(
+                             children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(vertical: 5,horizontal: 6),
+                                  color: DynamicColors.primaryClr,
+                                  child: Center(
+                                    child: Text("$index",
+                                    style: mozillaTextSemiBoldText(
+                                      fontSize: 12,
+                                      color: DynamicColors.whiteClr
+                                    ),
+                                    ),
+                                  ),
+                                ),
+                               Padding(
+                                 padding: const EdgeInsets.only(left: 8.0),
+                                 child: Text(controller.driversList[index],
+                                   style: mozillaTextSemiBoldText(
+                                       fontSize: 12,
+                                   ),
+                                 ),
+                               )
+                             ],
+                           ),
+                         ),
+                          Container(
+                              padding: const EdgeInsets.symmetric(vertical: 6,horizontal: 10),
+                              decoration: BoxDecoration(
+                                border: const Border(
+                                  top: BorderSide(color: Colors.grey),
+                                  right: BorderSide(color: Colors.grey),
+                                  bottom: BorderSide(color: Colors.grey),
+                                  // 👉 right side intentionally remove kiya (no border)
+                                ),
+                              ),
+                              child: Center(child: Icon(Icons.delete_forever,
+                                color: DynamicColors.primaryClr,
+                              )))
+                        ],
+                      ),
+                    );
+                  }),
+                )
+              ],
+            ),
+          );
+        }
       ),
     );
   }

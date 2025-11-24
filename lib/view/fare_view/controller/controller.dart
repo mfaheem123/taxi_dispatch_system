@@ -771,6 +771,12 @@ DaysClass? selectedDay;
   
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete sure charge api
+  ///
+  ///
+  ///
+  ///
+  ///
+  ///
   deleteSureCharge({id}) async{
     var response = await Api().delete("surcharges/delete/$id");
     if(response.statusCode == 200){
@@ -834,6 +840,7 @@ DaysClass? selectedDay;
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare meter
+
   GetAllFareMeterRateModel? getAllFareMeterRateModel;
   getAllFareMeterRate() async{
     var response = await Api().get("faremeter/get");

@@ -1288,10 +1288,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            icon: Icons.person,
                                                            focusNode: _focusNodes[0],
                                                            onPressed: (){
+
                                                              showDialog(
                                                                  context: context,
                                                                  builder: (_) =>
                                                                      RestrictDriversAlert());
+
                                                            },
                                                          ),
                                                        ),

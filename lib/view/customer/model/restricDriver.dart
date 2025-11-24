@@ -15,7 +15,7 @@ class RestricDriverModel {
     int total;
     int totalPages;
     int count;
-    List<Driver> drivers;
+    List<DriverObject> drivers;
 
     RestricDriverModel({
         required this.status,
@@ -34,7 +34,7 @@ class RestricDriverModel {
         total: json["total"],
         totalPages: json["total_pages"],
         count: json["count"],
-        drivers: List<Driver>.from(json["drivers"].map((x) => Driver.fromJson(x))),
+        drivers: List<DriverObject>.from(json["drivers"].map((x) => DriverObject.fromJson(x))),
     );
 
     Map<String, dynamic> toJson() => {
@@ -48,7 +48,7 @@ class RestricDriverModel {
     };
 }
 
-class Driver {
+class DriverObject {
     int id;
     int subsidiaryId;
     String username;
@@ -124,7 +124,7 @@ class Driver {
     Vehicle vehicle;
     Subsidiary subsidiary;
 
-    Driver({
+    DriverObject({
         required this.id,
         required this.subsidiaryId,
         required this.username,
@@ -201,7 +201,7 @@ class Driver {
         required this.subsidiary,
     });
 
-    factory Driver.fromJson(Map<String, dynamic> json) => Driver(
+    factory DriverObject.fromJson(Map<String, dynamic> json) => DriverObject(
         id: json["id"],
         subsidiaryId: json["subsidiary_id"],
         username: json["username"],
