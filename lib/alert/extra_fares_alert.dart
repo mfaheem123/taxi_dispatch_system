@@ -2,6 +2,7 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../component/color.dart';
@@ -33,129 +34,181 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
       insetPadding: EdgeInsets.all(20),
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        height: 350,
-        width: 650,
-        padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: GetBuilder<DashboardController>(
+        builder: (controller) {
+          return Container(
+            height: 350,
+            width: 650,
+            padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(AppText.extraFears,
-                  style: mozillaTextSemiBoldText(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: (){
-                    Get.back();
-                  },
-                  child: Icon(Icons.close,
-                    color: DynamicColors.textClr,
-                  ),
-                )
-              ],
-            ),
-            Divider(),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    hintText: "PARKING CHARGES",
-                    controller: dashBoardCntrl.partingChargesController,
-                    keyboardType: TextInputType.number,
-                    borderRadius: 0,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CustomTextField(
-                        borderRadius: 0,
-                        hintText: "CONGESTION CHARGES",
-                        controller: dashBoardCntrl.congestionChargesController,
-                      keyboardType: TextInputType.number,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(AppText.extraFears,
+                      style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13,
+                      ),
                     ),
-                  ),
+                    GestureDetector(
+                      onTap: (){
+                        Get.back();
+                      },
+                      child: Icon(Icons.close,
+                        color: DynamicColors.textClr,
+                      ),
+                    )
+                  ],
                 ),
-                Expanded(
-                  child: CustomTextField(
-                      borderRadius: 0,
-                      hintText: "MEET & GREET",
-                      controller: dashBoardCntrl.meetGreetController,
-                    keyboardType: TextInputType.number,
-                  ),
+                Divider(),
+                SizedBox(
+                  height: 15,
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    hintText: "WAITING CHARGES",
-                    controller: dashBoardCntrl.waitingChargesController,
-                    keyboardType: TextInputType.number,
-                    borderRadius: 0,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CustomTextField(
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        hintText: "PARKING CHARGES",
+                        controller: dashBoardCntrl.partingChargesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                              2),
+                        ],
                         borderRadius: 0,
-                        hintText: "EXTRA DROP CHARGES",
-                        controller: dashBoardCntrl.extraDropChargesController,
-                      keyboardType: TextInputType.number,
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomTextField(
+                            borderRadius: 0,
+                            hintText: "CONGESTION CHARGES",
+                            controller: dashBoardCntrl.congestionChargesController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly,
+                            LengthLimitingTextInputFormatter(
+                                2),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: CustomTextField(
+                          borderRadius: 0,
+                          hintText: "MEET & GREET",
+                          controller: dashBoardCntrl.meetGreetController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                              2),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  child: CustomTextField(
-                      borderRadius: 0,
-                      hintText: "CREDIT CARD CHARGES",
-                      controller: dashBoardCntrl.creditCardChargesController,
-                    keyboardType: TextInputType.number,
-                  ),
+                SizedBox(
+                  height: 15,
                 ),
-              ],
-            ),
-            SizedBox(
-              height: 15,
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomTextField(
-                    hintText: "COMPANY PRICE",
-                    controller: dashBoardCntrl.companyPriceController,
-                    keyboardType: TextInputType.number,
-                    borderRadius: 0,
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: CustomTextField(
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        hintText: "WAITING CHARGES",
+                        controller: dashBoardCntrl.waitingChargesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                              2),
+                        ],
                         borderRadius: 0,
-                        hintText: "RETURN COMPANY PRICE",
-                        controller: dashBoardCntrl.returnCompanyPriceController,
-                      keyboardType: TextInputType.number,
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomTextField(
+                            borderRadius: 0,
+                            hintText: "EXTRA DROP CHARGES",
+                            controller: dashBoardCntrl.extraDropChargesController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly,
+                            LengthLimitingTextInputFormatter(
+                                2),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: CustomTextField(
+                          borderRadius: 0,
+                          hintText: "CREDIT CARD CHARGES",
+                          controller: dashBoardCntrl.creditCardChargesController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                              2),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        hintText: "COMPANY PRICE",
+                        controller: dashBoardCntrl.companyPriceController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter
+                              .digitsOnly,
+                          LengthLimitingTextInputFormatter(
+                              2),
+                        ],
+                        borderRadius: 0,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: CustomTextField(
+                            borderRadius: 0,
+                            hintText: "RETURN COMPANY PRICE",
+                            controller: dashBoardCntrl.returnCompanyPriceController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter
+                                .digitsOnly,
+                            LengthLimitingTextInputFormatter(
+                                2),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }

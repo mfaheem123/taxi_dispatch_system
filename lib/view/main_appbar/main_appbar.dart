@@ -172,103 +172,133 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: GetBuilder<DashboardController>(builder: (controller) {
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: Get.width,
-                padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                color: Colors.grey.shade300,
-                child: Wrap(spacing: 6, runSpacing: 6, children: [
-                  GestureDetector(
-                    onTap: () {
-                      int index = controller.selectedMenuItems.indexWhere(
-                          (element) => element.selectedItem == true);
-                      if (index != -1) {
-                        controller.selectedMenuItems[index].selectedItem =
-                            false;
-                      }
-                      controller.currentPage.value = ByDefaultDashboard();
-                      controller.update();
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: DynamicColors.primaryClr,
-                        border: Border.all(color: DynamicColors.textClr),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Icon(
-                        Icons.home,
-                        color: DynamicColors.whiteClr,
-                      ),
-                    ),
-                  ),
-                  ...controller.selectedMenuItems.map((item) {
-                    return GestureDetector(
-                      onTap: () {
-                        int index = controller.selectedMenuItems.indexWhere(
-                            (element) => element.selectedItem == true);
-                        if (index != -1) {
-                          controller.selectedMenuItems[index].selectedItem =
-                              false;
-                        }
-                        item.selectedItem = true;
-                        if (item.category != null) {
-                          controller.currentPage.value = item.category;
-                        }
-                        controller.update();
-                      },
-                      child: Chip(
-                        label: Text(
-                          item.title!,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: DynamicColors.textClr,
+        return Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    width: Get.width,
+                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                    color: Colors.grey.shade300,
+                    child: Wrap(spacing: 6, runSpacing: 6, children: [
+                      GestureDetector(
+                        onTap: () {
+                          int index = controller.selectedMenuItems.indexWhere(
+                              (element) => element.selectedItem == true);
+                          if (index != -1) {
+                            controller.selectedMenuItems[index].selectedItem =
+                                false;
+                          }
+                          controller.currentPage.value = ByDefaultDashboard();
+                          controller.update();
+                        },
+                        child: Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: DynamicColors.primaryClr,
+                            border: Border.all(color: DynamicColors.textClr),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                            Icons.home,
+                            color: DynamicColors.whiteClr,
                           ),
                         ),
-                        backgroundColor: item.selectedItem == true
-                            ? DynamicColors.whiteClr
-                            : DynamicColors.gryClr,
-                        deleteIcon: Icon(
-                          Icons.close,
-                          color: DynamicColors.textClr,
-                          size: 18,
-                        ),
-                        onDeleted: () {
-                          if (item.selectedItem == true &&
-                              controller.selectedMenuItems.length > 1) {
+                      ),
+                      ...controller.selectedMenuItems.map((item) {
+                        return GestureDetector(
+                          onTap: () {
                             int index = controller.selectedMenuItems.indexWhere(
-                                (item) => item.selectedItem == true);
+                                (element) => element.selectedItem == true);
                             if (index != -1) {
                               controller.selectedMenuItems[index].selectedItem =
                                   false;
                             }
-                            controller.selectedMenuItems.remove(item);
-                            controller.selectedMenuItems.last.selectedItem =
-                                true;
-                            controller.currentPage.value =
-                                controller.selectedMenuItems.last.category;
-                          } else {
-                            controller.selectedMenuItems.remove(item);
-                            controller.currentPage.value = ByDefaultDashboard();
-                          }
+                            item.selectedItem = true;
+                            if (item.category != null) {
+                              controller.currentPage.value = item.category;
+                            }
+                            controller.update();
+                          },
+                          child: Chip(
+                            label: Text(
+                              item.title!,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: DynamicColors.textClr,
+                              ),
+                            ),
+                            backgroundColor: item.selectedItem == true
+                                ? DynamicColors.whiteClr
+                                : DynamicColors.gryClr,
+                            deleteIcon: Icon(
+                              Icons.close,
+                              color: DynamicColors.textClr,
+                              size: 18,
+                            ),
+                            onDeleted: () {
+                              if (item.selectedItem == true &&
+                                  controller.selectedMenuItems.length > 1) {
+                                int index = controller.selectedMenuItems.indexWhere(
+                                    (item) => item.selectedItem == true);
+                                if (index != -1) {
+                                  controller.selectedMenuItems[index].selectedItem =
+                                      false;
+                                }
+                                controller.selectedMenuItems.remove(item);
+                                controller.selectedMenuItems.last.selectedItem =
+                                    true;
+                                controller.currentPage.value =
+                                    controller.selectedMenuItems.last.category;
+                              } else {
+                                controller.selectedMenuItems.remove(item);
+                                controller.currentPage.value = ByDefaultDashboard();
+                              }
 
-                          controller.update(); // if using GetX
-                        },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ]),
+                              controller.update(); // if using GetX
+                            },
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ]),
+                  ),
+                  // controller.currentPage.value ?? CreateEscortScreen(),
+                 Obx(()=>  controller.currentPage.value ?? ByDefaultDashboard(),)
+                ],
               ),
-              // controller.currentPage.value ?? CreateEscortScreen(),
-             Obx(()=>  controller.currentPage.value ?? ByDefaultDashboard(),)
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 60,
+                  width: 120,
+                  color: Colors.blue,
+                ),
+                Container(
+                  height: 60,
+                  width: 120,
+                  color: Colors.red,
+                ),
+                Container(
+                  height: 60,
+                  width: 120,
+                  color: Colors.amber,
+                ),
+                Container(
+                  height: 60,
+                  width: 120,
+                  color: Colors.pink,
+                ),
+              ],
+            )
+          ],
         );
       }),
     );
