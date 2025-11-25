@@ -456,14 +456,20 @@ Widget labeledTextField(
       readOnly = false,
       Color? borderColor,
       borderWidth = 2,
+      ValueChanged<String>? onChanged, // << ADDED
     }) {
+
   return SizedBox(
-    height:column ==true? null:30,
-    child: column ==true? Column(
+    height: column == true ? null : 30,
+    child: column == true
+        ? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        Text(label,
+            style:
+            mozillaTextSemiBoldText(context: context, fontSize: 13)),
         const SizedBox(height: 5),
+
         if (isMobile)
           Expanded(
             child: CustomTextField(
@@ -471,12 +477,16 @@ Widget labeledTextField(
               borderRadius: 4,
               hintText: hintTex,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           )
         else
@@ -486,31 +496,44 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           ),
-    ]): Row(
+      ],
+    )
+        : Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        Text(label,
+            style:
+            mozillaTextSemiBoldText(context: context, fontSize: 13)),
         const SizedBox(width: 12),
+
         if (isMobile)
           Expanded(
             child: CustomTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           )
         else
@@ -520,12 +543,16 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           ),
       ],

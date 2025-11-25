@@ -209,7 +209,6 @@ class _AccountViewState extends State<AccountView> {
                                   Text(AppText.subsidiary,
                                       style: mozillaTextSemiBoldText(
                                           context: context, fontSize: 13)),
-
                               CustomDropdownField<Subsidiary>(
                               label: "Select Subsidiary",
                               width: Get.width / 5,
@@ -449,9 +448,7 @@ class _AccountViewState extends State<AccountView> {
                                               ElevatedButton(
                                                 child: const Text('Got it'),
                                                 onPressed: () {
-                                                  controller
-                                                          .foregroundCurrentColor =
-                                                      controller.foregroundClr;
+                                                  controller.foregroundCurrentColor = controller.foregroundClr;
                                                   controller.update();
                                                   Navigator.of(context).pop();
                                                 },

@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+ import 'dart:convert';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -158,7 +157,6 @@ class CustomerController extends GetxController {
     noteController.text = customerUpdate.notes!;
     address1Controller.text = customerUpdate.address1!;
     address2Controller.text = customerUpdate.address2!;
-
     updateCustomerValue(true);
   }
 
