@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:popover/popover.dart';
 
 import '../component/dropdown_button.dart';
+import '../view/customer/model/restricDriver.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../component/color.dart';
 import '../component/keyboard_dropdown_widget.dart';
@@ -93,31 +94,28 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                       child: Text("#"),
                     ),
                   ),
-                    CustomDropdownField<String>(
+                    CustomDropdownField<DriverObject>(
                       label: "SELECT DRIVERS",
-                      width: 300,
+                      width: 320,
                       height: 35,
-                      items: [
-                        "DRIVERS 01",
-                        "DRIVERS 02",
-                        "DRIVERS 03",
-                      ],
-                      value: controller.selectDriver,
-                      itemLabel: (data) =>
-                      data,
+                      items: controller.allDriverData!.drivers,
+                      value: controller.selectDriverObject,
+                      itemLabel: (driver) =>
+                      driver.name,
                       onChanged: (val) {
-                        controller.selectDriver = val;
+                        controller.selectDriverObject = val;
                         controller.update();
                       },
                     ),
-                    /*RestrictedDrivers(
-                      driversList: driversList,
-                      width: 200,
-                    ),*/
                     GestureDetector(
                       onTap: (){
-                        Get.back();
-                      },
+                        if(controller.selectDriverObject != null){
+                        controller.driversList
+                            .add(controller.selectDriverObject!);
+                        controller.selectDriverObject = null;
+                        controller.update();
+                      }
+                    },
                       child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 4,horizontal: 10),
                           decoration: BoxDecoration(
@@ -183,8 +181,8 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                   ),
                                 ),
                                Padding(
-                                 padding: const EdgeInsets.only(left: 8.0),
-                                 child: Text(controller.driversList[index],
+                                 padding: EdgeInsets.only(left: 8.0),
+                                 child: Text(controller.driversList[index].name,
                                    style: mozillaTextSemiBoldText(
                                        fontSize: 12,
                                    ),

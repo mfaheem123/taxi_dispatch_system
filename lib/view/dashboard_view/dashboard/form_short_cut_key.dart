@@ -10,6 +10,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/via_location.dart';
+import 'F8_widget_alert.dart';
 
 class FormShortCutKey extends StatelessWidget {
   FormShortCutKey({super.key});
@@ -17,138 +18,203 @@ class FormShortCutKey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: Get.width,
-      padding:
-      EdgeInsets.symmetric(vertical: 6,horizontal: 6),
-      decoration: BoxDecoration(
-        color: DynamicColors.primaryClr,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child:
-      Wrap(
-        spacing: 10, // horizontal gap
-        runSpacing: 8, // vertical gap when wrapped
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        return Container(
+          width: Get.width,
+          padding:
+          EdgeInsets.symmetric(vertical: 6,horizontal: 6),
+          decoration: BoxDecoration(
+            color: DynamicColors.primaryClr,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child:
+          Wrap(
+            spacing: 10, // horizontal gap
+            runSpacing: 8, // vertical gap when wrapped
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppText.booking,
-                    style: mozillaTextSemiBoldText(
-                        context: context,
-                        fontSize: 14,
-                        color: DynamicColors.whiteClr
-                    ),
+                  Row(
+                    children: [
+                      Text(AppText.booking,
+                        style: mozillaTextSemiBoldText(
+                            context: context,
+                            fontSize: 14,
+                            color: DynamicColors.whiteClr
+                        ),
+                      ),
+                    ],
                   ),
+                  Row(
+                    children: [
+                      Obx(
+                            ()=> MouseRegion(
+                          onEnter: (_) {
+                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                              DashboardF8Alert.show();
+                            }
+
+                            dashboardController.isHoveredF8 = true.obs;
+                          },
+                          onExit: (_) {
+                            dashboardController.isHoveredF8 = false.obs;
+                          },
+                          child: Container(
+                            // margin: EdgeInsets.symmetric(
+                            //     horizontal: 16, vertical: 3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '+ MULTI RESERVATION [F8]',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Obx(
+                            ()=> MouseRegion(
+                          onEnter: (_) {
+                            dashboardController.isHoveredF9 = true.obs;
+                          },
+                          onExit: (_) {
+                            dashboardController.isHoveredF9 = false.obs;
+                          },
+                          child: Container(
+                            // margin: EdgeInsets.symmetric(
+                            //     horizontal: 16, vertical: 3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '+ VEHICLES [F9]',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Obx(
+                      //       ()=> MouseRegion(
+                      //     onEnter: (_) {
+                      //       dashboardController.isHovered = true.obs;
+                      //     },
+                      //     onExit: (_) {
+                      //       dashboardController.isHovered = false.obs;
+                      //     },
+                      //     child: Container(
+                      //       // margin: EdgeInsets.symmetric(
+                      //       //     horizontal: 16, vertical: 3),
+                      //       padding: EdgeInsets.symmetric(
+                      //           horizontal: 8, vertical: 3),
+                      //       decoration: BoxDecoration(
+                      //         color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                      //         borderRadius:
+                      //         BorderRadius.circular(10),
+                      //       ),
+                      //       child: Text(
+                      //         'MULTI RESERVATION',
+                      //         style: TextStyle(
+                      //           color: Colors.white,
+                      //           fontSize: 13,
+                      //           fontWeight: FontWeight.bold,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      Obx(
+                            ()=> MouseRegion(
+                          onEnter: (_) {
+                            dashboardController.isHoveredVLA = true.obs;
+                          },
+                          onExit: (_) {
+                            dashboardController.isHoveredVLA = false.obs;
+                          },
+                          opaque: true,
+                          child: GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (_) =>
+                                      ViaLocation());
+                            },
+                            child: Container(
+                              // margin: EdgeInsets.symmetric(
+                              //     horizontal: 16, vertical: 3),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                borderRadius:
+                                BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                'VIA (${dashboardController.viaPoints.length})',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'SUB',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  )
+
                 ],
-              ),
-              Row(
-                children: [
-                  Obx(
-                        ()=> MouseRegion(
-                      onEnter: (_) {
-                        dashboardController.isHoveredF8 = true.obs;
-                      },
-                      onExit: (_) {
-                        dashboardController.isHoveredF8 = false.obs;
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(
-                        //     horizontal: 16, vertical: 3),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                          borderRadius:
-                          BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '+ MULTI RESERVATION [F8]',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
+              )
+            ]),
+         /* SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(AppText.booking,
+                  style: mozillaTextSemiBoldText(
+                      context: context,
+                      fontSize: 14,
+                      color: DynamicColors.whiteClr
                   ),
-                  Obx(
-                        ()=> MouseRegion(
-                      onEnter: (_) {
-                        dashboardController.isHoveredF9 = true.obs;
-                      },
-                      onExit: (_) {
-                        dashboardController.isHoveredF9 = false.obs;
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(
-                        //     horizontal: 16, vertical: 3),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                          borderRadius:
-                          BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          '+ VEHICLES [F9]',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Obx(
-                  //       ()=> MouseRegion(
-                  //     onEnter: (_) {
-                  //       dashboardController.isHovered = true.obs;
-                  //     },
-                  //     onExit: (_) {
-                  //       dashboardController.isHovered = false.obs;
-                  //     },
-                  //     child: Container(
-                  //       // margin: EdgeInsets.symmetric(
-                  //       //     horizontal: 16, vertical: 3),
-                  //       padding: EdgeInsets.symmetric(
-                  //           horizontal: 8, vertical: 3),
-                  //       decoration: BoxDecoration(
-                  //         color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                  //         borderRadius:
-                  //         BorderRadius.circular(10),
-                  //       ),
-                  //       child: Text(
-                  //         'MULTI RESERVATION',
-                  //         style: TextStyle(
-                  //           color: Colors.white,
-                  //           fontSize: 13,
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  Obx(
-                        ()=> MouseRegion(
-                      onEnter: (_) {
-                        dashboardController.isHoveredVLA = true.obs;
-                      },
-                      onExit: (_) {
-                        dashboardController.isHoveredVLA = false.obs;
-                      },
-                      opaque: true,
-                      child: GestureDetector(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (_) =>
-                                  ViaLocation());
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Obx(
+                          ()=> MouseRegion(
+                        onEnter: (_) {
+                          dashboardController.isHoveredF8 = true.obs;
+                        },
+                        onExit: (_) {
+                          dashboardController.isHoveredF8 = false.obs;
                         },
                         child: Container(
                           // margin: EdgeInsets.symmetric(
@@ -156,12 +222,12 @@ class FormShortCutKey extends StatelessWidget {
                           padding: EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                            color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
                             borderRadius:
                             BorderRadius.circular(10),
                           ),
                           child: Text(
-                            'VIA (${dashboardController.viaPoints.length})',
+                            '+ BOOKING [F8]',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 13,
@@ -171,175 +237,118 @@ class FormShortCutKey extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
-                  Text(
-                    'SUB',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              )
-
-            ],
-          )
-        ]),
-     /* SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(AppText.booking,
-              style: mozillaTextSemiBoldText(
-                  context: context,
-                  fontSize: 14,
-                  color: DynamicColors.whiteClr
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Obx(
-                      ()=> MouseRegion(
-                    onEnter: (_) {
-                      dashboardController.isHoveredF8 = true.obs;
-                    },
-                    onExit: (_) {
-                      dashboardController.isHoveredF8 = false.obs;
-                    },
-                    child: Container(
-                      // margin: EdgeInsets.symmetric(
-                      //     horizontal: 16, vertical: 3),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                        borderRadius:
-                        BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '+ BOOKING [F8]',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Obx(
-                      ()=> MouseRegion(
-                    onEnter: (_) {
-                      dashboardController.isHoveredF9 = true.obs;
-                    },
-                    onExit: (_) {
-                      dashboardController.isHoveredF9 = false.obs;
-                    },
-                    child: Container(
-                      // margin: EdgeInsets.symmetric(
-                      //     horizontal: 16, vertical: 3),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                        borderRadius:
-                        BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        '+ VEHICLES [F9]',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Obx(
-                      ()=> MouseRegion(
-                    onEnter: (_) {
-                      dashboardController.isHovered = true.obs;
-                    },
-                    onExit: (_) {
-                      dashboardController.isHovered = false.obs;
-                    },
-                    child: Container(
-                      // margin: EdgeInsets.symmetric(
-                      //     horizontal: 16, vertical: 3),
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                        borderRadius:
-                        BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        'MULTI RESERVATION',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Obx(
-                      ()=> MouseRegion(
-                    onEnter: (_) {
-                      dashboardController.isHoveredVLA = true.obs;
-                    },
-                    onExit: (_) {
-                      dashboardController.isHoveredVLA = false.obs;
-                    },
-                    opaque: true,
-                    child: GestureDetector(
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (_) =>
-                                ViaLocation());
-                      },
-                      child: Container(
-                        // margin: EdgeInsets.symmetric(
-                        //     horizontal: 16, vertical: 3),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                          borderRadius:
-                          BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          'VLA (0)',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
+                    Obx(
+                          ()=> MouseRegion(
+                        onEnter: (_) {
+                          dashboardController.isHoveredF9 = true.obs;
+                        },
+                        onExit: (_) {
+                          dashboardController.isHoveredF9 = false.obs;
+                        },
+                        child: Container(
+                          // margin: EdgeInsets.symmetric(
+                          //     horizontal: 16, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                            borderRadius:
+                            BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '+ VEHICLES [F9]',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                Text(
-                  'SUB',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                    Obx(
+                          ()=> MouseRegion(
+                        onEnter: (_) {
+                          dashboardController.isHovered = true.obs;
+                        },
+                        onExit: (_) {
+                          dashboardController.isHovered = false.obs;
+                        },
+                        child: Container(
+                          // margin: EdgeInsets.symmetric(
+                          //     horizontal: 16, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: dashboardController.isHovered.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                            borderRadius:
+                            BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            'MULTI RESERVATION',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(
+                          ()=> MouseRegion(
+                        onEnter: (_) {
+                          dashboardController.isHoveredVLA = true.obs;
+                        },
+                        onExit: (_) {
+                          dashboardController.isHoveredVLA = false.obs;
+                        },
+                        opaque: true,
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) =>
+                                    ViaLocation());
+                          },
+                          child: Container(
+                            // margin: EdgeInsets.symmetric(
+                            //     horizontal: 16, vertical: 3),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: dashboardController.isHoveredVLA.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                              borderRadius:
+                              BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              'VLA (0)',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'SUB',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
 
+                  ],
+                )
               ],
-            )
-          ],
-        ),
-      ),*/
+            ),
+          ),*/
+        );
+      }
     );
   }
 }

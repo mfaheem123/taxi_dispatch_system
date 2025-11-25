@@ -14,6 +14,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:polyline_codec/polyline_codec.dart';
 import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
+import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../tabbarview.dart';
@@ -59,8 +60,7 @@ class DashboardController extends GetxController {
 
   ///refresh function for menu bar
   menuBarRefresh({title, pageName}) {
-    print(title);
-    print(title);
+
     // if(selectedMenuItems.length < 3){
     int index =
         selectedMenuItems.indexWhere((item) => item.selectedItem == true);
@@ -137,6 +137,7 @@ class DashboardController extends GetxController {
   final creditCardChargesController = TextEditingController();
   final companyPriceController = TextEditingController();
   final returnCompanyPriceController = TextEditingController();
+  final specialRequirementsController = TextEditingController();
   final controllerNoteController = TextEditingController();
   final sendEmailController = TextEditingController();
   final emailToController = TextEditingController();
@@ -966,8 +967,9 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all drivers
-  List driversList = [];
+  List<DriverObject> driversList = [];
   RestricDriverModel? allDriverData;
+  DriverObject? selectDriverObject;
   getAllDrivers() async {
     var response = await Api().get("drivers/get");
     if (response.statusCode == 200) {
@@ -975,6 +977,12 @@ class DashboardController extends GetxController {
       update();
     }
   }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> child seat alert
+  List<ChildSeatClass> childSeatAlert = [];
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> controller note alert
+  List controllerAlert = [];
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 }
