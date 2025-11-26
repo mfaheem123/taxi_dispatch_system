@@ -194,6 +194,7 @@ class ZoneController extends GetxController {
 
     final vertices = toApiVertices(pts);
     const url = "http://192.168.110.4:5000/api/zones";
+    // const url = "https://www.nexustechnologys.com/api/zones";
     final data = {
       "name": zonenameContoller.text,
       "secondary_name": secondarynamezoneController.text,
@@ -237,6 +238,7 @@ class ZoneController extends GetxController {
 
     final vertices = toApiVertices(pts);
     final url = "http://192.168.110.4:5000/api/zones/edit/${zoneID.value}";
+    // final url = "https://www.nexustechnologys.com/api/zones/edit/${zoneID.value}";
     final storedUserId = html.window.localStorage['key'];
     final data = {
       "userId": storedUserId,

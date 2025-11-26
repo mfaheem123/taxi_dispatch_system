@@ -48,6 +48,7 @@ class Api {
           ),
           firstTime: firstTime),
     );
+
     dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
 
     if (url != "") {

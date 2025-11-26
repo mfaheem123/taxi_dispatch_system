@@ -456,16 +456,25 @@ Widget labeledTextField(
       readOnly = false,
       Color? borderColor,
       borderWidth = 2,
+<<<<<<< HEAD
       final GestureTapCallback? onTap,
       final ValueChanged<String>? onChanged,
+=======
+      ValueChanged<String>? onChanged, // << ADDED
+>>>>>>> ee0401cefd3c84ee009d148656070c9cd03da16a
     }) {
+
   return SizedBox(
-    height:column ==true? null:30,
-    child: column ==true? Column(
+    height: column == true ? null : 30,
+    child: column == true
+        ? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        Text(label,
+            style:
+            mozillaTextSemiBoldText(context: context, fontSize: 13)),
         const SizedBox(height: 5),
+
         if (isMobile)
           Expanded(
             child: CustomTextField(
@@ -475,12 +484,16 @@ Widget labeledTextField(
               onTap: onTap,
               onChanged: onChanged,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           )
         else
@@ -490,31 +503,44 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           ),
-    ]): Row(
+      ],
+    )
+        : Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+        Text(label,
+            style:
+            mozillaTextSemiBoldText(context: context, fontSize: 13)),
         const SizedBox(width: 12),
+
         if (isMobile)
           Expanded(
             child: CustomTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           )
         else
@@ -524,12 +550,16 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
+              inputFormatters: formatDigitsOnly
+                  ? [FilteringTextInputFormatter.digitsOnly]
+                  : null,
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
               borderWidth: borderWidth,
-              onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              onChanged: onChanged,          // << ADDED
+              onSubmitted: (_) =>
+                  FocusScope.of(context).nextFocus(),
             ),
           ),
       ],

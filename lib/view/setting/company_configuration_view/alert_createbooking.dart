@@ -248,7 +248,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           child: CustomButton(
                             height: 35,
                             width: fieldWidth / 2,
-                            fontSize: 14,
+                            fontSize: 10,
                             borderRadius: 4,
                             verticalPadding: 0.0,
                             btnText: AppText.createreservation,
@@ -259,34 +259,26 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         height: 10,
                       ),
                       SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
+                        // scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
+                          width: MediaQuery.of(context).size.width/2,
                           child: DatatableWidget(
                               columns: [
                                 buildHeaderWithSearch(title: "EXCLUDE"),
                                 buildHeaderWithSearch(title: "DAY"),
-                                buildHeaderWithSearch(title: "CHOOSE D/T"),
-                                buildHeaderWithSearch(title: "RETURN D/T"),
-                                buildHeaderWithSearch(title: "SELECTION"),
-                                buildHeaderWithSearch(title: "OF"),
-                                buildHeaderWithSearch(title: "TO"),
-                                buildHeaderWithSearch(title: "A/C"),
-                                buildHeaderWithSearch(title: "FREE"),
-                                buildHeaderWithSearch(title: "RETRUN FREE"),
+                                buildHeaderWithSearch(title: "DATE"),
+                                buildHeaderWithSearch(title: "TIME"),
+                                buildHeaderWithSearch(title: "RETURN TIME"),
+
                               ],
                               totalRow: totalRows,
                               cells: [
                                 const DataCell(Text("JOB")),
                                 const DataCell(Text("MONDAY")),
-                                const DataCell(Text("CHOOSE")),
-                                const DataCell(Text("RETURN")),
-                                const DataCell(Text("SELECTION")),
-                                const DataCell(Text("25_02_25")),
-                                const DataCell(Text("25_09_25")),
-                                const DataCell(Text("FAHEEM")),
-                                const DataCell(Text("PAID")),
-                                const DataCell(Text("FREE")),
+                                const DataCell(Text("12-Nov-2025")),
+                                const DataCell(Text("Time")),
+                                const DataCell(Text("RETURN Time")),
+
                               ]),
                         ),
                       ),
@@ -315,74 +307,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           spacing: 80,
                           runSpacing: 50,
                           children: [
-                            CustomDropdownField<String>(
-                              width: fieldWidth / 2,
-                              label: AppText.account,
-                              items: [
-                                "ACCOUNT 1",
-                                "ACCOUNT 2",
-                                "ACCOUNT 3",
-                                "ACCOUNT 4",
-                                "ACCOUNT 5",
-                              ],
-                              value: controller.account,
-                              itemLabel: (val) => val, // just show the string
-                              onChanged: (val) {
-                                controller.account = val!;
-                                controller.update();
-                              },
-                            ),
-                            CustomDropdownField<String>(
-                              width: fieldWidth / 2,
-                              label: AppText.departmentType,
-                              items: [
-                                "DEPARTMENT TYPE 1",
-                                "DEPARTMENT TYPE 2",
-                                "DEPARTMENT TYPE 3",
-                                "DEPARTMENT TYPE4",
-                                "DEPARTMENT TYPE 5",
-                              ],
-                              value: controller.departmentType,
-                              itemLabel: (val) => val, // just show the string
-                              onChanged: (val) {
-                                controller.departmentType = val!;
-                                controller.update();
-                              },
-                            ),
-                            CustomDropdownField<String>(
-                              width: fieldWidth / 2,
-                              label: AppText.cash,
-                              items: [
-                                "CASH 1",
-                                "CASH 2",
-                                "CASH 3",
-                                "CASH 4",
-                                "CASH 5",
-                              ],
-                              value: controller.cash,
-                              itemLabel: (val) => val, // just show the string
-                              onChanged: (val) {
-                                controller.cash = val!;
-                                controller.update();
-                              },
-                            ),
-                            CustomDropdownField<String>(
-                              width: fieldWidth / 2,
-                              label: AppText.selectDriver,
-                              items: [
-                                "SELECT DRIVER 1",
-                                "SELECT DRIVER 2",
-                                "SELECT DRIVER 3",
-                                "SELECT DRIVER 4",
-                                "SELECT DRIVER 5",
-                              ],
-                              value: controller.selectDriver,
-                              itemLabel: (val) => val, // just show the string
-                              onChanged: (val) {
-                                controller.selectDriver = val!;
-                                controller.update();
-                              },
-                            ),
+
                           ],
                         ),
                       ),

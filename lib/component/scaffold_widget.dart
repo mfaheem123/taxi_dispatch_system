@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 class ScaffoldWidget extends StatefulWidget {
+
   const ScaffoldWidget({super.key});
 
   @override

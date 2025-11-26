@@ -296,6 +296,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           CircleAvatar(
+
                             radius: 10,
                             backgroundColor: DynamicColors.greenClr,
                           ),

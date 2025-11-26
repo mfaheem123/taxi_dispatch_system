@@ -2,7 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+<<<<<<< HEAD
 import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
+=======
+import 'package:dashboard_new1/view/dashboard_view/models/getMobileNumberWithNameModel.dart';
+>>>>>>> ee0401cefd3c84ee009d148656070c9cd03da16a
 import 'package:dashboard_new1/view/dashboard_view/models/seeZoneOnMap.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -828,6 +832,7 @@ class DashboardController extends GetxController {
   }
 
 
+<<<<<<< HEAD
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
   DashboardDataModel? dashboardAllData;
   RxBool dashboardDataLoader = false.obs;
@@ -844,6 +849,62 @@ class DashboardController extends GetxController {
       update();
     }
   }
+=======
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
+
+
+  // TextEditingController mobileController = TextEditingController();
+  // TextEditingController nameController = TextEditingController();
+
+  // GetMobileNumberWithNameModel? getMobileNumberWithNameModel;
+  //
+  // RxBool getMobileNumberWithNameLoader = false.obs;
+  // RxList<Customer> filteredList = <Customer>[].obs;
+  //
+  // // API FETCH
+  // getMobileNumberWithName() async {
+  //   getMobileNumberWithNameLoader(true);
+  //
+  //   var response = await Api().get("enumerations/get");
+  //
+  //   if (response.statusCode == 200) {
+  //     getMobileNumberWithNameModel = GetMobileNumberWithNameModel.fromJson(response.data);
+  //
+  //     getMobileNumberWithNameLoader(false);
+  //     update();
+  //   }
+  // }
+  //
+  // // 🔍 SEARCH FILTER (while typing mobile number)
+  // void filterMobileResults(String query) {
+  //   if (query.isEmpty || getMobileNumberWithNameModel == null) {
+  //     filteredList.clear();
+  //     return;
+  //   }
+  //
+  //   filteredList.value = getMobileNumberWithNameModel!.customers!.where((item) {
+  //         return item.mobile.toString().contains(query);
+  //       }).toList();
+  // }
+  //
+  // // ▶ Tap on suggestion → auto-fill
+  // void fillFromSuggestion(Customer item) {
+  //   mobileController.text = item.mobile.toString();
+  //   nameController.text = item.name.toString();
+  //   filteredList.clear(); // hide suggestion popup
+  //   update();
+  // }
+
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
+
+
+
+
+
+
+>>>>>>> ee0401cefd3c84ee009d148656070c9cd03da16a
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality
 
@@ -958,3 +1019,28 @@ class DashBoardBindings implements Bindings {
     Get.lazyPut<DashboardController>(() => DashboardController());
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard

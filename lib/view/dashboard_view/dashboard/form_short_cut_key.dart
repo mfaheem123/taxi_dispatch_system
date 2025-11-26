@@ -11,6 +11,7 @@ import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
 import '../widgets/via_location.dart';
 import 'F8_widget_alert.dart';
+import 'F9_widget_alert.dart';
 
 class FormShortCutKey extends StatelessWidget {
   FormShortCutKey({super.key});
@@ -86,6 +87,9 @@ class FormShortCutKey extends StatelessWidget {
                       Obx(
                             ()=> MouseRegion(
                           onEnter: (_) {
+                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                              DashboardF9Alert.show();
+                            }
                             dashboardController.isHoveredF9 = true.obs;
                           },
                           onExit: (_) {

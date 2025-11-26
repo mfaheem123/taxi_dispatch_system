@@ -138,9 +138,9 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                       ],
                       totalRow: totalRows,
                       cells: [
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                         DataCell(Center(child: Text("#PHC VEHICLE"))),
+                         DataCell(Center(child: Text("20/10/2025"))),
+                         DataCell(Center(child: Text("#PHC VEHICLE"))),
                         DataCell(
                           Center(
                             child: Row(

@@ -188,7 +188,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                           label: "",
                                           width: fieldWidth,
                                           height: 35,
-                                          items: controller.weekDayList,
+                                          items: controller. weekDayList,
                                           value: controller.fromDayValue,
                                           itemLabel: (day) => day,
                                           onChanged: (val) {

@@ -291,7 +291,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                 onPressed: () {
                                   controller.customerUpdate(
                                       customerUpdate: item);
-
                                   int index = _controller.selectedMenuItems
                                       .indexWhere((element) =>
                                           element.title == "CustomerAdd");
