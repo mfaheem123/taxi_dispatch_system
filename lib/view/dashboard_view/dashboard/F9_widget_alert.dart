@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 
-class DashboardF8Alert {
+class DashboardF9Alert {
   static void show() {
 
     // int? editingIndex;
@@ -19,9 +19,8 @@ class DashboardF8Alert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-
               return Container(
-                width: Get.width * 0.6,
+                width: Get.width * 0.8,
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -35,7 +34,7 @@ class DashboardF8Alert {
                     ),
                   ],
                 ),
-                child: MultiReservationAlert(),
+                child: MultiVehiclePage(),
 
               );
             },

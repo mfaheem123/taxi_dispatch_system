@@ -15,5 +15,4 @@ class DynamicColors {
   static Color greenClr = Colors.green;
   static Color gryClr = Color(0xffA0DCFF);
   // static Color gryClr = Colors.grey;
-
 }
