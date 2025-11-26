@@ -41,7 +41,6 @@ class CustomerController extends GetxController {
     var response = await Api().get("drivers/get");
     if (response.statusCode == 200) {
       restricDriverModel = RestricDriverModel.fromJson(response.data);
-
       restricDriverLoader(false);
       update();
     }
