@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
-<<<<<<< HEAD
 import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
-=======
 import 'package:dashboard_new1/view/dashboard_view/models/getMobileNumberWithNameModel.dart';
->>>>>>> ee0401cefd3c84ee009d148656070c9cd03da16a
 import 'package:dashboard_new1/view/dashboard_view/models/seeZoneOnMap.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -832,7 +829,6 @@ class DashboardController extends GetxController {
   }
 
 
-<<<<<<< HEAD
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
   DashboardDataModel? dashboardAllData;
   RxBool dashboardDataLoader = false.obs;
@@ -849,7 +845,6 @@ class DashboardController extends GetxController {
       update();
     }
   }
-=======
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
 
@@ -903,8 +898,6 @@ class DashboardController extends GetxController {
 
 
 
-
->>>>>>> ee0401cefd3c84ee009d148656070c9cd03da16a
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality
 
