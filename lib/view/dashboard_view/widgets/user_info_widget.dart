@@ -456,6 +456,8 @@ Widget labeledTextField(
       readOnly = false,
       Color? borderColor,
       borderWidth = 2,
+      final GestureTapCallback? onTap,
+      final ValueChanged<String>? onChanged,
     }) {
   return SizedBox(
     height:column ==true? null:30,
@@ -470,6 +472,8 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               hintText: hintTex,
+              onTap: onTap,
+              onChanged: onChanged,
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly ? [FilteringTextInputFormatter.digitsOnly] : null,
               textInputAction: textInputAction,

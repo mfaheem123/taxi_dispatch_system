@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
 import 'package:dashboard_new1/view/dashboard_view/models/seeZoneOnMap.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import '../../../Model/via_point.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
+import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -217,6 +219,7 @@ class DashboardController extends GetxController {
   final FocusNode via1KeyboardFocusNode = FocusNode();
   final FocusNode via2KeyboardFocusNode = FocusNode();
   final FocusNode searchingAddressViaFocusNode = FocusNode();
+  final FocusNode phoneKeyboardFocusNode = FocusNode();
 
   final FocusNode pickupTextFieldFocusNode = FocusNode();
   final FocusNode dropOffTextFieldFocusNode = FocusNode();
@@ -822,6 +825,24 @@ class DashboardController extends GetxController {
     allAddressesData.clear();
     highlightedIndex.value = 0;
     update();
+  }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+  DashboardDataModel? dashboardAllData;
+  RxBool dashboardDataLoader = false.obs;
+  dashboardData() async{
+    dashboardDataLoader(true);
+    var response = await Api().get("enumerations/get");
+    if(response.statusCode == 200){
+      dashboardAllData = DashboardDataModel.fromJson(response.data);
+      SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
+          ? Get.find<SuggestionController>()
+          : Get.put(SuggestionController());
+      suggestion_controller.allListData = dashboardAllData!.customers!;
+      dashboardDataLoader(false);
+      update();
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality

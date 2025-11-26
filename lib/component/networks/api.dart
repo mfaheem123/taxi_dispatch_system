@@ -100,7 +100,7 @@ class Api {
       return response;
     } on SocketException {
       BotToast.showText(text: 'No Internet connection');
-    } on DioException catch (e) {
+    } on DioException catch ( e) {
       return returnResponse(e.response!);
     }
     // }

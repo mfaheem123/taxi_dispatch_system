@@ -15,6 +15,8 @@ import '../../../alert/extra_info_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
+import '../../../component/suggestion_widget/suggestion_controller.dart';
+import '../../../component/suggestion_widget/suggestion_view.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -33,6 +35,7 @@ import 'drivers.dart';
 import 'form_short_cut_key.dart';
 import 'location_suggestions.dart';
 import 'map_view_widget.dart';
+import 'package:flutter/material.dart' as material;
 
 class ByDefaultDashboard extends StatefulWidget {
   ByDefaultDashboard({super.key,
@@ -60,9 +63,22 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   Timer? _debounce;
 
   DashboardController controller = Get.find();
-  LocationController _controller = Get.isRegistered<LocationController>()
+  final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+
+  SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
+      ? Get.find<SuggestionController>()
+      : Get.put(SuggestionController());
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if(controller.dashboardAllData == null){
+      controller.dashboardData();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +95,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
           }
         },
       builder: (controller) {
-        return LayoutBuilder(
+        return controller.dashboardDataLoader.value? material.Center(
+            child: CircularProgressIndicator()
+        ): LayoutBuilder(
 
             builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
@@ -862,16 +880,69 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  ),
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(15),
-                                                   child: labeledTextField(
-                                                       context,
-                                                       isMobile,
-                                                       AppText.mobile,
-                                                       controller.mobileController,
+                                                   child:
+                                                   // labeledTextField(
+                                                   //   context,
+                                                   //   isMobile,
+                                                   //   onTap: () {
+                                                   //     controller.selectedTextFieldsValue.value = "Phone Number";
+                                                   //   },
+                                                   //   onChanged: (v){
+                                                   //     controller.selectedTextFieldsValue.value = "Phone Number";
+                                                   //     print(controller.selectedTextFieldsValue.value);
+                                                   //     print("controller.selectedTextFieldsValue.value");
+                                                   //     controller.update();
+                                                   //   },
+                                                   //   AppText.mobile,
+                                                   //   controller.mobileController,
+                                                   //   width: fieldWidth/2.3,
+                                                   //   textInputAction: TextInputAction.next,
+                                                   //   keyboardType: TextInputType.phone,
+                                                   //   formatDigitsOnly: false,
+                                                   // )
+
+
+                                                   RawKeyboardListener(
+                                                     focusNode: controller.phoneKeyboardFocusNode,
+                                                     onKey: (event) {
+                                                       // if (event is RawKeyDownEvent) {
+                                                       //   if (event.logicalKey ==
+                                                       //       LogicalKeyboardKey.arrowDown &&
+                                                       //       suggestion_controller.highlightedIndex.value <
+                                                       //           suggestion_controller.allListData.length - 1) {
+                                                       //     controller.highlightedIndex.value++;
+                                                       //   } else if (event.logicalKey ==
+                                                       //       LogicalKeyboardKey.arrowUp &&
+                                                       //       suggestion_controller.highlightedIndex.value >
+                                                       //           0) {
+                                                       //     suggestion_controller.highlightedIndex.value--;
+                                                       //   } else if (event.logicalKey ==
+                                                       //       LogicalKeyboardKey.enter) {
+                                                       //     final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
+                                                       //     suggestion_controller.selectSuggestion(selected);
+                                                       //   }else if(event.logicalKey == LogicalKeyboardKey.arrowDown
+                                                       //       || event.logicalKey == LogicalKeyboardKey.arrowUp
+                                                       //       || event.logicalKey == LogicalKeyboardKey.tab){
+                                                       //     FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
+                                                       //   }
+                                                       // }
+                                                     },
+                                                     child: CustomTextField(controller:
+                                                     controller.mobileController,
+                                                       hintText: AppText.mobile,
+                                                       borderRadius: 3,
+                                                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                       onChanged: (v){
+                                                         controller.selectedTextFieldsValue.value = "Phone Number";
+                                                         print(controller.selectedTextFieldsValue.value);
+                                                         print("controller.selectedTextFieldsValue.value");
+                                                         controller.update();
+                                                       },
                                                        width: fieldWidth/2.3,
-                                                       textInputAction: TextInputAction.next,
-                                                       keyboardType: TextInputType.phone,
-                                                       formatDigitsOnly: false),
+                                                     )
+                                                   ),
                                                  ),
+
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(16),
                                                    child: labeledTextField(
@@ -1579,6 +1650,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         // 🔽 Address suggestion dropdown with keyboard support
                         Obx(() {
                           if (controller.selectedTextFieldsValue.value == "via") return const SizedBox();
+                          if (controller.selectedTextFieldsValue.value == "Phone Number") {
+                            return SuggestionView(allListData: controller.dashboardAllData!.customers!,);
+                          }
                           if (controller.allAddressesData.isEmpty) return const SizedBox();
 
                           final activeKey = controller.activeFieldKey.value;
