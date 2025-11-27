@@ -76,9 +76,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(controller.dashboardAllData == null){
-      controller.dashboardData();
-    }
+    // if(controller.dashboardAllData == null){
+    //   controller.dashboardData();
+    // }
   }
 
   @override
@@ -912,27 +912,27 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    RawKeyboardListener(
                                                      focusNode: controller.phoneKeyboardFocusNode,
                                                      onKey: (event) {
-                                                       // if (event is RawKeyDownEvent) {
-                                                       //   if (event.logicalKey ==
-                                                       //       LogicalKeyboardKey.arrowDown &&
-                                                       //       suggestion_controller.highlightedIndex.value <
-                                                       //           suggestion_controller.allListData.length - 1) {
-                                                       //     controller.highlightedIndex.value++;
-                                                       //   } else if (event.logicalKey ==
-                                                       //       LogicalKeyboardKey.arrowUp &&
-                                                       //       suggestion_controller.highlightedIndex.value >
-                                                       //           0) {
-                                                       //     suggestion_controller.highlightedIndex.value--;
-                                                       //   } else if (event.logicalKey ==
-                                                       //       LogicalKeyboardKey.enter) {
-                                                       //     final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
-                                                       //     suggestion_controller.selectSuggestion(selected);
-                                                       //   }else if(event.logicalKey == LogicalKeyboardKey.arrowDown
-                                                       //       || event.logicalKey == LogicalKeyboardKey.arrowUp
-                                                       //       || event.logicalKey == LogicalKeyboardKey.tab){
-                                                       //     FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
-                                                       //   }
-                                                       // }
+                                                       if (event is RawKeyDownEvent) {
+                                                         if (event.logicalKey ==
+                                                             LogicalKeyboardKey.arrowDown &&
+                                                             suggestion_controller.highlightedIndex.value <
+                                                                 suggestion_controller.allListData.length - 1) {
+                                                           controller.highlightedIndex.value++;
+                                                         } else if (event.logicalKey ==
+                                                             LogicalKeyboardKey.arrowUp &&
+                                                             suggestion_controller.highlightedIndex.value >
+                                                                 0) {
+                                                           suggestion_controller.highlightedIndex.value--;
+                                                         } else if (event.logicalKey ==
+                                                             LogicalKeyboardKey.enter) {
+                                                           final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
+                                                           suggestion_controller.selectSuggestion(selected);
+                                                         }else if(event.logicalKey == LogicalKeyboardKey.arrowDown
+                                                             || event.logicalKey == LogicalKeyboardKey.arrowUp
+                                                             || event.logicalKey == LogicalKeyboardKey.tab){
+                                                           FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
+                                                         }
+                                                       }
                                                      },
                                                      child: CustomTextField(controller:
                                                      controller.mobileController,
@@ -940,10 +940,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        borderRadius: 3,
                                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                                        onChanged: (v){
-                                                         controller.selectedTextFieldsValue.value = "Phone Number";
-                                                         print(controller.selectedTextFieldsValue.value);
-                                                         print("controller.selectedTextFieldsValue.value");
-                                                         controller.update();
+                                                         controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
                                                        },
                                                        width: fieldWidth/2.3,
                                                      )
@@ -1658,7 +1655,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         Obx(() {
                           if (controller.selectedTextFieldsValue.value == "via") return const SizedBox();
                           if (controller.selectedTextFieldsValue.value == "Phone Number") {
-                            return SuggestionView(allListData: controller.dashboardAllData!.customers!,);
+                            return SuggestionView(allListData: controller.customerPhoneNumber!.customerInfo!,
+                              onSelect: (value) {
+                                FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
+                                print("Selected Phone Number: $value");
+                                controller.mobileController.text = value.mobile;   // <-- store anywhere
+                              },
+                            );
                           }
                           if (controller.allAddressesData.isEmpty) return const SizedBox();
 
