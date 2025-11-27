@@ -35,6 +35,7 @@ class ProductionConfig implements BaseConfig {
 
   @override
   String get imageUrl => "http://apis.bloodlines.info/public";
+
   @override
   String get slashImageUrl => "http://apis.bloodlines.info/public";
 

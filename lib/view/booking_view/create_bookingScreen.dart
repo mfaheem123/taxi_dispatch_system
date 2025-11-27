@@ -1,4 +1,10 @@
  import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/F8_widget_alert.dart';
+import '../dashboard_view/dashboard/F9_widget_alert.dart';
 
 class BookingForm extends StatefulWidget {
   @override
@@ -385,6 +391,7 @@ class _BookingFormState extends State<BookingForm> {
                                   horizontal: 8, vertical: 4),
                             ),
                           ),
+
                           ElevatedButton(
                             onPressed: () {},
                             child: Text('CLEAR [7]'),
