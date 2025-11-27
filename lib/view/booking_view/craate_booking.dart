@@ -1,5 +1,7 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/view/dashboard_view/dashboard/F8_widget_alert.dart';
+import 'package:dashboard_new1/view/dashboard_view/dashboard/F9_widget_alert.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/pickup_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/quotation_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
@@ -1672,6 +1674,74 @@ class _CreateBookingState extends State<CreateBooking> {
                                               "Driver 03",
                                               "Driver 04"
                                             ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Obx(
+                                          ()=> MouseRegion(
+                                        onEnter: (_) {
+                                          // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                          //
+                                          // }
+                                          DashboardF8Alert.show();
+
+                                          controller.isHoveredF8 = true.obs;
+                                        },
+                                        onExit: (_) {
+                                          controller.isHoveredF8 = false.obs;
+                                        },
+                                        child: Container(
+                                          // margin: EdgeInsets.symmetric(
+                                          //     horizontal: 16, vertical: 3),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: controller.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            '+ MULTI RESERVATION [F8]',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    Obx(
+                                          ()=> MouseRegion(
+                                        onEnter: (_) {
+                                          // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                          //
+                                          // }
+                                          DashboardF9Alert.show();
+                                          controller.isHoveredF9 = true.obs;
+                                        },
+                                        onExit: (_) {
+                                          controller.isHoveredF9 = false.obs;
+                                        },
+                                        child: Container(
+                                          // margin: EdgeInsets.symmetric(
+                                          //     horizontal: 16, vertical: 3),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: controller.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            '+ VEHICLES [F9]',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
