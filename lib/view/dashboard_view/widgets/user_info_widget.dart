@@ -456,7 +456,10 @@ Widget labeledTextField(
       readOnly = false,
       Color? borderColor,
       borderWidth = 2,
-      ValueChanged<String>? onChanged, // << ADDED
+      final GestureTapCallback? onTap,
+      final ValueChanged<String>? onChanged,
+
+
     }) {
 
   return SizedBox(
@@ -476,6 +479,8 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               hintText: hintTex,
+              onTap: onTap,
+              onChanged: onChanged,
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
@@ -483,8 +488,7 @@ Widget labeledTextField(
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
-              borderWidth: borderWidth,
-              onChanged: onChanged,          // << ADDED
+              borderWidth: borderWidth,       // << ADDED
               onSubmitted: (_) =>
                   FocusScope.of(context).nextFocus(),
             ),
