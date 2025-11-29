@@ -18,6 +18,11 @@ class SuggestionController extends GetxController {
   var inputText = ''.obs;
   final selectedTextController = TextEditingController();
 
+
+  void updateKeys() {
+    suggestionItemKeys = List.generate(allListData.length, (_) => GlobalKey());
+  }
+
   void onInputChanged(String value) {
     inputText.value = value;
     if (value.isEmpty) {
@@ -186,12 +191,15 @@ class SuggestionController extends GetxController {
 
   RxInt suggestionSelectedIndex = 0.obs;
 
-  void tapSelect(int index) {
-    if (allListData.isEmpty) return;
+  Future<dynamic> tapSelect(int index) async {
+    if (allListData.isEmpty) return null;
+
     final selected = allListData[index];
+
     allListData.clear();
     highlightedIndex.value = 0;
-    update();
+
+    return selected;
   }
 
 }

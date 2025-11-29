@@ -23,6 +23,8 @@ import '../../../tabbarview.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
+import '../models/users_phone_numbers_model.dart';
+
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
@@ -845,6 +847,47 @@ class DashboardController extends GetxController {
       update();
     }
   }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
+
+  Timer? _phoneNumberBebounce;
+  // 👇 ye function har baar text change hone par call hoga
+  Future<void> onPhoneNoChangeHandler(
+      {required String fieldName, required String searchingText}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay]
+    selectedTextFieldsValue.value = "";
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _phoneNumberBebounce = Timer(duration, () {
+      _stopPhoneNoTyping(fieldName: fieldName, searchingText: searchingText);
+    });
+  }
+
+  void _stopPhoneNoTyping({required String fieldName, required String searchingText}) {
+    // 👇 Yahan API call ya search function call karna hai
+    getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
+  }
+
+  GetPhoneNumbersModel? customerPhoneNumber;
+
+  getPhoneNumberOfUSers({fieldsName,searchingText}) async{
+    dashboardDataLoader(true);
+    var response = await Api().get("customers/search?mobile=$searchingText");
+    if(response.statusCode == 200){
+      customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
+      SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
+          ? Get.find<SuggestionController>()
+          : Get.put(SuggestionController());
+      suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+      FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
+      selectedTextFieldsValue.value = fieldsName;
+      dashboardDataLoader(false);
+      update();
+    }
+  }
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
 

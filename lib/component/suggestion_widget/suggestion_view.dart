@@ -7,8 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class SuggestionView extends StatefulWidget {
-  SuggestionView({super.key, required this.allListData});
+  SuggestionView({super.key, required this.allListData,
+    required this.onSelect,
+  });
   List allListData = [].obs;
+  final Function(dynamic value) onSelect;
 
   @override
   State<SuggestionView> createState() => _SuggestionViewState();
@@ -25,6 +28,8 @@ class _SuggestionViewState extends State<SuggestionView> {
     // TODO: implement initState
     super.initState();
     controller.allListData = widget.allListData;
+    FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+    controller.updateKeys();
   }
 
   @override
@@ -42,6 +47,7 @@ class _SuggestionViewState extends State<SuggestionView> {
 
       double top = 0.0;
       double left = 0.0;
+      double right = 0.0;
       double width = screenWidth; // define early
 
       if (fieldBox != null && stackBox != null) {
@@ -49,12 +55,13 @@ class _SuggestionViewState extends State<SuggestionView> {
         width = fieldBox.size.width;
         top = localOffset.dy + fieldBox.size.height;
         left = localOffset.dx;
+        right = localOffset.dx;
       }
 
       return Positioned(
-        top: top,
-        left: left,
-        width: width,
+        top: screenHeight * 0.2,
+        left: width/3.5,
+        width: width/8,
         child: RawKeyboardListener(
           focusNode: controller.suggestionFocusNode,
           autofocus: true,
@@ -65,13 +72,16 @@ class _SuggestionViewState extends State<SuggestionView> {
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 controller.moveHighlightUp();
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                controller.tapSelect(controller.suggestionSelectedIndex.value);
+                final data = controller.tapSelect(controller.suggestionSelectedIndex.value);
+                print(data);
+                widget.onSelect(data);
                 print("Enter pressed");
               }
             }
           },
           child: Container(
             height: screenHeight * 0.3,
+            width: screenWidth * 0.3,
             decoration: BoxDecoration(
               color: const Color(0xFFEFF0F2),
               borderRadius: BorderRadius.circular(5),
@@ -86,13 +96,15 @@ class _SuggestionViewState extends State<SuggestionView> {
               padding: const EdgeInsets.only(top: 15),
               itemBuilder: (context, index) {
                 final item = controller.allListData[index];
-                final isHighlighted = controller.highlightedIndex.value == index;
+                // final isHighlighted = controller.highlightedIndex.value == index;
 
                 return Obx(() {
                   final isHighlighted = controller.highlightedIndex.value == index;
+                  print(item);
                   return Container(
                     key: controller.suggestionItemKeys[index],
                     color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                    width: screenWidth * 0.3,
                     child: ListTile(
                       dense: true,
                       visualDensity: VisualDensity.compact,
@@ -103,9 +115,13 @@ class _SuggestionViewState extends State<SuggestionView> {
                           fontWeight: isHighlighted ? FontWeight.bold : FontWeight.normal,
                           color: isHighlighted ? Colors.blue : Colors.black,
                         ),
-                        child: Text("${item.name} ${item.postcode}"),
+                        child: Text("${item.mobile}"),
                       ),
-                      onTap: () => controller.tapSelect(index),
+                        onTap: () async {
+                          final data = await controller.tapSelect(index);
+                          widget.onSelect(data);
+                          print("Selected value --> $data");
+                        }
                     ),
                   );
                 });
