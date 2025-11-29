@@ -250,8 +250,7 @@ class _BookingTableState extends State<BookingTable> {
                                 style: OutlinedButton.styleFrom(
                                   padding: EdgeInsets.zero,
                                   minimumSize: Size.zero,
-                                  tapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   side: BorderSide.none,
                                 ),
                                 onPressed: () {
@@ -300,7 +299,8 @@ class _BookingTableState extends State<BookingTable> {
 }
 
 
-List<TableSelectClass> tabList = [ 
+List<TableSelectClass> tabList = [
+
   TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs, dropDownList: [], deletedClr: false),
   TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
