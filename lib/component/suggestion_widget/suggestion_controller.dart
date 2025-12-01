@@ -191,14 +191,13 @@ class SuggestionController extends GetxController {
 
   RxInt suggestionSelectedIndex = 0.obs;
 
-  Future<dynamic> tapSelect(int index) async {
+  Future tapSelect(int index) async {
     if (allListData.isEmpty) return null;
 
     final selected = allListData[index];
 
     allListData.clear();
     highlightedIndex.value = 0;
-
     return selected;
   }
 

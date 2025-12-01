@@ -876,13 +876,15 @@ class DashboardController extends GetxController {
     dashboardDataLoader(true);
     var response = await Api().get("customers/search?mobile=$searchingText");
     if(response.statusCode == 200){
-      customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-      SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
-          ? Get.find<SuggestionController>()
-          : Get.put(SuggestionController());
-      suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-      FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
-      selectedTextFieldsValue.value = fieldsName;
+      if(response.data['customer'].isNotEmpty){
+        customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
+        SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
+            ? Get.find<SuggestionController>()
+            : Get.put(SuggestionController());
+        suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+        FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
+        selectedTextFieldsValue.value = fieldsName;
+      }
       dashboardDataLoader(false);
       update();
     }
