@@ -483,10 +483,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                onTap: (){
                                                                  shortCutKeyValue.value = "DROP LOCATION";
                                                                },
+
                                                                borderRadius: 4,
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "DROP LOCATION",searchingText: v);
                                                                },
+
                                                                prefixIcon: const Icon(
                                                                  Icons.location_pin,
                                                                  color: Colors.red,
@@ -520,6 +522,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        size: 15,
                                                                      ),
                                                                    ),
+
                                                                    KbdActivatable(
                                                                      focusNode: swap2FN,
                                                                      onActivate: () {
@@ -538,6 +541,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              ),
                                                            ),
                                                          ),
+
                                                        ),
                                                        Padding( padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                                          child: FocusTraversalOrder(
@@ -768,6 +772,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    }
                                                                  }
                                                                },
+
                                                                child: CustomTextField(
                                                                  key: controller.via2FieldKey,
                                                                  controller:
@@ -813,6 +818,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          SizedBox(
                                                              width: isMobile ? 0 : 10,
                                                              height: isMobile ? 10 : 0),
+
                                                          // (5) Select plot button
                                                          FocusTraversalOrder(
                                                            order: const NumericFocusOrder(11),

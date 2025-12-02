@@ -549,6 +549,7 @@ class DashboardController extends GetxController {
         ));
 
         // build bounds from the route or from markers (choose whichever you prefer)
+
         final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
         LatLngBounds bounds;

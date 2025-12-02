@@ -43,8 +43,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                 height: 8,
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
+                padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
                 child: Container(
                   width: Get.width,
                   decoration: BoxDecoration(
