@@ -2,6 +2,7 @@
 
 
 import 'package:dashboard_new1/component/suggestion_widget/suggestion_controller.dart';
+import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,9 +10,11 @@ import 'package:get/get.dart';
 class SuggestionView extends StatefulWidget {
   SuggestionView({super.key, required this.allListData,
     required this.onSelect,
+    this.topPositions,
   });
   List allListData = [].obs;
   final Function(dynamic value) onSelect;
+  double? topPositions;
 
   @override
   State<SuggestionView> createState() => _SuggestionViewState();
@@ -23,12 +26,16 @@ class _SuggestionViewState extends State<SuggestionView> {
       ? Get.find<SuggestionController>()
       : Get.put(SuggestionController());
 
+  DashboardController dashboardController = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     controller.allListData = widget.allListData;
-    FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+    // FocusScope.of(Get.context!).requestFocus(dashboardController.phoneNumberFieldKey);
     controller.updateKeys();
   }
 
@@ -60,12 +67,12 @@ class _SuggestionViewState extends State<SuggestionView> {
       }
 
       return Positioned(
-        top: screenHeight * 0.2,
+        top: widget.topPositions ??  screenHeight * 0.2,
         left: width/3.5,
         width: width/8,
         child: RawKeyboardListener(
-          focusNode: controller.suggestionFocusNode,
-          autofocus: true,
+          focusNode: dashboardController.suggestionPhoneFocusNode.value,
+          // autofocus: true,
           onKey: (RawKeyEvent event) async {
             if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
@@ -73,7 +80,7 @@ class _SuggestionViewState extends State<SuggestionView> {
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 controller.moveHighlightUp();
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                final data = await controller.tapSelect(controller.suggestionSelectedIndex.value);
+                final data = await controller.tapSelect(controller.highlightedIndex.value);
                 widget.onSelect(data);
               }
             }
@@ -99,7 +106,6 @@ class _SuggestionViewState extends State<SuggestionView> {
 
                 return Obx(() {
                   final isHighlighted = controller.highlightedIndex.value == index;
-                  print(item);
                   return Container(
                     key: controller.suggestionItemKeys[index],
                     color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
