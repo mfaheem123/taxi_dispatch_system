@@ -9,6 +9,7 @@ import '../../../component/color.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
 import '../Controller/dashboard_controller.dart';
+import '../models/dashboard_model.dart';
 import '../widgets/via_location.dart';
 import 'F8_widget_alert.dart';
 import 'F9_widget_alert.dart';
@@ -190,6 +191,30 @@ class FormShortCutKey extends StatelessWidget {
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
+                      ),
+                      DropdownButtonFormField<DashboardSubsidiaryObject>(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                        ),
+                        value: controller.selectSubsidiariesValue,
+                        items: controller.dashboardAllData!
+                            .subsidiaries!
+                            .map((subsidiaries) =>
+                            DropdownMenuItem<DashboardSubsidiaryObject>(
+                              value: subsidiaries,
+                              child: Text(subsidiaries.name ?? "",
+                                style: mozillaTextRegularText(
+                                  fontSize: 12,
+                                  color: DynamicColors.textClr,
+                                ),
+                              ),
+                            ))
+                            .toList(),
+                        onChanged: (v) {
+                          controller.selectSubsidiariesValue = v;
+                          controller.getAccountData(subsidiariesId: controller.selectSubsidiariesValue!.id);
+                        },
                       ),
                     ],
                   )

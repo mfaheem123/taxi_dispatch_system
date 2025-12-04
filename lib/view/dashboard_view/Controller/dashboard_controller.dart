@@ -20,6 +20,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../tabbarview.dart';
+import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
@@ -833,20 +834,32 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
   DashboardDataModel? dashboardAllData;
+  DashboardDriverObject? selectDriverValue;
+  DashboardSubsidiaryObject? selectSubsidiariesValue;
+
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async{
     dashboardDataLoader(true);
     var response = await Api().get("enumerations/get");
     if(response.statusCode == 200){
       dashboardAllData = DashboardDataModel.fromJson(response.data);
-      SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
-          ? Get.find<SuggestionController>()
-          : Get.put(SuggestionController());
-      suggestion_controller.allListData = dashboardAllData!.customers!;
       dashboardDataLoader(false);
       update();
     }
   }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get account data
+  DashboardAccountModel? dashboardAccountData;
+  DashboardAccountObject ? selectAccountValue;
+  getAccountData({subsidiariesId}) async{
+    var response = await Api().get("accounts/subsidiary/$subsidiariesId");
+    if(response.statusCode == 200){
+      dashboardAccountData = DashboardAccountModel.fromJson(response.data);
+      update();
+    }
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 

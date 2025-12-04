@@ -24,6 +24,8 @@ import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
+import '../models/account_darshboard_model.dart';
+import '../models/dashboard_model.dart';
 import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
 import '../widgets/time_picker_widget.dart';
@@ -76,9 +78,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // if(controller.dashboardAllData == null){
-    //   controller.dashboardData();
-    // }
+    if(controller.dashboardAllData == null){
+      controller.dashboardData();
+    }
   }
 
   @override
@@ -997,24 +999,36 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      isMobile: isMobile,
                                                      label: AppText.drv,
                                                      width: fieldWidth/2.3,
+                                                     heights: 35,
                                                      child: Container(
-                                                       height: 30,
+                                                       // height: 35,
                                                        decoration: BoxDecoration(
                                                          borderRadius: BorderRadius.circular(6),
                                                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                        ),
-                                                       child: // (8) Journey dropdown (O/W, R/N, W/R)
-                                                       RestrictedDrivers(
-                                                         width: fieldWidth/2.3,
-                                                         height: 30,
-                                                         padding: 0.0,
-                                                         titleText: controller.drvValue,
-                                                         driversList: [
-                                                           "25 GEORGE HAMPTON",
-                                                           "26 PAUL DOUBLEDAY",
-                                                           "27 RICHARD HARDWICK",
-                                                           "28 LANRE OKERJO",
-                                                         ],
+                                                       child: DropdownButtonFormField<DashboardDriverObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectDriverValue,
+                                                         items: controller.dashboardAllData!
+                                                             .drivers!
+                                                             .map((driver) =>
+                                                             DropdownMenuItem<DashboardDriverObject>(
+                                                               value: driver,
+                                                               child: Text(driver.name ?? "",
+                                                               style: mozillaTextRegularText(
+                                                                 fontSize: 12,
+                                                                 color: DynamicColors.textClr,
+                                                               ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectDriverValue = v;
+                                                           controller.update();
+                                                         },
                                                        ),
                                                      ),
                                                    ),
@@ -1054,19 +1068,36 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      isMobile: isMobile,
                                                      label: AppText.acc,
                                                      width: fieldWidth/2.3,
-                                                     child: SizedBox(
-                                                       height: 30,
-                                                       child: CustomTextField(
-                                                         hintText: "SELECT ACCOUNT",
-                                                         controller: controller.accountNoController,
-                                                         borderRadius: 6,
-                                                         inputFormatters: [
-                                                           FilteringTextInputFormatter.digitsOnly,
-                                                           LengthLimitingTextInputFormatter(6),
-                                                         ],
-                                                         keyboardType: TextInputType.number,
-                                                         textInputAction: TextInputAction.next,
-                                                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                     heights: 35,
+                                                     child: Container(
+                                                       // height: 35,
+                                                       decoration: BoxDecoration(
+                                                         borderRadius: BorderRadius.circular(6),
+                                                         border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                       ),
+                                                       child: DropdownButtonFormField<DashboardAccountObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectAccountValue,
+                                                         items: controller.dashboardAccountData!
+                                                             .accounts!
+                                                             .map((account) =>
+                                                             DropdownMenuItem<DashboardAccountObject>(
+                                                               value: account,
+                                                               child: Text(account.name ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectAccountValue = v;
+                                                           controller.update();
+                                                         },
                                                        ),
                                                      ),
                                                    ),
@@ -1474,7 +1505,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        isMobile: isMobile,
                                                        label: AppText.driver,
                                                        width: fieldWidth/2.3,
-                                                       child: Container(
+                                                       // child:  DropdownButtonFormField<ZoneObject>(
+                                                       //   decoration: const InputDecoration(
+                                                       //     border: OutlineInputBorder(),
+                                                       //     isDense: true,
+                                                       //   ),
+                                                       //   value: controller.zoneValue,
+                                                       //   items: controller.locationtypezoneModel!
+                                                       //       .zonesList!
+                                                       //       .map((zone) =>
+                                                       //       DropdownMenuItem<ZoneObject>(
+                                                       //         value: zone,
+                                                       //         child: Text(zone.name ?? ""),
+                                                       //       ))
+                                                       //       .toList(),
+                                                       //   onChanged: (v) {
+                                                       //     controller.zoneValue = v;
+                                                       //     controller.update();
+                                                       //   },
+                                                       // ),
+                                                      child: Container(
                                                          height: 30,
                                                          decoration: BoxDecoration(
                                                            borderRadius: BorderRadius.circular(4),

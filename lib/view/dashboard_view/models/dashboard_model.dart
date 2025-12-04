@@ -1,14 +1,12 @@
-
-
 // To parse this JSON data, do
 //
-//     final DashboardDataModel = DashboardDataModelFromJson(jsonString);
+//     final dashboardDataModel = dashboardDataModelFromJson(jsonString);
 
 import 'dart:convert';
 
-DashboardDataModel DashboardDataModelFromJson(String str) => DashboardDataModel.fromJson(json.decode(str));
+DashboardDataModel dashboardDataModelFromJson(String str) => DashboardDataModel.fromJson(json.decode(str));
 
-String DashboardDataModelToJson(DashboardDataModel data) => json.encode(data.toJson());
+String dashboardDataModelToJson(DashboardDataModel data) => json.encode(data.toJson());
 
 class DashboardDataModel {
   bool? status;
@@ -18,8 +16,8 @@ class DashboardDataModel {
   List<PaymentStatus>? paymentStatuses;
   List<PaymentType>? paymentTypes;
   List<VehicleType>? vehicleTypes;
-  List<Customer>? customers;
-  List<Subsidiary>? subsidiaries;
+  List<DashboardSubsidiaryObject>? subsidiaries;
+  List<DashboardDriverObject>? drivers;
 
   DashboardDataModel({
     this.status,
@@ -29,8 +27,8 @@ class DashboardDataModel {
     this.paymentStatuses,
     this.paymentTypes,
     this.vehicleTypes,
-    this.customers,
     this.subsidiaries,
+    this.drivers,
   });
 
   factory DashboardDataModel.fromJson(Map<String, dynamic> json) => DashboardDataModel(
@@ -41,8 +39,8 @@ class DashboardDataModel {
     paymentStatuses: List<PaymentStatus>.from(json["payment_statuses"].map((x) => PaymentStatus.fromJson(x))),
     paymentTypes: List<PaymentType>.from(json["payment_types"].map((x) => PaymentType.fromJson(x))),
     vehicleTypes: List<VehicleType>.from(json["vehicle_types"].map((x) => VehicleType.fromJson(x))),
-    customers: List<Customer>.from(json["customers"].map((x) => Customer.fromJson(x))),
-    subsidiaries: List<Subsidiary>.from(json["subsidiaries"].map((x) => Subsidiary.fromJson(x))),
+    subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
+    drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -53,8 +51,8 @@ class DashboardDataModel {
     "payment_statuses": List<dynamic>.from(paymentStatuses!.map((x) => x.toJson())),
     "payment_types": List<dynamic>.from(paymentTypes!.map((x) => x.toJson())),
     "vehicle_types": List<dynamic>.from(vehicleTypes!.map((x) => x.toJson())),
-    "customers": List<dynamic>.from(customers!.map((x) => x.toJson())),
-    "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x.toJson())),
+    "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x!.toJson())),
+    "drivers": List<dynamic>.from(drivers!.map((x) => x.toJson())),
   };
 }
 
@@ -98,111 +96,31 @@ class BookingType {
   };
 }
 
-class Customer {
+class DashboardDriverObject {
   int? id;
+  String? username;
   String? name;
   String? email;
-  String? mobile;
-  String? telephone;
-  dynamic fax;
-  String? doorNumber;
-  String? address1;
-  String? address2;
-  bool? blacklist;
-  dynamic blacklistReason;
-  String? notes;
-  dynamic username;
-  dynamic password;
-  dynamic webDeviceId;
-  dynamic mobileDeviceId;
-  dynamic emailVerificationCode;
-  dynamic mobileVerificationCode;
-  dynamic emailVerified;
-  dynamic mobileVerified;
-  dynamic emailVerifiedAt;
-  dynamic mobileVerifiedAt;
-  bool? smsFlag;
-  DateTime? createdAt;
 
-  Customer({
+  DashboardDriverObject({
     this.id,
+    this.username,
     this.name,
     this.email,
-    this.mobile,
-    this.telephone,
-    this.fax,
-    this.doorNumber,
-    this.address1,
-    this.address2,
-    this.blacklist,
-    this.blacklistReason,
-    this.notes,
-    this.username,
-    this.password,
-    this.webDeviceId,
-    this.mobileDeviceId,
-    this.emailVerificationCode,
-    this.mobileVerificationCode,
-    this.emailVerified,
-    this.mobileVerified,
-    this.emailVerifiedAt,
-    this.mobileVerifiedAt,
-    this.smsFlag,
-    this.createdAt,
   });
 
-  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+  factory DashboardDriverObject.fromJson(Map<String, dynamic> json) => DashboardDriverObject(
     id: json["id"],
+    username: json["username"],
     name: json["name"],
     email: json["email"],
-    mobile: json["mobile"],
-    telephone: json["telephone"],
-    fax: json["fax"],
-    doorNumber: json["door_number"],
-    address1: json["address1"],
-    address2: json["address2"],
-    blacklist: json["blacklist"],
-    blacklistReason: json["blacklist_reason"],
-    notes: json["notes"],
-    username: json["username"],
-    password: json["password"],
-    webDeviceId: json["web_device_id"],
-    mobileDeviceId: json["mobile_device_id"],
-    emailVerificationCode: json["email_verification_code"],
-    mobileVerificationCode: json["mobile_verification_code"],
-    emailVerified: json["email_verified"],
-    mobileVerified: json["mobile_verified"],
-    emailVerifiedAt: json["email_verified_at"],
-    mobileVerifiedAt: json["mobile_verified_at"],
-    smsFlag: json["sms_flag"],
-    createdAt: DateTime.parse(json["created_at"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
+    "username": username,
     "name": name,
     "email": email,
-    "mobile": mobile,
-    "telephone": telephone,
-    "fax": fax,
-    "door_number": doorNumber,
-    "address1": address1,
-    "address2": address2,
-    "blacklist": blacklist,
-    "blacklist_reason": blacklistReason,
-    "notes": notes,
-    "username": username,
-    "password": password,
-    "web_device_id": webDeviceId,
-    "mobile_device_id": mobileDeviceId,
-    "email_verification_code": emailVerificationCode,
-    "mobile_verification_code": mobileVerificationCode,
-    "email_verified": emailVerified,
-    "mobile_verified": mobileVerified,
-    "email_verified_at": emailVerifiedAt,
-    "mobile_verified_at": mobileVerifiedAt,
-    "sms_flag": smsFlag,
-    "created_at": createdAt!.toIso8601String(),
   };
 }
 
@@ -278,127 +196,31 @@ class PaymentType {
   };
 }
 
-class Subsidiary {
+class DashboardSubsidiaryObject {
   int? id;
-  dynamic logo;
   String? backgroundColor;
   String? foregroundColor;
   String? name;
-  String? telephoneNumber;
-  String? emergencyContactNumber;
-  String? email;
-  String? fax;
-  String? website;
-  String? address;
-  String? sortCode;
-  String? accountNumber;
-  String? accountTitle;
-  String? bank;
-  String? companyNumber;
-  String? vatNumber;
-  String? iban;
-  String? balance;
-  String? currency;
-  String? webAccessToken;
-  String? mobileAccessToken;
-  int? maximumDrivers;
-  int? activeDrivers;
-  double? addressLatitude;
-  double? addressLongitude;
-  DateTime? createdAt;
-  DateTime? updatedAt;
 
-  Subsidiary({
+  DashboardSubsidiaryObject({
     this.id,
-    this.logo,
     this.backgroundColor,
     this.foregroundColor,
     this.name,
-    this.telephoneNumber,
-    this.emergencyContactNumber,
-    this.email,
-    this.fax,
-    this.website,
-    this.address,
-    this.sortCode,
-    this.accountNumber,
-    this.accountTitle,
-    this.bank,
-    this.companyNumber,
-    this.vatNumber,
-    this.iban,
-    this.balance,
-    this.currency,
-    this.webAccessToken,
-    this.mobileAccessToken,
-    this.maximumDrivers,
-    this.activeDrivers,
-    this.addressLatitude,
-    this.addressLongitude,
-    this.createdAt,
-    this.updatedAt,
   });
 
-  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+  factory DashboardSubsidiaryObject.fromJson(Map<String, dynamic> json) => DashboardSubsidiaryObject(
     id: json["id"],
-    logo: json["logo"],
     backgroundColor: json["background_color"],
     foregroundColor: json["foreground_color"],
     name: json["name"],
-    telephoneNumber: json["telephone_number"],
-    emergencyContactNumber: json["emergency_contact_number"],
-    email: json["email"],
-    fax: json["fax"],
-    website: json["website"],
-    address: json["address"],
-    sortCode: json["sort_code"],
-    accountNumber: json["account_number"],
-    accountTitle: json["account_title"],
-    bank: json["bank"],
-    companyNumber: json["company_number"],
-    vatNumber: json["vat_number"],
-    iban: json["iban"],
-    balance: json["balance"],
-    currency: json["currency"],
-    webAccessToken: json["web_access_token"],
-    mobileAccessToken: json["mobile_access_token"],
-    maximumDrivers: json["maximum_drivers"],
-    activeDrivers: json["active_drivers"],
-    addressLatitude: json["address_latitude"].toDouble(),
-    addressLongitude: json["address_longitude"].toDouble(),
-    createdAt: DateTime.parse(json["created_at"]),
-    updatedAt: DateTime.parse(json["updated_at"]),
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "logo": logo,
     "background_color": backgroundColor,
     "foreground_color": foregroundColor,
     "name": name,
-    "telephone_number": telephoneNumber,
-    "emergency_contact_number": emergencyContactNumber,
-    "email": email,
-    "fax": fax,
-    "website": website,
-    "address": address,
-    "sort_code": sortCode,
-    "account_number": accountNumber,
-    "account_title": accountTitle,
-    "bank": bank,
-    "company_number": companyNumber,
-    "vat_number": vatNumber,
-    "iban": iban,
-    "balance": balance,
-    "currency": currency,
-    "web_access_token": webAccessToken,
-    "mobile_access_token": mobileAccessToken,
-    "maximum_drivers": maximumDrivers,
-    "active_drivers": activeDrivers,
-    "address_latitude": addressLatitude,
-    "address_longitude": addressLongitude,
-    "created_at": createdAt!.toIso8601String(),
-    "updated_at": updatedAt!.toIso8601String(),
   };
 }
 

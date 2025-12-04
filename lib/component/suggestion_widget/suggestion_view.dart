@@ -11,10 +11,12 @@ class SuggestionView extends StatefulWidget {
   SuggestionView({super.key, required this.allListData,
     required this.onSelect,
     this.topPositions,
+    this.leftPositions,
   });
   List allListData = [].obs;
   final Function(dynamic value) onSelect;
   double? topPositions;
+  double? leftPositions;
 
   @override
   State<SuggestionView> createState() => _SuggestionViewState();
@@ -68,7 +70,7 @@ class _SuggestionViewState extends State<SuggestionView> {
 
       return Positioned(
         top: widget.topPositions ??  screenHeight * 0.2,
-        left: width/3.5,
+        left: widget.leftPositions ?? width/3.5,
         width: width/8,
         child: RawKeyboardListener(
           focusNode: dashboardController.suggestionPhoneFocusNode.value,
@@ -80,6 +82,15 @@ class _SuggestionViewState extends State<SuggestionView> {
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 controller.moveHighlightUp();
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                print("controller.highlightedIndex.value");
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
+                print(controller.highlightedIndex.value);
                 final data = await controller.tapSelect(controller.highlightedIndex.value);
                 widget.onSelect(data);
               }
