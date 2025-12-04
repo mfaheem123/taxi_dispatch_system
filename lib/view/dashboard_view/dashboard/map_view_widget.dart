@@ -451,6 +451,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                                       : DynamicColors.primaryClr,
                                 ),
                               ),
+
                               Expanded(
                                 child: RowButtonWidgetMap(
                                   onTap: () {
@@ -470,6 +471,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                               ),
                             ],
                           ),
+
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Padding(

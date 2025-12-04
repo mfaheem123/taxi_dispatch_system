@@ -946,7 +946,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        borderRadius: 3,
                                                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                                        onChanged: (v){
+                                                       if(v.isNotEmpty){
                                                          controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
+                                                       }
                                                        },
                                                        width: fieldWidth/2.3,
                                                      )
@@ -1661,11 +1663,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         Obx(() {
                           if (controller.selectedTextFieldsValue.value == "via") return const SizedBox();
                           if (controller.selectedTextFieldsValue.value == "Phone Number") {
-                            return SuggestionView(allListData: controller.customerPhoneNumber!.customerInfo!,
+                            return SuggestionView(
+                              allListData: controller.customerPhoneNumber!.customerInfo!,
                               onSelect: (value) {
+                                controller.selectedTextFieldsValue.value = "";
                                 FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
-                                print("Selected Phone Number: $value");
-                                controller.mobileController.text = value.mobile;   // <-- store anywhere
+                                controller.mobileController.text = value.mobile.toString();   // <-- store anywhere
+                                controller.nameController.text = value.name.toString();
                               },
                             );
                           }

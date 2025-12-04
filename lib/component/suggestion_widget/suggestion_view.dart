@@ -37,9 +37,10 @@ class _SuggestionViewState extends State<SuggestionView> {
 
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
     return Obx(() {
-      if (controller.allListData.isEmpty) return const SizedBox();
+      if (controller.allListData.isEmpty) {
+        return const SizedBox();
+      }
 
       final activeKey = controller.activeFieldKey.value;
       final fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
@@ -65,17 +66,15 @@ class _SuggestionViewState extends State<SuggestionView> {
         child: RawKeyboardListener(
           focusNode: controller.suggestionFocusNode,
           autofocus: true,
-          onKey: (RawKeyEvent event) {
+          onKey: (RawKeyEvent event) async {
             if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
                 controller.moveHighlightDown();
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 controller.moveHighlightUp();
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
-                final data = controller.tapSelect(controller.suggestionSelectedIndex.value);
-                print(data);
+                final data = await controller.tapSelect(controller.suggestionSelectedIndex.value);
                 widget.onSelect(data);
-                print("Enter pressed");
               }
             }
           },
