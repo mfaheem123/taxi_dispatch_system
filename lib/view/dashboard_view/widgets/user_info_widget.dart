@@ -412,10 +412,11 @@ Widget labeledField({
   required String label,
   required Widget child,
   required double width,
+   double? heights,
   bool column = false,
 }) {
   return SizedBox(
-    height: column == true ? null : 30,
+    height: column == true ? null : heights??30,
     child: column == true? Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

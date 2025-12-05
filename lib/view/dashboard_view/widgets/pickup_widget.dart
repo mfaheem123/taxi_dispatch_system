@@ -524,22 +524,16 @@ class _PickupWidgetState extends State<PickupWidget> {
                                   focusNode: controller.dropOffTextFieldFocusNode,
                                   hintText: 'DROP LOCATION',
                                   borderRadius: 4,
-                                  prefixIcon: const Icon(Icons.location_pin,
-                                      color: Colors.red,size: 20,),
+                                  prefixIcon: const Icon(Icons.location_pin, color: Colors.red,size: 20,),
                                   textInputAction: TextInputAction.next,
-                                  onSubmitted: (_) =>
-                                      FocusScope.of(context).nextFocus(),
+                                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                   suffixIcon: KbdActivatable(
                                     focusNode: swap2FN,
                                     onActivate: () {
-                                      String tempPic =
-                                          controller.viaLocation1Controller.text;
-                                      String tempDrop =
-                                          controller.viaLocation2Controller.text;
-                                      controller.viaLocation1Controller.text =
-                                          tempDrop;
-                                      controller.viaLocation2Controller.text =
-                                          tempPic;
+                                      String tempPic = controller.viaLocation1Controller.text;
+                                      String tempDrop = controller.viaLocation2Controller.text;
+                                      controller.viaLocation1Controller.text = tempDrop;
+                                      controller.viaLocation2Controller.text = tempPic;
                                       controller.update();
                                     },
                                     child: const Icon(Icons.swap_vert,

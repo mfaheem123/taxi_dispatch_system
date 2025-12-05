@@ -1011,8 +1011,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               width: fieldWidth,
                                               height: 30,
                                               child: CustomTextField(
-                                                controller:
-                                                    TextEditingController(),
+                                                controller: TextEditingController(),
                                                 hintText: "DROP NOTES",
                                                 borderRadius: 6,
                                                 textInputAction:
@@ -1062,46 +1061,61 @@ class _CreateBookingState extends State<CreateBooking> {
                                         width: fieldWidth / 2.3,
                                         textInputAction: TextInputAction.next),
                                   ),
-                                  FocusTraversalOrder(
-                                    order: const NumericFocusOrder(3),
-                                    child: RawKeyboardListener(
-                                        focusNode: controller.phoneKeyboardFocusNode,
-                                        onKey: (event) {
-                                          if (event is RawKeyDownEvent) {
-                                            if (event.logicalKey ==
-                                                LogicalKeyboardKey.arrowDown &&
-                                                suggestion_controller.highlightedIndex.value <
-                                                    suggestion_controller.allListData.length - 1) {
-                                              controller.highlightedIndex.value++;
-                                            } else if (event.logicalKey ==
-                                                LogicalKeyboardKey.arrowUp &&
-                                                suggestion_controller.highlightedIndex.value >
-                                                    0) {
-                                              suggestion_controller.highlightedIndex.value--;
-                                            } else if (event.logicalKey ==
-                                                LogicalKeyboardKey.enter) {
-                                              final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
-                                              suggestion_controller.selectSuggestion(selected);
-                                            }else if(event.logicalKey == LogicalKeyboardKey.arrowDown
-                                                || event.logicalKey == LogicalKeyboardKey.arrowUp
-                                                || event.logicalKey == LogicalKeyboardKey.tab){
-                                              FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode.value);
-                                            }
-                                          }
-                                        },
-                                        child: CustomTextField(
-                                          focusNode: controller.phoneNumberFieldKey,
-                                          controller: controller.mobileController,
-                                          hintText: AppText.mobile,
-                                          borderRadius: 3,
-                                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                          onChanged: (v){
-                                            if(v.isNotEmpty){
-                                              controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
-                                            }
-                                          },
-                                          width: fieldWidth/2.3,
-                                        )
+                                  SizedBox(
+                                    width: fieldWidth/1.8,
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 6.0),
+                                          child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                        ),
+                                        FocusTraversalOrder(
+                                          order: const NumericFocusOrder(15),
+                                          child: RawKeyboardListener(
+                                              focusNode: controller.phoneKeyboardFocusNode,
+                                              onKey: (event) {
+                                                if (event is RawKeyDownEvent) {
+                                                  if (event.logicalKey ==
+                                                      LogicalKeyboardKey.arrowDown &&
+                                                      suggestion_controller.highlightedIndex.value <
+                                                          suggestion_controller.allListData.length - 1) {
+                                                    suggestion_controller.highlightedIndex.value++;
+                                                  } else if (event.logicalKey ==
+                                                      LogicalKeyboardKey.arrowUp &&
+                                                      suggestion_controller.highlightedIndex.value >
+                                                          0) {
+                                                    suggestion_controller.highlightedIndex.value--;
+                                                  } else if (event.logicalKey ==
+                                                      LogicalKeyboardKey.enter) {
+                                                    final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
+                                                    suggestion_controller.selectSuggestion(selected);
+                                                  }else if(event.logicalKey == LogicalKeyboardKey.arrowDown
+                                                      || event.logicalKey == LogicalKeyboardKey.arrowUp
+                                                      || event.logicalKey == LogicalKeyboardKey.tab){
+                                                    FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
+                                                    FocusScope.of(Get.context!).requestFocus(controller.suggestionPhoneFocusNode.value);
+                                                    controller.update();
+                                                    // FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode.value);
+                                                  }
+                                                }
+                                              },
+                                              child: CustomTextField(
+                                                focusNode: controller.phoneNumberFieldKey,
+                                                controller: controller.mobileController,
+                                                // hintText: AppText.mobile,
+                                                borderRadius: 3,
+                                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                                onChanged: (v){
+                                                  if(v.isNotEmpty){
+                                                    FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
+                                                    controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
+                                                  }
+                                                },
+                                                width: fieldWidth/2.3,
+                                              )
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
 
@@ -1388,6 +1402,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           "Switch toggled: ${controller.switchController.value}");
                                     },
                                   ),
+
                                   Text(
                                     AppText.quotation,
                                     style: mozillaTextSemiBoldText(
@@ -1943,7 +1958,9 @@ class _CreateBookingState extends State<CreateBooking> {
                               return SuggestionView(
                                 allListData: controller.customerPhoneNumber!.customerInfo!,
                                 topPositions: MediaQuery.of(context).size.height * 0.125,
+                                leftPositions: Get.width/3.3,
                                 onSelect: (value) {
+                                  controller.suggestionPhoneFocusNode.value.unfocus();
                                   controller.selectedTextFieldsValue.value = "";
                                   FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
                                   controller.mobileController.text = value.mobile.toString();   // <-- store anywhere
