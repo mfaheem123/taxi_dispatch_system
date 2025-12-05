@@ -10,6 +10,7 @@ class ContactAlert {
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
         : Get.put(AccountController());
+
     int? editingIndex;
 
     Get.dialog(
@@ -21,6 +22,7 @@ class ContactAlert {
           child: StatefulBuilder(
             builder: (context, setState) {
               void saveRow() {
+                
                 if (controller.contactAlertNameCtrl.text.isEmpty &&
                     controller.contactAlertEmailCtrl.text.isEmpty &&
                     controller.contactAlertPasswordCtrl.text.isEmpty &&
@@ -29,7 +31,6 @@ class ContactAlert {
 
                 setState(() {
                   if (editingIndex == null) {
-
                     rows.add({
                       "name": controller.contactAlertNameCtrl.text,
                       "email": controller.contactAlertEmailCtrl.text,

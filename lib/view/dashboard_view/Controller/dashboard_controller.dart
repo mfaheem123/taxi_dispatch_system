@@ -856,7 +856,7 @@ class DashboardController extends GetxController {
   Future<void> onPhoneNoChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay]
-    selectedTextFieldsValue.value = "";
+    // selectedTextFieldsValue.value = "";
     // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
     if (_phoneNumberBebounce?.isActive ?? false) _phoneNumberBebounce!.cancel();
 
@@ -872,6 +872,7 @@ class DashboardController extends GetxController {
   }
 
   GetPhoneNumbersModel? customerPhoneNumber;
+  final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
 
   getPhoneNumberOfUSers({fieldsName,searchingText}) async{
     dashboardDataLoader(true);
@@ -883,7 +884,8 @@ class DashboardController extends GetxController {
             ? Get.find<SuggestionController>()
             : Get.put(SuggestionController());
         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-        FocusScope.of(Get.context!).requestFocus(suggestion_controller.suggestionFocusNode);
+        FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
+        // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
         selectedTextFieldsValue.value = fieldsName;
       }
       dashboardDataLoader(false);
@@ -1031,6 +1033,7 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all drivers
+  final FocusNode phoneNumberFieldKey = FocusNode();
   List<DriverObject> driversList = [];
   RestricDriverModel? allDriverData;
   DriverObject? selectDriverObject;

@@ -14,12 +14,14 @@ class SuggestionController extends GetxController {
 
   final activeFieldKey = Rx<GlobalKey?>(null);
   final stackKey = GlobalKey();
-  final suggestionFocusNode = FocusNode();
+  final Rx<FocusNode> suggestionFocusNode = FocusNode().obs;
   var inputText = ''.obs;
   final selectedTextController = TextEditingController();
 
 
   void updateKeys() {
+
+    // FocusScope.of(Get.context!).requestFocus(suggestionFocusNode.value);
     suggestionItemKeys = List.generate(allListData.length, (_) => GlobalKey());
   }
 
@@ -189,7 +191,6 @@ class SuggestionController extends GetxController {
   }
 
 
-  RxInt suggestionSelectedIndex = 0.obs;
 
   Future tapSelect(int index) async {
     if (allListData.isEmpty) return null;
