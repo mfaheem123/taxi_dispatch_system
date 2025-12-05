@@ -192,29 +192,38 @@ class FormShortCutKey extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      DropdownButtonFormField<DashboardSubsidiaryObject>(
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                        ),
-                        value: controller.selectSubsidiariesValue,
-                        items: controller.dashboardAllData!
-                            .subsidiaries!
-                            .map((subsidiaries) =>
-                            DropdownMenuItem<DashboardSubsidiaryObject>(
-                              value: subsidiaries,
-                              child: Text(subsidiaries.name ?? "",
-                                style: mozillaTextRegularText(
-                                  fontSize: 12,
-                                  color: DynamicColors.textClr,
+                      SizedBox(
+                        width: 8,
+                      ),
+                      SizedBox(
+                        width: 200,
+                        height: 35,
+                        child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                            filled: true,
+                            fillColor: DynamicColors.whiteClr
+                          ),
+                          value: controller.selectSubsidiariesValue,
+                          items: controller.dashboardAllData!
+                              .subsidiaries!
+                              .map((subsidiaries) =>
+                              DropdownMenuItem<DashboardSubsidiaryObject>(
+                                value: subsidiaries,
+                                child: Text(subsidiaries.name ?? "",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 12,
+                                    color: DynamicColors.textClr,
+                                  ),
                                 ),
-                              ),
-                            ))
-                            .toList(),
-                        onChanged: (v) {
-                          controller.selectSubsidiariesValue = v;
-                          controller.getAccountData(subsidiariesId: controller.selectSubsidiariesValue!.id);
-                        },
+                              ))
+                              .toList(),
+                          onChanged: (v) {
+                            controller.selectSubsidiariesValue = v;
+                            controller.getAccountData(subsidiariesId: controller.selectSubsidiariesValue!.id);
+                          },
+                        ),
                       ),
                     ],
                   )

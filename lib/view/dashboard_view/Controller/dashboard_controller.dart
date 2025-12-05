@@ -836,6 +836,7 @@ class DashboardController extends GetxController {
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardSubsidiaryObject? selectSubsidiariesValue;
+  DashboardVehicleTypeObject? selectVehicleValue;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async{
