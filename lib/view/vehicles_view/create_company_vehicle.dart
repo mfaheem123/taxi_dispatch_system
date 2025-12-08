@@ -336,14 +336,16 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               column: true,
               label: AppText.insuranceExpiry,
               width: fieldWidth/1.5,
-              child: SizedBox(height: 30, child: CustomTimePicker(
+              child: SizedBox(height: 30, child:
+              CustomTimePicker(
                 controller: controller.insuranceExpiryTimeController, // optional
                 onTimeSelected: (time) {
                   setState(() {
                     print(controller.insuranceExpiryTimeController.text);
                   });
                 },
-              )),
+              )
+              ),
             ),
             CustomTextField(
               borderRadius: 4,

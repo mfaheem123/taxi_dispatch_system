@@ -250,7 +250,21 @@ class VehicleController extends GetxController {
       if (searchColor.value.isNotEmpty) query += '&color=${searchColor.value}';
       print("API Query: company-vehicles/ge?$query");
       isCompanyVehicle.value = true;
-      final response = await Api().get('company-vehicles/get?$query');
+
+      final response = await Api().get('company-vehicles/get?$query',
+      // queryParameters: {
+      //     "page": companycurrentPage.value,
+      //     "limit": companylimit,
+      //     "vehicle_number" : vehicle_number.value,
+      //     "page" : vehicle_type.value,
+      //     "page" : vehicle_number.value,
+      //     "page" : vehicle_number.value,
+      //     "page" : vehicle_number.value,
+
+
+
+      // }
+      );
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);
         companytotalPages.value = companyVehicleModel?.totalPages ?? 1;

@@ -113,7 +113,8 @@ class CustomerController extends GetxController {
   final keyWordsController = TextEditingController();
   getCustomer() async {
     customerLoader(true);
-    var response = await Api().get("customers/get?", queryParameters: {
+    var response = await Api().get("customers/get?", 
+    queryParameters: {
       'blacklist': blackList.value,
       'limit': limit,
       "name": searchName.value.toLowerCase(),
@@ -121,7 +122,8 @@ class CustomerController extends GetxController {
       "telephone": searchTele.value.toLowerCase(),
       "email": searchEmail.value.toLowerCase(),
       "address1": searchAddress.value.toLowerCase(),
-    });
+    }
+    );
     if (response.statusCode == 200) {
       getCustomerModel = GetCustomerModel.fromJson(response.data);
       totalPages.value = getCustomerModel?.totalPages ?? 1;

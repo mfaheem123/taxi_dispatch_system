@@ -483,8 +483,8 @@ class FareController extends GetxController {
   String? fareConfiguration = "NORMAL";
 
   /// TextEditingControllers
-  final fromDayController = TextEditingController(text: "09:08 AM");
-  final toDayController = TextEditingController(text: "09:08 AM");
+  final fromDayController = TextEditingController(text: "09:08 ");
+  final toDayController = TextEditingController(text: "09:08 ");
   final startingFareController = TextEditingController();
   final startingMilesController = TextEditingController();
   final titleController = TextEditingController();
