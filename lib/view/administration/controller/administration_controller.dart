@@ -1,10 +1,13 @@
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
-import 'package:dashboard_new1/view/administration/model/user_model.dart';
+import 'package:dashboard_new1/view/administration/model/user_model.dart' hide Role;
+import 'package:dio/dio.dart' as dio show MultipartFile;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../model/get_role.dart';
 
 class AdministrationController extends GetxController {
   /// RxBool variable
@@ -12,18 +15,7 @@ class AdministrationController extends GetxController {
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
 
-  RxBool activeValue = false.obs;
-  final FocusNode activeNode = FocusNode();
-  RxBool alldriversValue = false.obs;
-  final FocusNode alldriversNode = FocusNode();
-  RxBool allbookingValue = false.obs;
-  final FocusNode allbookingNode = FocusNode();
-  RxBool accuntValue = false.obs;
-  final FocusNode accuntNode = FocusNode();
-  RxBool receviverValue = false.obs;
-  final FocusNode receviverNode = FocusNode();
-  RxBool transferValue = false.obs;
-  final FocusNode transferNode = FocusNode();
+
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List subsDiary api
 
@@ -40,6 +32,9 @@ class AdministrationController extends GetxController {
   RxString searchSubsiDiaryTelephone = ''.obs;
   RxString searchSubsiDiaryAddress = ''.obs;
   RxString searchSibsiDiaryFax = ''.obs;
+
+
+  Subsidiaries? selectedSubsidiary;
 
   Future<void> listSubsDiary() async {
     try {
@@ -99,8 +94,8 @@ class AdministrationController extends GetxController {
   RxString searchUserFax = ''.obs;
   RxString searchUserRole = ''.obs;
   RxString searchUserSubsiDiary = ''.obs;
-  Future<void> userData() async {
-    try {
+  userData() async {
+
       userLoading.value = true;
       String query = 'page=${userCurrentPage.value}&limit=$userLlimit';
       if (searchUserName.value.isNotEmpty)
@@ -125,12 +120,9 @@ class AdministrationController extends GetxController {
         print('User data ${UserModel}');
         print('User data ${response.data}');
       }
-    } catch (e) {
-      print("Error in User: $e");
-    } finally {
       userLoading.value = false;
       update();
-    }
+
   }
   void userSearch() {
     userCurrentPage.value = 1;
@@ -186,7 +178,13 @@ class AdministrationController extends GetxController {
   RxBool isLoadVehicleType = false.obs;
   createSubsiDiary() async {
     isLoadVehicleType.value = false;
-
+    var multipartFile;
+    if (profileImg != null) {
+      multipartFile = dio.MultipartFile.fromBytes(
+        profileImg!.bytes,
+        filename: profileImg!.name,
+      );
+    }
     var formData = {
       'name': nameController.text,
       'background_color':
@@ -213,7 +211,8 @@ class AdministrationController extends GetxController {
       'maximum_drivers': '50',
       'active_drivers': '10',
       'address_latitude': '51.5074',
-      'address_longitude': '-0.1278'
+      'address_longitude': '-0.1278',
+      if (multipartFile != null) "image": multipartFile!
     };
 
     var response = await Api().post(formData, 'subsidiaries/add', auth: true);
@@ -235,4 +234,88 @@ class AdministrationController extends GetxController {
       print("response of body -------------------------${response.data}");
     }
   }
+
+
+//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create User
+
+  RxBool activeValue = false.obs;
+  final FocusNode activeNode = FocusNode();
+  RxBool alldriversValue = false.obs;
+  final FocusNode alldriversNode = FocusNode();
+  RxBool allbookingValue = false.obs;
+  final FocusNode allbookingNode = FocusNode();
+  RxBool accuntValue = false.obs;
+  final FocusNode accuntNode = FocusNode();
+  RxBool receviverValue = false.obs;
+  final FocusNode receviverNode = FocusNode();
+  RxBool transferValue = false.obs;
+  final FocusNode transferNode = FocusNode();
+
+  RxBool userRoleLoading = false.obs;
+  GetRole? getRole;
+  Role? selectedRole;
+
+  @override
+  void onInit() {
+    super.onInit();
+    getRoleUser();   // <--- API call yahan se hoga
+    listSubsDiary();
+  }
+  getRoleUser() async {
+    userRoleLoading.value = true;   // <-- IMPORTANT
+      final response = await Api().get('roles');
+      if (response.statusCode == 200) {
+        getRole = GetRole.fromJson(response.data);
+        print("Response of dropdown: $getRole");
+      }
+    userRoleLoading.value = false;
+    update();
+  }
+
+  String? selectRoleUser = "SELECT ROLE";
+  final userNameController = TextEditingController();
+  final userEmailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmController = TextEditingController();
+  final phoneController = TextEditingController();
+  final faxUserController = TextEditingController();
+
+  RxBool isLoadUser = false.obs;
+  createUser() async {
+    isLoadVehicleType.value = true;
+    var formData = {
+      'subsidiary_id': selectedSubsidiary!.id,
+      'role_id': selectedRole!.id,
+      'username': userNameController.text,
+      'password': passwordController.text,
+      'confirmpassword': confirmController.text,
+      'email': userEmailController.text,
+      'phone': phoneController.text,
+      'fax': faxUserController.text,
+      'release_note_viewed': 'true',
+      'active': activeValue.value,
+      'alldrivers': alldriversValue.value,
+      'allbookings': allbookingValue.value,
+      'allaccounts': accuntValue.value,
+      'callreceiver': receviverValue.value,
+      'allowtransferbookings': transferValue.value,
+
+    };
+    var response = await Api().post(formData, 'employees/add', auth: true);
+    if (response.statusCode == 200) {
+      userNameController.clear();
+      passwordController.clear();
+      confirmController.clear();
+      userEmailController.clear();
+      phoneController.clear();
+      faxUserController.clear();
+      update();
+      Text("Saved Successfully");
+      print("response of body -------------------------${response.data}");
+    }
+
+    isLoadVehicleType.value = false;
+  }
+
+
 }
