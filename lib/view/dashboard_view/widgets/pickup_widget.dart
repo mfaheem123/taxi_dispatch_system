@@ -131,14 +131,10 @@ class _PickupWidgetState extends State<PickupWidget> {
                                 suffixIcon: KbdActivatable(
                                   focusNode: swap1FN,
                                   onActivate: () {
-                                    String tempPic =
-                                        controller.pickupController.text;
-                                    String tempDrop =
-                                        controller.dropOffController.text;
-                                    controller.pickupController.text =
-                                        tempDrop;
-                                    controller.dropOffController.text =
-                                        tempPic;
+                                    String tempPic = controller.pickupController.text;
+                                    String tempDrop = controller.dropOffController.text;
+                                    controller.pickupController.text = tempDrop;
+                                    controller.dropOffController.text = tempPic;
                                     controller.update();
                                   },
                                   child: const Icon(Icons.swap_vert,

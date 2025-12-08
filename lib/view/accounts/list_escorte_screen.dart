@@ -80,8 +80,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                     verticalPadding: 0.0,
                     borderRadius: 4,
                     widget: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
                       child: Icon(
                         Icons.refresh,
                         color: DynamicColors.whiteClr,
@@ -157,11 +156,9 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                 ),
                               ),
                               DataCell(Center(child: Text(item.name!))),
-                              DataCell(Center(
-                                  child: Text(item.safeguardingExpiry!))),
+                              DataCell(Center(child: Text(item.safeguardingExpiry!))),
                               DataCell(Center(child: Text(item.patExpiry!))),
-                              DataCell(
-                                  Center(child: Text(item.firstaidExpiry!))),
+                              DataCell(Center(child: Text(item.firstaidExpiry!))),
                               DataCell(Center(child: Text(item.dbsExpiry!))),
                               DataCell(
                                 Row(
@@ -202,7 +199,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                       ),
                     ),
                   ),
-            PaginationWidget(
+                 PaginationWidget(
                 currentPage: controller.escortCurrentPage.value,
                 totalPages: controller.escortTotalPages.value,
                 onPageChange: controller.PageEscort)

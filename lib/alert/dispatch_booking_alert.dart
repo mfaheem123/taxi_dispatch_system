@@ -61,7 +61,9 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                 )
               ],
             ),
+
             Divider(),
+
             Container(
               decoration: BoxDecoration(
                   color: DynamicColors.gryClr.withOpacity(0.4)
@@ -78,6 +80,7 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: 115,
                     child: Text(AppText.name,
@@ -117,6 +120,7 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: 80,
                     child: Text(""
@@ -125,6 +129,7 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                 ],
               ),
             ),
+
             SizedBox(
               height: 220,
               child: ListView.builder(
@@ -137,20 +142,18 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                   children: [
                     Row(
                       children: [
-
                         SizedBox(
                           width: 50,
                           child: Text("29",
                             style: mozillaTextRegularText(
                               fontSize: 11,
                             ),
-                          ),
+                          ), 
                         ),
 
                         SizedBox(
                           width: 115,
                           child: Text("NICOLAS GREY",
-
                             style: mozillaTextRegularText(
                               fontSize: 11,
                             ),

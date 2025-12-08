@@ -867,18 +867,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        width: fieldWidth/2.3,
                                                        textInputAction: TextInputAction.next),
                                                  ),
-                                                 Expanded(
-                                                   child: SizedBox(
-                                                      width: fieldWidth/1.8,
-                                                     child: Row(
-                                                       children: [
-                                                         Padding(
-                                                           padding: const EdgeInsets.only(right: 6.0),
-                                                           child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                                                         ),
-                                                         FocusTraversalOrder(
-                                                           order: const NumericFocusOrder(15),
-                                                           child: RawKeyboardListener(
+                                                 SizedBox(
+                                                   width: fieldWidth/1.8,
+                                                   child: Row(
+                                                     children: [
+                                                       Padding(
+                                                         padding: const EdgeInsets.only(right: 6.0),
+                                                         child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                                       ),
+                                                       FocusTraversalOrder(
+                                                         order: const NumericFocusOrder(15),
+                                                         child: RawKeyboardListener(
                                                              focusNode: controller.phoneKeyboardFocusNode,
                                                              onKey: (event) {
                                                                if (event is RawKeyDownEvent) {
@@ -913,19 +912,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                borderRadius: 3,
                                                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                                                onChanged: (v){
-                                                               if(v.isNotEmpty){
-                                                                 FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
-                                                                 controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
-                                                               }
+                                                                 if(v.isNotEmpty){
+                                                                   FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
+                                                                   controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
+                                                                 }
                                                                },
                                                                width: fieldWidth/2.3,
                                                              )
-                                                           ),
                                                          ),
-                                                       ],
-                                                     ),
+                                                       ),
+                                                     ],
                                                    ),
                                                  ),
+                                                 // Expanded(
+                                                 //   child: ,
+                                                 // ),
 
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(16),
@@ -1088,7 +1089,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            isDense: true,
                                                          ),
                                                          value: controller.selectAccountValue,
-                                                         items: controller.dashboardAccountData !
+
+                                                         items: controller.dashboardAccountData == null? []: controller.dashboardAccountData!
+
                                                              .accounts!
                                                              .map((account) =>
                                                              DropdownMenuItem<DashboardAccountObject>(
@@ -1164,7 +1167,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
                                                  ),
 
-                                                 // (12) Pay dropdown
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(26),
                                                    child: labeledField(
@@ -1172,27 +1174,36 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      isMobile: isMobile,
                                                      label: AppText.veh,
                                                      width: fieldWidth/2.3,
+                                                     heights: 35,
                                                      child: Container(
-                                                       height: 30,
+                                                       // height: 35,
                                                        decoration: BoxDecoration(
                                                          borderRadius: BorderRadius.circular(6),
                                                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                        ),
-                                                       child: // (8) Journey dropdown (O/W, R/N, W/R)
-                                                       RestrictedDrivers(
-                                                         width: fieldWidth/2.3,
-                                                         height: 30,
-                                                         padding: 0.0,
-                                                         titleText: controller.vehKey,
-                                                         driversList: [
-                                                           "SALOON",
-                                                           "ESTATE",
-                                                           "MPV6",
-                                                           "MPV PLUS",
-                                                           "MPV7",
-                                                           "MPV EXECUTIVE",
-                                                           "MINI BUS"
-                                                         ],
+                                                       child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectVehicleValue,
+                                                         items: controller.dashboardAllData!
+                                                             .vehicleTypes!
+                                                             .map((vehicle) =>
+                                                             DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                               value: vehicle,
+                                                               child: Text(vehicle.name ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectVehicleValue = v;
+                                                           controller.update();
+                                                         },
                                                        ),
                                                      ),
                                                    ),

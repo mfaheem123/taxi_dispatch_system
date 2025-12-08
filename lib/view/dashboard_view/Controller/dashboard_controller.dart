@@ -341,9 +341,7 @@ class DashboardController extends GetxController {
           suggestions.clear();
         } else {
           suggestions = allAddressesData
-              .where((loc) =>
-                  loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
-              .toList();
+              .where((loc) => loc.name!.toUpperCase().contains(searchingText.toLowerCase())).toList();
           highlightedIndex.value = 0;
         }
         getPickupAddressesLoader(true);
@@ -837,6 +835,7 @@ class DashboardController extends GetxController {
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardSubsidiaryObject? selectSubsidiariesValue;
+  DashboardVehicleTypeObject? selectVehicleValue;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async{

@@ -15,7 +15,7 @@ class DashboardDataModel {
   List<JourneyType>? journeyTypes;
   List<PaymentStatus>? paymentStatuses;
   List<PaymentType>? paymentTypes;
-  List<VehicleType>? vehicleTypes;
+  List<DashboardVehicleTypeObject>? vehicleTypes;
   List<DashboardSubsidiaryObject>? subsidiaries;
   List<DashboardDriverObject>? drivers;
 
@@ -38,7 +38,7 @@ class DashboardDataModel {
     journeyTypes: List<JourneyType>.from(json["journey_types"].map((x) => JourneyType.fromJson(x))),
     paymentStatuses: List<PaymentStatus>.from(json["payment_statuses"].map((x) => PaymentStatus.fromJson(x))),
     paymentTypes: List<PaymentType>.from(json["payment_types"].map((x) => PaymentType.fromJson(x))),
-    vehicleTypes: List<VehicleType>.from(json["vehicle_types"].map((x) => VehicleType.fromJson(x))),
+    vehicleTypes: List<DashboardVehicleTypeObject>.from(json["vehicle_types"].map((x) => DashboardVehicleTypeObject.fromJson(x))),
     subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
     drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
   );
@@ -224,7 +224,7 @@ class DashboardSubsidiaryObject {
   };
 }
 
-class VehicleType {
+class DashboardVehicleTypeObject {
   int? id;
   String? name;
   int? passengers;
@@ -244,7 +244,7 @@ class VehicleType {
   int? driverWaitingCharges;
   int? accountWaitingCharges;
 
-  VehicleType({
+  DashboardVehicleTypeObject({
     this.id,
     this.name,
     this.passengers,
@@ -265,7 +265,7 @@ class VehicleType {
     this.accountWaitingCharges,
   });
 
-  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+  factory DashboardVehicleTypeObject.fromJson(Map<String, dynamic> json) => DashboardVehicleTypeObject(
     id: json["id"],
     name: json["name"],
     passengers: json["passengers"],
