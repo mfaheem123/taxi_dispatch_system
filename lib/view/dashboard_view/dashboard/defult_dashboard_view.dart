@@ -1097,6 +1097,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              .toList(),
                                                          onChanged: (v) {
                                                            controller.selectAccountValue = v;
+                                                           controller.selectDepartmentData = null;
                                                            controller.update();
                                                          },
                                                        ),
@@ -1200,9 +1201,52 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
                                                  ),
 
-                                                 // Switch + Quotation
+                                                 controller.selectAccountValue ==null?
+                                                 SizedBox.shrink() :
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(27),
+                                                   child: labeledField(
+                                                     context: context,
+                                                     isMobile: isMobile,
+                                                     label: "DEPT",
+                                                     width: fieldWidth/2.5,
+                                                     heights: 35,
+                                                     child: Container(
+                                                       // height: 35,
+                                                       decoration: BoxDecoration(
+                                                         borderRadius: BorderRadius.circular(6),
+                                                         border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                       ),
+                                                       child: DropdownButtonFormField<DepartmentObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectDepartmentData,
+                                                         items: controller.selectAccountValue == null? []: controller.selectAccountValue!.departments
+                                                             !.map((department) =>
+                                                             DropdownMenuItem<DepartmentObject>(
+                                                               value: department,
+                                                               child: Text(department.name ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectDepartmentData = v;
+                                                           controller.update();
+                                                         },
+                                                       ),
+                                                     ),
+                                                   ),
+                                                 ),
+
+                                                 // Switch + Quotation
+                                                 FocusTraversalOrder(
+                                                   order: const NumericFocusOrder(28),
                                                    child: DynamicSwitch(
                                                      controller: controller.switchController,
                                                      activeColor: DynamicColors.primaryClr,
@@ -1221,7 +1265,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // SMS Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(28),
+                                                   order: const NumericFocusOrder(29),
                                                    child: SizedBox(
                                                      // width: fieldWidth/6,
                                                      child: Row(

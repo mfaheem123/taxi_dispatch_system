@@ -853,9 +853,13 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get account data
   DashboardAccountModel? dashboardAccountData;
   DashboardAccountObject ? selectAccountValue;
+  DepartmentObject? selectDepartmentData;
+
   getAccountData({subsidiariesId}) async{
     var response = await Api().get("accounts/subsidiary/$subsidiariesId");
     if(response.statusCode == 200){
+      selectDepartmentData = null;
+      selectAccountValue = null;
       dashboardAccountData = DashboardAccountModel.fromJson(response.data);
       update();
     }
