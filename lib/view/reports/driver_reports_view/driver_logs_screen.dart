@@ -11,6 +11,7 @@ import '../../../component/datatable_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
+import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../controller/report_controller.dart';
 
 class DriverLogsScreen extends StatefulWidget {
@@ -132,14 +133,25 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         onTap: () => _pickDate(context, true),
                       ),
 
-                      buildFilterField(
-                        hint: fromTime == null
-                            ? "--:--"
-                            : "${fromTime!.hour}:${fromTime!.minute.toString()
-                            .padLeft(2, '0')}",
-                        icon: Icons.access_time,
-                        onTap: () => _pickTime(context, true),
+                      CustomTimePicker(
+                        controller: controller.logStartTimeController, // optional
+                        onTimeSelected: (time) {
+                          setState(() {
+                            print(controller.logStartTimeController.text);
+                          });
+                        },
                       ),
+
+
+
+                      // buildFilterField(
+                      //   hint: fromTime == null
+                      //       ? "--:--"
+                      //       : "${fromTime!.hour}:${fromTime!.minute.toString()
+                      //       .padLeft(2, '0')}",
+                      //   icon: Icons.access_time,
+                      //   onTap: () => _pickTime(context, true),
+                      // ),
 
                       buildFilterField(
                         hint: toDate == null
@@ -148,15 +160,23 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         icon: Icons.calendar_today,
                         onTap: () => _pickDate(context, false),
                       ),
-
-                      buildFilterField(
-                        hint: toTime == null
-                            ? "--:--"
-                            : "${toTime!.hour}:${toTime!.minute.toString()
-                            .padLeft(2, '0')}",
-                        icon: Icons.access_time,
-                        onTap: () => _pickTime(context, false),
+                      CustomTimePicker(
+                        controller: controller.logEndTimeController, // optional
+                        onTimeSelected: (time) {
+                          setState(() {
+                            print(controller.logEndTimeController.text);
+                          });
+                        },
                       ),
+
+                      // buildFilterField(
+                      //   hint: toTime == null
+                      //       ? "--:--"
+                      //       : "${toTime!.hour}:${toTime!.minute.toString()
+                      //       .padLeft(2, '0')}",
+                      //   icon: Icons.access_time,
+                      //   onTap: () => _pickTime(context, false),
+                      // ),
 
                       SizedBox(
                         width: maxWidth < 400 ? double.infinity : 180,

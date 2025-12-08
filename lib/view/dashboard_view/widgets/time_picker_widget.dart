@@ -29,7 +29,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
   int selectedHour = 9;
   int selectedMinute = 8;
-  String selectedPeriod = "AM";
+  // String selectedPeriod = "AM";
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   void _updateTimeText() {
     final hourStr = selectedHour.toString().padLeft(2, '0');
     final minuteStr = selectedMinute.toString().padLeft(2, '0');
-    _timeController.text = "$hourStr:$minuteStr $selectedPeriod";
+    _timeController.text = "$hourStr:$minuteStr ";
   }
 
   void _toggleTimeDropdown() {
@@ -62,7 +62,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     setState(() {
       if (hour != null) selectedHour = hour;
       if (minute != null) selectedMinute = minute;
-      if (period != null) selectedPeriod = period;
+      // if (period != null) selectedPeriod = period;
       _updateTimeText();
     });
 
@@ -88,13 +88,13 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
             borderRadius: BorderRadius.circular(8),
             child: Row(
               children: [
-                _buildScrollColumn(1, 12, selectedHour, (value) {
+                _buildScrollColumn(0, 23, selectedHour, (value) {
                   _selectAndClose(hour: value);
                 }),
                 _buildScrollColumn(0, 59, selectedMinute, (value) {
                   _selectAndClose(minute: value);
                 }),
-                _buildAmPmColumn(),
+                // _buildAmPmColumn(),
               ],
             ),
           ),
@@ -134,33 +134,33 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       ),
     );
   }
-
-  Widget _buildAmPmColumn() {
-    return Expanded(
-      child: Column(
-        children: ['AM', 'PM'].map((period) {
-          final isSelected = period == selectedPeriod;
-          return InkWell(
-            onTap: () => _selectAndClose(period: period),
-            child: Container(
-              padding: EdgeInsets.all(12),
-              color: isSelected ? Colors.blue : null,
-              child: Center(
-                child: Text(
-                  period,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+  //
+  // Widget _buildAmPmColumn() {
+  //   return Expanded(
+  //     child: Column(
+  //       children: ['AM', 'PM'].map((period) {
+  //         final isSelected = period == selectedPeriod;
+  //         return InkWell(
+  //           onTap: () => _selectAndClose(period: period),
+  //           child: Container(
+  //             padding: EdgeInsets.all(12),
+  //             color: isSelected ? Colors.blue : null,
+  //             child: Center(
+  //               child: Text(
+  //                 period,
+  //                 style: TextStyle(
+  //                   color: isSelected ? Colors.white : Colors.black,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 12,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         );
+  //       }).toList(),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {

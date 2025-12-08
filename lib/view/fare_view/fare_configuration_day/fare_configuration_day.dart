@@ -344,7 +344,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                         controller.toDayController.text = time;
                                         controller.update();
                                       },
-                                    )),
+                                    )
+                                ),
                               ),
                             ],
                           ),
