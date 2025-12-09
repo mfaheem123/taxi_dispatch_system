@@ -940,7 +940,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.date,
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
                                                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
                                                    ),
                                                  ),
@@ -982,7 +982,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(20),
                                                    child: RestrictedDrivers(
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
                                                      height: 30,
                                                      padding: 0.0,
                                                      titleText: "SELECT PLOT",
@@ -1068,7 +1068,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.acc,
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
                                                      heights: 35,
                                                      child: Container(
                                                        // height: 35,
