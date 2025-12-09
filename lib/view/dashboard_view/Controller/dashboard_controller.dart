@@ -20,24 +20,20 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../tabbarview.dart';
+import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
 import '../models/users_phone_numbers_model.dart';
 
-
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
-
-
-
 class DashboardController extends GetxController {
- ///===========================================================>See Zone On Map
+  ///===========================================================>See Zone On Map
 
-
-  SeeZoneOnMapModel? seeZoneOnMapModel ;
-  RxBool seeZoneOnMappLoader=false.obs;
+  SeeZoneOnMapModel? seeZoneOnMapModel;
+  RxBool seeZoneOnMappLoader = false.obs;
 
   seeZoneOnMapp() async {
     seeZoneOnMappLoader(true);
@@ -48,7 +44,6 @@ class DashboardController extends GetxController {
       seeZoneOnMapModel = SeeZoneOnMapModel.fromJson(response.data);
       seeZoneOnMappLoader(false);
       update();
-
     } else {
       print("Error in Location List");
     }
@@ -65,7 +60,6 @@ class DashboardController extends GetxController {
 
   ///refresh function for menu bar
   menuBarRefresh({title, pageName}) {
-
     // if(selectedMenuItems.length < 3){
     int index =
         selectedMenuItems.indexWhere((item) => item.selectedItem == true);
@@ -410,9 +404,7 @@ class DashboardController extends GetxController {
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
   RxString totalDistance = "0".obs;
-  RxString totalTimeDuration = "0".obs;
-
-
+  RxString totalTimeDuration = "0 min".obs;
 
   LatLngBounds calculateBounds(List<LatLng> points) {
     assert(points.isNotEmpty);
@@ -529,42 +521,42 @@ class DashboardController extends GetxController {
 // (Optional) format nicely
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
+      totalTimeDuration.value =
+          formatDuration(durationInMinutes); // e.g. "443.3"
 
       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
 
-      List<LatLng> polylinePointss = result.map((PointLatLng point) => LatLng(point.latitude, point.longitude)).toList();
+      List<LatLng> polylinePointss = result
+          .map((PointLatLng point) => LatLng(point.latitude, point.longitude))
+          .toList();
 
-      polylinePointsCoordinate = polylinePointss.map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble())).toList();
+      polylinePointsCoordinate = polylinePointss
+          .map((p) => LatLng(p.latitude.toDouble(), p.longitude.toDouble()))
+          .toList();
 
       if (polylinePointsCoordinate.isNotEmpty) {
-
         polylines.add(Polyline(
-
           points: polylinePointsCoordinate,
-
           color: DynamicColors.primaryClr,
-
           strokeWidth: 2.0,
-
         ));
 
         // build bounds from the route or from markers (choose whichever you prefer)
-        final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
+        final List<LatLng> focusPoints =
+            tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
         LatLngBounds bounds;
 
         if (focusPoints.length == 1) {
-
-          bounds = LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
-
+          bounds =
+              LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
         } else {
-
           bounds = calculateBounds(focusPoints); // your existing helper
-
         }
 
-        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));mapController.fitCamera(cameraFit);
+        final cameraFit =
+            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        mapController.fitCamera(cameraFit);
       }
 
       update();
@@ -599,7 +591,8 @@ class DashboardController extends GetxController {
   List<GlobalKey> suggestionItemKeys = [];
 
   void updateKeys() {
-    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
+    suggestionItemKeys =
+        List.generate(allAddressesData.length, (_) => GlobalKey());
   }
 
   final GlobalKey suggestionListKey = GlobalKey();
@@ -628,7 +621,6 @@ class DashboardController extends GetxController {
   void _scrollToHighlighted(
       {bool scrollDown = true, bool viaCondition = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-
       final i = highlightedIndex.value;
 
       if (i < 0 || i >= suggestionItemKeys.length) return;
@@ -642,14 +634,13 @@ class DashboardController extends GetxController {
 
       if (itemCtx != null &&
           listCtx != null &&
-
           suggestionScrollController.hasClients) {
-
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
 
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
-        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final Offset itemOffset =
+            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
 
         final double itemTopLocal = itemOffset.dy;
 
@@ -664,35 +655,26 @@ class DashboardController extends GetxController {
         const double edgeMargin = 8.0;
 
         if (itemBottomLocal > viewportHeight - edgeMargin) {
-
           final double delta = itemBottomLocal - (viewportHeight - edgeMargin);
 
           targetOffset = (currentOffset + delta).clamp(
-
             suggestionScrollController.position.minScrollExtent,
             suggestionScrollController.position.maxScrollExtent,
-
           );
         } else if (itemTopLocal < edgeMargin) {
-
           final double delta = itemTopLocal - edgeMargin; // negative
 
           targetOffset = (currentOffset + delta).clamp(
-
             suggestionScrollController.position.minScrollExtent,
             suggestionScrollController.position.maxScrollExtent,
-
           );
         } else {
           return; // already visible
         }
 
         _instantOrSmoothScroll(targetOffset, currentOffset);
-
       } else {
-
         _fallbackScroll(i, scrollDown);
-
       }
     });
   }
@@ -747,7 +729,6 @@ class DashboardController extends GetxController {
       );
     }
   }
-
 
   RxInt suggestionSelectedIndex = 0.obs;
 
@@ -831,7 +812,6 @@ class DashboardController extends GetxController {
     update();
   }
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
@@ -839,32 +819,30 @@ class DashboardController extends GetxController {
   DashboardVehicleTypeObject? selectVehicleValue;
 
   RxBool dashboardDataLoader = false.obs;
-  dashboardData() async{
+  dashboardData() async {
     dashboardDataLoader(true);
     var response = await Api().get("enumerations/get");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       dashboardDataLoader(false);
       update();
     }
   }
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get account data
   DashboardAccountModel? dashboardAccountData;
-  DashboardAccountObject ? selectAccountValue;
+  DashboardAccountObject? selectAccountValue;
   DepartmentObject? selectDepartmentData;
 
-  getAccountData({subsidiariesId}) async{
+  getAccountData({subsidiariesId}) async {
     var response = await Api().get("accounts/subsidiary/$subsidiariesId");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       selectDepartmentData = null;
       selectAccountValue = null;
       dashboardAccountData = DashboardAccountModel.fromJson(response.data);
       update();
     }
   }
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
@@ -883,7 +861,8 @@ class DashboardController extends GetxController {
     });
   }
 
-  void _stopPhoneNoTyping({required String fieldName, required String searchingText}) {
+  void _stopPhoneNoTyping(
+      {required String fieldName, required String searchingText}) {
     // 👇 Yahan API call ya search function call karna hai
     getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
   }
@@ -891,15 +870,16 @@ class DashboardController extends GetxController {
   GetPhoneNumbersModel? customerPhoneNumber;
   final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
 
-  getPhoneNumberOfUSers({fieldsName,searchingText}) async{
+  getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     dashboardDataLoader(true);
     var response = await Api().get("customers/search?mobile=$searchingText");
-    if(response.statusCode == 200){
-      if(response.data['customer'].isNotEmpty){
+    if (response.statusCode == 200) {
+      if (response.data['customer'].isNotEmpty) {
         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-        SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
-            ? Get.find<SuggestionController>()
-            : Get.put(SuggestionController());
+        SuggestionController suggestion_controller =
+            Get.isRegistered<SuggestionController>()
+                ? Get.find<SuggestionController>()
+                : Get.put(SuggestionController());
         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
         // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
@@ -910,9 +890,115 @@ class DashboardController extends GetxController {
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
+  final pickUpNoteController = TextEditingController();
+  final dropUpNoteController = TextEditingController();
+  ZoneObject? dashboardZoneValue;
+  DateTime? pickUpDate = DateTime.now();
+  final pickUpTimeController = TextEditingController();
+  final passController = TextEditingController();
+  final luggController = TextEditingController();
+  final sluggController = TextEditingController();
+  List restrictedDrivers = [];
+  List childSeatList = [];
+  List extraFaresList = [];
+
+  postDashboardApi() async {
+
+    ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
+   await restrictedDriversListConfig();
+
+
+    var formData = {
+      'pickup': pickupController.text,
+      'pickup_plot': dashboardZoneValue!.name,
+      'pickup_door_number': pickUpNoteController.text,
+      'dropoff': dropOffController.text,
+      'dropoff_plot': '28',
+      'dropoff_door_number': dropUpNoteController.text,
+      'viapoints':
+      // viaPoints
+      '[{"viapoint": "elm park road london n3 1ed","name": "test","mobile": "1236547898","arrived": null, "passenger_on_board": null,"active": false,"latitude": "51.60502870865506","longitude": "-0.19752048515577314"},{"viapoint": "etchingham park road london n3 2ds","name": "test 2","mobile": "0123456879","arrived": null,"passenger_on_board": null,"active": false,"latitude": "51.60435165870115","longitude": "-0.18285231654990017"}]',
+      'name': nameController.text,
+      'email': emailController.text,
+      'mobile': mobileController.text,
+      'telephone': telController.text,
+      'pickup_date':
+          "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      'pickup_time': pickUpTimeController.text,
+      'lead_time': minController.text,
+      'journey_type_id': '2',
+      'account_id': selectAccountValue!.id,
+      'department': selectDepartmentData!.id,
+      'quotation': switchController.value,
+      'sms': smsCheckbox.value,
+      'emailFlag': emailCheckbox.value,
+      'passengers': passController.text,
+      'luggages': luggController.text,
+      'hand_luggages': sluggController.text,
+      'payment_type_id': '1',
+      'vehicle_type_id': selectVehicleValue!.id,
+      'restricted_drivers': jsonEncode(restrictedDrivers),
+      'child_seat': jsonEncode(childSeatList),
+      'parking_charges': partingChargesController.text,
+      'congestion_charges': congestionChargesController.text,
+      'meet_and_greet': meetGreetController.text,
+      'waiting_charges': waitingChargesController.text,
+      'extra_drop_charges': extraDropChargesController.text,
+      'credit_card_charges': creditCardChargesController.text,
+      'company_price': companyPriceController.text,
+      "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
+      'special_instructions': specialRequirementsController.text,
+      'notes': jsonEncode(extraFaresList),
+      'driver_id': selectDriverValue!.id,
+      'fares': slugController.text,
+      'eta': totalTimeDuration,
+      'miles': totalDistance,
+      'subsidiary_id': selectSubsidiariesValue!.id,
+      'booking_status_id': '1',
+      'booking_type_id': '1',
+      'booking_source': 'dashboard',
+      'customer':
+          ' [{name: "customer1", email: "tests@mail.com", mobile: "123467839", telephone: "1234536798", blacklist: false}]',
+      'employee_id': '2'
+    };
+    var response = await Api().post(formData, "bookings/add");
+  }
+
+  restrictedDriversListConfig() async {
+    if(driversList.isNotEmpty){
+      for (int i = 0; i <= driversList.length; i++) {
+        restrictedDrivers.add({
+          "id": driversList[i].id,
+          "username": driversList[i].username,
+          "name": driversList[i].name,
+        });
+      }
+    }
+    if(childSeatAlert.isNotEmpty){
+      for (int index = 0; index <= childSeatAlert.length; index++) {
+        childSeatList.add({
+          "child": childSeatAlert[index].sets,
+          "age": childSeatAlert[index].age,
+        });
+      }
+    }
+    if(controllerAlert.isNotEmpty){
+      for (int indexx = 0; indexx <= controllerAlert.length; indexx++) {
+        extraFaresList.add(
+          {"note":controllerAlert[indexx],
+          "created_at":
+          "2025-11-25 16:10",
+            "created_by":"nadeem"
+          },
+        );
+      }
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
-
 
   // TextEditingController mobileController = TextEditingController();
   // TextEditingController nameController = TextEditingController();
@@ -956,13 +1042,7 @@ class DashboardController extends GetxController {
   //   update();
   // }
 
-
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard
-
-
-
-
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create booking functionality
 
@@ -971,7 +1051,7 @@ class DashboardController extends GetxController {
   final mobileController = TextEditingController();
   final telController = TextEditingController();
   final minController = TextEditingController();
-  final slugController = TextEditingController();
+  final slugController = TextEditingController(text: "0.0");
   final accountNoController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
@@ -1038,15 +1118,15 @@ class DashboardController extends GetxController {
       await getAddresses(fieldsName: "VIA", searchingText: query);
 
       // ✅ Prepare list after data fetched
-      final list = allAddressesData.map((m) => "${m.name ?? ''} ${m.postcode ?? ''}").toList();
+      final list = allAddressesData
+          .map((m) => "${m.name ?? ''} ${m.postcode ?? ''}")
+          .toList();
 
       completer.complete(list); // mark as finished
-
     });
 
     // ✅ Wait until completer completes
     return completer.future;
-
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all drivers
@@ -1078,28 +1158,5 @@ class DashBoardBindings implements Bindings {
     Get.lazyPut<DashboardController>(() => DashboardController());
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Get Mobile Number With Name Dashboard

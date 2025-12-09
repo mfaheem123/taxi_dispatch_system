@@ -66,6 +66,7 @@ class CustomTextField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         columnText?Text(hintText!, style: mozillaTextSemiBoldText(context: context, fontSize: 13)):SizedBox.shrink(),
+
         SizedBox(
               width: width?? Get.width/2.5,
             height: height?? 30,
