@@ -3,11 +3,14 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
+import 'package:dashboard_new1/view/administration/model/get_role.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
+import '../model/get_role.dart';
+import '../model/list_subsDiary.dart';
 
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});
@@ -116,38 +119,56 @@ class CreateUserScreen extends StatelessWidget {
               runSpacing: 16,
               spacing: 20,
               children: [
-                _buildTextField("USERNAME"),
-                _buildTextField("EMAIL"),
-                _buildPasswordField("PASSWORD"),
-                _buildPasswordField("CONFIRM PASSWORD"),
-                _buildTextField("PHONE"),
-                _buildTextField("FAX"),
-                CustomDropdownField<String>(
-                  label: "ROLI",
-                  items: ["SELECT ROLI"],
-                  value: selectedValue,
-                  itemLabel: (val) => val, // just show the string
+                _buildTextField("USER", controller.userNameController),
+                _buildTextField("EMAIL", controller.emailController),
+                _buildPasswordField("PASSWORD", controller.passwordController),
+                _buildPasswordField("CONFIRM PASSWORD", controller.confirmController),
+                _buildTextField("PHONE", controller.phoneController),
+                _buildTextField("FAX", controller.faxUserController),
+
+                CustomDropdownField<Role>(
+                  label: "SELECT ROLE",
+                  items: controller.getRole?.roles ?? [],   // safe
+                  value: controller.selectedRole,
+                  itemLabel: (role) {// debug
+                    return role.name ?? "";
+                  },
                   onChanged: (val) {
-                    selectedValue = val;
+                    controller.selectedRole = val;
+                    controller.update();
                   },
                 ),
-                _buildTextField("SURBIONARY"),
-                _buildTextField("DIDIC COMPANY"),
+                CustomDropdownField<Subsidiaries>(
+                  label: "SURBIONARY",
+                  items: controller.subsDiaryModel?.subsidiaries ?? [],
+                  value: controller.selectedSubsidiary,
+                  itemLabel: (item) => item.name ?? "",
+                  onChanged: (val) {
+                    controller.selectedSubsidiary = val;
+                    controller.update();
+                  },
+                ),
+
+
+                // _buildTextField("DIDIC COMPANY", controller.didic_Controller),
                 KeyboardCheckbox(
                   onChanged: (v) {
                     controller.activeValue.value = v;
                     controller.update();
                   },
                   value: controller.activeValue.value,
+
                   focusNode: controller.activeNode,
                   width: 120,
                   label: "ACTIVE",
                 ),
                 KeyboardCheckbox(
                   onChanged: (v) {
+                    print("CHECKBOX VALUE RECEIVED: $v");
                     controller.alldriversValue.value = v;
                     controller.update();
                   },
+
                   value: controller.alldriversValue.value,
                   focusNode: controller.alldriversNode,
                   width: 120,
@@ -207,6 +228,9 @@ class CreateUserScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: Center(
               child: CustomButton(
+                onTap: (){
+                  controller.createUser();
+                },
                 height: 30,
                 width: screenWidth / 4,
                 verticalPadding: 0.0,
@@ -222,11 +246,12 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildTextField(String label) {
+  static Widget _buildTextField(String label, controller) {
     return SizedBox(
       width: Get.width / 4,
       height: 30,
       child: TextField(
+        controller: controller,
         style: mozillaTextRegularText(
           fontSize: 10,
         ),
@@ -243,11 +268,12 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildPasswordField(String label) {
+  static Widget _buildPasswordField(String label, controller) {
     return SizedBox(
       width: Get.width / 4,
       height: 30,
       child: TextField(
+        controller: controller,
         obscureText: true,
         style: mozillaTextRegularText(
           fontSize: 10,

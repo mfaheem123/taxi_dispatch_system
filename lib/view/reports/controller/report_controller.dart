@@ -16,7 +16,10 @@ class ReportController extends GetxController {
     selectedDriver.value = driver;
     update();
   }
-
+  final logStartTimeController = TextEditingController();
+  final logEndTimeController = TextEditingController();
+  final loginStartTimeController = TextEditingController();
+  final loginEndTimeController = TextEditingController();
   void applyFilters() {
     if (selectedDriver.value != "Select Driver") {
       filteredRows.add({

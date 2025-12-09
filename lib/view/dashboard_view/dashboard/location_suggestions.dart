@@ -61,6 +61,7 @@ class _SuggestionExampleState extends State<SuggestionExample> {
           }
         }
       },
+
       child: FieldSuggestion<String>.network(
         inputDecoration: const InputDecoration(
           hintText: 'Search something...',

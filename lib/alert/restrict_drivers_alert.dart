@@ -47,7 +47,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
               height: 350,
               width: 450,
             padding: EdgeInsets.symmetric(horizontal: 20,vertical: 20),
-            child: Column(
+            child: controller.allDriverData == null?SizedBox.shrink(): Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
 
