@@ -962,7 +962,7 @@ class DashboardController extends GetxController {
           ' [{name: "customer1", email: "tests@mail.com", mobile: "123467839", telephone: "1234536798", blacklist: false}]',
       'employee_id': '2'
     };
-    var response = await Api().post(formData, "bookings/add");
+    // var response = await Api().post(formData, "bookings/add");
   }
 
   restrictedDriversListConfig() async {

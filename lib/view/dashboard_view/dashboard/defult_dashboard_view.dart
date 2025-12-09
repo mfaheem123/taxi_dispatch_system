@@ -1618,6 +1618,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    FocusTraversalOrder(
                                                      order: const NumericFocusOrder(38),
                                                      child: CustomButton(
+                                                       onTap: (){
+                                                         controller.postDashboardApi();
+                                                       },
                                                        btnText: "SAVE[HOME]",
                                                        width: 110,
                                                        height: 30,
