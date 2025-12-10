@@ -12,9 +12,9 @@ class DashboardDataModel {
   bool? status;
   List<BookingStatus>? bookingStatuses;
   List<BookingType>? bookingTypes;
-  List<JourneyType>? journeyTypes;
+  List<JourneyTypeObject>? journeyTypes;
   List<PaymentStatus>? paymentStatuses;
-  List<PaymentType>? paymentTypes;
+  List<PaymentTypeObject>? paymentTypes;
   List<DashboardVehicleTypeObject>? vehicleTypes;
   List<DashboardSubsidiaryObject>? subsidiaries;
   List<DashboardDriverObject>? drivers;
@@ -35,9 +35,9 @@ class DashboardDataModel {
     status: json["status"],
     bookingStatuses: List<BookingStatus>.from(json["booking_statuses"].map((x) => BookingStatus.fromJson(x))),
     bookingTypes: List<BookingType>.from(json["booking_types"].map((x) => BookingType.fromJson(x))),
-    journeyTypes: List<JourneyType>.from(json["journey_types"].map((x) => JourneyType.fromJson(x))),
+    journeyTypes: List<JourneyTypeObject>.from(json["journey_types"].map((x) => JourneyTypeObject.fromJson(x))),
     paymentStatuses: List<PaymentStatus>.from(json["payment_statuses"].map((x) => PaymentStatus.fromJson(x))),
-    paymentTypes: List<PaymentType>.from(json["payment_types"].map((x) => PaymentType.fromJson(x))),
+    paymentTypes: List<PaymentTypeObject>.from(json["payment_types"].map((x) => PaymentTypeObject.fromJson(x))),
     vehicleTypes: List<DashboardVehicleTypeObject>.from(json["vehicle_types"].map((x) => DashboardVehicleTypeObject.fromJson(x))),
     subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
     drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
@@ -51,7 +51,7 @@ class DashboardDataModel {
     "payment_statuses": List<dynamic>.from(paymentStatuses!.map((x) => x.toJson())),
     "payment_types": List<dynamic>.from(paymentTypes!.map((x) => x.toJson())),
     "vehicle_types": List<dynamic>.from(vehicleTypes!.map((x) => x.toJson())),
-    "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x!.toJson())),
+    "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x.toJson())),
     "drivers": List<dynamic>.from(drivers!.map((x) => x.toJson())),
   };
 }
@@ -124,16 +124,16 @@ class DashboardDriverObject {
   };
 }
 
-class JourneyType {
+class JourneyTypeObject {
   int? id;
   String? journeyType;
 
-  JourneyType({
+  JourneyTypeObject({
     this.id,
     this.journeyType,
   });
 
-  factory JourneyType.fromJson(Map<String, dynamic> json) => JourneyType(
+  factory JourneyTypeObject.fromJson(Map<String, dynamic> json) => JourneyTypeObject(
     id: json["id"],
     journeyType: json["journey_type"],
   );
@@ -164,14 +164,14 @@ class PaymentStatus {
   };
 }
 
-class PaymentType {
+class PaymentTypeObject {
   int? id;
   String? name;
   dynamic service;
   String? backgroundColor;
   String? foregroundColor;
 
-  PaymentType({
+  PaymentTypeObject({
     this.id,
     this.name,
     this.service,
@@ -179,7 +179,7 @@ class PaymentType {
     this.foregroundColor,
   });
 
-  factory PaymentType.fromJson(Map<String, dynamic> json) => PaymentType(
+  factory PaymentTypeObject.fromJson(Map<String, dynamic> json) => PaymentTypeObject(
     id: json["id"],
     name: json["name"],
     service: json["service"],
