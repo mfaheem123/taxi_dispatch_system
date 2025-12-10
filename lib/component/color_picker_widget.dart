@@ -30,7 +30,6 @@ class ColorPickerWidget extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             Color tempColor = pickerColor;
-
             return AlertDialog(
               title: const Text('Pick a color!'),
               content: SingleChildScrollView(
@@ -58,6 +57,7 @@ class ColorPickerWidget extends StatelessWidget {
           },
         );
       },
+
       child: Container(
         height: height ?? 30,
         width: width ?? 100,
