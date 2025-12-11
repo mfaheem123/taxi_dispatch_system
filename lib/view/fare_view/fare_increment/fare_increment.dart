@@ -35,6 +35,7 @@ class _FareIncrementState extends State<FareIncrement> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "fareIncrement";
+
   }
 
   @override

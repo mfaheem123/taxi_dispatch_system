@@ -412,12 +412,13 @@ class _CenterAreaState extends State<_CenterArea> {
                        children: [
 
 
-              Checkbox(
-              value: isChecked.value,
-              onChanged: (v) {
-              isChecked.value = v!;
-              },
-              ),
+                         Obx(() => Checkbox(
+                           value: isChecked.value == 0,
+                           onChanged: (v) {
+                             isChecked.value = v!;
+                           },
+                         ),
+                         ),
 
 
               ],

@@ -274,6 +274,7 @@ class _PlotFareState extends State<PlotFare> {
 
                             CustomTextField(
                               borderRadius: 4,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               controller: controller.fareDescriptionController,
                               width: fieldWidth,
                               hintText: "",
@@ -284,6 +285,7 @@ class _PlotFareState extends State<PlotFare> {
 
                             CustomTextField(
                               borderRadius: 4,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                               controller: controller.fareDescription2ndController,
                               width: fieldWidth,
                               hintText: "",
@@ -316,6 +318,9 @@ class _PlotFareState extends State<PlotFare> {
                               ),
                             ),
                             CustomButton(
+                              onTap: (){
+                                controller.clearFormData();
+                              },
                               height: 35,
                               width: fieldWidth,
                               btnText: AppText.clear,

@@ -62,14 +62,20 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "plotfares/add");
     if(response.statusCode == 200){
-
+      clearFormData();
       print(response.data);
       BotToast.showText(text: "Plot Fare successfully added");
 
     }
   }
 
-
+clearFormData(){
+  fareValueVehicleController.clear();
+  fareDescription2ndController.clear();
+  fareDescriptionController.clear();
+  fareController.clear();
+  vehicleTypeController.clear();
+}
 
   AllPlotFareModel? allPlotFareModel;
   RxBool getAllPlotFareLoader = false.obs;
@@ -625,6 +631,7 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "fareincrement/add");
     if(response.statusCode == 200){
+      incrementValueVehicleController.clear();
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
 

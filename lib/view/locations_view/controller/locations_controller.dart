@@ -8,6 +8,7 @@ import 'package:dashboard_new1/view/locations_view/Model/zoneListModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../Model/zoneListModel.dart' hide Zone;
 
@@ -106,6 +107,7 @@ class LocationController extends GetxController {
             : 'locations/${locationUpdateId.value}',
         auth: true);
     if (response.statusCode == 200) {
+      print(formData);
       locationNameCtrl.clear();
       longitudeCtrl.clear();
       postcodeCtrl.clear();
@@ -143,7 +145,7 @@ class LocationController extends GetxController {
   RxBool getLocationLoader = false.obs;
 
   getLocationList() async {
-    try {
+
       getLocationLoader(true);
       var response = await Api().get("locations/get?", queryParameters: {
         'page': locationCurrentPage.value,
@@ -161,14 +163,10 @@ class LocationController extends GetxController {
         locationsAll.value = locationListModel?.locations ?? [];
         locationsFiltered.value = locationsAll;
         getLocationLoader(false);
+      getLocationLoader.value = false;
         update();
       }
-    } catch (e) {
-      print("Error in Location List: $e");
-    } finally {
-      getLocationLoader.value = false;
-      update();
-    }
+
   }
 
   // --------Search changes function
@@ -184,21 +182,48 @@ class LocationController extends GetxController {
 
   RxBool updateLocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
-  bindLocationUpdateLocation(Set<dynamic> set,
-      {Locations? locationUpdate}) async {
+  bindLocationUpdateLocation({Locations? locationUpdate}) async {
+    print("===== UPDATE LOCATION DATA RECEIVED =====");
+    print("ID: ${locationUpdate?.id}");
+    print("Name: ${locationUpdate?.name}");
+    print("Longitude: ${locationUpdate?.longitude}");
+    print("Latitude: ${locationUpdate?.latitude}");
+    print("Postcode: ${locationUpdate?.postcode}");
+    print("Shortcut: ${locationUpdate?.shortcut}");
+    print("Extra Charges: ${locationUpdate?.extraCharges}");
+    print("Address: ${locationUpdate?.address}");
+    print("Zone ID: ${locationUpdate?.zoneId}");
+    print("Zone: ${locationUpdate?.zone}");
+    print("Location Type ID: ${locationUpdate?.locationTypeId}");
+
+    print("==========================================");
+
     locationUpdateId.value = locationUpdate!.id!;
-    locationNameCtrl.text = locationUpdate.name!;
+    locationNameCtrl.text = locationUpdate.name! ;
     longitudeCtrl.text = locationUpdate.longitude!;
     postcodeCtrl.text = locationUpdate.postcode!;
     shortcutCtrl.text = locationUpdate.shortcut!;
     extraChargesCtrl.text = locationUpdate.extraCharges!;
     latitudeCtrl.text = locationUpdate.latitude!;
     addressCtrl.text = locationUpdate.address!;
+      zoneValue!.id = locationUpdate.zoneId;
+
+    /// 👉 ZONE + LOCATION TYPE SELECTION (NULL SAFE)
+    if (locationtypezoneModel != null) {
+      zoneValue = locationtypezoneModel!.zonesList!
+          .firstWhereOrNull((z) => z.id == locationUpdate.zoneId);
+
+      locationTypeValue = locationtypezoneModel!.locationTypesList!
+          .firstWhereOrNull((lt) => lt.id == locationUpdate.locationTypeId);
+    }
+
     updateLocationValue(true);
     getLocationTypeZone(
-        selectedZoneId: locationUpdate.zoneId,
-        selectedLocationTypeId: locationUpdate.locationTypeId); //-------------------------------------------------------------------
- }
+      selectedZoneId: locationUpdate.zoneId,
+      selectedLocationTypeId: locationUpdate.locationTypeId,
+    );
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete Location List Work
 

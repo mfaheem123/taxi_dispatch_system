@@ -42,7 +42,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<FareController>(initState: (v) {
+    return GetBuilder<FareController>(
+        initState: (v) {
       if (controller.fareGetVehicleTypeAccount == null) {
         controller.getFareGetVehicleTypeAccount();
       } else {
@@ -462,14 +463,14 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             .getAllFareConfigurationData!.fareConfigurations!
                             .map((fare) => DataRow(
                                   cells: [
-                                    DataCell(Text(fare.vehicleType!.name ?? "")),
-                                    DataCell(Text(fare.account!.name ?? "")),
-                                    DataCell(Text(controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??"")),
-                                    DataCell(Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? "")),
-                                    DataCell(Text(fare.fromTime ?? "")),
-                                    DataCell(Text(fare.toTime ?? "")),
-                                    DataCell(Text("£ ${fare.minimumFares ?? '0.00'}")),
-                                    DataCell(Text("${fare.minimumMiles ?? '0.0'} MI")),
+                                    DataCell(Center(child: Text(fare.vehicleType!.name ?? ""))),
+                                    DataCell(Center(child: Text(fare.account!.name ?? ""))),
+                                    DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??""))),
+                                    DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? ""))),
+                                    DataCell(Center(child: Text(fare.fromTime ?? ""))),
+                                    DataCell(Center(child: Text(fare.toTime ?? ""))),
+                                    DataCell(Center(child: Text("£ ${fare.minimumFares ?? '0.00'}"))),
+                                    DataCell(Center(child: Text("${fare.minimumMiles ?? '0.0'} MI"))),
                                    if(controller.fareConfiguration != "NORMAL") DataCell(Text(fare.title ?? "")),
                                     DataCell(
                                       Center(

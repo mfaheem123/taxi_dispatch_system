@@ -403,6 +403,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                       ),
                                       onPressed: () {},
                                       child: Icon(Icons.add)),
+
                                   OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         minimumSize:
@@ -476,6 +477,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               },
                             ),
                             CustomButton(
+                              onTap: (){
+                                controller.clearFormData();
+                              },
                               height: 35,
                               width: fieldWidth,
                               btnText: AppText.clear,
