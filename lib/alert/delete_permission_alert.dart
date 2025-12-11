@@ -30,19 +30,31 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         height: 150,
-        width: 150,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        width: MediaQuery.of(context).size.width/9,
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              "Are you sure to delete",
-              style: mozillaTextRegularText(
-                  fontSize: 20, color: DynamicColors.black),
+
+            Center(
+              child: Text(
+                "Are you sure ",
+                style: mozillaTextRegularText(
+                    fontSize: 20, color: DynamicColors.black),
+              ),
             ),
-            SizedBox(height: 60),
+
+            Center(
+              child: Text(
+                "you want to delete",
+                style: mozillaTextRegularText(
+                    fontSize: 20, color: DynamicColors.black),
+              ),
+            ),
+
+            SizedBox(height: 30),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CustomButton(
@@ -54,8 +66,8 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
                   style: mozillaTextRegularText(
                       fontSize: 10, color: DynamicColors.whiteClr),
                 onTap: () {
-  widget.deleteFunctionName(); 
-  Navigator.pop(context);
+                     widget.deleteFunctionName();
+                      Navigator.pop(context);
 }
                 ),
                 SizedBox(width: 30),

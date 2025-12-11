@@ -18,6 +18,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
 import '../airport_charges/airport_model.dart';
@@ -537,7 +538,9 @@ clearFormData(){
       if(fareConfiguration != "NORMAL") "to_date": endDate,
     };
     print(formData);
-    var response = await Api().post(formData, "faresconfiguration/add");
+    var response = await Api().post(formData,
+        updateFareValue.value == false ?
+        "faresconfiguration/add": "faresconfiguration/edit/${fareUpdateId.value}" );
     if(response.statusCode == 200){
       getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       print(response.data);
@@ -558,6 +561,50 @@ clearFormData(){
     titleController.clear();
     update();
   }
+
+
+
+
+  RxBool updateFareValue = false.obs;
+  RxInt fareUpdateId = 0.obs;
+  bindFare(FareConfiguration fare) {
+
+    /// vehicle dropdown ka same instance select karna
+    vehicleValue = fareGetVehicleTypeAccount!.vehicleTypes!
+        .firstWhere((v) => v.id == fare.vehicleTypeId);
+
+    /// account dropdown ka same instance select karna
+    accountValue = fareGetVehicleTypeAccount!.accounts!
+        .firstWhere((a) => a.id == fare.accountId);
+
+    fromDayValue = fare.fromDay;
+    toDayValue = fare.toDay;
+
+    fromDayController.text = fare.fromTime ?? "";
+    toDayController.text = fare.toTime ?? "";
+
+    startingFareController.text = fare.minimumFares?.toString() ?? "";
+    startingMilesController.text = fare.minimumMiles?.toString() ?? "";
+
+    titleController.text = fare.title ?? "";
+
+    startDate = fare.fromDate;
+    endDate = fare.toDate;
+
+    updateFareValue(true);
+    fareUpdateId(fare.id!);
+
+    update();
+  }
+
+
+
+
+
+
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare view
   RxBool getAllFareViewLoader = false.obs;
