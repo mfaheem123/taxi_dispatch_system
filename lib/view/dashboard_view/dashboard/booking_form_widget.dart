@@ -131,7 +131,9 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                 fontSize: 13,
                               ),
                             ),
+
                             SizedBox(width: 25),
+
                             GestureDetector(
                               child: Container(
                                 height: 30,

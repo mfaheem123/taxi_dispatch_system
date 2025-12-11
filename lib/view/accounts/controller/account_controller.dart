@@ -53,15 +53,19 @@ class AccountController extends GetxController {
   final contactAlertTelephoneCtrl = TextEditingController();
 
   ///DepartmentAlert
+
   final dpartmentCtrl = TextEditingController();
 
   ///OderAlert
+
   final orderCtrl = TextEditingController();
 
   ///CompanyAddressAlert
+
   final addressCtrl = TextEditingController();
 
   ///Information Control
+
   RxBool orderCheckBox = false.obs;
   RxBool bookedByCheckBox = false.obs;
   RxBool escoptCheckBox = false.obs;
@@ -69,11 +73,16 @@ class AccountController extends GetxController {
   RxBool bankInfoCheckBox = false.obs;
 
   ///Charges Control
+
+
   RxBool adminFeeCheckBox = false.obs;
   RxBool accountFeeCheckBox = false.obs;
   RxBool vatCheckBox = false.obs;
 
   ///SMS Control
+
+
+
   RxBool dispatchSmsCheckBox = false.obs;
   RxBool confirmSmsCheckBox = false.obs;
   RxBool arrivalSmsCheckBox = false.obs;

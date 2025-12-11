@@ -61,8 +61,7 @@ class _KeyboardDropdownState extends State<KeyboardDropdown> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          _selectedIndex =
-              (_selectedIndex - 1 + widget.items.length) % widget.items.length;
+          _selectedIndex = (_selectedIndex - 1 + widget.items.length) % widget.items.length;
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         if (_isOpen && widget.items.isNotEmpty) {

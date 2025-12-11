@@ -359,6 +359,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            value: _controller.zoneValue, itemLabel: (templateList) => templateList.name!,
                                                            onChanged: (val) {
                                                              _controller.zoneValue = val;
+                                                             controller.dashboardZoneValue = val;
                                                              controller.update();
                                                            },
                                                          ),
@@ -373,7 +374,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            width: fieldWidth / 3,
                                                            height: 30,
                                                            child: CustomTextField(
-                                                             controller: TextEditingController(),
+                                                             controller: controller.pickUpNoteController,
                                                              hintText: "PICKUP NOTES",
                                                              borderRadius: 6,
                                                              textInputAction: TextInputAction.next,
@@ -459,10 +460,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                onTap: (){
                                                                  shortCutKeyValue.value = "DROP LOCATION";
                                                                },
+
                                                                borderRadius: 4,
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "DROP LOCATION",searchingText: v);
                                                                },
+
                                                                prefixIcon: const Icon(
                                                                  Icons.location_pin,
                                                                  color: Colors.red,
@@ -496,6 +499,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        size: 15,
                                                                      ),
                                                                    ),
+
                                                                    KbdActivatable(
                                                                      focusNode: swap2FN,
                                                                      onActivate: () {
@@ -514,6 +518,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              ),
                                                            ),
                                                          ),
+
                                                        ),
                                                        Padding( padding: const EdgeInsets.symmetric(horizontal: 6.0),
                                                          child: FocusTraversalOrder(
@@ -535,7 +540,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            width: fieldWidth / 3,
                                                            height: 30,
                                                            child: CustomTextField(
-                                                             controller: TextEditingController(),
+                                                             controller: controller.dropUpNoteController,
                                                              hintText: "DROP NOTES",
                                                              borderRadius: 6,
                                                              textInputAction: TextInputAction.next,
@@ -744,6 +749,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    }
                                                                  }
                                                                },
+
                                                                child: CustomTextField(
                                                                  key: controller.via2FieldKey,
                                                                  controller:
@@ -789,6 +795,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          SizedBox(
                                                              width: isMobile ? 0 : 10,
                                                              height: isMobile ? 10 : 0),
+
                                                          // (5) Select plot button
                                                          FocusTraversalOrder(
                                                            order: const NumericFocusOrder(11),
@@ -940,8 +947,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.date,
-                                                     width: fieldWidth/2.3,
-                                                     child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                                                     width: fieldWidth/2.5,
+                                                     child: SizedBox(height: 30, child: KeyboardDatePicker(
+                                                       initialDate: controller.pickUpDate?? DateTime.now(),
+                                                       borderClr: Colors.blue,
+                                                       onChanged: (date) {
+                                                         controller.pickUpDate = date;
+                                                         controller.update();
+                                                       },
+                                                       onSubmitted: (date) {
+                                                         // jab user enter press kare
+                                                         print("User pressed enter: $date");
+                                                       },
+                                                     )),
                                                    ),
                                                  ),
                                                  // (6) Time
@@ -952,7 +970,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      isMobile: isMobile,
                                                      label: AppText.time,
                                                      width: fieldWidth/2.3,
-                                                     child: SizedBox(height: 30, child: CustomTimePicker()),
+                                                     child: SizedBox(height: 30, child: CustomTimePicker(
+                                                       controller: controller.pickUpTimeController, // optional
+                                                       onTimeSelected: (time) {
+                                                         controller.pickUpTimeController.text = time;
+                                                         setState(() {
+                                                           print(controller.pickUpTimeController.text);
+                                                         });
+                                                       },
+                                                     )),
                                                    ),
                                                  ),
                                                  // (7) Lead (mins)
@@ -981,24 +1007,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  // (8) Journey dropdown (O/W, R/N, W/R)
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(20),
-                                                   child: RestrictedDrivers(
-                                                     width: fieldWidth/2.3,
-                                                     height: 30,
-                                                     padding: 0.0,
-                                                     titleText: "SELECT PLOT",
-                                                     driversList: [
-                                                       'DEMO COMPANY 01', 'DEMO COMPANY 02'
-                                                     ],
-                                                   ),
-                                                 ),
-
-                                                 // (9) Driver dropdown
-                                                 FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(21),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
-                                                     label: AppText.drv,
+                                                     label: AppText.jour,
                                                      width: fieldWidth/2.3,
                                                      heights: 35,
                                                      child: Container(
@@ -1007,27 +1019,33 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          borderRadius: BorderRadius.circular(6),
                                                          border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                        ),
-                                                       child: DropdownButtonFormField<DashboardDriverObject>(
+                                                       child: DropdownButtonFormField<JourneyTypeObject>(
                                                          decoration: const InputDecoration(
                                                            border: OutlineInputBorder(),
                                                            isDense: true,
                                                          ),
-                                                         value: controller.selectDriverValue,
+                                                         value: controller.selectJourneyTypeValue,
                                                          items: controller.dashboardAllData!
-                                                             .drivers!
-                                                             .map((driver) =>
-                                                             DropdownMenuItem<DashboardDriverObject>(
-                                                               value: driver,
-                                                               child: Text(driver.name ?? "",
-                                                               style: mozillaTextRegularText(
-                                                                 fontSize: 12,
-                                                                 color: DynamicColors.textClr,
-                                                               ),
+                                                             .journeyTypes!
+                                                             .map((journey) =>
+                                                             DropdownMenuItem<JourneyTypeObject>(
+                                                               value: journey,
+                                                               child: Text(journey.journeyType ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
                                                                ),
                                                              ))
                                                              .toList(),
                                                          onChanged: (v) {
-                                                           controller.selectDriverValue = v;
+                                                            // O/W, R/N, W/R
+                                                           if(v!.journeyType == "one way"){
+                                                             controller.jourValue = null;
+                                                           }else{
+                                                             controller.jourValue = 'W/R';
+                                                           }
+                                                           controller.selectJourneyTypeValue = v;
                                                            controller.update();
                                                          },
                                                        ),
@@ -1035,9 +1053,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
                                                  ),
 
+                                                 // (9) Driver dropdown
+
+
                                                  // (10) Fare (Slugg)
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(22),
+                                                   order: const NumericFocusOrder(21),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1061,14 +1082,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    ),
                                                  ),
 
+
                                                  // (11) Account
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(23),
+                                                   order: const NumericFocusOrder(22),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.acc,
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
                                                      heights: 35,
                                                      child: Container(
                                                        // height: 35,
@@ -1082,7 +1104,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            isDense: true,
                                                          ),
                                                          value: controller.selectAccountValue,
+
                                                          items: controller.dashboardAccountData == null? []: controller.dashboardAccountData!
+
                                                              .accounts!
                                                              .map((account) =>
                                                              DropdownMenuItem<DashboardAccountObject>(
@@ -1107,27 +1131,42 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // (12) Pay dropdown
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(24),
+                                                   order: const NumericFocusOrder(23),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.pay,
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
+                                                     heights: 35,
                                                      child: Container(
-                                                       height: 30,
+                                                       // height: 35,
                                                        decoration: BoxDecoration(
-                                                         borderRadius: BorderRadius.circular(4),
-                                                         border: Border.all(color: DynamicColors.primaryClr),
+                                                         borderRadius: BorderRadius.circular(6),
+                                                         border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                        ),
-                                                       child:
-                                                       RestrictedDrivers(
-                                                         width: fieldWidth/2.3,
-                                                         height: 30,
-                                                         padding: 0.0,
-                                                         titleText: controller.payValue,
-                                                         driversList: [
-                                                           "CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"
-                                                         ],
+                                                       child: DropdownButtonFormField<PaymentTypeObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectPaymentTypeValue,
+
+                                                         items: controller.dashboardAllData!.paymentTypes!
+                                                             .map((payment) =>
+                                                             DropdownMenuItem<PaymentTypeObject>(
+                                                               value: payment,
+                                                               child: Text(payment.name ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectPaymentTypeValue = v;
+                                                           controller.update();
+                                                         },
                                                        ),
                                                      ),
                                                    ),
@@ -1135,7 +1174,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // (13) Calendar icon (keyboard clickable)
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(25),
+                                                   order: const NumericFocusOrder(24),
                                                    child: SizedBox(
                                                      height: 33,
                                                      child: KbdActivatable(
@@ -1160,7 +1199,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  ),
 
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(26),
+                                                   order: const NumericFocusOrder(25),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1204,7 +1243,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  controller.selectAccountValue ==null?
                                                  SizedBox.shrink() :
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(27),
+                                                   order: const NumericFocusOrder(26),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1246,7 +1285,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // Switch + Quotation
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(28),
+                                                   order: const NumericFocusOrder(27),
                                                    child: DynamicSwitch(
                                                      controller: controller.switchController,
                                                      activeColor: DynamicColors.primaryClr,
@@ -1265,7 +1304,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // SMS Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(29),
+                                                   order: const NumericFocusOrder(28),
                                                    child: SizedBox(
                                                      // width: fieldWidth/6,
                                                      child: Row(
@@ -1360,7 +1399,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              keyboardType: TextInputType.number,
                                                              contentPadding:
                                                              EdgeInsets.symmetric(horizontal: 4),
-                                                             controller: TextEditingController(),
+                                                             controller: controller.passController,
                                                              borderRadius: 4,
                                                            ),
                                                          ),
@@ -1380,7 +1419,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              keyboardType: TextInputType.number,
                                                              contentPadding:
                                                              EdgeInsets.symmetric(horizontal: 4),
-                                                             controller: TextEditingController(),
+                                                             controller: controller.luggController,
                                                              borderRadius: 4,
                                                            ),
                                                          ),
@@ -1400,7 +1439,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              keyboardType: TextInputType.number,
                                                              contentPadding:
                                                              EdgeInsets.symmetric(horizontal: 4),
-                                                             controller: TextEditingController(),
+                                                             controller: controller.sluggController,
                                                              borderRadius: 4,
                                                            ),
                                                          ),
@@ -1496,7 +1535,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    Icon(Icons.access_time_filled_outlined,
                                                        color: DynamicColors.textClr, size: 18),
                                                    SizedBox(width: 4),
-                                                   Text("ETA : 0.0 mins",
+                                                   Text("ETA : ${controller.totalTimeDuration}",
                                                        style: TextStyle(
                                                            color: DynamicColors.textClr,
                                                            fontSize: 13)),
@@ -1511,7 +1550,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    Icon(Icons.location_on,
                                                        color: DynamicColors.textClr, size: 18),
                                                    SizedBox(width: 4),
-                                                   Text("DISTANCE : 0.0 miles",
+                                                   Text("DISTANCE : ${controller.totalDistance}",
                                                        style: TextStyle(
                                                            color: DynamicColors.textClr,
                                                            fontSize: 13)),
@@ -1528,7 +1567,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      child: FittedBox(
                                                        fit: BoxFit.scaleDown,
                                                        child: Text(
-                                                         "PR: \$ 4.90",
+                                                         "PR: \$ ${controller.slugController.text}",
                                                          style: TextStyle(
                                                            fontWeight: FontWeight.bold,
                                                            color: Colors.black,
@@ -1556,42 +1595,38 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      child: labeledField(
                                                        context: context,
                                                        isMobile: isMobile,
-                                                       label: AppText.driver,
+                                                       label: AppText.drv,
                                                        width: fieldWidth/2.3,
-                                                       // child:  DropdownButtonFormField<ZoneObject>(
-                                                       //   decoration: const InputDecoration(
-                                                       //     border: OutlineInputBorder(),
-                                                       //     isDense: true,
-                                                       //   ),
-                                                       //   value: controller.zoneValue,
-                                                       //   items: controller.locationtypezoneModel!
-                                                       //       .zonesList!
-                                                       //       .map((zone) =>
-                                                       //       DropdownMenuItem<ZoneObject>(
-                                                       //         value: zone,
-                                                       //         child: Text(zone.name ?? ""),
-                                                       //       ))
-                                                       //       .toList(),
-                                                       //   onChanged: (v) {
-                                                       //     controller.zoneValue = v;
-                                                       //     controller.update();
-                                                       //   },
-                                                       // ),
-                                                      child: Container(
-                                                         height: 30,
+                                                       heights: 35,
+                                                       child: Container(
+                                                         // height: 35,
                                                          decoration: BoxDecoration(
-                                                           borderRadius: BorderRadius.circular(4),
-                                                           border: Border.all(color: DynamicColors.primaryClr),
+                                                           borderRadius: BorderRadius.circular(6),
+                                                           border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                          ),
-                                                         child:
-                                                         RestrictedDrivers(
-                                                           width: fieldWidth/2.3,
-                                                           height: 30,
-                                                           padding: 0.0,
-                                                           titleText: controller.selectedDriver,
-                                                           driversList: [
-                                                             "Driver 01", "Driver 02", "Driver 03", "Driver 04"
-                                                           ],
+                                                         child: DropdownButtonFormField<DashboardDriverObject>(
+                                                           decoration: const InputDecoration(
+                                                             border: OutlineInputBorder(),
+                                                             isDense: true,
+                                                           ),
+                                                           value: controller.selectDriverValue,
+                                                           items: controller.dashboardAllData!
+                                                               .drivers!
+                                                               .map((driver) =>
+                                                               DropdownMenuItem<DashboardDriverObject>(
+                                                                 value: driver,
+                                                                 child: Text(driver.name ?? "",
+                                                                   style: mozillaTextRegularText(
+                                                                     fontSize: 12,
+                                                                     color: DynamicColors.textClr,
+                                                                   ),
+                                                                 ),
+                                                               ))
+                                                               .toList(),
+                                                           onChanged: (v) {
+                                                             controller.selectDriverValue = v;
+                                                             controller.update();
+                                                           },
                                                          ),
                                                        ),
                                                      ),
@@ -1625,7 +1660,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    // ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(40),
+                                                     order: const NumericFocusOrder(38),
                                                      child: CustomButton(
                                                        btnText: "CLEAR [F7]",
                                                        width: 110,
@@ -1640,8 +1675,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      width: 10,
                                                    ),
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(41),
+                                                     order: const NumericFocusOrder(39),
                                                      child: CustomButton(
+                                                       onTap: (){
+                                                         controller.postDashboardApi();
+                                                       },
                                                        btnText: "SAVE[HOME]",
                                                        width: 110,
                                                        height: 30,

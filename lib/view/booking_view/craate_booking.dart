@@ -1011,8 +1011,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               width: fieldWidth,
                                               height: 30,
                                               child: CustomTextField(
-                                                controller:
-                                                    TextEditingController(),
+                                                controller: TextEditingController(),
                                                 hintText: "DROP NOTES",
                                                 borderRadius: 6,
                                                 textInputAction:
@@ -1403,6 +1402,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           "Switch toggled: ${controller.switchController.value}");
                                     },
                                   ),
+
                                   Text(
                                     AppText.quotation,
                                     style: mozillaTextSemiBoldText(

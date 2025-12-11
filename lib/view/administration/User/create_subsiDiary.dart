@@ -38,9 +38,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AdministrationController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -295,8 +293,6 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                       CustomButton(
                         onTap: () {
                           controller.createSubsiDiary();
-                          
-                          
                         },
                         height: 30,
                         width: fieldWidth,

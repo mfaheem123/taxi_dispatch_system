@@ -66,11 +66,6 @@ void showShortcutDialog(BuildContext context,{
   });
 }
 
-
-
-
-
-
 class F3AlertWidget extends StatelessWidget {
   F3AlertWidget({super.key});
   List<String> list = [
@@ -105,10 +100,12 @@ class F3AlertWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(
@@ -116,6 +113,7 @@ class F3AlertWidget extends StatelessWidget {
                         value: "Blue"
                       ),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(
@@ -126,11 +124,11 @@ class F3AlertWidget extends StatelessWidget {
                   ],
                 ),
               ),
+
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(
@@ -242,7 +240,6 @@ class F4AlertWidget extends StatelessWidget {
                     containerWidth: Get.width/10,
                     initialValue: list.first,
                     onChanged: (v){
-
                     },
                     items: list,
                   ),

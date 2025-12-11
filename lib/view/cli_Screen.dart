@@ -52,6 +52,10 @@ class ResponsivePassengerScreen extends StatelessWidget {
   }
 }
 
+
+
+
+
 /// --------- Wide (Web/Tablet landscape) ----------
 class _WideLayout extends StatelessWidget {
   const _WideLayout({required this.leftWidth, required this.rightWidth});
@@ -76,6 +80,11 @@ class _WideLayout extends StatelessWidget {
   }
 }
 
+
+
+
+
+
 /// --------- Mobile (Stacked) ----------
 class _MobileLayout extends StatelessWidget {
   const _MobileLayout({required this.leftWidth, required this.rightWidth});
@@ -96,6 +105,11 @@ class _MobileLayout extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
 
 /// --------- LEFT SIDEBAR ----------
 class _LeftSidebar extends StatelessWidget {
@@ -190,6 +204,11 @@ class _LeftSidebar extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
 
 /// --------- CENTER AREA ----------
 
@@ -542,7 +561,13 @@ class _CenterAreaState extends State<_CenterArea> {
   }
 }
 
-/// --------- RIGHT SIDEBAR ----------
+
+
+
+
+
+
+
 class _RightSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

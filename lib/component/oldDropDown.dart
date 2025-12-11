@@ -93,8 +93,10 @@ class CustomDropdown extends StatelessWidget {
               value: selecteditem,
               style: textStyle ??
                   TextStyle(
+
                     fontSize: MediaQuery.of(context).size.width * 0.0085,
                     color: DynamicColors.black,
+
                   ),
               icon: Icon(
                 Icons.keyboard_arrow_down,

@@ -12,14 +12,13 @@ import 'package:latlong2/latlong.dart';
 import '../../../Model/via_point.dart';
 import '../models/all_addresses_model.dart';
 
-class Job {
-  final String name;
-  final IconData icon;
-  const Job(this.name, this.icon);
-
-  @override
-  String toString() => name;
+class ViaTextEditingControllerClass {
+  TextEditingController name = TextEditingController();
+  TextEditingController mobile = TextEditingController();
+  ViaTextEditingControllerClass(this.name, this.mobile);
 }
+
+
 
 class ViaLocation extends StatefulWidget {
   const ViaLocation({super.key});
@@ -71,6 +70,7 @@ class _ViaLocationState extends State<ViaLocation> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -121,33 +121,6 @@ class _ViaLocationState extends State<ViaLocation> {
                                   ),
                                 ),
                                 SizedBox(width: 12),
-                                // Expanded(
-                                //   child: DropdownFlutter<String>.searchRequest(
-                                //     futureRequest: _getNamesRequest,
-                                //     hintText: 'Search location',
-                                //     items: controller.allAddressesData.map((m) => m.name ?? '').toList(),
-                                //     onChanged: (selectedName) {
-                                //       print(selectedName);
-                                //       // find original model (simple loop avoids firstWhere/orElse issues)
-                                //       for (final m in controller.allAddressesData) {
-                                //         if ("${m.name!} ${m.postcode!}"  == selectedName) {
-                                //           controller.selectedModel = m;
-                                //           break;
-                                //         }
-                                //       }
-                                //       if (controller.selectedModel != null) {
-                                //         print('Selected model: ${controller.selectedModel!.name}');
-                                //         // use selectedModel (lat/lon, postcode, etc.)
-                                //       }
-                                //     },
-                                //     decoration: CustomDropdownDecoration(
-                                //       closedBorder: Border.all(color: Colors.grey),
-                                //       closedBorderRadius: BorderRadius.circular(8),
-                                //     ),
-                                //     closedHeaderPadding: EdgeInsets.all(6),
-                                //   ),
-                                // ),
-
                                 RawKeyboardListener(
                                   focusNode: controller
                                       .searchingAddressViaFocusNode,
@@ -215,6 +188,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                           lat: controller.selectedModel!.lat!,
                                           lng: controller.selectedModel!.lon!));
                                       addressController.clear();
+                                      controller.viaTextEditingController.add(ViaTextEditingControllerClass(TextEditingController(),TextEditingController()));
                                       controller.update();
                                     }else{
                                         BotToast.showText(text: "Only Five VIA Allow");
@@ -267,10 +241,11 @@ class _ViaLocationState extends State<ViaLocation> {
                                           children: [
                                             Expanded(
                                                 child: TextField(
-                                              onChanged: (val){
-                                                point.name!.text = val;
-                                                controller.update();
-                                              },
+                                                  controller: controller.viaTextEditingController[index].name,
+                                              // onChanged: (val){
+                                              //   controller.viaPoints[index].name!.text = val;
+                                              //   controller.update();
+                                              // },
                                               decoration: InputDecoration(
                                                 hintText: "Name",
                                                 border: OutlineInputBorder(),
@@ -279,10 +254,11 @@ class _ViaLocationState extends State<ViaLocation> {
                                             SizedBox(width: 8),
                                             Expanded(
                                                 child: TextField(
-                                              onChanged: (val) {
-                                                point.mobile!.text = val;
-                                                controller.update();
-                                              },
+                                                  controller: controller.viaTextEditingController[index].mobile,
+                                              // onChanged: (val) {
+                                              //   controller.viaPoints[index].mobile!.text = val;
+                                              //   controller.update();
+                                              // },
                                               decoration: InputDecoration(
                                                 hintText: "Mobile",
                                                 border: OutlineInputBorder(),
@@ -368,11 +344,13 @@ class _ViaLocationState extends State<ViaLocation> {
                                     borderRadius: BorderRadius.circular(4)),
                               ),
                               onPressed: () {
+                                int len = controller.viaPoints.length;
+
+                                for (int a = 0; a < len && a < controller.viaTextEditingController.length; a++) {
+                                  controller.viaPoints[a].name = controller.viaTextEditingController[a].name.text;
+                                  controller.viaPoints[a].mobile = controller.viaTextEditingController[a].mobile.text;
+                                }
                                 controller.fetchRouteFromOSRM();
-                                // for (var point in controller.viaPoints) {
-                                //   print(
-                                //       "${point.address} - ${point.name} - ${point.mobile}");
-                                // }
                                 Navigator.pop(context);
                               },
                               child: Text(

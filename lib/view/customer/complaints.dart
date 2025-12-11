@@ -36,16 +36,12 @@ class _ComplaintsViewState extends State<ComplaintsView> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return GetBuilder<CustomerController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
         // Instead of fixed width, we calculate flexible field widths
         final double fieldWidth = isMobile
             ? maxWidth // full width
@@ -67,6 +63,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
+
                   SizedBox(
                     width: 60,
                   ),

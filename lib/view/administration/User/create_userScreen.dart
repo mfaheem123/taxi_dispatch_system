@@ -1,4 +1,4 @@
-import 'package:dashboard_new1/component/color.dart';
+ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
@@ -15,10 +15,9 @@ import '../model/list_subsDiary.dart';
 class CreateUserScreen extends StatelessWidget {
   CreateUserScreen({super.key});
 
-  AdministrationController controller =
-      Get.isRegistered<AdministrationController>()
-          ? Get.find<AdministrationController>()
-          : Get.put(AdministrationController());
+  AdministrationController controller = Get.isRegistered<AdministrationController>()
+      ? Get.find<AdministrationController>()
+      : Get.put(AdministrationController());
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +45,7 @@ class CreateUserScreen extends StatelessWidget {
                       // Image box fix with Flexible
                       Flexible(
                           flex: 1,
-                          child:
-                              _buildImageBox(isMobile, controller: controller)),
+                          child: _buildImageBox(isMobile, controller: controller)),
                       SizedBox(width: 20),
                       // Form box fix with Flexible
                       Flexible(
