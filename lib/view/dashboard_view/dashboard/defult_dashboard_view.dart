@@ -241,7 +241,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          child: SizedBox(
                                                            width: 20,
                                                            height: 20,
-                                                           child:  CircularProgressIndicator(),
+                                                           child: CircularProgressIndicator(),
                                                          ),
                                                        ),
                                                        ),

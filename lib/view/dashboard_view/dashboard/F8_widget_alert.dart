@@ -8,9 +8,6 @@ import '../../../component/textStyle.dart';
 
 class DashboardF8Alert {
   static void show() {
-
-    // int? editingIndex;
-
     Get.dialog(
       Dialog(
         insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),
@@ -19,7 +16,6 @@ class DashboardF8Alert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-
               return Container(
                 width: Get.width * 0.6,
                 padding: const EdgeInsets.all(14),
