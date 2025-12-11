@@ -135,7 +135,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                                   CustomDropdownField<VehicleTypeConfiguration>(
                                     label: "Select Vehicle",
                                     width: fieldWidth,
@@ -154,6 +156,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
                                   CustomDropdownField<Account>(
                                     label: "Select Account",
                                     width: fieldWidth,
@@ -433,6 +436,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                         ],
                       ),
                     ),
+                    SizedBox(height: 20,),
                     SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
@@ -484,12 +488,11 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                                     color: Colors.transparent),
                                               ),
                                               onPressed: () {
-                                                // 🟢 Edit action
+                                                controller.editcreateFareSetting(fare.id);
                                               },
                                               child: Icon(Icons.edit_calendar,
                                                   size: 20,
-                                                  color:
-                                                      DynamicColors.primaryClr),
+                                                  color: DynamicColors.primaryClr),
                                             ),
                                             OutlinedButton(
                                               style: OutlinedButton.styleFrom(
@@ -499,7 +502,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                                     color: Colors.transparent),
                                               ),
                                               onPressed: () {
-                                                // 🔴 Delete action
+                                                controller.deletecreateFareSetting(fare.id);
                                               },
                                               child: Icon(Icons.delete_forever,
                                                   size: 20,

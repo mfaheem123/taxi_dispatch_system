@@ -293,7 +293,6 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
         final List<dynamic> list = response.data['localizationdetail'];
         final List<Postcode> loaded =
         list.map((e) => Postcode.fromJson(e)).toList();
-
         setState(() {
           postcodes = loaded;
         });

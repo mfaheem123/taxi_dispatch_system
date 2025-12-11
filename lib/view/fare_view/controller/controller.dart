@@ -516,6 +516,7 @@ class FareController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> create fare setting
+
   createFareSetting() async{
     var formData = {
       "vehicle_type_id": vehicleValue!.id,
@@ -537,6 +538,42 @@ class FareController extends GetxController {
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
       refreshCreateFareFields();
+    }
+  }
+
+  editcreateFareSetting(int? id) async{
+    var formData = {
+      "vehicle_type_id": vehicleValue!.id,
+      "account_id": accountValue!.id,
+      "from_day": fromDayValue,
+      "to_day": toDayValue,
+      "from_time": fromDayController.text,
+      "to_time": toDayController.text,
+      "minimum_fares": startingFareController.text,
+      "minimum_miles": startingMilesController.text,
+      if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
+      if(fareConfiguration != "NORMAL") "from_date": startDate,
+      if(fareConfiguration != "NORMAL") "to_date": endDate,
+    };
+    print(formData);
+    var response = await Api().post(formData, "faresconfiguration/edit/${id}");
+    if(response.statusCode == 200){
+      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
+      print(response.data);
+      BotToast.showText(text: "Fare configuration is successfully added");
+      refreshCreateFareFields();
+    }
+  }
+
+  deletecreateFareSetting(int? id) async{
+    var response = await Api().delete( "faresconfiguration/delete/${id}");
+    if(response.statusCode == 200){
+      // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
+      // print(response.data);
+      // BotToast.showText(text: "Fare configuration is successfully added");
+      getAllFareConfiguration();
+      refreshCreateFareFields();
+      update();
     }
   }
 

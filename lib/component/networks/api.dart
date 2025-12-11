@@ -73,8 +73,7 @@ class Api {
 
 
 
-  Future<dynamic> get(String url,
-      {fullUrl, queryParameters, auth = false}) async {
+  Future<dynamic> get(String url, {fullUrl, queryParameters, auth = false}) async {
     Dio dio = Dio(BaseOptions(
         connectTimeout: Duration(seconds: 50),
         receiveTimeout: Duration(seconds: 50),

@@ -32,6 +32,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
   @override
   void initState() {
     // TODO: implement initState
+
     super.initState();
 
     shortCutKeyValue.value = "createCompanyVehicle";
@@ -63,6 +64,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
 
             return /*controller.getAllVehicleTypeLoader.value == true ? Center(
               child: CircularProgressIndicator(),
+
             ):*/ Column(
               children: [
                 SizedBox(
@@ -82,6 +84,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                 SizedBox(
                   height: 8,
                 ),
+
         Wrap(
         runSpacing: 16,
         spacing: 10,
