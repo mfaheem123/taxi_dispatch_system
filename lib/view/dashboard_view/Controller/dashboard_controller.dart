@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
@@ -21,6 +22,7 @@ import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../tabbarview.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
+import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -896,6 +898,71 @@ class DashboardController extends GetxController {
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables
+  DateTime? multiReservationFromDate = DateTime.now();
+  DateTime? multiReservationToDate = DateTime.now();
+  final multiReservationToTimeController = TextEditingController();
+
+  List<MultiReservation> multiReservationList = [];
+  List<String> multiReservationDaysList = [];
+  void addDayToTempList(String day) {
+    if (multiReservationDaysList.contains(day)) {
+      multiReservationDaysList.remove(day);
+    } else {
+      multiReservationDaysList.add(day);
+    }
+  }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start to end date are filters
+  List<String> getDatesBetween({required DateTime start, required DateTime end}) {
+    List<String> dates = [];
+
+    for (DateTime date = start;
+    date.isBefore(end.add(const Duration(days: 1)));
+    date = date.add(const Duration(days: 1))) {
+      dates.add("${date.day}/${date.month}/${date.year}");
+    }
+
+    return dates;
+  }
+
+
+
+  addToMultiReservation({DateTime? startTime, DateTime? endTime, List? selectedDays, time}) async{
+    if (startTime == null || endTime == null) return BotToast.showText(text: "Please Select start and end date and as well time");
+
+    if(multiReservationDaysList.isEmpty) return BotToast.showText(text: "Please Select day");
+
+    final allDates = getDatesBetween(start: startTime, end: endTime);
+
+    for (var element in allDates) {
+      for (var action in multiReservationDaysList) {
+        multiReservationList.add(
+            MultiReservation(
+                startDate: element.toString(),
+                day: action,
+                exclude: "Jobs",
+                returnTime: time
+            )
+        );
+      }
+    }
+    refreshMultiReservationData();
+  }
+
+  refreshMultiReservationData() async{
+    multiReservationDaysList.clear();
+    mondayValue.value = false;
+    tuesdayValue.value = false;
+    wednesdayValue.value = false;
+    thursdayValue.value = false;
+    fridayValue.value = false;
+    saturdayValue.value = false;
+    sundayValue.value = false;
+    update();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
   final pickUpNoteController = TextEditingController();
   final dropUpNoteController = TextEditingController();
@@ -910,8 +977,8 @@ class DashboardController extends GetxController {
   List extraFaresList = [];
   List viaPostList = [];
 
+
   postDashboardApi() async {
-    print(viaPoints);
 
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
    await restrictedDriversListConfig();
@@ -928,14 +995,12 @@ class DashboardController extends GetxController {
       'dropoff_plot': '28',
       'dropoff_door_number': dropUpNoteController.text,
      if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
-      if(nameController.text.isNotEmpty)'name': nameController.text,
-      if(emailController.text.isNotEmpty)'email': emailController.text,
-      if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
+     if(nameController.text.isNotEmpty)'name': nameController.text,
+     if(emailController.text.isNotEmpty)'email': emailController.text,
+     if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
      if(telController.text.isNotEmpty) 'telephone': telController.text,
-      'customer':
-      ' [{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
-      'pickup_date':
-          "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      'customer': '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
+      'pickup_date': "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
      if(pickUpTimeController.text.isNotEmpty) 'pickup_time': pickUpTimeController.text,
      if(minController.text.isNotEmpty) 'lead_time': minController.text,
       'journey_type_id': selectJourneyTypeValue !=null ? selectJourneyTypeValue!.id :1,
@@ -944,13 +1009,13 @@ class DashboardController extends GetxController {
       'quotation': switchController.value,
       'sms': smsCheckbox.value,
       'emailFlag': emailCheckbox.value,
-      if(passController.text.isNotEmpty)'passengers': passController.text,
-      if(luggController.text.isNotEmpty)'luggages': luggController.text,
-      if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
+     if(passController.text.isNotEmpty)'passengers': passController.text,
+     if(luggController.text.isNotEmpty)'luggages': luggController.text,
+     if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
      if(selectPaymentTypeValue != null) 'payment_type_id': selectPaymentTypeValue!.id,
      if(selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
-      if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
-      if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
+     if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
+     if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
      if(partingChargesController.text.isNotEmpty) 'parking_charges': partingChargesController.text,
      if(congestionChargesController.text.isNotEmpty) 'congestion_charges': congestionChargesController.text,
      if(meetGreetController.text.isNotEmpty) 'meet_and_greet': meetGreetController.text,
@@ -959,10 +1024,10 @@ class DashboardController extends GetxController {
      if(creditCardChargesController.text.isNotEmpty) 'credit_card_charges': creditCardChargesController.text,
      if(companyPriceController.text.isNotEmpty) 'company_price': companyPriceController.text,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
-      if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
-      if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
-      if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
-      if(slugController.text.isNotEmpty)'fares': slugController.text,
+     if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
+     if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
+     if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
+     if(slugController.text.isNotEmpty)'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,
      if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
