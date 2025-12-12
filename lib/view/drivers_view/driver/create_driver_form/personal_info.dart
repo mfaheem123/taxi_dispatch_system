@@ -123,6 +123,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      child:
                      CustomDropdownField<SubsidiaryObject>(
                        label: "COMPANY TYPE",
+                       text: "COMPANY ACCOUNTS",
                        width: fieldWidth/2,
                        height: 35,
                        items: controller.getCombineVehicleData!.subsidiaries!,
