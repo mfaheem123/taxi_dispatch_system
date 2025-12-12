@@ -345,7 +345,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width,
+                          width: Get.width/2,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "EXCLUDE"),
@@ -389,18 +389,6 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             verticalPadding: 0.0,
                             btnText: AppText.saveAndClose,
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 50, right: 50, bottom: 30),
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 80,
-                          runSpacing: 50,
-                          children: [
-
-                          ],
                         ),
                       ),
                     ],

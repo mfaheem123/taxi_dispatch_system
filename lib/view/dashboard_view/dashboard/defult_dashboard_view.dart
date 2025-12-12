@@ -1678,7 +1678,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      order: const NumericFocusOrder(39),
                                                      child: CustomButton(
                                                        onTap: (){
-                                                         controller.postDashboardApi();
+                                                         controller.dashBardApiValidation();
                                                        },
                                                        btnText: "SAVE[HOME]",
                                                        width: 110,

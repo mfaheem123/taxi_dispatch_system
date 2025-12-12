@@ -22,6 +22,7 @@ import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../tabbarview.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
+import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
@@ -105,7 +106,7 @@ class DashboardController extends GetxController {
   final pickupController = TextEditingController();
   final dropOffController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
-  RxBool smsCheckbox = false.obs;
+  RxBool smsCheckbox = true.obs;
 
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
@@ -831,6 +832,10 @@ class DashboardController extends GetxController {
     var response = await Api().get("enumerations/get");
     if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
+      selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+      selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
+      selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+      selectVehicleValue = dashboardAllData!.vehicleTypes![0];
       dashboardDataLoader(false);
       update();
     }
@@ -935,6 +940,7 @@ class DashboardController extends GetxController {
     if(multiReservationDaysList.isEmpty) return BotToast.showText(text: "Please Select day");
 
     final allDates = getDatesBetween(start: startTime, end: endTime);
+    print(allDates);
 
     for (var element in allDates) {
       for (var action in multiReservationDaysList) {
@@ -977,6 +983,43 @@ class DashboardController extends GetxController {
   List extraFaresList = [];
   List viaPostList = [];
 
+  dashBardApiValidation() async{
+    if(pickupController.text.isEmpty){
+      return BotToast.showText(text: "Please select pickup location");
+    }
+    if(dashboardZoneValue == null){
+      return BotToast.showText(text: "Please select location zone");
+    }
+    if(dropOffController.text.isEmpty){
+      return BotToast.showText(text: "Please select dropoff location");
+    }
+    if(selectSubsidiariesValue == null){
+      return BotToast.showText(text: "Please select subsidiaries");
+    }
+    if(nameController.text.isEmpty){
+      return BotToast.showText(text: "Please write name");
+    }
+    if(emailController.text.isEmpty){
+      return BotToast.showText(text: "Please write email");
+    }
+    if(mobileController.text.isEmpty){
+      return BotToast.showText(text: "Please write mobile");
+    }
+    if(pickUpTimeController.text.isEmpty){
+      return BotToast.showText(text: "Please select pickup time");
+    }
+    if(selectJourneyTypeValue == null){
+      return BotToast.showText(text: "Please select journey type");
+    }
+    if(selectPaymentTypeValue == null){
+      return BotToast.showText(text: "Please select payment type");
+    }
+    if(selectVehicleValue == null){
+      return BotToast.showText(text: "Please select vehicle type");
+    }
+    postDashboardApi();
+    return null;
+  }
 
   postDashboardApi() async {
 
@@ -989,7 +1032,7 @@ class DashboardController extends GetxController {
 
     var formData = {
       'pickup': pickupController.text,
-      'pickup_plot': dashboardZoneValue!.name,
+      'pickup_plot': dashboardZoneValue!.id,
       'pickup_door_number': pickUpNoteController.text,
       'dropoff': dropOffController.text,
       'dropoff_plot': '28',
@@ -1007,7 +1050,7 @@ class DashboardController extends GetxController {
      if(selectAccountValue != null) 'account_id': selectAccountValue!.id,
      if(selectDepartmentData != null) 'department': selectDepartmentData!.id,
       'quotation': switchController.value,
-      'sms': smsCheckbox.value,
+      'sms': true /*smsCheckbox.value*/,
       'emailFlag': emailCheckbox.value,
      if(passController.text.isNotEmpty)'passengers': passController.text,
      if(luggController.text.isNotEmpty)'luggages': luggController.text,
@@ -1036,7 +1079,11 @@ class DashboardController extends GetxController {
       'booking_source': 'dashboard',
       'employee_id': '2'
     };
-    // var response = await Api().post(formData, "bookings/add");
+    var response = await Api().post(formData, "bookings/add");
+    if(response.statusCode == 200){
+      refreshPostAllFields();
+      print(response.data);
+    }
   }
 
   restrictedDriversListConfig() async {
@@ -1074,21 +1121,84 @@ class DashboardController extends GetxController {
     update();
   }
 
-  postViaListConfig() async{
+  postViaListConfig() async {
     viaPostList.clear();
-    for (int i = 0; i <= viaPoints.length; i++) {
+    print(viaPoints);
+    for (var action in viaPoints) {
       viaPostList.add({
-        "viapoint": viaPoints[i].address,
-        "name": viaPoints[i].name,
-        "mobile": viaPoints[i].mobile,
+        "viapoint": action.address,
+        "name": action.name,
+        "mobile": action.mobile,
         "arrived": null,
         "passenger_on_board": null,
         "active": false,
-        "latitude": viaPoints[i].lat,
-        "longitude": viaPoints[i].lng
+        "latitude": action.lat,
+        "longitude": action.lng
       }
       );
     }
+    update();
+  }
+
+  refreshPostAllFields() async{
+    final LocationController _controller = Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
+    pickupController.clear();
+    pickUpNoteController.clear();
+    dropOffController.clear();
+    dropUpNoteController.clear();
+    nameController.clear();
+    emailController.clear();
+    mobileController.clear();
+    telController.clear();
+    pickUpTimeController.clear();
+    minController.clear();
+    passController.clear();
+    luggController.clear();
+    sluggController.clear();
+    partingChargesController.clear();
+    congestionChargesController.clear();
+    meetGreetController.clear();
+    waitingChargesController.clear();
+    extraDropChargesController.clear();
+    creditCardChargesController.clear();
+    companyPriceController.clear();
+    specialRequirementsController.clear();
+    slugController.clear();
+    viaPostList.clear();
+    restrictedDrivers.clear();
+    childSeatList.clear();
+    extraFaresList.clear();
+    driversList.clear();
+    childSeatAlert.clear();
+    controllerAlert.clear();
+    viaPoints.clear();
+    dashboardZoneValue = null;
+    _controller.zoneValue = null;
+    selectJourneyTypeValue = null;
+    selectAccountValue = null;
+    selectDepartmentData = null;
+    selectPaymentTypeValue = null;
+    selectVehicleValue = null;
+    selectDriverValue = null;
+    selectSubsidiariesValue = null;
+    switchController.value = false;
+    smsCheckbox.value = true;
+    emailCheckbox.value = false;
+    markers.clear();
+    polylines.clear();
+    polylinePointsCoordinate.clear();
+    markers.clear();
+    polyLineMarkerInfo.clear();
+    polylines.clear();
+    polylinePoints.clear();
+    multiReservationToTimeController.clear();
+    multiReservationDaysList.clear();
+    multiReservationList.clear();
+    totalDistance.value = "0";
+    totalDistance.value = "0";
+    totalTimeDuration.value = "0";
     update();
   }
 
