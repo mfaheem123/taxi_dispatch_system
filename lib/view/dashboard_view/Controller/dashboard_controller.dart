@@ -1089,30 +1089,29 @@ class DashboardController extends GetxController {
   restrictedDriversListConfig() async {
     if(driversList.isNotEmpty){
       restrictedDrivers.clear();
-      for (int i = 0; i <= driversList.length; i++) {
+      for (var driverss in driversList) {
         restrictedDrivers.add({
-          "id": driversList[i].id,
-          "username": driversList[i].username,
-          "name": driversList[i].name,
+          "id": driverss.id,
+          "username": driverss.username,
+          "name": driverss.name,
         });
-      }
-    }
+      }}
     if(childSeatAlert.isNotEmpty){
       childSeatList.clear();
-      for (int index = 0; index <= childSeatAlert.length; index++) {
+      for (var ele in childSeatAlert) {
         childSeatList.add({
-          "child": childSeatAlert[index].sets,
-          "age": childSeatAlert[index].age,
+          "child": ele.sets,
+          "age": ele.age,
         });
       }
     }
     if(controllerAlert.isNotEmpty){
       extraFaresList.clear();
-      for (int indexx = 0; indexx <= controllerAlert.length; indexx++) {
+      for (var index in controllerAlert) {
         extraFaresList.add(
-          {"note":controllerAlert[indexx],
-          "created_at":
-          "2025-11-25 16:10",
+          {"note": index,
+            "created_at":
+            "2025-11-25 16:10",
             "created_by":"nadeem"
           },
         );
@@ -1196,6 +1195,7 @@ class DashboardController extends GetxController {
     multiReservationToTimeController.clear();
     multiReservationDaysList.clear();
     multiReservationList.clear();
+    viaTextEditingController.clear();
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
