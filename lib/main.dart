@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
-
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'component/networks/Url.dart';
 
 void main() async{
+  usePathUrlStrategy(); // removes # from URL
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 

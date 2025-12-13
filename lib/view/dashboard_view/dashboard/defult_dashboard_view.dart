@@ -126,14 +126,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                     return;
                   } else if (event.logicalKey.keyLabel == "F8") {
-                    // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                    if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
                       DashboardF8Alert.show();
-                    // }
+                    }
                     return;
                   }else if (event.logicalKey.keyLabel == "F9") {
-                    // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                    if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
                     DashboardF9Alert.show();
-                    // }
+                    }
                     return;
                   }
                 }
@@ -1698,7 +1698,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                      DriversView(),
                                      MapViewWidget(),
                                    ],
-                                 ):Column(
+                                 ) : Column(
                                    children: [
                                      BookingFormWidget(),
                                      Row(

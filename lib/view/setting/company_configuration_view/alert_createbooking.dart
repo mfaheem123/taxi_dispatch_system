@@ -187,7 +187,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.monday,
                               value: controller.mondayValue.value,
                               focusNode: controller.mondayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -198,7 +198,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.tuesday,
                               value: controller.tuesdayValue.value,
                               focusNode: controller.tuesdayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -209,7 +209,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.wednesday,
                               value: controller.wednesdayValue.value,
                               focusNode: controller.wednesdayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -220,7 +220,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.thursday,
                               value: controller.thursdayValue.value,
                               focusNode: controller.thursdayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -231,7 +231,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.friday,
                               value: controller.fridayValue.value,
                               focusNode: controller.fridayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -242,7 +242,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.saturday,
                               value: controller.saturdayValue.value,
                               focusNode: controller.saturdayNode,
-                              width: 200,
+                              width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -253,7 +253,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.sunday,
                               value: controller.sundayValue.value,
                               focusNode: controller.sundayNode,
-                              width: 200,
+                              width: 120,
                             ),
                           ],
                         ),
@@ -261,86 +261,86 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       SizedBox(
                         height: 25,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 30),
-                        child: Wrap(
-                          runSpacing: 50,
-                          spacing: 50,
-                          children: [
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.weeks,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.fromDate,
-                            ),
-                            CustomTextField(
-                              borderRadius: 1.5,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.finishDate,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.pickupTime,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.returnPickupTime,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              labelText: AppText.fare,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              columnText: false,
-                              labelText: AppText.returnFare,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              columnText: false,
-                              labelText: AppText.accountPrice,
-                            ),
-                            CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.weeks,
-                              width: fieldWidth / 1.5,
-                              columnText: false,
-                              labelText: AppText.returnAccountPrice,
-                            ),
-                            KeyboardCheckbox(
-                              onChanged: (v) {
-                                controller.returnTrip.value = v;
-                                controller.update();
-                              },
-                              label: AppText.returnTrip,
-                              value: controller.returnTrip.value,
-                              focusNode: controller.returnTripNode,
-                              width: 200,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       vertical: 10, horizontal: 30),
+                      //   child: Wrap(
+                      //     runSpacing: 50,
+                      //     spacing: 50,
+                      //     children: [
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.weeks,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.fromDate,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 1.5,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.finishDate,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.pickupTime,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.returnPickupTime,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         labelText: AppText.fare,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         columnText: false,
+                      //         labelText: AppText.returnFare,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         columnText: false,
+                      //         labelText: AppText.accountPrice,
+                      //       ),
+                      //       CustomTextField(
+                      //         borderRadius: 4,
+                      //         controller: controller.weeks,
+                      //         width: fieldWidth / 1.5,
+                      //         columnText: false,
+                      //         labelText: AppText.returnAccountPrice,
+                      //       ),
+                      //       KeyboardCheckbox(
+                      //         onChanged: (v) {
+                      //           controller.returnTrip.value = v;
+                      //           controller.update();
+                      //         },
+                      //         label: AppText.returnTrip,
+                      //         value: controller.returnTrip.value,
+                      //         focusNode: controller.returnTripNode,
+                      //         width: 200,
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   height: 30,
+                      // ),
 
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -352,20 +352,20 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               buildHeaderWithSearch(title: "DAY"),
                               buildHeaderWithSearch(title: "DATE"),
                               buildHeaderWithSearch(title: "TIME"),
-                              buildHeaderWithSearch(title: "RETURN TIME"),
+                              // buildHeaderWithSearch(title: "RETURN TIME"),
                             ],
                             rows: [
                               // Existing extensions
                               ...controller
                                   .multiReservationList
-                                  .map((ext) {
+                                  .map((object) {
                                 return DataRow(
                                   cells: [
-                                    DataCell(Text("JOB")),
-                                    DataCell(Text("MONDAY")),
-                                    DataCell(Text("12-Nov-2025")),
-                                    DataCell(Text("Time")),
-                                    DataCell(Text("RETURN Time")),
+                                    DataCell(Text(object.exclude.toString().toUpperCase())),
+                                    DataCell(Text(object.day??"")),
+                                    DataCell(Text(object.startDate??"")),
+                                    // DataCell(Text(object.time??"")),
+                                    DataCell(Text(object.returnTime??"")),
                                   ],
                                 );
                               }).toList(),
@@ -382,6 +382,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         child: Align(
                           alignment: Alignment.bottomRight,
                           child: CustomButton(
+                            onTap: (){
+                              Get.back();
+                            },
                             height: 35,
                             width: fieldWidth / 2,
                             fontSize: 14,
@@ -408,7 +411,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
 
 class MultiReservation{
-  String? exclude,time,returnTime, day, startDate;
+  String? time,returnTime, day, startDate;
+  bool exclude = false;
 
-  MultiReservation({this.day, this.time, this.startDate, this.exclude, this.returnTime});
+  MultiReservation({this.day, this.time, this.startDate, this.exclude = false, this.returnTime});
 }

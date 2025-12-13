@@ -823,6 +823,7 @@ class DashboardController extends GetxController {
   DashboardDriverObject? selectDriverValue;
   DashboardSubsidiaryObject? selectSubsidiariesValue;
   DashboardVehicleTypeObject? selectVehicleValue;
+  DashboardVehicleTypeObject? selectMultiVehicleValue;
   PaymentTypeObject? selectPaymentTypeValue;
   JourneyTypeObject? selectJourneyTypeValue;
 
@@ -906,7 +907,7 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables
   DateTime? multiReservationFromDate = DateTime.now();
   DateTime? multiReservationToDate = DateTime.now();
-  final multiReservationToTimeController = TextEditingController();
+  final multiReservationToTimeController = TextEditingController(text: "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");
 
   List<MultiReservation> multiReservationList = [];
   List<String> multiReservationDaysList = [];
@@ -948,7 +949,7 @@ class DashboardController extends GetxController {
             MultiReservation(
                 startDate: element.toString(),
                 day: action,
-                exclude: "Jobs",
+                exclude: false,
                 returnTime: time
             )
         );
@@ -982,6 +983,9 @@ class DashboardController extends GetxController {
   List childSeatList = [];
   List extraFaresList = [];
   List viaPostList = [];
+  List multiReservationTemp = [];
+  List<DashboardVehicleTypeObject> multiVehicleList = [];
+  List multiVehicleTempList = [];
 
   dashBardApiValidation() async{
     if(pickupController.text.isEmpty){
@@ -1074,10 +1078,12 @@ class DashboardController extends GetxController {
       'eta': totalTimeDuration,
       'miles': totalDistance,
      if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
-      'booking_status_id': '1',
+      'booking_status_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2': '1',
       'booking_type_id': '1',
       'booking_source': 'dashboard',
-      'employee_id': '2'
+      'employee_id': '2',
+     if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
+     if(multiVehicleTempList.isNotEmpty) "multi_reservation": jsonEncode(multiVehicleTempList),
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
@@ -1116,7 +1122,28 @@ class DashboardController extends GetxController {
           },
         );
       }
+
+      if(multiReservationList.isNotEmpty){
+        for (var element in multiReservationList) {
+          multiReservationTemp.add(
+              {
+                "exclude": element.exclude,
+                "day": element.day,
+                "pickup_date": element.startDate,
+                "pickup_time": element.exclude
+              });
+        }
+      }
     }
+
+      if(multiVehicleList.isNotEmpty){
+        for (var element in multiVehicleList) {
+          multiVehicleTempList.add(
+              {
+                "vehicle_type": element.id,
+              });
+        }
+      }
     update();
   }
 
@@ -1172,6 +1199,10 @@ class DashboardController extends GetxController {
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
+    multiReservationList.clear();
+    multiReservationTemp.clear();
+    multiVehicleList.clear();
+    multiVehicleTempList.clear();
     viaPoints.clear();
     dashboardZoneValue = null;
     _controller.zoneValue = null;

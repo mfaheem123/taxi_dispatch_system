@@ -1,17 +1,18 @@
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
+import 'package:dashboard_new1/view/dashboard_view/models/dashboard_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'component/color.dart';
+import 'component/datatable_widget.dart';
 import 'component/dropdown_button.dart';
 import 'component/textStyle.dart';
 import 'component/text_widget.dart';
 
-
-
 class MultiVehiclePage extends StatefulWidget {
-   MultiVehiclePage({super.key});
+  MultiVehiclePage({super.key});
 
   @override
   State<MultiVehiclePage> createState() => _MultiVehiclePageState();
@@ -19,7 +20,6 @@ class MultiVehiclePage extends StatefulWidget {
 
 class _MultiVehiclePageState extends State<MultiVehiclePage> {
   @override
-
   Widget build(BuildContext context) {
     return GetBuilder<DashboardController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -31,8 +31,9 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
+                ? maxWidth / 2
+                : maxWidth / 4;
+
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -41,9 +42,9 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
+                    const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
                 child: Container(
-                  width: Get.width,
+                  width: fieldWidth * 1.3,
                   decoration: BoxDecoration(
                       color: DynamicColors.whiteClr,
                       border: Border.all(
@@ -53,7 +54,7 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          width: Get.width,
+                          width: fieldWidth * 1.5,
                           height: kToolbarHeight,
                           color: DynamicColors.secondaryClr,
                           child: Padding(
@@ -62,13 +63,9 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                 alignment: Alignment.centerLeft,
                                 child: Row(
                                   children: [
-                                    Text("Multi Reversation",
+                                    Text("MULTI VEHICLE",
                                         style: TextStyle(
-                                          fontSize: 17,
-                                          color: Colors.black
-                                        )
-                                    
-                                    ),
+                                            fontSize: 17, color: Colors.black)),
                                     Spacer(),
                                     IconButton(
                                         onPressed: () {
@@ -80,64 +77,108 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                 )),
                           )),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                      Column(
-                        children: [
-                          Text("Multi Vehicle",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black
-                            ),
-
-                          ),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 2,
-                            label: "Select Car",
-                            items: [
-                              "SELECT DRIVER 1",
-                              "SELECT DRIVER 2",
-                              "SELECT DRIVER 3",
-                              "SELECT DRIVER 4",
-                              "SELECT DRIVER 5",
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Multi Vehicle",
+                                style: TextStyle(
+                                    fontSize: 14, color: Colors.black),
+                              ),
+                              SizedBox(
+                                width: fieldWidth,
+                                height: 35,
+                                child: DropdownButtonFormField<
+                                    DashboardVehicleTypeObject>(
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                  value: controller.selectMultiVehicleValue,
+                                  items: controller
+                                      .dashboardAllData!.vehicleTypes!
+                                      .map((vehicle) => DropdownMenuItem<
+                                              DashboardVehicleTypeObject>(
+                                            value: vehicle,
+                                            child: Text(
+                                              vehicle.name ?? "",
+                                              style: mozillaTextRegularText(
+                                                fontSize: 12,
+                                                color: DynamicColors.textClr,
+                                              ),
+                                            ),
+                                          ))
+                                      .toList(),
+                                  onChanged: (v) {
+                                    controller.selectMultiVehicleValue = v;
+                                    controller.update();
+                                  },
+                                ),
+                              ),
                             ],
-                            value: controller.selectDriver,
-                            itemLabel: (val) => val, // just show the string
-                            onChanged: (val) {
-                              controller.selectDriver = val!;
+                          ),
+                          OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: DynamicColors.primaryClr,
+                              ), // border color & thickness
+                            ),
+                            onPressed: () {
+                              controller.multiVehicleList.add(controller.selectMultiVehicleValue!);
+                              controller.selectMultiVehicleValue = null;
                               controller.update();
                             },
+                            child: Text(
+                              "Add",
+                              style: TextStyle(
+                                color: DynamicColors.black,
+                                fontSize: 12,
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                          Spacer(),
-                          Column(
-                            children: [
-                              Text("Action",
-                                style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black
-                                ),
-
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.green
-                                ),
-                                child: Text("Add",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12
-                                ),
-                                ),
-                              )
-                            ],
-                          ),
-
-                        ],
-                      )
-
+                      SizedBox(
+                        width: fieldWidth*1.3,
+                        child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "Vehicle", removeSearching: true),
+                            buildHeaderWithSearch(title: "Action", removeSearching: true),
+                          ],
+                          rows: [
+                            // Existing extensions
+                            ...controller
+                                .multiVehicleList
+                                .map((object) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Text(object.name.toString().toUpperCase())),
+                                  DataCell(
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        side: BorderSide.none,
+                                      ),
+                                      onPressed: () {
+                                        controller.multiVehicleList.remove(object);
+                                        controller.update();
+                                      },
+                                      child: Icon(Icons.delete_forever,
+                                      color: DynamicColors.redClr,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
