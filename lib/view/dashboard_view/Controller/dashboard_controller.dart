@@ -66,7 +66,7 @@ class DashboardController extends GetxController {
   menuBarRefresh({title, pageName}) {
     // if(selectedMenuItems.length < 3){
     int index =
-        selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+    selectedMenuItems.indexWhere((item) => item.selectedItem == true);
     if (index != -1) {
       selectedMenuItems[index].selectedItem = false;
     }
@@ -379,7 +379,7 @@ class DashboardController extends GetxController {
         {
           "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
           "postcode": response.data['address']
-              ['postcode'], // e.g. Brondesbury Park, Brent
+          ['postcode'], // e.g. Brondesbury Park, Brent
           "lat": double.parse(response.data['lat']), // 51.542059
           "lon": double.parse(response.data['lon']), // -0.212545
         }
@@ -503,7 +503,7 @@ class DashboardController extends GetxController {
 
     // --------- MULTI-POINT: request route from OSRM ----------
     final coordinates =
-        tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+    tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
     final url = Uri.parse(
         'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
 
@@ -561,7 +561,7 @@ class DashboardController extends GetxController {
         }
 
         final cameraFit =
-            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
 
@@ -635,8 +635,8 @@ class DashboardController extends GetxController {
 
       final listCtx = /*selectedTextFieldsValue.value !=
           "via"?*/
-          suggestionListKey
-              .currentContext /*:suggestionListKeyVia.currentContext*/;
+      suggestionListKey
+          .currentContext /*:suggestionListKeyVia.currentContext*/;
 
       if (itemCtx != null &&
           listCtx != null &&
@@ -646,7 +646,7 @@ class DashboardController extends GetxController {
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
         final Offset itemOffset =
-            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        itemBox.localToGlobal(Offset.zero, ancestor: listBox);
 
         final double itemTopLocal = itemOffset.dy;
 
@@ -797,7 +797,7 @@ class DashboardController extends GetxController {
     } else if (selectedTextFieldsValue.value ==
         "Create Booking DROP LOCATION") {
       int index = polyLineMarkerInfo.indexWhere(
-          (test) => test.markerType == "Create Booking DROP LOCATION");
+              (test) => test.markerType == "Create Booking DROP LOCATION");
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
@@ -891,9 +891,9 @@ class DashboardController extends GetxController {
       if (response.data['customer'].isNotEmpty) {
         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
         SuggestionController suggestion_controller =
-            Get.isRegistered<SuggestionController>()
-                ? Get.find<SuggestionController>()
-                : Get.put(SuggestionController());
+        Get.isRegistered<SuggestionController>()
+            ? Get.find<SuggestionController>()
+            : Get.put(SuggestionController());
         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
         // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
@@ -1028,11 +1028,11 @@ class DashboardController extends GetxController {
   postDashboardApi() async {
 
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
-   await restrictedDriversListConfig();
+    await restrictedDriversListConfig();
 
-   if(viaPoints.isNotEmpty){
-     await postViaListConfig();
-   }
+    if(viaPoints.isNotEmpty){
+      await postViaListConfig();
+    }
 
     var formData = {
       'pickup': pickupController.text,
@@ -1041,49 +1041,49 @@ class DashboardController extends GetxController {
       'dropoff': dropOffController.text,
       'dropoff_plot': '28',
       'dropoff_door_number': dropUpNoteController.text,
-     if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
-     if(nameController.text.isNotEmpty)'name': nameController.text,
-     if(emailController.text.isNotEmpty)'email': emailController.text,
-     if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
-     if(telController.text.isNotEmpty) 'telephone': telController.text,
+      if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
+      if(nameController.text.isNotEmpty)'name': nameController.text,
+      if(emailController.text.isNotEmpty)'email': emailController.text,
+      if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
+      if(telController.text.isNotEmpty) 'telephone': telController.text,
       'customer': '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
       'pickup_date': "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-     if(pickUpTimeController.text.isNotEmpty) 'pickup_time': pickUpTimeController.text,
-     if(minController.text.isNotEmpty) 'lead_time': minController.text,
+      if(pickUpTimeController.text.isNotEmpty) 'pickup_time': pickUpTimeController.text,
+      if(minController.text.isNotEmpty) 'lead_time': minController.text,
       'journey_type_id': selectJourneyTypeValue !=null ? selectJourneyTypeValue!.id :1,
-     if(selectAccountValue != null) 'account_id': selectAccountValue!.id,
-     if(selectDepartmentData != null) 'department': selectDepartmentData!.id,
+      if(selectAccountValue != null) 'account_id': selectAccountValue!.id,
+      if(selectDepartmentData != null) 'department': selectDepartmentData!.id,
       'quotation': switchController.value,
       'sms': true /*smsCheckbox.value*/,
       'emailFlag': emailCheckbox.value,
-     if(passController.text.isNotEmpty)'passengers': passController.text,
-     if(luggController.text.isNotEmpty)'luggages': luggController.text,
-     if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
-     if(selectPaymentTypeValue != null) 'payment_type_id': selectPaymentTypeValue!.id,
-     if(selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
-     if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
-     if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
-     if(partingChargesController.text.isNotEmpty) 'parking_charges': partingChargesController.text,
-     if(congestionChargesController.text.isNotEmpty) 'congestion_charges': congestionChargesController.text,
-     if(meetGreetController.text.isNotEmpty) 'meet_and_greet': meetGreetController.text,
-     if(waitingChargesController.text.isNotEmpty) 'waiting_charges': waitingChargesController.text,
-     if(extraDropChargesController.text.isNotEmpty) 'extra_drop_charges': extraDropChargesController.text,
-     if(creditCardChargesController.text.isNotEmpty) 'credit_card_charges': creditCardChargesController.text,
-     if(companyPriceController.text.isNotEmpty) 'company_price': companyPriceController.text,
+      if(passController.text.isNotEmpty)'passengers': passController.text,
+      if(luggController.text.isNotEmpty)'luggages': luggController.text,
+      if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
+      if(selectPaymentTypeValue != null) 'payment_type_id': selectPaymentTypeValue!.id,
+      if(selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
+      if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
+      if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
+      if(partingChargesController.text.isNotEmpty) 'parking_charges': partingChargesController.text,
+      if(congestionChargesController.text.isNotEmpty) 'congestion_charges': congestionChargesController.text,
+      if(meetGreetController.text.isNotEmpty) 'meet_and_greet': meetGreetController.text,
+      if(waitingChargesController.text.isNotEmpty) 'waiting_charges': waitingChargesController.text,
+      if(extraDropChargesController.text.isNotEmpty) 'extra_drop_charges': extraDropChargesController.text,
+      if(creditCardChargesController.text.isNotEmpty) 'credit_card_charges': creditCardChargesController.text,
+      if(companyPriceController.text.isNotEmpty) 'company_price': companyPriceController.text,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
-     if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
-     if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
-     if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
-     if(slugController.text.isNotEmpty)'fares': slugController.text,
+      if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
+      if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
+      if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
+      if(slugController.text.isNotEmpty)'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,
-     if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
+      if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
       'booking_status_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2': '1',
       'booking_type_id': '1',
       'booking_source': 'dashboard',
       'employee_id': '2',
-     if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
-     if(multiVehicleTempList.isNotEmpty) "multi_reservation": jsonEncode(multiVehicleTempList),
+      if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
+      if(multiVehicleTempList.isNotEmpty) "multi_reservation": jsonEncode(multiVehicleTempList),
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
@@ -1122,28 +1122,29 @@ class DashboardController extends GetxController {
           },
         );
       }
-
-      if(multiReservationList.isNotEmpty){
-        for (var element in multiReservationList) {
-          multiReservationTemp.add(
-              {
-                "exclude": element.exclude,
-                "day": element.day,
-                "pickup_date": element.startDate,
-                "pickup_time": element.exclude
-              });
-        }
+    }
+    if(multiReservationList.isNotEmpty){
+      for (var element in multiReservationList) {
+        String tempDateStore = DateFormat('yyyy-MM-dd').format(
+          DateFormat('dd/MM/yyyy').parse(element.startDate!),
+        );
+        multiReservationTemp.add({
+          "exclude": element.exclude,
+          "day": element.day,
+          "pickup_date": tempDateStore,
+          "pickup_time": element.exclude
+        });
       }
     }
 
-      if(multiVehicleList.isNotEmpty){
-        for (var element in multiVehicleList) {
-          multiVehicleTempList.add(
-              {
-                "vehicle_type": element.id,
-              });
-        }
+    if(multiVehicleList.isNotEmpty){
+      for (var element in multiVehicleList) {
+        multiVehicleTempList.add(
+            {
+              "vehicle_type": element.id,
+            });
       }
+    }
     update();
   }
 
@@ -1199,7 +1200,6 @@ class DashboardController extends GetxController {
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
-    multiReservationList.clear();
     multiReservationTemp.clear();
     multiVehicleList.clear();
     multiVehicleTempList.clear();
@@ -1230,6 +1230,11 @@ class DashboardController extends GetxController {
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
+    selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+    selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
+    selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+    selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    dashboardDataLoader(false);
     update();
   }
 
@@ -1385,7 +1390,7 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> controller note alert
   List controllerAlert = [];
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 }
 
 class DashBoardBindings implements Bindings {

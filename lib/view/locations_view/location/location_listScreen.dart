@@ -172,6 +172,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                 controller.SearchLocation();
                               },
                             ),
+
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
@@ -200,8 +201,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>
-                                                    element.title ==
-                                                    "UPDATE LOCATION");
+                                                    element.title == "UPDATE LOCATION");
                                             if (index != -1) {
                                               _controller
                                                   .selectedMenuItems[index]
@@ -215,6 +215,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                                   title: "UPDATE LOCATION",
                                                   pageName: LocationForm());
                                             }
+
                                             controller.update();
 
                                           },

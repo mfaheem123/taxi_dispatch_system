@@ -59,10 +59,10 @@ class FormShortCutKey extends StatelessWidget {
                               DashboardF8Alert.show();
                             }
 
-                            dashboardController.isHoveredF8 = true.obs;
+                            // dashboardController.isHoveredF8 = true.obs;
                           },
                           onExit: (_) {
-                            dashboardController.isHoveredF8 = false.obs;
+                            // dashboardController.isHoveredF8 = false.obs;
                           },
                           child: Container(
                             // margin: EdgeInsets.symmetric(
@@ -91,10 +91,10 @@ class FormShortCutKey extends StatelessWidget {
                             if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
                               DashboardF9Alert.show();
                             }
-                            dashboardController.isHoveredF9 = true.obs;
+                            // dashboardController.isHoveredF9 = true.obs;
                           },
                           onExit: (_) {
-                            dashboardController.isHoveredF9 = false.obs;
+                            // dashboardController.isHoveredF9 = false.obs;
                           },
                           child: Container(
                             // margin: EdgeInsets.symmetric(
@@ -149,10 +149,10 @@ class FormShortCutKey extends StatelessWidget {
                       Obx(
                             ()=> MouseRegion(
                           onEnter: (_) {
-                            dashboardController.isHoveredVLA = true.obs;
+                            // dashboardController.isHoveredVLA = true.obs;
                           },
                           onExit: (_) {
-                            dashboardController.isHoveredVLA = false.obs;
+                            // dashboardController.isHoveredVLA = false.obs;
                           },
                           opaque: true,
                           child: GestureDetector(

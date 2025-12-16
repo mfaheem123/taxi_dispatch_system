@@ -41,6 +41,7 @@ class LocationForm extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _header(),
+
                       const SizedBox(height: 20),
 
                       isMobile
@@ -113,7 +114,6 @@ class LocationForm extends StatelessWidget {
                             CustomDropdownField<ZoneObject>(
                               text: "SELECT ZONE",
                               label: "SELECT ZONE",
-
                               width: Get.width / 5,
                               height: 38,
                               items: controller.locationtypezoneModel!
@@ -166,11 +166,9 @@ class LocationForm extends StatelessWidget {
                           CustomDropdownField<LocationTypeObject>(
                             text: "LOCATION TYPE",
                             label: "LOCATION TYPE",
-
                             width: Get.width / 5,
                             height: 45,
-                            items: controller.locationtypezoneModel!
-                                .locationTypesList!,
+                            items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
                             templateList.name!,

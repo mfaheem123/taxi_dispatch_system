@@ -50,8 +50,11 @@ enum RectHandle { nw, n, ne, e, se, s, sw, w }
 enum RectDragSource { liveDraft, savedRect, none }
 
 class RectBounds {
+
   double minLat, maxLat, minLng, maxLng;
+
   RectBounds(this.minLat, this.maxLat, this.minLng, this.maxLng);
+
 }
 
 class ZoneController extends GetxController {
@@ -68,7 +71,6 @@ class ZoneController extends GetxController {
   var base = false.obs;
   var selectedPolyId = RxnString();
   var mode = DrawMode.navigate.obs;
-
   final categoryItems = ['Select Category', 'Inner', 'Outer'];
   final zoneItems = ['Select Zone Type', 'Major', 'Minor'];
 
@@ -76,7 +78,6 @@ class ZoneController extends GetxController {
   final Completer<GoogleMapController> ctrl = Completer();
   GoogleMapController? mapController;
   final mapKey = GlobalKey();
-
   final draft = <LatLng>[].obs;
   final pointsDraft = <LatLng>[].obs;
   final polyPoints = <String, List<LatLng>>{}.obs;

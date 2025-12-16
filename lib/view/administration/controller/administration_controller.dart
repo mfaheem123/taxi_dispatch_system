@@ -92,6 +92,7 @@ class AdministrationController extends GetxController {
   RxString searchUserName = ''.obs;
   RxString searchUserEmail = ''.obs;
   RxString searchUserPhone = ''.obs;
+
   RxString searchUserFax = ''.obs;
   RxString searchUserRole = ''.obs;
   RxString searchUserSubsiDiary = ''.obs;
@@ -190,12 +191,11 @@ class AdministrationController extends GetxController {
         filename: profileImg!.name,
       );
     }
+
     var formData = {
       'name': nameController.text,
-      'background_color':
-          subsiDiarypickerColor.value.toRadixString(16).substring(2),
-      'foreground_color':
-          subsiDiaryforegroundColor.value.toRadixString(16).substring(2),
+      'background_color': subsiDiarypickerColor.value.toRadixString(16).substring(2),
+      'foreground_color': subsiDiaryforegroundColor.value.toRadixString(16).substring(2),
       'telephone_number': telephoneController.text,
       'emergency_contact_number': emergencyContactController.text,
       'email': emailController.text,
@@ -222,6 +222,7 @@ class AdministrationController extends GetxController {
 
     var response = await Api().post(formData, 'subsidiaries/add', auth: true);
     if (response.statusCode == 200) {
+      profileImg = null;
       nameController.clear();
       emailController.clear();
       faxController.clear();

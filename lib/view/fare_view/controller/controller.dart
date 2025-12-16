@@ -523,6 +523,7 @@ clearFormData(){
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> create fare setting
+
   createFareSetting() async{
     var formData = {
       "vehicle_type_id": vehicleValue!.id,
@@ -537,6 +538,7 @@ clearFormData(){
       if(fareConfiguration != "NORMAL") "from_date": startDate,
       if(fareConfiguration != "NORMAL") "to_date": endDate,
     };
+
     print(formData);
     var response = await Api().post(formData,
         updateFareValue.value == false ?
@@ -546,6 +548,20 @@ clearFormData(){
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
       refreshCreateFareFields();
+    }
+  }
+
+
+
+  deletecreateFareSetting(int? id) async{
+    var response = await Api().delete( "faresconfiguration/delete/${id}");
+    if(response.statusCode == 200){
+      // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
+      // print(response.data);
+      // BotToast.showText(text: "Fare configuration is successfully added");
+      getAllFareConfiguration();
+      refreshCreateFareFields();
+      update();
     }
   }
 
@@ -624,6 +640,7 @@ clearFormData(){
       update();
     }
   }
+
 
 
 

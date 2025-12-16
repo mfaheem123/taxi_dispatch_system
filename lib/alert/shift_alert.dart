@@ -69,6 +69,7 @@ class ShiftAlert {
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 12),
 
                         Row(

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
@@ -1038,16 +1039,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                              ))
                                                              .toList(),
-                                                         onChanged: (v) {
+                                                         onChanged: controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty?
+                                                           (v) {
                                                             // O/W, R/N, W/R
-                                                           if(v!.journeyType == "one way"){
-                                                             controller.jourValue = null;
-                                                           }else{
-                                                             controller.jourValue = 'W/R';
-                                                           }
-                                                           controller.selectJourneyTypeValue = v;
-                                                           controller.update();
-                                                         },
+
+                                                             if (v!.journeyType ==
+                                                                                "one way") {
+                                                                              controller.jourValue = null;
+                                                                            } else {
+                                                                              controller.jourValue = 'W/R';
+                                                                            }
+                                                                            controller.selectJourneyTypeValue =
+                                                                                v;
+                                                                            controller.update();
+
+                                                                        }:null,
                                                        ),
                                                      ),
                                                    ),
@@ -1317,7 +1323,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  (event.logicalKey == LogicalKeyboardKey.enter ||
                                                                      event.logicalKey == LogicalKeyboardKey.space)) {
                                                                setState(() {
-                                                                 controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                                                 // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
                                                                });
                                                              }
                                                            },
@@ -1325,8 +1331,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              activeColor: DynamicColors.primaryClr,
                                                              value: controller.smsCheckbox.value,
                                                              onChanged: (v) {
-                                                               controller.smsCheckbox.value = v!;
-                                                               controller.update();
+                                                               // controller.smsCheckbox.value = v!;
+                                                               // controller.update();
                                                              },
                                                            ),
                                                          ),

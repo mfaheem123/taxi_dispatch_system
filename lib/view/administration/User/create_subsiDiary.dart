@@ -121,8 +121,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         width: Get.width,
                         color: DynamicColors.gryClr,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 18.0, vertical: 12),
+                          padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
                           child: Row(
                             children: [
                               Text(
@@ -160,6 +159,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         runSpacing: 16,
                         spacing: 10,
                         children: [
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.nameController,
@@ -168,6 +168,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.emailController,
@@ -176,6 +177,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.faxController,
@@ -184,6 +186,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.websiteController,
@@ -192,6 +195,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.telephoneController,
@@ -200,6 +204,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.emergencyContactController,
@@ -208,12 +213,15 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             columnText: true,
                             height: 35,
                           ),
+
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+
                               Text(AppText.backgroundClr,
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
+
                               ColorPickerWidget(
                                 width: fieldWidth / 2,
                                 pickerColor: controller.subsiDiarypickerColor,
@@ -222,6 +230,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                     controller.subsiDiarypickerColor =
                                         color; // live preview
                                   });
+
                                 },
                                 onColorSelected: (color) {
                                   setState(() {

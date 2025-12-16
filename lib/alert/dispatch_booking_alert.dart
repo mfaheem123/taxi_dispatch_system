@@ -182,7 +182,6 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                         SizedBox(
                           width: 115,
                           child: Text("3435.08 MI",
-
                             style: mozillaTextRegularText(
                               fontSize: 11,
                             ),

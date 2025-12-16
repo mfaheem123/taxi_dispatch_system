@@ -57,7 +57,6 @@ class LocationController extends GetxController {
 
   ZoneObject? zoneValue;
   LocationTypeObject? locationTypeValue;
-
   RxBool getLocationTypeZoneLoader = false.obs;
   LocationtypezoneModel? locationtypezoneModel;
 
@@ -205,15 +204,13 @@ class LocationController extends GetxController {
     extraChargesCtrl.text = locationUpdate.extraCharges!;
     latitudeCtrl.text = locationUpdate.latitude!;
     addressCtrl.text = locationUpdate.address!;
-      zoneValue!.id = locationUpdate.zoneId;
+    zoneValue!.id = locationUpdate.zoneId;
 
     /// 👉 ZONE + LOCATION TYPE SELECTION (NULL SAFE)
     if (locationtypezoneModel != null) {
-      zoneValue = locationtypezoneModel!.zonesList!
-          .firstWhereOrNull((z) => z.id == locationUpdate.zoneId);
+      zoneValue = locationtypezoneModel!.zonesList!.firstWhereOrNull((z) => z.id == locationUpdate.zoneId);
 
-      locationTypeValue = locationtypezoneModel!.locationTypesList!
-          .firstWhereOrNull((lt) => lt.id == locationUpdate.locationTypeId);
+      locationTypeValue = locationtypezoneModel!.locationTypesList!.firstWhereOrNull((lt) => lt.id == locationUpdate.locationTypeId);
     }
 
     updateLocationValue(true);
@@ -309,7 +306,7 @@ getZoneList() async {
 
     var response = await Api().get(
   "zones/get",
- auth: true,
+     auth: true,
       queryParameters: {
         "page": zoneCurrentPage.value,
         "limit": zoneLimit,
