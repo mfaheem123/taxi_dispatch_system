@@ -259,8 +259,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final active = mode == m;
     return IconButton(
       tooltip: tip,
-      icon: Icon(icon,
-          color: active ? Theme.of(context).colorScheme.primary : null),
+      icon: Icon(icon, color: active ? Theme.of(context).colorScheme.primary : null),
       onPressed: () => setState(() {
         mode = m;
         controller.draft.clear();
@@ -864,6 +863,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           onPressed: () {
                             controller.submitForm(context);
                           },
+
                           child: Text('SAVE'),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
