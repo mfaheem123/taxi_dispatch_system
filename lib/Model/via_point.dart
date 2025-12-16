@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 
 class ViaPoint {
   final String address;
-  TextEditingController? name  = TextEditingController();
-  TextEditingController? mobile = TextEditingController();
+  String? name;
+  String? mobile;
   double lat;
   double lng;
   String? markerType;

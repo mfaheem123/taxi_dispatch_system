@@ -26,6 +26,7 @@ import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
 import '../models/users_phone_numbers_model.dart';
+import '../widgets/via_location.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
@@ -103,7 +104,6 @@ class DashboardController extends GetxController {
   final dropOffController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = false.obs;
-
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
@@ -396,6 +396,8 @@ class DashboardController extends GetxController {
   AllAddressesModel? selectedModel;
   late final MapController mapController;
   final List<ViaPoint> viaPoints = [];
+  List<ViaTextEditingControllerClass> viaTextEditingController = [];
+
   final List<LatLng> polylinePoints = [];
   List<ViaPoint> polyLineMarkerInfo = [];
   List<LatLng> polylinePointsCoordinate = [];
@@ -817,6 +819,8 @@ class DashboardController extends GetxController {
   DashboardDriverObject? selectDriverValue;
   DashboardSubsidiaryObject? selectSubsidiariesValue;
   DashboardVehicleTypeObject? selectVehicleValue;
+  PaymentTypeObject? selectPaymentTypeValue;
+  JourneyTypeObject? selectJourneyTypeValue;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
@@ -903,12 +907,17 @@ class DashboardController extends GetxController {
   List restrictedDrivers = [];
   List childSeatList = [];
   List extraFaresList = [];
+  List viaPostList = [];
 
   postDashboardApi() async {
+    print(viaPoints);
 
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
    await restrictedDriversListConfig();
 
+   if(viaPoints.isNotEmpty){
+     await postViaListConfig();
+   }
 
     var formData = {
       'pickup': pickupController.text,
@@ -917,50 +926,48 @@ class DashboardController extends GetxController {
       'dropoff': dropOffController.text,
       'dropoff_plot': '28',
       'dropoff_door_number': dropUpNoteController.text,
-      'viapoints':
-      // viaPoints
-      '[{"viapoint": "elm park road london n3 1ed","name": "test","mobile": "1236547898","arrived": null, "passenger_on_board": null,"active": false,"latitude": "51.60502870865506","longitude": "-0.19752048515577314"},{"viapoint": "etchingham park road london n3 2ds","name": "test 2","mobile": "0123456879","arrived": null,"passenger_on_board": null,"active": false,"latitude": "51.60435165870115","longitude": "-0.18285231654990017"}]',
-      'name': nameController.text,
-      'email': emailController.text,
-      'mobile': mobileController.text,
-      'telephone': telController.text,
+     if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
+      if(nameController.text.isNotEmpty)'name': nameController.text,
+      if(emailController.text.isNotEmpty)'email': emailController.text,
+      if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
+     if(telController.text.isNotEmpty) 'telephone': telController.text,
+      'customer':
+      ' [{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
       'pickup_date':
           "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-      'pickup_time': pickUpTimeController.text,
-      'lead_time': minController.text,
-      'journey_type_id': '2',
-      'account_id': selectAccountValue!.id,
-      'department': selectDepartmentData!.id,
+     if(pickUpTimeController.text.isNotEmpty) 'pickup_time': pickUpTimeController.text,
+     if(minController.text.isNotEmpty) 'lead_time': minController.text,
+      'journey_type_id': selectJourneyTypeValue !=null ? selectJourneyTypeValue!.id :1,
+     if(selectAccountValue != null) 'account_id': selectAccountValue!.id,
+     if(selectDepartmentData != null) 'department': selectDepartmentData!.id,
       'quotation': switchController.value,
       'sms': smsCheckbox.value,
       'emailFlag': emailCheckbox.value,
-      'passengers': passController.text,
-      'luggages': luggController.text,
-      'hand_luggages': sluggController.text,
-      'payment_type_id': '1',
-      'vehicle_type_id': selectVehicleValue!.id,
-      'restricted_drivers': jsonEncode(restrictedDrivers),
-      'child_seat': jsonEncode(childSeatList),
-      'parking_charges': partingChargesController.text,
-      'congestion_charges': congestionChargesController.text,
-      'meet_and_greet': meetGreetController.text,
-      'waiting_charges': waitingChargesController.text,
-      'extra_drop_charges': extraDropChargesController.text,
-      'credit_card_charges': creditCardChargesController.text,
-      'company_price': companyPriceController.text,
-      "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
-      'special_instructions': specialRequirementsController.text,
-      'notes': jsonEncode(extraFaresList),
-      'driver_id': selectDriverValue!.id,
-      'fares': slugController.text,
+      if(passController.text.isNotEmpty)'passengers': passController.text,
+      if(luggController.text.isNotEmpty)'luggages': luggController.text,
+      if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
+     if(selectPaymentTypeValue != null) 'payment_type_id': selectPaymentTypeValue!.id,
+     if(selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
+      if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
+      if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
+     if(partingChargesController.text.isNotEmpty) 'parking_charges': partingChargesController.text,
+     if(congestionChargesController.text.isNotEmpty) 'congestion_charges': congestionChargesController.text,
+     if(meetGreetController.text.isNotEmpty) 'meet_and_greet': meetGreetController.text,
+     if(waitingChargesController.text.isNotEmpty) 'waiting_charges': waitingChargesController.text,
+     if(extraDropChargesController.text.isNotEmpty) 'extra_drop_charges': extraDropChargesController.text,
+     if(creditCardChargesController.text.isNotEmpty) 'credit_card_charges': creditCardChargesController.text,
+     if(companyPriceController.text.isNotEmpty) 'company_price': companyPriceController.text,
+      // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
+      if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
+      if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
+      if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
+      if(slugController.text.isNotEmpty)'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,
-      'subsidiary_id': selectSubsidiariesValue!.id,
+     if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
       'booking_status_id': '1',
       'booking_type_id': '1',
       'booking_source': 'dashboard',
-      'customer':
-          ' [{name: "customer1", email: "tests@mail.com", mobile: "123467839", telephone: "1234536798", blacklist: false}]',
       'employee_id': '2'
     };
     // var response = await Api().post(formData, "bookings/add");
@@ -968,6 +975,7 @@ class DashboardController extends GetxController {
 
   restrictedDriversListConfig() async {
     if(driversList.isNotEmpty){
+      restrictedDrivers.clear();
       for (int i = 0; i <= driversList.length; i++) {
         restrictedDrivers.add({
           "id": driversList[i].id,
@@ -977,6 +985,7 @@ class DashboardController extends GetxController {
       }
     }
     if(childSeatAlert.isNotEmpty){
+      childSeatList.clear();
       for (int index = 0; index <= childSeatAlert.length; index++) {
         childSeatList.add({
           "child": childSeatAlert[index].sets,
@@ -985,6 +994,7 @@ class DashboardController extends GetxController {
       }
     }
     if(controllerAlert.isNotEmpty){
+      extraFaresList.clear();
       for (int indexx = 0; indexx <= controllerAlert.length; indexx++) {
         extraFaresList.add(
           {"note":controllerAlert[indexx],
@@ -995,6 +1005,25 @@ class DashboardController extends GetxController {
         );
       }
     }
+    update();
+  }
+
+  postViaListConfig() async{
+    viaPostList.clear();
+    for (int i = 0; i <= viaPoints.length; i++) {
+      viaPostList.add({
+        "viapoint": viaPoints[i].address,
+        "name": viaPoints[i].name,
+        "mobile": viaPoints[i].mobile,
+        "arrived": null,
+        "passenger_on_board": null,
+        "active": false,
+        "latitude": viaPoints[i].lat,
+        "longitude": viaPoints[i].lng
+      }
+      );
+    }
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api

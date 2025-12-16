@@ -393,7 +393,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-
         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
         decoration: BoxDecoration(
           // border: Border.all(color: active ? Colors.blue : Colors.grey.shade400),

@@ -40,6 +40,7 @@ Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
     RectHandle.n: LatLng(b.maxLat, midLng),
     RectHandle.ne: LatLng(b.maxLat, b.maxLng),
     RectHandle.e: LatLng(midLat, b.maxLng),
+
     RectHandle.se: LatLng(b.minLat, b.maxLng),
     RectHandle.s: LatLng(b.minLat, midLng),
     RectHandle.sw: LatLng(b.minLat, b.minLng),
@@ -538,8 +539,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         points: pts,
         strokeWidth: 3,
         strokeColor: id == _selectedPolyId ? Colors.orange : Colors.green,
-        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green)
-            .withOpacity(0.18),
+        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green).withOpacity(0.18),
         geodesic: true,
         consumeTapEvents: true,
         zIndex: id == _selectedPolyId ? 2 : 1,
@@ -805,7 +805,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
+
                     SizedBox(height: 15),
+
                     TextField(
                       controller: controller.secondarynamezoneController,
                       decoration: InputDecoration(
@@ -815,7 +817,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
+
                     SizedBox(height: 15),
+
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
                       items: controller.zoneItems,
@@ -826,6 +830,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         });
                       },
                     ),
+
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
                         items: controller.categoryItems,
@@ -835,7 +840,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             controller.categoryValue.value = newValue!;
                           });
                         }),
+
                     SizedBox(height: 20),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -852,6 +859,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             ),
                           ),
                         ),
+
                         ElevatedButton(
                           onPressed: () {
                             controller.submitForm(context);
@@ -873,6 +881,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                 ),
               ),
             ),
+
             // Map Placeholder
             Expanded(
               flex: 3, // More space for map
@@ -975,6 +984,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             _modeButton(
                                 DrawMode.points, Icons.more_horiz, "Points"),
                             _modeButton(DrawMode.edit, Icons.edit, "Edit"),
+
                             IconButton(
                               tooltip: "Clear all",
                               icon: const Icon(Icons.delete_outline),

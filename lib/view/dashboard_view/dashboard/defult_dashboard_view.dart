@@ -1005,25 +1005,60 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  ),
 
                                                  // (8) Journey dropdown (O/W, R/N, W/R)
-                                                 // FocusTraversalOrder(
-                                                 //   order: const NumericFocusOrder(20),
-                                                 //   child: RestrictedDrivers(
-                                                 //     width: fieldWidth/2.5,
-                                                 //     height: 30,
-                                                 //     padding: 0.0,
-                                                 //     titleText: "SELECT PLOT",
-                                                 //     driversList: [
-                                                 //       'DEMO COMPANY 01', 'DEMO COMPANY 02'
-                                                 //     ],
-                                                 //   ),
-                                                 // ),
+                                                 FocusTraversalOrder(
+                                                   order: const NumericFocusOrder(20),
+                                                   child: labeledField(
+                                                     context: context,
+                                                     isMobile: isMobile,
+                                                     label: AppText.jour,
+                                                     width: fieldWidth/2.3,
+                                                     heights: 35,
+                                                     child: Container(
+                                                       // height: 35,
+                                                       decoration: BoxDecoration(
+                                                         borderRadius: BorderRadius.circular(6),
+                                                         border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                       ),
+                                                       child: DropdownButtonFormField<JourneyTypeObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectJourneyTypeValue,
+                                                         items: controller.dashboardAllData!
+                                                             .journeyTypes!
+                                                             .map((journey) =>
+                                                             DropdownMenuItem<JourneyTypeObject>(
+                                                               value: journey,
+                                                               child: Text(journey.journeyType ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                            // O/W, R/N, W/R
+                                                           if(v!.journeyType == "one way"){
+                                                             controller.jourValue = null;
+                                                           }else{
+                                                             controller.jourValue = 'W/R';
+                                                           }
+                                                           controller.selectJourneyTypeValue = v;
+                                                           controller.update();
+                                                         },
+                                                       ),
+                                                     ),
+                                                   ),
+                                                 ),
 
                                                  // (9) Driver dropdown
 
 
                                                  // (10) Fare (Slugg)
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(20),
+                                                   order: const NumericFocusOrder(21),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1050,7 +1085,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // (11) Account
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(21),
+                                                   order: const NumericFocusOrder(22),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1096,27 +1131,42 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // (12) Pay dropdown
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(22),
+                                                   order: const NumericFocusOrder(23),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
                                                      label: AppText.pay,
-                                                     width: fieldWidth/2.3,
+                                                     width: fieldWidth/2.5,
+                                                     heights: 35,
                                                      child: Container(
-                                                       height: 30,
+                                                       // height: 35,
                                                        decoration: BoxDecoration(
-                                                         borderRadius: BorderRadius.circular(4),
-                                                         border: Border.all(color: DynamicColors.primaryClr),
+                                                         borderRadius: BorderRadius.circular(6),
+                                                         border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                        ),
-                                                       child:
-                                                       RestrictedDrivers(
-                                                         width: fieldWidth/2.3,
-                                                         height: 30,
-                                                         padding: 0.0,
-                                                         titleText: controller.payValue,
-                                                         driversList: [
-                                                           "CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"
-                                                         ],
+                                                       child: DropdownButtonFormField<PaymentTypeObject>(
+                                                         decoration: const InputDecoration(
+                                                           border: OutlineInputBorder(),
+                                                           isDense: true,
+                                                         ),
+                                                         value: controller.selectPaymentTypeValue,
+
+                                                         items: controller.dashboardAllData!.paymentTypes!
+                                                             .map((payment) =>
+                                                             DropdownMenuItem<PaymentTypeObject>(
+                                                               value: payment,
+                                                               child: Text(payment.name ?? "",
+                                                                 style: mozillaTextRegularText(
+                                                                   fontSize: 12,
+                                                                   color: DynamicColors.textClr,
+                                                                 ),
+                                                               ),
+                                                             ))
+                                                             .toList(),
+                                                         onChanged: (v) {
+                                                           controller.selectPaymentTypeValue = v;
+                                                           controller.update();
+                                                         },
                                                        ),
                                                      ),
                                                    ),
@@ -1124,7 +1174,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // (13) Calendar icon (keyboard clickable)
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(23),
+                                                   order: const NumericFocusOrder(24),
                                                    child: SizedBox(
                                                      height: 33,
                                                      child: KbdActivatable(
@@ -1149,7 +1199,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  ),
 
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(24),
+                                                   order: const NumericFocusOrder(25),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1193,7 +1243,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  controller.selectAccountValue ==null?
                                                  SizedBox.shrink() :
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(25),
+                                                   order: const NumericFocusOrder(26),
                                                    child: labeledField(
                                                      context: context,
                                                      isMobile: isMobile,
@@ -1235,7 +1285,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // Switch + Quotation
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(26),
+                                                   order: const NumericFocusOrder(27),
                                                    child: DynamicSwitch(
                                                      controller: controller.switchController,
                                                      activeColor: DynamicColors.primaryClr,
@@ -1254,7 +1304,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // SMS Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(27),
+                                                   order: const NumericFocusOrder(28),
                                                    child: SizedBox(
                                                      // width: fieldWidth/6,
                                                      child: Row(
@@ -1292,7 +1342,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                  // Email Checkbox
                                                  FocusTraversalOrder(
-                                                   order: const NumericFocusOrder(28),
+                                                   order: const NumericFocusOrder(29),
                                                    child: SizedBox(
                                                      // width: fieldWidth/5,
                                                      child: Row(
@@ -1336,7 +1386,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      mainAxisSize: MainAxisSize.min,
                                                      children: [
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(29),
+                                                         order: const NumericFocusOrder(30),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1356,7 +1406,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        ),
                                                        SizedBox(width: 8),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(30),
+                                                         order: const NumericFocusOrder(31),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1376,7 +1426,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        ),
                                                        SizedBox(width: 8),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(31),
+                                                         order: const NumericFocusOrder(32),
                                                          child: SizedBox(
                                                            width: 60,
                                                            height: 30,
@@ -1410,7 +1460,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      mainAxisSize: MainAxisSize.min,
                                                      children: [
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(32),
+                                                         order: const NumericFocusOrder(33),
                                                          child: buildFocusableIcon(
                                                            icon: Icons.person,
                                                            focusNode: _focusNodes[0],
@@ -1425,7 +1475,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(33),
+                                                         order: const NumericFocusOrder(34),
                                                          child: buildFocusableIcon(
                                                            icon: Icons.shopping_cart_checkout_outlined,
                                                            focusNode: _focusNodes[1],
@@ -1439,7 +1489,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(34),
+                                                         order: const NumericFocusOrder(35),
                                                          child: buildFocusableIcon(
                                                            icon: Icons.attach_money,
                                                            focusNode: _focusNodes[2],
@@ -1453,7 +1503,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
                                                        FocusTraversalOrder(
-                                                         order: const NumericFocusOrder(35),
+                                                         order: const NumericFocusOrder(36),
                                                          child: buildFocusableIcon(
                                                            icon: Icons.note_add_sharp,
                                                            focusNode: _focusNodes[3],
@@ -1541,7 +1591,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                  runSpacing: 16,
                                                  children: [
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(36),
+                                                     order: const NumericFocusOrder(37),
                                                      child: labeledField(
                                                        context: context,
                                                        isMobile: isMobile,
@@ -1610,7 +1660,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                    // ),
 
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(37),
+                                                     order: const NumericFocusOrder(38),
                                                      child: CustomButton(
                                                        btnText: "CLEAR [F7]",
                                                        width: 110,
@@ -1625,7 +1675,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      width: 10,
                                                    ),
                                                    FocusTraversalOrder(
-                                                     order: const NumericFocusOrder(38),
+                                                     order: const NumericFocusOrder(39),
                                                      child: CustomButton(
                                                        onTap: (){
                                                          controller.postDashboardApi();

@@ -10,7 +10,9 @@ class ManagePostcodes extends StatefulWidget {
 }
 
 class _ManagePostcodesState extends State<ManagePostcodes> {
+
   // Dummy data
+
   final List<Map<String, String>> allPostcodes = [
     {"area": "Aberdeen", "postcode": "AB"},
     {"area": "St Albans", "postcode": "AL"},
@@ -96,6 +98,8 @@ class _ManagePostcodesState extends State<ManagePostcodes> {
 
                           child: Row(
                             children: [
+
+
                               Checkbox(value: false, onChanged: (v){
 
                               }),

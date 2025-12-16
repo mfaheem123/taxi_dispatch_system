@@ -1,9 +1,9 @@
 import 'package:dashboard_new1/component/oldDropDown.dart';
+import 'package:dashboard_new1/component/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:html_editor_enhanced/utils/utils.dart';
-
 import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
@@ -25,7 +25,6 @@ class ResponsivePassengerScreen extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
-
             // Breakpoints
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
@@ -129,10 +128,10 @@ class _LeftSidebar extends StatelessWidget {
               Text(
                 "SEA CARZ",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.1,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.1,
+                ),
               ),
               Spacer(),
               Icon(Icons.close, color: Colors.white70),
@@ -210,7 +209,7 @@ class _LeftSidebar extends StatelessWidget {
 
 
 
-/// --------- CENTER AREA ----------
+
 
 /// --------- CENTER AREA ----------
 class _CenterArea extends StatefulWidget {
@@ -221,10 +220,11 @@ class _CenterArea extends StatefulWidget {
 class _CenterAreaState extends State<_CenterArea> {
   @override
   Widget build(BuildContext context) {
-    RxBool isChecked = false.obs;
+    var isChecked = (0).obs;
 
-   RxString selectDriverObject = "SELECT DRIVER 1".obs;
-
+    RxString selectDriverObject = "SELECT DRIVER 1".obs;
+    TextEditingController pickUpcontroller = TextEditingController();
+    TextEditingController dropOfUpcontroller = TextEditingController();
     final subtle = const Color(0xFF6B7C8F);
     final int totalRows = 5;
     return Padding(
@@ -232,22 +232,22 @@ class _CenterAreaState extends State<_CenterArea> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header Title
+          // Header Title'
           Text(
             "Passenger",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: subtle,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: .2,
-                ),
+              color: subtle,
+              fontWeight: FontWeight.w700,
+              letterSpacing: .2,
+            ),
           ),
           SizedBox(height: 4),
           Text(
             "07795116925",
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: Colors.black87,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           SizedBox(height: 8),
           // Status
@@ -313,7 +313,18 @@ class _CenterAreaState extends State<_CenterArea> {
             ],
           ),
 
-          SizedBox(height: 150),
+          SizedBox(height: 50),
+
+
+          Row(
+            children: [
+              CustomTextField(controller: pickUpcontroller, width: 200, columnText: true, hintText: "PICK UP", ),
+              SizedBox(width: 20),
+              CustomTextField(controller: dropOfUpcontroller,  width: 200, columnText: true, hintText: "DROP OFF",),
+            ],
+          ),
+          SizedBox(height: 10),
+
 
           // Table header
           // Container(
@@ -402,57 +413,67 @@ class _CenterAreaState extends State<_CenterArea> {
           //   ),
           // ),
 
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width / 3,
-          child: DatatableWidget(
-            columns: [
-              buildHeaderWithSearch(title: "Destination", removeSearching: true),
-              buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
-              buildHeaderWithSearch(title: "Via", removeSearching: true),
-              buildHeaderWithSearch(title: "Fares", removeSearching: true),
-              buildHeaderWithSearch(title: "Action", removeSearching: true),
-            ],
-            totalRow: totalRows,
-            rows: List.generate(totalRows, (index) {
-             return DataRow(
-               cells: [
-                 DataCell(Center(child: Text("London City ${index + 1}"))),
-                 DataCell(Center(child: Text("Pickup ${index + 1}"))),
-                 DataCell(Center(child: Text("Via Point ${index + 1}"))),
-                 DataCell(Center(child: Text("£${10 + index}"))),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width / 3,
+              child: DatatableWidget(
+                columns: [
+                  buildHeaderWithSearch(title: "Destination", removeSearching: true),
+                  buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+                  buildHeaderWithSearch(title: "Via", removeSearching: true),
+                  buildHeaderWithSearch(title: "Fares", removeSearching: true),
+                  buildHeaderWithSearch(title: "Action", removeSearching: true),
+                ],
+                totalRow: totalRows,
+                rows: List.generate(totalRows, (index) {
+                  return DataRow(
+                    cells: [
+                      DataCell(Center(child: Text("London City ${index + 1}"))),
+                      DataCell(Center(child: Text("Pickup ${index + 1}"))),
+                      DataCell(Center(child: Text("Via Point ${index + 1}"))),
+                      DataCell(Center(child: Text("£${10 + index}"))),
 
-                 DataCell(
-                   Center(
-                     child: Row(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       mainAxisSize: MainAxisSize.min,
-                       children: [
+                      DataCell(
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
 
 
-              Checkbox(
-              value: isChecked.value,
-              onChanged: (v) {
-              isChecked.value = v!;
-              },
+                              Obx(
+                                    () => Checkbox(
+                                  value: isChecked.value == index,
+                                  onChanged: (v) {
+                                    isChecked.value = index; // Sirf ek row select hogi
+                                  },
+                                ),
+                              ),
+
+                              //
+                              // Checkbox(
+                              //     value: isChecked.value,
+                              //     onChanged: (v) {
+                              //       isChecked.value = v!;
+                              //
+                              //     },
+                              //     ),
+
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
               ),
-
-
-              ],
-                     ),
-                   ),
-                 ),
-               ],
-             );
-            }),
+            ),
           ),
-        ),
-      ),
 
 
-      // Bottom action row
-          SizedBox(height: 80 ),
+          // Bottom action row
+          SizedBox(height: 20 ),
           Row(
             children: [
               Expanded(
@@ -466,40 +487,42 @@ class _CenterAreaState extends State<_CenterArea> {
               ),
               const SizedBox(width: 16),
 
-              const SizedBox(width: 8),
+              // const SizedBox(width: 8),
               Row(
                 children: [
 
-                  Obx(
-                        ()=> CustomDropdownField<String>(
-                      label: "SELECT DRIVERS",
-                      width: 200,
-                      height: 35,
-                      items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
-                      value: selectDriverObject.value,
-                      itemLabel: (driver) => driver,
-                      onChanged: (val) {
-                        selectDriverObject.value = val!;
+                  // Obx(
+                  //       ()=> CustomDropdownField<String>(
+                  //     label: "SELECT DRIVERS",
+                  //     width: 200,
+                  //     height: 35,
+                  //     items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
+                  //     value: selectDriverObject.value,
+                  //     itemLabel: (driver) => driver,
+                  //     onChanged: (val) {
+                  //       selectDriverObject.value = val!;
+                  //
+                  //     },
+                  //   ),
+                  // ),
 
-                      },
-                    ),
-                  ),
-                  Obx(
-                        ()=> CustomDropdownField<String>(
-                      label: "SELECT DRIVERS",
-                      width: 200,
-                      height: 35,
-                      items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
-                      value: selectDriverObject.value,
-                      itemLabel: (driver) => driver,
-                      onChanged: (val) {
-                        selectDriverObject.value = val!;
 
-                      },
-                    ),
-                  ),
+                  // Obx(
+                  //       ()=> CustomDropdownField<String>(
+                  //     label: "SELECT DRIVERS",
+                  //     width: 200,
+                  //     height: 35,
+                  //     items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
+                  //     value: selectDriverObject.value,
+                  //     itemLabel: (driver) => driver,
+                  //     onChanged: (val) {
+                  //       selectDriverObject.value = val!;
+                  //
+                  //     },
+                  //   ),
+                  // ),
                   ElevatedButton(onPressed: (){}, child:   Text(
-                    "SEND",
+                    "SUBMIT",
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
@@ -508,13 +531,12 @@ class _CenterAreaState extends State<_CenterArea> {
                   SizedBox(width: 30),
                   Icon(Icons.directions_car),
                   Text(
-                    "New Booking",
+                    "NEW JOB",
                     style: Theme.of(context)
                         .textTheme
                         .titleSmall
                         ?.copyWith(fontWeight: FontWeight.w600),
                   ),
-
 
 
                 ],
@@ -559,11 +581,6 @@ class _CenterAreaState extends State<_CenterArea> {
     return Expanded(flex: flex, child: child);
   }
 }
-
-
-
-
-
 
 
 

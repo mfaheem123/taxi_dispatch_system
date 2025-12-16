@@ -91,6 +91,7 @@ class AdministrationController extends GetxController {
   RxString searchUserName = ''.obs;
   RxString searchUserEmail = ''.obs;
   RxString searchUserPhone = ''.obs;
+
   RxString searchUserFax = ''.obs;
   RxString searchUserRole = ''.obs;
   RxString searchUserSubsiDiary = ''.obs;
@@ -185,6 +186,7 @@ class AdministrationController extends GetxController {
         filename: profileImg!.name,
       );
     }
+
     var formData = {
       'name': nameController.text,
       'background_color': subsiDiarypickerColor.value.toRadixString(16).substring(2),

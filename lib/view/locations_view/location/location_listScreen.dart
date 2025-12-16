@@ -172,6 +172,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                 controller.SearchLocation();
                               },
                             ),
+
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
@@ -193,13 +194,14 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                         OutlinedButton(
                                           style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
                                           onPressed: () {
-                                            // controller
-                                                // .bindLocationUpdateLocation(locationUpdate: item.id!);
+
+                                            controller
+                                                .bindLocationUpdateLocation(locationUpdate: item!);
+
                                             int index = _controller
                                                 .selectedMenuItems
                                                 .indexWhere((element) =>
-                                                    element.title ==
-                                                    "LocationForm");
+                                                    element.title == "UPDATE LOCATION");
                                             if (index != -1) {
                                               _controller
                                                   .selectedMenuItems[index]
@@ -210,10 +212,12 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                               _controller.currentPage.value =
                                                   LocationForm();
                                               _controller.menuBarRefresh(
-                                                  title: "LocationForm",
+                                                  title: "UPDATE LOCATION",
                                                   pageName: LocationForm());
                                             }
+
                                             controller.update();
+
                                           },
                                           child: Icon(Icons.edit_calendar,
                                               size: 28),

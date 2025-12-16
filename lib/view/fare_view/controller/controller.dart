@@ -62,14 +62,20 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "plotfares/add");
     if(response.statusCode == 200){
-
+      clearFormData();
       print(response.data);
       BotToast.showText(text: "Plot Fare successfully added");
 
     }
   }
 
-
+clearFormData(){
+  fareValueVehicleController.clear();
+  fareDescription2ndController.clear();
+  fareDescriptionController.clear();
+  fareController.clear();
+  vehicleTypeController.clear();
+}
 
   AllPlotFareModel? allPlotFareModel;
   RxBool getAllPlotFareLoader = false.obs;
@@ -531,6 +537,7 @@ class FareController extends GetxController {
       if(fareConfiguration != "NORMAL") "from_date": startDate,
       if(fareConfiguration != "NORMAL") "to_date": endDate,
     };
+
     print(formData);
     var response = await Api().post(formData, "faresconfiguration/add");
     if(response.statusCode == 200){
@@ -541,29 +548,7 @@ class FareController extends GetxController {
     }
   }
 
-  editcreateFareSetting(int? id) async{
-    var formData = {
-      "vehicle_type_id": vehicleValue!.id,
-      "account_id": accountValue!.id,
-      "from_day": fromDayValue,
-      "to_day": toDayValue,
-      "from_time": fromDayController.text,
-      "to_time": toDayController.text,
-      "minimum_fares": startingFareController.text,
-      "minimum_miles": startingMilesController.text,
-      if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
-      if(fareConfiguration != "NORMAL") "from_date": startDate,
-      if(fareConfiguration != "NORMAL") "to_date": endDate,
-    };
-    print(formData);
-    var response = await Api().post(formData, "faresconfiguration/edit/${id}");
-    if(response.statusCode == 200){
-      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
-      print(response.data);
-      BotToast.showText(text: "Fare configuration is successfully added");
-      refreshCreateFareFields();
-    }
-  }
+
 
   deletecreateFareSetting(int? id) async{
     var response = await Api().delete( "faresconfiguration/delete/${id}");
@@ -608,6 +593,7 @@ class FareController extends GetxController {
       update();
     }
   }
+
 
 
 
@@ -662,6 +648,7 @@ class FareController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "fareincrement/add");
     if(response.statusCode == 200){
+      incrementValueVehicleController.clear();
       print(response.data);
       BotToast.showText(text: "Fare configuration is successfully added");
 

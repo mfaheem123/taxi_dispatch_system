@@ -41,6 +41,7 @@ class LocationForm extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       _header(),
+
                       const SizedBox(height: 20),
 
                       isMobile
@@ -105,13 +106,16 @@ class LocationForm extends StatelessWidget {
                               child: _buildField("POSTCODE",
                                   controller.postcodeCtrl,
                                   isNumeric: true)),
+
                           const SizedBox(width: 10),
+
                           Expanded(
                             child: 
                             CustomDropdownField<ZoneObject>(
-                              label: "Select Zone",
+                              text: "SELECT ZONE",
+                              label: "SELECT ZONE",
                               width: Get.width / 5,
-                              height: 35,
+                              height: 38,
                               items: controller.locationtypezoneModel!
                                   .zonesList!,
                               value: controller.zoneValue,
@@ -160,11 +164,11 @@ class LocationForm extends StatelessWidget {
                           ? Column(
                         children: [
                           CustomDropdownField<LocationTypeObject>(
-                            label: "Location Type",
+                            text: "LOCATION TYPE",
+                            label: "LOCATION TYPE",
                             width: Get.width / 5,
                             height: 45,
-                            items: controller.locationtypezoneModel!
-                                .locationTypesList!,
+                            items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
                             templateList.name!,
@@ -173,7 +177,9 @@ class LocationForm extends StatelessWidget {
                               controller.update();
                             },
                           ),
+
                           const SizedBox(height: 10),
+
                           _buildField("LATITUDE",
                               controller.latitudeCtrl,
                               isNumeric: true),
@@ -183,7 +189,9 @@ class LocationForm extends StatelessWidget {
                           : Row(
                         children: [
                           CustomDropdownField<LocationTypeObject>(
+                            text: "LOCATION TYPE",
                             label: "Location Type",
+
                             width: Get.width / 5,
                             height: 45,
                             items: controller.locationtypezoneModel!
