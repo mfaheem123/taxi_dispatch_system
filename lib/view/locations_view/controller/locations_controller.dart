@@ -194,7 +194,6 @@ class LocationController extends GetxController {
     print("Zone ID: ${locationUpdate?.zoneId}");
     print("Zone: ${locationUpdate?.zone}");
     print("Location Type ID: ${locationUpdate?.locationTypeId}");
-
     print("==========================================");
 
     locationUpdateId.value = locationUpdate!.id!;

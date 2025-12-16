@@ -231,6 +231,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                           onPressed: () {
                                             showDialog(
                                               context: context,
+
                                               builder: (_) =>
                                                   DeletePermissionAlert(
                                                 deleteFunctionName: () =>

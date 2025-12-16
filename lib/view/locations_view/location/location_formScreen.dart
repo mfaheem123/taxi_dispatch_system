@@ -49,11 +49,11 @@ class LocationForm extends StatelessWidget {
                         children: [
                           _buildField("LOCATION NAME",
                               controller.locationNameCtrl,
-                              isNumeric: false),
+                              inputType: "text"),
                           const SizedBox(height: 10),
                           _buildField("LONGITUDE",
                               controller.longitudeCtrl,
-                              isNumeric: true),
+                              inputType: "number"),
                         ],
                       )
                           : Row(
@@ -61,12 +61,12 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("LOCATION NAME",
                                   controller.locationNameCtrl,
-                                  isNumeric: false)),
+                                  inputType: "text")),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildField("LONGITUDE",
                                   controller.longitudeCtrl,
-                                  isNumeric: true)),
+                                  inputType: "text")),
                         ],
                       ),
 
@@ -77,7 +77,7 @@ class LocationForm extends StatelessWidget {
                         children: [
                           _buildField("POSTCODE",
                               controller.postcodeCtrl,
-                              isNumeric: true),
+                              inputType: 'both' ),
                           const SizedBox(height: 10),
                           DropdownButtonFormField<ZoneObject>(
                             decoration: const InputDecoration(
@@ -105,7 +105,7 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("POSTCODE",
                                   controller.postcodeCtrl,
-                                  isNumeric: true)),
+                                  inputType: "both")),
 
                           const SizedBox(width: 10),
 
@@ -137,11 +137,11 @@ class LocationForm extends StatelessWidget {
                         children: [
                           _buildField("SHORTCUT",
                               controller.shortcutCtrl,
-                              isNumeric: false),
+                              inputType: "text"),
                           const SizedBox(height: 10),
                           _buildField("EXTRA CHARGES",
                               controller.extraChargesCtrl,
-                              isNumeric: true),
+                              inputType: "number"),
                         ],
                       )
                           : Row(
@@ -149,12 +149,12 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("SHORTCUT",
                                   controller.shortcutCtrl,
-                                  isNumeric: false)),
+                                  inputType: "text")),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildField("EXTRA CHARGES",
                                   controller.extraChargesCtrl,
-                                  isNumeric: true)),
+                                  inputType: "number")),
                         ],
                       ),
 
@@ -182,7 +182,7 @@ class LocationForm extends StatelessWidget {
 
                           _buildField("LATITUDE",
                               controller.latitudeCtrl,
-                              isNumeric: true),
+                              inputType: "number"),
                         ],
 
                       )
@@ -208,7 +208,8 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("LATITUDE",
                                   controller.latitudeCtrl,
-                                  isNumeric: true)),
+                                  inputType: "number"),
+                          ),
                         ],
                       ),
 
@@ -232,7 +233,7 @@ class LocationForm extends StatelessWidget {
                         child: Text(
                           controller.updateLocationValue
                               .value ==
-                              false
+                              true
                               ? "SAVE"
                               : "UPDATE",
                           style: const TextStyle(
@@ -262,28 +263,45 @@ class LocationForm extends StatelessWidget {
     );
   }
 
-  static Widget _buildField(String label,
-      TextEditingController controller,
-      {bool isNumeric = false}) {
+  static Widget _buildField(
+      String label,
+      TextEditingController controller, {
+        String inputType = "text", // text, number, both
+      })
+  {
+    // Decide Regex Based on inputType
+    RegExp pattern;
+
+    switch (inputType) {
+      case "number":
+        pattern = RegExp(r'[0-9]');
+        break;
+      case "both":
+        pattern = RegExp(r'[a-zA-Z0-9 ]');
+        break;
+      default: // text
+        pattern = RegExp(r'[a-zA-Z ]');
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                letterSpacing: .5)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+            letterSpacing: .5,
+          ),
+        ),
         const SizedBox(height: 5),
         TextField(
           controller: controller,
-          keyboardType:
-          isNumeric ? TextInputType.number : TextInputType.text,
+          keyboardType: inputType == "number"
+              ? TextInputType.number
+              : TextInputType.text,
           inputFormatters: [
-            isNumeric
-                ? FilteringTextInputFormatter.allow(
-                RegExp(r'[0-9.]'))
-                : FilteringTextInputFormatter.allow(
-                RegExp(r'[a-zA-Z ]')),
+            FilteringTextInputFormatter.allow(pattern),
           ],
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
@@ -293,6 +311,7 @@ class LocationForm extends StatelessWidget {
       ],
     );
   }
+
 
   static Widget _buildMultiline(
       String label, TextEditingController controller) {
@@ -309,10 +328,6 @@ class LocationForm extends StatelessWidget {
           controller: controller,
           maxLines: 3,
           keyboardType: TextInputType.text,
-          inputFormatters: [
-            FilteringTextInputFormatter.allow(
-                RegExp(r'[a-zA-Z ]')),
-          ],
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
           ),

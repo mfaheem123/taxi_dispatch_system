@@ -213,6 +213,7 @@ class ShiftAlert {
                                             shiftCtrl.text = row.shiftTitle.text;
                                             startTimeCtrl.text = row.startTime ?? "";
                                             endTimeCtrl.text = row.endTime ?? "";
+
                                           });
                                         },
                                       ),
@@ -433,16 +434,19 @@ class NoteAlert {
                                   Expanded(
                                     flex: 2,
                                     child: Row(
+
                                       children: [
                                         IconButton(
                                           icon: const Icon(Icons.edit,
                                               size: 18, color: Color(0xFF43489A)),
                                           onPressed: () {
                                             setState(() {
+
                                               controller.notesCtrl.text = row.notesTitle.text;
                                             });
                                           },
                                         ),
+
                                         IconButton(
                                           icon: const Icon(Icons.delete,
                                               size: 18, color: Colors.red),

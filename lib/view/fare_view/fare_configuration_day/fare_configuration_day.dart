@@ -2,6 +2,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/networks/ErrorMethod.dart';
+import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,7 +30,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
   FareController controller = Get.isRegistered<FareController>()
       ? Get.find<FareController>()
       : Get.put(FareController());
-
+  final DashboardController _controller = Get.find();
   int selectedRowIndex = 0; // currently selected row
   final int totalRows =
       50; // total rows (dynamic list ke hisaab se change hoga)
@@ -107,6 +108,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       // ),
                                       CustomDropdownField<String>(
                                     label: "SELECT FARE CONFIGURATION",
+
                                     width: Get.width / 6,
                                     height: 30,
 
@@ -424,7 +426,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 controller.createFareSetting();
                               },
                               width: fieldWidth,
-                              btnText: AppText.save,
+                              btnText:
+                              controller.updateFareValue == false ? AppText.save:AppText.update,
+
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               style: mozillaTextRegularText(
@@ -489,6 +493,11 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                               ),
                                               onPressed: () {
 
+                                                controller.bindFare(fare );
+
+                                                controller.update();
+
+                                                // 🟢 Edit action
                                               },
                                               child: Icon(Icons.edit_calendar,
                                                   size: 20,
