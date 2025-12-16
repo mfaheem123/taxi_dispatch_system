@@ -10,6 +10,9 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:get/get.dart';
 
+import '../../../alert/bank_details_alert.dart';
+import '../../../alert/shift_alert.dart';
+
 class CreateSubsiDiary extends StatefulWidget {
   const CreateSubsiDiary({super.key});
 
@@ -131,6 +134,9 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                 children: [
                                   // Icon(Icons.other_houses_outlined),
                                   CustomButton(
+                                    onTap: (){
+                                      BankDetailsAlert.show();
+                                    },
                                     verticalPadding: 0.0,
                                     width: screenWidth / 15,
                                     height: 40,
@@ -320,4 +326,17 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
       });
     });
   }
+}
+
+
+class BankDetailsAlertClass{
+  String? bank;
+  String? accountTitle;
+  String? account;
+  String? iban;
+  String? sortCode;
+  String? vat;
+
+
+  BankDetailsAlertClass({this.bank ,this.accountTitle ,this.account, this.iban, this.sortCode, this.vat});
 }

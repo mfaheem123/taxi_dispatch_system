@@ -89,7 +89,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
               : controller.AccountList;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: Column(
               children: [
                 Row(

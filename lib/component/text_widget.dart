@@ -218,7 +218,7 @@ class AppText {
   static get adminFeeType => "ADMIN FEES TYPE";
   static get adminFee => "ADMIN FEES";
   static get accountFeeType => "ACCOUNT FEES TYPE";
-  static get accountFee => "ACOUNT FEES";
+  static get accountFee => "ACCOUNT FEES";
   static get informationControl => "INFORMATION CONTROL";
   static get order => "ORDER #";
   static get bookedBy => "BOOKED BY";

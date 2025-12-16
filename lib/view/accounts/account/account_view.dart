@@ -334,7 +334,7 @@ class _AccountViewState extends State<AccountView> {
                                 columnText: true,
                                 maxLines: 3,
                                 contentPadding:
-                                    EdgeInsets.only(top: 6, left: 3),
+                                    EdgeInsets.only(top: 15, left: 3),
                                 height: 30,
                               ),
                               Column(
@@ -384,7 +384,7 @@ class _AccountViewState extends State<AccountView> {
                                 columnText: true,
                                 maxLines: 3,
                                 contentPadding:
-                                    EdgeInsets.only(top: 6, left: 3),
+                                    EdgeInsets.only(top: 15, left: 3),
                                 height: 30,
                               ),
                               CustomTextField(

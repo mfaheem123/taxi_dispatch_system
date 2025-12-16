@@ -542,7 +542,7 @@ clearFormData(){
     print(formData);
     var response = await Api().post(formData,
         updateFareValue.value == false ?
-        "faresconfiguration/add": "faresconfiguration/edit/${fareUpdateId.value}" );
+        "faresconfiguration/add" : "faresconfiguration/edit/${fareUpdateId.value}" );
     if(response.statusCode == 200){
       getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       print(response.data);

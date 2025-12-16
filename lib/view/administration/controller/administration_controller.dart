@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
 class AdministrationController extends GetxController {
@@ -159,6 +160,10 @@ class AdministrationController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
+
+  List bankDetailList = <BankDetailsAlertClass>[].obs;
+
+
 
   final nameController = TextEditingController();
   final emailController = TextEditingController();

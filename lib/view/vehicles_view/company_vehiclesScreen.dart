@@ -74,6 +74,12 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
 
         return controller.isCompanyVehicle.value == true
             ? Center(child: CircularProgressIndicator())
+
+          :(controller.companyVehicleModel?.vehicles == null || controller.companyVehicleModel!.vehicles!.isEmpty)
+? Center(
+          child: Text("NO DATA"),
+        )
+
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -123,6 +129,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                               controller.SearchingOnCompany();
                             },
                           ),
+
                           buildHeaderWithSearch(
                               title: "VEHICLE TYPE",
                               onChanged: (v) {
