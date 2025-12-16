@@ -987,7 +987,7 @@ class DashboardController extends GetxController {
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
 
-  dashBardApiValidation() async{
+  dashBoardApiValidation() async{
     if(pickupController.text.isEmpty){
       return BotToast.showText(text: "Please select pickup location");
     }
