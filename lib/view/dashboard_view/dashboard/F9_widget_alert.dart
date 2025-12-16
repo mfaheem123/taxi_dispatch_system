@@ -8,7 +8,6 @@ import '../../../component/textStyle.dart';
 
 class DashboardF9Alert {
   static void show() {
-
     // int? editingIndex;
 
     Get.dialog(
@@ -19,23 +18,36 @@ class DashboardF9Alert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-              return Container(
-                width: Get.width * 0.8,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: MultiVehiclePage(),
+              return LayoutBuilder(builder: (context, constraints) {
+                final double maxWidth = constraints.maxWidth;
+                final bool isMobile = maxWidth < 600;
+                final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+                // Instead of fixed width, we calculate flexible field widths
+                final double fieldWidth = isMobile
+                    ? maxWidth // full width
+                    : isTablet
+                    ? maxWidth / 2
+                    : maxWidth / 4;
+
+                  return Container(
+                    width: fieldWidth*1.5,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: MultiVehiclePage(),
+                  );
+                }
               );
             },
           ),
