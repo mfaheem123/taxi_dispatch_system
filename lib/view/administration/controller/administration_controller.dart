@@ -234,6 +234,7 @@ class AdministrationController extends GetxController {
       currencyController.clear();
       addressController.clear();
       balanceController.clear();
+      profileImg = null;
       update();
       Text("Saved Successfully");
       print("response of body -------------------------${response.data}");

@@ -127,6 +127,7 @@ class CreateUserScreen extends StatelessWidget {
                 _buildTextField("FAX", controller.faxUserController),
 
                 CustomDropdownField<Role>(
+                  text: "SELECT ROLE",
                   label: "SELECT ROLE",
                   items: controller.getRole?.roles ?? [],   // safe
                   value: controller.selectedRole,
@@ -139,7 +140,8 @@ class CreateUserScreen extends StatelessWidget {
                   },
                 ),
                 CustomDropdownField<Subsidiaries>(
-                  label: "SURBIONARY",
+                  label: "SUBSIDIARY",
+                  text: "SUBSIDIARY",
                   items: controller.subsDiaryModel?.subsidiaries ?? [],
                   value: controller.selectedSubsidiary,
                   itemLabel: (item) => item.name ?? "",
@@ -151,28 +153,34 @@ class CreateUserScreen extends StatelessWidget {
 
 
                 // _buildTextField("DIDIC COMPANY", controller.didic_Controller),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.activeValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.activeValue.value,
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: KeyboardCheckbox(
+                    onChanged: (v) {
+                      controller.activeValue.value = v;
+                      controller.update();
+                    },
+                    value: controller.activeValue.value,
 
-                  focusNode: controller.activeNode,
-                  width: 120,
-                  label: "ACTIVE",
+                    focusNode: controller.activeNode,
+                    width: 120,
+                    label: "ACTIVE",
+                  ),
                 ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    print("CHECKBOX VALUE RECEIVED: $v");
-                    controller.alldriversValue.value = v;
-                    controller.update();
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: KeyboardCheckbox(
+                    onChanged: (v) {
+                      print("CHECKBOX VALUE RECEIVED: $v");
+                      controller.alldriversValue.value = v;
+                      controller.update();
+                    },
 
-                  value: controller.alldriversValue.value,
-                  focusNode: controller.alldriversNode,
-                  width: 120,
-                  label: "ALL DRIVERS",
+                    value: controller.alldriversValue.value,
+                    focusNode: controller.alldriversNode,
+                    width: 120,
+                    label: "ALL DRIVERS",
+                  ),
                 ),
                 KeyboardCheckbox(
                   onChanged: (v) {
