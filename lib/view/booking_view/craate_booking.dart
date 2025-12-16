@@ -1426,9 +1426,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                         LogicalKeyboardKey
                                                             .space)) {
                                               setState(() {
-                                                controller.smsCheckbox.value =
-                                                    !controller.smsCheckbox
-                                                        .value; // ✅ toggle
+                                                // controller.smsCheckbox.value =
+                                                //     !controller.smsCheckbox
+                                                //         .value; // ✅ toggle
                                               });
                                             }
                                           },
@@ -1437,8 +1437,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 DynamicColors.primaryClr,
                                             value: controller.smsCheckbox.value,
                                             onChanged: (v) {
-                                              controller.smsCheckbox.value = v!;
-                                              controller.update();
+                                              // controller.smsCheckbox.value = v!;
+                                              // controller.update();
                                             },
                                           ),
                                         ),

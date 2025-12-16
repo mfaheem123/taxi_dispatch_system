@@ -200,7 +200,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                     (event.logicalKey == LogicalKeyboardKey.enter ||
                                         event.logicalKey == LogicalKeyboardKey.space)) {
                                   setState(() {
-                                    controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                    // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
                                   });
                                 }
                               },
@@ -208,8 +208,8 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                                 activeColor: DynamicColors.primaryClr,
                                 value: controller.smsCheckbox.value,
                                 onChanged: (v) {
-                                  controller.smsCheckbox.value = v!;
-                                  controller.update();
+                                  // controller.smsCheckbox.value = v!;
+                                  // controller.update();
                                 },
                               ),
                             ),

@@ -1122,17 +1122,18 @@ class DashboardController extends GetxController {
           },
         );
       }
-
-      if(multiReservationList.isNotEmpty){
-        for (var element in multiReservationList) {
-          multiReservationTemp.add(
-              {
-                "exclude": element.exclude,
-                "day": element.day,
-                "pickup_date": element.startDate,
-                "pickup_time": element.exclude
-              });
-        }
+    }
+    if(multiReservationList.isNotEmpty){
+      for (var element in multiReservationList) {
+        String tempDateStore = DateFormat('yyyy-MM-dd').format(
+          DateFormat('dd/MM/yyyy').parse(element.startDate!),
+        );
+        multiReservationTemp.add({
+          "exclude": element.exclude,
+          "day": element.day,
+          "pickup_date": tempDateStore,
+          "pickup_time": element.exclude
+        });
       }
     }
 
@@ -1199,7 +1200,6 @@ class DashboardController extends GetxController {
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
-    multiReservationList.clear();
     multiReservationTemp.clear();
     multiVehicleList.clear();
     multiVehicleTempList.clear();
@@ -1230,6 +1230,11 @@ class DashboardController extends GetxController {
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
+    selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+    selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
+    selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+    selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    dashboardDataLoader(false);
     update();
   }
 
