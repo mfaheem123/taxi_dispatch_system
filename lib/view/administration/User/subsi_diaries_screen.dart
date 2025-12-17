@@ -17,17 +17,13 @@ class SubsiDiariesScreen extends StatefulWidget {
 }
 
 class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
-
-  AdministrationController controller =
-      Get.isRegistered<AdministrationController>()
-          ? Get.find<AdministrationController>()
-          : Get.put(AdministrationController());
+  final AdministrationController controller =
+  Get.isRegistered<AdministrationController>()
+      ? Get.find<AdministrationController>()
+      : Get.put(AdministrationController());
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "SubsiDiariesScreen";
     controller.listSubsDiary();
@@ -35,188 +31,200 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    return GetBuilder<AdministrationController>(
+      builder: (controller) {
+        // ✅ Null-safe list
+        final List listToShow =
+        controller.filteredSubsiDiary.isNotEmpty
+            ? controller.filteredSubsiDiary
+            : (controller.subsiDiaryAll ?? []);
 
-    return GetBuilder<AdministrationController>(builder: (controller) {
-      final listToShow = controller.filteredSubsiDiary.isNotEmpty
-          ? controller.filteredSubsiDiary
-          : controller.subsiDiaryAll;
+        // ✅ Loading State
+        if (controller.subsDiaryLoading == true) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
-
-        return Wrap(
-          runSpacing: 10,
-          spacing: 10,
-          children: [
-            Container(
-              width: Get.width,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-              color: DynamicColors.gryClr.withOpacity(0.5),
-              child: Row(
-                children: [
-                  Text(
-                    "SUBSIDIARIES",
-                    style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800, fontSize: 17),
-                  ),
-                  Spacer(),
-                  CustomButton(
-                    onTap: () {
-                      controller.listSubsDiary();
-                    },
-                    height: 40,
-                    width: 80,
-                    verticalPadding: 0.0,
-                    borderRadius: 4,
-                    widget: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                      child: Icon(
-                        Icons.refresh,
-                        color: DynamicColors.whiteClr,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        // ✅ Empty State
+        if (listToShow.isEmpty) {
+          return const Center(
+            child: Text(
+              "No Data Found",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            controller.subsDiaryLoading == true
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: SizedBox(
-                     width: isMobile || isTablet
-                                  ? Get.width + 700
-                                  : Get.width,
-                      child: DatatableWidget(
-                        columns: [
-                          DataColumn(
-                            label: Checkbox(
-                                value: controller.subsDiaryAllSelection.value,
-                                onChanged: (v) {
-                                  controller.subsDiaryAllSelection.value = v!;
-                                  controller.update();
-                                }),
-                          ),
-                          buildHeaderWithSearch(
-                            title: "NAME",
-                            onChanged: (v) {
-                              controller.searchSubsiDiaryName.value = v;
-                              controller.subsiDiarySearchChanged();
-                            },
-                          ),
-                          buildHeaderWithSearch(
-                            title: "EMAIL",
-                            onChanged: (v) {
-                              controller.searchSubsiDiaryName.value = v;
-                              controller.subsiDiarySearchChanged();
-                            },
-                          ),
-                          buildHeaderWithSearch(
-                            title: "TELEPHONE",
-                            onChanged: (v) {
-                              controller.searchSubsiDiaryTelephone.value = v;
-                              controller.subsiDiarySearchChanged();
-                            },
-                          ),
-                          buildHeaderWithSearch(
-                            title: "ADDRESS",
-                            onChanged: (v) {
-                              controller.searchSubsiDiaryAddress.value = v;
-                              controller.subsiDiarySearchChanged();
-                            },
-                          ),
-                          buildHeaderWithSearch(
-                            title: "FAX",
-                            onChanged: (v) {
-                              controller.searchSibsiDiaryFax.value = v;
-                              controller.subsiDiarySearchChanged();
-                            },
-                          ),
-                          buildHeaderWithSearch(
-                              title: "ACTIONS", removeSearching: true),
-                        ],
-                        totalRow: listToShow.length ?? 0,
-                        rows: (listToShow ?? []).map((item) {
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                Checkbox(
-                                    value: controller.subsDiarySelection.value,
-                                    onChanged: (v) {
-                                      controller.subsDiarySelection.value = v!;
-                                      controller.update();
-                                    }),
-                              ),
-                              DataCell(Center(child: Text(item.name!))),
-                              DataCell(Center(child: Text(item.email!))),
-                              DataCell(
-                                  Center(child: Text(item.telephoneNumber!))),
-                              DataCell(Center(child: Text(item.address!))),
-                              DataCell(Center(child: Text(item.fax!))),
-                              DataCell(
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), 
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.search,
-                                        size: 28,
-                                        color: DynamicColors.primaryClr,
-                                      ),
-                                    ),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.delete,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
+          );
+        }
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final bool isMobile = constraints.maxWidth < 600;
+            final bool isTablet =
+                constraints.maxWidth >= 600 && constraints.maxWidth < 1024;
+
+            return Wrap(
+              runSpacing: 10,
+              spacing: 10,
+              children: [
+                /// 🔹 Header
+                Container(
+                  width: Get.width,
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                  color: DynamicColors.gryClr.withOpacity(0.5),
+                  child: Row(
+                    children: [
+                      Text(
+                        "SUBSIDIARIES",
+                        style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800, fontSize: 17),
                       ),
+                      const Spacer(),
+                      CustomButton(
+                        onTap: controller.listSubsDiary,
+                        height: 40,
+                        width: 80,
+                        borderRadius: 4,
+                        widget: const Icon(
+                          Icons.refresh,
+                          color: Colors.white,
+                          size: 25,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                /// 🔹 Table
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: isMobile || isTablet
+                        ? Get.width + 700
+                        : Get.width,
+                    child: DatatableWidget(
+                      columns: [
+                        DataColumn(
+                          label: Checkbox(
+                            value:
+                            controller.subsDiaryAllSelection.value ?? false,
+                            onChanged: (v) {
+                              controller.subsDiaryAllSelection.value =
+                                  v ?? false;
+                              controller.update();
+                            },
+                          ),
+                        ),
+                        buildHeaderWithSearch(
+                          title: "NAME",
+                          onChanged: (v) {
+                            controller.searchSubsiDiaryName.value = v;
+                            controller.subsiDiarySearchChanged();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "EMAIL",
+                          onChanged: (v) {
+                            controller.searchSubsiDiaryEmail.value = v;
+                            controller.subsiDiarySearchChanged();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "TELEPHONE",
+                          onChanged: (v) {
+                            controller.searchSubsiDiaryTelephone.value = v;
+                            controller.subsiDiarySearchChanged();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "ADDRESS",
+                          onChanged: (v) {
+                            controller.searchSubsiDiaryAddress.value = v;
+                            controller.subsiDiarySearchChanged();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "FAX",
+                          onChanged: (v) {
+                            controller.searchSibsiDiaryFax.value = v;
+                            controller.subsiDiarySearchChanged();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "ACTIONS",
+                          removeSearching: true,
+                        ),
+                      ],
+
+                      /// ✅ Safe total rows
+                      totalRow: listToShow.length,
+
+                      /// ✅ Safe rows mapping
+                      rows: listToShow.map<DataRow>((item) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Checkbox(
+                                value: controller
+                                    .subsDiarySelection.value ??
+                                    false,
+                                onChanged: (v) {
+                                  controller.subsDiarySelection.value =
+                                      v ?? false;
+                                  controller.update();
+                                },
+                              ),
+                            ),
+
+                            /// 🔥 Null Safe Fields
+                            DataCell(
+                                Center(child: Text(item.name ?? "-"))),
+                            DataCell(
+                                Center(child: Text(item.email ?? "-"))),
+                            DataCell(Center(
+                                child:
+                                Text(item.telephoneNumber ?? "-"))),
+                            DataCell(
+                                Center(child: Text(item.address ?? "-"))),
+                            DataCell(
+                                Center(child: Text(item.fax ?? "-"))),
+
+                            /// Actions
+                            DataCell(
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.search,
+                                        color:
+                                        DynamicColors.primaryClr),
+                                    onPressed: () {},
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.delete,
+                                        color: DynamicColors.redClr),
+                                    onPressed: () {},
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
                     ),
                   ),
-            PaginationWidget(
-                currentPage: controller.subsiCurrentPage.value,
-                totalPages: controller.subsiTotalPages.value,
-                onPageChange: controller.onPageChange)
-          ],
+                ),
+
+                /// 🔹 Pagination
+                PaginationWidget(
+                  currentPage: controller.subsiCurrentPage.value ?? 1,
+                  totalPages: controller.subsiTotalPages.value ?? 1,
+                  onPageChange: controller.onPageChange,
+                ),
+              ],
+            );
+          },
         );
-      });
-    });
+      },
+    );
   }
 }

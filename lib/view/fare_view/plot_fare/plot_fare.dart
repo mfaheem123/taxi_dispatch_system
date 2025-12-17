@@ -354,6 +354,7 @@ class _PlotFareState extends State<PlotFare> {
                             rows: controller
                                 .allPlotFareModel!.plotFares!
                                 .map((plot) => DataRow(
+
                               cells: [
 
                                 DataCell(Center(child: Text(plot.vehicleType!.name ?? ""))),
