@@ -91,7 +91,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                       child: CircularProgressIndicator(),
                     )
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(5),
                       child: Column(
                         children: [
                           Row(
