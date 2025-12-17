@@ -826,6 +826,7 @@ class DashboardController extends GetxController {
   DashboardVehicleTypeObject? selectMultiVehicleValue;
   PaymentTypeObject? selectPaymentTypeValue;
   JourneyTypeObject? selectJourneyTypeValue;
+  List<BookingTabObject>? bookingTabsList;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
@@ -834,6 +835,7 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+      bookingTabsList = dashboardAllData!.bookingTabs;
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
@@ -1078,12 +1080,12 @@ class DashboardController extends GetxController {
       'eta': totalTimeDuration,
       'miles': totalDistance,
       if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
-      'booking_status_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2': '1',
-      'booking_type_id': '1',
+      'booking_status_id': '1',
+      'booking_type_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2':'1',
       'booking_source': 'dashboard',
       'employee_id': '2',
       if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
-      if(multiVehicleTempList.isNotEmpty) "multi_reservation": jsonEncode(multiVehicleTempList),
+      if(multiVehicleTempList.isNotEmpty) "multi_vehicle": jsonEncode(multiVehicleTempList),
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
@@ -1132,7 +1134,7 @@ class DashboardController extends GetxController {
           "exclude": element.exclude,
           "day": element.day,
           "pickup_date": tempDateStore,
-          "pickup_time": element.exclude
+          "pickup_time": element.returnTime
         });
       }
     }

@@ -300,7 +300,6 @@ class _BookingTableState extends State<BookingTable> {
 
 
 List<TableSelectClass> tabList = [
-
   TableSelectClass(titleText: "TODAY BOOKINGS", selectedClr: false.obs, dropDownList: [], deletedClr: false),
   TableSelectClass(titleText: "BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "PRE BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
@@ -311,7 +310,6 @@ List<TableSelectClass> tabList = [
   TableSelectClass(titleText: "APP BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "IVR BOOKINGS", selectedClr: false.obs, dropDownList: [],deletedClr: false),
   TableSelectClass(titleText: "JOB DUE BY", selectedClr: false.obs,dropDown: true,dropDownList: [
-
     "JOB DUE BY",
     "15 MIN",
     "30 MIN",

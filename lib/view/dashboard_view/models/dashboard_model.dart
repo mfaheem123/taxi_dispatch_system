@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+
 DashboardDataModel dashboardDataModelFromJson(String str) => DashboardDataModel.fromJson(json.decode(str));
 
 String dashboardDataModelToJson(DashboardDataModel data) => json.encode(data.toJson());
@@ -18,6 +20,7 @@ class DashboardDataModel {
   List<DashboardVehicleTypeObject>? vehicleTypes;
   List<DashboardSubsidiaryObject>? subsidiaries;
   List<DashboardDriverObject>? drivers;
+  List<BookingTabObject>? bookingTabs;
 
   DashboardDataModel({
     this.status,
@@ -29,6 +32,7 @@ class DashboardDataModel {
     this.vehicleTypes,
     this.subsidiaries,
     this.drivers,
+    this.bookingTabs,
   });
 
   factory DashboardDataModel.fromJson(Map<String, dynamic> json) => DashboardDataModel(
@@ -41,6 +45,7 @@ class DashboardDataModel {
     vehicleTypes: List<DashboardVehicleTypeObject>.from(json["vehicle_types"].map((x) => DashboardVehicleTypeObject.fromJson(x))),
     subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
     drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
+    bookingTabs: List<BookingTabObject>.from(json["booking_tabs"].map((x) => BookingTabObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -53,6 +58,34 @@ class DashboardDataModel {
     "vehicle_types": List<dynamic>.from(vehicleTypes!.map((x) => x.toJson())),
     "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x.toJson())),
     "drivers": List<dynamic>.from(drivers!.map((x) => x.toJson())),
+    "booking_tabs": List<dynamic>.from(bookingTabs!.map((x) => x.toJson())),
+  };
+}
+
+class BookingTabObject {
+  int? id;
+  String? bookingTabs;
+  int? bookingCount;
+  RxBool? selectedClr = false.obs;
+
+  BookingTabObject({
+    this.id,
+    this.bookingTabs,
+    this.bookingCount,
+    this.selectedClr,
+  });
+
+  factory BookingTabObject.fromJson(Map<String, dynamic> json) => BookingTabObject(
+    id: json["id"],
+    bookingTabs: json["booking_tabs"],
+    bookingCount: json["booking_count"],
+    selectedClr: false.obs,
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "booking_tabs": bookingTabs,
+    "booking_count": bookingCount,
   };
 }
 
