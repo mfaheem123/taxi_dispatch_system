@@ -277,7 +277,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     ]),
                   ),
                   // controller.currentPage.value ?? CreateEscortScreen(),
-                 Obx(()=>  controller.currentPage.value ?? ByDefaultDashboard(),)
+                 Obx(()=>
+                 Padding(padding:
+               EdgeInsets.only(bottom:  controller.currentPage.value == null ||
+                   controller.currentPage.value.runtimeType == ByDefaultDashboard? kToolbarHeight:0),
+                 child: controller.currentPage.value ?? ByDefaultDashboard(),
+                 )
+                 )
                 ],
               ),
             ),

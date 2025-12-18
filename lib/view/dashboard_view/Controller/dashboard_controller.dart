@@ -13,8 +13,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:polyline_codec/polyline_codec.dart';
-import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
@@ -28,6 +26,7 @@ import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
+import '../models/dashboard_table_model.dart';
 import '../models/users_phone_numbers_model.dart';
 import '../widgets/via_location.dart';
 
@@ -827,6 +826,7 @@ class DashboardController extends GetxController {
   PaymentTypeObject? selectPaymentTypeValue;
   JourneyTypeObject? selectJourneyTypeValue;
   List<BookingTabObject>? bookingTabsList;
+  String? bookingTabs;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
@@ -836,9 +836,29 @@ class DashboardController extends GetxController {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
       bookingTabsList = dashboardAllData!.bookingTabs;
+      bookingTabsList!.first.selectedClr!.value = true;
+      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
+        bookingTabs: "JOB DUE BY",
+        id: 0,
+        deletedClr: false.obs,
+        selectedClr: true.obs,
+        dropDownList: [
+          "JOB DUE BY",
+          "15 MIN",
+          "30 MIN",
+          "60 MIN",
+        ],),);
+      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
+        bookingTabs: "DELETE SELECTION",
+        id: 0,
+        selectedClr: false.obs,
+        deletedClr: true.obs,
+        dropDownList: []
+      ),);
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+      getDashboardTableData(tableId: bookingTabsList!.first.id);
       dashboardDataLoader(false);
       update();
     }
@@ -855,6 +875,16 @@ class DashboardController extends GetxController {
       selectDepartmentData = null;
       selectAccountValue = null;
       dashboardAccountData = DashboardAccountModel.fromJson(response.data);
+      update();
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
+  DashboardTableModel? dashboardTableModelData;
+  getDashboardTableData({tableId}) async{
+    var response = await Api().get("bookings/getbytabs/$tableId");
+    if(response.statusCode ==200){
+      dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       update();
     }
   }
