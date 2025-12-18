@@ -63,7 +63,7 @@ class CreateUserScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (controller.profileImg == null) {
-          controller.pickImage();
+          controller.pickImageCreate();
         }
       },
       child: Container(

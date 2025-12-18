@@ -174,7 +174,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                             inactiveColor: DynamicColors.gryClr,
                           focusScale: 1.5,
                           onToggle: () {
-                            print("Switch toggled: ${controller.switchController.value}");
+                            print("Switc toggled: ${controller.switchController.value}");
                           },
                   ),
                             // QuotationWidget(

@@ -282,6 +282,25 @@ class AdministrationController extends GetxController {
   final phoneController = TextEditingController();
   final faxUserController = TextEditingController();
 
+
+  ImageModel? profileImage;
+
+  Future<void> pickImageCreate() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
+      profileImg = ImageModel(
+          name: result.files.single.name,
+          bytes: result.files.single.bytes!,
+          path: result.files.single.path);
+    }
+    update();
+  }
+
+
+
   RxBool isLoadUser = false.obs;
   createUser() async {
     isLoadVehicleType.value = true;
@@ -312,7 +331,7 @@ class AdministrationController extends GetxController {
       'allowtransferbookings': transferValue.value,
       if (multipartFile != null) "image": multipartFile!,
     };
-    var response = await Api().post(formData, 'employees/add', auth: true);
+    var response = await Api().post(formData, 'employees/add', auth : true);
     if (response.statusCode == 200) {
       userNameController.clear();
       passwordController.clear();
@@ -320,6 +339,14 @@ class AdministrationController extends GetxController {
       userEmailController.clear();
       phoneController.clear();
       faxUserController.clear();
+      activeValue.value = false;
+      alldriversValue.value = false;
+      allbookingValue.value = false;
+      accuntValue.value = false;
+      receviverValue.value = false;
+      transferValue.value = false;
+      profileImage = null;
+
       update();
       Text("Saved Successfully");
       print("response of body -------------------------${response.data}");
