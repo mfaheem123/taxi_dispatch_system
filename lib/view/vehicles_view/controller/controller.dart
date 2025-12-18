@@ -12,6 +12,8 @@ import 'package:get/get.dart';
 import '../../../Model/image_model.dart';
 import 'package:dio/dio.dart' as dio;
 
+import '../../dashboard_view/models/dashboard_model.dart';
+
 class VehicleController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo functionality vehicle type
 
@@ -73,6 +75,11 @@ class VehicleController extends GetxController {
   final motExpiryExpireTimeController = TextEditingController();
   final mot2ExpiryExpireTimeController = TextEditingController();
   final insuranceExpiryTimeController = TextEditingController();
+
+  DashboardDataModel? dashboardAllData;
+  DashboardVehicleTypeObject? selectVehicleValue;
+
+
 
   postCompanyVehicle() async {
     companyVehicleLoader(false);

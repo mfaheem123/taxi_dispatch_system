@@ -354,6 +354,7 @@ class _FareChargesState extends State<FareCharges> {
                                                 width: 1,
                                               ),
                                             ),
+
                                             label: Text(
                                               item.dayName!,
                                               style: TextStyle(
@@ -371,6 +372,7 @@ class _FareChargesState extends State<FareCharges> {
                                 SizedBox(
                                   width: 40,
                                 ),
+
                                 CustomButton(
                                   onTap: (){
                                     controller.postSurchargeData();
