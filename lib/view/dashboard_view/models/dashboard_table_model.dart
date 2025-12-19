@@ -1,0 +1,908 @@
+
+
+
+// To parse this JSON data, do
+//
+//     final dashboardTableModel = dashboardTableModelFromJson(jsonString);
+
+import 'dart:convert';
+
+DashboardTableModel dashboardTableModelFromJson(String str) => DashboardTableModel.fromJson(json.decode(str));
+
+String dashboardTableModelToJson(DashboardTableModel data) => json.encode(data.toJson());
+
+class DashboardTableModel {
+  bool? success;
+  int? tabId;
+  String? tabName;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
+  int? count;
+  List<BookingObjectData>? data;
+
+  DashboardTableModel({
+    this.success,
+    this.tabId,
+    this.tabName,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
+    this.count,
+    this.data,
+  });
+
+  factory DashboardTableModel.fromJson(Map<String, dynamic> json) => DashboardTableModel(
+    success: json["success"],
+    tabId: json["tab_id"],
+    tabName: json["tab_name"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
+    count: json["count"],
+    data: List<BookingObjectData>.from(json["data"].map((x) => BookingObjectData.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "success": success,
+    "tab_id": tabId,
+    "tab_name": tabName,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
+    "count": count,
+    "data": List<dynamic>.from(data!.map((x) => x.toJson())),
+  };
+}
+
+class BookingObjectData {
+  String? id;
+  String? referenceNumber;
+  int? subsidiaryId;
+  int? bookingTypeId;
+  int? bookingStatusId;
+  int? journeyTypeId;
+  int? accountId;
+  int? customerId;
+  int? employeeId;
+  String? pickup;
+  String? dropoff;
+  DateTime? pickupDate;
+  String? pickupTime;
+  dynamic dropoffDate;
+  dynamic dropoffTime;
+  String? pickupDoorNumber;
+  String? dropoffDoorNumber;
+  int? pickupPlot;
+  int? dropoffPlot;
+  dynamic pickupLocationTypeId;
+  dynamic dropoffLocationTypeId;
+  String? pickupLatitude;
+  String? pickupLongitude;
+  String? dropoffLatitude;
+  String? dropoffLongitude;
+  List<Viapoint>? viapoints;
+  List<RestrictedDriver>? restrictedDrivers;
+  dynamic flightNumber;
+  dynamic arrivingFrom;
+  int? vehicleTypeId;
+  dynamic vehicleId;
+  int? driverId;
+  int? passengers;
+  int? luggages;
+  int? handLuggages;
+  List<ChildSeat>? childSeat;
+  String? name;
+  String? email;
+  String? mobile;
+  String? telephone;
+  String? leadTime;
+  List<Note>? notes;
+  String? specialInstructions;
+  int? paymentTypeId;
+  String? companyPrice;
+  String? fares;
+  String? totalCharges;
+  String? parkingCharges;
+  String? waitingCharges;
+  String? extraDropCharges;
+  String? creditCardCharges;
+  String? congestionCharges;
+  String? miles;
+  int? meetAndGreet;
+  String? department;
+  dynamic escortId;
+  dynamic orderNumber;
+  dynamic bookedBy;
+  bool? addReturnFare;
+  bool? fareMeterStatus;
+  bool? fareMeter;
+  bool? quotation;
+  bool? quoted;
+  bool? dispatch;
+  dynamic dispatchAs;
+  bool? sms;
+  bool? emailflag;
+  bool? trash;
+  bool? hidden;
+  int? multiBookingId;
+  dynamic associatedBooking;
+  String? invoiceStatus;
+  String? commissionStatus;
+  bool? commission;
+  List<dynamic>? skippedBookings;
+  dynamic permanent;
+  dynamic toggleDriverText;
+  dynamic togglePassengerText;
+  dynamic cancelledReason;
+  String? bookingSource;
+  dynamic onRoute;
+  dynamic arrived;
+  dynamic passengerOnBoard;
+  dynamic completed;
+  dynamic controllerCompleted;
+  dynamic driverWaitingTime;
+  dynamic dispatchedAt;
+  DateTime? bookedAt;
+  dynamic stripeCustomerId;
+  dynamic stripePaymentId;
+  dynamic invoiceNumber;
+  dynamic initialSubsidiaryId;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? eta;
+  BookingStatus? bookingStatus;
+  BookingType? bookingType;
+  JourneyType? journeyType;
+  Subsidiary? subsidiary;
+  VehicleType? vehicleType;
+  PaymentType? paymentType;
+  Account? account;
+  Driver? driver;
+  Customer? customer;
+  Employee? employee;
+
+  BookingObjectData({
+    this.id,
+    this.referenceNumber,
+    this.subsidiaryId,
+    this.bookingTypeId,
+    this.bookingStatusId,
+    this.journeyTypeId,
+    this.accountId,
+    this.customerId,
+    this.employeeId,
+    this.pickup,
+    this.dropoff,
+    this.pickupDate,
+    this.pickupTime,
+    this.dropoffDate,
+    this.dropoffTime,
+    this.pickupDoorNumber,
+    this.dropoffDoorNumber,
+    this.pickupPlot,
+    this.dropoffPlot,
+    this.pickupLocationTypeId,
+    this.dropoffLocationTypeId,
+    this.pickupLatitude,
+    this.pickupLongitude,
+    this.dropoffLatitude,
+    this.dropoffLongitude,
+    this.viapoints,
+    this.restrictedDrivers,
+    this.flightNumber,
+    this.arrivingFrom,
+    this.vehicleTypeId,
+    this.vehicleId,
+    this.driverId,
+    this.passengers,
+    this.luggages,
+    this.handLuggages,
+    this.childSeat,
+    this.name,
+    this.email,
+    this.mobile,
+    this.telephone,
+    this.leadTime,
+    this.notes,
+    this.specialInstructions,
+    this.paymentTypeId,
+    this.companyPrice,
+    this.fares,
+    this.totalCharges,
+    this.parkingCharges,
+    this.waitingCharges,
+    this.extraDropCharges,
+    this.creditCardCharges,
+    this.congestionCharges,
+    this.miles,
+    this.meetAndGreet,
+    this.department,
+    this.escortId,
+    this.orderNumber,
+    this.bookedBy,
+    this.addReturnFare,
+    this.fareMeterStatus,
+    this.fareMeter,
+    this.quotation,
+    this.quoted,
+    this.dispatch,
+    this.dispatchAs,
+    this.sms,
+    this.emailflag,
+    this.trash,
+    this.hidden,
+    this.multiBookingId,
+    this.associatedBooking,
+    this.invoiceStatus,
+    this.commissionStatus,
+    this.commission,
+    this.skippedBookings,
+    this.permanent,
+    this.toggleDriverText,
+    this.togglePassengerText,
+    this.cancelledReason,
+    this.bookingSource,
+    this.onRoute,
+    this.arrived,
+    this.passengerOnBoard,
+    this.completed,
+    this.controllerCompleted,
+    this.driverWaitingTime,
+    this.dispatchedAt,
+    this.bookedAt,
+    this.stripeCustomerId,
+    this.stripePaymentId,
+    this.invoiceNumber,
+    this.initialSubsidiaryId,
+    this.createdAt,
+    this.updatedAt,
+    this.eta,
+    this.bookingStatus,
+    this.bookingType,
+    this.journeyType,
+    this.subsidiary,
+    this.vehicleType,
+    this.paymentType,
+    this.account,
+    this.driver,
+    this.customer,
+    this.employee,
+  });
+
+  factory BookingObjectData.fromJson(Map<String, dynamic> json) => BookingObjectData(
+    id: json["id"],
+    referenceNumber: json["reference_number"],
+    subsidiaryId: json["subsidiary_id"],
+    bookingTypeId: json["booking_type_id"],
+    bookingStatusId: json["booking_status_id"],
+    journeyTypeId: json["journey_type_id"],
+    accountId: json["account_id"],
+    customerId: json["customer_id"],
+    employeeId: json["employee_id"],
+    pickup: json["pickup"],
+    dropoff: json["dropoff"],
+    pickupDate: DateTime.parse(json["pickup_date"]),
+    pickupTime: json["pickup_time"],
+    dropoffDate: json["dropoff_date"],
+    dropoffTime: json["dropoff_time"],
+    pickupDoorNumber: json["pickup_door_number"],
+    dropoffDoorNumber: json["dropoff_door_number"],
+    pickupPlot: json["pickup_plot"],
+    dropoffPlot: json["dropoff_plot"],
+    pickupLocationTypeId: json["pickup_location_type_id"],
+    dropoffLocationTypeId: json["dropoff_location_type_id"],
+    pickupLatitude: json["pickup_latitude"],
+    pickupLongitude: json["pickup_longitude"],
+    dropoffLatitude: json["dropoff_latitude"],
+    dropoffLongitude: json["dropoff_longitude"],
+    viapoints: List<Viapoint>.from(json["viapoints"].map((x) => Viapoint.fromJson(x))),
+    restrictedDrivers: List<RestrictedDriver>.from(json["restricted_drivers"].map((x) => RestrictedDriver.fromJson(x))),
+    flightNumber: json["flight_number"],
+    arrivingFrom: json["arriving_from"],
+    vehicleTypeId: json["vehicle_type_id"],
+    vehicleId: json["vehicle_id"],
+    driverId: json["driver_id"],
+    passengers: json["passengers"],
+    luggages: json["luggages"],
+    handLuggages: json["hand_luggages"],
+    childSeat: List<ChildSeat>.from(json["child_seat"].map((x) => ChildSeat.fromJson(x))),
+    name: json["name"],
+    email: json["email"],
+    mobile: json["mobile"],
+    telephone: json["telephone"],
+    leadTime: json["lead_time"],
+    notes: List<Note>.from(json["notes"].map((x) => Note.fromJson(x))),
+    specialInstructions: json["special_instructions"],
+    paymentTypeId: json["payment_type_id"],
+    companyPrice: json["company_price"],
+    fares: json["fares"],
+    totalCharges: json["total_charges"],
+    parkingCharges: json["parking_charges"],
+    waitingCharges: json["waiting_charges"],
+    extraDropCharges: json["extra_drop_charges"],
+    creditCardCharges: json["credit_card_charges"],
+    congestionCharges: json["congestion_charges"],
+    miles: json["miles"],
+    meetAndGreet: json["meet_and_greet"],
+    department: json["department"],
+    escortId: json["escort_id"],
+    orderNumber: json["order_number"],
+    bookedBy: json["booked_by"],
+    addReturnFare: json["add_return_fare"],
+    fareMeterStatus: json["fare_meter_status"],
+    fareMeter: json["fare_meter"],
+    quotation: json["quotation"],
+    quoted: json["quoted"],
+    dispatch: json["dispatch"],
+    dispatchAs: json["dispatch_as"],
+    sms: json["sms"],
+    emailflag: json["emailflag"],
+    trash: json["trash"],
+    hidden: json["hidden"],
+    multiBookingId: json["multi_booking_id"],
+    associatedBooking: json["associated_booking"],
+    invoiceStatus: json["invoice_status"],
+    commissionStatus: json["commission_status"],
+    commission: json["commission"],
+    skippedBookings: List<dynamic>.from(json["skipped_bookings"].map((x) => x)),
+    permanent: json["permanent"],
+    toggleDriverText: json["toggle_driver_text"],
+    togglePassengerText: json["toggle_passenger_text"],
+    cancelledReason: json["cancelled_reason"],
+    bookingSource: json["booking_source"],
+    onRoute: json["on_route"],
+    arrived: json["arrived"],
+    passengerOnBoard: json["passenger_on_board"],
+    completed: json["completed"],
+    controllerCompleted: json["controller_completed"],
+    driverWaitingTime: json["driver_waiting_time"],
+    dispatchedAt: json["dispatched_at"],
+    bookedAt: DateTime.parse(json["booked_at"]),
+    stripeCustomerId: json["stripe_customer_id"],
+    stripePaymentId: json["stripe_payment_id"],
+    invoiceNumber: json["invoice_number"],
+    initialSubsidiaryId: json["initial_subsidiary_id"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    eta: json["eta"],
+    bookingStatus: BookingStatus.fromJson(json["booking_status"]),
+    bookingType: BookingType.fromJson(json["booking_type"]),
+    journeyType: JourneyType.fromJson(json["journey_type"]),
+    subsidiary: Subsidiary.fromJson(json["subsidiary"]),
+    vehicleType: VehicleType.fromJson(json["vehicle_type"]),
+    paymentType: PaymentType.fromJson(json["payment_type"]),
+    account: Account.fromJson(json["account"]),
+    driver: Driver.fromJson(json["driver"]),
+    customer: Customer.fromJson(json["customer"]),
+    employee: Employee.fromJson(json["employee"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "reference_number": referenceNumber,
+    "subsidiary_id": subsidiaryId,
+    "booking_type_id": bookingTypeId,
+    "booking_status_id": bookingStatusId,
+    "journey_type_id": journeyTypeId,
+    "account_id": accountId,
+    "customer_id": customerId,
+    "employee_id": employeeId,
+    "pickup": pickup,
+    "dropoff": dropoff,
+    "pickup_date": "${pickupDate!.year.toString().padLeft(4, '0')}-${pickupDate!.month.toString().padLeft(2, '0')}-${pickupDate!.day.toString().padLeft(2, '0')}",
+    "pickup_time": pickupTime,
+    "dropoff_date": dropoffDate,
+    "dropoff_time": dropoffTime,
+    "pickup_door_number": pickupDoorNumber,
+    "dropoff_door_number": dropoffDoorNumber,
+    "pickup_plot": pickupPlot,
+    "dropoff_plot": dropoffPlot,
+    "pickup_location_type_id": pickupLocationTypeId,
+    "dropoff_location_type_id": dropoffLocationTypeId,
+    "pickup_latitude": pickupLatitude,
+    "pickup_longitude": pickupLongitude,
+    "dropoff_latitude": dropoffLatitude,
+    "dropoff_longitude": dropoffLongitude,
+    "viapoints": List<dynamic>.from(viapoints!.map((x) => x.toJson())),
+    "restricted_drivers": List<dynamic>.from(restrictedDrivers!.map((x) => x.toJson())),
+    "flight_number": flightNumber,
+    "arriving_from": arrivingFrom,
+    "vehicle_type_id": vehicleTypeId,
+    "vehicle_id": vehicleId,
+    "driver_id": driverId,
+    "passengers": passengers,
+    "luggages": luggages,
+    "hand_luggages": handLuggages,
+    "child_seat": List<dynamic>.from(childSeat!.map((x) => x.toJson())),
+    "name": name,
+    "email": email,
+    "mobile": mobile,
+    "telephone": telephone,
+    "lead_time": leadTime,
+    "notes": List<dynamic>.from(notes!.map((x) => x.toJson())),
+    "special_instructions": specialInstructions,
+    "payment_type_id": paymentTypeId,
+    "company_price": companyPrice,
+    "fares": fares,
+    "total_charges": totalCharges,
+    "parking_charges": parkingCharges,
+    "waiting_charges": waitingCharges,
+    "extra_drop_charges": extraDropCharges,
+    "credit_card_charges": creditCardCharges,
+    "congestion_charges": congestionCharges,
+    "miles": miles,
+    "meet_and_greet": meetAndGreet,
+    "department": department,
+    "escort_id": escortId,
+    "order_number": orderNumber,
+    "booked_by": bookedBy,
+    "add_return_fare": addReturnFare,
+    "fare_meter_status": fareMeterStatus,
+    "fare_meter": fareMeter,
+    "quotation": quotation,
+    "quoted": quoted,
+    "dispatch": dispatch,
+    "dispatch_as": dispatchAs,
+    "sms": sms,
+    "emailflag": emailflag,
+    "trash": trash,
+    "hidden": hidden,
+    "multi_booking_id": multiBookingId,
+    "associated_booking": associatedBooking,
+    "invoice_status": invoiceStatus,
+    "commission_status": commissionStatus,
+    "commission": commission,
+    "skipped_bookings": List<dynamic>.from(skippedBookings!.map((x) => x)),
+    "permanent": permanent,
+    "toggle_driver_text": toggleDriverText,
+    "toggle_passenger_text": togglePassengerText,
+    "cancelled_reason": cancelledReason,
+    "booking_source": bookingSource,
+    "on_route": onRoute,
+    "arrived": arrived,
+    "passenger_on_board": passengerOnBoard,
+    "completed": completed,
+    "controller_completed": controllerCompleted,
+    "driver_waiting_time": driverWaitingTime,
+    "dispatched_at": dispatchedAt,
+    "booked_at": bookedAt!.toIso8601String(),
+    "stripe_customer_id": stripeCustomerId,
+    "stripe_payment_id": stripePaymentId,
+    "invoice_number": invoiceNumber,
+    "initial_subsidiary_id": initialSubsidiaryId,
+    "created_at": createdAt!.toIso8601String(),
+    "updated_at": updatedAt!.toIso8601String(),
+    "eta": eta,
+    "booking_status": bookingStatus!.toJson(),
+    "booking_type": bookingType!.toJson(),
+    "journey_type": journeyType!.toJson(),
+    "subsidiary": subsidiary!.toJson(),
+    "vehicle_type": vehicleType!.toJson(),
+    "payment_type": paymentType!.toJson(),
+    "account": account!.toJson(),
+    "driver": driver!.toJson(),
+    "customer": customer!.toJson(),
+    "employee": employee!.toJson(),
+  };
+}
+
+class Account {
+  dynamic id;
+  dynamic name;
+  dynamic backgroundColor;
+  dynamic foregroundColor;
+  dynamic hasVat;
+  dynamic bankInformation;
+  dynamic fareController;
+  dynamic accountFeesType;
+  dynamic accountFees;
+  dynamic accountFeesVat;
+
+  Account({
+    this.id,
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.hasVat,
+    this.bankInformation,
+    this.fareController,
+    this.accountFeesType,
+    this.accountFees,
+    this.accountFeesVat,
+  });
+
+  factory Account.fromJson(Map<String, dynamic> json) => Account(
+    id: json["id"],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+    hasVat: json["has_vat"],
+    bankInformation: json["bank_information"],
+    fareController: json["fare_controller"],
+    accountFeesType: json["account_fees_type"],
+    accountFees: json["account_fees"],
+    accountFeesVat: json["account_fees_vat"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+    "has_vat": hasVat,
+    "bank_information": bankInformation,
+    "fare_controller": fareController,
+    "account_fees_type": accountFeesType,
+    "account_fees": accountFees,
+    "account_fees_vat": accountFeesVat,
+  };
+}
+
+class BookingStatus {
+  String? bookingStatus;
+
+  BookingStatus({
+    this.bookingStatus,
+  });
+
+  factory BookingStatus.fromJson(Map<String, dynamic> json) => BookingStatus(
+    bookingStatus: json["booking_status"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "booking_status": bookingStatus,
+  };
+}
+
+class BookingType {
+  String? bookingType;
+
+  BookingType({
+    this.bookingType,
+  });
+
+  factory BookingType.fromJson(Map<String, dynamic> json) => BookingType(
+    bookingType: json["booking_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "booking_type": bookingType,
+  };
+}
+
+class ChildSeat {
+  String? child;
+  String? age;
+
+  ChildSeat({
+    this.child,
+    this.age,
+  });
+
+  factory ChildSeat.fromJson(Map<String, dynamic> json) => ChildSeat(
+    child: json["child"],
+    age: json["age"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "child": child,
+    "age": age,
+  };
+}
+
+class Customer {
+  String? doorNumber;
+  String? address1;
+  String? address2;
+  dynamic blacklist;
+
+  Customer({
+    this.doorNumber,
+    this.address1,
+    this.address2,
+    this.blacklist,
+  });
+
+  factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+    doorNumber: json["door_number"],
+    address1: json["address1"],
+    address2: json["address2"],
+    blacklist: json["blacklist"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "door_number": doorNumber,
+    "address1": address1,
+    "address2": address2,
+    "blacklist": blacklist,
+  };
+}
+
+class Driver {
+  int? id;
+  String? username;
+  String? name;
+  dynamic mobileDeviceId;
+  dynamic phcVehicleNumber;
+  dynamic phcDriverNumber;
+  int? vehicleId;
+  int? driverCommission;
+  String? sessionStatus;
+  Vehicle? vehicle;
+
+  Driver({
+    this.id,
+    this.username,
+    this.name,
+    this.mobileDeviceId,
+    this.phcVehicleNumber,
+    this.phcDriverNumber,
+    this.vehicleId,
+    this.driverCommission,
+    this.sessionStatus,
+    this.vehicle,
+  });
+
+  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
+    id: json["id"],
+    username: json["username"],
+    name: json["name"],
+    mobileDeviceId: json["mobile_device_id"],
+    phcVehicleNumber: json["phc_vehicle_number"],
+    phcDriverNumber: json["phc_driver_number"],
+    vehicleId: json["vehicle_id"],
+    driverCommission: json["driver_commission"],
+    sessionStatus: json["session_status"],
+    vehicle: Vehicle.fromJson(json["vehicle"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "username": username,
+    "name": name,
+    "mobile_device_id": mobileDeviceId,
+    "phc_vehicle_number": phcVehicleNumber,
+    "phc_driver_number": phcDriverNumber,
+    "vehicle_id": vehicleId,
+    "driver_commission": driverCommission,
+    "session_status": sessionStatus,
+    "vehicle": vehicle!.toJson(),
+  };
+}
+
+class Vehicle {
+  String? make;
+  String? model;
+  String? color;
+  String? vehicleNumber;
+
+  Vehicle({
+    this.make,
+    this.model,
+    this.color,
+    this.vehicleNumber,
+  });
+
+  factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+    make: json["make"],
+    model: json["model"],
+    color: json["color"],
+    vehicleNumber: json["vehicle_number"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "make": make,
+    "model": model,
+    "color": color,
+    "vehicle_number": vehicleNumber,
+  };
+}
+
+class Employee {
+  String? username;
+  int? roleId;
+
+  Employee({
+    this.username,
+    this.roleId,
+  });
+
+  factory Employee.fromJson(Map<String, dynamic> json) => Employee(
+    username: json["username"],
+    roleId: json["role_id"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "username": username,
+    "role_id": roleId,
+  };
+}
+
+class JourneyType {
+  String? journeyType;
+
+  JourneyType({
+    this.journeyType,
+  });
+
+  factory JourneyType.fromJson(Map<String, dynamic> json) => JourneyType(
+    journeyType: json["journey_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "journey_type": journeyType,
+  };
+}
+
+class Note {
+  String? note;
+  String? createdAt;
+  String? createdBy;
+
+  Note({
+    this.note,
+    this.createdAt,
+    this.createdBy,
+  });
+
+  factory Note.fromJson(Map<String, dynamic> json) => Note(
+    note: json["note"],
+    createdAt: json["created_at"],
+    createdBy: json["created_by"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "note": note,
+    "created_at": createdAt,
+    "created_by": createdBy,
+  };
+}
+
+class PaymentType {
+  int? id;
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  PaymentType({
+    this.id,
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory PaymentType.fromJson(Map<String, dynamic> json) => PaymentType(
+    id: json["id"],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+  };
+}
+
+class RestrictedDriver {
+  String? id;
+  String? username;
+  String? name;
+
+  RestrictedDriver({
+    this.id,
+    this.username,
+    this.name,
+  });
+
+  factory RestrictedDriver.fromJson(Map<String, dynamic> json) => RestrictedDriver(
+    id: json["id"],
+    username: json["username"],
+    name: json["name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "username": username,
+    "name": name,
+  };
+}
+
+class Subsidiary {
+  int? id;
+  String? name;
+  String? telephoneNumber;
+
+  Subsidiary({
+    this.id,
+    this.name,
+    this.telephoneNumber,
+  });
+
+  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+    id: json["id"],
+    name: json["name"],
+    telephoneNumber: json["telephone_number"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "telephone_number": telephoneNumber,
+  };
+}
+
+class VehicleType {
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  VehicleType({
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+  };
+}
+
+class Viapoint {
+  String? viapoint;
+  String? name;
+  String? mobile;
+  dynamic? arrived;
+  dynamic? passengerOnBoard;
+  bool? active;
+  String? latitude;
+  String? longitude;
+
+  Viapoint({
+    this.viapoint,
+    this.name,
+    this.mobile,
+    this.arrived,
+    this.passengerOnBoard,
+    this.active,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory Viapoint.fromJson(Map<String, dynamic> json) => Viapoint(
+    viapoint: json["viapoint"],
+    name: json["name"],
+    mobile: json["mobile"],
+    arrived: json["arrived"],
+    passengerOnBoard: json["passenger_on_board"],
+    active: json["active"],
+    latitude: json["latitude"],
+    longitude: json["longitude"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "viapoint": viapoint,
+    "name": name,
+    "mobile": mobile,
+    "arrived": arrived,
+    "passenger_on_board": passengerOnBoard,
+    "active": active,
+    "latitude": latitude,
+    "longitude": longitude,
+  };
+}

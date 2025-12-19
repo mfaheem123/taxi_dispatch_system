@@ -67,12 +67,18 @@ class BookingTabObject {
   String? bookingTabs;
   int? bookingCount;
   RxBool? selectedClr = false.obs;
+  RxBool? deletedClr = false.obs;
+  List<String>? dropDownList = [];
+  String? selectedDropDownValue;
 
   BookingTabObject({
     this.id,
     this.bookingTabs,
     this.bookingCount,
     this.selectedClr,
+    this.deletedClr,
+    this.dropDownList,
+    this.selectedDropDownValue,
   });
 
   factory BookingTabObject.fromJson(Map<String, dynamic> json) => BookingTabObject(
@@ -80,12 +86,19 @@ class BookingTabObject {
     bookingTabs: json["booking_tabs"],
     bookingCount: json["booking_count"],
     selectedClr: false.obs,
+    deletedClr: false.obs,
+    dropDownList: [],
+    selectedDropDownValue: null
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "booking_tabs": bookingTabs,
     "booking_count": bookingCount,
+    'dropDownList': dropDownList,
+    'selectedDropDownValue': selectedDropDownValue,
+    'selectedClr': false.obs,
+    'deletedClr': false.obs,
   };
 }
 
