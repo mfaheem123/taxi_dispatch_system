@@ -191,6 +191,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
         BotToast.closeAllLoading();
+
         BotToast.showText(text: "Connection Timeout Exception");
         throw Exception("Connection Timeout Exception");
       }
@@ -211,6 +212,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
         isProgressShow = false,
         noCloseLoading = false,
         fullUrl}) async {
+
     print('Api Post, url $url');
 
     if (isProgressShow == false) {
