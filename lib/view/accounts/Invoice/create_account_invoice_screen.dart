@@ -252,51 +252,54 @@ class _CreateAccountInvoiceScreenState
                         },
                       ),
                     ),
-                    const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("CUST")),
-                    const DataCell(Text("SALOON")),
-                    const DataCell(Text("NW7")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("HEATHROW TERMINAL 2 TW6 1JS")),
-                    const DataCell(Text("£55.00")),
-                    const DataCell(Text("£55.00")),
+                    const DataCell(Center(child: Text("SALOON"))),
+                    const DataCell(Center(child: Text("NW7"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("CUST"))),
+                    const DataCell(Center(child: Text("SALOON"))),
+                    const DataCell(Center(child: Text("NW7"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
+                    const DataCell(Center(child: Text("£55.00"))),
+                    const DataCell(Center(child: Text("£55.00"))),
                     DataCell(
-                      Row(
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
+                      Center(
+                        child: Row(
+                          children: [
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Colors.transparent,
+                                ), // border color & thickness
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.search,
+                                size: 28,
+                                color: DynamicColors.primaryClr,
+                              ),
                             ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.search,
-                              size: 28,
-                              color: DynamicColors.primaryClr,
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(
+                                  color: Colors.transparent,
+                                ), // border color & thickness
+                              ),
+                              onPressed: () {},
+                              child: Icon(
+                                Icons.clear,
+                                size: 28,
+                                color: DynamicColors.redClr,
+
+                              ),
                             ),
-                          ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: Colors.transparent,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {},
-                            child: Icon(
-                              Icons.clear,
-                              size: 28,
-                              color: DynamicColors.redClr,
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ],

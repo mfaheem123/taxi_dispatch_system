@@ -85,7 +85,7 @@ class CustomTextField extends StatelessWidget {
                 style: hintStyle?? mozillaTextSemiBoldText(
                     context: context,
                     fontSize: 10,
-                    fontWeight: FontWeight.w800
+                    fontWeight: FontWeight.w800,
                 ),
                 inputFormatters: inputFormatters,
                 maxLines: maxLines,
