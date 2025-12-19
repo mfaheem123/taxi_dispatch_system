@@ -276,8 +276,8 @@ class DashboardVehicleTypeObject {
   int? passengers;
   int? luggages;
   int? handLuggages;
-  int? minimumFares;
-  int? minimumMiles;
+  num? minimumFares;
+  num? minimumMiles;
   int? waitingTime;
   int? waitingTimeDuration;
   bool? defaultVehicle;
@@ -287,8 +287,8 @@ class DashboardVehicleTypeObject {
   DateTime? updatedAt;
   String? backgroundColor;
   String? foregroundColor;
-  int? driverWaitingCharges;
-  int? accountWaitingCharges;
+  num? driverWaitingCharges;
+  num? accountWaitingCharges;
 
   DashboardVehicleTypeObject({
     this.id,

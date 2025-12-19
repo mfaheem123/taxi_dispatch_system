@@ -889,6 +889,30 @@ class DashboardController extends GetxController {
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
+  getTableDataStatus({index, value}) async{
+    int selectedIndex =
+    bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
+    if (selectedIndex != -1) {
+      bookingTabsList![selectedIndex].selectedClr!.value = false;
+    }
+    if(value != null){
+      bookingTabsList![index].selectedDropDownValue = value;
+      bookingTabsList![index].selectedClr!.value = true; // <-- fix selection
+    }else{
+      if(bookingTabsList![index].deletedClr!.value == true){
+        return;
+      }
+        if (selectedIndex != -1) {
+          bookingTabsList![selectedIndex].selectedClr!.value = false;
+        }
+        bookingTabsList![index].selectedClr!
+            .value = true; // <-- fix selection}
+    }
+    getDashboardTableData(tableId: bookingTabsList![index].id);
+    update();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
   Timer? _phoneNumberBebounce;
@@ -1119,6 +1143,7 @@ class DashboardController extends GetxController {
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
+      // dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['booking']));
       refreshPostAllFields();
       print(response.data);
     }

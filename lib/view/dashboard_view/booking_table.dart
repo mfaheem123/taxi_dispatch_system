@@ -1,11 +1,15 @@
 
+import 'dart:ui';
+
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import 'Controller/dashboard_controller.dart';
@@ -65,18 +69,7 @@ class _BookingTableState extends State<BookingTable> {
                           btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
                           controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
                           onTap: () {
-                            if(controller.bookingTabsList![index].deletedClr!.value == false) {
-                              int selectedIndex =
-                              controller.bookingTabsList!.indexWhere((
-                                  test) => test.selectedClr!.value == true);
-                              if (selectedIndex != -1) {
-                                controller.bookingTabsList![selectedIndex]
-                                    .selectedClr!.value = false;
-                              }
-                              controller.bookingTabsList![index].selectedClr!
-                                  .value = true; // <-- fix selection}
-                              controller.update();
-                            }
+                            controller.getTableDataStatus(index: index);
                           },
                         ):
 
@@ -107,19 +100,7 @@ class _BookingTableState extends State<BookingTable> {
                               }).toList(),
 
                               onChanged: (value) {
-                                int selectedIndex =
-                                controller.bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
-                                if (selectedIndex != -1) {
-                                  controller.bookingTabsList![selectedIndex].selectedClr!.value = false;
-                                }
-                                setState(() {
-
-                                  controller.bookingTabsList![index].selectedDropDownValue = value;
-                                  controller.bookingTabsList![index].selectedClr!.value = true; // <-- fix selection
-
-                                });
-
-                                controller.update();
+                                controller.getTableDataStatus(index: index,value: value);
                                 // });
                               },
                             ),
@@ -135,7 +116,7 @@ class _BookingTableState extends State<BookingTable> {
               const SizedBox(height: 10),
 
 
-              SizedBox(
+              controller.dashboardTableModelData == null?SizedBox(): SizedBox(
                 width: Get.width,
                 child: DataTable(
                   headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
@@ -152,6 +133,7 @@ class _BookingTableState extends State<BookingTable> {
                     fontWeight: FontWeight.w800,
                   ),
                   border: TableBorder(
+
                     horizontalInside: BorderSide(
                       width: 0.5,
                       color: Colors.grey.shade400,
@@ -161,22 +143,6 @@ class _BookingTableState extends State<BookingTable> {
                       color: Colors.grey.shade400, // 👈 vertical lines added
                     ),
                     borderRadius: BorderRadius.circular(4),
-                    top: BorderSide(
-                      width: 1,
-                      color: DynamicColors.textClr.withOpacity(0.5),
-                    ),
-                    left: BorderSide(
-                      width: 1,
-                      color: DynamicColors.textClr.withOpacity(0.5),
-                    ),
-                    right: BorderSide(
-                      width: 1,
-                      color: DynamicColors.textClr.withOpacity(0.5),
-                    ),
-                    bottom: BorderSide(
-                      width: 1,
-                      color: DynamicColors.textClr.withOpacity(0.5),
-                    ),
                   ),
                   columns: [
                     buildHeaderWithSearch(widget: Checkbox(value: false, onChanged: (v){
@@ -202,12 +168,12 @@ class _BookingTableState extends State<BookingTable> {
                         (index) {
                       final item = controller.dashboardTableModelData!.data![index];
                       bool isSelected = index == selectedRowIndex;
-
-                      return DataRow(
+                      return DataRow.byIndex(
+                        index: index,
                         selected: isSelected,
                         cells: [
 
-                          /// Checkbox
+                          /// Checkbox ❌ (NO right click)
                           DataCell(
                             Checkbox(
                               value: isSelected,
@@ -219,86 +185,197 @@ class _BookingTableState extends State<BookingTable> {
                             ),
                           ),
 
-                          /// TYPE
+                          /// TYPE ❌
                           DataCell(
-                            Icon(Icons.laptop_chromebook_outlined,
+                            Icon(
+                              item.bookingSource == "dashboard"
+                                  ? Icons.laptop_chromebook_outlined
+                                  : Icons.mobile_screen_share,
                               color: Colors.blue,
                             ),
                           ),
 
-                          /// REF #
-                          DataCell(Text(item.referenceNumber ?? "-")),
-
-                          /// DATETIME
-                          DataCell(Text(item.pickupDate.toString())),
-
-                          /// CUSTOMER
-                          DataCell(Text(item.name!)),
-
-                          /// PICKUP
+                          /// REF # ✅
                           DataCell(
-                            SizedBox(
-                              width: 160,
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK REF #: ${item.referenceNumber}");
+                              },
+                              child: Text(item.referenceNumber ?? "-"),
+                            ),
+                          ),
+
+                          /// DATETIME ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK DATETIME: ${item.pickupDate}");
+                              },
+                              child: Text(item.pickupDate.toString()),
+                            ),
+                          ),
+
+                          /// CUSTOMER ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK CUSTOMER: ${item.name}");
+                              },
+                              child: Text(item.name ?? "-"),
+                            ),
+                          ),
+
+                          /// PICKUP ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK PICKUP: ${item.pickup}");
+                                showMenu(
+                                  context: context,
+                                  position: RelativeRect.fromLTRB(
+                                    // event.position.dx,
+                                    // event.position.dy,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                  ),
+                                  items: [
+                                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                                    const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                                  ],
+                                );
+
+                              },
+                              child: SizedBox(
+                                width: 160,
+                                child: Text(
+                                  item.pickup ?? "-",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          /// DROPOFF ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK DROPOFF: ${item.dropoff}");
+                              },
+                              child: SizedBox(
+                                width: 160,
+                                child: Text(
+                                  item.dropoff ?? "-",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          /// ACCOUNT ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
+                              },
+                              child: Text(item.account?.name ?? ""),
+                            ),
+                          ),
+
+                          /// DRIVER ✅
+                          DataCell(
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK DRIVER: ${item.driver?.name}");
+                              },
+                              child: Text(item.driver?.name ?? ""),
+                            ),
+                          ),
+
+                          /// VEHICLE ✅
+                          DataCell(
+                            rightClickTextCell(
+                               item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
+                              },
+                              child: Text(item.vehicleType?.name ?? "-"),
+                            ),
+                          ),
+
+                          /// NOTE ✅
+                          DataCell(
+                            rightClickTextCell(
+                               item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK NOTE");
+                              },
+                              child: SizedBox(
+                                width: 180,
+                                child: Text(
+                                  item.notes!.isEmpty ? "" : item.notes![0].note ?? "-",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          /// FARE ✅
+                          DataCell(
+                            rightClickTextCell(
+                               item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK FARE: ${item.fares}");
+                              },
+                              child: Text("£ ${item.fares ?? "0.00"}"),
+                            ),
+                          ),
+
+                          /// STATUS ✅
+                          DataCell(
+                            rightClickTextCell(
+                               item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK STATUS");
+                              },
                               child: Text(
-                                item.pickup ?? "-",
-                                overflow: TextOverflow.ellipsis,
+                                "-",
+                                style: const TextStyle(color: Colors.green),
                               ),
                             ),
                           ),
 
-                          /// DROPOFF
+                          /// J/T ✅
                           DataCell(
-                            SizedBox(
-                              width: 160,
-                              child: Text(
-                                item.dropoff ?? "-",
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK JOURNEY TYPE");
+                              },
+                              child: Text(item.journeyType?.journeyType ?? "-"),
                             ),
                           ),
 
-                          /// ACCOUNT
-                          DataCell(Text(item.account!.name??"")),
-
-                          /// DRIVER
-                          DataCell(Text(item.driver!.name ?? "")),
-
-                          /// VEHICLE
-                          DataCell(Text(item.vehicleType!.name ?? "-")),
-
-                          /// NOTE
+                          /// P/T ✅
                           DataCell(
-                            SizedBox(
-                              width: 180,
-                              child: Text(
-                                item.notes!.isEmpty?"": item.notes![0].note ?? "-",
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                            rightClickTextCell(
+                              item: item,
+                              onRightClick: () {
+                                print("RIGHT CLICK PAYMENT TYPE");
+                              },
+                              child: Text(item.paymentType?.name ?? "-"),
                             ),
                           ),
 
-                          /// FARE
-                          DataCell(Text("£ ${item.fares ?? "0.00"}")),
-
-                          /// STATUS
-                          DataCell(
-                            Text(
-                              /*item.status ??*/ "-",
-                              style: TextStyle(
-                                color:/* item.status == "WAITING"
-                                    ? Colors.orange
-                                    :*/ Colors.green,
-                              ),
-                            ),
-                          ),
-
-                          /// J/T
-                          DataCell(Text(item.journeyType!.journeyType ?? "-")),
-
-                          /// P/T
-                          DataCell(Text(item.paymentType!.name ?? "-")),
-
-                          /// ACTIONS
+                          /// ACTIONS ❌
                           DataCell(
                             Row(
                               children: [
@@ -332,100 +409,139 @@ class _BookingTableState extends State<BookingTable> {
                           ),
                         ],
                       );
+
+                          // return DataRow(
+                      //   selected: isSelected,
+                      //   cells: [
+                      //     /// Checkbox
+                      //     DataCell(
+                      //       Checkbox(
+                      //         value: isSelected,
+                      //         onChanged: (value) {
+                      //           setState(() {
+                      //             selectedRowIndex = value! ? index : -1;
+                      //           });
+                      //         },
+                      //       ),
+                      //     ),
+                      //
+                      //     /// TYPE
+                      //     DataCell(
+                      //       Icon(
+                      //         item.bookingSource == "dashboard"?Icons.laptop_chromebook_outlined:
+                      //             Icons.mobile_screen_share,
+                      //         color: Colors.blue,
+                      //       ),
+                      //     ),
+                      //
+                      //     /// REF #
+                      //     DataCell(Text(item.referenceNumber ?? "-")),
+                      //
+                      //     /// DATETIME
+                      //     DataCell(Text(item.pickupDate.toString())),
+                      //
+                      //     /// CUSTOMER
+                      //     DataCell(Text(item.name!)),
+                      //
+                      //     /// PICKUP
+                      //     DataCell(
+                      //       SizedBox(
+                      //         width: 160,
+                      //         child: Text(
+                      //           item.pickup ?? "-",
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //
+                      //     /// DROPOFF
+                      //     DataCell(
+                      //       SizedBox(
+                      //         width: 160,
+                      //         child: Text(
+                      //           item.dropoff ?? "-",
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //
+                      //     /// ACCOUNT
+                      //     DataCell(Text(item.account!.name??"")),
+                      //
+                      //     /// DRIVER
+                      //     DataCell(Text(item.driver!.name ?? "")),
+                      //
+                      //     /// VEHICLE
+                      //     DataCell(Text(item.vehicleType!.name ?? "-")),
+                      //
+                      //     /// NOTE
+                      //     DataCell(
+                      //       SizedBox(
+                      //         width: 180,
+                      //         child: Text(
+                      //           item.notes!.isEmpty?"": item.notes![0].note ?? "-",
+                      //           overflow: TextOverflow.ellipsis,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //
+                      //     /// FARE
+                      //     DataCell(Text("£ ${item.fares ?? "0.00"}")),
+                      //
+                      //     /// STATUS
+                      //     DataCell(
+                      //       Text(
+                      //         /*item.status ??*/ "-",
+                      //         style: TextStyle(
+                      //           color:/* item.status == "WAITING"
+                      //               ? Colors.orange
+                      //               :*/ Colors.green,
+                      //         ),
+                      //       ),
+                      //     ),
+                      //
+                      //     /// J/T
+                      //     DataCell(Text(item.journeyType!.journeyType ?? "-")),
+                      //
+                      //     /// P/T
+                      //     DataCell(Text(item.paymentType!.name ?? "-")),
+                      //
+                      //     /// ACTIONS
+                      //     DataCell(
+                      //       Row(
+                      //         children: [
+                      //           IconButton(
+                      //             icon: const Icon(Icons.arrow_forward, color: Colors.green),
+                      //             onPressed: () {
+                      //               showDialog(
+                      //                 context: context,
+                      //                 builder: (_) => DispatchBookingAlert(),
+                      //               );
+                      //             },
+                      //           ),
+                      //           const Text("|"),
+                      //           IconButton(
+                      //             icon: const Icon(Icons.delete_forever, color: Colors.red),
+                      //             onPressed: () {
+                      //               showShortcutDialog(
+                      //                 context,
+                      //                 title: "Delete",
+                      //                 contentWidget: const Text("Are you sure?"),
+                      //               );
+                      //             },
+                      //           ),
+                      //           const Text("|"),
+                      //           IconButton(
+                      //             icon: const Icon(Icons.more_horiz, color: Colors.green),
+                      //             onPressed: () {},
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     ),
+                      //   ],
+                      // );
                     },
                   ),
-                  //
-                  // rows: List.generate(controller.dashboardTableModelData!.data!.length, (index) {
-                  //   bool isSelected = index == selectedRowIndex;
-                  //   return DataRow(
-                  //     cells: [
-                  //       DataCell(Checkbox(
-                  //         value: isSelected,
-                  //         onChanged: (value) {
-                  //           setState(() {
-                  //             selectedRowIndex = value! ? index : -1;
-                  //           });
-                  //         },
-                  //       )),
-                  //       DataCell(Icon(Icons.laptop_chromebook_outlined, color: Colors.blue)),
-                  //       DataCell(Text("BCB74867")),
-                  //       DataCell(Text("02-05-25 23:36")),
-                  //       DataCell(Text("NADEEM")),
-                  //       DataCell(Text("FLAT 10 BLANDFORD COURT ...")),
-                  //       DataCell(Text("65 JEDBURGH ROAD, LONDON")),
-                  //       DataCell(Text("DRV")),
-                  //       DataCell(Text("CAPITA BUSI ...")),
-                  //       DataCell(Text("SALOON")),
-                  //       DataCell(Text("Lorem ipsum dolor sit amet...")),
-                  //       DataCell(Text("£ 14.00")),
-                  //       DataCell(Text("WAITING")),
-                  //       DataCell(Text("o/w")),
-                  //       DataCell(Text("CASH")),
-                  //       DataCell(
-                  //         Row(
-                  //           children: [
-                  //             OutlinedButton(
-                  //               style: OutlinedButton.styleFrom(
-                  //                 padding: EdgeInsets.zero,
-                  //                 minimumSize: Size.zero,
-                  //                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  //                 side: BorderSide.none,
-                  //               ),
-                  //               onPressed: () {
-                  //                 showDialog(
-                  //                   context: context,
-                  //                   builder: (_) => DispatchBookingAlert(),
-                  //                 );
-                  //               },
-                  //               child: ImageIcon(
-                  //                   AssetImage(Images.fowardIcon),
-                  //                   color: Colors.green, size: 20),
-                  //             ),
-                  //             Padding(
-                  //                 padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                  //                 child: Text("|")),
-                  //             OutlinedButton(
-                  //               style: OutlinedButton.styleFrom(
-                  //                 padding: EdgeInsets.zero,
-                  //                 minimumSize: Size.zero,
-                  //                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  //                 side: BorderSide.none,
-                  //               ),
-                  //               onPressed: () {
-                  //                 showShortcutDialog(
-                  //                   context,
-                  //                   title: "testing",
-                  //                   contentWidget: Center(child: Text("Testing"),),
-                  //                 );
-                  //               },
-                  //               child: Icon(Icons.delete_forever, color: Colors.red, size: 20),
-                  //             ),
-                  //             Padding(
-                  //               padding: const EdgeInsets.symmetric(horizontal: 1.0),
-                  //               child: Text("|"),
-                  //             ),
-                  //             OutlinedButton(
-                  //               style: OutlinedButton.styleFrom(
-                  //                 padding: EdgeInsets.zero,
-                  //                 minimumSize: Size.zero,
-                  //                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  //                 side: BorderSide.none,
-                  //               ),
-                  //               onPressed: () {
-                  //                 showShortcutDialog(
-                  //                   context,
-                  //                   title: "testing",
-                  //                   contentWidget: Center(child: Text("Testing"),),
-                  //                 );
-                  //               },
-                  //               child: Icon(Icons.more_horiz, color: Colors.green, size: 20),
-                  //             ),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   );
-                  // }),
                 ),
               )
             ],
@@ -434,6 +550,101 @@ class _BookingTableState extends State<BookingTable> {
       }
     );
   }
+
+  Widget rightClickTextCell({
+    required Widget child,
+    required VoidCallback onRightClick,
+    required dynamic item,
+  }) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.mouse &&
+            event.buttons == kSecondaryMouseButton) {
+          final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              event.position,
+              event.position,
+            ),
+            Offset.zero & overlay.size,
+          );
+          // onRightClick();
+          showRowContextMenu(
+            context: context,
+            position: position,
+            item: item,
+          );
+        }
+      },
+      child: child,
+    );
+  }
+
+  List<NestedMenuItem> _makeMenus(BuildContext context) {
+    return [
+      NestedMenuItem(title: "CUSTOMERS", children: [
+        NestedMenuItem(
+          title: "ADD CUSTOMER",
+          onTap: () {
+
+          },
+        ),
+      ]),
+    ];
+  }
+
+  void showRowContextMenu({
+    required BuildContext context,
+    required RelativeRect position,
+    required dynamic item,
+  }) {
+    showMenu(
+      context: context,
+      position: position/*RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        0,
+        0,
+      )*/,
+      items: const [
+        PopupMenuItem(value: 'accept', child: Text('ACCEPT')),
+        PopupMenuItem(value: 'decline', child: Text('DECLINE')),
+        PopupMenuItem(value: 'copy', child: Text('COPY')),
+        PopupMenuItem(value: 'audit', child: Text('AUDIT REPORT')),
+      ],
+    ).then((value) {
+      if (value == null) return;
+
+      switch (value) {
+        case 'accept':
+          print("ACCEPT ${item.referenceNumber}");
+          break;
+        case 'decline':
+          print("DECLINE ${item.referenceNumber}");
+          break;
+        case 'copy':
+          print("COPY ${item.referenceNumber}");
+          break;
+        case 'audit':
+          print("AUDIT REPORT ${item.referenceNumber}");
+          break;
+        case 'update':
+          print("UPDATE ${item.referenceNumber}");
+          break;
+        case 'edit_fare':
+          print("EDIT FARE ${item.referenceNumber}");
+          break;
+        case 'call':
+          print("CALL CUSTOMER ${item.name}");
+          break;
+      }
+    });
+  }
+
+
 }
 
 
