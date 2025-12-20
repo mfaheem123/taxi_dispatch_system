@@ -827,6 +827,7 @@ class DashboardController extends GetxController {
   JourneyTypeObject? selectJourneyTypeValue;
   List<BookingTabObject>? bookingTabsList;
   String? bookingTabs;
+  int selectedTabId = 1;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
@@ -884,6 +885,7 @@ class DashboardController extends GetxController {
   getDashboardTableData({tableId}) async{
     var response = await Api().get("bookings/getbytabs/$tableId");
     if(response.statusCode ==200){
+      selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       update();
     }
@@ -1143,7 +1145,11 @@ class DashboardController extends GetxController {
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
-      // dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['booking']));
+      if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }else if (selectedTabId == 2){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }
       refreshPostAllFields();
       print(response.data);
     }
