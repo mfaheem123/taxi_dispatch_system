@@ -411,6 +411,7 @@ class DashboardController extends GetxController {
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
   RxString totalDistance = "0".obs;
+  RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
   RxString fixedFare ="0".obs;
 
@@ -529,6 +530,7 @@ class DashboardController extends GetxController {
 
 // (Optional) format nicely
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
+      tempStoreTotalDistance.value == distanceInMiles.toStringAsFixed(2);
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
       totalTimeDuration.value =
           formatDuration(durationInMinutes); // e.g. "443.3"
@@ -568,6 +570,14 @@ class DashboardController extends GetxController {
         final cameraFit =
         CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
+      }
+
+      int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
+
+      if(index != -1){
+        double inttt = (double.parse(totalDistance.value) / double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+
+        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
       }
 
       update();
@@ -1160,7 +1170,7 @@ class DashboardController extends GetxController {
     if(response.statusCode == 200){
       if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      }else if (selectedTabId == 2){
+      }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
       refreshPostAllFields();

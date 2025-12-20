@@ -21,11 +21,11 @@ class DashboardDataModel {
   List<DashboardSubsidiaryObject>? subsidiaries;
   List<DashboardDriverObject>? drivers;
   List<BookingTabObject>? bookingTabs;
-  List<FareConfiguration>? fareConfigurations;
-  List<FixedFare>? fixedFares;
-  List<PlotFare>? plotFares;
-  List<FareByVehicle>? fareByVehicles;
-  List<AirportCharge>? airportCharges;
+  List<FareConfigurationObject>? fareConfigurations;
+  List<FixedFareObject>? fixedFares;
+  List<PlotFareObject>? plotFares;
+  List<FareByVehicleObject>? fareByVehicles;
+  List<AirportChargeObject>? airportCharges;
 
   DashboardDataModel({
     this.status,
@@ -56,11 +56,11 @@ class DashboardDataModel {
     subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
     drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
     bookingTabs: List<BookingTabObject>.from(json["booking_tabs"].map((x) => BookingTabObject.fromJson(x))),
-    fareConfigurations: List<FareConfiguration>.from(json["fare_configurations"].map((x) => FareConfiguration.fromJson(x))),
-    fixedFares: List<FixedFare>.from(json["fixed_fares"].map((x) => FixedFare.fromJson(x))),
-    plotFares: List<PlotFare>.from(json["plot_fares"].map((x) => PlotFare.fromJson(x))),
-    fareByVehicles: List<FareByVehicle>.from(json["fare_by_vehicles"].map((x) => FareByVehicle.fromJson(x))),
-    airportCharges: List<AirportCharge>.from(json["airport_charges"].map((x) => AirportCharge.fromJson(x))),
+    fareConfigurations: List<FareConfigurationObject>.from(json["fare_configurations"].map((x) => FareConfigurationObject.fromJson(x))),
+    fixedFares: List<FixedFareObject>.from(json["fixed_fares"].map((x) => FixedFareObject.fromJson(x))),
+    plotFares: List<PlotFareObject>.from(json["plot_fares"].map((x) => PlotFareObject.fromJson(x))),
+    fareByVehicles: List<FareByVehicleObject>.from(json["fare_by_vehicles"].map((x) => FareByVehicleObject.fromJson(x))),
+    airportCharges: List<AirportChargeObject>.from(json["airport_charges"].map((x) => AirportChargeObject.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -82,7 +82,7 @@ class DashboardDataModel {
   };
 }
 
-class AirportCharge {
+class AirportChargeObject {
   int? id;
   String? name;
   int? locationTypeId;
@@ -100,7 +100,7 @@ class AirportCharge {
   String? longitude;
   LocationType? locationType;
 
-  AirportCharge({
+  AirportChargeObject({
     this.id,
     this.name,
     this.locationTypeId,
@@ -119,7 +119,7 @@ class AirportCharge {
     this.locationType,
   });
 
-  factory AirportCharge.fromJson(Map<String, dynamic> json) => AirportCharge(
+  factory AirportChargeObject.fromJson(Map<String, dynamic> json) => AirportChargeObject(
     id: json["id"],
     name: json["name"],
     locationTypeId: json["location_type_id"],
@@ -190,7 +190,7 @@ class LocationType {
   };
 }
 
-class PlotFare {
+class PlotFareObject {
   int? id;
   int? vehicleTypeId;
   int? pickupPlotId;
@@ -202,7 +202,7 @@ class PlotFare {
   String? pickupPlotName;
   String? dropoffPlotName;
 
-  PlotFare({
+  PlotFareObject({
     this.id,
     this.vehicleTypeId,
     this.pickupPlotId,
@@ -215,7 +215,7 @@ class PlotFare {
     this.dropoffPlotName,
   });
 
-  factory PlotFare.fromJson(Map<String, dynamic> json) => PlotFare(
+  factory PlotFareObject.fromJson(Map<String, dynamic> json) => PlotFareObject(
     id: json["id"],
     vehicleTypeId: json["vehicle_type_id"],
     pickupPlotId: json["pickup_plot_id"],
@@ -243,7 +243,7 @@ class PlotFare {
 }
 
 
-class FareByVehicle {
+class FareByVehicleObject {
   int? id;
   int? vehicleTypeId;
   String? fareByVehicleOperator;
@@ -252,7 +252,7 @@ class FareByVehicle {
   dynamic updatedAt;
   DashboardVehicleTypeObject? vehicleType;
 
-  FareByVehicle({
+  FareByVehicleObject({
     this.id,
     this.vehicleTypeId,
     this.fareByVehicleOperator,
@@ -262,7 +262,7 @@ class FareByVehicle {
     this.vehicleType,
   });
 
-  factory FareByVehicle.fromJson(Map<String, dynamic> json) => FareByVehicle(
+  factory FareByVehicleObject.fromJson(Map<String, dynamic> json) => FareByVehicleObject(
     id: json["id"],
     vehicleTypeId: json["vehicle_type_id"],
     fareByVehicleOperator: json["operator"],
@@ -283,7 +283,7 @@ class FareByVehicle {
   };
 }
 
-class FareConfiguration {
+class FareConfigurationObject {
   int? id;
   int? vehicleTypeId;
   int? accountId;
@@ -300,7 +300,7 @@ class FareConfiguration {
   String? vehicleTypeName;
   double? vehicleMinimumFare;
 
-  FareConfiguration({
+  FareConfigurationObject({
     this.id,
     this.vehicleTypeId,
     this.accountId,
@@ -318,7 +318,7 @@ class FareConfiguration {
     this.vehicleMinimumFare,
   });
 
-  factory FareConfiguration.fromJson(Map<String, dynamic> json) => FareConfiguration(
+  factory FareConfigurationObject.fromJson(Map<String, dynamic> json) => FareConfigurationObject(
     id: json["id"],
     vehicleTypeId: json["vehicle_type_id"],
     accountId: json["account_id"],
@@ -355,7 +355,7 @@ class FareConfiguration {
   };
 }
 
-class FixedFare {
+class FixedFareObject {
   int? id;
   int? vehicleTypeId;
   String? fares;
@@ -369,7 +369,7 @@ class FixedFare {
   String? fromLocationName;
   String? toLocationName;
 
-  FixedFare({
+  FixedFareObject({
     this.id,
     this.vehicleTypeId,
     this.fares,
@@ -384,7 +384,7 @@ class FixedFare {
     this.toLocationName,
   });
 
-  factory FixedFare.fromJson(Map<String, dynamic> json) => FixedFare(
+  factory FixedFareObject.fromJson(Map<String, dynamic> json) => FixedFareObject(
     id: json["id"],
     vehicleTypeId: json["vehicle_type_id"],
     fares: json["fares"],

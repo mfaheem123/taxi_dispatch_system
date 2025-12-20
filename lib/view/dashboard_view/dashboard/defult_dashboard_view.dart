@@ -312,6 +312,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropOffController.clear();
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
+                                                                      controller.fixedFare.value = "0";
+                                                                      controller.totalDistance.value = "0";
+                                                                      controller.totalTimeDuration.value = "0";
                                                                       controller.update();
 
                                                                       // controller.fetchRouteFromOSRM();
@@ -490,6 +493,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        controller.pickupController.clear();
                                                                        controller.polylinePoints.clear();
                                                                        controller.fetchRouteFromOSRM();
+
+                                                                       controller.fixedFare.value = "0";
+                                                                       controller.totalDistance.value = "0";
+                                                                       controller.totalTimeDuration.value = "0";
                                                                        controller.update();
                                                                      },
                                                                      child: Icon(Icons.close,
@@ -1245,6 +1252,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              .toList(),
                                                          onChanged: (v) {
                                                            controller.selectVehicleValue = v;
+                                                           int index =  controller.dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == controller.selectVehicleValue!.id);
+                                                           if(index != -1){
+                                                             double inttt = (double.parse(controller.totalDistance.value) / double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+
+                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
+                                                           }
                                                            controller.update();
                                                          },
                                                        ),
@@ -1579,7 +1592,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      child: FittedBox(
                                                        fit: BoxFit.scaleDown,
                                                        child: Text(
-                                                         "PR: \$ ${controller.slugController.text}",
+                                                         "PR: \$ ${double.parse(controller.fixedFare.value).toStringAsFixed(2)}",
                                                          style: TextStyle(
                                                            fontWeight: FontWeight.bold,
                                                            color: Colors.black,

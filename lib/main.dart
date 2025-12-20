@@ -15,9 +15,9 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
-  disableInspect();
-
-  html.document.documentElement?.requestFullscreen();
+  // disableInspect();
+  //
+  // html.document.documentElement?.requestFullscreen();
  Get.put(ZoneController(), permanent: true);
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',
