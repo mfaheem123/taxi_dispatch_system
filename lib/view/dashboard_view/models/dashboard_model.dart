@@ -21,6 +21,11 @@ class DashboardDataModel {
   List<DashboardSubsidiaryObject>? subsidiaries;
   List<DashboardDriverObject>? drivers;
   List<BookingTabObject>? bookingTabs;
+  List<FareConfiguration>? fareConfigurations;
+  List<FixedFare>? fixedFares;
+  List<PlotFare>? plotFares;
+  List<FareByVehicle>? fareByVehicles;
+  List<AirportCharge>? airportCharges;
 
   DashboardDataModel({
     this.status,
@@ -33,6 +38,11 @@ class DashboardDataModel {
     this.subsidiaries,
     this.drivers,
     this.bookingTabs,
+    this.fareConfigurations,
+    this.fixedFares,
+    this.plotFares,
+    this.fareByVehicles,
+    this.airportCharges,
   });
 
   factory DashboardDataModel.fromJson(Map<String, dynamic> json) => DashboardDataModel(
@@ -46,6 +56,11 @@ class DashboardDataModel {
     subsidiaries: List<DashboardSubsidiaryObject>.from(json["subsidiaries"].map((x) => DashboardSubsidiaryObject.fromJson(x))),
     drivers: List<DashboardDriverObject>.from(json["drivers"].map((x) => DashboardDriverObject.fromJson(x))),
     bookingTabs: List<BookingTabObject>.from(json["booking_tabs"].map((x) => BookingTabObject.fromJson(x))),
+    fareConfigurations: List<FareConfiguration>.from(json["fare_configurations"].map((x) => FareConfiguration.fromJson(x))),
+    fixedFares: List<FixedFare>.from(json["fixed_fares"].map((x) => FixedFare.fromJson(x))),
+    plotFares: List<PlotFare>.from(json["plot_fares"].map((x) => PlotFare.fromJson(x))),
+    fareByVehicles: List<FareByVehicle>.from(json["fare_by_vehicles"].map((x) => FareByVehicle.fromJson(x))),
+    airportCharges: List<AirportCharge>.from(json["airport_charges"].map((x) => AirportCharge.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -59,6 +74,344 @@ class DashboardDataModel {
     "subsidiaries": List<dynamic>.from(subsidiaries!.map((x) => x.toJson())),
     "drivers": List<dynamic>.from(drivers!.map((x) => x.toJson())),
     "booking_tabs": List<dynamic>.from(bookingTabs!.map((x) => x.toJson())),
+    "fare_configurations": List<dynamic>.from(fareConfigurations!.map((x) => x.toJson())),
+    "fixed_fares": List<dynamic>.from(fixedFares!.map((x) => x.toJson())),
+    "plot_fares": List<dynamic>.from(plotFares!.map((x) => x.toJson())),
+    "fare_by_vehicles": List<dynamic>.from(fareByVehicles!.map((x) => x.toJson())),
+    "airport_charges": List<dynamic>.from(airportCharges!.map((x) => x.toJson())),
+  };
+}
+
+class AirportCharge {
+  int? id;
+  String? name;
+  int? locationTypeId;
+  String? address;
+  String? postcode;
+  dynamic zoneId;
+  String? shortcut;
+  dynamic backgroundColor;
+  dynamic foregroundColor;
+  String? extraCharges;
+  String? pickupCharges;
+  String? dropoffCharges;
+  bool? blacklist;
+  String? latitude;
+  String? longitude;
+  LocationType? locationType;
+
+  AirportCharge({
+    this.id,
+    this.name,
+    this.locationTypeId,
+    this.address,
+    this.postcode,
+    this.zoneId,
+    this.shortcut,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.extraCharges,
+    this.pickupCharges,
+    this.dropoffCharges,
+    this.blacklist,
+    this.latitude,
+    this.longitude,
+    this.locationType,
+  });
+
+  factory AirportCharge.fromJson(Map<String, dynamic> json) => AirportCharge(
+    id: json["id"],
+    name: json["name"],
+    locationTypeId: json["location_type_id"],
+    address: json["address"],
+    postcode: json["postcode"],
+    zoneId: json["zone_id"],
+    shortcut: json["shortcut"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+    extraCharges: json["extra_charges"],
+    pickupCharges: json["pickup_charges"],
+    dropoffCharges: json["dropoff_charges"],
+    blacklist: json["blacklist"],
+    latitude: json["latitude"],
+    longitude: json["longitude"],
+    locationType: LocationType.fromJson(json["location_type"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "location_type_id": locationTypeId,
+    "address": address,
+    "postcode": postcode,
+    "zone_id": zoneId,
+    "shortcut": shortcut,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+    "extra_charges": extraCharges,
+    "pickup_charges": pickupCharges,
+    "dropoff_charges": dropoffCharges,
+    "blacklist": blacklist,
+    "latitude": latitude,
+    "longitude": longitude,
+    "location_type": locationType!.toJson(),
+  };
+}
+
+class LocationType {
+  int? id;
+  String? name;
+  String? shortcut;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  LocationType({
+    this.id,
+    this.name,
+    this.shortcut,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
+    id: json["id"],
+    name: json["name"],
+    shortcut: json["shortcut"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "shortcut": shortcut,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
+  };
+}
+
+class PlotFare {
+  int? id;
+  int? vehicleTypeId;
+  int? pickupPlotId;
+  int? dropoffPlotId;
+  String? fares;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? vehicleTypeName;
+  String? pickupPlotName;
+  String? dropoffPlotName;
+
+  PlotFare({
+    this.id,
+    this.vehicleTypeId,
+    this.pickupPlotId,
+    this.dropoffPlotId,
+    this.fares,
+    this.createdAt,
+    this.updatedAt,
+    this.vehicleTypeName,
+    this.pickupPlotName,
+    this.dropoffPlotName,
+  });
+
+  factory PlotFare.fromJson(Map<String, dynamic> json) => PlotFare(
+    id: json["id"],
+    vehicleTypeId: json["vehicle_type_id"],
+    pickupPlotId: json["pickup_plot_id"],
+    dropoffPlotId: json["dropoff_plot_id"],
+    fares: json["fares"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    vehicleTypeName: json["vehicle_type_name"],
+    pickupPlotName: json["pickup_plot_name"],
+    dropoffPlotName: json["dropoff_plot_name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "vehicle_type_id": vehicleTypeId,
+    "pickup_plot_id": pickupPlotId,
+    "dropoff_plot_id": dropoffPlotId,
+    "fares": fares,
+    "created_at": createdAt!.toIso8601String(),
+    "updated_at": updatedAt!.toIso8601String(),
+    "vehicle_type_name": vehicleTypeName,
+    "pickup_plot_name": pickupPlotName,
+    "dropoff_plot_name": dropoffPlotName,
+  };
+}
+
+
+class FareByVehicle {
+  int? id;
+  int? vehicleTypeId;
+  String? fareByVehicleOperator;
+  String? value;
+  DateTime? createdAt;
+  dynamic updatedAt;
+  DashboardVehicleTypeObject? vehicleType;
+
+  FareByVehicle({
+    this.id,
+    this.vehicleTypeId,
+    this.fareByVehicleOperator,
+    this.value,
+    this.createdAt,
+    this.updatedAt,
+    this.vehicleType,
+  });
+
+  factory FareByVehicle.fromJson(Map<String, dynamic> json) => FareByVehicle(
+    id: json["id"],
+    vehicleTypeId: json["vehicle_type_id"],
+    fareByVehicleOperator: json["operator"],
+    value: json["value"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"],
+    vehicleType: DashboardVehicleTypeObject.fromJson(json["vehicle_type"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "vehicle_type_id": vehicleTypeId,
+    "operator": fareByVehicleOperator,
+    "value": value,
+    "created_at": createdAt!.toIso8601String(),
+    "updated_at": updatedAt,
+    "vehicle_type": vehicleType!.toJson(),
+  };
+}
+
+class FareConfiguration {
+  int? id;
+  int? vehicleTypeId;
+  int? accountId;
+  String? fromDay;
+  String? toDay;
+  String? fromTime;
+  String? toTime;
+  String? minimumFares;
+  String? minimumMiles;
+  String? fromDate;
+  String? toDate;
+  String? title;
+  DateTime? createdAt;
+  String? vehicleTypeName;
+  double? vehicleMinimumFare;
+
+  FareConfiguration({
+    this.id,
+    this.vehicleTypeId,
+    this.accountId,
+    this.fromDay,
+    this.toDay,
+    this.fromTime,
+    this.toTime,
+    this.minimumFares,
+    this.minimumMiles,
+    this.fromDate,
+    this.toDate,
+    this.title,
+    this.createdAt,
+    this.vehicleTypeName,
+    this.vehicleMinimumFare,
+  });
+
+  factory FareConfiguration.fromJson(Map<String, dynamic> json) => FareConfiguration(
+    id: json["id"],
+    vehicleTypeId: json["vehicle_type_id"],
+    accountId: json["account_id"],
+    fromDay: json["from_day"],
+    toDay: json["to_day"],
+    fromTime: json["from_time"],
+    toTime: json["to_time"],
+    minimumFares: json["minimum_fares"],
+    minimumMiles: json["minimum_miles"],
+    fromDate: json["from_date"],
+    toDate: json["to_date"],
+    title: json["title"],
+    createdAt: DateTime.parse(json["created_at"]),
+    vehicleTypeName: json["vehicle_type_name"],
+    vehicleMinimumFare: json["vehicle_minimum_fare"].toDouble(),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "vehicle_type_id": vehicleTypeId,
+    "account_id": accountId,
+    "from_day": fromDay,
+    "to_day": toDay,
+    "from_time": fromTime,
+    "to_time": toTime,
+    "minimum_fares": minimumFares,
+    "minimum_miles": minimumMiles,
+    "from_date": fromDate,
+    "to_date": toDate,
+    "title": title,
+    "created_at": createdAt!.toIso8601String(),
+    "vehicle_type_name": vehicleTypeName,
+    "vehicle_minimum_fare": vehicleMinimumFare,
+  };
+}
+
+class FixedFare {
+  int? id;
+  int? vehicleTypeId;
+  String? fares;
+  String? area1;
+  String? area2;
+  int? fromLocationId;
+  int? toLocationId;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  String? vehicleTypeName;
+  String? fromLocationName;
+  String? toLocationName;
+
+  FixedFare({
+    this.id,
+    this.vehicleTypeId,
+    this.fares,
+    this.area1,
+    this.area2,
+    this.fromLocationId,
+    this.toLocationId,
+    this.createdAt,
+    this.updatedAt,
+    this.vehicleTypeName,
+    this.fromLocationName,
+    this.toLocationName,
+  });
+
+  factory FixedFare.fromJson(Map<String, dynamic> json) => FixedFare(
+    id: json["id"],
+    vehicleTypeId: json["vehicle_type_id"],
+    fares: json["fares"],
+    area1: json["area1"],
+    area2: json["area2"],
+    fromLocationId: json["from_location_id"],
+    toLocationId: json["to_location_id"],
+    createdAt: DateTime.parse(json["created_at"]),
+    updatedAt: DateTime.parse(json["updated_at"]),
+    vehicleTypeName: json["vehicle_type_name"],
+    fromLocationName: json["from_location_name"],
+    toLocationName: json["to_location_name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "vehicle_type_id": vehicleTypeId,
+    "fares": fares,
+    "area1": area1,
+    "area2": area2,
+    "from_location_id": fromLocationId,
+    "to_location_id": toLocationId,
+    "created_at": createdAt!.toIso8601String(),
+    "updated_at": updatedAt!.toIso8601String(),
+    "vehicle_type_name": vehicleTypeName,
+    "from_location_name": fromLocationName,
+    "to_location_name": toLocationName,
   };
 }
 
