@@ -13,8 +13,6 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:polyline_codec/polyline_codec.dart';
-import '../../../Model/dashboard_booking_table.dart';
 import '../../../Model/via_point.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
@@ -30,6 +28,7 @@ import '../models/all_addresses_model.dart';
 
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
+import '../models/dashboard_table_model.dart';
 import '../models/users_phone_numbers_model.dart';
 
 import '../widgets/via_location.dart';
@@ -413,6 +412,7 @@ class DashboardController extends GetxController {
   List<CustomMarker> markers = [];
   RxString totalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
+  RxString fixedFare ="0".obs;
 
   LatLngBounds calculateBounds(List<LatLng> points) {
     assert(points.isNotEmpty);
@@ -482,6 +482,7 @@ class DashboardController extends GetxController {
               height: 30,
             ),
           );
+
         } else if (item.markerType == "DROP LOCATION" ||
             item.markerType == "Create Booking DROP LOCATION") {
           tempPoints.add(p);
@@ -836,6 +837,8 @@ class DashboardController extends GetxController {
   DashboardVehicleTypeObject? selectMultiVehicleValue;
   PaymentTypeObject? selectPaymentTypeValue;
   JourneyTypeObject? selectJourneyTypeValue;
+  List<BookingTabObject>? bookingTabsList;
+  String? bookingTabs;
 
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
@@ -844,9 +847,30 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+      bookingTabsList = dashboardAllData!.bookingTabs;
+      bookingTabsList!.first.selectedClr!.value = true;
+      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
+        bookingTabs: "JOB DUE BY",
+        id: 0,
+        deletedClr: false.obs,
+        selectedClr: true.obs,
+        dropDownList: [
+          "JOB DUE BY",
+          "15 MIN",
+          "30 MIN",
+          "60 MIN",
+        ],),);
+      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
+        bookingTabs: "DELETE SELECTION",
+        id: 0,
+        selectedClr: false.obs,
+        deletedClr: true.obs,
+        dropDownList: []
+      ),);
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+      getDashboardTableData(tableId: bookingTabsList!.first.id);
       dashboardDataLoader(false);
       update();
     }
@@ -865,6 +889,40 @@ class DashboardController extends GetxController {
       dashboardAccountData = DashboardAccountModel.fromJson(response.data);
       update();
     }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
+  DashboardTableModel? dashboardTableModelData;
+  getDashboardTableData({tableId}) async{
+    var response = await Api().get("bookings/getbytabs/$tableId");
+    if(response.statusCode ==200){
+      dashboardTableModelData = DashboardTableModel.fromJson(response.data);
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
+  getTableDataStatus({index, value}) async{
+    int selectedIndex =
+    bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
+    if (selectedIndex != -1) {
+      bookingTabsList![selectedIndex].selectedClr!.value = false;
+    }
+    if(value != null){
+      bookingTabsList![index].selectedDropDownValue = value;
+      bookingTabsList![index].selectedClr!.value = true; // <-- fix selection
+    }else{
+      if(bookingTabsList![index].deletedClr!.value == true){
+        return;
+      }
+        if (selectedIndex != -1) {
+          bookingTabsList![selectedIndex].selectedClr!.value = false;
+        }
+        bookingTabsList![index].selectedClr!
+            .value = true; // <-- fix selection}
+    }
+    getDashboardTableData(tableId: bookingTabsList![index].id);
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
@@ -1089,15 +1147,16 @@ class DashboardController extends GetxController {
       'eta': totalTimeDuration,
       'miles': totalDistance,
       if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
-      'booking_status_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2': '1',
-      'booking_type_id': '1',
+      'booking_status_id': '1',
+      'booking_type_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2':'1',
       'booking_source': 'dashboard',
       'employee_id': '2',
       if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
-      if(multiVehicleTempList.isNotEmpty) "multi_reservation": jsonEncode(multiVehicleTempList),
+      if(multiVehicleTempList.isNotEmpty) "multi_vehicle": jsonEncode(multiVehicleTempList),
     };
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
+      // dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['booking']));
       refreshPostAllFields();
       print(response.data);
     }
@@ -1133,17 +1192,18 @@ class DashboardController extends GetxController {
           },
         );
       }
-
-      if(multiReservationList.isNotEmpty){
-        for (var element in multiReservationList) {
-          multiReservationTemp.add(
-              {
-                "exclude": element.exclude,
-                "day": element.day,
-                "pickup_date": element.startDate,
-                "pickup_time": element.exclude
-              });
-        }
+    }
+    if(multiReservationList.isNotEmpty){
+      for (var element in multiReservationList) {
+        String tempDateStore = DateFormat('yyyy-MM-dd').format(
+          DateFormat('dd/MM/yyyy').parse(element.startDate!),
+        );
+        multiReservationTemp.add({
+          "exclude": element.exclude,
+          "day": element.day,
+          "pickup_date": tempDateStore,
+          "pickup_time": element.returnTime
+        });
       }
     }
 
@@ -1210,7 +1270,6 @@ class DashboardController extends GetxController {
     driversList.clear();
     childSeatAlert.clear();
     controllerAlert.clear();
-    multiReservationList.clear();
     multiReservationTemp.clear();
     multiVehicleList.clear();
     multiVehicleTempList.clear();
@@ -1241,6 +1300,11 @@ class DashboardController extends GetxController {
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
+    selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
+    selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
+    selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+    selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    dashboardDataLoader(false);
     update();
   }
 

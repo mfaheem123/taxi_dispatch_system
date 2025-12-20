@@ -22,14 +22,12 @@ class DashboardF9Alert {
                 final double maxWidth = constraints.maxWidth;
                 final bool isMobile = maxWidth < 600;
                 final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
                 // Instead of fixed width, we calculate flexible field widths
                 final double fieldWidth = isMobile
                     ? maxWidth // full width
                     : isTablet
                     ? maxWidth / 2
                     : maxWidth / 4;
-
                   return Container(
                     width: fieldWidth*1.5,
                     padding: const EdgeInsets.all(14),

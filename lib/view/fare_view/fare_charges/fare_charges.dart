@@ -281,7 +281,8 @@ class _FareChargesState extends State<FareCharges> {
                                   column: true,
                                   label: AppText.from,
                                   width: fieldWidth/1.8,
-                                  child: SizedBox(height: 30, child: CustomTimePicker(
+                                  child: SizedBox(height: 30,
+                                      child: CustomTimePicker(
                                     controller: controller.startTimeSurCharge, // optional
                                     onTimeSelected: (time) {
                                       setState(() {
@@ -353,6 +354,7 @@ class _FareChargesState extends State<FareCharges> {
                                                 width: 1,
                                               ),
                                             ),
+
                                             label: Text(
                                               item.dayName!,
                                               style: TextStyle(
@@ -370,6 +372,7 @@ class _FareChargesState extends State<FareCharges> {
                                 SizedBox(
                                   width: 40,
                                 ),
+
                                 CustomButton(
                                   onTap: (){
                                     controller.postSurchargeData();

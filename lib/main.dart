@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
         );
         // return child;
         return child;
+
       },
       navigatorObservers: [BotToastNavigatorObserver()],
       getPages: AppPages.routes,

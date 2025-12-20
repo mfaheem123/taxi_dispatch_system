@@ -50,7 +50,7 @@ class _PlotFareState extends State<PlotFare> {
 
 
         builder: (controller) {
-          return controller.getPlotVehicleTypeLoader==true?CircularProgressIndicator(): LayoutBuilder(
+          return  LayoutBuilder(
               builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
                 final bool isMobile = maxWidth < 600;
@@ -128,7 +128,7 @@ class _PlotFareState extends State<PlotFare> {
                       ),
 
                       SizedBox(
-                        height: 10,
+                        height: 10
                       ),
 
                       Padding(
@@ -338,6 +338,7 @@ class _PlotFareState extends State<PlotFare> {
                       SizedBox(
                         height: 10,
                       ),
+                      controller.getPlotVehicleTypeLoader==true?CircularProgressIndicator():
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
@@ -353,11 +354,14 @@ class _PlotFareState extends State<PlotFare> {
                             rows: controller
                                 .allPlotFareModel!.plotFares!
                                 .map((plot) => DataRow(
+
                               cells: [
-                                DataCell(Text(plot.vehicleType!.name ?? "")),
-                                DataCell(Text(plot.pickupPlot!.name ?? "")),
-                                DataCell(Text(plot.dropoffPlot!.name ?? "")),
-                                DataCell(Text(plot.fares ?? "")),
+
+                                DataCell(Center(child: Text(plot.vehicleType!.name ?? ""))),
+                                DataCell(Center(child: Text(plot.pickupPlot!.name ?? ""))),
+                                DataCell(Center(child: Text(plot.dropoffPlot!.name ?? ""))),
+                                DataCell(Center(child: Text(plot.fares ?? ""))),
+
                                 DataCell(
                                   Center(
                                     child: Row(
@@ -402,6 +406,7 @@ class _PlotFareState extends State<PlotFare> {
                           ),
                         ),
                       ),
+                      SizedBox(height: 25),
                     ],
                   ),
                 );

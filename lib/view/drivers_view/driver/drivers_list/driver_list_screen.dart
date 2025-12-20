@@ -91,7 +91,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                       child: CircularProgressIndicator(),
                     )
                   : SingleChildScrollView(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(5),
                       child: Column(
                         children: [
                           Row(
@@ -240,37 +240,37 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                     cells: [
                                       DataCell(Center(
                                           child: Text(
-                                              item.username ?? "no data"))),
+                                              item.username ?? "-"))),
                                       DataCell(Center(
-                                          child: Text(item.name ?? "no data"))),
+                                          child: Text(item.name ?? "-"))),
                                       DataCell(Center(
                                           child: Text(
                                               item.vehicle?.vehicleType?.name ??
-                                                  "no data"))),
+                                                  "-"))),
                                       DataCell(Center(
                                           child: Text(item.vehicle?.endDate ??
-                                              "no data"))),
+                                              "-"))),
                                       DataCell(Center(
                                           child:
-                                              Text(item.endDate ?? "no data"))),
+                                              Text(item.endDate ?? "-"))),
                                       DataCell(Center(
                                           child: Text(
-                                              item.motExpiry ?? "no data"))),
+                                              item.motExpiry ?? "-"))),
                                       DataCell(Center(
                                           child: Text(
-                                              item.mot2Expiry ?? "no data"))),
+                                              item.mot2Expiry ?? "-"))),
                                       DataCell(Center(
                                           child: Text(item.insuranceExpiry ??
-                                              "no data"))),
+                                              "-"))),
                                       DataCell(Center(
                                           child: Text(item.licenceExpiry ??
-                                              "no data"))),
+                                              "-"))),
                                       DataCell(Center(
                                           child:
-                                              Text(item.mobile ?? "no data"))),
+                                              Text(item.mobile ?? "-"))),
                                       DataCell(Center(
                                           child: Text(item.subsidiary?.name ??
-                                              "no data"))),
+                                              "-"))),
                                       DataCell(
                                         Center(
                                           child: Row(

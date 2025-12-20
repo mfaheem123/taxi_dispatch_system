@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
 import 'package:dropdown_flutter/custom_dropdown.dart';
@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
@@ -87,8 +86,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<DashboardController>(
         initState: (v) {
@@ -735,8 +733,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        LogicalKeyboardKey.arrowUp &&
                                                                        controller.highlightedIndex.value >
                                                                            0) {
-                                                                     controller
-                                                                         .highlightedIndex.value--;
+                                                                     controller.highlightedIndex.value--;
                                                                    } else if (event.logicalKey ==
                                                                        LogicalKeyboardKey.enter) {
                                                                      final selected =
@@ -827,6 +824,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    FocusScope.of(context).unfocus(),
                                                              ),
                                                            ),
+                                                         ),
+                                                         FocusTraversalOrder(
+                                                           order: const NumericFocusOrder(13),
+                                                           child:  labeledTextField(
+                                                               context,
+                                                               isMobile,
+                                                               AppText.name,
+                                                               controller.nameController,
+                                                               width: fieldWidth/2.3,
+                                                               textInputAction: TextInputAction.next),
                                                          ),
                                                        ],
                                                      ),
@@ -1038,16 +1045,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                              ))
                                                              .toList(),
-                                                         onChanged: (v) {
+                                                         onChanged: controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty?
+                                                           (v) {
                                                             // O/W, R/N, W/R
-                                                           if(v!.journeyType == "one way"){
-                                                             controller.jourValue = null;
-                                                           }else{
-                                                             controller.jourValue = 'W/R';
-                                                           }
-                                                           controller.selectJourneyTypeValue = v;
-                                                           controller.update();
-                                                         },
+
+                                                             if (v!.journeyType ==
+                                                                                "one way") {
+                                                                              controller.jourValue = null;
+                                                                            } else {
+                                                                              controller.jourValue = 'W/R';
+                                                                            }
+                                                                            controller.selectJourneyTypeValue =
+                                                                                v;
+                                                                            controller.update();
+
+                                                                        }:null,
                                                        ),
                                                      ),
                                                    ),
@@ -1317,7 +1329,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  (event.logicalKey == LogicalKeyboardKey.enter ||
                                                                      event.logicalKey == LogicalKeyboardKey.space)) {
                                                                setState(() {
-                                                                 controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                                                 // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
                                                                });
                                                              }
                                                            },
@@ -1325,8 +1337,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              activeColor: DynamicColors.primaryClr,
                                                              value: controller.smsCheckbox.value,
                                                              onChanged: (v) {
-                                                               controller.smsCheckbox.value = v!;
-                                                               controller.update();
+                                                               // controller.smsCheckbox.value = v!;
+                                                               // controller.update();
                                                              },
                                                            ),
                                                          ),
@@ -1829,6 +1841,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   itemCount: controller.allAddressesData.length,
                                   padding: const EdgeInsets.only(top: 15),
                                   itemBuilder: (context, index) {
+
                                     final item = controller.allAddressesData[index];
                                     final isHighlighted = controller.highlightedIndex.value == index;
 

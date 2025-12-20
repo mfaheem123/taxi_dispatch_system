@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
-import 'package:dashboard_new1/view/accounts/Invoice/customerInvoice.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/create_customer_invoice.dart';
 import 'package:dashboard_new1/view/accounts/Invoice/list_of_account_invoice_screen.dart';
-import 'package:dashboard_new1/view/accounts/Invoice/account_invoice_screen.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/create_account_invoice_screen.dart';
 import 'package:dashboard_new1/view/accounts/create_escort_screen.dart';
 import 'package:dashboard_new1/view/accounts/list_escorte_screen.dart';
 import 'package:dashboard_new1/view/administration/User/create_subsiDiary.dart';
@@ -277,141 +277,143 @@ class _MyHomePageState extends State<MyHomePage> {
                     ]),
                   ),
                   // controller.currentPage.value ?? CreateEscortScreen(),
-                 Obx(()=>  controller.currentPage.value ?? ByDefaultDashboard(),)
+                 Obx(()=> controller.currentPage.value ?? ByDefaultDashboard()
+                 )
                 ],
               ),
             ),
-            if (controller.currentPage.value == null ||
-                controller.currentPage.value.runtimeType == ByDefaultDashboard)Container(
-              width: Get.width,
-                  color: DynamicColors.whiteClr,
-                  height: kToolbarHeight,
-                  child: Row(
-                    children: [
-                    Container(
-                      height: kToolbarHeight,
-                      width: 120,
-                      color: DynamicColors.textClr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-
-                            radius: 10,
-                            backgroundColor: DynamicColors.greenClr,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: Text("Nadeem",
-                            style: mozillaTextRegularText(
-                              color: DynamicColors.whiteClr,
-                              fontSize: 13
-                            ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                      child: SizedBox(
-                        height: kToolbarHeight,
-                        width: 165,
-                        child: Row(
-                          children: [
-                            Text(
-                              "PRESS",
-                              style: mozillaTextRegularText(
-                                  color: DynamicColors.textClr,
-                                  fontSize: 14
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 9,vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: DynamicColors.textClr,
-                                  borderRadius: BorderRadius.circular(4)
-                                ),
-                                child: Text(
-                                  "/",
-                                  style: mozillaTextRegularText(
-                                      color: DynamicColors.whiteClr,
-                                      fontSize: 14
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              "SHORTCUTS",
-                              style: mozillaTextRegularText(
-                                  color: DynamicColors.textClr,
-                                  fontSize: 14
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Spacer(),
-                      Container(
-                        height: kToolbarHeight,
-                        width: 120,
-                        color: DynamicColors.textClr,
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 5.0),
-                            child: Text(DateFormat("EEE dd MMM").format(DateTime.now()),
-                              style: mozillaTextRegularText(
-                                  color: DynamicColors.whiteClr,
-                                  fontSize: 13
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: Container(
-                          height: kToolbarHeight,
-                          width: 80,
-                          color: DynamicColors.textClr,
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 5.0),
-                              child: Text("#310",
-                                style: mozillaTextRegularText(
-                                    color: DynamicColors.whiteClr,
-                                    fontSize: 13
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: kToolbarHeight,
-                        width: 120,
-                        color: DynamicColors.primaryClr,
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 5.0),
-                            child: Text("1560 DAYS",
-                              style: mozillaTextRegularText(
-                                  color: DynamicColors.whiteClr,
-                                  fontSize: 13
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                                ],
-                              ),
-                )
           ],
         );
       }),
+      bottomNavigationBar:
+      (controller.currentPage.value == null ||
+          controller.currentPage.value.runtimeType == ByDefaultDashboard) ?Container(
+      width: Get.width,
+      color: DynamicColors.whiteClr,
+      height: kToolbarHeight,
+      child: Row(
+        children: [
+          Container(
+            height: kToolbarHeight,
+            width: 120,
+            color: DynamicColors.textClr,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircleAvatar(
+
+                  radius: 10,
+                  backgroundColor: DynamicColors.greenClr,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 5.0),
+                  child: Text("Nadeem",
+                    style: mozillaTextRegularText(
+                        color: DynamicColors.whiteClr,
+                        fontSize: 13
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: SizedBox(
+              height: kToolbarHeight,
+              width: 165,
+              child: Row(
+                children: [
+                  Text(
+                    "PRESS",
+                    style: mozillaTextRegularText(
+                        color: DynamicColors.textClr,
+                        fontSize: 14
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 9,vertical: 4),
+                      decoration: BoxDecoration(
+                          color: DynamicColors.textClr,
+                          borderRadius: BorderRadius.circular(4)
+                      ),
+                      child: Text(
+                        "/",
+                        style: mozillaTextRegularText(
+                            color: DynamicColors.whiteClr,
+                            fontSize: 14
+                        ),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "SHORTCUTS",
+                    style: mozillaTextRegularText(
+                        color: DynamicColors.textClr,
+                        fontSize: 14
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Spacer(),
+          Container(
+            height: kToolbarHeight,
+            width: 120,
+            color: DynamicColors.textClr,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(left: 5.0),
+                child: Text(DateFormat("EEE dd MMM").format(DateTime.now()),
+                  style: mozillaTextRegularText(
+                      color: DynamicColors.whiteClr,
+                      fontSize: 13
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Container(
+              height: kToolbarHeight,
+              width: 80,
+              color: DynamicColors.textClr,
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(left: 5.0),
+                  child: Text("#310",
+                    style: mozillaTextRegularText(
+                        color: DynamicColors.whiteClr,
+                        fontSize: 13
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            height: kToolbarHeight,
+            width: 120,
+            color: DynamicColors.primaryClr,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(left: 5.0),
+                child: Text("1560 DAYS",
+                  style: mozillaTextRegularText(
+                      color: DynamicColors.whiteClr,
+                      fontSize: 13
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ):SizedBox.shrink(),
     );
   }
 

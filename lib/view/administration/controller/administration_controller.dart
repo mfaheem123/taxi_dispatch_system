@@ -40,19 +40,16 @@ class AdministrationController extends GetxController {
   Future<void> listSubsDiary() async {
     try {
       subsDiaryLoading.value = true;
-      String query = 'page=${subsiCurrentPage.value}&limit=$subsiiLimit';
-      if (searchSubsiDiaryName.value.isNotEmpty)
-        query += '&name=${searchSubsiDiaryName.value}';
-      if (searchSubsiDiaryEmail.value.isNotEmpty)
-        query += '&email=${searchSubsiDiaryEmail.value}';
-      if (searchSubsiDiaryTelephone.value.isNotEmpty)
-        query += '&telephone_number=${searchSubsiDiaryTelephone.value}';
-      if (searchSubsiDiaryAddress.value.isNotEmpty)
-        query += '&address=${searchSubsiDiaryAddress.value}';
-      if (searchSibsiDiaryFax.value.isNotEmpty)
-        query += '&fax=${searchSibsiDiaryFax.value}';
-      print("API Query: subsidiaries/get?$query");
-      final response = await Api().get('subsidiaries/get?$query');
+      final response = await Api().get('subsidiaries/get?', queryParameters: {
+        "page" : subsiCurrentPage.value,
+        '&limit' : subsiiLimit,
+        "name" :searchSubsiDiaryName.value.toLowerCase(),
+        "email" : searchSubsiDiaryEmail.value.toLowerCase(),
+        "telephone_number" : searchSubsiDiaryTelephone.value.toLowerCase(),
+        "address" : searchSubsiDiaryAddress.value.toLowerCase(),
+        "fax" : searchSibsiDiaryFax.value.toLowerCase(),
+      }
+      );
       if (response.statusCode == 200) {
         subsDiaryModel = SubsDiaryModel.fromJson(response.data);
         subsiTotalPages.value = subsDiaryModel?.totalPages ?? 1;
@@ -99,21 +96,19 @@ class AdministrationController extends GetxController {
   userData() async {
 
       userLoading.value = true;
-      String query = 'page=${userCurrentPage.value}&limit=$userLlimit';
-      if (searchUserName.value.isNotEmpty)
-        query += '&username=${searchUserName.value}';
-      if (searchUserEmail.value.isNotEmpty)
-        query += '&email=${searchUserEmail.value}';
-      if (searchUserPhone.value.isNotEmpty)
-        query += '&phone=${searchUserPhone.value}';
-      if (searchUserFax.value.isNotEmpty)
-        query += '&fax=${searchUserFax.value}';
-      if (searchUserRole.value.isNotEmpty)
-        query += '&role=${searchUserRole.value}';
-      if (searchUserSubsiDiary.value.isNotEmpty)
-        query += '&subsidiary=${searchUserSubsiDiary.value}';
-      print("API Query: employees/get?$query");
-      final response = await Api().get('employees/get?$query');
+
+      final response = await Api().get('employees/get?',
+          queryParameters: {
+        'page' : userCurrentPage.value,
+        'limit': userLlimit,
+        'username' : searchUserName.value.toLowerCase(),
+        'email' : searchUserEmail.value.toLowerCase(),
+        'phone' : searchUserPhone.value.toLowerCase(),
+        'fax' : searchUserFax.value.toLowerCase(),
+        'role' : searchUserRole.value.toLowerCase(),
+        'subsidiary' : searchUserSubsiDiary.value.toLowerCase(),
+
+      });
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
         userTotalPage.value = userModel?.totalPages ?? 1;
@@ -235,6 +230,7 @@ class AdministrationController extends GetxController {
       currencyController.clear();
       addressController.clear();
       balanceController.clear();
+      profileImg = null;
       update();
       Text("Saved Successfully");
       print("response of body -------------------------${response.data}");
@@ -286,9 +282,37 @@ class AdministrationController extends GetxController {
   final phoneController = TextEditingController();
   final faxUserController = TextEditingController();
 
+
+  ImageModel? profileImage;
+
+  Future<void> pickImageCreate() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
+      profileImg = ImageModel(
+          name: result.files.single.name,
+          bytes: result.files.single.bytes!,
+          path: result.files.single.path);
+    }
+    update();
+  }
+
+
+
   RxBool isLoadUser = false.obs;
   createUser() async {
     isLoadVehicleType.value = true;
+
+    var multipartFile;
+    if (profileImg != null) {
+      multipartFile = dio.MultipartFile.fromBytes(
+        profileImg!.bytes,
+        filename: profileImg!.name,
+      );
+    }
+
     var formData = {
       'subsidiary_id': selectedSubsidiary!.id,
       'role_id': selectedRole!.id,
@@ -305,9 +329,9 @@ class AdministrationController extends GetxController {
       'allaccounts': accuntValue.value,
       'callreceiver': receviverValue.value,
       'allowtransferbookings': transferValue.value,
-
+      if (multipartFile != null) "image": multipartFile!,
     };
-    var response = await Api().post(formData, 'employees/add', auth: true);
+    var response = await Api().post(formData, 'employees/add', auth : true);
     if (response.statusCode == 200) {
       userNameController.clear();
       passwordController.clear();
@@ -315,6 +339,14 @@ class AdministrationController extends GetxController {
       userEmailController.clear();
       phoneController.clear();
       faxUserController.clear();
+      activeValue.value = false;
+      alldriversValue.value = false;
+      allbookingValue.value = false;
+      accuntValue.value = false;
+      receviverValue.value = false;
+      transferValue.value = false;
+      profileImage = null;
+
       update();
       Text("Saved Successfully");
       print("response of body -------------------------${response.data}");

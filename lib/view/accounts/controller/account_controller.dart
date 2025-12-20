@@ -6,6 +6,8 @@ import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../Invoice/create_customer_invoice.dart';
+
 class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
   /// RxBool variable
@@ -320,6 +322,28 @@ class AccountController extends GetxController {
   RxBool creditValue = false.obs;
   RxBool account_Value = false.obs;
   RxBool creditCardPaid_Value = false.obs;
+  RxBool showDownloadButtons = false.obs;
+
+  List<InvoiceRow> invoiceList = [
+    InvoiceRow(
+      ref: "REF001",
+      datetime: "12-09-2025",
+      pickup: "Heathrow",
+      dropoff: "NW7",
+      fare: "£55.00",
+      pickup1: "Heathrow",
+      dropoff2: "NW7",
+      fare3: "£55.00",
+
+
+
+    ),
+  ];
+
+
+
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List OF Account Api controller
 

@@ -137,10 +137,11 @@ class BankDetailsAlert {
 
                           const SizedBox(height: 14),
 
-                          // Table Header
+                          /// Table Header
+
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 4),
+                                vertical: 6,),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               borderRadius: BorderRadius.circular(4),
@@ -176,23 +177,26 @@ class BankDetailsAlert {
                                     child: Text("SORT CODE",
                                         style: TextStyle(
                                             fontSize: 13,
-                                            fontWeight: FontWeight.bold))),      Expanded(
+                                            fontWeight: FontWeight.bold))),
+                                Expanded(
                                     flex: 2,
                                     child: Text("VAT #",
                                         style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold))),
+                                Expanded(flex: 1, child: SizedBox()),
                               ],
                             ),
                           ),
 
-                          // Table Body
+                          /// Table Body
+
                           ...controller.bankDetailList.asMap().entries.map((entry) {
                             int index = entry.key;
                             var row = entry.value; // This is a ShiftAlertClass object
 
                             return Container(
-                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                              padding: const EdgeInsets.symmetric(vertical: 6,),
                               decoration: BoxDecoration(
                                 border: Border(
                                   bottom: BorderSide(color: Colors.grey.shade200),
@@ -207,7 +211,7 @@ class BankDetailsAlert {
                                   Expanded(flex: 2, child: Text(row.sortCode ?? "")),
                                   Expanded(flex: 2, child: Text(row.vat ?? "")),
                                   Expanded(
-                                    flex: 2,
+                                    flex: 1,
                                     child: Row(
                                       children: [
                                         IconButton(
@@ -215,12 +219,12 @@ class BankDetailsAlert {
                                               size: 18, color: Color(0xFF43489A)),
                                           onPressed: () {
                                             setState(() {
-                                              bank.text = row.shiftTitle.text;
-                                              accountTitle.text = row.startTime ?? "";
-                                              account.text = row.endTime ?? "";
-                                              iban.text = row.endTime ?? "";
-                                              sortCode.text = row.endTime ?? "";
-                                              vat.text = row.endTime ?? "";
+                                              bank.text = row.bank.text;
+                                              accountTitle.text = row.accountTitle ?? "";
+                                              account.text = row.account ?? "";
+                                              iban.text = row.iban ?? "";
+                                              sortCode.text = row.sortCode ?? "";
+                                              vat.text = row.vat ?? "";
 
                                             });
                                           },
@@ -240,7 +244,9 @@ class BankDetailsAlert {
                                 ],
                               ),
                             );
-                          }),
+                          }
+
+                          ),
 
                         ],
                       ),

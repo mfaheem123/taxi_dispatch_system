@@ -509,10 +509,10 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             ],
                             rows: controller.getAllFixedFareModel!.fixedFares!.map((farefxed) => DataRow(
                               cells: [
-                                DataCell(Text(farefxed.vehicleTypeName! ?? "")),
-                                DataCell(Text(farefxed.area1! ?? "")),
-                                DataCell(Text(farefxed.area2! ?? "")),
-                                DataCell(Text(farefxed.fares! ?? "")),
+                                DataCell(Center(child: Text(farefxed.vehicleTypeName! ?? ""))),
+                                DataCell(Center(child: Text(farefxed.area1! ?? ""))),
+                                DataCell(Center(child: Text(farefxed.area2! ?? ""))),
+                                DataCell(Center(child: Text(farefxed.fares! ?? ""))),
                                 DataCell(
                                   Center(
                                     child: Row(

@@ -277,6 +277,7 @@ class _DriversViewState extends State<DriversView> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 8),
                       itemBuilder: (context, index) {
+
                         final isSelected =
                             !isHeaderMode && controller.selectedDriverIndex == index;
 

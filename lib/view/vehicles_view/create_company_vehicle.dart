@@ -12,6 +12,7 @@ import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
 import '../dashboard_view/widgets/user_info_widget.dart';
 import 'controller/controller.dart';
@@ -24,7 +25,7 @@ class CreateCompanyVehicle extends StatefulWidget {
 }
 
 class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
-
+  DashboardController controllerdesh = Get.find();
   final VehicleController _controller = Get.isRegistered<VehicleController>()
       ? Get.find<VehicleController>()
       : Get.put(VehicleController());
@@ -103,36 +104,57 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                // CustomDropdownField<LocationTypeObject>(
-                //   label: "Location Type",
-                //   width: fieldWidth/1.5,
-                //   height: 45,
-                //   items: controller.locationtypezoneModel!
-                //       .locationTypesList!,
-                //   value: controller.locationTypeValue,
-                //   itemLabel: (templateList) =>
-                //   templateList.name!,
-                //   onChanged: (val) {
-                //     controller.locationTypeValue = val;
-                //     controller.update();
-                //   },
-                // ),
-                RestrictedDrivers(
-                  width: fieldWidth/1.5,
-                  // height: 35,
-                  padding: 0.0,
-                  border: Border.all(
-                    color: DynamicColors.gryClr,
+
+                Container(
+                  height: 35,
+                  width: fieldWidth,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                   ),
-                  titleText: "ESTAT",
-                  driversList: [
-                    "25 GEORGE HAMPTON",
-                    "26 PAUL DOUBLEDAY",
-                    "27 RICHARD HARDWICK",
-                    "28 LANRE OKERJO",
-                  ],
+                  child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    value: controllerdesh.selectVehicleValue,
+                    items: controllerdesh.dashboardAllData!
+                        .vehicleTypes!
+                        .map((vehicle) =>
+                        DropdownMenuItem<DashboardVehicleTypeObject>(
+                          value: vehicle,
+                          child: Text(vehicle.name ?? "",
+                            style: mozillaTextRegularText(
+                              fontSize: 12,
+                              color: DynamicColors.textClr,
+                            ),
+                          ),
+                        ))
+                        .toList(),
+                    onChanged: (v) {
+                      controllerdesh.selectVehicleValue = v;
+                      controllerdesh.update();
+                    },
+                  ),
                 ),
-              ],
+
+
+                // RestrictedDrivers(
+                //   width: fieldWidth/1.5,
+                //   // height: 35,
+                //   padding: 0.0,
+                //   border: Border.all(
+                //     color: DynamicColors.gryClr,
+                //   ),
+                //   titleText: "ESTAT",
+                //   driversList: [
+                //     "25 GEORGE HAMPTON",
+                //     "26 PAUL DOUBLEDAY",
+                //     "27 RICHARD HARDWICK",
+                //     "28 LANRE OKERJO",
+                //   ],
+                // ), 
+              ]
             ),
             CustomTextField(
               borderRadius: 4,

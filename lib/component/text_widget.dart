@@ -418,7 +418,7 @@ class AppText {
   static get departmentType => "DEPARTMENT TYPE";
   static get customerInvoices => "CUSTOMER INVOICES (0)";
   static get paid => "PAID";
-  static get accountInvoice => "Account Invoice";
+  static get accountInvoice => "ACCOUNT INVOICE";
   static get create => "CREATE";
   static get bankDetails => "BANK DETAILS";
   static get emergencyContactHash => "EMERGENCY CONTACT #";

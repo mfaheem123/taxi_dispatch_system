@@ -60,28 +60,50 @@ class CreateUserScreen extends StatelessWidget {
   }
 
   Widget _buildImageBox(bool isMobile, {controller}) {
-    return Container(
-      height: isMobile ? 200 : 400,
-      margin: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.cloud_upload, size: 50, color: Colors.grey),
-            SizedBox(height: 10),
-            Text(
-              "UPLOAD IMAGE",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: DynamicColors.gryClr,
-              ),
+    return GestureDetector(
+      onTap: () {
+        if (controller.profileImg == null) {
+          controller.pickImageCreate();
+        }
+      },
+      child: Container(
+        height: isMobile ? 200 : 400,
+        // width: fieldWidth,
+        margin: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Colors.grey),
+          image: controller.profileImg == null
+              ? null
+              : DecorationImage(
+            image: MemoryImage(controller
+                .profileImg!.bytes), // ✅ correct provider
+            fit: BoxFit.fill,
+          ),
+        ),
+        child: controller.profileImg != null
+            ? Align(
+          alignment: Alignment.topRight,
+          child: GestureDetector(
+            onTap: () {
+              controller.profileImg = null;
+              controller.update();
+            },
+            child: Icon(
+              Icons.close_rounded,
+              color: DynamicColors.redClr,
             ),
-          ],
+          ),
+        )
+            : Center(
+          child: Text(
+            "UPLOAD IMAGE",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
         ),
       ),
     );
@@ -127,6 +149,7 @@ class CreateUserScreen extends StatelessWidget {
                 _buildTextField("FAX", controller.faxUserController),
 
                 CustomDropdownField<Role>(
+                  text: "SELECT ROLE",
                   label: "SELECT ROLE",
                   items: controller.getRole?.roles ?? [],   // safe
                   value: controller.selectedRole,
@@ -139,7 +162,8 @@ class CreateUserScreen extends StatelessWidget {
                   },
                 ),
                 CustomDropdownField<Subsidiaries>(
-                  label: "SURBIONARY",
+                  label: "SUBSIDIARY",
+                  text: "SUBSIDIARY",
                   items: controller.subsDiaryModel?.subsidiaries ?? [],
                   value: controller.selectedSubsidiary,
                   itemLabel: (item) => item.name ?? "",
@@ -151,28 +175,34 @@ class CreateUserScreen extends StatelessWidget {
 
 
                 // _buildTextField("DIDIC COMPANY", controller.didic_Controller),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    controller.activeValue.value = v;
-                    controller.update();
-                  },
-                  value: controller.activeValue.value,
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: KeyboardCheckbox(
+                    onChanged: (v) {
+                      controller.activeValue.value = v;
+                      controller.update();
+                    },
+                    value: controller.activeValue.value,
 
-                  focusNode: controller.activeNode,
-                  width: 120,
-                  label: "ACTIVE",
+                    focusNode: controller.activeNode,
+                    width: 120,
+                    label: "ACTIVE",
+                  ),
                 ),
-                KeyboardCheckbox(
-                  onChanged: (v) {
-                    print("CHECKBOX VALUE RECEIVED: $v");
-                    controller.alldriversValue.value = v;
-                    controller.update();
-                  },
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: KeyboardCheckbox(
+                    onChanged: (v) {
+                      print("CHECKBOX VALUE RECEIVED: $v");
+                      controller.alldriversValue.value = v;
+                      controller.update();
+                    },
 
-                  value: controller.alldriversValue.value,
-                  focusNode: controller.alldriversNode,
-                  width: 120,
-                  label: "ALL DRIVERS",
+                    value: controller.alldriversValue.value,
+                    focusNode: controller.alldriversNode,
+                    width: 120,
+                    label: "ALL DRIVERS",
+                  ),
                 ),
                 KeyboardCheckbox(
                   onChanged: (v) {
