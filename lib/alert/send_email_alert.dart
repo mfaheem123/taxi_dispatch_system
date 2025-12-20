@@ -67,7 +67,9 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                 )
               ],
             ),
+
             Divider(),
+
             CustomTextField(
               hintText: "",
               controller: dashBoardCntrl.sendEmailController,
@@ -86,6 +88,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                     borderRadius: 0,
                   ),
                 ),
+
                 Flexible(
                   flex: 2,
                   child: Padding(
@@ -97,6 +100,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                     ),
                   ),
                 ),
+
                 SizedBox(
                   width: 100,
                   height: 30,
@@ -105,6 +109,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                     driversList: sendEmailRoleList,
                   ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.only(left: 8.0),
                   child: CustomButton(
@@ -120,6 +125,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                 ),
               ],
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: CustomTextField(
@@ -128,6 +134,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                   controller: dashBoardCntrl.subjectController
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: CustomTextField(
@@ -139,6 +146,7 @@ class _SendEmailAlertState extends State<SendEmailAlert> {
                   controller: dashBoardCntrl.typeEmailController
               ),
             ),
+
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: CustomButton(
@@ -206,6 +214,7 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                     fontSize: 13,
                   ),
                 ),
+
                 GestureDetector(
                   onTap: (){
                     Get.back();
@@ -216,7 +225,9 @@ class _SendMessageAlertState extends State<SendMessageAlert> {
                 )
               ],
             ),
+
             Divider(),
+
             Row(
               children: [
                 Flexible(

@@ -25,6 +25,7 @@ class ResponsivePassengerScreen extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
+
             // Breakpoints
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
@@ -507,6 +508,7 @@ class _CenterAreaState extends State<_CenterArea> {
                   // ),
 
 
+
                   // Obx(
                   //       ()=> CustomDropdownField<String>(
                   //     label: "SELECT DRIVERS",
@@ -537,6 +539,7 @@ class _CenterAreaState extends State<_CenterArea> {
                         .titleSmall
                         ?.copyWith(fontWeight: FontWeight.w600),
                   ),
+
 
 
                 ],
@@ -581,6 +584,11 @@ class _CenterAreaState extends State<_CenterArea> {
     return Expanded(flex: flex, child: child);
   }
 }
+
+
+
+
+
 
 
 

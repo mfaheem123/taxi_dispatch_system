@@ -53,6 +53,7 @@ class _DeletePermissionAlertState extends State<DeletePermissionAlert> {
             ),
 
             SizedBox(height: 30),
+
             Row(
               // crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

@@ -272,10 +272,12 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
                 setState(() {
                   _selectedIndex = (_selectedIndex + 1) % items.length; // cycle forward
                 });
+
               } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                 setState(() {
                   _selectedIndex = (_selectedIndex - 1 + items.length) % items.length;
                 });
+
               } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                 Navigator.pop(context);
                 debugPrint("Selected: ${items[_selectedIndex]}");

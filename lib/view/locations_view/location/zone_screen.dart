@@ -1,9 +1,6 @@
-import 'dart:async' show Completer;
+
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:ui' as html hide window;
-import 'dart:html' as html;
-import 'package:dashboard_new1/component/app_promts.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
@@ -40,7 +37,6 @@ Map<RectHandle, LatLng> _handlePositions(_RectBounds b) {
     RectHandle.n: LatLng(b.maxLat, midLng),
     RectHandle.ne: LatLng(b.maxLat, b.maxLng),
     RectHandle.e: LatLng(midLat, b.maxLng),
-
     RectHandle.se: LatLng(b.minLat, b.maxLng),
     RectHandle.s: LatLng(b.minLat, midLng),
     RectHandle.sw: LatLng(b.minLat, b.minLng),
@@ -54,9 +50,34 @@ class ZoneScreen extends StatefulWidget {
 }
 
 class _ZoneScreenState extends State<ZoneScreen> {
+
   ZoneController controller = Get.isRegistered<ZoneController>()
       ? Get.find<ZoneController>()
       : Get.put(ZoneController());
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (controller.updateZone.value == true &&
+        controller.zoneUpdateId.value != 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await controller.bindUpdateZone({}, zoneUpdate: controller.currentZoneBeingEdited);
+
+        /// WAIT UNTIL POLYGON POINTS LOADED
+        if (mounted) {
+          Future.delayed(Duration(milliseconds: 150), () {
+            if (mounted && _polyPoints.isNotEmpty) {
+              setState(() {
+                mode = DrawMode.edit;
+                _selectedPolyId = controller.zoneUpdateId.value.toString();
+              });
+            }
+          });
+        }
+      });
+    }
+  }
 
   // TextEditingController zonenameContoller = TextEditingController();
   // TextEditingController secondarynamezoneController = TextEditingController();
@@ -95,6 +116,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
   _RectBounds? _activeStartBounds;
   List<dynamic>? localZoneData;
   String? _selectedPolyId;
+
   // double _rad(double d) => d * math.pi / 180.0;
   // double _hav(double t) => (1 - math.cos(t)) / 2;
 
@@ -179,12 +201,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
   //   }
   // }
 
-  registerzoneForm() {
-    controller.registerZoneForm(context);
-    controller.clearTextFields();
-    Prompts()
-        .showToastMessage(msg: "Data posted Succesfully!", context: context);
-  }
+  // registerzoneForm() {
+  //   controller.postZone(context);
+  //   controller.clearTextFields();
+  //   Prompts()
+  //       .showToastMessage(msg: "Data posted Succesfully!", context: context);
+  // }
 
   // List<Map<String, double>> toApiVertices(List<LatLng> pts) {
   //   return pts
@@ -198,7 +220,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (p == null) return;
 
     if (mode == DrawMode.freehand) {
-      if (controller.draft.isEmpty || controller.distanceMeters(controller.draft.last, p) > 3) {
+      if (controller.draft.isEmpty ||
+          controller.distanceMeters(controller.draft.last, p) > 3) {
         setState(() => controller.draft.add(p));
       }
       return;
@@ -247,7 +270,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }
 
       // If not dragging grips, update live draft corners while drawing
-      if ( controller.rectStart != null &&
+      if (controller.rectStart != null &&
           controller.rectCurrent != null &&
           _selectedPolyId == null) {
         setState(() => controller.rectCurrent = p);
@@ -259,12 +282,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final active = mode == m;
     return IconButton(
       tooltip: tip,
-      icon: Icon(icon, color: active ? Theme.of(context).colorScheme.primary : null),
+      icon: Icon(icon,
+          color: active ? Theme.of(context).colorScheme.primary : null),
       onPressed: () => setState(() {
         mode = m;
         controller.draft.clear();
-        controller.rectStart = null;
-        controller.rectCurrent = null;
+        controller.rectStart;
+        controller.rectCurrent;
         controller.pointsDraft.clear();
         if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
           _selectedPolyId = null;
@@ -367,7 +391,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
   bool _isDragging = false;
   Future<LatLng?> _screenToLatLng(Offset global) async {
     final ctrl = await controller.ctrl.future;
-    final renderBox = controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox =
+    controller.mapKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null || !renderBox.hasSize) return null;
     final origin = renderBox.localToGlobal(Offset.zero);
     final local = global - origin;
@@ -414,7 +439,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
       // 2) Else try live rectangle’s grips (unsaved)
       if (controller.rectStart != null && controller.rectCurrent != null) {
-        final b = _boundsFromTwo(controller.rectStart!, controller.rectCurrent!);
+        final b = _boundsFromTwo(
+            controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
         final hit = await _nearestRectGripAt(global, b);
         if (hit != null) {
           setState(() {
@@ -538,7 +564,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
         points: pts,
         strokeWidth: 3,
         strokeColor: id == _selectedPolyId ? Colors.orange : Colors.green,
-        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green).withOpacity(0.18),
+        fillColor: (id == _selectedPolyId ? Colors.orange : Colors.green)
+            .withOpacity(0.18),
         geodesic: true,
         consumeTapEvents: true,
         zIndex: id == _selectedPolyId ? 2 : 1,
@@ -570,7 +597,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (mode == DrawMode.rectangle &&
         controller.rectStart != null &&
         controller.rectCurrent != null) {
-      final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
+      final rectPts = _rectFromDiagonal(
+          controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
       set.add(Polygon(
         polygonId: const PolygonId('live_rect'),
         points: rectPts,
@@ -612,7 +640,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
           zIndex: 4,
           icon:
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-          onDragEnd: (newPos) => setState(() => controller.pointsDraft[i] = newPos),
+          onDragEnd: (newPos) =>
+              setState(() => controller.pointsDraft[i] = newPos),
           onTap: () {
             if (controller.pointsDraft.length > 1) {
               setState(() => controller.pointsDraft.removeAt(i));
@@ -626,7 +655,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (mode == DrawMode.rectangle &&
         controller.rectStart != null &&
         controller.rectCurrent != null) {
-      final b = _boundsFromTwo(controller.rectStart!, controller.rectCurrent!);
+      final b = _boundsFromTwo(
+          controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
       final hp = _handlePositions(b);
       for (final entry in hp.entries) {
         final handle = entry.key;
@@ -768,11 +798,29 @@ class _ZoneScreenState extends State<ZoneScreen> {
       }
     }
 
+
+
     return markers;
   }
+  Set<Polygon> polygons = {};
+  List<LatLng> _ppolyPoints = [];
 
+  void _rebuildPolygons() {
+    setState(() {
+      polygons = {
+        Polygon(
+          polygonId: PolygonId("active"),
+          points: _ppolyPoints,
+          strokeColor: Colors.red,
+          strokeWidth: 2,
+          fillColor: Colors.red.withOpacity(0.2),
+        )
+      };
+    });
+  }
   @override
   Widget build(BuildContext context) {
+
     final polygons = _buildPolygonsForRender();
     final markers = _buildMarkersForRender();
     return SizedBox(
@@ -804,9 +852,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 15),
-
                     TextField(
                       controller: controller.secondarynamezoneController,
                       decoration: InputDecoration(
@@ -816,9 +862,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 15),
-
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
                       items: controller.zoneItems,
@@ -829,7 +873,6 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         });
                       },
                     ),
-
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
                         items: controller.categoryItems,
@@ -839,9 +882,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             controller.categoryValue.value = newValue!;
                           });
                         }),
-
                     SizedBox(height: 20),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -858,13 +899,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             ),
                           ),
                         ),
-
                         ElevatedButton(
-                          onPressed: () {
-                            controller.submitForm(context);
+                          onPressed: () async {
+                            await controller.postZone(context);
+                            Get.snackbar(
+                                'Saved', 'Zone data submitted successfully');
                           },
-
-                          child: Text('SAVE'),
+                          child: Text(
+                              controller.updateZone.value ? "EDIT" : "SAVE"),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.green[700],
@@ -874,7 +916,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               borderRadius: BorderRadius.circular(5),
                             ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                   ],
@@ -893,8 +935,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     RepaintBoundary(
                         key: controller.mapKey,
                         child: GoogleMap(
+                          key: ValueKey("main-map"),
                           initialCameraPosition: _initialCamera,
-                          onMapCreated: (c) => controller.ctrl.complete(c),
+                          onMapCreated: (c) {
+                            controller.ctrl.complete(c);
+                            /// Yahan map listener safe ho jata hai
+                            if (mounted) setState(() {});
+                          },
+
                           scrollGesturesEnabled: !_lockMapGestures,
                           zoomGesturesEnabled: !_lockMapGestures,
                           rotateGesturesEnabled: !_lockMapGestures,
@@ -906,7 +954,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           compassEnabled: false,
                           onTap: (latLng) async {
                             if (mode == DrawMode.points) {
-                              setState(() => controller.pointsDraft.add(latLng));
+                              setState(
+                                      () => controller.pointsDraft.add(latLng));
                             } else if (mode == DrawMode.edit) {
                               setState(() => _selectedPolyId = null);
                             }
@@ -923,11 +972,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
                               onPointerUp: (_) => _onPanEnd(),
                               onPointerCancel: (_) => _onPanEnd())),
 
-                    if ((mode == DrawMode.freehand && controller.draft.isNotEmpty) ||
+                    if ((mode == DrawMode.freehand &&
+                        controller.draft.isNotEmpty) ||
                         (mode == DrawMode.rectangle &&
-                            (controller.rectStart != null && controller.rectCurrent != null ||
+                            (controller.rectStart != null &&
+                                controller.rectCurrent != null ||
                                 _selectedPolyId != null)) ||
-                        (mode == DrawMode.points && controller.pointsDraft.isNotEmpty))
+                        (mode == DrawMode.points &&
+                            controller.pointsDraft.isNotEmpty))
                       Positioned(
                           left: 12,
                           bottom: 16,
@@ -977,6 +1029,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             // 🔹 Mode buttons
                             _modeButton(DrawMode.navigate, Icons.pan_tool_alt,
                                 "Navigate"),
+
                             _modeButton(
                                 DrawMode.freehand, Icons.gesture, "Freehand"),
                             _modeButton(DrawMode.rectangle, Icons.crop_square,
@@ -984,14 +1037,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             _modeButton(
                                 DrawMode.points, Icons.more_horiz, "Points"),
                             _modeButton(DrawMode.edit, Icons.edit, "Edit"),
-
                             IconButton(
                               tooltip: "Clear all",
                               icon: const Icon(Icons.delete_outline),
                               onPressed: () => setState(() {
                                 controller.draft.clear();
-                                controller.rectStart = null;
-                                controller.rectCurrent = null;
+                                controller.rectStart;
+                                controller.rectCurrent;
                                 controller.pointsDraft.clear();
                                 _polyPoints.clear();
                                 _selectedPolyId = null;

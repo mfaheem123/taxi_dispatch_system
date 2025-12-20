@@ -25,6 +25,7 @@ TextStyle mozillaTextSemiBoldText({
   Color? color,
   FontWeight? fontWeight,
 }) {
+
   double finalFontSize = fontSize ?? 20;
 
   if (context != null) {

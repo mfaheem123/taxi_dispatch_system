@@ -17,7 +17,6 @@ import 'dashboard/F3_alert.dart';
 import 'models/dashboard_model.dart';
 
 class BookingTable extends StatefulWidget {
-
   @override
   State<BookingTable> createState() => _BookingTableState();
 }
@@ -652,6 +651,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
   return DataColumn(
     label: Expanded(
       child: widget?? Column(
+
         mainAxisAlignment: MainAxisAlignment.center,
 
         children: [
@@ -662,7 +662,8 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
           SizedBox(height: 4),
           title == "TYPE" || removeSearching == true
               ? SizedBox.shrink()
-              : customWidget ?? SizedBox(
+              : customWidget
+              ?? SizedBox(
             width: 100,
             height: textFieldHeight??28,
             child: TextField(
