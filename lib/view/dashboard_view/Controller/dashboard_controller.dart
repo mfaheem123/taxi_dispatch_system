@@ -25,21 +25,27 @@ import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
+
 import '../models/all_addresses_model.dart';
+
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 
 import '../models/users_phone_numbers_model.dart';
+
 import '../widgets/via_location.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 class DashboardController extends GetxController {
+
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
+
   RxBool seeZoneOnMappLoader = false.obs;
 
   seeZoneOnMapp() async {
+
     seeZoneOnMappLoader(true);
 
     var response = await Api().get("zones/get");
@@ -222,12 +228,10 @@ class DashboardController extends GetxController {
   final FocusNode via2KeyboardFocusNode = FocusNode();
   final FocusNode searchingAddressViaFocusNode = FocusNode();
   final FocusNode phoneKeyboardFocusNode = FocusNode();
-
   final FocusNode pickupTextFieldFocusNode = FocusNode();
   final FocusNode dropOffTextFieldFocusNode = FocusNode();
   final FocusNode via1TextFieldFocusNode = FocusNode();
   final FocusNode via2TextFieldFocusNode = FocusNode();
-
   final FocusNode viaFieldFocusNode = FocusNode();
 
   final referenceNumberController = TextEditingController(text: 'NTG54851');
@@ -798,9 +802,11 @@ class DashboardController extends GetxController {
         "Create Booking DROP LOCATION") {
       int index = polyLineMarkerInfo.indexWhere(
               (test) => test.markerType == "Create Booking DROP LOCATION");
+
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
+
       polylinePoints.add(
         LatLng(selected.lat!, selected.lon!),
       );
@@ -810,12 +816,16 @@ class DashboardController extends GetxController {
         markerType: "Create Booking DROP LOCATION",
         address: '',
       ));
+
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
+
     }
+
     allAddressesData.clear();
     highlightedIndex.value = 0;
     update();
+
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
@@ -905,6 +915,7 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables
+
   DateTime? multiReservationFromDate = DateTime.now();
   DateTime? multiReservationToDate = DateTime.now();
   final multiReservationToTimeController = TextEditingController(text: "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");

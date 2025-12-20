@@ -112,7 +112,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
           int value = start + index;
           final valueStr = value.toString().padLeft(2, '0');
           final isSelected = value == selected;
-
           return InkWell(
             onTap: () => onSelect(value),
             child: Container(
@@ -134,6 +133,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
       ),
     );
   }
+
   //
   // Widget _buildAmPmColumn() {
   //   return Expanded(

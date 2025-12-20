@@ -62,10 +62,12 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return /*controller.getAllVehicleTypeLoader.value == true ? Center(
+            return
+              /*controller.getAllVehicleTypeLoader.value == true ? Center(
               child: CircularProgressIndicator(),
 
-            ):*/ Column(
+            ):*/
+              Column(
               children: [
                 SizedBox(
                   height: 10,

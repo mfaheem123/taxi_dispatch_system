@@ -65,7 +65,9 @@ class _LocationListScreenState extends State<LocationListScreen> {
     final listToShow = controller.locationsFiltered.isNotEmpty
         ? controller.locationsFiltered
         : controller.locationsAll;
-    return RawKeyboardListener(
+
+    return
+      RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
@@ -81,8 +83,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                     Row(
                       children: [
                         Text(
-                          "Location" +
-                              "(${controller.locationListModel?.count})",
+                          "Location" + "(${controller.locationListModel?.count})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -158,6 +159,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                 controller.SearchLocation();
                               },
                             ),
+
                             buildHeaderWithSearch(
                               title: "Location Type",
                               onChanged: (v) {
@@ -165,6 +167,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                 controller.SearchLocation();
                               },
                             ),
+
                             buildHeaderWithSearch(
                               title: "Zone",
                               onChanged: (v) {
@@ -225,11 +228,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                         Text("|"),
                                         OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            side: BorderSide(
-                                                color: Colors.transparent),
+                                            side: BorderSide(color: Colors.transparent),
                                           ),
                                           onPressed: () {
                                             showDialog(
+
                                               context: context,
 
                                               builder: (_) =>

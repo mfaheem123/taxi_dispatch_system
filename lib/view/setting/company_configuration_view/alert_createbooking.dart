@@ -353,7 +353,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               buildHeaderWithSearch(title: "DATE"),
                               buildHeaderWithSearch(title: "TIME"),
                               // buildHeaderWithSearch(title: "RETURN TIME"),
+
                             ],
+
                             rows: [
                               // Existing extensions
                               ...controller

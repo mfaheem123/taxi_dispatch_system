@@ -52,6 +52,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
               : isTablet
               ? maxWidth / 2
               : maxWidth / 4;
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -71,9 +72,12 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                       decoration: BoxDecoration(
                         border: Border.all(color: DynamicColors.gryClr),
                       ),
+
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+
                         children: [
+
                           /// Header
                           Container(
                             width: double.infinity,
@@ -101,6 +105,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                       Text(AppText.sub,
                                           style: mozillaTextSemiBoldText(
                                               context: context, fontSize: 13)),
+
                                       const SizedBox(height: 6),
                                       Container(
                                         width: fieldWidth,
@@ -130,6 +135,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                     ],
                                   ),
                                 ),
+
                                 SizedBox(
                                   width: fieldWidth/1.5,
                                   child: Column(
@@ -185,6 +191,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                           BookingAlert.showNoBookingAlert();
                                         },
                                       ),
+
                                       CustomButton(
                                         width: 80,
                                         height: 33,
@@ -196,6 +203,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                         verticalPadding: 0.0,
                                         btnText: AppText.clear,
                                       ),
+
                                       CustomButton(
                                         width: 90,
                                         height: 33,
@@ -215,6 +223,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                         ],
                       ),
                     ),
+
                     /// Responsive Box
                     Container(
                       width: fieldWidth,
@@ -268,7 +277,8 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                                     borderRadius: 4,
                                     style: mozillaTextRegularText(
                                         fontSize: 11,
-                                        color: DynamicColors.whiteClr),
+                                        color: DynamicColors.whiteClr
+                                    ),
                                     verticalPadding: 0.0,
                                     btnText: AppText.generateSendPdf,
                                   ),
@@ -281,6 +291,7 @@ class _BulkDriverRentState extends State<BulkDriverRent> {
                     ),
                   ],
                 ):
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

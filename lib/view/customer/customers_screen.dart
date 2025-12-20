@@ -328,7 +328,6 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                           controller.deleteCustomer(item.id!),
                                     ),
                                   );
-                              
                                 },
                                 child: Icon(
                                   Icons.delete_forever,

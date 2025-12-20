@@ -22,8 +22,7 @@ final String socketUrl = Environment().config.socketUrl;
 String checkImageUrl(String type) =>
     "https://bloodlines.gologonow.app/uploads$type/default.png";
 
-const String groupPlaceholder =
-    "https://www.kindpng.com/picc/m/419-4196045_group-head-avatar-icon-group-png-transparent-png.png";
+const String groupPlaceholder = "https://www.kindpng.com/picc/m/419-4196045_group-head-avatar-icon-group-png-transparent-png.png";
 
 class Api {
   static final Api singleton = Api._internal();
@@ -62,6 +61,7 @@ class Api {
             },
           ),
         );
+
         return response;
       } on SocketException {
         BotToast.showText(text: 'No Internet connection');
@@ -175,11 +175,13 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
             'Content-Type': 'application/json',
           },
         ),
+
       );Future.delayed(Duration(seconds: 1), () {
         if (isProgressShow == false) {
           BotToast.closeAllLoading();
         }
       });
+
       return response;
     } on SocketException {
       Future.delayed(Duration(seconds: 1), () {
@@ -187,6 +189,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
           BotToast.closeAllLoading();
         }
       });
+
       BotToast.showText(text: 'No Internet connection');
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout) {
@@ -199,6 +202,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
           BotToast.closeAllLoading();
         }
       });
+
       return returnResponse(e.response!);
     }
   }
@@ -211,6 +215,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
         isProgressShow = false,
         noCloseLoading = false,
         fullUrl}) async {
+
     print('Api Post, url $url');
 
     if (isProgressShow == false) {
@@ -231,12 +236,14 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
               if (auth == false) "Authorization": "Bearer ${sp.read('token')}"
             },
           ));
+
       print("hide");
       if (isProgressShow == false) {
         if (noCloseLoading == false) {
           BotToast.closeAllLoading();
         }
       }
+
       print(apiUrl + url);
       return response;
     } on DioException catch (e) {
@@ -286,7 +293,6 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
               getx.Get.offAllNamed(Routes.loginScreen);
             }
           }
-
           return response;
         case 409:
           BotToast.showText(
@@ -295,6 +301,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
                           (key, value) => MapEntry(key,
                           {BotToast.showText(text: value[0].toString())})));
           return response;
+
         case 410:
           BotToast.showText(
               text: response.data["message"] ??
@@ -340,8 +347,10 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
           return response;
       }
     }
+
     BotToast.showText(text: 'Connection Error');
     throw SocketException("No Internet");
+
   }
 }
 

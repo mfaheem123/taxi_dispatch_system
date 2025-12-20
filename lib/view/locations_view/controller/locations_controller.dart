@@ -116,7 +116,6 @@ class LocationController extends GetxController {
       addressCtrl.clear();
       locationTypeValue = null;
       zoneValue = null;
-
       update();
       print(response);
     } else {
