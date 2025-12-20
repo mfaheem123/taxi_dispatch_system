@@ -278,16 +278,11 @@ class _DriversViewState extends State<DriversView> {
                           vertical: 8),
                       itemBuilder: (context, index) {
 
-                        final isSelected =
-                            !isHeaderMode && controller.selectedDriverIndex == index;
-
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
-                          color: isSelected
-                              ? Colors.blue.shade100
-                              : Colors.white,
+                          color: Colors.white,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 10),
@@ -295,16 +290,34 @@ class _DriversViewState extends State<DriversView> {
                               children: [
                                 SizedBox(
                                   width: 50,
-                                  child: CustomButton(
-                                    height: 28,
-                                    borderRadius: 4,
-                                    verticalPadding: 0,
-                                    btnText: "X1",
-                                    style: mozillaTextRegularText(
-                                      fontSize: 14,
-                                      color: DynamicColors.whiteClr,
+                                  child: Container(
+                                    height: 32,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: DynamicColors.primaryClr
+                                    ),
+                                    child: Center(
+                                      child: Text("X1",
+                                        style: mozillaTextRegularText(
+                                          fontSize: 14,
+                                          color: DynamicColors.whiteClr,
+                                        ),
+
+                                      ),
                                     ),
                                   ),
+
+
+                                  // CustomButton(
+                                  //   height: 28,
+                                  //   borderRadius: 4,
+                                  //   verticalPadding: 0,
+                                  //   btnText: "X1",
+                                  //   style: mozillaTextRegularText(
+                                  //     fontSize: 14,
+                                  //     color: DynamicColors.whiteClr,
+                                  //   ),
+                                  // ),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -329,15 +342,25 @@ class _DriversViewState extends State<DriversView> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                SizedBox(
-                                  width: 40,
-                                  child: CustomButton(
-                                    height: 28,
-                                    btnColor: DynamicColors.secondaryClr,
-                                    borderRadius: 4,
-                                    verticalPadding: 0,
-                                    btnText: "-",
+                            SizedBox(
+                              width: 48,
+                              child: Container(
+                                height: 32,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    color: DynamicColors.secondaryClr
+                                ),
+                                child: Center(
+                                  child: Text("-",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 14,
+                                      color: DynamicColors.whiteClr,
+                                    ),
+
                                   ),
+                                ),
+                              ),
+
                                 ),
                               ],
                             ),
