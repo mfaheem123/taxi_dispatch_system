@@ -575,9 +575,9 @@ class DashboardController extends GetxController {
       int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
 
       if(index != -1){
-        double inttt = (double.parse(totalDistance.value) / double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+        double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
 
-        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
+        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
       }
 
       update();

@@ -1254,9 +1254,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            controller.selectVehicleValue = v;
                                                            int index =  controller.dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == controller.selectVehicleValue!.id);
                                                            if(index != -1){
-                                                             double inttt = (double.parse(controller.totalDistance.value) / double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+                                                             double inttt = (double.parse(controller.totalDistance.value) - double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
 
-                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
+                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
                                                            }
                                                            controller.update();
                                                          },
