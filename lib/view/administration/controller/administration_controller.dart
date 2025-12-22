@@ -83,7 +83,7 @@ class AdministrationController extends GetxController {
   RxBool userLoading = false.obs;
   var userCurrentPage = 1.obs;
   var userTotalPage = 1.obs;
-  final int userLlimit = 20;
+  final int userLlimit = 5;
   RxList<Employees> userAll = <Employees>[].obs;
   RxList<Employees> userFliter = <Employees>[].obs;
   RxString searchUserName = ''.obs;

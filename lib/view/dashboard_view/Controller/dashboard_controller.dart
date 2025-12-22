@@ -904,13 +904,58 @@ class DashboardController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
   DashboardTableModel? dashboardTableModelData;
+  final referenceNumber = TextEditingController();
+  final pickupDate = TextEditingController();
+  final pickupTime = TextEditingController();
+  final name = TextEditingController();
+  final pickup = TextEditingController();
+  final dropOff = TextEditingController();
+  final accountName = TextEditingController();
+  final driverName = TextEditingController();
+  final notes = TextEditingController();
+  final fares = TextEditingController();
+  final bookingStatus = TextEditingController();
+  final journeyType = TextEditingController();
+  final paymentType = TextEditingController();
+  final vehicleTypeName = TextEditingController();
+
+  RxInt dashboardTableCurrentPage = 1.obs;
+  RxInt dashboardTableTotalPages = 1.obs;
+  final int dashboardTableLimit = 20;
+
+
   getDashboardTableData({tableId}) async{
-    var response = await Api().get("bookings/getbytabs/$tableId");
+    var response = await Api().get("bookings/getbytabs/$tableId",
+    queryParameters: {
+      "page": dashboardTableCurrentPage.value,
+      "limit": dashboardTableLimit,
+      "reference_number": referenceNumber.text,
+      "pickup_date": pickupDate.text,
+      "pickup_time": pickupTime.text,
+      "name": name.text,
+      "pickup": pickup.text,
+      "dropoff": dropOff.text,
+      "account_name": accountName.text,
+      "driver_name": driverName.text,
+      "notes": notes.text,
+      "fares": fares.text,
+      "booking_status": bookingStatus.text,
+      "journey_type": journeyType.text,
+      "payment_type": paymentType.text,
+      "vehicle_type_name": vehicleTypeName.text,
+    }
+    );
     if(response.statusCode ==200){
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
+      dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       update();
     }
+  }
+
+  void dashboardTablePageChange(int page) {
+    dashboardTableCurrentPage.value = page;
+    getDashboardTableData(tableId: selectedTabId);
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
