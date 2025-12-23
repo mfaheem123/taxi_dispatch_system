@@ -271,8 +271,7 @@ class DashboardController extends GetxController {
           TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
       dropOffController.text = value!;
-      dropOffController.selection =
-          TextSelection.collapsed(offset: value.length);
+      dropOffController.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
       viaLocation1Controller.text = value!;
       viaLocation1Controller.selection =
@@ -567,8 +566,7 @@ class DashboardController extends GetxController {
           bounds = calculateBounds(focusPoints); // your existing helper
         }
 
-        final cameraFit =
-        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
 

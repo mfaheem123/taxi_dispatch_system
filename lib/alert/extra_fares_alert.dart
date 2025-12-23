@@ -19,6 +19,7 @@ class ExtraFaresAlert extends StatefulWidget {
 }
 
 class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
+
   final dashBoardCntrl = Get.find<DashboardController>();
 
   @override
@@ -43,6 +44,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -62,10 +64,13 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                     )
                   ],
                 ),
+
                 Divider(),
+
                 SizedBox(
                   height: 15,
                 ),
+
                 Row(
                   children: [
                     Expanded(
@@ -82,6 +87,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         borderRadius: 0,
                       ),
                     ),
+
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -99,6 +105,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         ),
                       ),
                     ),
+
                     Expanded(
                       child: CustomTextField(
                           borderRadius: 0,
@@ -113,11 +120,14 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         ],
                       ),
                     ),
+
                   ],
                 ),
+
                 SizedBox(
                   height: 15,
                 ),
+
                 Row(
                   children: [
                     Expanded(
@@ -134,6 +144,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         borderRadius: 0,
                       ),
                     ),
+
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -151,6 +162,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                         ),
                       ),
                     ),
+
                     Expanded(
                       child: CustomTextField(
                           borderRadius: 0,
