@@ -25,6 +25,7 @@ import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/dashboard_model.dart';
+import '../widgets/fare_configuration.dart';
 import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
 import '../widgets/time_picker_widget.dart';
@@ -1251,13 +1252,20 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              ))
                                                              .toList(),
 
-                                                         onChanged: (v) {
+                                                         onChanged: (v) async {
                                                            controller.selectVehicleValue = v;
-                                                           int index =  controller.dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == controller.selectVehicleValue!.id);
-                                                           if(index != -1){
-                                                             double inttt = (double.parse(controller.totalDistance.value) - double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
 
-                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
+                                                           final fare = await getActiveFareForVehicle(controller.dashboardAllData!.fareConfigurations!,
+                                                             controller.selectVehicleValue!.id!,);
+                                                           if (fare != null) {
+                                                             print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
+
+                                                             double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+
+                                                             controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+
+                                                           } else {
+                                                             print('No active fare found for this vehicle');
                                                            }
                                                            controller.update();
                                                          },

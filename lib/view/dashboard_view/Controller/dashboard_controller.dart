@@ -31,6 +31,7 @@ import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../models/dashboard_table_model.dart';
 import '../models/users_phone_numbers_model.dart';
 
+import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
@@ -568,13 +569,32 @@ class DashboardController extends GetxController {
         mapController.fitCamera(cameraFit);
       }
 
-      int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
+      print(dashboardAllData!.fareConfigurations);
 
-      if(index != -1){
-        double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+      final fare = await getActiveFareForVehicle(dashboardAllData!.fareConfigurations!, selectVehicleValue!.id!,);
 
-        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
+      if (fare != null) {
+        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
+
+        double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+
+        fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+        print(fixedFare.value);
+      } else {
+        print('No active fare found for this vehicle');
       }
+
+
+
+
+
+      // int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
+      //
+      // if(index != -1){
+      //   double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+      //
+      //   fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
+      // }
 
       update();
     } else {
@@ -918,6 +938,26 @@ class DashboardController extends GetxController {
   RxInt dashboardTableCurrentPage = 1.obs;
   RxInt dashboardTableTotalPages = 1.obs;
   final int dashboardTableLimit = 20;
+
+  Timer? _tableDashboardBebounce;
+  // 👇 ye function har baar text change hone par call hoga
+  Future<void> onTableChangeHandler({required String tableId}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay]
+    // selectedTextFieldsValue.value = "";
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_tableDashboardBebounce?.isActive ?? false) _tableDashboardBebounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _tableDashboardBebounce = Timer(duration, () {
+      _stopTableDataTyping(tableId: tableId);
+    });
+  }
+
+  void _stopTableDataTyping({required String tableId}) {
+    // 👇 Yahan API call ya search function call karna hai
+    getDashboardTableData(tableId: tableId);
+  }
+
 
 
   getDashboardTableData({tableId}) async{
