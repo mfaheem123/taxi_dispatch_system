@@ -12,8 +12,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 import 'model/select_templete_type.dart';
-import 'model/select_templete_type.dart' as template_model;
-import 'model/select_user_model.dart' hide TemplateType;
+import 'model/templete_by_type_model.dart';
+
 
 class SettingController  extends GetxController{
   // Add your methods and properties here
@@ -69,18 +69,37 @@ class SettingController  extends GetxController{
   bool templateTypeLoad = false;
   getTemplateTypes() async {
     templateTypeLoad = true;
-    update();
     var response = await Api().get("templates/template_types");
     if (response.statusCode == 200) {
       selectTempleteType = SelectTempleteType.fromJson(response.data);
+      selectedTemplateType = selectTempleteType!.templateTypes![3];
+      templateTypeLoad = false;
+      update();
     }
-    templateTypeLoad = false;
-    update();
+
+  }
+
+  TempleteByTypeMOdel? templeteByTypeMOdel;
+  Template? template;
+  bool templatebyTypeLoad = false;
+  getTemplateByTypes({selectedTempId}) async {
+    if(selectedTemplateType == null) return; // safety
+    templatebyTypeLoad = true;
+    var response = await Api().get("templates/get_templates_by_types?template_type_id=$selectedTempId");
+    if (response.statusCode == 200) {
+      templeteByTypeMOdel = TempleteByTypeMOdel.fromJson(response.data);
+      templatebyTypeLoad = false;
+      update();
+    }
   }
 
 
 
+  getTemplateHtmlText({selectedTempId}) async {
 
+
+
+  }
 
 
 

@@ -17,6 +17,7 @@ import '../accounts/controller/account_controller.dart';
 import '../administration/User/create_userScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'model/select_templete_type.dart';
+import 'model/templete_by_type_model.dart';
 
 class TemplateSettings extends StatefulWidget {
   const TemplateSettings({super.key});
@@ -38,12 +39,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "templateSettings";
-
-
-
-
-      controller.getTemplateTypes(); // 🔴 IMPORTANT
-
+    controller.getTemplateTypes();
 
   }
 
@@ -159,34 +155,39 @@ class _TemplateSettingsState extends State<TemplateSettings> {
 
 
                                 CustomDropdownField<TemplateType>(
-                                  width: fieldWidth / 1.5,
+
                                   text: "SELECT TEMPLATE TYPE",
                                   label: "SELECT TEMPLATE TYPE",
                                   items: controller.selectTempleteType!.templateTypes!,
                                   value: controller.selectedTemplateType,
                                   itemLabel: (val) => val.name ?? "",
+
                                   onChanged: (val) {
                                     controller.selectedTemplateType = val;
-                                    controller.update();
-
-                                    debugPrint("Template Type: ${val?.name}");
+                                    controller.getTemplateByTypes(selectedTempId: val!.id);
                                   },
                                 ),
 
-                          CustomDropdownField<DropdownModel>(
+
+
+                              CustomDropdownField<Template>(
+                                text: "Select User",
                                 label: "Select User",
-                                items: selectTemplateList,
-                                value: selectedTemplateValue,
-                                itemLabel: (templateList) => templateList.name!, // show name
+                                items: controller.templeteByTypeMOdel?.templates ?? [],
+                                value: controller.template,
+                                itemLabel: (val) => val.name ?? "",
                                 onChanged: (val) {
-                                  controller.templateTitleController.clear();
-                                  selectedTemplateValue = val;
-                                  controller.insertTagValue(value: val?.templateValue,temFormate: true);
+                                  controller.template = val;
 
-                                  print("Selected User ID: ${val?.id}");
-
+                                  controller.getTemplateHtmlText(selectedTempId: val!.id);
                                 },
                               ),
+
+
+
+
+
+
                               CustomTextField(
                                 borderRadius: 4,
                                 controller: controller.emailController,
