@@ -242,7 +242,7 @@ class LocationController extends GetxController {
   // List<Postcode> postcodes = [];
   //
   // final Dio _dio = Dio(BaseOptions(
-  //   baseUrl: 'http://192.168.110.5:5000/api',
+  //   baseUrl: 'http://192.168.110.3:5000/api',
   //   connectTimeout: const Duration(seconds: 10),
   //   receiveTimeout: const Duration(seconds: 10),
   // ));

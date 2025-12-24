@@ -8,10 +8,31 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+
+import 'model/select_templete_type.dart';
+import 'model/select_templete_type.dart' as template_model;
+import 'model/select_user_model.dart' hide TemplateType;
 
 class SettingController  extends GetxController{
   // Add your methods and properties here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
@@ -20,6 +41,7 @@ class SettingController  extends GetxController{
   String? selectedTemplateTitle;
   String? selectedTemplate;
   String? tagAssigned;
+
 
   /// text field controllers
    final templateTitleController = HtmlEditorController();
@@ -41,6 +63,30 @@ class SettingController  extends GetxController{
     }
     update();
   }
+
+  SelectTempleteType? selectTempleteType;
+  TemplateType? selectedTemplateType;
+  bool templateTypeLoad = false;
+  getTemplateTypes() async {
+    templateTypeLoad = true;
+    update();
+    var response = await Api().get("templates/template_types");
+    if (response.statusCode == 200) {
+      selectTempleteType = SelectTempleteType.fromJson(response.data);
+    }
+    templateTypeLoad = false;
+    update();
+  }
+
+
+
+
+
+
+
+
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 

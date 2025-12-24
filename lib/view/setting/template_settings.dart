@@ -1,6 +1,4 @@
 
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/setting/setting_controller.dart';
@@ -18,6 +16,7 @@ import '../../component/text_widget.dart';
 import '../accounts/controller/account_controller.dart';
 import '../administration/User/create_userScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import 'model/select_templete_type.dart';
 
 class TemplateSettings extends StatefulWidget {
   const TemplateSettings({super.key});
@@ -39,6 +38,13 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "templateSettings";
+
+
+
+
+      controller.getTemplateTypes(); // 🔴 IMPORTANT
+
+
   }
 
   DropdownModel? selectedTag;
@@ -150,23 +156,24 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 color: DynamicColors.gryClr.withOpacity(0.5),
                                 child: Text(AppText.templateSelection, style: titleDesign()),
                               ),
-                              CustomDropdownField<String>(
-                                width: fieldWidth/1.5,
-                                label: "SELECT TEMPLATE TYPE", items:[
-                                "SELECT TEMPLATE TYPE",
-                                "EMAIL",
-                                "SMS",
-                                "NOTIFICATION",
-                                "INVOICE",
-                                "REPORT",],
-                                value: controller.selectedTemplateTitle,
-                                itemLabel: (val) => val, // just show the string
-                                onChanged: (val) {
-                                  controller.selectedTemplateTitle = val;
-                                  controller.update();
-                                },
-                              ),
-                              CustomDropdownField<DropdownModel>(
+
+
+                                CustomDropdownField<TemplateType>(
+                                  width: fieldWidth / 1.5,
+                                  text: "SELECT TEMPLATE TYPE",
+                                  label: "SELECT TEMPLATE TYPE",
+                                  items: controller.selectTempleteType!.templateTypes!,
+                                  value: controller.selectedTemplateType,
+                                  itemLabel: (val) => val.name ?? "",
+                                  onChanged: (val) {
+                                    controller.selectedTemplateType = val;
+                                    controller.update();
+
+                                    debugPrint("Template Type: ${val?.name}");
+                                  },
+                                ),
+
+                          CustomDropdownField<DropdownModel>(
                                 label: "Select User",
                                 items: selectTemplateList,
                                 value: selectedTemplateValue,
@@ -175,7 +182,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   controller.templateTitleController.clear();
                                   selectedTemplateValue = val;
                                   controller.insertTagValue(value: val?.templateValue,temFormate: true);
+
                                   print("Selected User ID: ${val?.id}");
+
                                 },
                               ),
                               CustomTextField(
@@ -183,6 +192,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 controller: controller.emailController,
                                 width: fieldWidth/1.5,
                                 hintText: AppText.email,
+
                                 // columnText: true,
                                 height: 30,
                               ),
@@ -449,3 +459,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
   ];
 
 }
+
+
+
+
+
+
