@@ -499,7 +499,9 @@ Future<void> downloadExcelWeb(List<InvoiceRow> list) async {
     TextCellValue('DATE'),
     TextCellValue('PICKUP'),
     TextCellValue('DROPOFF'),
-    TextCellValue('FARE'),
+    TextCellValue('PICKUP1'),
+    TextCellValue('DROPOFF2'),
+    TextCellValue('FARE3'),
   ]);
 
   // Data rows
@@ -510,6 +512,8 @@ Future<void> downloadExcelWeb(List<InvoiceRow> list) async {
       TextCellValue(e.pickup.isNotEmpty ? e.pickup : 'No Data'),
       TextCellValue(e.dropoff.isNotEmpty ? e.dropoff : 'No Data'),
       TextCellValue(e.fare.isNotEmpty ? e.fare : 'No Data'),
+      TextCellValue(e.dropoff2.isNotEmpty ? e.dropoff : 'No Data'),
+      TextCellValue(e.fare3.isNotEmpty ? e.fare : 'No Data'),
     ]);
   }
 
@@ -532,31 +536,8 @@ Future<void> downloadExcelWeb(List<InvoiceRow> list) async {
 
 
 
-// var excel = Excel.createExcel();
-// Sheet sheet;
-// if (excel.sheets.containsKey('Invoice')) {
-// sheet = excel['Invoice']!;
-// } else {
-// sheet = excel['Invoice'] = excel.createSheet('Invoice');
-// }
-//
-//
-// Future<void> downloadCsvWeb(List<InvoiceRow> list) async {
-//   String csv = 'REF,DATE,PICKUP,DROPOFF,FARE\n';
-//   for (var e in list) {
-//     csv += '${e.ref},${e.datetime},${e.pickup},${e.dropoff},${e.fare}\n';
-//   }
-//
-//   final bytes = Uint8List.fromList(csv.codeUnits);
-//   final blob = html.Blob([bytes], 'text/csv');
-//   final url = html.Url.createObjectUrlFromBlob(blob);
-//
-//   html.AnchorElement(href: url)
-//     ..setAttribute("download", "invoice.csv")
-//     ..click();
-//
-//   html.Url.revokeObjectUrl(url);
-// }
+
+
 
 
 

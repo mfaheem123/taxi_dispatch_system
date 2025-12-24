@@ -529,19 +529,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
 
                                                        ),
-                                                       Padding( padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                                                         child: FocusTraversalOrder(
-                                                           order: const NumericFocusOrder(5),
-                                                           child: RestrictedDrivers(
-                                                             width: fieldWidth / 3,
-                                                             height: 30,
-                                                             padding: 0.0,
-                                                             titleText: "SELECT PLOT",
-                                                             driversList: ["BASE NE7", "WILLESDEN"],
+                                                       Obx(
+                                                             () =>Padding(
+                                                           padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                                                           child: FocusTraversalOrder(
+                                                             order: const NumericFocusOrder(2),
+                                                             child: CustomDropdownField<ZoneObject>(
+                                                               label: "Select Zone",
+                                                               width: Get.width / 9,
+                                                               height: 35,
+                                                               items: _controller.updateLocationValue.value == true?[]: _controller.locationtypezoneModel!.zonesList!,
+                                                               value: _controller.zoneValue, itemLabel: (templateList) => templateList.name!,
+                                                               onChanged: (val) {
+                                                                 _controller.zoneValue = val;
+                                                                 controller.dashboardZoneValue = val;
+                                                                 controller.update();
+                                                               },
+                                                             ),
                                                            ),
                                                          ),
                                                        ),
-
                                                        // (3) Pickup notes
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(6),
