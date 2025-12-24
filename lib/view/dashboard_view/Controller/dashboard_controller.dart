@@ -267,20 +267,16 @@ class DashboardController extends GetxController {
   void selectSuggestion(String? value) {
     if (activeFieldKey.value == pickupFieldKey) {
       pickupController.text = value!;
-      pickupController.selection =
-          TextSelection.collapsed(offset: value.length);
+      pickupController.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
       dropOffController.text = value!;
-      dropOffController.selection =
-          TextSelection.collapsed(offset: value.length);
+      dropOffController.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
       viaLocation1Controller.text = value!;
-      viaLocation1Controller.selection =
-          TextSelection.collapsed(offset: value.length);
+      viaLocation1Controller.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via2FieldKey) {
       viaLocation2Controller.text = value!;
-      viaLocation2Controller.selection =
-          TextSelection.collapsed(offset: value.length);
+      viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
     }
 
     inputText.value = value!;
@@ -327,6 +323,7 @@ class DashboardController extends GetxController {
     } else if (fieldsName == "PICKUP LOCATION") {
       getDropAddressesLoader(false);
     }
+
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
@@ -567,17 +564,16 @@ class DashboardController extends GetxController {
           bounds = calculateBounds(focusPoints); // your existing helper
         }
 
-        final cameraFit =
-        CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
 
       int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
 
       if(index != -1){
-        double inttt = (double.parse(totalDistance.value) / double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+        double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
 
-        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
+        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
       }
 
       update();
@@ -904,13 +900,58 @@ class DashboardController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard table data
   DashboardTableModel? dashboardTableModelData;
+  final referenceNumber = TextEditingController();
+  final pickupDate = TextEditingController();
+  final pickupTime = TextEditingController();
+  final name = TextEditingController();
+  final pickup = TextEditingController();
+  final dropOff = TextEditingController();
+  final accountName = TextEditingController();
+  final driverName = TextEditingController();
+  final notes = TextEditingController();
+  final fares = TextEditingController();
+  final bookingStatus = TextEditingController();
+  final journeyType = TextEditingController();
+  final paymentType = TextEditingController();
+  final vehicleTypeName = TextEditingController();
+
+  RxInt dashboardTableCurrentPage = 1.obs;
+  RxInt dashboardTableTotalPages = 1.obs;
+  final int dashboardTableLimit = 20;
+
+
   getDashboardTableData({tableId}) async{
-    var response = await Api().get("bookings/getbytabs/$tableId");
+    var response = await Api().get("bookings/getbytabs/$tableId",
+    queryParameters: {
+      "page": dashboardTableCurrentPage.value,
+      "limit": dashboardTableLimit,
+      "reference_number": referenceNumber.text,
+      "pickup_date": pickupDate.text,
+      "pickup_time": pickupTime.text,
+      "name": name.text,
+      "pickup": pickup.text,
+      "dropoff": dropOff.text,
+      "account_name": accountName.text,
+      "driver_name": driverName.text,
+      "notes": notes.text,
+      "fares": fares.text,
+      "booking_status": bookingStatus.text,
+      "journey_type": journeyType.text,
+      "payment_type": paymentType.text,
+      "vehicle_type_name": vehicleTypeName.text,
+    }
+    );
     if(response.statusCode ==200){
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
+      dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       update();
     }
+  }
+
+  void dashboardTablePageChange(int page) {
+    dashboardTableCurrentPage.value = page;
+    getDashboardTableData(tableId: selectedTabId);
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base

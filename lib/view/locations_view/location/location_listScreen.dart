@@ -105,6 +105,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                         CustomButton(
                           onTap: () {
                             controller.getLocationList();
+
                           },
                           height: 40,
                           width: 80,

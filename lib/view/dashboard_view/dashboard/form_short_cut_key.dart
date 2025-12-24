@@ -37,6 +37,7 @@ class FormShortCutKey extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Row(
+
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
@@ -88,7 +89,8 @@ class FormShortCutKey extends StatelessWidget {
                       Obx(
                             ()=> MouseRegion(
                           onEnter: (_) {
-                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
+                            {
                               DashboardF9Alert.show();
                             }
                             // dashboardController.isHoveredF9 = true.obs;

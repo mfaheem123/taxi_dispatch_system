@@ -119,7 +119,7 @@ class GetFareConfigAccount {
 }
 
 class GetFareConfigVehicleType {
-  int? minimumFares;
+  num? minimumFares;
   String? name;
 
   GetFareConfigVehicleType({

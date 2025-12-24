@@ -266,6 +266,7 @@ class _RestrictedDriversState extends State<RestrictedDrivers> {
         return RawKeyboardListener(
           autofocus: true,
           focusNode: FocusNode(),
+
           onKey: (event) {
             if (event is RawKeyDownEvent) {
               if (event.logicalKey == LogicalKeyboardKey.arrowDown) {

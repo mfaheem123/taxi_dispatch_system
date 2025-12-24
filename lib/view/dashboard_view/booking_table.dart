@@ -9,9 +9,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
+import '../../component/pagination.dart';
 import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
 import 'models/dashboard_model.dart';
@@ -147,20 +149,59 @@ class _BookingTableState extends State<BookingTable> {
                     buildHeaderWithSearch(widget: Checkbox(value: false, onChanged: (v){
                     })),
                     buildHeaderWithSearch(title: "TYPE"),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "CUS"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "ACC"),
-                    buildHeaderWithSearch(title: "DRV"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "NOTE"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "STATUS"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "ACC"),
+                    buildHeaderWithSearch(title: "REF #", onChanged: (v){
+                      controller.referenceNumber.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "DATETIME", onChanged: (v){
+                      controller.pickupDate.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "CUS", onChanged: (v){
+                      controller.name.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "PICKUP", onChanged: (v){
+                      controller.pickup.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "DROPOFF", onChanged: (v){
+                      controller.dropOff.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "ACC", onChanged: (v){
+                      controller.accountName.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "DRV", onChanged: (v){
+                      controller.driverName.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "VEH", onChanged: (v){
+                      controller.vehicleTypeName.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "NOTE", onChanged: (v){
+                      controller.notes.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "FARE", onChanged: (v){
+                      controller.fares.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "STATUS", onChanged: (v){
+                      controller.bookingStatus.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "J/T", onChanged: (v){
+                      controller.journeyType.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "P/T", onChanged: (v){
+                      controller.paymentType.text = v;
+                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                    }),
+                    buildHeaderWithSearch(title: "Action"),
                   ],
                   rows: List.generate(
                     controller.dashboardTableModelData!.data!.length,
@@ -212,7 +253,8 @@ class _BookingTableState extends State<BookingTable> {
                               onRightClick: () {
                                 print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                               },
-                              child: Text(item.pickupDate.toString()),
+                              child: Text("${DateFormat('dd-MM-yyyy')
+                                  .format(item.pickupDate!)} ${item.pickupTime}"),
                             ),
                           ),
 
@@ -542,7 +584,11 @@ class _BookingTableState extends State<BookingTable> {
                     },
                   ),
                 ),
-              )
+              ),
+              PaginationWidget(
+                  currentPage: controller.dashboardTableCurrentPage.value,
+                  totalPages: controller.dashboardTableTotalPages.value,
+                  onPageChange: controller.dashboardTablePageChange),
             ],
           ),
         );
@@ -647,18 +693,17 @@ class _BookingTableState extends State<BookingTable> {
 }
 
 
-DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged, }  ) {
+DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget? widget, textFieldHeight, double? fontSize, Widget? customWidget, Function(String)? onChanged,
+  TextEditingController? controller,
+}) {
   return DataColumn(
     label: Expanded(
       child: widget?? Column(
-
         mainAxisAlignment: MainAxisAlignment.center,
-
         children: [
           Text(title!, style: TextStyle(fontWeight: FontWeight.bold,
               fontSize: fontSize ?? 13
           )),
-
           SizedBox(height: 4),
           title == "TYPE" || removeSearching == true
               ? SizedBox.shrink()
@@ -667,6 +712,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
             width: 100,
             height: textFieldHeight??28,
             child: TextField(
+              controller: controller,
              onChanged: onChanged,
               onTap: () {
                 shortCutKeyValue.value = "tableSelected";

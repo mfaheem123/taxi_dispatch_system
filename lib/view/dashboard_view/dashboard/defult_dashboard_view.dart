@@ -155,6 +155,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         runSpacing: 8, // vertical gap when wrapped
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
+
                           Row(
                             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -189,6 +190,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       ),
                     ),
                   ),
+
                     Stack(
                       key: controller.stackKey,
                       children: [
@@ -290,6 +292,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                onTap: () {
                                                                  shortCutKeyValue.value = "PICKUP LOCATION";
                                                                },
+
                                                                onChanged: (v){
                                                                  controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
                                                                },
@@ -310,6 +313,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
+
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.fixedFare.value = "0";
@@ -419,6 +423,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                          ),
                                                        ),
                                                        ),
+
                                                        // (4) Dropoff textfield
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(4),
@@ -493,7 +498,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        controller.pickupController.clear();
                                                                        controller.polylinePoints.clear();
                                                                        controller.fetchRouteFromOSRM();
-
                                                                        controller.fixedFare.value = "0";
                                                                        controller.totalDistance.value = "0";
                                                                        controller.totalTimeDuration.value = "0";
@@ -736,20 +740,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
                                                                        controller.highlightedIndex.value < controller.suggestions.length - 1) {
                                                                      controller.highlightedIndex.value++;
-                                                                   } else if (event.logicalKey ==
-                                                                       LogicalKeyboardKey.arrowUp &&
-                                                                       controller.highlightedIndex.value >
-                                                                           0) {
+                                                                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
                                                                      controller.highlightedIndex.value--;
-                                                                   } else if (event.logicalKey ==
-                                                                       LogicalKeyboardKey.enter) {
+                                                                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                                                                      final selected =
-                                                                     controller.suggestions[
-                                                                     controller
-                                                                         .highlightedIndex
-                                                                         .value].name;
-                                                                     controller
-                                                                         .selectSuggestion(selected);
+                                                                     controller.suggestions[controller.highlightedIndex.value].name;
+                                                                     controller.selectSuggestion(selected);
                                                                    }
                                                                  }
                                                                },
@@ -905,7 +901,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                      LogicalKeyboardKey.arrowUp &&
                                                                      suggestion_controller.highlightedIndex.value >
                                                                          0) {
-                                                                   suggestion_controller.highlightedIndex.value--;
+                                                                    suggestion_controller.highlightedIndex.value--;
                                                                  } else if (event.logicalKey ==
                                                                      LogicalKeyboardKey.enter) {
                                                                    final selected = suggestion_controller.allListData[suggestion_controller.highlightedIndex.value].name;
@@ -976,6 +972,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      )),
                                                    ),
                                                  ),
+
                                                  // (6) Time
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(18),
@@ -995,6 +992,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      )),
                                                    ),
                                                  ),
+
                                                  // (7) Lead (mins)
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(19),
@@ -1168,6 +1166,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            border: OutlineInputBorder(),
                                                            isDense: true,
                                                          ),
+
                                                          value: controller.selectPaymentTypeValue,
 
                                                          items: controller.dashboardAllData!.paymentTypes!
@@ -1205,6 +1204,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            const SnackBar(content: Text("Calendar icon activated")),
                                                          );
                                                        },
+
                                                        child: Container(
                                                          padding: const EdgeInsets.symmetric(horizontal: 8),
                                                          decoration: BoxDecoration(
@@ -1250,13 +1250,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                              ))
                                                              .toList(),
+
                                                          onChanged: (v) {
                                                            controller.selectVehicleValue = v;
                                                            int index =  controller.dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == controller.selectVehicleValue!.id);
                                                            if(index != -1){
-                                                             double inttt = (double.parse(controller.totalDistance.value) / double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+                                                             double inttt = (double.parse(controller.totalDistance.value) - double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
 
-                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].vehicleMinimumFare.toString())).toString();
+                                                             controller.fixedFare.value = (inttt * double.parse(controller.dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
                                                            }
                                                            controller.update();
                                                          },
@@ -1286,8 +1287,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            border: OutlineInputBorder(),
                                                            isDense: true,
                                                          ),
+
                                                          value: controller.selectDepartmentData,
                                                          items: controller.selectAccountValue == null? []: controller.selectAccountValue!.departments
+
                                                              !.map((department) =>
                                                              DropdownMenuItem<DepartmentObject>(
                                                                value: department,
@@ -1299,6 +1302,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                              ))
                                                              .toList(),
+
                                                          onChanged: (v) {
                                                            controller.selectDepartmentData = v;
                                                            controller.update();
@@ -1321,6 +1325,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      },
                                                    ),
                                                  ),
+
                                                  Text(
                                                    AppText.quotation,
                                                    style: mozillaTextSemiBoldText(
@@ -1346,6 +1351,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                });
                                                              }
                                                            },
+
                                                            child: Checkbox(
                                                              activeColor: DynamicColors.primaryClr,
                                                              value: controller.smsCheckbox.value,
@@ -1355,6 +1361,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              },
                                                            ),
                                                          ),
+
                                                          Text(
                                                            AppText.sms,
                                                            style: mozillaTextSemiBoldText(
@@ -1384,6 +1391,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                });
                                                              }
                                                            },
+
                                                            child: Checkbox(
                                                              activeColor: DynamicColors.primaryClr,
                                                              value: controller.emailCheckbox.value,
@@ -1429,7 +1437,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            ),
                                                          ),
                                                        ),
+
                                                        SizedBox(width: 8),
+
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(31),
                                                          child: SizedBox(
@@ -1449,7 +1459,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            ),
                                                          ),
                                                        ),
+
                                                        SizedBox(width: 8),
+
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(32),
                                                          child: SizedBox(
@@ -1480,6 +1492,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      color: Colors.grey.shade300,
                                                      borderRadius: BorderRadius.circular(4),
                                                    ),
+
                                                    child: Row(
                                                      mainAxisAlignment: MainAxisAlignment.end,
                                                      mainAxisSize: MainAxisSize.min,
@@ -1499,6 +1512,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            },
                                                          ),
                                                        ),
+
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(34),
                                                          child: buildFocusableIcon(
@@ -1513,6 +1527,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            },
                                                          ),
                                                        ),
+
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(35),
                                                          child: buildFocusableIcon(
@@ -1527,6 +1542,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            },
                                                          ),
                                                        ),
+
                                                        FocusTraversalOrder(
                                                          order: const NumericFocusOrder(36),
                                                          child: buildFocusableIcon(
@@ -1536,7 +1552,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              showDialog(
                                                                context: context,
                                                                builder: (_) =>
+
                                                                    ExtraInfoAlert(),
+
                                                              );
                                                            },
                                                          ),
@@ -1580,9 +1598,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            color: DynamicColors.textClr,
                                                            fontSize: 13)),
                                                    Container(
-
                                                      width: fieldWidth/3.5,
-
                                                      padding: EdgeInsets.symmetric(
                                                          horizontal: 8, vertical: 4),
                                                      decoration: BoxDecoration(
@@ -1592,7 +1608,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      child: FittedBox(
                                                        fit: BoxFit.scaleDown,
                                                        child: Text(
-                                                         "PR: \$ ${double.parse(controller.fixedFare.value).toStringAsFixed(2)}",
+                                                         "PR: \$ ${(double.parse(controller.fixedFare.value) + 5).toStringAsFixed(1)}",
                                                          style: TextStyle(
                                                            fontWeight: FontWeight.bold,
                                                            color: Colors.black,
