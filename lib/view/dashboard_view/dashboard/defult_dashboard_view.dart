@@ -277,6 +277,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                // }
                                                                }
                                                              },
+
                                                              child: CustomTextField(
                                                                key: controller.pickupFieldKey,
                                                                controller: controller.pickupController,
@@ -313,7 +314,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
-
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.fixedFare.value = "0";
