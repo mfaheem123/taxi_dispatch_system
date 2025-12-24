@@ -267,19 +267,16 @@ class DashboardController extends GetxController {
   void selectSuggestion(String? value) {
     if (activeFieldKey.value == pickupFieldKey) {
       pickupController.text = value!;
-      pickupController.selection =
-          TextSelection.collapsed(offset: value.length);
+      pickupController.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
       dropOffController.text = value!;
       dropOffController.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
       viaLocation1Controller.text = value!;
-      viaLocation1Controller.selection =
-          TextSelection.collapsed(offset: value.length);
+      viaLocation1Controller.selection = TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via2FieldKey) {
       viaLocation2Controller.text = value!;
-      viaLocation2Controller.selection =
-          TextSelection.collapsed(offset: value.length);
+      viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
     }
 
     inputText.value = value!;
@@ -326,6 +323,7 @@ class DashboardController extends GetxController {
     } else if (fieldsName == "PICKUP LOCATION") {
       getDropAddressesLoader(false);
     }
+
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);

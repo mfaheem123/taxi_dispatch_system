@@ -155,6 +155,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         runSpacing: 8, // vertical gap when wrapped
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
+
                           Row(
                             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -189,6 +190,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       ),
                     ),
                   ),
+
                     Stack(
                       key: controller.stackKey,
                       children: [
@@ -311,6 +313,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
+
                                                                       controller.polylinePoints.clear();
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.fixedFare.value = "0";
@@ -495,7 +498,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                        controller.pickupController.clear();
                                                                        controller.polylinePoints.clear();
                                                                        controller.fetchRouteFromOSRM();
-
                                                                        controller.fixedFare.value = "0";
                                                                        controller.totalDistance.value = "0";
                                                                        controller.totalTimeDuration.value = "0";
@@ -738,20 +740,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                    if (event.logicalKey == LogicalKeyboardKey.arrowDown &&
                                                                        controller.highlightedIndex.value < controller.suggestions.length - 1) {
                                                                      controller.highlightedIndex.value++;
-                                                                   } else if (event.logicalKey ==
-                                                                       LogicalKeyboardKey.arrowUp &&
-                                                                       controller.highlightedIndex.value >
-                                                                           0) {
+                                                                   } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
                                                                      controller.highlightedIndex.value--;
-                                                                   } else if (event.logicalKey ==
-                                                                       LogicalKeyboardKey.enter) {
+                                                                   } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                                                                      final selected =
-                                                                     controller.suggestions[
-                                                                     controller
-                                                                         .highlightedIndex
-                                                                         .value].name;
-                                                                     controller
-                                                                         .selectSuggestion(selected);
+                                                                     controller.suggestions[controller.highlightedIndex.value].name;
+                                                                     controller.selectSuggestion(selected);
                                                                    }
                                                                  }
                                                                },
@@ -978,6 +972,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      )),
                                                    ),
                                                  ),
+
                                                  // (6) Time
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(18),
@@ -997,6 +992,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      )),
                                                    ),
                                                  ),
+
                                                  // (7) Lead (mins)
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(19),
@@ -1291,8 +1287,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                            border: OutlineInputBorder(),
                                                            isDense: true,
                                                          ),
+
                                                          value: controller.selectDepartmentData,
                                                          items: controller.selectAccountValue == null? []: controller.selectAccountValue!.departments
+
                                                              !.map((department) =>
                                                              DropdownMenuItem<DepartmentObject>(
                                                                value: department,
@@ -1304,6 +1302,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                ),
                                                              ))
                                                              .toList(),
+
                                                          onChanged: (v) {
                                                            controller.selectDepartmentData = v;
                                                            controller.update();
@@ -1326,6 +1325,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      },
                                                    ),
                                                  ),
+
                                                  Text(
                                                    AppText.quotation,
                                                    style: mozillaTextSemiBoldText(
@@ -1361,6 +1361,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                              },
                                                            ),
                                                          ),
+
                                                          Text(
                                                            AppText.sms,
                                                            style: mozillaTextSemiBoldText(
@@ -1390,6 +1391,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                });
                                                              }
                                                            },
+
                                                            child: Checkbox(
                                                              activeColor: DynamicColors.primaryClr,
                                                              value: controller.emailCheckbox.value,
