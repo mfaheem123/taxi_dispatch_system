@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:pdf/pdf.dart';
 
 import 'model/select_templete_type.dart';
 import 'model/templete_HTML_model.dart' hide TemplateType;
@@ -18,6 +19,10 @@ import 'model/templete_by_type_model.dart';
 
 
 
+import 'dart:typed_data';
+import 'dart:html' as html;
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 
 class SettingController  extends GetxController{
@@ -47,6 +52,7 @@ class SettingController  extends GetxController{
   String? selectedTemplate;
   String? tagAssigned;
 
+  // RxBool showDownloadButtons = false.obs;
 
   /// text field controllers
    final templateTitleController = HtmlEditorController();
@@ -119,7 +125,54 @@ class SettingController  extends GetxController{
     }
 
   }
-
+//// Template setting download function
+  //
+  // Future<void> downloadPdfWebDynamic() async {
+  //   try {
+  //     final list = await getTemplateHtmlText(selectedTempId: templeteHtmlModel!.templates!.id!);
+  //     if (list.isEmpty) return;
+  //
+  //     final pdf = pw.Document();
+  //
+  //     // headers = API keys
+  //     final headers = list.first.keys.toList();
+  //
+  //     // rows = API values
+  //     final data = list.map((row) {
+  //       return headers.map((key) {
+  //         final value = row[key];
+  //         return value == null ? '' : value.toString();
+  //       }).toList();
+  //     }).toList();
+  //
+  //     pdf.addPage(
+  //       pw.Page(
+  //         build: (context) {
+  //           return pw.Table.fromTextArray(
+  //             headers: headers,
+  //             data: data,
+  //             border: pw.TableBorder.all(),
+  //             headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+  //           );
+  //         },
+  //       ),
+  //     );
+  //
+  //     final pdfData = await pdf.save();
+  //     final bytes = Uint8List.fromList(pdfData);
+  //
+  //     final blob = html.Blob([bytes], 'application/pdf');
+  //     final url = html.Url.createObjectUrlFromBlob(blob);
+  //
+  //     html.AnchorElement(href: url)
+  //       ..setAttribute("download", "invoice.pdf")
+  //       ..click();
+  //
+  //     html.Url.revokeObjectUrl(url);
+  //   } catch (e) {
+  //     print("PDF Error: $e");
+  //   }
+  // }
 
 
 
