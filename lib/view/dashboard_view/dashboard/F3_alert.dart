@@ -136,6 +136,7 @@ class F3AlertWidget extends StatelessWidget {
                         value: "saloon"
                       ),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6.0),
                       child: customKeyValue(

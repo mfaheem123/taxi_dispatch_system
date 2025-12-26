@@ -203,6 +203,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             child: SizedBox(height: 30, child: CustomTimePicker()),
                           ),
                         ),
+
+
+
                         // (7) Lead (mins)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(7),
@@ -226,6 +229,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           ),
                         ),
 
+
+
+
                         // (8) Journey dropdown (O/W, R/N, W/R)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(8),
@@ -243,7 +249,14 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                     ),
                   ),
 
+
+
+
                   SizedBox(height: screenHeight * 0.019),
+
+
+
+
 
                   // ============== Row 3: Driver, Fare, Account, Pay, Calendar Icon ==============
                   SingleChildScrollView(
@@ -284,6 +297,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           ),
                         ),
 
+
+
+
                         // (10) Fare (Slugg)
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(10),
@@ -310,6 +326,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           ),
                         ),
 
+
+
+
                         // (11) Account
                         FocusTraversalOrder(
                           order: const NumericFocusOrder(11),
@@ -335,6 +354,9 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             ),
                           ),
                         ),
+
+
+
 
                         // (12) Pay dropdown
                         FocusTraversalOrder(
