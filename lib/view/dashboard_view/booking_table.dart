@@ -151,11 +151,11 @@ class _BookingTableState extends State<BookingTable> {
                     buildHeaderWithSearch(title: "TYPE"),
                     buildHeaderWithSearch(title: "REF #", onChanged: (v){
                       controller.referenceNumber.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "DATETIME", onChanged: (v){
                       controller.pickupDate.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "CUS", onChanged: (v){
                       controller.name.text = v;
@@ -163,43 +163,53 @@ class _BookingTableState extends State<BookingTable> {
                     }),
                     buildHeaderWithSearch(title: "PICKUP", onChanged: (v){
                       controller.pickup.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "DROPOFF", onChanged: (v){
                       controller.dropOff.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "ACC", onChanged: (v){
                       controller.accountName.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "DRV", onChanged: (v){
                       controller.driverName.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "VEH", onChanged: (v){
                       controller.vehicleTypeName.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "NOTE", onChanged: (v){
                       controller.notes.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "FARE", onChanged: (v){
                       controller.fares.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "STATUS", onChanged: (v){
                       controller.bookingStatus.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "J/T", onChanged: (v){
                       controller.journeyType.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "P/T", onChanged: (v){
                       controller.paymentType.text = v;
-                      controller.getDashboardTableData(tableId: controller.selectedTabId);
+
+                      controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "Action"),
                   ],

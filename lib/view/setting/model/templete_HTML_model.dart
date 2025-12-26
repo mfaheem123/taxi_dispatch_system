@@ -1,34 +1,34 @@
 // To parse this JSON data, do
 //
-//     final selectUser = selectUserFromJson(jsonString);
+//     final htmlTempleteModel = htmlTempleteModelFromJson(jsonString);
 
 import 'dart:convert';
 
-SelectUser selectUserFromJson(String str) => SelectUser.fromJson(json.decode(str));
+HtmlTempleteModel htmlTempleteModelFromJson(String str) => HtmlTempleteModel.fromJson(json.decode(str));
 
-String selectUserToJson(SelectUser data) => json.encode(data.toJson());
+String htmlTempleteModelToJson(HtmlTempleteModel data) => json.encode(data.toJson());
 
-class SelectUser {
+class HtmlTempleteModel {
   bool? status;
-  Template? template;
+  Templates? templates;
 
-  SelectUser({
+  HtmlTempleteModel({
     this.status,
-    this.template,
+    this.templates,
   });
 
-  factory SelectUser.fromJson(Map<String, dynamic> json) => SelectUser(
+  factory HtmlTempleteModel.fromJson(Map<String, dynamic> json) => HtmlTempleteModel(
     status: json["status"],
-    template: json["template"] == null ? null : Template.fromJson(json["template"]),
+    templates: json["templates"] == null ? null : Templates.fromJson(json["templates"]),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "template": template?.toJson(),
+    "templates": templates?.toJson(),
   };
 }
 
-class Template {
+class Templates {
   int? id;
   int? templateTypeId;
   String? name;
@@ -37,7 +37,7 @@ class Template {
   String? body;
   TemplateType? templateType;
 
-  Template({
+  Templates({
     this.id,
     this.templateTypeId,
     this.name,
@@ -47,7 +47,7 @@ class Template {
     this.templateType,
   });
 
-  factory Template.fromJson(Map<String, dynamic> json) => Template(
+  factory Templates.fromJson(Map<String, dynamic> json) => Templates(
     id: json["id"],
     templateTypeId: json["template_type_id"],
     name: json["name"],

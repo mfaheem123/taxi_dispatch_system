@@ -1,4 +1,5 @@
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/setting/setting_controller.dart';
@@ -17,6 +18,7 @@ import '../accounts/controller/account_controller.dart';
 import '../administration/User/create_userScreen.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import 'model/select_templete_type.dart';
+import 'model/templete_by_type_model.dart';
 
 class TemplateSettings extends StatefulWidget {
   const TemplateSettings({super.key});
@@ -38,12 +40,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "templateSettings";
-
-
-
-
-      controller.getTemplateTypes(); // 🔴 IMPORTANT
-
+    controller.getTemplateTypes();
 
   }
 
@@ -159,7 +156,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
 
 
                                 CustomDropdownField<TemplateType>(
-                                  width: fieldWidth / 1.5,
                                   text: "SELECT TEMPLATE TYPE",
                                   label: "SELECT TEMPLATE TYPE",
                                   items: controller.selectTempleteType!.templateTypes!,
@@ -167,34 +163,38 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   itemLabel: (val) => val.name ?? "",
                                   onChanged: (val) {
                                     controller.selectedTemplateType = val;
-                                    controller.update();
-
-                                    debugPrint("Template Type: ${val?.name}");
+                                    controller.getTemplateByTypes(selectedTempId: val!.id);
                                   },
                                 ),
 
-                          CustomDropdownField<DropdownModel>(
+
+                              CustomDropdownField<Template>(
+                                text: "Select User",
                                 label: "Select User",
-                                items: selectTemplateList,
-                                value: selectedTemplateValue,
-                                itemLabel: (templateList) => templateList.name!, // show name
+                                items: controller.templeteByTypeMOdel?.templates ?? [],
+                                value: controller.templeteByTypeMOdel?.templates
+                                    ?.contains(controller.template) == true
+                                    ? controller.template
+                                    : null,
+                                itemLabel: (val) => val.name ?? "",
                                 onChanged: (val) {
-                                  controller.templateTitleController.clear();
-                                  selectedTemplateValue = val;
-                                  controller.insertTagValue(value: val?.templateValue,temFormate: true);
-
-                                  print("Selected User ID: ${val?.id}");
-
+                                  controller.template = val;
+                                  controller.getTemplateHtmlText(selectedTempId: val!.id);
                                 },
                               ),
-                              CustomTextField(
-                                borderRadius: 4,
-                                controller: controller.emailController,
-                                width: fieldWidth/1.5,
-                                hintText: AppText.email,
 
-                                // columnText: true,
-                                height: 30,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.emailController,
+                                  width: fieldWidth/1.5,
+                                  hintText: AppText.email,
+
+
+                                  // columnText: true,
+                                  height: 30,
+                                ),
                               ),
                               /*CustomDropdownField<String>(
                                 width: fieldWidth/1.5,
@@ -213,7 +213,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 },
                               ),*/
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
                                 child: CustomButton(
                                   width: fieldWidth/2.5,
                                   height: 30,
@@ -223,13 +223,16 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   btnText: AppText.save,
                                 ),
                               ),
-                              CustomButton(
-                                width: fieldWidth/2.5,
-                                height: 30,
-                                borderRadius: 4,
-                                verticalPadding: 0.0,
-                                fontSize: 11,
-                                btnText: AppText.update,
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: CustomButton(
+                                  width: fieldWidth/2.5,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  verticalPadding: 0.0,
+                                  fontSize: 11,
+                                  btnText: AppText.update,
+                                ),
                               ),
                             ],
                           ),
@@ -241,11 +244,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               borderRadius: BorderRadius.circular(4),
                               border: Border.all(color: DynamicColors.textClr)
                           ),
-                          height: 300,
+                          height: 500,
                           child: HtmlEditor(
                             controller: controller.templateTitleController,
                             htmlEditorOptions: HtmlEditorOptions(
-                              hint: 'Your text here...',
+                              hint: 'Write text here...',
                               shouldEnsureVisible: true,
                               //initialText: "<p>text content initial, if any</p>",
                             ),
@@ -320,7 +323,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                               ],
 
                             ),
-                            otherOptions: OtherOptions(height: 300),
+                            otherOptions: OtherOptions(height: 500),
                             callbacks: Callbacks(onBeforeCommand: (String? currentHtml) {
                               print('html before change is $currentHtml');
                             },
@@ -410,7 +413,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 child: CustomDropdownField<DropdownModel>(
                                   label: "Select User",
                                   items: templateList,
-
                                   value: selectedTag,
                                   itemLabel: (templateList) => templateList.name!, // show name
                                   onChanged: (val) {
@@ -443,20 +445,20 @@ class _TemplateSettingsState extends State<TemplateSettings> {
       }
     );
   }
-
-  DropdownModel? selectedTemplateValue;
-
-  List<DropdownModel> selectTemplateList = [
-    DropdownModel(id:1, name: "DRIVER DISPATCH", templateValue: "{{payment_type}} booking | {{reference_number}}customer: {{customer}}mobile: {{customer_mobile}}ph: {{customer_telephone}}{{pickup_door_number}}pickup: {{pickup}}{{viapoints}}{{dropoff_door_number}}dropoff: {{dropoff}}{{flight_number}}{{arriving_from}}pickup date: {{date}}pickup time: {{time}}fares: {{fares}} gbpVEHICLE: {{vehicle_type}}payment type: {{payment_type}}{{special_instructions}}{{company_name}}* reply to these messages are not monitored"),
-    DropdownModel(id:2, name: "CUSTOMER DISPATCH", templateValue: "thank you for booking with {{company_name}} ({{company_telephone}})vehicle: {{vehicle_type}}colour: {{vehicle_color}}make: {{vehicle_make}}model: {{vehicle_model}}reg #: {{vehicle_number}}driver {{driver_name}} will be there with you shortlyfares: {{fares}} gbpmail us on {{company_email}}call us on {{company_telephone}}plus car park/DROP OFF for airport TRANSFERS onlyplease do not replyreply to these messages are not monitored"),
-    DropdownModel(id:3, name: "NORMAL ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
-    DropdownModel(id:4, name: "AIRPORT ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
-    DropdownModel(id:5, name: "BOOKING CONFIRMATION SMS", templateValue: "DO NOT REPLY.Your car has been booked, From {{pickup_door_number}} {{pickup}} {{viapoints}} {{dropoff_door_number}} {{dropoff}} For {{customer}} at {{date}} {{time}} Fare: {{fares}} GBP TOtal Fare: {{total_fares}} gbp. Thank you for booking with {{company_name}} {{company_telephone}}.Reply to these messages are not monitored."),
-    DropdownModel(id:6, name: "BOOKING CANCEL SMS", templateValue: "DO NOT REPLY.Your booking has been canceled. However, if you still require the taxi, please call the office direct on {{company_telephone}}.Thank you"),
-    DropdownModel(id:6, name: "BOOKING COMPLETE SMS", templateValue: "DO NOT REPLY.Thank you for booking with {{company_name}} ({{company_telephone}}). We hope to serve your again with our best services.Kindly send us your feedback via Call or email on {{company_email}}{{company_telephone}}Reply to these messages are not monitored."),
-    DropdownModel(id:6, name: "MULTIBOOKING CONFIRMATION MESSAGE", templateValue: "do not replyyour car has booked from {{pickup}} to {{dropoff}} for {{customer}} from {{from}} to {{to}}, you need to pay {{fares}} gbp each.thank you for booking with {{company_name}}. for query call us on {{company_telephone}}* reply to these messages are not monitored"),
-    DropdownModel(id:6, name: "BOOKING QUOTATION SMS", templateValue: "DO NOT REPLYBOOKING QUOTATIONThank you for your inquiry about booking information with {{company_name}}Journey details; {{reference_number}}Pickup {{date}} {{time}}From: {{pickup}}To:{{dropoff}}fare: {{total_fares}}\"Please call us at {{company_telephone}} for confirmation or to make any amendments.\"* reply to these messages are not monitored"),
-  ];
+  //
+  // DropdownModel? selectedTemplateValue;
+  //
+  // List<DropdownModel> selectTemplateList = [
+  //   DropdownModel(id:1, name: "DRIVER DISPATCH", templateValue: "{{payment_type}} booking | {{reference_number}}customer: {{customer}}mobile: {{customer_mobile}}ph: {{customer_telephone}}{{pickup_door_number}}pickup: {{pickup}}{{viapoints}}{{dropoff_door_number}}dropoff: {{dropoff}}{{flight_number}}{{arriving_from}}pickup date: {{date}}pickup time: {{time}}fares: {{fares}} gbpVEHICLE: {{vehicle_type}}payment type: {{payment_type}}{{special_instructions}}{{company_name}}* reply to these messages are not monitored"),
+  //   DropdownModel(id:2, name: "CUSTOMER DISPATCH", templateValue: "thank you for booking with {{company_name}} ({{company_telephone}})vehicle: {{vehicle_type}}colour: {{vehicle_color}}make: {{vehicle_make}}model: {{vehicle_model}}reg #: {{vehicle_number}}driver {{driver_name}} will be there with you shortlyfares: {{fares}} gbpmail us on {{company_email}}call us on {{company_telephone}}plus car park/DROP OFF for airport TRANSFERS onlyplease do not replyreply to these messages are not monitored"),
+  //   DropdownModel(id:3, name: "NORMAL ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
+  //   DropdownModel(id:4, name: "AIRPORT ARRIVAL", templateValue: "do not replyyour driver has arrived and waiting outside in {{vehicle_type}} car* reply to these messages are not monitored"),
+  //   DropdownModel(id:5, name: "BOOKING CONFIRMATION SMS", templateValue: "DO NOT REPLY.Your car has been booked, From {{pickup_door_number}} {{pickup}} {{viapoints}} {{dropoff_door_number}} {{dropoff}} For {{customer}} at {{date}} {{time}} Fare: {{fares}} GBP TOtal Fare: {{total_fares}} gbp. Thank you for booking with {{company_name}} {{company_telephone}}.Reply to these messages are not monitored."),
+  //   DropdownModel(id:6, name: "BOOKING CANCEL SMS", templateValue: "DO NOT REPLY.Your booking has been canceled. However, if you still require the taxi, please call the office direct on {{company_telephone}}.Thank you"),
+  //   DropdownModel(id:6, name: "BOOKING COMPLETE SMS", templateValue: "DO NOT REPLY.Thank you for booking with {{company_name}} ({{company_telephone}}). We hope to serve your again with our best services.Kindly send us your feedback via Call or email on {{company_email}}{{company_telephone}}Reply to these messages are not monitored."),
+  //   DropdownModel(id:6, name: "MULTIBOOKING CONFIRMATION MESSAGE", templateValue: "do not replyyour car has booked from {{pickup}} to {{dropoff}} for {{customer}} from {{from}} to {{to}}, you need to pay {{fares}} gbp each.thank you for booking with {{company_name}}. for query call us on {{company_telephone}}* reply to these messages are not monitored"),
+  //   DropdownModel(id:6, name: "BOOKING QUOTATION SMS", templateValue: "DO NOT REPLYBOOKING QUOTATIONThank you for your inquiry about booking information with {{company_name}}Journey details; {{reference_number}}Pickup {{date}} {{time}}From: {{pickup}}To:{{dropoff}}fare: {{total_fares}}\"Please call us at {{company_telephone}} for confirmation or to make any amendments.\"* reply to these messages are not monitored"),
+  // ];
 
 }
 

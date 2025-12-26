@@ -939,6 +939,26 @@ class DashboardController extends GetxController {
   RxInt dashboardTableTotalPages = 1.obs;
   final int dashboardTableLimit = 20;
 
+  Timer? _tableDashboardBebounce;
+  // 👇 ye function har baar text change hone par call hoga
+  Future<void> onTableChangeHandler({required String tableId}) async {
+    const duration = Duration(milliseconds: 800); // 800ms ka delay]
+    // selectedTextFieldsValue.value = "";
+    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    if (_tableDashboardBebounce?.isActive ?? false) _tableDashboardBebounce!.cancel();
+
+    // 👇 Naya timer start karo
+    _tableDashboardBebounce = Timer(duration, () {
+      _stopTableDataTyping(tableId: tableId);
+    });
+  }
+
+  void _stopTableDataTyping({required String tableId}) {
+    // 👇 Yahan API call ya search function call karna hai
+    getDashboardTableData(tableId: tableId);
+  }
+
+
 
   getDashboardTableData({tableId}) async{
     var response = await Api().get("bookings/getbytabs/$tableId",
