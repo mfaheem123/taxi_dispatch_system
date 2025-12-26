@@ -1,23 +1,23 @@
 // To parse this JSON data, do
 //
-//     final selectTempleteType = selectTempleteTypeFromJson(jsonString);
+//     final tempTypeModel = tempTypeModelFromJson(jsonString);
 
 import 'dart:convert';
 
-SelectTempleteType selectTempleteTypeFromJson(String str) => SelectTempleteType.fromJson(json.decode(str));
+TempTypeModel tempTypeModelFromJson(String str) => TempTypeModel.fromJson(json.decode(str));
 
-String selectTempleteTypeToJson(SelectTempleteType data) => json.encode(data.toJson());
+String tempTypeModelToJson(TempTypeModel data) => json.encode(data.toJson());
 
-class SelectTempleteType {
+class TempTypeModel {
   bool? status;
   List<TemplateType>? templateTypes;
 
-  SelectTempleteType({
+  TempTypeModel({
     this.status,
     this.templateTypes,
   });
 
-  factory SelectTempleteType.fromJson(Map<String, dynamic> json) => SelectTempleteType(
+  factory TempTypeModel.fromJson(Map<String, dynamic> json) => TempTypeModel(
     status: json["status"],
     templateTypes: json["template_types"] == null ? [] : List<TemplateType>.from(json["template_types"]!.map((x) => TemplateType.fromJson(x))),
   );

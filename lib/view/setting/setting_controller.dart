@@ -1,6 +1,7 @@
 
 
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/setting/shortcut_model.dart';
@@ -12,7 +13,11 @@ import 'package:get_storage/get_storage.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 import 'model/select_templete_type.dart';
+import 'model/templete_HTML_model.dart' hide TemplateType;
 import 'model/templete_by_type_model.dart';
+
+
+
 
 
 class SettingController  extends GetxController{
@@ -64,15 +69,15 @@ class SettingController  extends GetxController{
     update();
   }
 
-  SelectTempleteType? selectTempleteType;
+  TempTypeModel? selectTempleteType;
   TemplateType? selectedTemplateType;
   bool templateTypeLoad = false;
   getTemplateTypes() async {
     templateTypeLoad = true;
     var response = await Api().get("templates/template_types");
     if (response.statusCode == 200) {
-      selectTempleteType = SelectTempleteType.fromJson(response.data);
-      selectedTemplateType = selectTempleteType!.templateTypes![3];
+      selectTempleteType = TempTypeModel.fromJson(response.data);
+      selectedTemplateType = selectTempleteType!.templateTypes![1];
       templateTypeLoad = false;
       update();
     }
@@ -83,7 +88,11 @@ class SettingController  extends GetxController{
   Template? template;
   bool templatebyTypeLoad = false;
   getTemplateByTypes({selectedTempId}) async {
-    if(selectedTemplateType == null) return; // safety
+    if (selectedTemplateType == null) {
+      BotToast.showText(
+        text: "Please select template type first");
+      return; // safety
+    } // safety
     templatebyTypeLoad = true;
     var response = await Api().get("templates/get_templates_by_types?template_type_id=$selectedTempId");
     if (response.statusCode == 200) {
@@ -94,10 +103,20 @@ class SettingController  extends GetxController{
   }
 
 
-
+  HtmlTempleteModel? templeteHtmlModel;
+  bool loadHtml = false;
   getTemplateHtmlText({selectedTempId}) async {
-
-
+    if(template == null) return;
+    loadHtml = true;
+    var response = await Api().get("templates/template_setting?id=$selectedTempId");
+    if (response.statusCode == 200) {
+      templeteHtmlModel = HtmlTempleteModel.fromJson(response.data);
+      templateTitleController.setText(
+          templeteHtmlModel?.templates?.content ?? ""
+      );
+      loadHtml = false;
+      update();
+    }
 
   }
 
@@ -197,7 +216,6 @@ class SettingController  extends GetxController{
   Color foregroundColor = Colors.blue;
 
   ImageModel? profileImg;
-
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -210,6 +228,7 @@ class SettingController  extends GetxController{
           path: result.files.single.path
       );
     }
+
     update();
   }
 
