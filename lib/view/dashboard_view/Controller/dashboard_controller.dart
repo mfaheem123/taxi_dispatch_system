@@ -31,6 +31,7 @@ import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../models/dashboard_table_model.dart';
 import '../models/users_phone_numbers_model.dart';
 
+import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
@@ -568,13 +569,32 @@ class DashboardController extends GetxController {
         mapController.fitCamera(cameraFit);
       }
 
-      int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
+      print(dashboardAllData!.fareConfigurations);
 
-      if(index != -1){
-        double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+      final fare = await getActiveFareForVehicle(dashboardAllData!.fareConfigurations!, selectVehicleValue!.id!,);
 
-        fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
+      if (fare != null) {
+        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
+
+        double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+
+        fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+        print(fixedFare.value);
+      } else {
+        print('No active fare found for this vehicle');
       }
+
+
+
+
+
+      // int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
+      //
+      // if(index != -1){
+      //   double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
+      //
+      //   fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
+      // }
 
       update();
     } else {

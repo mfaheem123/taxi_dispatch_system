@@ -161,9 +161,11 @@ class _CreateAccountInvoiceScreenState
                 controller.update();
               },
             ),
+
             SizedBox(
               height: 8,
             ),
+
             Padding(
               padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
               child: Row(
@@ -185,7 +187,9 @@ class _CreateAccountInvoiceScreenState
                     width: fieldWidth / 1.8,
                     child: SizedBox(height: 30, child: KeyboardDatePicker()),
                   ),
+
                   Spacer(),
+
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 40,
@@ -210,6 +214,7 @@ class _CreateAccountInvoiceScreenState
                 ],
               ),
             ),
+
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
