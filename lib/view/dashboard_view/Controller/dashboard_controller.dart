@@ -1239,6 +1239,7 @@ class DashboardController extends GetxController {
   final pickUpNoteController = TextEditingController();
   final dropUpNoteController = TextEditingController();
   ZoneObject? dashboardZoneValue;
+  ZoneObject? dashboardDZoneValue;
   DateTime? pickUpDate = DateTime.now();
   DateTime? pickUpDateReturn = DateTime.now();
   final pickUpTimeController = TextEditingController();

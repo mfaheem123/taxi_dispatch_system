@@ -56,6 +56,7 @@ class LocationController extends GetxController {
   final addressCtrl = TextEditingController();
 
   ZoneObject? zoneValue;
+  ZoneObject? zoneDValue;
   LocationTypeObject? locationTypeValue;
   RxBool getLocationTypeZoneLoader = false.obs;
   LocationtypezoneModel? locationtypezoneModel;

@@ -51,28 +51,28 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     DropdownModel(id:2, name: "PICKUP DOOR NUMBER"),
     DropdownModel(id:3, name: "DROPOFF DOOR NUMBER"),
     DropdownModel(id:4, name: "PICKUP POINT"),
-    DropdownModel(id:4, name: "DROPOFF POINT"),
-    DropdownModel(id:4, name: "VIAPOINTS"),
-    DropdownModel(id:4, name: "CUSTOMER"),
-    DropdownModel(id:4, name: "CUSTOMER EMAIL"),
-    DropdownModel(id:4, name: "CUSTOMER MOBILE"),
-    DropdownModel(id:4, name: "CUSTOMER TELEPHONE"),
-    DropdownModel(id:4, name: "DATETIME"),
-    DropdownModel(id:4, name: "DATE"),
-    DropdownModel(id:4, name: "TIME"),
-    DropdownModel(id:4, name: "JOURNEY TYPE"),
-    DropdownModel(id:4, name: "ACCOUNT"),
-    DropdownModel(id:4, name: "VEHICLE TYPE"),
-    DropdownModel(id:4, name: "VEHICLE MAKE"),
-    DropdownModel(id:4, name: "VEHICLE MODEL"),
-    DropdownModel(id:4, name: "VEHICLE COLOR"),
-    DropdownModel(id:4, name: "VEHICLE NUMBER"),
-    DropdownModel(id:4, name: "DRIVER NAME"),
-    DropdownModel(id:4, name: "PASSENGERS"),
-    DropdownModel(id:4, name: "CHILD SEATS"),
-    DropdownModel(id:4, name: "LUGGAGES"),
-    DropdownModel(id:4, name: "HAND LUGGAGES"),
-    DropdownModel(id:4, name: "NOTES"),
+    DropdownModel(id:5, name: "DROPOFF POINT"),
+    DropdownModel(id:6, name: "VIAPOINTS"),
+    DropdownModel(id:7, name: "CUSTOMER"),
+    DropdownModel(id:8, name: "CUSTOMER EMAIL"),
+    DropdownModel(id:9, name: "CUSTOMER MOBILE"),
+    DropdownModel(id:10, name: "CUSTOMER TELEPHONE"),
+    DropdownModel(id:11, name: "DATETIME"),
+    DropdownModel(id:12, name: "DATE"),
+    DropdownModel(id:13, name: "TIME"),
+    DropdownModel(id:14, name: "JOURNEY TYPE"),
+    DropdownModel(id:15, name: "ACCOUNT"),
+    DropdownModel(id:16, name: "VEHICLE TYPE"),
+    DropdownModel(id:17, name: "VEHICLE MAKE"),
+    DropdownModel(id:18, name: "VEHICLE MODEL"),
+    DropdownModel(id:19, name: "VEHICLE COLOR"),
+    DropdownModel(id:20, name: "VEHICLE NUMBER"),
+    DropdownModel(id:21, name: "DRIVER NAME"),
+    DropdownModel(id:22, name: "PASSENGERS"),
+    DropdownModel(id:23, name: "CHILD SEATS"),
+    DropdownModel(id:24, name: "LUGGAGES"),
+    DropdownModel(id:25, name: "HAND LUGGAGES"),
+    DropdownModel(id:26, name: "NOTES"),
     DropdownModel(id:4, name: "PAYMENT TYPE"),
     DropdownModel(id:4, name: "FARES"),
     DropdownModel(id:4, name: "COMPANY CHARGES"),
@@ -92,6 +92,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     DropdownModel(id:4, name: "FLIGHT NUMBER"),
     DropdownModel(id:4, name: "ARRIVING FROM"),
 
+
   ];
 
   @override
@@ -100,15 +101,12 @@ class _TemplateSettingsState extends State<TemplateSettings> {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
     return GetBuilder<SettingController>(
         builder: (controller) {
-
           return LayoutBuilder(builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
             // Instead of fixed width, we calculate flexible field widths
             final double fieldWidth = isMobile
                 ? maxWidth // full width
@@ -136,7 +134,9 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                     runSpacing: 16,
                     children: [
                       Container(
+
                         // width: fieldWidth*2.5,
+
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: DynamicColors.textClr)
@@ -153,8 +153,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 color: DynamicColors.gryClr.withOpacity(0.5),
                                 child: Text(AppText.templateSelection, style: titleDesign()),
                               ),
-
-
                                 CustomDropdownField<TemplateType>(
                                   text: "SELECT TEMPLATE TYPE",
                                   label: "SELECT TEMPLATE TYPE",
@@ -166,8 +164,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                     controller.getTemplateByTypes(selectedTempId: val!.id);
                                   },
                                 ),
-
-
                               CustomDropdownField<Template>(
                                 text: "Select User",
                                 label: "Select User",
@@ -212,17 +208,74 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   controller.update();
                                 },
                               ),*/
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
-                                child: CustomButton(
-                                  width: fieldWidth/2.5,
-                                  height: 30,
-                                  borderRadius: 4,
-                                  verticalPadding: 0.0,
-                                  fontSize: 11,
-                                  btnText: AppText.save,
-                                ),
-                              ),
+                              // Padding(
+                              //   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 20),
+                              //   child: CustomButton(
+                              //     width: fieldWidth/2.5,
+                              //     height: 30,
+                              //     borderRadius: 4,
+                              //     verticalPadding: 0.0,
+                              //     fontSize: 11,
+                              //     btnText: AppText.save,
+                              //   ),
+                              // ),
+
+
+
+                          Padding(
+                            padding: const EdgeInsets.only(top:  20.0),
+                            child: CustomButton(
+                              onTap: (){
+                                /// use for download that time is comment
+                                /// controller.showDownloadButtons.value = true;
+                              },
+                              verticalPadding: 0.0,
+                              width: fieldWidth/2.5,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: AppText.save,
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                            ),
+                          ),
+
+                          //     /// Download PDF BUTTON
+                          //     Obx(() => controller.showDownloadButtons.value
+                          //         ? CustomButton(
+                          //       onTap: () {
+                          //         print("DOWNLOAD PDF");
+                          //         controller.downloadPdfWebDynamic();
+                          //       },
+                          //       verticalPadding: 0.0,
+                          //       width: 110,
+                          //       height: 35,
+                          //       borderRadius: 4,
+                          //       btnText: "DOWNLOAD PDF",
+                          //       style: mozillaTextRegularText(
+                          //         fontSize: 10,
+                          //         color: DynamicColors.whiteClr,
+                          //       ),
+                          //     )
+                          //         : const SizedBox(),
+                          //     ),
+                          //
+                          // /// Download  EXCEL BUTTON
+                          // Obx(() => controller.showDownloadButtons.value
+                          //     ? CustomButton(
+                          //   onTap: () {
+                          //     print("DOWNLOAD EXCEL");
+                          //   },
+                          //   verticalPadding: 0.0,
+                          //   width: 120,
+                          //   height: 35,
+                          //   borderRadius: 4,
+                          //   btnText: "DOWNLOAD EXCEL",
+                          //   style: mozillaTextRegularText(
+                          //     fontSize: 10,
+                          //     color: DynamicColors.whiteClr,
+                          //   ),
+                          // )       : const SizedBox()),
+
                               Padding(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: CustomButton(
@@ -238,6 +291,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                           ),
                         ),
                       ),
+
+
+
+
+
                       Container(
                           width: fieldWidth*2.4,
                           decoration: BoxDecoration(
@@ -402,6 +460,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                           padding: const EdgeInsets.symmetric(vertical: 6.0),
                           child: Column(
                             children: [
+
                               Container(
                                 width: Get.width,
                                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -416,9 +475,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   value: selectedTag,
                                   itemLabel: (templateList) => templateList.name!, // show name
                                   onChanged: (val) {
+
                                     selectedTag = val;
                                     controller.insertTagValue(value: val?.name);
                                     print("Selected User ID: ${val?.id}");
+
                                   },
                                 ),
                               ),

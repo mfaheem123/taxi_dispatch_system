@@ -150,6 +150,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                       // }
                                     }
                                   },
+
                                   child: SizedBox(
                                     width: Get.width/4,
                                     child: TextField(
@@ -164,6 +165,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                               "via",
                                               searchingText: v);
                                         },
+
                                         decoration: InputDecoration(
                                           hintText: "Search Address",
                                           border: OutlineInputBorder(),
@@ -172,7 +174,9 @@ class _ViaLocationState extends State<ViaLocation> {
                                         )),
                                   ),
                                 ),
+
                                 SizedBox(width: 12),
+
                                 SizedBox(
                                   width: 30,
                                   height: 30,
