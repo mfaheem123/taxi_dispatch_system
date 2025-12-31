@@ -1,6 +1,3 @@
-
-
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
@@ -17,33 +14,13 @@ import 'model/select_templete_type.dart';
 import 'model/templete_HTML_model.dart' hide TemplateType;
 import 'model/templete_by_type_model.dart';
 
-
-
 import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-
-class SettingController  extends GetxController{
+class SettingController extends GetxController {
   // Add your methods and properties here
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 
@@ -55,17 +32,17 @@ class SettingController  extends GetxController{
   // RxBool showDownloadButtons = false.obs;
 
   /// text field controllers
-   final templateTitleController = HtmlEditorController();
-   final emailController = TextEditingController();
+  final templateTitleController = HtmlEditorController();
+  final emailController = TextEditingController();
 
-  void insertTagValue({value,bool temFormate = false}) async {
+  void insertTagValue({value, bool temFormate = false}) async {
     String currentText = await templateTitleController.getText();
     String valueAdding = value.toString().replaceAll(" ", "_");
     if (currentText.trim().isEmpty || currentText.trim() == "<p></p>") {
       // 👇 Agar text empty hai
-      if(temFormate == false){
+      if (temFormate == false) {
         templateTitleController.setText("<p>{{$valueAdding}}</p>");
-      }else{
+      } else {
         templateTitleController.setText("<p>$value</p>");
       }
     } else {
@@ -78,6 +55,7 @@ class SettingController  extends GetxController{
   TempTypeModel? selectTempleteType;
   TemplateType? selectedTemplateType;
   bool templateTypeLoad = false;
+
   getTemplateTypes() async {
     templateTypeLoad = true;
     var response = await Api().get("templates/template_types");
@@ -87,20 +65,20 @@ class SettingController  extends GetxController{
       templateTypeLoad = false;
       update();
     }
-
   }
 
   TempleteByTypeMOdel? templeteByTypeMOdel;
   Template? template;
   bool templatebyTypeLoad = false;
+
   getTemplateByTypes({selectedTempId}) async {
     if (selectedTemplateType == null) {
-      BotToast.showText(
-        text: "Please select template type first");
+      BotToast.showText(text: "Please select template type first");
       return; // safety
     } // safety
     templatebyTypeLoad = true;
-    var response = await Api().get("templates/get_templates_by_types?template_type_id=$selectedTempId");
+    var response = await Api().get(
+        "templates/get_templates_by_types?template_type_id=$selectedTempId");
     if (response.statusCode == 200) {
       templeteByTypeMOdel = TempleteByTypeMOdel.fromJson(response.data);
       templatebyTypeLoad = false;
@@ -108,23 +86,53 @@ class SettingController  extends GetxController{
     }
   }
 
-
   HtmlTempleteModel? templeteHtmlModel;
   bool loadHtml = false;
   getTemplateHtmlText({selectedTempId}) async {
-    if(template == null) return;
+    if (template == null) return;
     loadHtml = true;
-    var response = await Api().get("templates/template_setting?id=$selectedTempId");
+    var response =
+        await Api().get("templates/template_setting?id=$selectedTempId");
     if (response.statusCode == 200) {
       templeteHtmlModel = HtmlTempleteModel.fromJson(response.data);
-      templateTitleController.setText(
-          templeteHtmlModel?.templates?.content ?? ""
-      );
+      templateTitleController
+          .setText(templeteHtmlModel?.templates?.content ?? "");
       loadHtml = false;
       update();
     }
-
   }
+
+
+
+
+  bool updating = false;
+
+  updateTemplateHtml({required int templateId}) async {
+    updating = true;
+    String htmlText = await templateTitleController.getText();
+
+    update();
+
+    var  formData= {
+      "content": htmlText, // edited text
+    };
+
+    var response = await Api().post(
+      formData,
+      "templates/edit_templates/$templateId",
+    );
+    updating = false;
+    if (response.statusCode == 200) {
+      getTemplateHtmlText(selectedTempId: "$templateId");
+      BotToast.showText(text: "Successfully UPDATE ");
+    } else {
+      Get.snackbar("Error", "Update failed");
+    }
+
+    update();
+  }
+
+
 //// Template setting download function
   //
   // Future<void> downloadPdfWebDynamic() async {
@@ -174,11 +182,6 @@ class SettingController  extends GetxController{
   //   }
   // }
 
-
-
-
-
-
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Template Settings functionality
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
@@ -191,7 +194,7 @@ class SettingController  extends GetxController{
   String? typeAmount;
   String? deadMileageMethods;
 
-/// text field controllers
+  /// text field controllers
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
   final hostController = TextEditingController();
@@ -224,8 +227,6 @@ class SettingController  extends GetxController{
   final baseAddress = TextEditingController();
   final deadMileageMiles = TextEditingController();
 
-
-
   /// bool
   RxBool secureConnectionValue = false.obs;
   final FocusNode secureConnectionNode = FocusNode();
@@ -239,36 +240,31 @@ class SettingController  extends GetxController{
   final FocusNode toggleMapControlsNode = FocusNode();
   RxBool bookingQuotationSMSValue = false.obs;
   final FocusNode bookingQuotationSMSNode = FocusNode();
-    RxBool enableBookingTextValue = false.obs;
+  RxBool enableBookingTextValue = false.obs;
   final FocusNode enableBookingTextNode = FocusNode();
-    RxBool peakFactorsValue = false.obs;
+  RxBool peakFactorsValue = false.obs;
   final FocusNode peakFactorsNode = FocusNode();
-    RxBool webBookerConfValue = false.obs;
+  RxBool webBookerConfValue = false.obs;
   final FocusNode webBookerConfNode = FocusNode();
-    RxBool bookingDueNotiValue = false.obs;
+  RxBool bookingDueNotiValue = false.obs;
   final FocusNode bookingDueNotiNode = FocusNode();
-    RxBool enableCustomerValue = false.obs;
+  RxBool enableCustomerValue = false.obs;
   final FocusNode enableCustomerNode = FocusNode();
-    RxBool notificationValue = false.obs;
+  RxBool notificationValue = false.obs;
   final FocusNode notificationNode = FocusNode();
-    RxBool deadMileageValue = false.obs;
+  RxBool deadMileageValue = false.obs;
   final FocusNode deadMileageNode = FocusNode();
-    
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo company configuration functionality
 
-
-
-
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
-
-
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
   /// color pick
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
 
   ImageModel? profileImg;
+
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -278,13 +274,11 @@ class SettingController  extends GetxController{
       profileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
-          path: result.files.single.path
-      );
+          path: result.files.single.path);
     }
 
     update();
   }
-
 
   final nameController = TextEditingController();
   final emailCompanyController = TextEditingController();
@@ -300,62 +294,29 @@ class SettingController  extends GetxController{
   final balanceController = TextEditingController();
   final abbreviationController = TextEditingController();
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Company Information
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
 
   LocationShortCutModel? locationShortCut;
   RxBool getShortCutLoader = false.obs;
-  getShortCut() async{
+
+  getShortCut() async {
     getShortCutLoader(true);
     var response = await Api().get("location-types");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       locationShortCut = LocationShortCutModel.fromJson(response.data);
       getShortCutLoader(false);
       update();
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo LocationShortcuts Work
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
 
+  String? selectMessageRole;
 
-
-
-
-
-
-
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen 
-
-
- String? selectMessageRole;
-
-     RxBool sendToAllValue = false.obs;
+  RxBool sendToAllValue = false.obs;
   final FocusNode sendToAllNode = FocusNode();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
