@@ -110,9 +110,12 @@ class DashboardController extends GetxController {
 
   ///text editing controllers
   final pickupController = TextEditingController();
+  final pickupTwoWayController = TextEditingController();
   final dropOffController = TextEditingController();
+  final dropOffTwoWayController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
+  RxBool addReturnFare = true.obs;
 
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
@@ -210,7 +213,9 @@ class DashboardController extends GetxController {
   final highlightedIndex = 0.obs;
   int selectedDriverIndex = 0;
   final pickupFieldKey = GlobalKey();
+  final pickupTwoWayFieldKey = GlobalKey();
   final dropOffFieldKey = GlobalKey();
+  final dropOffTwoFieldKey = GlobalKey();
   final via1FieldKey = GlobalKey();
   final via2FieldKey = GlobalKey();
   final stackKey = GlobalKey();
@@ -223,13 +228,17 @@ class DashboardController extends GetxController {
   // final keyboardFocusNode = FocusNode();
 
   final FocusNode pickupKeyboardFocusNode = FocusNode();
+  final FocusNode pickupTwoWayKeyboardFocusNode = FocusNode();
   final FocusNode dropOffKeyboardFocusNode = FocusNode();
+  final FocusNode dropOffTwoDayKeyboardFocusNode = FocusNode();
   final FocusNode via1KeyboardFocusNode = FocusNode();
   final FocusNode via2KeyboardFocusNode = FocusNode();
   final FocusNode searchingAddressViaFocusNode = FocusNode();
   final FocusNode phoneKeyboardFocusNode = FocusNode();
   final FocusNode pickupTextFieldFocusNode = FocusNode();
+  final FocusNode pickupTwoTextFieldFocusNode = FocusNode();
   final FocusNode dropOffTextFieldFocusNode = FocusNode();
+  final FocusNode dropOffTwoWayTextFieldFocusNode = FocusNode();
   final FocusNode via1TextFieldFocusNode = FocusNode();
   final FocusNode via2TextFieldFocusNode = FocusNode();
   final FocusNode viaFieldFocusNode = FocusNode();
@@ -265,7 +274,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  void selectSuggestion(String? value) {
+  void selectSuggestion(String? value,{twoWayPickup}) {
     if (activeFieldKey.value == pickupFieldKey) {
       pickupController.text = value!;
       pickupController.selection = TextSelection.collapsed(offset: value.length);
@@ -278,6 +287,12 @@ class DashboardController extends GetxController {
     } else if (activeFieldKey.value == via2FieldKey) {
       viaLocation2Controller.text = value!;
       viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
+    }else if (activeFieldKey.value == pickupTwoWayFieldKey){
+      pickupTwoWayController.text = value!;
+      pickupTwoWayController.selection = TextSelection.collapsed(offset: value.length);
+    }else if (activeFieldKey.value == dropOffTwoFieldKey){
+      dropOffTwoWayController.text = value!;
+      dropOffTwoWayController.selection = TextSelection.collapsed(offset: value.length);
     }
 
     inputText.value = value!;
@@ -317,6 +332,8 @@ class DashboardController extends GetxController {
 
   RxBool getPickupAddressesLoader = true.obs;
   RxBool getDropAddressesLoader = true.obs;
+  RxBool getPickupTwoWayAddressesLoader = true.obs;
+  RxBool getDropTwoWayAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
     if (fieldsName == "PICKUP LOCATION") {
@@ -491,6 +508,30 @@ class DashboardController extends GetxController {
               point: p,
               child: Icon(Icons.location_pin,
                   color: DynamicColors.redClr, size: 30),
+              width: 30,
+              height: 30,
+            ),
+          );
+        } else if (item.markerType == "PICKUP TWO WAY LOCATION"){
+          tempPoints.add(p);
+          markers.add(
+            CustomMarker(
+              type: "pickup",
+              point: p,
+              child: Icon(Icons.location_pin,
+                  color: Colors.amberAccent, size: 30),
+              width: 30,
+              height: 30,
+            ),
+          );
+        }else if (item.markerType == "DROP TWO WAY LOCATION"){
+          tempPoints.add(p);
+          markers.add(
+            CustomMarker(
+              type: "dropOff",
+              point: p,
+              child: Icon(Icons.location_pin,
+                  color: DynamicColors.textClr, size: 30),
               width: 30,
               height: 30,
             ),
@@ -847,6 +888,66 @@ class DashboardController extends GetxController {
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
 
+    }else if ( selectedTextFieldsValue.value== "DROP LOCATION"){
+      int index = polyLineMarkerInfo.indexWhere(
+              (test) => test.markerType == "DROP LOCATION");
+
+      if (index != -1) {
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
+
+      polylinePoints.add(
+        LatLng(selected.lat!, selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "DROP LOCATION",
+        address: '',
+      ));
+
+      dropOffTwoWayController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
+    }else if ( selectedTextFieldsValue.value== "DROP TWO WAY LOCATION"){
+      int index = polyLineMarkerInfo.indexWhere(
+              (test) => test.markerType == "DROP TWO WAY LOCATION");
+
+      if (index != -1) {
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
+
+      polylinePoints.add(
+        LatLng(selected.lat!, selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "DROP TWO WAY LOCATION",
+        address: '',
+      ));
+
+      dropOffTwoWayController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
+    }else if ( selectedTextFieldsValue.value== "PICKUP TWO WAY LOCATION"){
+      int index = polyLineMarkerInfo.indexWhere(
+              (test) => test.markerType == "PICKUP TWO WAY LOCATION");
+
+      if (index != -1) {
+        polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
+      }
+
+      polylinePoints.add(
+        LatLng(selected.lat!, selected.lon!),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: selected.lat!,
+        lng: selected.lon!,
+        markerType: "PICKUP TWO WAY LOCATION",
+        address: '',
+      ));
+
+      pickupTwoWayController.text = "$suggestion $postCode";
+      fetchRouteFromOSRM();
     }
 
     allAddressesData.clear();
@@ -858,8 +959,10 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
+  DashboardDriverObject? selectDriverValueReturn;
   DashboardSubsidiaryObject? selectSubsidiariesValue;
   DashboardVehicleTypeObject? selectVehicleValue;
+  DashboardVehicleTypeObject? selectVehicleValueReturn;
   DashboardVehicleTypeObject? selectMultiVehicleValue;
   PaymentTypeObject? selectPaymentTypeValue;
   JourneyTypeObject? selectJourneyTypeValue;
@@ -1137,7 +1240,9 @@ class DashboardController extends GetxController {
   final dropUpNoteController = TextEditingController();
   ZoneObject? dashboardZoneValue;
   DateTime? pickUpDate = DateTime.now();
+  DateTime? pickUpDateReturn = DateTime.now();
   final pickUpTimeController = TextEditingController();
+  final pickUpTimeControllerReturn = TextEditingController();
   final passController = TextEditingController();
   final luggController = TextEditingController();
   final sluggController = TextEditingController();
@@ -1460,7 +1565,9 @@ class DashboardController extends GetxController {
   final mobileController = TextEditingController();
   final telController = TextEditingController();
   final minController = TextEditingController();
+  final minControllerReturn = TextEditingController();
   final slugController = TextEditingController(text: "0.0");
+  final slugControllerReturn = TextEditingController(text: "0.0");
   final accountNoController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking functionality
