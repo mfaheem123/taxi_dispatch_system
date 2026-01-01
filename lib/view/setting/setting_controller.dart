@@ -103,32 +103,25 @@ class SettingController extends GetxController {
   }
 
 
-
-
-  bool updating = false;
-
+  bool loadingtemp = false;
   updateTemplateHtml({required int templateId}) async {
-    updating = true;
+    loadingtemp = true;
     String htmlText = await templateTitleController.getText();
-
     update();
-
     var  formData= {
       "content": htmlText, // edited text
     };
-
     var response = await Api().post(
       formData,
       "templates/edit_templates/$templateId",
     );
-    updating = false;
+    loadingtemp = false;
     if (response.statusCode == 200) {
       getTemplateHtmlText(selectedTempId: "$templateId");
       BotToast.showText(text: "Successfully UPDATE ");
     } else {
-      Get.snackbar("Error", "Update failed");
+      BotToast.showText(text: "Error, Update failed");
     }
-
     update();
   }
 
@@ -144,7 +137,6 @@ class SettingController extends GetxController {
   //
   //     // headers = API keys
   //     final headers = list.first.keys.toList();
-  //
   //     // rows = API values
   //     final data = list.map((row) {
   //       return headers.map((key) {
@@ -269,14 +261,12 @@ class SettingController extends GetxController {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
-
     if (result != null && result.files.single.bytes != null) {
       profileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
           path: result.files.single.path);
     }
-
     update();
   }
 
