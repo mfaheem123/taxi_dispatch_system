@@ -283,7 +283,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                 : maxWidth / 4;
 
             return
-              Column(
+              controller.templateTypeLoad == true ?
+              Center(
+                child: CircularProgressIndicator(),
+              )
+                  : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
@@ -302,9 +306,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                     runSpacing: 16,
                     children: [
                       Container(
-
                         // width: fieldWidth*2.5,
-
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(color: DynamicColors.textClr)
@@ -354,8 +356,6 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                   controller: controller.emailController,
                                   width: fieldWidth/1.5,
                                   hintText: AppText.email,
-
-
                                   // columnText: true,
                                   height: 30,
                                 ),
@@ -481,7 +481,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                             htmlEditorOptions: HtmlEditorOptions(
                               hint: 'Write text here...',
                               shouldEnsureVisible: true,
-initialText: invoiceHtml,
+
                               //initialText: "<p>text content initial, if any</p>",
                             ),
                             htmlToolbarOptions: HtmlToolbarOptions(
