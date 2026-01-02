@@ -72,17 +72,18 @@ class SettingController extends GetxController {
   bool templatebyTypeLoad = false;
 
   getTemplateByTypes({selectedTempId}) async {
-    if (selectedTemplateType == null) {
+    if (selectTempleteType == null) {
       BotToast.showText(text: "Please select template type first");
-      return; // safety
-    } // safety
+      return;
+
+    }
     templatebyTypeLoad = true;
     var response = await Api().get(
         "templates/get_templates_by_types?template_type_id=$selectedTempId");
     if (response.statusCode == 200) {
       templeteByTypeMOdel = TempleteByTypeMOdel.fromJson(response.data);
       templatebyTypeLoad = false;
-      update();
+  update();
     }
   }
 
@@ -95,8 +96,7 @@ class SettingController extends GetxController {
         await Api().get("templates/template_setting?id=$selectedTempId");
     if (response.statusCode == 200) {
       templeteHtmlModel = HtmlTempleteModel.fromJson(response.data);
-      templateTitleController
-          .setText(templeteHtmlModel?.templates?.content ?? "");
+      templateTitleController.setText(templeteHtmlModel?.templates?.content ?? "");
       loadHtml = false;
       update();
     }
@@ -115,13 +115,13 @@ class SettingController extends GetxController {
       formData,
       "templates/edit_templates/$templateId",
     );
-    loadingtemp = false;
     if (response.statusCode == 200) {
       getTemplateHtmlText(selectedTempId: "$templateId");
       BotToast.showText(text: "Successfully UPDATE ");
     } else {
       BotToast.showText(text: "Error, Update failed");
     }
+    loadingtemp = false;
     update();
   }
 
@@ -254,9 +254,7 @@ class SettingController extends GetxController {
   /// color pick
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
-
   ImageModel? profileImg;
-
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
@@ -290,7 +288,6 @@ class SettingController extends GetxController {
 
   LocationShortCutModel? locationShortCut;
   RxBool getShortCutLoader = false.obs;
-
   getShortCut() async {
     getShortCutLoader(true);
     var response = await Api().get("location-types");
@@ -306,7 +303,6 @@ class SettingController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Chat screen
 
   String? selectMessageRole;
-
   RxBool sendToAllValue = false.obs;
   final FocusNode sendToAllNode = FocusNode();
 }
