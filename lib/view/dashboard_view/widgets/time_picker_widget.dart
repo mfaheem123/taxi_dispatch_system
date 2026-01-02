@@ -134,34 +134,6 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     );
   }
 
-  //
-  // Widget _buildAmPmColumn() {
-  //   return Expanded(
-  //     child: Column(
-  //       children: ['AM', 'PM'].map((period) {
-  //         final isSelected = period == selectedPeriod;
-  //         return InkWell(
-  //           onTap: () => _selectAndClose(period: period),
-  //           child: Container(
-  //             padding: EdgeInsets.all(12),
-  //             color: isSelected ? Colors.blue : null,
-  //             child: Center(
-  //               child: Text(
-  //                 period,
-  //                 style: TextStyle(
-  //                   color: isSelected ? Colors.white : Colors.black,
-  //                   fontWeight: FontWeight.bold,
-  //                   fontSize: 12,
-  //                 ),
-  //               ),
-  //             ),
-  //           ),
-  //         );
-  //       }).toList(),
-  //     ),
-  //   );
-  // }
-
   @override
   void dispose() {
     if (widget.controller == null) {
@@ -470,6 +442,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
         month = picked.month;
         year = picked.year;
       });
+      _notifyChanged();
     }
   }
 

@@ -1186,42 +1186,86 @@ class DashboardController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start to end date are filters
-  List<String> getDatesBetween({required DateTime start, required DateTime end}) {
-    List<String> dates = [];
+  List<DateTime> getDatesBetween({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    List<DateTime> dates = [];
 
-    for (DateTime date = start;
-    date.isBefore(end.add(const Duration(days: 1)));
-    date = date.add(const Duration(days: 1))) {
-      dates.add("${date.day}/${date.month}/${date.year}");
+    DateTime current = DateTime(start.year, start.month, start.day);
+
+    while (current.isBefore(end) || current.isAtSameMomentAs(end)) {
+      dates.add(current);
+      current = current.add(const Duration(days: 1));
     }
 
     return dates;
   }
 
+  addToMultiReservation({
+    DateTime? startTime,
+    DateTime? endTime,
+    required List<String> selectedDays,
+    required String time,
+  }) async {
+    if (startTime == null || endTime == null) {
+      return BotToast.showText(
+          text: "Please select start and end date with time");
+    }
 
+    if (selectedDays.isEmpty) {
+      return BotToast.showText(text: "Please select day");
+    }
 
-  addToMultiReservation({DateTime? startTime, DateTime? endTime, List? selectedDays, time}) async{
-    if (startTime == null || endTime == null) return BotToast.showText(text: "Please Select start and end date and as well time");
-
-    if(multiReservationDaysList.isEmpty) return BotToast.showText(text: "Please Select day");
+    multiReservationList.clear();
 
     final allDates = getDatesBetween(start: startTime, end: endTime);
-    print(allDates);
 
-    for (var element in allDates) {
-      for (var action in multiReservationDaysList) {
+    // Convert selected day names → weekday numbers
+    final selectedWeekdays =
+    selectedDays.map(dayNameToWeekday).toList();
+
+    for (final DateTime date in allDates) {
+      if (selectedWeekdays.contains(date.weekday)) {
+        final dayIndex = selectedWeekdays.indexOf(date.weekday);
+
         multiReservationList.add(
-            MultiReservation(
-                startDate: element.toString(),
-                day: action,
-                exclude: false,
-                returnTime: time
-            )
+          MultiReservation(
+            startDate: "${date.year}-${date.month}-${date.day}",
+            day: selectedDays[dayIndex],
+            exclude: false,
+            returnTime: time,
+          ),
         );
       }
     }
+
     refreshMultiReservationData();
   }
+
+
+
+  int dayNameToWeekday(String day) {
+    switch (day.toLowerCase()) {
+      case 'monday':
+        return DateTime.monday;
+      case 'tuesday':
+        return DateTime.tuesday;
+      case 'wednesday':
+        return DateTime.wednesday;
+      case 'thursday':
+        return DateTime.thursday;
+      case 'friday':
+        return DateTime.friday;
+      case 'saturday':
+        return DateTime.saturday;
+      case 'sunday':
+        return DateTime.sunday;
+      default:
+        throw Exception("Invalid day name");
+    }
+  }
+
 
   refreshMultiReservationData() async{
     multiReservationDaysList.clear();
@@ -1398,9 +1442,12 @@ class DashboardController extends GetxController {
     }
     if(multiReservationList.isNotEmpty){
       for (var element in multiReservationList) {
-        String tempDateStore = DateFormat('yyyy-MM-dd').format(
-          DateFormat('dd/MM/yyyy').parse(element.startDate!),
-        );
+        DateTime parsedDate = DateFormat('yyyy-M-d').parse(element.startDate!);
+
+// 2. Format it into your desired output (yyyy-MM-dd)
+        String tempDateStore = DateFormat('yyyy-MM-dd').format(parsedDate);
+
+        print(tempDateStore); // Output: 2026-01-05
         multiReservationTemp.add({
           "exclude": element.exclude,
           "day": element.day,

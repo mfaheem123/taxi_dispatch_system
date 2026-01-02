@@ -140,6 +140,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                 print(controller.multiReservationToTimeController.text);
                               });
                             },
+
                           )),
                         ),
                         CustomButton(
@@ -149,7 +150,6 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           borderRadius: 4,
                           verticalPadding: 0.0,
                           onTap: (){
-
                             controller.addToMultiReservation(
                               endTime: controller.multiReservationToDate,
                               startTime: controller.multiReservationFromDate,
