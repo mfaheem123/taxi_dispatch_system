@@ -966,7 +966,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         // O/W, R/N, W/R
 
                                                         if (v!.journeyType ==
-                                                            "two way") {
+                                                            "w/r") {
                                                           controller.jourValue =
                                                           'W/R';
                                                         } else {

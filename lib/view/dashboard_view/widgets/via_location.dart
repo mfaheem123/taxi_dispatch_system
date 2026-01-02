@@ -213,113 +213,332 @@ class _ViaLocationState extends State<ViaLocation> {
 
 
                         SizedBox(height: 16),
-                        ListView.builder(
-                            itemCount: controller.viaPoints.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final point = controller.viaPoints[index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${index + 1}',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                                width: controller.jourValue != 'W/R'?550: 260,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
 
-                                      style: TextStyle(fontWeight: FontWeight.bold),
-                                    ),
-                                    SizedBox(width: 12),
-                                    Expanded(
-                                        child: Column(
-                                      children: [
-                                        TextField(
-                                          readOnly: true,
-                                          controller: TextEditingController(text: point.address),
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                          ),
-                                        ),
-                                        SizedBox(height: 10),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: TextField(
-                                                  controller: controller.viaTextEditingController[index].name,
-                                              // onChanged: (val){
-                                              //   controller.viaPoints[index].name!.text = val;
-                                              //   controller.update();
-                                              // },
-                                              decoration: InputDecoration(
-                                                hintText: "Name",
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            )),
-                                            SizedBox(width: 8),
-                                            Expanded(
-                                                child: TextField(
-                                                  controller: controller.viaTextEditingController[index].mobile,
-                                              // onChanged: (val) {
-                                              //   controller.viaPoints[index].mobile!.text = val;
-                                              //   controller.update();
-                                              // },
-                                              decoration: InputDecoration(
-                                                hintText: "Mobile",
-                                                border: OutlineInputBorder(),
-                                              ),
-                                            )),
-                                          ],
-                                        ),
-                                      ],
-                                    )),
-
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
-                                      child: SizedBox(
-                                        width: 30,
-                                        height: 30,
+                                  Row(
+                                    children: [
+                                      Text("O/W"),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      SizedBox(
+                                        width: 40,
+                                        height: 25,
                                         child: ElevatedButton(
                                           onPressed: () {
-                                            setState(() {
-                                              controller.viaPoints.removeAt(index);
-                                              controller.update();
-                                            });
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
+                                            backgroundColor: Colors.green,
                                             padding: EdgeInsets.zero,
                                             shape: RoundedRectangleBorder(
                                               borderRadius: BorderRadius.circular(4),
                                             ),
                                           ),
-                                          child: Icon(Icons.delete, color: Colors.white, size: 20),
+                                          child: Text("O/W"),
                                         ),
                                       ),
-                                    ),
+                                    ],
+                                  ),
+                                  ListView.builder(
+                                      itemCount: controller.viaPoints.length,
+                                      shrinkWrap: true,
+                                      physics: NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        final point = controller.viaPoints[index];
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 10),
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${index + 1}',
 
-                                    // SizedBox(
-                                    //   width: 30,
-                                    //   height: 30,
-                                    //   child: ElevatedButton(
-                                    //     onPressed: () {
-                                    //       setState(() {
-                                    //         viaPoints.removeAt(index);
-                                    //       });
-                                    //     },
-                                    //     style: ElevatedButton.styleFrom(
-                                    //         backgroundColor: Colors.red,
-                                    //         padding: EdgeInsets.zero,
-                                    //         shape: RoundedRectangleBorder(
-                                    //           borderRadius: BorderRadius.circular(4),
-                                    //         )),
-                                    //     child: Icon(Icons.delete,
-                                    //         color: Colors.white, size: 20),
-                                    //   ),
-                                    // ),
+                                                style: TextStyle(fontWeight: FontWeight.bold),
+                                              ),
+                                              SizedBox(width: 12),
+                                              Expanded(
+                                                  child: Column(
+                                                    children: [
+                                                      SizedBox(
+                                                        height: 35,
+                                                        child: TextField(
+                                                          style: TextStyle(fontSize: 13),
+                                                          readOnly: true,
+                                                          controller: TextEditingController(text: point.address),
+                                                          decoration: InputDecoration(
+                                                            contentPadding: EdgeInsets.zero,
+                                                            border: OutlineInputBorder(),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(height: 10),
+                                                      Row(
+                                                        children: [
+                                                          Expanded(
+                                                              child: SizedBox(
+                                                                height: 35,
+                                                                child: TextField(
+                                                                  style: TextStyle(fontSize: 13),
+                                                                  controller: controller.viaTextEditingController[index].name,
+                                                                  // onChanged: (val){
+                                                                  //   controller.viaPoints[index].name!.text = val;
+                                                                  //   controller.update();
+                                                                  // },
+                                                                  decoration: InputDecoration(
+                                                                    contentPadding: EdgeInsets.zero,
+                                                                    hintText: "Name",
+                                                                    border: OutlineInputBorder(),
+                                                                  ),
+                                                                ),
+                                                              )),
+                                                          SizedBox(width: 8),
+                                                          Expanded(
+                                                              child: SizedBox(
+                                                                height: 35,
+                                                                child: TextField(
+
+                                                                  style: TextStyle(fontSize: 13),
+                                                                  controller: controller.viaTextEditingController[index].mobile,
+                                                                  // onChanged: (val) {
+                                                                  //   controller.viaPoints[index].mobile!.text = val;
+                                                                  //   controller.update();
+                                                                  // },
+                                                                  decoration: InputDecoration(
+
+                                                                    contentPadding: EdgeInsets.zero,
+                                                                    hintText: "Mobile",
+                                                                    border: OutlineInputBorder(),
+                                                                  ),
+                                                                ),
+                                                              )),
+                                                        ],
+                                                      ),
+                                                    ],
+                                                  )),
+
+                                              Padding(
+                                                padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
+                                                child: SizedBox(
+                                                  width: 30,
+                                                  height: 30,
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        controller.viaPoints.removeAt(index);
+                                                        controller.update();
+                                                      });
+                                                    },
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor: Colors.red,
+                                                      padding: EdgeInsets.zero,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(4),
+                                                      ),
+                                                    ),
+                                                    child: Icon(Icons.delete, color: Colors.white, size: 20),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              // SizedBox(
+                                              //   width: 30,
+                                              //   height: 30,
+                                              //   child: ElevatedButton(
+                                              //     onPressed: () {
+                                              //       setState(() {
+                                              //         viaPoints.removeAt(index);
+                                              //       });
+                                              //     },
+                                              //     style: ElevatedButton.styleFrom(
+                                              //         backgroundColor: Colors.red,
+                                              //         padding: EdgeInsets.zero,
+                                              //         shape: RoundedRectangleBorder(
+                                              //           borderRadius: BorderRadius.circular(4),
+                                              //         )),
+                                              //     child: Icon(Icons.delete,
+                                              //         color: Colors.white, size: 20),
+                                              //   ),
+                                              // ),
+                                            ],
+                                          ),
+                                        );
+                                      }),
+                                ],
+                              ),
+                            ),
+
+                            Visibility(
+                              visible: controller.jourValue == 'W/R'?true:false,
+                              child: SizedBox(
+                                width: 260,
+                                child: Column(
+
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                   Row(
+                                     children: [
+                                       Text("W/R"),
+                                       SizedBox(
+                                         width: 10,
+                                       ),
+                                       SizedBox(
+                                         width: 40,
+                                         height: 25,
+                                         child: ElevatedButton(
+                                           onPressed: () {
+                                           },
+                                           style: ElevatedButton.styleFrom(
+                                             backgroundColor: Colors.green,
+                                             padding: EdgeInsets.zero,
+                                             shape: RoundedRectangleBorder(
+                                               borderRadius: BorderRadius.circular(4),
+                                             ),
+                                           ),
+                                           child: Text("W/R"),
+                                         ),
+                                       ),
+                                     ],
+                                   ),
+                                    ListView.builder(
+                                        itemCount: controller.viaPoints.length,
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          final point = controller.viaPoints[index];
+                                          return Padding(
+                                            padding: EdgeInsets.symmetric(vertical: 10),
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${index + 1}',
+
+                                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                                ),
+                                                SizedBox(width: 12),
+                                                Expanded(
+                                                    child: Column(
+
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 35,
+                                                          child: TextField(
+                                                            readOnly: true,
+                                                            style: TextStyle(fontSize: 13),
+                                                            controller: TextEditingController(text: point.address),
+                                                            decoration: InputDecoration(
+                                                              contentPadding: EdgeInsets.zero,
+                                                              border: OutlineInputBorder(),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        SizedBox(height: 10),
+                                                        Row(
+                                                          children: [
+                                                            Expanded(
+                                                                child: SizedBox(
+                                                                  height: 35,
+
+                                                                  child: TextField(
+                                                                    style: TextStyle(fontSize: 13),
+                                                                    controller: controller.viaTextEditingController[index].name,
+                                                                    // onChanged: (val){
+                                                                    //   controller.viaPoints[index].name!.text = val;
+                                                                    //   controller.update();
+                                                                    // },
+                                                                    decoration: InputDecoration(
+
+                                                                      contentPadding: EdgeInsets.zero,
+                                                                      hintText: "Name",
+                                                                      border: OutlineInputBorder(),
+                                                                    ),
+                                                                  ),
+                                                                )),
+                                                            SizedBox(width: 8),
+                                                            Expanded(
+                                                                child: SizedBox(
+                                                                  height: 35,
+                                                                  child: TextField(
+                                                                    style: TextStyle(fontSize: 13),
+                                                                    controller: controller.viaTextEditingController[index].mobile,
+                                                                    // onChanged: (val) {
+                                                                    //   controller.viaPoints[index].mobile!.text = val;
+                                                                    //   controller.update();
+                                                                    // },
+                                                                    decoration: InputDecoration(
+
+                                                                      contentPadding: EdgeInsets.zero,
+                                                                      hintText: "Mobile",
+                                                                      border: OutlineInputBorder(),
+                                                                    ),
+                                                                  ),
+                                                                )),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    )),
+
+                                                Padding(
+                                                  padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
+                                                  child: SizedBox(
+                                                    width: 30,
+                                                    height: 30,
+                                                    child: ElevatedButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          controller.viaPoints.removeAt(index);
+                                                          controller.update();
+                                                        });
+                                                      },
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: Colors.red,
+                                                        padding: EdgeInsets.zero,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(4),
+                                                        ),
+                                                      ),
+                                                      child: Icon(Icons.delete, color: Colors.white, size: 20),
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                // SizedBox(
+                                                //   width: 30,
+                                                //   height: 30,
+                                                //   child: ElevatedButton(
+                                                //     onPressed: () {
+                                                //       setState(() {
+                                                //         viaPoints.removeAt(index);
+                                                //       });
+                                                //     },
+                                                //     style: ElevatedButton.styleFrom(
+                                                //         backgroundColor: Colors.red,
+                                                //         padding: EdgeInsets.zero,
+                                                //         shape: RoundedRectangleBorder(
+                                                //           borderRadius: BorderRadius.circular(4),
+                                                //         )),
+                                                //     child: Icon(Icons.delete,
+                                                //         color: Colors.white, size: 20),
+                                                //   ),
+                                                // ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
                                   ],
                                 ),
-                              );
-                            }),
+                              ),
+                            ),
+                          ],
+                        ),
+
                         SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
