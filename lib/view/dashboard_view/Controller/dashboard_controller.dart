@@ -1360,7 +1360,7 @@ class DashboardController extends GetxController {
       }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      refreshPostAllFields();
+      // refreshPostAllFields();
       print(response.data);
     }
   }
