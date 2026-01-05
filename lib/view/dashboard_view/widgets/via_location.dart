@@ -82,7 +82,7 @@ class _ViaLocationState extends State<ViaLocation> {
         builder: (controller) {
           return SizedBox(
             height: 400,
-            width: 600,
+            width: 650,
             child: Padding(
               padding: EdgeInsets.all(20),
               child: Stack(
@@ -182,21 +182,52 @@ class _ViaLocationState extends State<ViaLocation> {
                                   height: 30,
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      if(controller.viaPoints.length <6){
-                                      controller.polylinePoints.add(
-                                        LatLng(controller.selectedModel!.lat!,
-                                            controller.selectedModel!.lon!),
-                                      );
-                                      controller.viaPoints.add(ViaPoint(
+                                      // 1. Identify which type the user is trying to add
+                                      bool isViaWithReturn = !controller.viaSelectionOneWay.value;
+                                      String currentTypeName = isViaWithReturn ? 'via with return' : 'via';
+
+                                        // 2. Count existing points of that specific type
+                                      int currentTypeCount = controller.viaPoints.where((p) => p.withReturnWay == currentTypeName).length;
+
+                                        // 3. Check against the limit (6 for each type)
+                                      if (currentTypeCount < 6) {
+                                        controller.polylinePoints.add(
+                                          LatLng(controller.selectedModel!.lat!, controller.selectedModel!.lon!),
+                                        );
+                                        controller.viaPoints.add(ViaPoint(
+                                          withReturnWay: currentTypeName,
+                                          // name: currentTypeName,
                                           address: controller.selectedModel!.name!,
                                           lat: controller.selectedModel!.lat!,
-                                          lng: controller.selectedModel!.lon!));
-                                      addressController.clear();
-                                      controller.viaTextEditingController.add(ViaTextEditingControllerClass(TextEditingController(),TextEditingController()));
-                                      controller.update();
-                                    }else{
-                                        BotToast.showText(text: "Only Five VIA Allow");
+                                          lng: controller.selectedModel!.lon!,
+                                        ));
+
+                                        addressController.clear();
+                                        controller.viaTextEditingController.add(
+                                            ViaTextEditingControllerClass(TextEditingController(), TextEditingController())
+                                        );
+                                        controller.update();
+                                      } else {
+                                        // Show a specific error message based on which limit was hit
+                                        BotToast.showText(text: "Maximum 6 of '$currentTypeName' allowed");
                                       }
+
+                                    //   if(controller.viaPoints.length <6){
+                                    //   controller.polylinePoints.add(
+                                    //     LatLng(controller.selectedModel!.lat!,
+                                    //         controller.selectedModel!.lon!),
+                                    //   );
+                                    //   controller.viaPoints.add(ViaPoint(
+                                    //     name: controller.viaSelectionOneWay.value? "via": 'via with return',
+                                    //       address: controller.selectedModel!.name!,
+                                    //       lat: controller.selectedModel!.lat!,
+                                    //       lng: controller.selectedModel!.lon!));
+                                    //   addressController.clear();
+                                    //   controller.viaTextEditingController.add(ViaTextEditingControllerClass(TextEditingController(),TextEditingController()));
+                                    //   controller.update();
+                                    // }else{
+                                    //     BotToast.showText(text: "Only Five VIA Allow");
+                                    //   }
                                   },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green,
@@ -214,37 +245,48 @@ class _ViaLocationState extends State<ViaLocation> {
 
                         SizedBox(height: 16),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             SizedBox(
-                                width: controller.jourValue != 'W/R'?550: 260,
+                                width: controller.jourValue != 'W/R'?600: 280,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
 
-                                  Row(
-                                    children: [
-                                      Text("O/W"),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                      SizedBox(
-                                        width: 40,
-                                        height: 25,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.green,
-                                            padding: EdgeInsets.zero,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(4),
+                                  Visibility(
+                                    visible: controller.jourValue != 'W/R'?false:true,
+                                    child: Row(
+                                      children: [
+                                        Text("O/W"),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        SizedBox(
+                                          width: 70,
+                                          height: 25,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              controller.viaSelectionOneWay.value = !controller.viaSelectionOneWay.value;
+                                              controller.update();
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: controller.viaSelectionOneWay.value?DynamicColors.primaryClr :
+                                              DynamicColors.primaryClr.withOpacity(0.2),
+                                              padding: EdgeInsets.zero,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(4),
+                                              ),
+                                            ),
+                                            child: Text("O/W",
+                                              style: TextStyle(
+                                                  color: DynamicColors.whiteClr
+                                              ),
                                             ),
                                           ),
-                                          child: Text("O/W"),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                   ListView.builder(
                                       itemCount: controller.viaPoints.length,
@@ -252,14 +294,13 @@ class _ViaLocationState extends State<ViaLocation> {
                                       physics: NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         final point = controller.viaPoints[index];
-                                        return Padding(
+                                        return point.withReturnWay =="via"? Padding(
                                           padding: EdgeInsets.symmetric(vertical: 10),
                                           child: Row(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 '${index + 1}',
-
                                                 style: TextStyle(fontWeight: FontWeight.bold),
                                               ),
                                               SizedBox(width: 12),
@@ -368,7 +409,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                               // ),
                                             ],
                                           ),
-                                        );
+                                        ):SizedBox.shrink();
                                       }),
                                 ],
                               ),
@@ -377,7 +418,7 @@ class _ViaLocationState extends State<ViaLocation> {
                             Visibility(
                               visible: controller.jourValue == 'W/R'?true:false,
                               child: SizedBox(
-                                width: 260,
+                                width: 280,
                                 child: Column(
 
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,19 +430,27 @@ class _ViaLocationState extends State<ViaLocation> {
                                          width: 10,
                                        ),
                                        SizedBox(
-                                         width: 40,
+                                         width: 70,
                                          height: 25,
                                          child: ElevatedButton(
                                            onPressed: () {
+                                             controller.viaSelectionOneWay.value = !controller.viaSelectionOneWay.value;
+                                             controller.update();
                                            },
                                            style: ElevatedButton.styleFrom(
-                                             backgroundColor: Colors.green,
+                                             backgroundColor: controller.viaSelectionOneWay.value
+                                                 ?
+                                             DynamicColors.primaryClr.withOpacity(0.2):DynamicColors.primaryClr,
                                              padding: EdgeInsets.zero,
                                              shape: RoundedRectangleBorder(
                                                borderRadius: BorderRadius.circular(4),
                                              ),
                                            ),
-                                           child: Text("W/R"),
+                                           child: Text("W/R",
+                                           style: TextStyle(
+                                             color: DynamicColors.whiteClr
+                                           ),
+                                           ),
                                          ),
                                        ),
                                      ],
@@ -412,7 +461,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                         physics: NeverScrollableScrollPhysics(),
                                         itemBuilder: (context, index) {
                                           final point = controller.viaPoints[index];
-                                          return Padding(
+                                          return point.withReturnWay =="via"?SizedBox.shrink():  Padding(
                                             padding: EdgeInsets.symmetric(vertical: 10),
                                             child: Row(
                                               crossAxisAlignment: CrossAxisAlignment.start,

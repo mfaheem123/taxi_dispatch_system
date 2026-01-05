@@ -429,6 +429,7 @@ class DashboardController extends GetxController {
   RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
   RxString fixedFare ="0".obs;
+  RxBool viaSelectionOneWay = true.obs;
 
   LatLngBounds calculateBounds(List<LatLng> points) {
     assert(points.isNotEmpty);
@@ -470,9 +471,10 @@ class DashboardController extends GetxController {
       tempPoints.add(p);
       markers.add(
         CustomMarker(
-          type: "via",
+          withReturnType: item.withReturnWay =="via"? "via": 'via with return',
           child: Icon(Icons.location_pin,
-              color: DynamicColors.primaryClr, size: 30),
+              color: item.withReturnWay =="via"? DynamicColors.primaryClr:Colors.pink, size: 30),
+          type: "via",
           point: p,
           width: 30,
           height: 30,
