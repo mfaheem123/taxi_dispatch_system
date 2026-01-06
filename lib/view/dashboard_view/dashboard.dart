@@ -108,7 +108,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
         shortCutKeyValue.value = "shortCutKey";
       }
       else if(event.logicalKey.keyLabel == "F2"){
-        final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
+        final newTabUrl = Uri.base.origin + /*'/#' +*/ Routes.createBooking;
         html.window.open(newTabUrl, '_blank');
       }
       }

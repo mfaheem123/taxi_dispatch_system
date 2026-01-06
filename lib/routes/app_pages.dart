@@ -1,6 +1,8 @@
 import 'package:dashboard_new1/view/vehicles_view/create_vehicleScreen.dart';
 import 'package:dashboard_new1/view/vehicles_view/create_vehicle_types.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../view/auth/login_screen.dart';
 import '../view/booking_view/complete_bookingview.dart';
 import '../view/cli_Screen.dart';
@@ -47,6 +49,7 @@ class AppPages {
     GetPage(
       name: _Paths.createBooking,
       page: () => CreateBooking(),
+      // middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: _Paths.CustomerFormScreen,
@@ -61,4 +64,20 @@ class AppPages {
       page: () => CreateVehicleTypes(),
     ),
   ];
+}
+
+
+
+
+
+class AuthMiddleware extends GetMiddleware {
+  @override
+  RouteSettings? redirect(String? route) {
+    final token = GetStorage().read('token');
+
+    if (token == null) {
+      return const RouteSettings(name: Routes.loginScreen);
+    }
+    return null;
+  }
 }

@@ -15,6 +15,13 @@ void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
+  /// 🔑 READ TOKEN BEFORE APP START
+  // final String? token = GetStorage().read('token');
+  //
+  // /// 🔑 DECIDE INITIAL ROUTE
+  // final String initialRoute =
+  // token == null ? Routes.loginScreen : Routes.myHomePage;
+
   // disableInspect();
   //
   // html.document.documentElement?.requestFullscreen();
