@@ -54,6 +54,7 @@
 import 'package:dashboard_new1/view/auth/Controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../component/customButton.dart';
 import '../../component/images.dart';
 import '../../component/textStyle.dart';
@@ -166,6 +167,10 @@ AuthController controller = Get.put(AuthController());
                         height: 55,
                         // text: "Login",
                         onTap: () {
+                          // GetStorage().write(
+                          //   'token',
+                          //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
+                          // );
                           // controller.postLoginDetails();
                           Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.dashBoarScreen);

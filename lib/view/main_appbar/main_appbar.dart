@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
           shortCutKeyValue.value == "alert") {
         shortCutKeyValue.value = "shortCutKey";
       } else if (event.logicalKey.keyLabel == "F2") {
-        final newTabUrl = Uri.base.origin + '/#' + Routes.createBooking;
+        final newTabUrl = Uri.base.origin + /*'/#' +*/ Routes.createBooking;
         html.window.open(newTabUrl, '_blank');
       }
     }
@@ -426,11 +426,14 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
-            // Get.toNamed(Routes.createBooking);
-            final newTabUrl = Uri.base.origin + '/#' +  Routes.createBooking;
-
-
+            final newTabUrl = Uri.base.origin + Routes.createBooking;
             html.window.open(newTabUrl, '_blank');
+
+            // Get.toNamed(Routes.createBooking);
+            // final newTabUrl = Uri.base.origin + '/#' +  Routes.createBooking;
+            //
+            //
+            // html.window.open(newTabUrl, '_blank');
 
 
           },
