@@ -18,6 +18,7 @@ import '../../../alert/child_seats_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
+import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
@@ -576,8 +577,7 @@ class DashboardController extends GetxController {
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
       tempStoreTotalDistance.value == distanceInMiles.toStringAsFixed(2);
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value =
-          formatDuration(durationInMinutes); // e.g. "443.3"
+      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
 
       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
 
@@ -632,11 +632,6 @@ class DashboardController extends GetxController {
       } else {
         print('No active fare found for this vehicle');
       }
-
-
-
-
-
       // int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
       //
       // if(index != -1){
@@ -651,20 +646,7 @@ class DashboardController extends GetxController {
     }
   }
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> make function for mints and hours
-  String formatDuration(double minutes) {
-    final int totalMinutes = minutes.round();
-    final int hours = totalMinutes ~/ 60;
-    final int remainingMinutes = totalMinutes % 60;
 
-    if (hours > 0 && remainingMinutes > 0) {
-      return '$hours hour${hours > 1 ? 's' : ''} $remainingMinutes min${remainingMinutes > 1 ? 's' : ''}';
-    } else if (hours > 0) {
-      return '$hours hour${hours > 1 ? 's' : ''}';
-    } else {
-      return '$remainingMinutes min${remainingMinutes > 1 ? 's' : ''}';
-    }
-  }
 
 // inside your controller
   final suggestionFocusNode = FocusNode();
