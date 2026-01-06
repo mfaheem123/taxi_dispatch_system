@@ -183,7 +183,8 @@ class DashboardController extends GetxController {
     });
 
     viaLocation1Controller.addListener(() {
-      if (viaLocation1Controller.selection.baseOffset != -1) {
+      if (viaLocation1Controller.selection.baseOffset != -1)
+      {
         activeFieldKey.value = via1FieldKey;
         inputText.value = viaLocation1Controller.text;
         onInputChanged(viaLocation1Controller.text);
@@ -191,7 +192,8 @@ class DashboardController extends GetxController {
     });
 
     viaLocation2Controller.addListener(() {
-      if (viaLocation2Controller.selection.baseOffset != -1) {
+      if (viaLocation2Controller.selection.baseOffset != -1)
+      {
         activeFieldKey.value = via2FieldKey;
         inputText.value = viaLocation2Controller.text;
         onInputChanged(viaLocation2Controller.text);
@@ -503,6 +505,7 @@ class DashboardController extends GetxController {
     if (polyLineMarkerInfo.length == 1) {
       return;
     }
+
     update();
 
     // --------- MULTI-POINT: request route from OSRM ----------
@@ -664,10 +667,11 @@ class DashboardController extends GetxController {
 
       final itemCtx = suggestionItemKeys[i].currentContext;
 
-      final listCtx = /*selectedTextFieldsValue.value !=
+      final listCtx =
+      /*selectedTextFieldsValue.value !=
           "via"?*/
-      suggestionListKey
-          .currentContext /*:suggestionListKeyVia.currentContext*/;
+      suggestionListKey.currentContext
+      /*:suggestionListKeyVia.currentContext*/;
 
       if (itemCtx != null &&
           listCtx != null &&
@@ -676,8 +680,7 @@ class DashboardController extends GetxController {
 
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
-        final Offset itemOffset =
-        itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
 
         final double itemTopLocal = itemOffset.dy;
 
@@ -809,8 +812,7 @@ class DashboardController extends GetxController {
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "Create Booking PICKUP") {
-      int index = polyLineMarkerInfo
-          .indexWhere((test) => test.markerType == "Create Booking PICKUP");
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking PICKUP");
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }

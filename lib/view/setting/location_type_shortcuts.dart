@@ -38,7 +38,6 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
             // Instead of fixed width, we calculate flexible field widths
             final double fieldWidth = isMobile
                 ? maxWidth // full width

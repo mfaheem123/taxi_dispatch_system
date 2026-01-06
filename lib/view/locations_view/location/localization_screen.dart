@@ -286,7 +286,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   Future<void> _fetchPostcodes() async {
     setState(() => isLoading = true);
     try {
-      final response = await _dio.get('http://192.168.110.3:5000/api/localizations/getlocalization',);
+      final response = await _dio.get('http://192.168.110.4:5000/api/localizations/getlocalization',);
       // final response = await _dio.get('https://www.nexustechnologys.com/api/localizations/getlocalization',);
 
       if (response.statusCode == 200 && response.data['status'] == true) {
@@ -318,7 +318,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   /// 📌 POST API call for adding postcode
   Future<void> _addPostcodeApi(String code) async {
     try {
-      final response = await _dio.post('http://192.168.110.3:5000/api/localizations', data: FormData.fromMap({'postcode': code,}),);
+      final response = await _dio.post('http://192.168.110.4:5000/api/localizations', data: FormData.fromMap({'postcode': code,}),);
       // final response = await _dio.post('https://www.nexustechnologys.com/api/localizations', data: FormData.fromMap({'postcode': code,}),);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -353,7 +353,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   /// 🗑️ DELETE API call
   Future<void> _deletePostcodeApi(int id) async {
     try {
-      final response = await _dio.delete('http://192.168.110.3:5000/api/localizations/delete/$id',);
+      final response = await _dio.delete('http://192.168.110.4:5000/api/localizations/delete/$id',);
       // final response = await _dio.delete('https://www.nexustechnologys.com/api/localizations/delete/$id',);
 
       if (response.statusCode == 200) {

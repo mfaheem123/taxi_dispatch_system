@@ -16,7 +16,9 @@ Widget focusableTextButton(String label, VoidCallback onTap) {
             // Give focus to this widget when tapped
             FocusScope.of(context).requestFocus(Focus.of(context));
           },
+
           onTap: onTap,
+
           child: AnimatedContainer(
             duration: Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 6),
@@ -24,6 +26,7 @@ Widget focusableTextButton(String label, VoidCallback onTap) {
               color: isFocused ? Colors.blue : const Color(0xFF43489A),
               borderRadius: BorderRadius.circular(3),
             ),
+
             child: Text(
               label,
               style: const TextStyle(

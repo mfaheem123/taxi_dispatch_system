@@ -39,8 +39,7 @@ class SuggestionController extends GetxController {
 
   Future<void> selectSuggestion(String? value) async {
     // viaLocation2Controller.text = value!;
-    selectedTextController.selection =
-        TextSelection.collapsed(offset: value!.length);
+    selectedTextController.selection = TextSelection.collapsed(offset: value!.length);
 
     inputText.value = value;
     return allListData.clear();

@@ -194,7 +194,7 @@ class _DispatchBookingAlertState extends State<DispatchBookingAlert> {
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               btnText: AppText.dispatch,
-                            style: mozillaTextSemiBoldText(
+                              style: mozillaTextSemiBoldText(
                               fontSize: 13,
                               color: DynamicColors.whiteClr
                             ),

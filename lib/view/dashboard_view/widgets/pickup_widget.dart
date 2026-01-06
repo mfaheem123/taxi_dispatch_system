@@ -46,8 +46,7 @@ class _PickupWidgetState extends State<PickupWidget> {
           return LayoutBuilder(
             builder: (context, constraints) {
               bool isMobile = constraints.maxWidth < 600;
-              bool isTablet =
-                  constraints.maxWidth >= 600 && constraints.maxWidth < 1024;
+              bool isTablet = constraints.maxWidth >= 600 && constraints.maxWidth < 1024;
 
               double pickupWidth = isMobile
                   ? constraints.maxWidth * 0.9
@@ -110,6 +109,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                   }
                                 }
                               },
+
                               child: CustomTextField(
                                 key: controller.pickupFieldKey,
                                 controller: controller.pickupController,
@@ -333,11 +333,12 @@ class _PickupWidgetState extends State<PickupWidget> {
                             ),
                           ),
                         ),
+
                       ],
                     ),
                   ),
-                  if (controller.jourValue ==
-                      'W/R') ...[
+
+                  if (controller.jourValue == 'W/R') ...[
                     SizedBox(
                       height: screenHeight * 0.01,
                     ),
@@ -387,6 +388,7 @@ class _PickupWidgetState extends State<PickupWidget> {
                                     }
                                   }
                                 },
+
                                 child: CustomTextField(
                                   key: controller.via1FieldKey,
                                   controller: controller.viaLocation1Controller,

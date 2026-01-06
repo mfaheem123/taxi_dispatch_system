@@ -22,7 +22,6 @@ import 'model/templete_by_type_model.dart';
 import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 
 class SettingController  extends GetxController{

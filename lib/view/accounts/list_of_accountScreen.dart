@@ -49,8 +49,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
+          selectedRowIndex = (selectedRowIndex - 1 + totalRows) % totalRows; // move up
         });
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         // Enter dabane par row ke action button ka kaam

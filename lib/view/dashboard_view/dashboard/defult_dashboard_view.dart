@@ -763,8 +763,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                  key: controller.via2FieldKey,
                                                                  controller:
                                                                  controller.viaLocation2Controller,
-                                                                 focusNode: controller
-                                                                     .dropOffTextFieldFocusNode,
+                                                                 focusNode: controller.dropOffTextFieldFocusNode,
                                                                  hintText: 'DROP LOCATION',
                                                                  borderRadius: 4,
                                                                  prefixIcon: const Icon(
@@ -857,6 +856,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                              // Fields Row / Column Responsive
                                              /*PickupWidget(),*/
                                              ///todo pickup fields widget
+
                                              SizedBox(
                                                height: screenHeight * 0.01,
                                              ),
@@ -878,6 +878,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        width: fieldWidth/2.3,
                                                        textInputAction: TextInputAction.next),
                                                  ),
+
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(14),
                                                    child: labeledTextField(context,
@@ -887,6 +888,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        width: fieldWidth/2.3,
                                                        textInputAction: TextInputAction.next),
                                                  ),
+
                                                  SizedBox(
                                                    width: fieldWidth/1.8,
                                                    child: Row(
@@ -944,6 +946,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                      ],
                                                    ),
                                                  ),
+
                                                  // Expanded(
                                                  //   child: ,
                                                  // ),
@@ -960,6 +963,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                        keyboardType: TextInputType.phone,
                                                        formatDigitsOnly: false),
                                                  ),
+
                                                  FocusTraversalOrder(
                                                    order: const NumericFocusOrder(17),
                                                    child: labeledField(
@@ -1752,12 +1756,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                          ),
                                        ),
                                      ),
+
                                      DriversView(),
+
                                      MapViewWidget(),
+
                                    ],
                                  ) : Column(
                                    children: [
+
                                      BookingFormWidget(),
+
                                      Row(
                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                        children: [
@@ -1769,6 +1778,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                          /// todo MAP SECTION
                                        ],
                                      )
+
                                    ],
                                  ),
                                  /* child: width <= 1366 ? Row(
@@ -1806,6 +1816,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   ),*/
                                 ),
                               ),
+
                               Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
@@ -1813,15 +1824,21 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(color: Colors.grey.shade300),
                                   ),
+
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: BookingTable(),
-                                  )),
+                                  )
+
+                              ),
+
                             ],
                           ),
                         ),
+
                         // SizedBox(height: 12),
                         // 🔽 Address suggestion dropdown with keyboard support
+
                         Obx(() {
                           if (controller.selectedTextFieldsValue.value == "via") return const SizedBox();
                           if (controller.selectedTextFieldsValue.value == "Phone Number") {
@@ -1836,10 +1853,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                               },
                             );
                           }
+
                           if (controller.allAddressesData.isEmpty) return const SizedBox();
 
                           final activeKey = controller.activeFieldKey.value;
+
                           final fieldBox = activeKey?.currentContext?.findRenderObject() as RenderBox?;
+
                           final stackBox = controller.stackKey.currentContext?.findRenderObject() as RenderBox?;
 
                           double top = 0.0;
@@ -1871,6 +1891,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                   }
                                 }
                               },
+
                               child: Container(
                                 height: screenHeight * 0.3,
                                 decoration: BoxDecoration(
@@ -1880,6 +1901,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                     BoxShadow(color: Colors.black12, blurRadius: 5, offset: Offset(0, 2)),
                                   ],
                                 ),
+
                                 child: Obx(() => ListView.builder(
                                   key: controller.suggestionListKey,
                                   controller: controller.suggestionScrollController,

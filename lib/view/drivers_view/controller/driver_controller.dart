@@ -411,40 +411,49 @@ class DriverController extends GetxController {
       if(singleDriverData!.driver!.rentLimit != null){
         driverRendLimitController.text = singleDriverData!.driver!.rentLimit!;
       }
+
       if(singleDriverData!.driver!.balance != null){
         driverBalanceController.text =
             singleDriverData!.driver!.balance.toString();
       }
+
      if(singleDriverData!.driver!.address != null) {
         driverAddressController.text =
             singleDriverData!.driver!.address.toString();
       }
+
       if(singleDriverData!.driver!.useCompanyVehicle == false){
         if(singleDriverData!.driver!.vehicle!.vehicleNumber != null){
           vehicleNameController.text =
               singleDriverData!.driver!.vehicle!.vehicleNumber.toString();
         }
+
         if(singleDriverData!.driver!.vehicle!.make != null){
           vehicleMakeController.text =
               singleDriverData!.driver!.vehicle!.make.toString();
         }
+
         if(singleDriverData!.driver!.vehicle!.model != null){
         vehicleModelController.text =
             singleDriverData!.driver!.vehicle!.model.toString();
         }
+
         if(singleDriverData!.driver!.vehicle!.color != null){
         vehicleColorController.text =
             singleDriverData!.driver!.vehicle!.color.toString();
         }
+
         if(singleDriverData!.driver!.vehicle!.owner != null){
         vehicleOwnerController.text =
             singleDriverData!.driver!.vehicle!.owner.toString();
         }
+
         if( singleDriverData!.driver!.vehicle!.logBook!.logBookNumber != null){
           vehicleLogBookController.text = singleDriverData!
               .driver!.vehicle!.logBook!.logBookNumber
               .toString();
         }
+
         int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) => test.id == singleDriverData!.driver!.vehicle!.vehicleTypeId!);
         selectCompanyVehicle = getCombineVehicleData!.vehicleTypes![index];
         for (var action in rows) {
@@ -548,6 +557,7 @@ class DriverController extends GetxController {
           ));
         }
       }
+
       if(singleDriverData!.driver!.notes!.isNotEmpty){
         for (var action in singleDriverData!.driver!.notes!) {
           noteList.add(NoteAlertClass(

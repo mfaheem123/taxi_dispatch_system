@@ -124,7 +124,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
               return Column(
                 children: [
-
                   SizedBox(height: screenHeight * 0.019),
                   // ================= Row 1: Name, Email, Mobile, Tel =================
                   SingleChildScrollView(
@@ -354,8 +353,6 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                             ),
                           ),
                         ),
-
-
 
 
                         // (12) Pay dropdown

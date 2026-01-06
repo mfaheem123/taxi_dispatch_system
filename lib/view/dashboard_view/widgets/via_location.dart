@@ -120,10 +120,11 @@ class _ViaLocationState extends State<ViaLocation> {
                                         fontWeight: FontWeight.bold, fontSize: 22),
                                   ),
                                 ),
+
                                 SizedBox(width: 12),
+
                                 RawKeyboardListener(
-                                  focusNode: controller
-                                      .searchingAddressViaFocusNode,
+                                  focusNode: controller.searchingAddressViaFocusNode,
 
                                   onKey: (event) {
                                     if (event is RawKeyDownEvent) {
@@ -213,6 +214,8 @@ class _ViaLocationState extends State<ViaLocation> {
 
 
                         SizedBox(height: 16),
+
+
                         ListView.builder(
                             itemCount: controller.viaPoints.length,
                             shrinkWrap: true,

@@ -1,6 +1,5 @@
 
 import 'dart:ui';
-
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -99,7 +98,6 @@ class _BookingTableState extends State<BookingTable> {
                                   ),
                                 );
                               }).toList(),
-
                               onChanged: (value) {
                                 controller.getTableDataStatus(index: index,value: value);
                                 // });
@@ -113,6 +111,7 @@ class _BookingTableState extends State<BookingTable> {
                 ),
               ),
               // _buildTabs(),
+
 
               const SizedBox(height: 10),
 
@@ -163,52 +162,42 @@ class _BookingTableState extends State<BookingTable> {
                     }),
                     buildHeaderWithSearch(title: "PICKUP", onChanged: (v){
                       controller.pickup.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "DROPOFF", onChanged: (v){
                       controller.dropOff.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "ACC", onChanged: (v){
                       controller.accountName.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "DRV", onChanged: (v){
                       controller.driverName.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "VEH", onChanged: (v){
                       controller.vehicleTypeName.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "NOTE", onChanged: (v){
                       controller.notes.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "FARE", onChanged: (v){
                       controller.fares.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "STATUS", onChanged: (v){
                       controller.bookingStatus.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "J/T", onChanged: (v){
                       controller.journeyType.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "P/T", onChanged: (v){
                       controller.paymentType.text = v;
-
                       controller.onTableChangeHandler(tableId: controller.selectedTabId.toString(),);
                     }),
                     buildHeaderWithSearch(title: "Action"),
@@ -658,7 +647,8 @@ class _BookingTableState extends State<BookingTable> {
   }) {
     showMenu(
       context: context,
-      position: position/*RelativeRect.fromLTRB(
+      position: position
+      /*RelativeRect.fromLTRB(
         position.dx,
         position.dy,
         0,
@@ -670,6 +660,7 @@ class _BookingTableState extends State<BookingTable> {
         PopupMenuItem(value: 'copy', child: Text('COPY')),
         PopupMenuItem(value: 'audit', child: Text('AUDIT REPORT')),
       ],
+
     ).then((value) {
       if (value == null) return;
 

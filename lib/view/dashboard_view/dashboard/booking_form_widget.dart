@@ -360,6 +360,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               );
                             },
                           ),
+
                           buildFocusableIcon(
                             icon: Icons.note_add_sharp,
                             focusNode: _focusNodes[3],
@@ -499,7 +500,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
   }
 }
 
-Widget buildFocusableIcon({
+Widget  buildFocusableIcon({
   required IconData icon,
   required VoidCallback onPressed,
   required FocusNode focusNode,

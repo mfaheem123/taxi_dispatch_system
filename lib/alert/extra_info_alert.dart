@@ -87,10 +87,14 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                   contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 4),
                   borderRadius: 4,
                 ),
+
+
                 Divider(),
+
                 // SizedBox(
                 //   height: 15,
                 // ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Text(AppText.controllerNotes,
@@ -139,6 +143,7 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                     ),
                   ],
                 ),
+
                 SizedBox(
                   height: 200,
                   child: ListView.builder(

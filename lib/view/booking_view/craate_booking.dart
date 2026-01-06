@@ -43,7 +43,6 @@ class _CreateBookingState extends State<CreateBooking> {
   String selectedMenu = "";
   String selectedDropdownItem = "";
   DateTime selected = DateTime.now();
-
   final FocusNode swap1FN = FocusNode();
   final FocusNode swap2FN = FocusNode();
   final FocusNode calendarFN = FocusNode();
@@ -91,9 +90,7 @@ class _CreateBookingState extends State<CreateBooking> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     // Controller initialize only if not already put
     if (!Get.isRegistered<DashboardController>()) {
@@ -1398,8 +1395,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                     inactiveColor: DynamicColors.gryClr,
                                     focusScale: 1.5,
                                     onToggle: () {
-                                      print(
-                                          "Switch toggled: ${controller.switchController.value}");
+                                      print("Switch toggled: ${controller.switchController.value}");
                                     },
                                   ),
 
@@ -1514,8 +1510,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             ],
                                             keyboardType: TextInputType.number,
                                             contentPadding:
-                                                EdgeInsets.symmetric(
-                                                    horizontal: 4),
+                                                EdgeInsets.symmetric(horizontal: 4),
                                             controller: TextEditingController(),
                                             borderRadius: 4,
                                           ),
@@ -1529,8 +1524,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             inputFormatters: [
                                               FilteringTextInputFormatter
                                                   .digitsOnly,
-                                              LengthLimitingTextInputFormatter(
-                                                  2),
+                                              LengthLimitingTextInputFormatter(2),
                                             ],
                                             keyboardType: TextInputType.number,
                                             contentPadding:
@@ -1629,9 +1623,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                   ),
                                 ],
                               ),
+
                               SizedBox(
                                 height: 10,
                               ),
+
                               Container(
                                 width: Get.width,
                                 padding:
@@ -1686,9 +1682,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                   ],
                                 ),
                               ),
+
                               SizedBox(
                                 height: 10,
                               ),
+
                               Container(
                                 width: Get.width,
                                 padding:
