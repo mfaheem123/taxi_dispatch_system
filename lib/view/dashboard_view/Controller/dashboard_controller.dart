@@ -607,6 +607,7 @@ class DashboardController extends GetxController {
         if (focusPoints.length == 1) {
           bounds =
               LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
+
         } else {
           bounds = calculateBounds(focusPoints); // your existing helper
         }
@@ -625,7 +626,9 @@ class DashboardController extends GetxController {
         double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
 
         fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+
         print(fixedFare.value);
+
       } else {
         print('No active fare found for this vehicle');
       }
@@ -838,8 +841,7 @@ class DashboardController extends GetxController {
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
-      int index = polyLineMarkerInfo
-          .indexWhere((test) => test.markerType == "DROP LOCATION");
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "DROP LOCATION");
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
@@ -872,8 +874,7 @@ class DashboardController extends GetxController {
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value ==
         "Create Booking DROP LOCATION") {
-      int index = polyLineMarkerInfo.indexWhere(
-              (test) => test.markerType == "Create Booking DROP LOCATION");
+      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking DROP LOCATION");
 
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);

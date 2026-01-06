@@ -245,23 +245,7 @@ class _ViaLocationState extends State<ViaLocation> {
 
 
                         SizedBox(height: 16),
-<<<<<<< HEAD
 
-
-                        ListView.builder(
-                            itemCount: controller.viaPoints.length,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            itemBuilder: (context, index) {
-                              final point = controller.viaPoints[index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(vertical: 10),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${index + 1}',
-=======
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -271,7 +255,7 @@ class _ViaLocationState extends State<ViaLocation> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
->>>>>>> d1a1e85f16871029ae1b537c4feb6a4b9de5acfb
+
 
                                   Visibility(
                                     visible: controller.jourValue != 'W/R'?false:true,
