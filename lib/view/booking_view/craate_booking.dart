@@ -818,101 +818,104 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // (4) Dropoff textfield
+
+
                                           FocusTraversalOrder(
-                                            order: const NumericFocusOrder(4),
-                                            child: SizedBox(
-                                              width: fieldWidth,
-                                              height: 30,
-                                              child: RawKeyboardListener(
-                                                focusNode: controller
-                                                    .via2KeyboardFocusNode,
-                                                onKey: (event) {
-                                                  if (event
-                                                      is RawKeyDownEvent) {
-                                                    if (event.logicalKey ==
-                                                            LogicalKeyboardKey
-                                                                .arrowDown &&
-                                                        controller
-                                                                .highlightedIndex
-                                                                .value <
-                                                            controller
-                                                                    .suggestions
-                                                                    .length -
-                                                                1) {
-                                                      controller
-                                                          .highlightedIndex
-                                                          .value++;
-                                                    } else if (event
-                                                                .logicalKey ==
-                                                            LogicalKeyboardKey
-                                                                .arrowUp &&
-                                                        controller
-                                                                .highlightedIndex
-                                                                .value >
-                                                            0) {
-                                                      controller
-                                                          .highlightedIndex
-                                                          .value--;
-                                                    } else if (event
-                                                            .logicalKey ==
-                                                        LogicalKeyboardKey
-                                                            .enter) {
-                                                      final selected = controller
-                                                          .suggestions[controller
-                                                              .highlightedIndex
-                                                              .value]
-                                                          .name;
-                                                      controller
-                                                          .selectSuggestion(
-                                                              selected);
-                                                    }
-                                                  }
-                                                },
-                                                child: CustomTextField(
-                                                  key: controller.via2FieldKey,
-                                                  controller: controller
-                                                      .viaLocation2Controller,
+                                              order: const NumericFocusOrder(4),
+                                              child: SizedBox(
+                                                width: fieldWidth,
+                                                height: 30,
+                                                child: RawKeyboardListener(
                                                   focusNode: controller
-                                                      .dropOffTextFieldFocusNode,
-                                                  hintText: 'DROP LOCATION',
-                                                  borderRadius: 4,
-                                                  prefixIcon: const Icon(
-                                                    Icons.location_pin,
-                                                    color: Colors.red,
-                                                    size: 20,
-                                                  ),
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .nextFocus(),
-                                                  suffixIcon: KbdActivatable(
-                                                    focusNode: swap2FN,
-                                                    onActivate: () {
-                                                      String tempPic = controller
-                                                          .viaLocation1Controller
-                                                          .text;
-                                                      String tempDrop = controller
-                                                          .viaLocation2Controller
-                                                          .text;
-                                                      controller
-                                                          .viaLocation1Controller
-                                                          .text = tempDrop;
-                                                      controller
-                                                          .viaLocation2Controller
-                                                          .text = tempPic;
-                                                      controller.update();
-                                                    },
-                                                    child: const Icon(
-                                                        Icons.swap_vert,
-                                                        color:
-                                                            Color(0xFF575797),
-                                                        size: 20),
+                                                      .via2KeyboardFocusNode,
+                                                  onKey: (event) {
+                                                    if (event
+                                                        is RawKeyDownEvent) {
+                                                      if (event.logicalKey ==
+                                                              LogicalKeyboardKey
+                                                                  .arrowDown &&
+                                                          controller
+                                                                  .highlightedIndex
+                                                                  .value <
+                                                              controller
+                                                                      .suggestions
+                                                                      .length -
+                                                                  1) {
+                                                        controller
+                                                            .highlightedIndex
+                                                            .value++;
+                                                      } else if (event
+                                                                  .logicalKey ==
+                                                              LogicalKeyboardKey
+                                                                  .arrowUp &&
+                                                          controller
+                                                                  .highlightedIndex
+                                                                  .value >
+                                                              0) {
+                                                        controller
+                                                            .highlightedIndex
+                                                            .value--;
+                                                      } else if (event
+                                                              .logicalKey ==
+                                                          LogicalKeyboardKey
+                                                              .enter) {
+                                                        final selected = controller
+                                                            .suggestions[controller
+                                                                .highlightedIndex
+                                                                .value]
+                                                            .name;
+                                                        controller
+                                                            .selectSuggestion(
+                                                                selected);
+                                                      }
+                                                    }
+                                                  },
+                                                  child: CustomTextField(
+                                                    key: controller.via2FieldKey,
+                                                    controller: controller
+                                                        .viaLocation2Controller,
+                                                    focusNode: controller
+                                                        .dropOffTextFieldFocusNode,
+                                                    hintText: 'DROP LOCATION',
+                                                    borderRadius: 4,
+                                                    prefixIcon: const Icon(
+                                                      Icons.location_pin,
+                                                      color: Colors.red,
+                                                      size: 20,
+                                                    ),
+                                                    textInputAction:
+                                                        TextInputAction.next,
+                                                    onSubmitted: (_) =>
+                                                        FocusScope.of(context)
+                                                            .nextFocus(),
+                                                    suffixIcon: KbdActivatable(
+                                                      focusNode: swap2FN,
+                                                      onActivate: () {
+                                                        String tempPic = controller
+                                                            .viaLocation1Controller
+                                                            .text;
+                                                        String tempDrop = controller
+                                                            .viaLocation2Controller
+                                                            .text;
+                                                        controller
+                                                            .viaLocation1Controller
+                                                            .text = tempDrop;
+                                                        controller
+                                                            .viaLocation2Controller
+                                                            .text = tempPic;
+                                                        controller.update();
+                                                      },
+                                                      child: const Icon(
+                                                          Icons.swap_vert,
+                                                          color:
+                                                              Color(0xFF575797),
+                                                          size: 20),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                          ),
+
 
                                           SizedBox(
                                               width: isMobile ? 0 : 10,
