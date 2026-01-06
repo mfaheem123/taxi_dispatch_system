@@ -53,72 +53,62 @@ class FormShortCutKey extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      Obx(
-                            ()=> MouseRegion(
-                          onEnter: (_) {
-                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                              DashboardF8Alert.show();
-                            }
 
-                            // dashboardController.isHoveredF8 = true.obs;
-                          },
-                          onExit: (_) {
-                            // dashboardController.isHoveredF8 = false.obs;
-                          },
-                          child: Container(
-                            // margin: EdgeInsets.symmetric(
-                            //     horizontal: 16, vertical: 3),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                              borderRadius:
-                              BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '+ MULTI RESERVATION [F8]',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      GestureDetector(
+                        onTap: (){
+                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                            DashboardF8Alert.show();
+                          }
+                        },
+                        child: Container(
+                          // margin: EdgeInsets.symmetric(
+                          //     horizontal: 16, vertical: 3),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: dashboardController.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                            borderRadius:
+                            BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            '+ MULTI RESERVATION [F8]',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      Obx(
-                            ()=> MouseRegion(
-                          onEnter: (_) {
-                            if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
-                            {
-                              DashboardF9Alert.show();
-                            }
-                            // dashboardController.isHoveredF9 = true.obs;
-                          },
-                          onExit: (_) {
-                            // dashboardController.isHoveredF9 = false.obs;
-                          },
-                          child: Container(
-                            // margin: EdgeInsets.symmetric(
-                            //     horizontal: 16, vertical: 3),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                              borderRadius:
-                              BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '+ VEHICLES [F9]',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+
+                      GestureDetector(
+                        onTap: (){
+                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
+                          {
+                            DashboardF9Alert.show();
+                          }
+                        },
+                        child: Container(
+                                // margin: EdgeInsets.symmetric(
+                                //     horizontal: 16, vertical: 3),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: dashboardController.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                ),
+                                child: Text(
+                                  '+ VEHICLES [F9]',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
                       ),
+
                       // Obx(
                       //       ()=> MouseRegion(
                       //     onEnter: (_) {

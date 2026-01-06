@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
@@ -6,6 +8,9 @@ import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'dart:html' as html;
+import '../../setting/model/templete_HTML_model.dart';
+import '../../setting/model/templete_by_type_model.dart';
 import '../Invoice/create_customer_invoice.dart';
 
 class AccountController extends GetxController {
@@ -235,15 +240,12 @@ class AccountController extends GetxController {
 
   SubsidairyBankModel? subsidairyBankModel;
   Subsidiary? subsidiaryStoreValue;
-
   RxBool SubsdairyBankLoader = false.obs;
-
   getSubsdairyBank() async {
     SubsdairyBankLoader(true);
     var response = await Api().get("subsidiaries/with-bank-details");
     if (response.statusCode == 200) {
       subsidairyBankModel = SubsidairyBankModel.fromJson(response.data);
-
       if (accountObjectData != null) {
         int index = subsidairyBankModel!.subsidiariesList!
             .indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
@@ -265,6 +267,55 @@ class AccountController extends GetxController {
   final customerEmailController = TextEditingController();
   final customerMobileController = TextEditingController();
   final customerTelephoneController = TextEditingController();
+
+  @override
+  void onInit() {
+    super.onInit();
+    getTemplateHtmlText(); // ye call zaruri hai
+  }
+
+
+  HtmlTempleteModel? templeteHtmlModel;
+  bool loadHtml = false;
+  getTemplateHtmlText() async {
+    loadHtml = true;
+    var response = await Api().get("templates/template_setting?id=16");
+    if (response.statusCode == 200) {
+      templeteHtmlModel = HtmlTempleteModel.fromJson(response.data);
+      loadHtml = false;
+      update();
+    }
+  }
+
+
+  Future<void> downloadApiContentAsFile() async {
+
+    final String htmlContent =
+        templeteHtmlModel?.templates?.content ?? '';
+
+    if (htmlContent.isEmpty) {
+      print('No content to download');
+      return;
+    }
+    final bytes = utf8.encode(htmlContent);
+    final blob = html.Blob([bytes], 'text/html');
+    final url = html.Url.createObjectUrlFromBlob(blob);
+    html.AnchorElement(href: url)
+      ..setAttribute("download", "invoice.html")
+      ..click();
+
+    html.Url.revokeObjectUrl(url);
+  }
+
+
+
+
+
+
+
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo CUSTOMER INVOICE functionality
 

@@ -1,7 +1,9 @@
 
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:excel/excel.dart' show Excel, Sheet, CellValue, TextCellValue;
+import 'package:flutter_html/flutter_html.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 
@@ -226,10 +228,11 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                 /// PDF BUTTON
                 Obx(() => controller.showDownloadButtons.value
                     ? CustomButton(
-                  onTap: () {
-                    print("DOWNLOAD PDF");
-
-                    downloadPdfWeb(controller.invoiceList);
+                  onTap: () async {
+                    if (controller.templeteHtmlModel == null) {
+                      await controller.getTemplateHtmlText();
+                    }
+                    await controller.downloadApiContentAsFile();
                   },
                   verticalPadding: 0.0,
                   width: 110,
@@ -269,7 +272,9 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
             SizedBox(
               height: 8,
             ),
-            SingleChildScrollView(
+
+
+        SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: Get.width,
@@ -449,42 +454,7 @@ class InvoiceRow {
 
 
 
-Future<void> downloadPdfWeb(List<InvoiceRow> list) async {
-  final pdf = pw.Document();
 
-  pdf.addPage(
-    pw.Page(
-      build: (context) {
-        return pw.Table.fromTextArray(
-          headers: ['REF', 'DATE', 'PICKUP', 'DROPOFF', 'FARE', 'PICKUP1', 'DROPOFF2', 'FARE3'],
-          data: list.map((e) => [
-            e.ref,
-            e.datetime,
-            e.pickup,
-            e.dropoff,
-            e.fare,
-            e.pickup1,
-            e.dropoff2,
-            e.fare3
-          ]).toList(),
-        );
-      },
-    ),
-  );
-
-
-  final List<int> pdfData = await pdf.save();
-  final Uint8List bytes = Uint8List.fromList(pdfData);
-
-  final blob = html.Blob([bytes], 'application/pdf');
-  final url = html.Url.createObjectUrlFromBlob(blob);
-
-  html.AnchorElement(href: url)
-    ..setAttribute("download", "invoice.pdf")
-    ..click();
-
-  html.Url.revokeObjectUrl(url);
-}
 
 
 
