@@ -19,7 +19,7 @@ class AppPages {
 
   static const initial = Routes.loginScreen;
   // static const initial = Routes.ResponsivePassengerScreen;
-  // static const initial = Routes.myHomePage;
+  // static const initial = Routes.createBooking;
 
   static final routes = [
     GetPage(
@@ -80,4 +80,5 @@ class AuthMiddleware extends GetMiddleware {
     }
     return null;
   }
+
 }
