@@ -616,22 +616,32 @@ class DashboardController extends GetxController {
         mapController.fitCamera(cameraFit);
       }
 
-      print(dashboardAllData!.fareConfigurations);
+      final storedTemFare = await getFares(
+        // day: ,
+          dropOff: pickupController.text,
+          pickup: dropOffController.text,
+          miles: totalDistance.value,
+          dropoffPlotId: dashboardZoneValue != null? dashboardZoneValue!.id:null,
+          pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+          pickupTime: pickUpTimeController.text,
+          vehicleTypeId: selectVehicleValue!.id
+      );
+      print(storedTemFare);
 
-      final fare = await getActiveFareForVehicle(dashboardAllData!.fareConfigurations!, selectVehicleValue!.id!,);
-
-      if (fare != null) {
-        print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
-
-        double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-
-        fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-
-        print(fixedFare.value);
-
-      } else {
-        print('No active fare found for this vehicle');
-      }
+      fixedFare.value = storedTemFare;
+      // final fare = await getActiveFareForVehicle(dashboardAllData!.fareConfigurations!, selectVehicleValue!.id!,);
+      //
+      // if (fare != null) {
+      //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
+      //   double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+      //
+      //   fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+      //
+      //   print(fixedFare.value);
+      //
+      // } else {
+      //   print('No active fare found for this vehicle');
+      // }
       // int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
       //
       // if(index != -1){
