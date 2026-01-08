@@ -1,5 +1,7 @@
 
 
+import 'package:dashboard_new1/component/networks/api.dart';
+
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> make function for mints and hours
 String formatDuration(double minutes) {
   final int totalMinutes = minutes.round();
@@ -15,11 +17,45 @@ String formatDuration(double minutes) {
   }
 }
 
-Future<void> getFares({miles, pickupDate, pickupTime, vehicleTypeId}) async{
+
+Future<String> getFares({
+  dynamic miles,
+  dynamic pickupDate,
+  dynamic pickupTime,
+  dynamic vehicleTypeId,
+  List? multiReservation,
+  dynamic day,
+  dynamic pickUpPlotId,
+  dynamic dropoffPlotId,
+  String? pickup,
+  String? dropOff,
+}) async {
   var formData = {
-    "miles": miles,
-    "pickup_date": pickupDate,
-    "pickup_time": pickupTime,
-    "vehicle_type_id": vehicleTypeId,
+    if (miles != null) "miles": miles,
+    if (pickupDate != null) "pickup_date": pickupDate,
+    if (pickupTime != null) "pickup_time": pickupTime,
+    if (vehicleTypeId != null) "vehicle_type_id": vehicleTypeId,
+    if (multiReservation != null) "multi_reservation": multiReservation,
+    if (day != null) "day": day,
+    if (pickUpPlotId != null) "pickup_plot_id": pickUpPlotId,
+    if (dropoffPlotId != null) "dropoff_plot_id": dropoffPlotId,
+    if (pickup != null) "pickup": pickup,
+    if (dropOff != null) "dropoff": dropOff,
   };
+  try {
+    var response = await Api().post(formData, "fares/calculate-fare");
+
+    if (response.statusCode == 200) {
+      print("API Success: ${response.data}");
+      // Ensure you convert the value to String using .toString()
+      // in case the API returns it as a number (int/double).
+      return response.data['data']['total_fare'].toString();
+    } else {
+      print("API Error: ${response.statusCode}");
+      return "0"; // Return a default value or handle error
+    }
+  } catch (e) {
+    print("Connection Error: $e");
+    return "0"; // Return a default value if the request fails entirely
+  }
 }

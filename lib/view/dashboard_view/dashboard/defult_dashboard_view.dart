@@ -12,6 +12,7 @@ import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
+import '../../../bottom_navigation.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
 import '../../../component/suggestion_widget/suggestion_controller.dart';
@@ -19,6 +20,7 @@ import '../../../component/suggestion_widget/suggestion_view.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
+import '../../../component/time_duration_method.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
@@ -842,9 +844,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             borderClr:
                                                             Colors.blue,
                                                             onChanged:
-                                                                (date) {
+                                                                (date) async{
                                                               controller.pickUpDate =
                                                                   date;
+                                                              final storedTemFare = await getFares(
+                                                                  dropOff: controller.pickupController.text,
+                                                                  pickup: controller.dropOffController.text,
+                                                                  miles: controller.totalDistance.value,
+                                                                  dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                  pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                  pickupTime: controller.pickUpTimeController.text,
+                                                                  vehicleTypeId: controller.selectVehicleValue!.id
+                                                              );
+                                                              controller.fixedFare.value = storedTemFare;
                                                               controller.update();
                                                             },
                                                             onSubmitted:
@@ -880,9 +892,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               controller:
                                                               controller.pickUpTimeController, // optional
                                                               onTimeSelected:
-                                                                  (time) {
+                                                                  (time) async{
                                                                 controller.pickUpTimeController.text =
                                                                     time;
+                                                                final storedTemFare = await getFares(
+                                                                    dropOff: controller.pickupController.text,
+                                                                    pickup: controller.dropOffController.text,
+                                                                    miles: controller.totalDistance.value,
+                                                                    dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                    pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                    pickupTime: controller.pickUpTimeController.text,
+                                                                    vehicleTypeId: controller.selectVehicleValue!.id
+                                                                );
+                                                                controller.fixedFare.value = storedTemFare;
                                                                 setState(() {
                                                                   print(controller.pickUpTimeController.text);
                                                                 });
@@ -999,7 +1021,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             // O/W, R/N, W/R
 
                                                             if (v!.journeyType ==
-                                                                "w/r") {
+                                                                "r/n") {
                                                               controller.jourValue =
                                                               'W/R';
                                                             } else {
@@ -1969,7 +1991,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   //     ),
                                                   //   ),
                                                   // ),
-SizedBox(width: 2),
+                                                  SizedBox(width: 2),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?38:25),
@@ -2026,29 +2048,39 @@ SizedBox(width: 2),
                                                               .toList(),
                                                           onChanged:
                                                               (v) async {
-                                                            controller.selectVehicleValue =
-                                                                v;
+                                                            controller.selectVehicleValue = v;
+                                                            Get.to(BottomNavigationView());
+                                                            // final storedTemFare = await getFares(
+                                                            //     dropOff: controller.pickupController.text,
+                                                            //     pickup: controller.dropOffController.text,
+                                                            //     miles: controller.totalDistance.value,
+                                                            //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                            //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                            //     pickupTime: controller.pickUpTimeController.text,
+                                                            //     vehicleTypeId: controller.selectVehicleValue!.id
+                                                            // );
+                                                            // controller.fixedFare.value = storedTemFare;
 
-                                                            final fare =
-                                                            await getActiveFareForVehicle(
-                                                              controller.dashboardAllData!.fareConfigurations!,
-                                                              controller.selectVehicleValue!.id!,
-                                                            );
-                                                            if (fare !=
-                                                                null) {
-                                                              print(
-                                                                'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                              );
-
-                                                              double
-                                                              inttt =
-                                                              (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-
-                                                              controller.fixedFare.value =
-                                                                  (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                            } else {
-                                                              print('No active fare found for this vehicle');
-                                                            }
+                                                            // final fare =
+                                                            // await getActiveFareForVehicle(
+                                                            //   controller.dashboardAllData!.fareConfigurations!,
+                                                            //   controller.selectVehicleValue!.id!,
+                                                            // );
+                                                            // if (fare !=
+                                                            //     null) {
+                                                            //   print(
+                                                            //     'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                            //   );
+                                                            //
+                                                            //   double
+                                                            //   inttt =
+                                                            //   (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                            //
+                                                            //   controller.fixedFare.value =
+                                                            //       (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                            // } else {
+                                                            //   print('No active fare found for this vehicle');
+                                                            // }
                                                             controller
                                                                 .update();
                                                           },
