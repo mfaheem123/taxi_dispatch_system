@@ -1991,7 +1991,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   //     ),
                                                   //   ),
                                                   // ),
-SizedBox(width: 2),
+                                                  SizedBox(width: 2),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?38:25),
