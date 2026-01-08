@@ -1,6 +1,7 @@
 
 
 
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import '../component/color.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
 import '../component/text_widget.dart';
+import '../component/time_duration_method.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class ExtraFaresAlert extends StatefulWidget {
@@ -217,6 +219,75 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                       ),
                     ),
                   ],
+                ),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      height: 35,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: Text("Cancel",
+                          style: TextStyle(
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    SizedBox(
+                      width: 150,
+                      height: 35,
+                      child: ElevatedButton(
+                        onPressed: () async{
+                          final storedTemFare = await getFares(
+                            // day: ,
+                              dropOff: controller.pickupController.text,
+                              pickup: controller.dropOffController.text,
+                              miles: controller.totalDistance.value,
+                              dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                              pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                              pickupTime: controller.pickUpTimeController.text,
+                              vehicleTypeId: controller.selectVehicleValue!.id
+                          );
+                          print(storedTemFare);
+
+                          controller.fixedFare.value = storedTemFare;
+                          controller.update();
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: controller.viaSelectionOneWay.value?DynamicColors.primaryClr :
+                          DynamicColors.primaryClr.withOpacity(0.2),
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: Text("Save",
+                          style: TextStyle(
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
                 ),
               ],
             ),
