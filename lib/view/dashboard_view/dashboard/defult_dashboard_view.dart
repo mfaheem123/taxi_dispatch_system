@@ -23,6 +23,7 @@ import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
+import '../../../../../../hubaib/slc_mobile_app/lib/view/lab_view/my_reports_view/view_report.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
 import '../models/account_darshboard_model.dart';
@@ -316,8 +317,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               // }
                                                             }
                                                           },
-                                                          child:
-                                                          CustomTextField(
+                                                          child: CustomTextField(
                                                             key: controller.pickupFieldKey,
                                                             controller: controller.pickupController,
                                                             focusNode: controller.pickupTextFieldFocusNode,
@@ -2460,6 +2460,7 @@ SizedBox(width: 15),
                                                                 () {
                                                               showDialog(
                                                                 context: context,
+                                                                barrierDismissible: false,
                                                                 builder: (_) => ExtraFaresAlert(),
                                                               );
                                                             },
@@ -2477,10 +2478,11 @@ SizedBox(width: 15),
                                                             _focusNodes[3],
                                                             onPressed:
                                                                 () {
-                                                              showDialog(
-                                                                context: context,
-                                                                builder: (_) => ExtraInfoAlert(),
-                                                              );
+                                                              Get.to(ViewReport());
+                                                              // showDialog(
+                                                              //   context: context,
+                                                              //   builder: (_) => ExtraInfoAlert(),
+                                                              // );
                                                             },
                                                           ),
                                                         ),
