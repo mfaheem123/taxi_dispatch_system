@@ -237,6 +237,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                         ),
+
                                         // (1) Pickup textfield
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(1),
@@ -829,8 +830,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // (4) Dropoff textfield
-
-
                                           FocusTraversalOrder(
                                               order: const NumericFocusOrder(4),
                                               child: SizedBox(
@@ -986,7 +985,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
+                                  padding: const EdgeInsets.only(left: 6),
                                   child: Wrap(
                                     spacing: 10,
                                     runSpacing: 16,
@@ -997,7 +996,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                       // name fileds
 
                                       Padding(
-                                        padding: const EdgeInsets.only(left: 2),
+                                        padding: const EdgeInsets.only(left: 0.0),
                                         child: FocusTraversalOrder(
                                           order: const NumericFocusOrder(1),
                                           child: labeledTextField(context, isMobile,
@@ -1007,6 +1006,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               textInputAction: TextInputAction.next),
                                         ),
                                       ),
+
                                       // email fileds
 
                                       FocusTraversalOrder(
