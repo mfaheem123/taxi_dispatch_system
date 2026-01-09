@@ -12,7 +12,6 @@ import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
-import '../../../bottom_navigation.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
 import '../../../component/suggestion_widget/suggestion_controller.dart';
@@ -23,7 +22,7 @@ import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
-import '../../../../../../hubaib/slc_mobile_app/lib/view/lab_view/my_reports_view/view_report.dart';
+// import '../../../../../../hubaib/slc_mobile_app/lib/view/lab_view/my_reports_view/view_report.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
 import '../models/account_darshboard_model.dart';
@@ -460,14 +459,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 padding: const EdgeInsets
                                                     .symmetric(
                                                     horizontal:
-                                                    12.0),
+                                                    10.0),
                                                 child: Row(
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .only(
                                                           right:
-                                                          10),
+                                                          8),
                                                       child:
                                                       Text(
                                                         AppText
@@ -605,7 +604,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         child:
                                                         RestrictedDrivers(
                                                           width:
-                                                          fieldWidth / 2.7,
+                                                          fieldWidth / 2.65,
                                                           height:
                                                           30,
                                                           padding:
@@ -667,7 +666,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                           Align(
                                             alignment: Alignment.centerLeft,
                                             child: Padding(
-                                              padding: const EdgeInsets.only(left: 10),
+                                              padding: const EdgeInsets.only(left: 6),
                                               child: Wrap(
                                                 spacing: 10,
                                                 runSpacing: 6,
@@ -703,7 +702,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
 
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 8),
+                                                      padding: const EdgeInsets.only(left: 4),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(
@@ -726,17 +725,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
 
                                                    Padding(
-                                                     padding: const EdgeInsets.only(left: 15),
+                                                     padding: const EdgeInsets.only(left: 10),
                                                      child: SizedBox(
                                                         width:
                                                         fieldWidth /
-                                                            2.4,
+                                                            2.25,
                                                         child: Row(
                                                           children: [
                                                             Padding(
                                                               padding: const EdgeInsets
                                                                   .only(
-                                                                  right: 6.0,),
+                                                                  right: 10.0,),
                                                               child: Text(
                                                                   AppText
                                                                       .mobile,
@@ -780,7 +779,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
                                                                         }
                                                                       },
-                                                                      width: fieldWidth / 3,
+                                                                      width: fieldWidth / 2.9
+                                                                      ,
                                                                     )),
                                                               ),
 
@@ -870,7 +870,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                   // (6) Time
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 16),
+                                                    padding: const EdgeInsets.only(left: 10),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -931,7 +931,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             .lead,
                                                         width:
                                                         fieldWidth /
-                                                            3,
+                                                            2.9,
                                                         child:
                                                         SizedBox(
                                                           height:
@@ -976,8 +976,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           .jour,
                                                       width:
                                                       fieldWidth /
-                                                          3,
-                                                      heights: 35,
+                                                          2.91,
+                                                      heights: 33,
                                                       child:
                                                       Container(
                                                         // height: 35,
@@ -1066,20 +1066,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          12.0),
+                                                          0.0),
                                                       child: Row(
                                                         children: [
-                                                          Padding(
-                                                            padding: const EdgeInsets
-                                                                .only(
-                                                                right: 10),
-                                                            child:
-                                                            Text(
-                                                              AppText.pick,
-                                                              style:
-                                                              mozillaTextSemiBoldText(
-                                                                context: context,
-                                                                fontSize: 13,
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets
+                                                                  .only(
+                                                                  right: 15),
+                                                              child:
+                                                              Text(
+                                                                AppText.pick,
+                                                                style:
+                                                                mozillaTextSemiBoldText(
+                                                                  context: context,
+                                                                  fontSize: 13,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -1191,7 +1194,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
+                                                            // Select Zone
                                                           Obx(
                                                                 () =>
                                                                 Padding(
@@ -1202,8 +1205,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     order: const NumericFocusOrder(22),
                                                                     child: CustomDropdownField<ZoneObject>(
                                                                       label: "Select Zone",
-                                                                      width: Get.width / 9,
-                                                                      height: 35,
+                                                                      width: Get.width / 7.5,
+                                                                      height: 30,
                                                                       items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
                                                                       value: _controller.zoneValue,
                                                                       itemLabel: (templateList) => templateList.name!,
@@ -1216,7 +1219,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                 ),
                                                           ),
-
+SizedBox(width: 18),
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
                                                             order:
@@ -1244,20 +1247,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          12.0),
+                                                          0.0),
                                                       child: Row(
                                                         children: [
-                                                          Padding(
-                                                            padding: const EdgeInsets
-                                                                .only(
-                                                                right: 10),
-                                                            child:
-                                                            Text(
-                                                              AppText.drop,
-                                                              style:
-                                                              mozillaTextSemiBoldText(
-                                                                context: context,
-                                                                fontSize: 13,
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets
+                                                                  .only(
+                                                                  right: 10),
+                                                              child:
+                                                              Text(
+                                                                AppText.drop,
+                                                                style:
+                                                                mozillaTextSemiBoldText(
+                                                                  context: context,
+                                                                  fontSize: 13,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -1370,6 +1376,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
+
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
@@ -1380,7 +1387,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               const NumericFocusOrder(25),
                                                               child:
                                                               RestrictedDrivers(
-                                                                width: fieldWidth / 3,
+                                                                width: fieldWidth / 2.78,
                                                                 height: 30,
                                                                 padding: 0.0,
                                                                 titleText: "SELECT PLOT",
@@ -1391,6 +1398,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
+                                                          SizedBox(width: 16),
 
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
@@ -1529,7 +1537,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           30),
                                                       child:
                                                       SizedBox(
-                                                        width: fieldWidth / 3,
+                                                        width: fieldWidth / 2,
                                                         // width: fieldWidth/6,
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
@@ -1545,15 +1553,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 }
                                                               },
                                                               child:
-                                                              Checkbox(
-                                                                activeColor:
-                                                                DynamicColors.primaryClr,
-                                                                value: controller.addReturnFare.value,
-                                                                onChanged:
-                                                                    (v) {
-                                                                  // controller.smsCheckbox.value = v!;
-                                                                  // controller.update();
-                                                                },
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(left: 35),
+                                                                child: Checkbox(
+                                                                  activeColor:
+                                                                  DynamicColors.primaryClr,
+                                                                  value: controller.addReturnFare.value,
+                                                                  onChanged:
+                                                                      (v) {
+                                                                    // controller.smsCheckbox.value = v!;
+                                                                    // controller.update();
+                                                                  },
+                                                                ),
                                                               ),
                                                             ),
                                                             Text(
@@ -1621,11 +1632,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: "R/${AppText.veh}",
+                                                        label: "R/${AppText.veh} ",
                                                         width:
                                                         fieldWidth /
                                                             3,
-                                                        heights: 35,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1706,12 +1717,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: "R/${AppText.drv}",
+                                                        label: "R/${AppText.drv} ",
                                                         width:
                                                         fieldWidth /
                                                             3,
                                                         heights:
-                                                        35,
+                                                        32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1807,7 +1818,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                   // (11) Account
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 20),
+                                                    padding: const EdgeInsets.only(left: 2),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       NumericFocusOrder(controller.jourValue == 'W/R'?35: 22),
@@ -1818,12 +1829,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         isMobile:
                                                         isMobile,
                                                         label:
-                                                        AppText
-                                                            .acc,
+                                                        "${AppText.acc}    ",
                                                         width:
                                                         fieldWidth /
-                                                            2.8,
-                                                        heights: 35,
+                                                            3,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1877,9 +1887,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     ),
                                                   ),
 
+                                                  
+
+                                                  
                                                   // (12) Pay dropdown
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 10),
+                                                    padding: const EdgeInsets.only(left: 20),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       NumericFocusOrder(controller.jourValue == 'W/R'?36: 23),
@@ -1895,7 +1908,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         width:
                                                         fieldWidth /
                                                             2.9,
-                                                        heights: 35,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1917,6 +1930,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               isDense:
                                                               true,
                                                             ),
+
                                                             value: controller
                                                                 .selectPaymentTypeValue,
                                                             items: controller
@@ -1991,7 +2005,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   //     ),
                                                   //   ),
                                                   // ),
-                                                  SizedBox(width: 2),
+                                                  SizedBox(width: 3),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?38:25),
@@ -2007,7 +2021,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       width:
                                                       fieldWidth /
                                                           3,
-                                                      heights: 35,
+                                                      heights: 32,
                                                       child:
                                                       Container(
                                                         // height: 35,
@@ -2049,17 +2063,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           onChanged:
                                                               (v) async {
                                                             controller.selectVehicleValue = v;
-                                                            Get.to(BottomNavigationView());
-                                                            // final storedTemFare = await getFares(
-                                                            //     dropOff: controller.pickupController.text,
-                                                            //     pickup: controller.dropOffController.text,
-                                                            //     miles: controller.totalDistance.value,
-                                                            //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                            //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                            //     pickupTime: controller.pickUpTimeController.text,
-                                                            //     vehicleTypeId: controller.selectVehicleValue!.id
-                                                            // );
-                                                            // controller.fixedFare.value = storedTemFare;
+                                                            final storedTemFare = await getFares(
+                                                                dropOff: controller.pickupController.text,
+                                                                pickup: controller.dropOffController.text,
+                                                                miles: controller.totalDistance.value,
+                                                                dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                pickupTime: controller.pickUpTimeController.text,
+                                                                vehicleTypeId: controller.selectVehicleValue!.id
+                                                            );
+                                                            controller.fixedFare.value = storedTemFare;
 
                                                             // final fare =
                                                             // await getActiveFareForVehicle(
@@ -2478,11 +2491,10 @@ SizedBox(width: 15),
                                                             _focusNodes[3],
                                                             onPressed:
                                                                 () {
-                                                              Get.to(ViewReport());
-                                                              // showDialog(
-                                                              //   context: context,
-                                                              //   builder: (_) => ExtraInfoAlert(),
-                                                              // );
+                                                              showDialog(
+                                                                context: context,
+                                                                builder: (_) => ExtraInfoAlert(),
+                                                              );
                                                             },
                                                           ),
                                                         ),

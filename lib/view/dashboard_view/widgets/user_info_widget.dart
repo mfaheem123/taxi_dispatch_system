@@ -540,7 +540,7 @@ Widget labeledTextField(
         Text(label,
             style:
             mozillaTextSemiBoldText(context: context, fontSize: 13)),
-        const SizedBox(width: 18),
+        const SizedBox(width: 12),
 
         if (isMobile)
           Expanded(

@@ -428,7 +428,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                   children: [
                                    Row(
                                      children: [
-                                       Text("W/R"),
+                                       Text("R/N"),
                                        SizedBox(
                                          width: 10,
                                        ),
@@ -449,7 +449,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                                borderRadius: BorderRadius.circular(4),
                                              ),
                                            ),
-                                           child: Text("W/R",
+                                           child: Text("R/N",
                                            style: TextStyle(
                                              color: DynamicColors.whiteClr
                                            ),

@@ -50,14 +50,14 @@ Future<String> getFares({
     if (pickup != null) "pickup": pickup,
     if (dropOff != null) "dropoff": dropOff,
 
-    if(partingCharges != null)"partingCharges": partingCharges,
-    if(congestionCharges != null)"congestionCharges": congestionCharges,
-    if(meetGreet != null)"meetGreet": meetGreet,
-    if(waitingCharges != null)"waitingCharges": waitingCharges,
-    if(extraDropCharges != null)"extraDropCharges": extraDropCharges,
-    if(creditCardCharges != null)"creditCardCharges": creditCardCharges,
-    if(companyPrice != null)"companyPrice": companyPrice,
-    if(returnCompanyPrice != null)"returnCompanyPrice": returnCompanyPrice,
+    if(partingCharges != null)"parking_charges": partingCharges,
+    if(congestionCharges != null)"congestion_charges": congestionCharges,
+    if(meetGreet != null)"meet_and_greet": meetGreet,
+    if(waitingCharges != null)"waiting_charges": waitingCharges,
+    if(extraDropCharges != null)"extra_drop_charges": extraDropCharges,
+    if(creditCardCharges != null)"credit_card_charges": creditCardCharges,
+    if(companyPrice != null)"company_price": companyPrice,
+    // if(returnCompanyPrice != null)"returnCompanyPrice": returnCompanyPrice,
 
   };
   try {

@@ -261,17 +261,23 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                               dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
                               pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
                               pickupTime: controller.pickUpTimeController.text,
-                              vehicleTypeId: controller.selectVehicleValue!.id
+                              vehicleTypeId: controller.selectVehicleValue!.id,
+                              partingCharges: dashBoardCntrl.partingChargesController.text,
+                              congestionCharges: dashBoardCntrl.congestionChargesController.text,
+                              meetGreet: dashBoardCntrl.meetGreetController.text,
+                              waitingCharges: dashBoardCntrl.waitingChargesController.text,
+                              extraDropCharges: dashBoardCntrl.extraDropChargesController.text,
+                              creditCardCharges: dashBoardCntrl.creditCardChargesController.text,
+                              companyPrice: dashBoardCntrl.companyPriceController.text,
+                              returnCompanyPrice: dashBoardCntrl.returnCompanyPriceController.text
                           );
-                          print(storedTemFare);
 
                           controller.fixedFare.value = storedTemFare;
                           controller.update();
                           Get.back();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: controller.viaSelectionOneWay.value?DynamicColors.primaryClr :
-                          DynamicColors.primaryClr.withOpacity(0.2),
+                          backgroundColor: DynamicColors.primaryClr,
                           padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
