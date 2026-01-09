@@ -383,7 +383,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(2),
                                           child: RestrictedDrivers(
-                                            width: fieldWidth / 2.5,
+                                            width: fieldWidth / 3,
                                             height: 30,
                                             padding: 0.0,
                                             titleText: "SELECT PLOT",
@@ -594,7 +594,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             child: FocusTraversalOrder(
                                               order: const NumericFocusOrder(2),
                                               child: RestrictedDrivers(
-                                                width: fieldWidth / 2.5,
+                                                width: fieldWidth / 3,
                                                 height: 30,
                                                 padding: 0.0,
                                                 titleText: "SELECT PLOT",
@@ -989,7 +989,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 6),
+                                  padding: const EdgeInsets.only(left: 13),
                                   child: Wrap(
                                     spacing: 10,
                                     runSpacing: 16,
@@ -998,7 +998,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                     alignment: WrapAlignment.start,
                                     children: [
                                       // name fileds
-
                                        FocusTraversalOrder(
                                           order: const NumericFocusOrder(1),
                                           child: labeledTextField(context, isMobile,
@@ -1007,10 +1006,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               width: fieldWidth / 2.4,
                                               textInputAction: TextInputAction.next),
                                         ),
-
-
                                       // email fileds
-
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(2),
                                         child: labeledTextField(
@@ -1022,12 +1018,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                             textInputAction: TextInputAction.next),
                                       ),
                                       // Mob
+                                      SizedBox(width: 2),
                                       SizedBox(
-                                        width: fieldWidth/ 1.4,
+                                        width: fieldWidth/ 1.62,
                                         child: Row(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.only(right: 18.0, left: 5),
+                                              padding: const EdgeInsets.only(right: 16.0 ),
                                               child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                             ),
                                             FocusTraversalOrder(
@@ -1072,7 +1069,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                         controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
                                                       }
                                                     },
-                                                    width: fieldWidth/1.7,
+                                                    width: fieldWidth/2,
                                                   )
                                               ),
                                             ),
@@ -1082,9 +1079,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                       // tel fields
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(4),
-                                        child: labeledTextField(context, isMobile,
-                                            AppText.tel, controller.telController,
-                                            width: fieldWidth / 2,
+                                        child: labeledTextField(context,
+                                            isMobile,
+                                            AppText.tel,
+                                            controller.telController,
+                                            width: fieldWidth / 1.97,
                                             textInputAction: TextInputAction.next,
                                             keyboardType: TextInputType.phone,
                                             formatDigitsOnly: false),
@@ -1103,7 +1102,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                       ),
                                       // (6) Time
-                                      SizedBox(width: 1.3),
+                                      // SizedBox(width: 1.3),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(6),
                                         child: labeledField(
@@ -1123,7 +1122,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.lead,
-                                          width: fieldWidth / 1.7,
+                                          width: fieldWidth / 2,
                                           child: SizedBox(
                                             height: 30,
                                             child: CustomTextField(
@@ -1143,13 +1142,12 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
                                       // (8) Journey dropdown (O/W, R/N, W/R)
-                                      SizedBox(width: 15),
+                                      SizedBox(width: 38),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(8),
                                         child: RestrictedDrivers(
-                                          width: fieldWidth / 2.90,
+                                          width: fieldWidth / 2.92,
                                           height: 30,
                                           padding: 0.0,
                                           titleText: "SELECT PLOT",
@@ -1159,7 +1157,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ],
                                         ),
                                       ),
-
                                       // (9) Driver dropdown
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(9),
@@ -1193,7 +1190,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
                                       // (10) Fare (Slugg)
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(10),
@@ -1222,15 +1218,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
                                       // (11) Account
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(11),
                                         child: labeledField(
                                           context: context,
                                           isMobile: isMobile,
-                                          label: AppText.acc,
-                                          width: fieldWidth / 2.3,
+                                          label: "${AppText.acc} ",
+                                          width: fieldWidth / 2,
                                           child: SizedBox(
                                             height: 30,
                                             child: CustomTextField(
@@ -1252,7 +1247,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
                                       // (12) Pay dropdown
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(12),
@@ -1260,7 +1254,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.pay,
-                                          width: fieldWidth / 2.3,
+                                          width: fieldWidth / 1.95,
                                           child: Container(
                                             height: 30,
                                             decoration: BoxDecoration(
@@ -1284,39 +1278,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
-                                      // (13) Calendar icon (keyboard clickable)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(13),
-                                        child: SizedBox(
-                                          height: 33,
-                                          child: KbdActivatable(
-                                            focusNode: calendarFN,
-                                            onActivate: () {
-                                              // TODO: open your calendar modal/sheet
-                                              // For demo:
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        "Calendar icon activated")),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey.shade300,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: const Icon(Icons.calculate,
-                                                  size: 20),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
                                       // (12) Pay dropdown
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(9),
@@ -1353,7 +1314,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
-
                                       // Switch + Quotation
                                       DynamicSwitch(
                                         controller: controller.switchController,
@@ -1364,7 +1324,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           print("Switch toggled: ${controller.switchController.value}");
                                         },
                                       ),
-
                                       Text(
                                         AppText.quotation,
                                         style: mozillaTextSemiBoldText(
@@ -1523,7 +1482,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ],
                                         ),
                                       ),
-
+                                      // 3 icons row  (person) (shopping_cart) (doller)
                                       FocusTraversalGroup(
                                         policy: OrderedTraversalPolicy(),
                                         child: Container(
@@ -1587,6 +1546,38 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                       ),
+                                      // (13) Calendar icon (keyboard clickable)
+                                      FocusTraversalOrder(
+                                        order: const NumericFocusOrder(13),
+                                        child: SizedBox(
+                                          height: 33,
+                                          child: KbdActivatable(
+                                            focusNode: calendarFN,
+                                            onActivate: () {
+                                              // TODO: open your calendar modal/sheet
+                                              // For demo:
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        "Calendar icon activated")),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(Icons.calculate,
+                                                  size: 25),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
                                     ],
                                   ),
                                 ),
