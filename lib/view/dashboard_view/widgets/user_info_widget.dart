@@ -450,7 +450,7 @@ Widget labeledField({
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-        const SizedBox(width: 14),
+        const SizedBox(width: 25),
         if (isMobile)
           Expanded(child: child)
         else
@@ -541,7 +541,6 @@ Widget labeledTextField(
             style:
             mozillaTextSemiBoldText(context: context, fontSize: 13)),
         const SizedBox(width: 12),
-
         if (isMobile)
           Expanded(
             child: CustomTextField(
