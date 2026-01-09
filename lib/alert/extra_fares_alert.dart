@@ -254,10 +254,12 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                       child: ElevatedButton(
                         onPressed: () async{
                           final storedTemFare = await getFares(
+                            multiReservationList: controller.multiReservationList,
                             // day: ,
                               dropOff: controller.pickupController.text,
                               pickup: controller.dropOffController.text,
                               miles: controller.totalDistance.value,
+                              journeyTypeId: controller.selectJourneyTypeValue!.id,
                               dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
                               pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
                               pickupTime: controller.pickUpTimeController.text,
