@@ -618,6 +618,8 @@ class DashboardController extends GetxController {
 
       final storedTemFare = await getFares(
         // day: ,
+          journeyTypeId: selectJourneyTypeValue!.id,
+        multiReservationList: multiReservationList,
           dropOff: pickupController.text,
           pickup: dropOffController.text,
           miles: totalDistance.value,

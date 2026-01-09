@@ -848,6 +848,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               controller.pickUpDate =
                                                                   date;
                                                               final storedTemFare = await getFares(
+                                                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                multiReservationList: controller.multiReservationList,
                                                                   dropOff: controller.pickupController.text,
                                                                   pickup: controller.dropOffController.text,
                                                                   miles: controller.totalDistance.value,
@@ -896,6 +898,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 controller.pickUpTimeController.text =
                                                                     time;
                                                                 final storedTemFare = await getFares(
+                                                                    journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                    multiReservationList: controller.multiReservationList,
                                                                     dropOff: controller.pickupController.text,
                                                                     pickup: controller.dropOffController.text,
                                                                     miles: controller.totalDistance.value,
@@ -1017,8 +1021,32 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ))
                                                               .toList(),
                                                           onChanged:
-                                                              (v) {
+                                                              (v) async{
                                                             // O/W, R/N, W/R
+
+                                                                final storedTemFare = await getFares(
+                                                                    multiReservationList: controller.multiReservationList,
+                                                                    // day: ,
+                                                                    dropOff: controller.pickupController.text,
+                                                                    pickup: controller.dropOffController.text,
+                                                                    miles: controller.totalDistance.value,
+                                                                    journeyTypeId: v!.id,
+                                                                    dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                    pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                    pickupTime: controller.pickUpTimeController.text,
+                                                                    vehicleTypeId: controller.selectVehicleValue!.id,
+                                                                    partingCharges: controller.partingChargesController.text,
+                                                                    congestionCharges: controller.congestionChargesController.text,
+                                                                    meetGreet: controller.meetGreetController.text,
+                                                                    waitingCharges: controller.waitingChargesController.text,
+                                                                    extraDropCharges: controller.extraDropChargesController.text,
+                                                                    creditCardCharges: controller.creditCardChargesController.text,
+                                                                    companyPrice: controller.companyPriceController.text,
+                                                                    returnCompanyPrice: controller.returnCompanyPriceController.text
+                                                                );
+
+                                                                controller.fixedFare.value = storedTemFare;
+
 
                                                             if (v!.journeyType ==
                                                                 "r/n") {
@@ -1030,8 +1058,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             }
                                                             controller.selectJourneyTypeValue =
                                                                 v;
-                                                            controller
-                                                                .update();
+                                                                controller.update();
                                                           },
                                                           // onChanged: controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty?
                                                           //     (v) {
@@ -2064,6 +2091,8 @@ SizedBox(width: 18),
                                                               (v) async {
                                                             controller.selectVehicleValue = v;
                                                             final storedTemFare = await getFares(
+                                                                journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                multiReservationList: controller.multiReservationList,
                                                                 dropOff: controller.pickupController.text,
                                                                 pickup: controller.dropOffController.text,
                                                                 miles: controller.totalDistance.value,
