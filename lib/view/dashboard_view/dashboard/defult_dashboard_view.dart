@@ -1367,11 +1367,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           : KbdActivatable(
                                                                         focusNode: clearDrop,
                                                                         onActivate: () {
-                                                                          // int index = controller.markers.indexWhere((test) => test.type == "dropOff");
-                                                                          // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
-                                                                          // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-                                                                          // controller.markers.remove(controller.markers[index]);
-                                                                          FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+                                                                         FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
                                                                           controller.dropOffTwoWayController.clear();
                                                                           controller.markers.clear();
                                                                           controller.polyLineMarkerInfo.clear();
