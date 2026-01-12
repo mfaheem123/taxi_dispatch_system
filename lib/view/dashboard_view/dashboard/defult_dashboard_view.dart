@@ -393,7 +393,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
-                                                                horizontal: 6.0),
+                                                                horizontal: 15.0),
                                                             child:
                                                             FocusTraversalOrder(
                                                               order:
@@ -418,7 +418,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                     // (3) Pickup notes
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 3),
+                                                      padding: const EdgeInsets.only(left: 15),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(3),
@@ -596,7 +596,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          6.0),
+                                                          15.0),
                                                       child:
                                                       FocusTraversalOrder(
                                                         order:
@@ -621,7 +621,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                     // (3) Pickup notes
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 5),
+                                                      padding: const EdgeInsets.only(left: 15),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(6),
@@ -722,20 +722,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 .next),
                                                       ),
                                                     ),
-
-
+                                                   // MOB fields
                                                    Padding(
-                                                     padding: const EdgeInsets.only(left: 10),
+                                                     padding: const EdgeInsets.only(left: 18),
                                                      child: SizedBox(
                                                         width:
                                                         fieldWidth /
-                                                            2.25,
+                                                            2.1,
                                                         child: Row(
                                                           children: [
                                                             Padding(
                                                               padding: const EdgeInsets
                                                                   .only(
-                                                                  right: 10.0,),
+                                                                  right: 22.0,),
                                                               child: Text(
                                                                   AppText
                                                                       .mobile,
@@ -793,8 +792,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   //   child: ,
                                                   // ),
 
+                                                  // Tel fileds
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 8),
+                                                    padding: const EdgeInsets.only(left: 4),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -820,8 +820,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     ),
                                                   ),
 
-
+                                                    // date fileds
                                                   FocusTraversalOrder(
+
                                                     order:
                                                     const NumericFocusOrder(
                                                         17),
@@ -872,7 +873,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                   // (6) Time
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 10),
+                                                    padding: const EdgeInsets.only(left: 4),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -920,7 +921,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                   // (7) Lead (mins)
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 3),
+                                                    padding: const EdgeInsets.only(left: 28),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -980,13 +981,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           .jour,
                                                       width:
                                                       fieldWidth /
-                                                          2.91,
+                                                          2.95,
                                                       heights: 33,
                                                       child:
                                                       Container(
+
                                                         // height: 35,
                                                         decoration:
                                                         BoxDecoration(
+
                                                           borderRadius:
                                                           BorderRadius.circular(6),
                                                           border: Border.all(
@@ -1226,13 +1229,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 () =>
                                                                 Padding(
                                                                   padding:
-                                                                  const EdgeInsets.symmetric(horizontal: 6.0),
+                                                                  const EdgeInsets.symmetric(horizontal: 17.0),
                                                                   child:
                                                                   FocusTraversalOrder(
                                                                     order: const NumericFocusOrder(22),
                                                                     child: CustomDropdownField<ZoneObject>(
                                                                       label: "Select Zone",
-                                                                      width: Get.width / 7.5,
+                                                                      width: Get.width / 7,
                                                                       height: 30,
                                                                       items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
                                                                       value: _controller.zoneValue,
@@ -1246,7 +1249,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                 ),
                                                           ),
-SizedBox(width: 18),
+                                                              SizedBox(width: 12),
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
                                                             order:
@@ -1407,14 +1410,14 @@ SizedBox(width: 18),
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
-                                                                horizontal: 6.0),
+                                                                horizontal: 17.0),
                                                             child:
                                                             FocusTraversalOrder(
                                                               order:
                                                               const NumericFocusOrder(25),
                                                               child:
                                                               RestrictedDrivers(
-                                                                width: fieldWidth / 2.78,
+                                                                width: fieldWidth / 2.65,
                                                                 height: 30,
                                                                 padding: 0.0,
                                                                 titleText: "SELECT PLOT",
@@ -1425,7 +1428,7 @@ SizedBox(width: 18),
                                                               ),
                                                             ),
                                                           ),
-                                                          SizedBox(width: 16),
+                                                          SizedBox(width: 15),
 
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
@@ -1516,7 +1519,7 @@ SizedBox(width: 18),
                                                               },
                                                             )),
                                                       ),
-                                                    ),
+                                                    ) ,
 
                                                     // (7) Lead (mins)
                                                     FocusTraversalOrder(
@@ -1565,6 +1568,7 @@ SizedBox(width: 18),
                                                       child:
                                                       SizedBox(
                                                         width: fieldWidth / 2,
+                                                        // height: 50 ,
                                                         // width: fieldWidth/6,
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
@@ -1581,7 +1585,7 @@ SizedBox(width: 18),
                                                               },
                                                               child:
                                                               Padding(
-                                                                padding: const EdgeInsets.only(left: 35),
+                                                                padding: const EdgeInsets.only(left: 55),
                                                                 child: Checkbox(
                                                                   activeColor:
                                                                   DynamicColors.primaryClr,
@@ -1799,6 +1803,7 @@ SizedBox(width: 18),
                                                   ],
 
                                                   // (10) Fare (Slugg)
+                                                  SizedBox(width: 8),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?  34:21),
@@ -2047,7 +2052,7 @@ SizedBox(width: 18),
                                                           .veh,
                                                       width:
                                                       fieldWidth /
-                                                          3,
+                                                          2.9,
                                                       heights: 32,
                                                       child:
                                                       Container(
@@ -2228,7 +2233,7 @@ SizedBox(width: 18),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(
-                                                        controller.jourValue == 'W/R'?41:        28),
+                                                        controller.jourValue == 'W/R'?41:28),
                                                     child:
                                                     SizedBox(
                                                       // width: fieldWidth/6,
