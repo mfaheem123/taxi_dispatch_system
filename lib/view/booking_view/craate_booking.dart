@@ -1018,7 +1018,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             textInputAction: TextInputAction.next),
                                       ),
                                       // Mob
-                                      SizedBox(width: 2),
+                                      SizedBox(width: 8),
                                       SizedBox(
                                         width: fieldWidth/ 1.62,
                                         child: Row(
