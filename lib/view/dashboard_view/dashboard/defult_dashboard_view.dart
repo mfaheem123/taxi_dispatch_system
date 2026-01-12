@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
-import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
@@ -22,7 +18,6 @@ import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
-// import '../../../../../../hubaib/slc_mobile_app/lib/view/lab_view/my_reports_view/view_report.dart';
 import '../Controller/dashboard_controller.dart';
 import '../booking_table.dart';
 import '../models/account_darshboard_model.dart';
@@ -32,13 +27,11 @@ import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
 import '../widgets/time_picker_widget.dart';
 import '../widgets/user_info_widget.dart' hide KbdActivatable;
-import '../widgets/via_location.dart';
 import 'F8_widget_alert.dart';
 import 'F9_widget_alert.dart';
 import 'booking_form_widget.dart';
 import 'drivers.dart';
 import 'form_short_cut_key.dart';
-import 'location_suggestions.dart';
 import 'map_view_widget.dart';
 import 'package:flutter/material.dart' as material;
 
@@ -452,9 +445,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   height:
                                                   screenHeight *
                                                       0.019),
-
                                               // ================= DROPOFF ROW =================
-
                                               Padding(
                                                 padding: const EdgeInsets
                                                     .symmetric(
@@ -480,7 +471,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-
                                                     // (1) Pickup textfield
                                                     Obx(
                                                           () => controller.getDropAddressesLoader.value
@@ -592,6 +582,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
+
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .symmetric(
@@ -679,6 +670,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 alignment:
                                                 WrapAlignment
                                                     .start,
+
                                                 children: [
 
                                                     FocusTraversalOrder(
@@ -699,8 +691,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           TextInputAction
                                                               .next),
                                                     ),
-
-
                                                     Padding(
                                                       padding: const EdgeInsets.only(left: 4),
                                                       child: FocusTraversalOrder(
@@ -787,11 +777,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                    ),
-
-                                                  // Expanded(
-                                                  //   child: ,
-                                                  // ),
-
                                                   // Tel fileds
                                                   Padding(
                                                     padding: const EdgeInsets.only(left: 4),
@@ -819,7 +804,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           false),
                                                     ),
                                                   ),
-
                                                     // date fileds
                                                   FocusTraversalOrder(
 
@@ -870,7 +854,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           )),
                                                     ),
                                                   ),
-
                                                   // (6) Time
                                                   Padding(
                                                     padding: const EdgeInsets.only(left: 4),
@@ -918,7 +901,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // (7) Lead (mins)
                                                   Padding(
                                                     padding: const EdgeInsets.only(left: 28),
@@ -1026,7 +1008,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           onChanged:
                                                               (v) async{
                                                             // O/W, R/N, W/R
-
                                                                 final storedTemFare = await getFares(
                                                                     multiReservationList: controller.multiReservationList,
                                                                     // day: ,
@@ -1063,21 +1044,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 v;
                                                                 controller.update();
                                                           },
-                                                          // onChanged: controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty?
-                                                          //     (v) {
-                                                          //   // O/W, R/N, W/R
-                                                          //
-                                                          //   if (v!.journeyType ==
-                                                          //       "one way") {
-                                                          //     controller.jourValue = null;
-                                                          //   } else {
-                                                          //     controller.jourValue = 'W/R';
-                                                          //   }
-                                                          //   controller.selectJourneyTypeValue =
-                                                          //       v;
-                                                          //   controller.update();
-                                                          //
-                                                          // }:null,
                                                         ),
                                                       ),
                                                     ),
@@ -1153,9 +1119,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
                                                                       FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                     }
-                                                                    // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-                                                                    //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                                    // }
                                                                   }
                                                                 },
                                                                 child: CustomTextField(
@@ -1297,7 +1260,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
                                                           // (1) Pickup textfield
                                                           Obx(
                                                                 () => controller.getDropTwoWayAddressesLoader.value
@@ -1311,7 +1273,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
                                                           // (4) Dropoff textfield
                                                           FocusTraversalOrder(
                                                             order:
@@ -1367,7 +1328,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           : KbdActivatable(
                                                                         focusNode: clearDrop,
                                                                         onActivate: () {
+
                                                                          FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+
                                                                           controller.dropOffTwoWayController.clear();
                                                                           controller.markers.clear();
                                                                           controller.polyLineMarkerInfo.clear();
@@ -1402,7 +1365,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
@@ -1425,7 +1387,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                           SizedBox(width: 15),
-
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
                                                             order:
@@ -1449,7 +1410,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       ),
                                                     ),
-
                                                     FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -1485,7 +1445,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             )),
                                                       ),
                                                     ),
-
                                                     // (6) Time
                                                     FocusTraversalOrder(
                                                       order:
@@ -1516,7 +1475,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             )),
                                                       ),
                                                     ) ,
-
                                                     // (7) Lead (mins)
                                                     FocusTraversalOrder(
                                                       order:
@@ -1797,7 +1755,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ],
-
                                                   // (10) Fare (Slugg)
                                                   SizedBox(width: 8),
                                                   FocusTraversalOrder(
@@ -1914,10 +1871,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
-                                                  
-
-                                                  
                                                   // (12) Pay dropdown
                                                   Padding(
                                                     padding: const EdgeInsets.only(left: 20),
@@ -1988,51 +1941,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
-                                                  // (13) Calendar icon (keyboard clickable)
-                                                  // FocusTraversalOrder(
-                                                  //   order:
-                                                  //   NumericFocusOrder(controller.jourValue == 'W/R'?37:24),
-                                                  //   child:
-                                                  //   SizedBox(
-                                                  //     height: 33,
-                                                  //     child:
-                                                  //     KbdActivatable(
-                                                  //       focusNode:
-                                                  //       calendarFN,
-                                                  //       onActivate:
-                                                  //           () {
-                                                  //         // TODO: open your calendar modal/sheet
-                                                  //         // For demo:
-                                                  //         ScaffoldMessenger.of(context)
-                                                  //             .showSnackBar(
-                                                  //           const SnackBar(
-                                                  //               content: Text("Calendar icon activated")),
-                                                  //         );
-                                                  //       },
-                                                  //       child:
-                                                  //       Container(
-                                                  //         padding: const EdgeInsets
-                                                  //             .symmetric(
-                                                  //             horizontal:
-                                                  //             8),
-                                                  //         decoration:
-                                                  //         BoxDecoration(
-                                                  //           color: Colors
-                                                  //               .grey
-                                                  //               .shade300,
-                                                  //           borderRadius:
-                                                  //           BorderRadius.circular(6),
-                                                  //         ),
-                                                  //         child: const Icon(
-                                                  //             Icons
-                                                  //                 .calculate,
-                                                  //             size:
-                                                  //             20),
-                                                  //       ),
-                                                  //     ),
-                                                  //   ),
-                                                  // ),
                                                   SizedBox(width: 3),
                                                   FocusTraversalOrder(
                                                     order:
@@ -2131,7 +2039,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   controller.selectAccountValue ==
                                                       null
                                                       ? SizedBox
@@ -2187,7 +2094,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Switch + Quotation
                                                 SizedBox(width: 15),
                                                     FocusTraversalOrder(
@@ -2213,8 +2119,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         },
                                                       ),
                                                     ),
-
-
                                                   Text(
                                                     AppText
                                                         .quotation,
@@ -2224,7 +2128,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         fontSize:
                                                         13),
                                                   ),
-
                                                   // SMS Checkbox
                                                   FocusTraversalOrder(
                                                     order:
@@ -2274,7 +2177,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Email Checkbox
                                                   FocusTraversalOrder(
                                                     order:
@@ -2324,7 +2226,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Pass, Lugg, Slugg fields
                                                 SizedBox(width: 10,),
                                                     SizedBox(
@@ -2427,9 +2328,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       ),
                                                     ),
-
-SizedBox(width: 15),
-                                                  Container(
+                                                        SizedBox(width: 15),
+                                                      Container(
                                                     height: 40,
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -2489,7 +2389,6 @@ SizedBox(width: 15),
                                                           ),
                                                         ),
                                                         SizedBox(width: 5),
-
                                                         FocusTraversalOrder(
                                                           order: NumericFocusOrder(
                                                               controller.jourValue == 'W/R'?48:35),
@@ -2510,7 +2409,6 @@ SizedBox(width: 15),
                                                           ),
                                                         ),
                                                         SizedBox(width: 5),
-
                                                         FocusTraversalOrder(
                                                           order: NumericFocusOrder(controller.jourValue == 'W/R'?49:36),
                                                           child:
@@ -2631,7 +2529,6 @@ SizedBox(width: 15),
                                                         fontSize:
                                                         13)),
                                                 SizedBox(width: 30),
-
                                                 Icon(
                                                     Icons
                                                         .location_on,
@@ -2768,32 +2665,7 @@ SizedBox(width: 15),
                                                     ),
                                                   ),
                                                 ),
-SizedBox(width: 350),
-
-                                                // FocusTraversalOrder(
-                                                //   order: const NumericFocusOrder(38),
-                                                //   child: CustomButton(
-                                                //     btnText: "MULTI BOOKING [F8]",
-                                                //     width: 150,
-                                                //     height: 30,
-                                                //     fontSize: 11,
-                                                //     verticalPadding: 0.0,
-                                                //     borderRadius: 4,
-                                                //   ),
-                                                // ),
-                                                //
-                                                // FocusTraversalOrder(
-                                                //   order: const NumericFocusOrder(39),
-                                                //   child: CustomButton(
-                                                //     btnText: "MULTI VEHICLE [F9]",
-                                                //     width: 150,
-                                                //     height: 30,
-                                                //     fontSize: 11,
-                                                //     verticalPadding: 0.0,
-                                                //     borderRadius: 4,
-                                                //   ),
-                                                // ),
-
+                                                SizedBox(width: 350),
                                                 FocusTraversalOrder(
                                                   order: NumericFocusOrder(controller.jourValue == 'W/R'?51:38),
                                                   child:
@@ -2865,48 +2737,13 @@ SizedBox(width: 350),
                                       SizedBox(
                                           width: screenWidth *
                                               0.0133),
-
                                       /// todo MAP SECTION
                                       MapViewWidget(),
-
                                       /// todo MAP SECTION
                                     ],
                                   )
                                 ],
                               ),
-                              /* child: width <= 1366 ? Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.007,
-                                      ),
-                                      BookingFormWidget(),
-                                      SizedBox(width: screenWidth * 0.011),
-
-                                      /// todo MAP SECTION
-                                      MapViewWidget(),
-                                      /// todo MAP SECTION
-                                      SizedBox(width: screenWidth * 0.0133),
-
-                                      //Driver
-                                      DriversView(),
-                                    ],
-                                  ):Column(
-                                    children: [
-                                      BookingFormWidget(),
-                                      Row(
-                                        children: [
-                                          /// todo MAP SECTION
-                                          MapViewWidget(),
-                                          /// todo MAP SECTION
-                                          SizedBox(width: screenWidth * 0.0133),
-
-                                          //Driver
-                                          DriversView(),
-                                        ],
-                                      )
-                                    ],
-                                  ),*/
                             ),
                           ),
                           Container(
@@ -2925,7 +2762,6 @@ SizedBox(width: 350),
                         ],
                       ),
                     ),
-                    // SizedBox(height: 12),
                     // 🔽 Address suggestion dropdown with keyboard support
                     Obx(() {
                       if (controller
