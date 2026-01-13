@@ -93,6 +93,7 @@ class AppVersionWidget extends StatelessWidget {
                             },
                             label: AppText.hideBreak,
                           ),
+
                           KeyboardCheckbox(
                             value: controller.hideDeclineValue.value,
                             onChanged: (v) {
@@ -101,6 +102,7 @@ class AppVersionWidget extends StatelessWidget {
                             },
                             label: AppText.hideDecline,
                           ),
+
                           KeyboardCheckbox(
                             value: controller.hideRecoverValue.value,
                             onChanged: (v) {
