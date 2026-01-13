@@ -151,7 +151,9 @@ class DashboardController extends GetxController {
   final companyPriceController = TextEditingController();
   final returnCompanyPriceController = TextEditingController();
   final specialRequirementsController = TextEditingController();
+  final specialRequirementsReturnController = TextEditingController();
   final controllerNoteController = TextEditingController();
+  final controllerNoteReturnController = TextEditingController();
   final sendEmailController = TextEditingController();
   final emailToController = TextEditingController();
   final mobileNoController = TextEditingController();
@@ -1347,11 +1349,30 @@ class DashboardController extends GetxController {
     }
 
     int pickUpTwoIndex = markers.indexWhere((test) => test.type == "pickup two way");
+    int pickUpIndex = markers.indexWhere((test) => test.type == "pickup");
+    int dropOffIndex = markers.indexWhere((test) => test.type == "dropOff");
     int dropOffTwoIndex = markers.indexWhere((test) => test.type == "dropOff two way");
+    double? pickUpLatLat;
+    double? pickUpLngLat;
+    double? dropOffLatLat;
+    double? dropOffLngLat;
     double? pickUpLatTwoLat;
     double? pickUpLngTwoLat;
     double? dropOffLatTwoLat;
     double? dropOffLngTwoLat;
+
+    // Check if the marker was actually found to avoid errors
+    if (pickUpIndex != -1) {
+      // Assuming 'lat' is a property or constant available in your scope
+      pickUpLatLat = markers[pickUpIndex].point.longitude;
+      pickUpLngLat = markers[pickUpIndex].point.longitude;
+    }
+    // Check if the marker was actually found to avoid errors
+    if (dropOffIndex != -1) {
+      // Assuming 'lat' is a property or constant available in your scope
+      dropOffLatLat = markers[dropOffIndex].point.longitude;
+      dropOffLngLat = markers[dropOffIndex].point.longitude;
+    }
 
 // Check if the marker was actually found to avoid errors
     if (pickUpTwoIndex != -1) {
@@ -1370,9 +1391,13 @@ class DashboardController extends GetxController {
       'pickup': pickupController.text,
       'pickup_plot': dashboardZoneValue!.id,
       'pickup_door_number': pickUpNoteController.text,
+      'pickup_latitude': pickUpLatLat,
+      'pickup_longitude': pickUpLngLat,
       'dropoff': dropOffController.text,
       'dropoff_plot': '28',
       'dropoff_door_number': dropUpNoteController.text,
+      'dropoff_latitude': dropOffLatLat,
+      'dropoff_longitude': dropOffLngLat,
       if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
       if(nameController.text.isNotEmpty)'name': nameController.text,
       if(emailController.text.isNotEmpty)'email': emailController.text,
@@ -1769,7 +1794,7 @@ class DashboardController extends GetxController {
   List<ChildSeatClass> childSeatAlert = [];
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> controller note alert
-  List controllerAlert = [];
+  List<NoteClass> controllerAlert = [];
 
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 }
