@@ -1503,8 +1503,7 @@ class DashboardController extends GetxController {
 
     if(multiVehicleList.isNotEmpty){
       for (var element in multiVehicleList) {
-        multiVehicleTempList.add(
-            {
+        multiVehicleTempList.add({
               "vehicle_type": element.id,
             });
       }
