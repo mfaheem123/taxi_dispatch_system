@@ -383,7 +383,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(2),
                                           child: RestrictedDrivers(
-                                            width: fieldWidth / 3,
+                                            width: fieldWidth / 3.4,
                                             height: 30,
                                             padding: 0.0,
                                             titleText: "SELECT PLOT",
@@ -395,7 +395,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
 
                                         // (3) Pickup notes
-                                        SizedBox(width: 30,),
+                                        SizedBox(width: 55,),
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(3),
                                           child: SizedBox(
@@ -594,7 +594,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             child: FocusTraversalOrder(
                                               order: const NumericFocusOrder(2),
                                               child: RestrictedDrivers(
-                                                width: fieldWidth / 3,
+                                                width: fieldWidth / 3.4,
                                                 height: 30,
                                                 padding: 0.0,
                                                 titleText: "SELECT PLOT",
@@ -607,7 +607,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // (3) Pickup notes
-                                          SizedBox(width: 35,),
+                                          SizedBox(width: 60,),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 5),
                                             child: FocusTraversalOrder(
@@ -1069,7 +1069,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                         controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
                                                       }
                                                     },
-                                                    width: fieldWidth/2,
+                                                    width: fieldWidth/2.3,
                                                   )
                                               ),
                                             ),
@@ -1102,7 +1102,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                       ),
                                       // (6) Time
-                                      // SizedBox(width: 1.3),
+                                      SizedBox(width: 2),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(6),
                                         child: labeledField(
@@ -1116,34 +1116,37 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                       ),
                                       // (7) Lead (mins)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(7),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.lead,
-                                          width: fieldWidth / 2,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "MINS",
-                                              controller: controller.minController,
-                                              borderRadius: 4,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 10),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(7),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.lead,
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
+                                              height: 30,
+                                              child: CustomTextField(
+                                                hintText: "MINS",
+                                                controller: controller.minController,
+                                                borderRadius: 4,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                       // (8) Journey dropdown (O/W, R/N, W/R)
-                                      SizedBox(width: 38),
+                                      SizedBox(width: 65),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(8),
                                         child: RestrictedDrivers(
@@ -1191,89 +1194,98 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                       ),
                                       // (10) Fare (Slugg)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(10),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.fare,
-                                          width: fieldWidth / 2.3,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "Slugg",
-                                              controller: controller.slugController,
-                                              borderRadius: 6,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                LengthLimitingTextInputFormatter(6),
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(10),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.fare,
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
+                                              height: 30,
+                                              child: CustomTextField(
+                                                hintText: "Slugg",
+                                                controller: controller.slugController,
+                                                borderRadius: 6,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  LengthLimitingTextInputFormatter(6),
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                       // (11) Account
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(11),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: "${AppText.acc} ",
-                                          width: fieldWidth / 2,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "SELECT ACCOUNT",
-                                              controller:
-                                                  controller.accountNoController,
-                                              borderRadius: 6,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                LengthLimitingTextInputFormatter(6),
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 15),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(11),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: "${AppText.acc} ",
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
+                                              height: 30,
+                                              child: CustomTextField(
+                                                hintText: "SELECT ACCOUNT",
+                                                controller:
+                                                    controller.accountNoController,
+                                                borderRadius: 6,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  LengthLimitingTextInputFormatter(6),
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
                                       // (12) Pay dropdown
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(12),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.pay,
-                                          width: fieldWidth / 1.95,
-                                          child: Container(
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              border: Border.all(
-                                                  color: DynamicColors.primaryClr),
-                                            ),
-                                            child: RestrictedDrivers(
-                                              width: fieldWidth / 2.3,
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 40),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(12),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.pay,
+                                            width: fieldWidth / 1.95,
+                                            child: Container(
                                               height: 30,
-                                              padding: 0.0,
-                                              titleText: controller.payValue,
-                                              driversList: [
-                                                "CASH",
-                                                "CREDIT CARD",
-                                                "ACCOUNT",
-                                                "CREDIT CARD PAID"
-                                              ],
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                border: Border.all(
+                                                    color: DynamicColors.primaryClr),
+                                              ),
+                                              child: RestrictedDrivers(
+                                                width: fieldWidth / 2.3,
+                                                height: 30,
+                                                padding: 0.0,
+                                                titleText: controller.payValue,
+                                                driversList: [
+                                                  "CASH",
+                                                  "CREDIT CARD",
+                                                  "ACCOUNT",
+                                                  "CREDIT CARD PAID"
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
