@@ -222,13 +222,14 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                     child: CustomButton(
                                       width: 30,
                                       height: 30,
+                                      btnColor: DynamicColors.greenClr,
                                       onTap: (){
-                                        if(controller.controllerNoteController.text.isNotEmpty){
+                                        if(controller.controllerNoteReturnController.text.isNotEmpty){
                                           controller.controllerAlert.add(NoteClass(
-                                            note: controller.controllerNoteController.text,
+                                            note: controller.controllerNoteReturnController.text,
                                             title: 'controller return note'
                                           ));
-                                          controller.controllerNoteController.clear();
+                                          controller.controllerNoteReturnController.clear();
                                           controller.update();
                                         }
                                       },
@@ -286,13 +287,15 @@ class _ExtraInfoAlertState extends State<ExtraInfoAlert> {
                                     padding: const EdgeInsets.only(left: 8.0),
                                     child: CustomButton(
                                       onTap: (){
-                                        controller.controllerNoteController.text = controller.controllerAlert[index].title!;
+                                        controller.controllerNoteController.text = controller.controllerAlert[index].note!;
                                         controller.update();
                                       },
                                       width: 30,
                                       height: 25,
                                       verticalPadding: 0.0,
                                       borderRadius: 6,
+                                      btnColor: controller.controllerAlert[index].title == "controller return note"?DynamicColors.greenClr:
+                                      DynamicColors.primaryClr,
                                       widget: Icon(Icons.edit_document,
                                         color: DynamicColors.whiteClr,
                                         size: 15,

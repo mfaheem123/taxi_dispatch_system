@@ -7,6 +7,8 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 DashboardTableModel dashboardTableModelFromJson(String str) => DashboardTableModel.fromJson(json.decode(str));
 
 String dashboardTableModelToJson(DashboardTableModel data) => json.encode(data.toJson());
@@ -286,7 +288,10 @@ class BookingObjectData {
     employeeId: json["employee_id"],
     pickup: json["pickup"],
     dropoff: json["dropoff"],
-    pickupDate: DateTime.parse(json["pickup_date"]),
+    pickupDate: json["pickup_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["pickup_date"])
+        : null,
+    // pickupDate: DateTime.parse(json["pickup_date"]),
     pickupTime: json["pickup_time"],
     dropoffDate: json["dropoff_date"],
     dropoffTime: json["dropoff_time"],
@@ -870,8 +875,8 @@ class Viapoint {
   dynamic? arrived;
   dynamic? passengerOnBoard;
   bool? active;
-  String? latitude;
-  String? longitude;
+  num? latitude;
+  num? longitude;
 
   Viapoint({
     this.viapoint,

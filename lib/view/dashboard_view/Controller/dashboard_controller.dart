@@ -1295,6 +1295,7 @@ class DashboardController extends GetxController {
   List restrictedDrivers = [];
   List childSeatList = [];
   List extraFaresList = [];
+  List extraFaresReturnList = [];
   List viaPostList = [];
   List viaReturnPostList = [];
   List multiReservationTemp = [];
@@ -1305,21 +1306,27 @@ class DashboardController extends GetxController {
     if(pickupController.text.isEmpty){
       return BotToast.showText(text: "Please select pickup location");
     }
+
     if(dashboardZoneValue == null){
       return BotToast.showText(text: "Please select location zone");
     }
+
     if(dropOffController.text.isEmpty){
       return BotToast.showText(text: "Please select dropoff location");
     }
+
     if(selectSubsidiariesValue == null){
       return BotToast.showText(text: "Please select subsidiaries");
     }
+
     if(nameController.text.isEmpty){
       return BotToast.showText(text: "Please write name");
     }
+
     if(emailController.text.isEmpty){
       return BotToast.showText(text: "Please write email");
     }
+
     if(mobileController.text.isEmpty){
       return BotToast.showText(text: "Please write mobile");
     }
@@ -1361,12 +1368,14 @@ class DashboardController extends GetxController {
     double? dropOffLatTwoLat;
     double? dropOffLngTwoLat;
 
+
     // Check if the marker was actually found to avoid errors
     if (pickUpIndex != -1) {
       // Assuming 'lat' is a property or constant available in your scope
       pickUpLatLat = markers[pickUpIndex].point.longitude;
       pickUpLngLat = markers[pickUpIndex].point.longitude;
     }
+
     // Check if the marker was actually found to avoid errors
     if (dropOffIndex != -1) {
       // Assuming 'lat' is a property or constant available in your scope
@@ -1456,7 +1465,7 @@ class DashboardController extends GetxController {
      if(selectVehicleValueReturn != null) "return_driver_id": selectVehicleValueReturn!.id,
      if(selectDriverValueReturn != null) "return_vehicle_type_id": selectDriverValueReturn!.id,
       "return_fare": '12345.12',
-      "return_notes": '[{"note":"test","created_at":"2025-11-25 16:10","created_by":"nadeem"},{"note":"test 2","created_at":"2025-11-25 16:10","created_by":"nadeem"}]',
+     if(extraFaresReturnList.isNotEmpty) "return_notes": jsonEncode(extraFaresReturnList),
 
       /// todo waiting return
 
@@ -1466,16 +1475,16 @@ class DashboardController extends GetxController {
     };
     print(markers);
     print(formData);
-    // var response = await Api().post(formData, "bookings/add");
-    // if(response.statusCode == 200){
-    //   if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
-    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //   }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
-    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //   }
-    //   // refreshPostAllFields();
-    //   print(response.data);
-    // }
+    var response = await Api().post(formData, "bookings/add");
+    if(response.statusCode == 200){
+      if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }
+      // refreshPostAllFields();
+      print(response.data);
+    }
   }
 
   restrictedDriversListConfig() async {
@@ -1499,14 +1508,21 @@ class DashboardController extends GetxController {
     }
     if(controllerAlert.isNotEmpty){
       extraFaresList.clear();
+      extraFaresReturnList.clear();
       for (var index in controllerAlert) {
-        extraFaresList.add(
-          {"note": index,
+        if(index.title == "controller return note"){
+          extraFaresReturnList.add({"note": index.note,
             "created_at":
             "2025-11-25 16:10",
             "created_by":"nadeem"
-          },
-        );
+          });
+        }else{
+          extraFaresList.add({"note": index.note,
+            "created_at":
+            "2025-11-25 16:10",
+            "created_by":"nadeem"
+          });
+        }
       }
     }
     if(multiReservationList.isNotEmpty){
@@ -1566,8 +1582,6 @@ class DashboardController extends GetxController {
         });
       }
     }
-    print(viaPostList);
-    print(viaReturnPostList);
     update();
   }
 
