@@ -123,17 +123,16 @@ class _BookingTableState extends State<BookingTable> {
                   columnSpacing: 12, // 👈 default 56 hota hai, isko chhota kardo
                   dataRowMinHeight: 40,
                   dataRowMaxHeight: 48,
+
                   headingTextStyle: const TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13,
                   ),
                   dataTextStyle: const TextStyle(
-
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
                   ),
                   border: TableBorder(
-
                     horizontalInside: BorderSide(
                       width: 0.5,
                       color: Colors.grey.shade400,
@@ -252,8 +251,19 @@ class _BookingTableState extends State<BookingTable> {
                               onRightClick: () {
                                 print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                               },
-                              child: Text("${DateFormat('dd-MM-yyyy')
-                                  .format(item.pickupDate!)} ${item.pickupTime}"),
+                              child: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                alignment: Alignment.center,
+
+                                // APPLY YOUR COLOR HERE
+                                decoration: BoxDecoration(
+                                  color: DynamicColors.secondaryClr.withOpacity(0.7),
+                                  // Optional: borderRadius: BorderRadius.circular(2),
+                                ),
+                                child: Text("${DateFormat('dd-MM-yyyy')
+                                    .format(item.pickupDate!)} ${item.pickupTime}"),
+                              ),
                             ),
                           ),
 
@@ -347,7 +357,23 @@ class _BookingTableState extends State<BookingTable> {
                               onRightClick: () {
                                 print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
                               },
-                              child: Text(item.vehicleType?.name ?? "-"),
+                              child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  alignment: Alignment.center,
+
+                                  // APPLY YOUR COLOR HERE
+                                  decoration: BoxDecoration(
+                                    color: item.vehicleType!.backgroundColor == null?DynamicColors.whiteClr: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
+                                    // Optional: borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  child: Text(item.vehicleType?.name ?? "-",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 13,
+                                    color: item.vehicleType!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.vehicleType!.foregroundColor}")),
+                                  ),
+                                  ),
+                              ),
                             ),
                           ),
 
@@ -386,9 +412,20 @@ class _BookingTableState extends State<BookingTable> {
                               onRightClick: () {
                                 print("RIGHT CLICK STATUS");
                               },
-                              child: Text(
-                                "-",
-                                style: const TextStyle(color: Colors.green),
+                              child: Container(
+                                width: double.infinity,
+                                height: double.infinity,
+                                alignment: Alignment.center,
+
+                                // APPLY YOUR COLOR HERE
+                                decoration: BoxDecoration(
+                                  color: DynamicColors.statusColor,
+                                  // Optional: borderRadius: BorderRadius.circular(2),
+                                ),
+                                child: Text(
+                                  "-",
+                                  style: TextStyle(color: DynamicColors.whiteClr),
+                                ),
                               ),
                             ),
                           ),
@@ -409,9 +446,24 @@ class _BookingTableState extends State<BookingTable> {
                             rightClickTextCell(
                               item: item,
                               onRightClick: () {
+
                                 print("RIGHT CLICK PAYMENT TYPE");
                               },
-                              child: Text(item.paymentType?.name ?? "-"),
+                              child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  alignment: Alignment.center,
+
+                                  // APPLY YOUR COLOR HERE
+                                  decoration: BoxDecoration(
+                                    color: DynamicColors.primaryClr,
+                                    // Optional: borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  child: Text(item.paymentType?.name ?? "-",
+                                  style: TextStyle(
+                                    color: DynamicColors.whiteClr
+                                  ),
+                                  )),
                             ),
                           ),
 
