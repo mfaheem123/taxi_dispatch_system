@@ -17,6 +17,8 @@ class AppText {
   static get tel => "TEL";
   static get date => "DATE";
   static get time => "TIME";
+  static get rdate => "R/DATE";
+  static get rtime => "R/TIME";
   static get lead => "LEAD";
   static get jour => "JOUR";
   static get acc => "ACC";

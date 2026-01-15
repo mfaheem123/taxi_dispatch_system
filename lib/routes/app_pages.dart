@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../view/auth/login_screen.dart';
 import '../view/booking_view/complete_bookingview.dart';
+import '../view/booking_view/update_booking.dart';
 import '../view/cli_Screen.dart';
 import '../view/customer/add_customerScreen.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
@@ -18,7 +19,7 @@ class AppPages {
   AppPages._();
 
   static const initial = Routes.loginScreen;
-  // static const initial = Routes.ResponsivePassengerScreen;
+  // static const initial = Routes.updateBooking;
   // static const initial = Routes.createBooking;
 
   static final routes = [
@@ -50,6 +51,11 @@ class AppPages {
       name: _Paths.createBooking,
       page: () => CreateBooking(),
       // middlewares: [AuthMiddleware()],
+    ),
+    GetPage(
+      name: _Paths.updateBooking,
+      page: () => UpdateBooking(),
+
     ),
     GetPage(
       name: _Paths.CustomerFormScreen,
