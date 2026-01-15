@@ -1486,6 +1486,7 @@ class DashboardController extends GetxController {
       }
       refreshPostAllFields();
       print(response.data);
+
     }
   }
 
