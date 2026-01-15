@@ -1,18 +1,13 @@
 import 'dart:async';
-import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
-import 'package:dropdown_flutter/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
-import 'package:latlong2/latlong.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/extra_fares_alert.dart';
 import '../../../alert/extra_info_alert.dart';
 import '../../../alert/restrict_drivers_alert.dart';
-import '../../../bottom_navigation.dart';
 import '../../../component/color.dart';
 import '../../../component/dropdown_button.dart' show CustomDropdownField;
 import '../../../component/suggestion_widget/suggestion_controller.dart';
@@ -32,13 +27,11 @@ import '../widgets/pickup_widget.dart';
 import '../widgets/quotation_widget.dart';
 import '../widgets/time_picker_widget.dart';
 import '../widgets/user_info_widget.dart' hide KbdActivatable;
-import '../widgets/via_location.dart';
 import 'F8_widget_alert.dart';
 import 'F9_widget_alert.dart';
 import 'booking_form_widget.dart';
 import 'drivers.dart';
 import 'form_short_cut_key.dart';
-import 'location_suggestions.dart';
 import 'map_view_widget.dart';
 import 'package:flutter/material.dart' as material;
 
@@ -316,8 +309,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               // }
                                                             }
                                                           },
-                                                          child:
-                                                          CustomTextField(
+                                                          child: CustomTextField(
                                                             key: controller.pickupFieldKey,
                                                             controller: controller.pickupController,
                                                             focusNode: controller.pickupTextFieldFocusNode,
@@ -393,7 +385,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
-                                                                horizontal: 6.0),
+                                                                horizontal: 15.0),
                                                             child:
                                                             FocusTraversalOrder(
                                                               order:
@@ -418,7 +410,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                     // (3) Pickup notes
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 3),
+                                                      padding: const EdgeInsets.only(left: 15),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(3),
@@ -452,21 +444,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   height:
                                                   screenHeight *
                                                       0.019),
-
                                               // ================= DROPOFF ROW =================
-
                                               Padding(
                                                 padding: const EdgeInsets
                                                     .symmetric(
                                                     horizontal:
-                                                    12.0),
+                                                    10.0),
                                                 child: Row(
                                                   children: [
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .only(
                                                           right:
-                                                          10),
+                                                          8),
                                                       child:
                                                       Text(
                                                         AppText
@@ -480,7 +470,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-
                                                     // (1) Pickup textfield
                                                     Obx(
                                                           () => controller.getDropAddressesLoader.value
@@ -592,11 +581,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
+
                                                     Padding(
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          6.0),
+                                                          15.0),
                                                       child:
                                                       FocusTraversalOrder(
                                                         order:
@@ -604,7 +594,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         child:
                                                         RestrictedDrivers(
                                                           width:
-                                                          fieldWidth / 2.7,
+                                                          fieldWidth / 2.65,
                                                           height:
                                                           30,
                                                           padding:
@@ -621,7 +611,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                     // (3) Pickup notes
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 5),
+                                                      padding: const EdgeInsets.only(left: 15),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(6),
@@ -666,7 +656,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                           Align(
                                             alignment: Alignment.centerLeft,
                                             child: Padding(
-                                              padding: const EdgeInsets.only(left: 10),
+                                              padding: const EdgeInsets.only(left: 6),
                                               child: Wrap(
                                                 spacing: 10,
                                                 runSpacing: 6,
@@ -679,6 +669,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 alignment:
                                                 WrapAlignment
                                                     .start,
+
                                                 children: [
 
                                                     FocusTraversalOrder(
@@ -699,10 +690,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           TextInputAction
                                                               .next),
                                                     ),
-
-
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 8),
+                                                      padding: const EdgeInsets.only(left: 4),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(
@@ -722,20 +711,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 .next),
                                                       ),
                                                     ),
-
-
+                                                   // MOB fields
                                                    Padding(
-                                                     padding: const EdgeInsets.only(left: 15),
+                                                     padding: const EdgeInsets.only(left: 18),
                                                      child: SizedBox(
                                                         width:
                                                         fieldWidth /
-                                                            2.4,
+                                                            2.1,
                                                         child: Row(
                                                           children: [
                                                             Padding(
                                                               padding: const EdgeInsets
                                                                   .only(
-                                                                  right: 6.0,),
+                                                                  right: 22.0,),
                                                               child: Text(
                                                                   AppText
                                                                       .mobile,
@@ -779,7 +767,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
                                                                         }
                                                                       },
-                                                                      width: fieldWidth / 3,
+                                                                      width: fieldWidth / 2.9
+                                                                      ,
                                                                     )),
                                                               ),
 
@@ -787,13 +776,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                    ),
-
-                                                  // Expanded(
-                                                  //   child: ,
-                                                  // ),
-
+                                                  // Tel fileds
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 8),
+                                                    padding: const EdgeInsets.only(left: 4),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -818,9 +803,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           false),
                                                     ),
                                                   ),
-
-
+                                                    // date fileds
                                                   FocusTraversalOrder(
+
                                                     order:
                                                     const NumericFocusOrder(
                                                         17),
@@ -846,6 +831,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 (date) async{
                                                               controller.pickUpDate = date;
                                                               final storedTemFare = await getFares(
+                                                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                multiReservationList: controller.multiReservationList,
                                                                   dropOff: controller.pickupController.text,
                                                                   pickup: controller.dropOffController.text,
                                                                   miles: controller.totalDistance.value,
@@ -865,10 +852,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           )),
                                                     ),
                                                   ),
-
                                                   // (6) Time
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 16),
+                                                    padding: const EdgeInsets.only(left: 4),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -892,6 +878,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   (time) async{
                                                                 controller.pickUpTimeController.text = time;
                                                                 final storedTemFare = await getFares(
+                                                                    journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                    multiReservationList: controller.multiReservationList,
                                                                     dropOff: controller.pickupController.text,
                                                                     pickup: controller.dropOffController.text,
                                                                     miles: controller.totalDistance.value,
@@ -909,10 +897,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // (7) Lead (mins)
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 3),
+                                                    padding: const EdgeInsets.only(left: 28),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -926,7 +913,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         label: AppText.lead,
                                                         width:
                                                         fieldWidth /
-                                                            3,
+                                                            2.9,
                                                         child:
                                                         SizedBox(
                                                           height:
@@ -971,14 +958,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           .jour,
                                                       width:
                                                       fieldWidth /
-                                                          3,
-                                                      heights: 35,
+                                                          2.95,
+                                                      heights: 33,
                                                       child:
 
                                                       Container(
+
                                                         // height: 35,
                                                         decoration:
                                                         BoxDecoration(
+
                                                           borderRadius:
                                                           BorderRadius.circular(6),
                                                           border: Border.all(
@@ -1013,9 +1002,33 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ))
                                                               .toList(),
                                                           onChanged:
-                                                              (v) {
+
+                                                              (v) async{
 
                                                             // O/W, R/N, W/R
+                                                                final storedTemFare = await getFares(
+                                                                    multiReservationList: controller.multiReservationList,
+                                                                    // day: ,
+                                                                    dropOff: controller.pickupController.text,
+                                                                    pickup: controller.dropOffController.text,
+                                                                    miles: controller.totalDistance.value,
+                                                                    journeyTypeId: v!.id,
+                                                                    dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                    pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                    pickupTime: controller.pickUpTimeController.text,
+                                                                    vehicleTypeId: controller.selectVehicleValue!.id,
+                                                                    partingCharges: controller.partingChargesController.text,
+                                                                    congestionCharges: controller.congestionChargesController.text,
+                                                                    meetGreet: controller.meetGreetController.text,
+                                                                    waitingCharges: controller.waitingChargesController.text,
+                                                                    extraDropCharges: controller.extraDropChargesController.text,
+                                                                    creditCardCharges: controller.creditCardChargesController.text,
+                                                                    companyPrice: controller.companyPriceController.text,
+                                                                    returnCompanyPrice: controller.returnCompanyPriceController.text
+                                                                );
+
+                                                                controller.fixedFare.value = storedTemFare;
+
 
                                                             if (v!.journeyType ==
                                                                 "r/n") {
@@ -1027,24 +1040,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             }
                                                             controller.selectJourneyTypeValue =
                                                                 v;
-                                                            controller
-                                                                .update();
+                                                                controller.update();
                                                           },
-                                                          // onChanged: controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty?
-                                                          //     (v) {
-                                                          //   // O/W, R/N, W/R
-                                                          //
-                                                          //   if (v!.journeyType ==
-                                                          //       "one way") {
-                                                          //     controller.jourValue = null;
-                                                          //   } else {
-                                                          //     controller.jourValue = 'W/R';
-                                                          //   }
-                                                          //   controller.selectJourneyTypeValue =
-                                                          //       v;
-                                                          //   controller.update();
-                                                          //
-                                                          // }:null,
                                                         ),
                                                       ),
                                                     ),
@@ -1063,20 +1060,23 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          12.0),
+                                                          0.0),
                                                       child: Row(
                                                         children: [
-                                                          Padding(
-                                                            padding: const EdgeInsets
-                                                                .only(
-                                                                right: 10),
-                                                            child:
-                                                            Text(
-                                                              AppText.pick,
-                                                              style:
-                                                              mozillaTextSemiBoldText(
-                                                                context: context,
-                                                                fontSize: 13,
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets
+                                                                  .only(
+                                                                  right: 15),
+                                                              child:
+                                                              Text(
+                                                                AppText.pick,
+                                                                style:
+                                                                mozillaTextSemiBoldText(
+                                                                  context: context,
+                                                                  fontSize: 13,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
@@ -1117,9 +1117,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
                                                                       FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                     }
-                                                                    // }else if(event.logicalKey == LogicalKeyboardKey.tab){
-                                                                    //   FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                                                    // }
                                                                   }
                                                                 },
                                                                 child: CustomTextField(
@@ -1188,19 +1185,19 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
+                                                            // Select Zone
                                                           Obx(
                                                                 () =>
                                                                 Padding(
                                                                   padding:
-                                                                  const EdgeInsets.symmetric(horizontal: 6.0),
+                                                                  const EdgeInsets.symmetric(horizontal: 17.0),
                                                                   child:
                                                                   FocusTraversalOrder(
                                                                     order: const NumericFocusOrder(22),
                                                                     child: CustomDropdownField<ZoneObject>(
                                                                       label: "Select Zone",
-                                                                      width: Get.width / 9,
-                                                                      height: 35,
+                                                                      width: Get.width / 7,
+                                                                      height: 30,
                                                                       items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
                                                                       value: _controller.zoneValue,
                                                                       itemLabel: (templateList) => templateList.name!,
@@ -1213,7 +1210,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   ),
                                                                 ),
                                                           ),
-
+                                                              SizedBox(width: 12),
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
                                                             order:
@@ -1241,24 +1238,26 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       padding: const EdgeInsets
                                                           .symmetric(
                                                           horizontal:
-                                                          12.0),
+                                                          0.0),
                                                       child: Row(
                                                         children: [
-                                                          Padding(
-                                                            padding: const EdgeInsets
-                                                                .only(
-                                                                right: 10),
-                                                            child:
-                                                            Text(
-                                                              AppText.drop,
-                                                              style:
-                                                              mozillaTextSemiBoldText(
-                                                                context: context,
-                                                                fontSize: 13,
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets
+                                                                  .only(
+                                                                  right: 10),
+                                                              child:
+                                                              Text(
+                                                                AppText.drop,
+                                                                style:
+                                                                mozillaTextSemiBoldText(
+                                                                  context: context,
+                                                                  fontSize: 13,
+                                                                ),
                                                               ),
                                                             ),
                                                           ),
-
                                                           // (1) Pickup textfield
                                                           Obx(
                                                                 () => controller.getDropTwoWayAddressesLoader.value
@@ -1272,7 +1271,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
                                                           // (4) Dropoff textfield
                                                           FocusTraversalOrder(
                                                             order:
@@ -1328,11 +1326,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           : KbdActivatable(
                                                                         focusNode: clearDrop,
                                                                         onActivate: () {
-                                                                          // int index = controller.markers.indexWhere((test) => test.type == "dropOff");
-                                                                          // int indexx = controller.polyLineMarkerInfo.indexWhere(((element) => element.markerType == "DROP LOCATION"));
-                                                                          // controller.polyLineMarkerInfo.remove(controller.polyLineMarkerInfo[indexx]);
-                                                                          // controller.markers.remove(controller.markers[index]);
-                                                                          FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+
+                                                                         FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+
                                                                           controller.dropOffTwoWayController.clear();
                                                                           controller.markers.clear();
                                                                           controller.polyLineMarkerInfo.clear();
@@ -1370,14 +1366,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           Padding(
                                                             padding: const EdgeInsets
                                                                 .symmetric(
-                                                                horizontal: 6.0),
+                                                                horizontal: 17.0),
                                                             child:
                                                             FocusTraversalOrder(
                                                               order:
                                                               const NumericFocusOrder(25),
                                                               child:
                                                               RestrictedDrivers(
-                                                                width: fieldWidth / 3,
+                                                                width: fieldWidth / 2.65,
                                                                 height: 30,
                                                                 padding: 0.0,
                                                                 titleText: "SELECT PLOT",
@@ -1388,7 +1384,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
+                                                          SizedBox(width: 15),
                                                           // (3) Pickup notes
                                                           FocusTraversalOrder(
                                                             order:
@@ -1412,7 +1408,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       ),
                                                     ),
-
                                                     FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -1448,7 +1443,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             )),
                                                       ),
                                                     ),
-
                                                     // (6) Time
                                                     FocusTraversalOrder(
                                                       order:
@@ -1478,8 +1472,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               },
                                                             )),
                                                       ),
-                                                    ),
-
+                                                    ) ,
                                                     // (7) Lead (mins)
                                                     FocusTraversalOrder(
                                                       order:
@@ -1526,7 +1519,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           30),
                                                       child:
                                                       SizedBox(
-                                                        width: fieldWidth / 3,
+                                                        width: fieldWidth / 2,
+                                                        // height: 50 ,
                                                         // width: fieldWidth/6,
                                                         child: Row(
                                                           mainAxisSize: MainAxisSize.min,
@@ -1543,15 +1537,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               },
 
                                                               child:
-                                                              Checkbox(
-                                                                activeColor:
-                                                                DynamicColors.primaryClr,
-                                                                value: controller.addReturnFare.value,
-                                                                onChanged:
-                                                                    (v) {
-                                                                  // controller.smsCheckbox.value = v!;
-                                                                  // controller.update();
-                                                                },
+                                                              Padding(
+                                                                padding: const EdgeInsets.only(left: 55),
+                                                                child: Checkbox(
+                                                                  activeColor:
+                                                                  DynamicColors.primaryClr,
+                                                                  value: controller.addReturnFare.value,
+                                                                  onChanged:
+                                                                      (v) {
+                                                                    // controller.smsCheckbox.value = v!;
+                                                                    // controller.update();
+                                                                  },
+                                                                ),
                                                               ),
                                                             ),
                                                             Text(
@@ -1619,11 +1616,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: "R/${AppText.veh}",
+                                                        label: "R/${AppText.veh} ",
                                                         width:
                                                         fieldWidth /
                                                             3,
-                                                        heights: 35,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1704,12 +1701,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: "R/${AppText.drv}",
+                                                        label: "R/${AppText.drv} ",
                                                         width:
                                                         fieldWidth /
                                                             3,
                                                         heights:
-                                                        35,
+                                                        32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1757,8 +1754,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ],
-
                                                   // (10) Fare (Slugg)
+                                                  SizedBox(width: 8),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?  34:21),
@@ -1805,7 +1802,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                   // (11) Account
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 20),
+                                                    padding: const EdgeInsets.only(left: 2),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       NumericFocusOrder(controller.jourValue == 'W/R'?35: 22),
@@ -1816,12 +1813,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         isMobile:
                                                         isMobile,
                                                         label:
-                                                        AppText
-                                                            .acc,
+                                                        "${AppText.acc}    ",
                                                         width:
                                                         fieldWidth /
-                                                            2.8,
-                                                        heights: 35,
+                                                            3,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1874,10 +1870,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // (12) Pay dropdown
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 10),
+                                                    padding: const EdgeInsets.only(left: 20),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       NumericFocusOrder(controller.jourValue == 'W/R'?36: 23),
@@ -1893,7 +1888,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         width:
                                                         fieldWidth /
                                                             2.9,
-                                                        heights: 35,
+                                                        heights: 32,
                                                         child:
                                                         Container(
                                                           // height: 35,
@@ -1915,6 +1910,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               isDense:
                                                               true,
                                                             ),
+
                                                             value: controller
                                                                 .selectPaymentTypeValue,
                                                             items: controller
@@ -1944,52 +1940,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
-                                                  // (13) Calendar icon (keyboard clickable)
-                                                  // FocusTraversalOrder(
-                                                  //   order:
-                                                  //   NumericFocusOrder(controller.jourValue == 'W/R'?37:24),
-                                                  //   child:
-                                                  //   SizedBox(
-                                                  //     height: 33,
-                                                  //     child:
-                                                  //     KbdActivatable(
-                                                  //       focusNode:
-                                                  //       calendarFN,
-                                                  //       onActivate:
-                                                  //           () {
-                                                  //         // TODO: open your calendar modal/sheet
-                                                  //         // For demo:
-                                                  //         ScaffoldMessenger.of(context)
-                                                  //             .showSnackBar(
-                                                  //           const SnackBar(
-                                                  //               content: Text("Calendar icon activated")),
-                                                  //         );
-                                                  //       },
-                                                  //       child:
-                                                  //       Container(
-                                                  //         padding: const EdgeInsets
-                                                  //             .symmetric(
-                                                  //             horizontal:
-                                                  //             8),
-                                                  //         decoration:
-                                                  //         BoxDecoration(
-                                                  //           color: Colors
-                                                  //               .grey
-                                                  //               .shade300,
-                                                  //           borderRadius:
-                                                  //           BorderRadius.circular(6),
-                                                  //         ),
-                                                  //         child: const Icon(
-                                                  //             Icons
-                                                  //                 .calculate,
-                                                  //             size:
-                                                  //             20),
-                                                  //       ),
-                                                  //     ),
-                                                  //   ),
-                                                  // ),
-                                                  SizedBox(width: 2),
+                                                  SizedBox(width: 3),
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(controller.jourValue == 'W/R'?38:25),
@@ -2004,8 +1955,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           .veh,
                                                       width:
                                                       fieldWidth /
-                                                          3,
-                                                      heights: 35,
+                                                          2.9,
+                                                      heights: 32,
                                                       child:
                                                       Container(
                                                         // height: 35,
@@ -2047,17 +1998,18 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           onChanged:
                                                               (v) async {
                                                             controller.selectVehicleValue = v;
-                                                            Get.to(BottomNavigationView());
-                                                            // final storedTemFare = await getFares(
-                                                            //     dropOff: controller.pickupController.text,
-                                                            //     pickup: controller.dropOffController.text,
-                                                            //     miles: controller.totalDistance.value,
-                                                            //     dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                            //     pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                            //     pickupTime: controller.pickUpTimeController.text,
-                                                            //     vehicleTypeId: controller.selectVehicleValue!.id
-                                                            // );
-                                                            // controller.fixedFare.value = storedTemFare;
+                                                            final storedTemFare = await getFares(
+                                                                journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                                multiReservationList: controller.multiReservationList,
+                                                                dropOff: controller.pickupController.text,
+                                                                pickup: controller.dropOffController.text,
+                                                                miles: controller.totalDistance.value,
+                                                                dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                                pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                                pickupTime: controller.pickUpTimeController.text,
+                                                                vehicleTypeId: controller.selectVehicleValue!.id
+                                                            );
+                                                            controller.fixedFare.value = storedTemFare;
 
                                                             // final fare =
                                                             // await getActiveFareForVehicle(
@@ -2086,7 +2038,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   controller.selectAccountValue ==
                                                       null
                                                       ? SizedBox
@@ -2142,7 +2093,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Switch + Quotation
                                                 SizedBox(width: 15),
                                                     FocusTraversalOrder(
@@ -2168,8 +2118,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         },
                                                       ),
                                                     ),
-
-
                                                   Text(
                                                     AppText
                                                         .quotation,
@@ -2179,12 +2127,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         fontSize:
                                                         13),
                                                   ),
-
                                                   // SMS Checkbox
                                                   FocusTraversalOrder(
                                                     order:
                                                     NumericFocusOrder(
-                                                        controller.jourValue == 'W/R'?41:        28),
+                                                        controller.jourValue == 'W/R'?41:28),
                                                     child:
                                                     SizedBox(
                                                       // width: fieldWidth/6,
@@ -2229,7 +2176,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Email Checkbox
                                                   FocusTraversalOrder(
                                                     order:
@@ -2279,7 +2225,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-
                                                   // Pass, Lugg, Slugg fields
                                                 SizedBox(width: 10,),
                                                     SizedBox(
@@ -2382,9 +2327,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       ),
                                                     ),
-
-SizedBox(width: 15),
-                                                  Container(
+                                                        SizedBox(width: 15),
+                                                      Container(
                                                     height: 40,
                                                     padding: const EdgeInsets
                                                         .symmetric(
@@ -2444,7 +2388,6 @@ SizedBox(width: 15),
                                                           ),
                                                         ),
                                                         SizedBox(width: 5),
-
                                                         FocusTraversalOrder(
                                                           order: NumericFocusOrder(
                                                               controller.jourValue == 'W/R'?48:35),
@@ -2458,13 +2401,13 @@ SizedBox(width: 15),
                                                                 () {
                                                               showDialog(
                                                                 context: context,
+                                                                barrierDismissible: false,
                                                                 builder: (_) => ExtraFaresAlert(),
                                                               );
                                                             },
                                                           ),
                                                         ),
                                                         SizedBox(width: 5),
-
                                                         FocusTraversalOrder(
                                                           order: NumericFocusOrder(controller.jourValue == 'W/R'?49:36),
                                                           child:
@@ -2585,7 +2528,6 @@ SizedBox(width: 15),
                                                         fontSize:
                                                         13)),
                                                 SizedBox(width: 30),
-
                                                 Icon(
                                                     Icons
                                                         .location_on,
@@ -2722,32 +2664,7 @@ SizedBox(width: 15),
                                                     ),
                                                   ),
                                                 ),
-SizedBox(width: 350),
-
-                                                // FocusTraversalOrder(
-                                                //   order: const NumericFocusOrder(38),
-                                                //   child: CustomButton(
-                                                //     btnText: "MULTI BOOKING [F8]",
-                                                //     width: 150,
-                                                //     height: 30,
-                                                //     fontSize: 11,
-                                                //     verticalPadding: 0.0,
-                                                //     borderRadius: 4,
-                                                //   ),
-                                                // ),
-                                                //
-                                                // FocusTraversalOrder(
-                                                //   order: const NumericFocusOrder(39),
-                                                //   child: CustomButton(
-                                                //     btnText: "MULTI VEHICLE [F9]",
-                                                //     width: 150,
-                                                //     height: 30,
-                                                //     fontSize: 11,
-                                                //     verticalPadding: 0.0,
-                                                //     borderRadius: 4,
-                                                //   ),
-                                                // ),
-
+                                                SizedBox(width: 350),
                                                 FocusTraversalOrder(
                                                   order: NumericFocusOrder(controller.jourValue == 'W/R'?51:38),
                                                   child:
@@ -2819,48 +2736,13 @@ SizedBox(width: 350),
                                       SizedBox(
                                           width: screenWidth *
                                               0.0133),
-
                                       /// todo MAP SECTION
                                       MapViewWidget(),
-
                                       /// todo MAP SECTION
                                     ],
                                   )
                                 ],
                               ),
-                              /* child: width <= 1366 ? Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: screenWidth * 0.007,
-                                      ),
-                                      BookingFormWidget(),
-                                      SizedBox(width: screenWidth * 0.011),
-
-                                      /// todo MAP SECTION
-                                      MapViewWidget(),
-                                      /// todo MAP SECTION
-                                      SizedBox(width: screenWidth * 0.0133),
-
-                                      //Driver
-                                      DriversView(),
-                                    ],
-                                  ):Column(
-                                    children: [
-                                      BookingFormWidget(),
-                                      Row(
-                                        children: [
-                                          /// todo MAP SECTION
-                                          MapViewWidget(),
-                                          /// todo MAP SECTION
-                                          SizedBox(width: screenWidth * 0.0133),
-
-                                          //Driver
-                                          DriversView(),
-                                        ],
-                                      )
-                                    ],
-                                  ),*/
                             ),
                           ),
                           Container(
@@ -2879,7 +2761,6 @@ SizedBox(width: 350),
                         ],
                       ),
                     ),
-                    // SizedBox(height: 12),
                     // 🔽 Address suggestion dropdown with keyboard support
                     Obx(() {
                       if (controller

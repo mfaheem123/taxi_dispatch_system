@@ -11,6 +11,7 @@ import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
+import '../../../component/time_duration_method.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../setting_controller.dart';
@@ -391,7 +392,20 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         child: Align(
                           alignment: Alignment.bottomRight,
                           child: CustomButton(
-                            onTap: (){
+                            onTap: () async{
+                              final storedTemFare = await getFares(
+                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                  multiReservationList: controller.multiReservationList,
+                                  dropOff: controller.pickupController.text,
+                                  pickup: controller.dropOffController.text,
+                                  miles: controller.totalDistance.value,
+                                  dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                  pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                  pickupTime: controller.pickUpTimeController.text,
+                                  vehicleTypeId: controller.selectVehicleValue!.id
+                              );
+                              controller.fixedFare.value = storedTemFare;
+                              controller.update();
                               Get.back();
                             },
                             height: 35,

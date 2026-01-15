@@ -237,6 +237,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                         ),
+
                                         // (1) Pickup textfield
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(1),
@@ -378,10 +379,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
                                         ),
                                         // Select PLots
+                                        SizedBox(width: 30,),
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(2),
                                           child: RestrictedDrivers(
-                                            width: fieldWidth / 2.5,
+                                            width: fieldWidth / 3.4,
                                             height: 30,
                                             padding: 0.0,
                                             titleText: "SELECT PLOT",
@@ -393,6 +395,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
 
                                         // (3) Pickup notes
+                                        SizedBox(width: 55,),
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(3),
                                           child: SizedBox(
@@ -585,12 +588,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // Select Plot
+                                          SizedBox(width: 35,),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 5),
                                             child: FocusTraversalOrder(
                                               order: const NumericFocusOrder(2),
                                               child: RestrictedDrivers(
-                                                width: fieldWidth / 2.5,
+                                                width: fieldWidth / 3.4,
                                                 height: 30,
                                                 padding: 0.0,
                                                 titleText: "SELECT PLOT",
@@ -603,6 +607,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // (3) Pickup notes
+                                          SizedBox(width: 60,),
                                           Padding(
                                             padding: const EdgeInsets.only(left: 5),
                                             child: FocusTraversalOrder(
@@ -829,8 +834,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ),
 
                                           // (4) Dropoff textfield
-
-
                                           FocusTraversalOrder(
                                               order: const NumericFocusOrder(4),
                                               child: SizedBox(
@@ -986,7 +989,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               Align(
                                 alignment: Alignment.centerLeft,
                                 child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
+                                  padding: const EdgeInsets.only(left: 13),
                                   child: Wrap(
                                     spacing: 10,
                                     runSpacing: 16,
@@ -995,20 +998,15 @@ class _CreateBookingState extends State<CreateBooking> {
                                     alignment: WrapAlignment.start,
                                     children: [
                                       // name fileds
-
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 2),
-                                        child: FocusTraversalOrder(
+                                       FocusTraversalOrder(
                                           order: const NumericFocusOrder(1),
                                           child: labeledTextField(context, isMobile,
                                               AppText.name,
                                               controller.nameController,
-                                              width: fieldWidth / 2,
+                                              width: fieldWidth / 2.4,
                                               textInputAction: TextInputAction.next),
                                         ),
-                                      ),
                                       // email fileds
-
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(2),
                                         child: labeledTextField(
@@ -1019,13 +1017,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                             width: fieldWidth / 2.3,
                                             textInputAction: TextInputAction.next),
                                       ),
-SizedBox(width: 2),
+                                      // Mob
+                                      SizedBox(width: 8),
                                       SizedBox(
-                                        width: fieldWidth/1.8,
+                                        width: fieldWidth/ 1.62,
                                         child: Row(
                                           children: [
                                             Padding(
-                                              padding: const EdgeInsets.only(right: 12.0),
+                                              padding: const EdgeInsets.only(right: 16.0 ),
                                               child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                             ),
                                             FocusTraversalOrder(
@@ -1080,9 +1079,11 @@ SizedBox(width: 2),
                                       // tel fields
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(4),
-                                        child: labeledTextField(context, isMobile,
-                                            AppText.tel, controller.telController,
-                                            width: fieldWidth / 2.3,
+                                        child: labeledTextField(context,
+                                            isMobile,
+                                            AppText.tel,
+                                            controller.telController,
+                                            width: fieldWidth / 1.97,
                                             textInputAction: TextInputAction.next,
                                             keyboardType: TextInputType.phone,
                                             formatDigitsOnly: false),
@@ -1094,13 +1095,14 @@ SizedBox(width: 2),
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.date,
-                                          width: fieldWidth / 2.3,
+                                          width: fieldWidth / 2.4,
                                           child: SizedBox(
                                               height: 30,
                                               child: KeyboardDatePicker()),
                                         ),
                                       ),
                                       // (6) Time
+                                      SizedBox(width: 2),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(6),
                                         child: labeledField(
@@ -1114,48 +1116,50 @@ SizedBox(width: 2),
                                         ),
                                       ),
                                       // (7) Lead (mins)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(7),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.lead,
-                                          width: fieldWidth / 2.3,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "MINS",
-                                              controller: controller.minController,
-                                              borderRadius: 4,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 10),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(7),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.lead,
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
+                                              height: 30,
+                                              child: CustomTextField(
+                                                hintText: "MINS",
+                                                controller: controller.minController,
+                                                borderRadius: 4,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-
                                       // (8) Journey dropdown (O/W, R/N, W/R)
+                                      SizedBox(width: 65),
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(8),
                                         child: RestrictedDrivers(
-                                          width: fieldWidth / 2.3,
+                                          width: fieldWidth / 2.92,
                                           height: 30,
                                           padding: 0.0,
                                           titleText: "SELECT PLOT",
                                           driversList: [
                                             'DEMO COMPANY 01',
-                                            'DEMO COMPANY 02'
+                                            'DEMO COMPANY 02',
                                           ],
                                         ),
                                       ),
-
                                       // (9) Driver dropdown
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(9),
@@ -1189,130 +1193,103 @@ SizedBox(width: 2),
                                           ),
                                         ),
                                       ),
-
                                       // (10) Fare (Slugg)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(10),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.fare,
-                                          width: fieldWidth / 2.3,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "Slugg",
-                                              controller: controller.slugController,
-                                              borderRadius: 6,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                LengthLimitingTextInputFormatter(6),
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      // (11) Account
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(11),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.acc,
-                                          width: fieldWidth / 2.3,
-                                          child: SizedBox(
-                                            height: 30,
-                                            child: CustomTextField(
-                                              hintText: "SELECT ACCOUNT",
-                                              controller:
-                                                  controller.accountNoController,
-                                              borderRadius: 6,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter
-                                                    .digitsOnly,
-                                                LengthLimitingTextInputFormatter(6),
-                                              ],
-                                              keyboardType: TextInputType.number,
-                                              textInputAction: TextInputAction.next,
-                                              onSubmitted: (_) =>
-                                                  FocusScope.of(context)
-                                                      .nextFocus(),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      // (12) Pay dropdown
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(12),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.pay,
-                                          width: fieldWidth / 2.3,
-                                          child: Container(
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              border: Border.all(
-                                                  color: DynamicColors.primaryClr),
-                                            ),
-                                            child: RestrictedDrivers(
-                                              width: fieldWidth / 2.3,
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(10),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.fare,
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
                                               height: 30,
-                                              padding: 0.0,
-                                              titleText: controller.payValue,
-                                              driversList: [
-                                                "CASH",
-                                                "CREDIT CARD",
-                                                "ACCOUNT",
-                                                "CREDIT CARD PAID"
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-
-                                      // (13) Calendar icon (keyboard clickable)
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(13),
-                                        child: SizedBox(
-                                          height: 33,
-                                          child: KbdActivatable(
-                                            focusNode: calendarFN,
-                                            onActivate: () {
-                                              // TODO: open your calendar modal/sheet
-                                              // For demo:
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                    content: Text(
-                                                        "Calendar icon activated")),
-                                              );
-                                            },
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                  horizontal: 8),
-                                              decoration: BoxDecoration(
-                                                color: Colors.grey.shade300,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
+                                              child: CustomTextField(
+                                                hintText: "Slugg",
+                                                controller: controller.slugController,
+                                                borderRadius: 6,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  LengthLimitingTextInputFormatter(6),
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
                                               ),
-                                              child: const Icon(Icons.calculate,
-                                                  size: 20),
                                             ),
                                           ),
                                         ),
                                       ),
-
+                                      // (11) Account
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 15),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(11),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: "${AppText.acc} ",
+                                            width: fieldWidth / 2.3,
+                                            child: SizedBox(
+                                              height: 30,
+                                              child: CustomTextField(
+                                                hintText: "SELECT ACCOUNT",
+                                                controller:
+                                                    controller.accountNoController,
+                                                borderRadius: 6,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  LengthLimitingTextInputFormatter(6),
+                                                ],
+                                                keyboardType: TextInputType.number,
+                                                textInputAction: TextInputAction.next,
+                                                onSubmitted: (_) =>
+                                                    FocusScope.of(context)
+                                                        .nextFocus(),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      // (12) Pay dropdown
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 40),
+                                        child: FocusTraversalOrder(
+                                          order: const NumericFocusOrder(12),
+                                          child: labeledField(
+                                            context: context,
+                                            isMobile: isMobile,
+                                            label: AppText.pay,
+                                            width: fieldWidth / 1.95,
+                                            child: Container(
+                                              height: 30,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(4),
+                                                border: Border.all(
+                                                    color: DynamicColors.primaryClr),
+                                              ),
+                                              child: RestrictedDrivers(
+                                                width: fieldWidth / 2.3,
+                                                height: 30,
+                                                padding: 0.0,
+                                                titleText: controller.payValue,
+                                                driversList: [
+                                                  "CASH",
+                                                  "CREDIT CARD",
+                                                  "ACCOUNT",
+                                                  "CREDIT CARD PAID"
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                       // (12) Pay dropdown
                                       FocusTraversalOrder(
                                         order: const NumericFocusOrder(9),
@@ -1349,7 +1326,6 @@ SizedBox(width: 2),
                                           ),
                                         ),
                                       ),
-
                                       // Switch + Quotation
                                       DynamicSwitch(
                                         controller: controller.switchController,
@@ -1360,7 +1336,6 @@ SizedBox(width: 2),
                                           print("Switch toggled: ${controller.switchController.value}");
                                         },
                                       ),
-
                                       Text(
                                         AppText.quotation,
                                         style: mozillaTextSemiBoldText(
@@ -1519,7 +1494,7 @@ SizedBox(width: 2),
                                           ],
                                         ),
                                       ),
-
+                                      // 3 icons row  (person) (shopping_cart) (doller)
                                       FocusTraversalGroup(
                                         policy: OrderedTraversalPolicy(),
                                         child: Container(
@@ -1583,6 +1558,38 @@ SizedBox(width: 2),
                                           ),
                                         ),
                                       ),
+                                      // (13) Calendar icon (keyboard clickable)
+                                      FocusTraversalOrder(
+                                        order: const NumericFocusOrder(13),
+                                        child: SizedBox(
+                                          height: 33,
+                                          child: KbdActivatable(
+                                            focusNode: calendarFN,
+                                            onActivate: () {
+                                              // TODO: open your calendar modal/sheet
+                                              // For demo:
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                    content: Text(
+                                                        "Calendar icon activated")),
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey.shade300,
+                                                borderRadius:
+                                                BorderRadius.circular(6),
+                                              ),
+                                              child: const Icon(Icons.calculate,
+                                                  size: 25),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
                                     ],
                                   ),
                                 ),
@@ -1803,110 +1810,6 @@ SizedBox(width: 2),
                               SizedBox(
                                 height: Get.height / 2.1,
                       child: MapViewWidget(createBooking: true,),
-                      //           child: Stack(
-                      //             children: [
-                      //               Positioned.fill(
-                      //                 child: FlutterMap(
-                      //                   options: MapOptions(
-                      //                     initialCenter:
-                      //                         LatLng(33.6844, 73.0479),
-                      //                     initialZoom: 13.0,
-                      //                   ),
-                      //                   children: [
-                      //                     TileLayer(
-                      //                       urlTemplate:
-                      //                           'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      //                       subdomains: ['a', 'b', 'c'],
-                      //                     ),
-                      //                   ],
-                      //                 ),
-                      //               ),
-                      //               Positioned(
-                      //                   bottom: 0,
-                      //                   child: Padding(
-                      //                     padding: const EdgeInsets.all(7.0),
-                      //                     child: Container(
-                      //                         decoration: BoxDecoration(
-                      //                             borderRadius:
-                      //                                 BorderRadius.circular(6),
-                      //                             color: DynamicColors
-                      //                                 .secondaryClr),
-                      //                         child: IconButton(
-                      //                             padding: EdgeInsets.zero,
-                      //                             onPressed: () {
-                      //                               final newTabUrll = Uri
-                      //                                       .base.origin +
-                      //                                   '/#' +
-                      //                                   Routes.viewDriversMap;
-                      //                               html.window.open(
-                      //                                 newTabUrll,
-                      //                                 '_blank', // "_blank" nayi window/tab me open karega
-                      //                                 'width=1200,height=800,noopener,noreferrer', // Optional: size aur options
-                      //                               );
-                      //                             },
-                      //                             icon: Icon(Icons
-                      //                                 .crop_square_outlined))),
-                      //                   ))
-                      //
-                      //               ///todo Duration Info
-                      //               /*Positioned(
-                      // top: 90,
-                      // left: 10,
-                      // child: Obx(() {
-                      //   final controller = Get.find<
-                      //       DashboardController>();
-                      //   return Container(
-                      //     padding:
-                      //     const EdgeInsets.symmetric(
-                      //         horizontal: 17,
-                      //         vertical: 8),
-                      //     decoration: BoxDecoration(
-                      //       color: Color(0xFF3CC2C1)
-                      //           .withOpacity(0.7),
-                      //       borderRadius:
-                      //       BorderRadius.circular(12),
-                      //     ),
-                      //     child: Column(
-                      //       crossAxisAlignment:
-                      //       CrossAxisAlignment.start,
-                      //       children: [
-                      //         const Text("MILES:",
-                      //             style: TextStyle(
-                      //                 fontWeight:
-                      //                 FontWeight.bold,
-                      //                 fontSize: 12,
-                      //                 color:
-                      //                 Colors.white)),
-                      //         Text(controller.miles.value,
-                      //             style: const TextStyle(
-                      //                 fontSize: 10,
-                      //                 color:
-                      //                 Colors.white)),
-                      //         SizedBox(
-                      //             height: screenHeight *
-                      //                 0.0075),
-                      //         const Text("DURATION:",
-                      //             style: TextStyle(
-                      //                 fontWeight:
-                      //                 FontWeight.bold,
-                      //                 fontSize: 12,
-                      //                 color:
-                      //                 Colors.white)),
-                      //         Text(
-                      //             controller
-                      //                 .duration.value,
-                      //             style: const TextStyle(
-                      //                 fontSize: 10,
-                      //                 color:
-                      //                 Colors.white)),
-                      //       ],
-                      //     ),
-                      //   );
-                      // }),
-                      //                 ),*/
-                      //               ///todo Duration Info
-                      //             ],
-                      //           ),
                               )
                             ],
                           ),

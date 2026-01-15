@@ -521,7 +521,7 @@ class DashboardController extends GetxController {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
-              type: "pickup",
+              type: "pickup two way",
               point: p,
               child: Icon(Icons.location_pin,
                   color: Colors.amberAccent, size: 30),
@@ -533,7 +533,7 @@ class DashboardController extends GetxController {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
-              type: "dropOff",
+              type: "dropOff two way",
               point: p,
               child: Icon(Icons.location_pin,
                   color: DynamicColors.textClr, size: 30),
@@ -618,6 +618,8 @@ class DashboardController extends GetxController {
 
       final storedTemFare = await getFares(
         // day: ,
+          journeyTypeId: selectJourneyTypeValue!.id,
+        multiReservationList: multiReservationList,
           dropOff: pickupController.text,
           pickup: dropOffController.text,
           miles: totalDistance.value,
@@ -1292,6 +1294,7 @@ class DashboardController extends GetxController {
   List childSeatList = [];
   List extraFaresList = [];
   List viaPostList = [];
+  List viaReturnPostList = [];
   List multiReservationTemp = [];
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
@@ -1341,6 +1344,26 @@ class DashboardController extends GetxController {
 
     if(viaPoints.isNotEmpty){
       await postViaListConfig();
+    }
+
+    int pickUpTwoIndex = markers.indexWhere((test) => test.type == "pickup two way");
+    int dropOffTwoIndex = markers.indexWhere((test) => test.type == "dropOff two way");
+    double? pickUpLatTwoLat;
+    double? pickUpLngTwoLat;
+    double? dropOffLatTwoLat;
+    double? dropOffLngTwoLat;
+
+// Check if the marker was actually found to avoid errors
+    if (pickUpTwoIndex != -1) {
+      // Assuming 'lat' is a property or constant available in your scope
+      pickUpLatTwoLat = markers[pickUpTwoIndex].point.latitude;
+      pickUpLngTwoLat = markers[pickUpTwoIndex].point.longitude;
+    }
+// Check if the marker was actually found to avoid errors
+    if (dropOffTwoIndex != -1) {
+      // Assuming 'lat' is a property or constant available in your scope
+      dropOffLatTwoLat = markers[dropOffTwoIndex].point.longitude;
+      dropOffLngTwoLat = markers[dropOffTwoIndex].point.longitude;
     }
 
     var formData = {
@@ -1393,17 +1416,41 @@ class DashboardController extends GetxController {
       'employee_id': '2',
       if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
       if(multiVehicleTempList.isNotEmpty) "multi_vehicle": jsonEncode(multiVehicleTempList),
+
+
+      /// todo waiting return
+      if(pickupTwoWayController.text.isNotEmpty)"return_pickup": pickupTwoWayController.text,
+      if(dropOffTwoWayController.text.isNotEmpty)"return_dropoff": dropOffTwoWayController.text,
+      "return_pickup_latitude": pickUpLatTwoLat,
+      "return_pickup_longitude": pickUpLngTwoLat,
+      "return_dropoff_latitude": dropOffLatTwoLat,
+      "return_dropoff_longitude": dropOffLngTwoLat,
+      "return_pickup_date": "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
+      "return_pickup_time": pickUpTimeControllerReturn.text,
+      if(viaReturnPostList.isNotEmpty)'return_viapoints': jsonEncode(viaReturnPostList),
+     if(selectVehicleValueReturn != null) "return_driver_id": selectVehicleValueReturn!.id,
+     if(selectDriverValueReturn != null) "return_vehicle_type_id": selectDriverValueReturn!.id,
+      "return_fare": '12345.12',
+      "return_notes": '[{"note":"test","created_at":"2025-11-25 16:10","created_by":"nadeem"},{"note":"test 2","created_at":"2025-11-25 16:10","created_by":"nadeem"}]',
+
+      /// todo waiting return
+
+
+
+
     };
-    var response = await Api().post(formData, "bookings/add");
-    if(response.statusCode == 200){
-      if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
-        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
-        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      }
-      // refreshPostAllFields();
-      print(response.data);
-    }
+    print(markers);
+    print(formData);
+    // var response = await Api().post(formData, "bookings/add");
+    // if(response.statusCode == 200){
+    //   if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
+    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+    //   }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
+    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+    //   }
+    //   // refreshPostAllFields();
+    //   print(response.data);
+    // }
   }
 
   restrictedDriversListConfig() async {
@@ -1467,20 +1514,36 @@ class DashboardController extends GetxController {
 
   postViaListConfig() async {
     viaPostList.clear();
+    viaReturnPostList.clear();
     print(viaPoints);
     for (var action in viaPoints) {
-      viaPostList.add({
-        "viapoint": action.address,
-        "name": action.name,
-        "mobile": action.mobile,
-        "arrived": null,
-        "passenger_on_board": null,
-        "active": false,
-        "latitude": action.lat,
-        "longitude": action.lng
+      print(action.withReturnWay);
+      if(action.withReturnWay == 'via'){
+        viaPostList.add({
+          "viapoint": action.address,
+          "name": action.name,
+          "mobile": action.mobile,
+          "arrived": null,
+          "passenger_on_board": null,
+          "active": false,
+          "latitude": action.lat,
+          "longitude": action.lng
+        });
+      }else{
+        viaReturnPostList.add({
+          "viapoint": action.address,
+          "name": action.name,
+          "mobile": action.mobile,
+          "arrived": null,
+          "passenger_on_board": null,
+          "active": false,
+          "latitude": action.lat,
+          "longitude": action.lng
+        });
       }
-      );
     }
+    print(viaPostList);
+    print(viaReturnPostList);
     update();
   }
 

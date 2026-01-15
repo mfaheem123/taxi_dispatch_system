@@ -1,6 +1,7 @@
 
 
 
+import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,6 +10,7 @@ import '../component/color.dart';
 import '../component/textStyle.dart';
 import '../component/text_field.dart';
 import '../component/text_widget.dart';
+import '../component/time_duration_method.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class ExtraFaresAlert extends StatefulWidget {
@@ -217,6 +219,83 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                       ),
                     ),
                   ],
+                ),
+                Spacer(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 150,
+                      height: 35,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: Text("Cancel",
+                          style: TextStyle(
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    SizedBox(
+                      width: 150,
+                      height: 35,
+                      child: ElevatedButton(
+                        onPressed: () async{
+                          final storedTemFare = await getFares(
+                            multiReservationList: controller.multiReservationList,
+                            // day: ,
+                              dropOff: controller.pickupController.text,
+                              pickup: controller.dropOffController.text,
+                              miles: controller.totalDistance.value,
+                              journeyTypeId: controller.selectJourneyTypeValue!.id,
+                              dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                              pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                              pickupTime: controller.pickUpTimeController.text,
+                              vehicleTypeId: controller.selectVehicleValue!.id,
+                              partingCharges: dashBoardCntrl.partingChargesController.text,
+                              congestionCharges: dashBoardCntrl.congestionChargesController.text,
+                              meetGreet: dashBoardCntrl.meetGreetController.text,
+                              waitingCharges: dashBoardCntrl.waitingChargesController.text,
+                              extraDropCharges: dashBoardCntrl.extraDropChargesController.text,
+                              creditCardCharges: dashBoardCntrl.creditCardChargesController.text,
+                              companyPrice: dashBoardCntrl.companyPriceController.text,
+                              returnCompanyPrice: dashBoardCntrl.returnCompanyPriceController.text
+                          );
+
+                          controller.fixedFare.value = storedTemFare;
+                          controller.update();
+                          Get.back();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: DynamicColors.primaryClr,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: Text("Save",
+                          style: TextStyle(
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
                 ),
               ],
             ),
