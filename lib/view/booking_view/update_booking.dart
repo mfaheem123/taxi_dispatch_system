@@ -130,26 +130,26 @@ class _UpdateBookingState extends State<UpdateBooking> {
                     child: Column(
                       children: [
                         // Shortcut Keys Row
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                ShortcutKeyWidget(
-                                    keyss: "F1", valuess: "BASE ADDRESS"),
-                                const SizedBox(width: 10),
-                                ShortcutKeyWidget(
-                                    keyss: "F2", valuess: "BOOKING FORM"),
-                                const SizedBox(width: 10),
-                                ShortcutKeyWidget(
-                                    keyss: "F6", valuess: "QUOTATION"),
-                                const SizedBox(width: 10),
-                                // Add more shortcut buttons here if needed
-                              ],
-                            ),
-                          ),
-                        ),
+                        // Padding(
+                        //                         //   padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        //                         //   child: SingleChildScrollView(
+                        //                         //     scrollDirection: Axis.horizontal,
+                        //                         //     child: Row(
+                        //                         //       children: [
+                        //                         //         ShortcutKeyWidget(
+                        //                         //             keyss: "F1", valuess: "BASE ADDRESS"),
+                        //                         //         const SizedBox(width: 10),
+                        //                         //         ShortcutKeyWidget(
+                        //                         //             keyss: "F2", valuess: "BOOKING FORM"),
+                        //                         //         const SizedBox(width: 10),
+                        //                         //         ShortcutKeyWidget(
+                        //                         //             keyss: "F6", valuess: "QUOTATION"),
+                        //                         //         const SizedBox(width: 10),
+                        //                         //         // Add more shortcut buttons here if needed
+                        //                         //       ],
+                        //                         //     ),
+                        //                         //   ),
+                        //                         // ),
                         // Booking Title
                         // Top Row aligned with fields
 
@@ -206,93 +206,92 @@ class _UpdateBookingState extends State<UpdateBooking> {
                             spacing: 8,
                             runSpacing: 16,
                             children: [
-                              SizedBox(width: 20),
+                              SizedBox(width: 10),
                               Text("UPDATE BOOKING",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 1),
                               Text("|",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 1),
                               Text("DCB75295",
                                   style: TextStyle(
                                       color: Colors.red,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 20),
                               Text("|",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 1),
                               Text("USER :",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               Text("NADEEM",
                                   style: TextStyle(
                                       color: Colors.red,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
 
                               Text("|",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 1),
                               Text("BOOKED ON :",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               Text("15-01-26 11:02",
                                   style: TextStyle(
                                       color: Colors.red,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               Text("|",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               // SizedBox(width: 1),
                               Text("BOOKING STATUS :",
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
-                                      fontSize: 13)),
+                                      fontSize: 12)),
                               Text("PENDING",
                                   style: TextStyle(
                                       color: Colors.red,
-                                      fontSize: 13)),
-                              SizedBox(width: 30),
+                                      fontSize: 12)),
+                              SizedBox(width: screenWidth/25),
+                              Text("R/Reference # dcb75241 ",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12)),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade500,
-                                  borderRadius:
-                                  BorderRadius.circular(6),
-                                ),
                                 child: const Icon(Icons.play_arrow,
                                     size: 22),
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade500,
-                                  borderRadius:
-                                  BorderRadius.circular(6),
-                                ),
-                                child: const Icon(Icons.send,
+                                // decoration: BoxDecoration(
+                                //   color: Colors.grey.shade500,
+                                //   borderRadius:
+                                //   BorderRadius.circular(6),
+                                // ),
+                                child: const Icon(Icons.send_outlined,
                                     size: 22),
                               ),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade500,
-                                  borderRadius:
-                                  BorderRadius.circular(6),
-                                ),
+                                // decoration: BoxDecoration(
+                                //   color: Colors.grey.shade500,
+                                //   borderRadius:
+                                //   BorderRadius.circular(6),
+                                // ),
                                 child: const Icon(Icons.email,
                                     size: 22),
                               ),
@@ -1739,14 +1738,14 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                             fontSize: 13)),
                                     SizedBox(width: 20),
 
-                                    Icon(Icons.access_time_filled_outlined,
-                                        color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 2),
-                                    Text("JOURNEY : 0.0 mins",
-                                        style: TextStyle(
-                                            color: DynamicColors.textClr,
-                                            fontSize: 13)),
-                                    SizedBox(width: 20),
+                                    // Icon(Icons.access_time_filled_outlined,
+                                    //     color: DynamicColors.textClr, size: 18),
+                                    // SizedBox(width: 2),
+                                    // Text("JOURNEY : 0.0 mins",
+                                    //     style: TextStyle(
+                                    //         color: DynamicColors.textClr,
+                                    //         fontSize: 13)),
+                                    // SizedBox(width: 20),
 
                                     Icon(Icons.location_on,
                                         color: DynamicColors.textClr, size: 18),
@@ -1840,84 +1839,92 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                         ),
                                       ),
                                     ),
-                                    Obx(
-                                          ()=> MouseRegion(
-                                        onEnter: (_) {
-                                          // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                                          //
-                                          // }
-                                          DashboardF8Alert.show();
+                                    // Obx(
+                                    //       ()=> MouseRegion(
+                                    //     onEnter: (_) {
+                                    //       // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                    //       //
+                                    //       // }
+                                    //       DashboardF8Alert.show();
+                                    //
+                                    //       controller.isHoveredF8 = true.obs;
+                                    //     },
+                                    //     onExit: (_) {
+                                    //       controller.isHoveredF8 = false.obs;
+                                    //     },
+                                    //     child: Container(
+                                    //       // margin: EdgeInsets.symmetric(
+                                    //       //     horizontal: 16, vertical: 3),
+                                    //       padding: EdgeInsets.symmetric(
+                                    //           horizontal: 8, vertical: 3),
+                                    //       decoration: BoxDecoration(
+                                    //         color: controller.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                    //         borderRadius:
+                                    //         BorderRadius.circular(10),
+                                    //       ),
+                                    //       child: Text(
+                                    //         '+ MULTI RESERVATION [F8]',
+                                    //         style: TextStyle(
+                                    //           color: Colors.black,
+                                    //           fontSize: 13,
+                                    //           fontWeight: FontWeight.bold,
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
 
-                                          controller.isHoveredF8 = true.obs;
-                                        },
-                                        onExit: (_) {
-                                          controller.isHoveredF8 = false.obs;
-                                        },
-                                        child: Container(
-                                          // margin: EdgeInsets.symmetric(
-                                          //     horizontal: 16, vertical: 3),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: controller.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                                            borderRadius:
-                                            BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            '+ MULTI RESERVATION [F8]',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-
-                                    Obx(
-                                          ()=> MouseRegion(
-                                        onEnter: (_) {
-                                          // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                                          //
-                                          // }
-                                          DashboardF9Alert.show();
-                                          controller.isHoveredF9 = true.obs;
-                                        },
-                                        onExit: (_) {
-                                          controller.isHoveredF9 = false.obs;
-                                        },
-                                        child: Container(
-                                          // margin: EdgeInsets.symmetric(
-                                          //     horizontal: 16, vertical: 3),
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 3),
-                                          decoration: BoxDecoration(
-                                            color: controller.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
-                                            borderRadius:
-                                            BorderRadius.circular(10),
-                                          ),
-                                          child: Text(
-                                            '+ VEHICLES [F9]',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    // Obx(
+                                    //       ()=> MouseRegion(
+                                    //     onEnter: (_) {
+                                    //       // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                    //       //
+                                    //       // }
+                                    //       DashboardF9Alert.show();
+                                    //       controller.isHoveredF9 = true.obs;
+                                    //     },
+                                    //     onExit: (_) {
+                                    //       controller.isHoveredF9 = false.obs;
+                                    //     },
+                                    //     child: Container(
+                                    //       // margin: EdgeInsets.symmetric(
+                                    //       //     horizontal: 16, vertical: 3),
+                                    //       padding: EdgeInsets.symmetric(
+                                    //           horizontal: 8, vertical: 3),
+                                    //       decoration: BoxDecoration(
+                                    //         color: controller.isHoveredF9.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                    //         borderRadius:
+                                    //         BorderRadius.circular(10),
+                                    //       ),
+                                    //       child: Text(
+                                    //         '+ VEHICLES [F9]',
+                                    //         style: TextStyle(
+                                    //           color: Colors.black,
+                                    //           fontSize: 13,
+                                    //           fontWeight: FontWeight.bold,
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                     SizedBox(
-                                      width: 25,
+                                      width: screenWidth/ 4,
                                     ),
 
                                     CustomButton(
-                                      btnText: "CLEAR [F7]",
+                                      btnText: "CANCEL",
                                       width: 110,
                                       height: 30,
                                       fontSize: 11,
                                       btnColor: DynamicColors.redClr,
+                                      verticalPadding: 0.0,
+                                      borderRadius: 4,
+                                    ),
+                                    CustomButton(
+                                      btnText: "RECEIPT",
+                                      width: 110,
+                                      height: 30,
+                                      fontSize: 11,
                                       verticalPadding: 0.0,
                                       borderRadius: 4,
                                     ),
@@ -1928,9 +1935,8 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                       fontSize: 11,
                                       verticalPadding: 0.0,
                                       borderRadius: 4,
-                                    ),
-                                    CustomButton(
-                                      btnText: "SAVE[HOME]",
+                                    ),     CustomButton(
+                                      btnText: "SAVE",
                                       width: 110,
                                       height: 30,
                                       fontSize: 11,
