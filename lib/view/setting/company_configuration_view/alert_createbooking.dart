@@ -144,6 +144,25 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
                           )),
                         ),
+                        Visibility(
+                          visible: controller.jourValue == 'W/R' ? true : false,
+                          child: labeledField(
+                            context: context,
+                            isMobile: isMobile,
+                            label: AppText.time,
+                            width: fieldWidth/2.3,
+                            child: SizedBox(height: 30, child: CustomTimePicker(
+                              controller: controller.returnMultiReservationToTimeController, // optional
+                              onTimeSelected: (time) {
+                                controller.returnMultiReservationToTimeController.text = time;
+                                setState(() {
+                                  print(controller.returnMultiReservationToTimeController.text);
+                                });
+                              },
+
+                            )),
+                          ),
+                        ),
                         CustomButton(
                           height: 35,
                           width: fieldWidth / 2,
@@ -436,6 +455,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 class MultiReservation{
   String? time,returnTime, day, startDate;
   bool exclude = false;
+  String? selectedTitle;
 
-  MultiReservation({this.day, this.time, this.startDate, this.exclude = false, this.returnTime});
+
+  MultiReservation({this.day, this.time, this.startDate, this.exclude = false, this.returnTime, this.selectedTitle});
 }
