@@ -346,7 +346,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     controller.polyLineMarkerInfo.clear();
                                                                     controller.pickupController.clear();
                                                                     controller.dropOffController.clear();
-
                                                                     controller.polylinePoints.clear();
                                                                     controller.fetchRouteFromOSRM();
                                                                     controller.fixedFare.value = "0";
@@ -832,8 +831,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             Colors.blue,
                                                             onChanged:
                                                                 (date) async{
-                                                              controller.pickUpDate =
-                                                                  date;
+                                                              controller.pickUpDate = date;
                                                               final storedTemFare = await getFares(
                                                                   journeyTypeId: controller.selectJourneyTypeValue!.id,
                                                                 multiReservationList: controller.multiReservationList,
@@ -869,8 +867,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: AppText
-                                                            .time,
+                                                        label: AppText.time,
                                                         width:
                                                         fieldWidth /
                                                             2.8,
@@ -881,8 +878,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               controller.pickUpTimeController, // optional
                                                               onTimeSelected:
                                                                   (time) async{
-                                                                controller.pickUpTimeController.text =
-                                                                    time;
+                                                                controller.pickUpTimeController.text = time;
                                                                 final storedTemFare = await getFares(
                                                                     journeyTypeId: controller.selectJourneyTypeValue!.id,
                                                                     multiReservationList: controller.multiReservationList,
@@ -916,8 +912,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         context,
                                                         isMobile:
                                                         isMobile,
-                                                        label: AppText
-                                                            .lead,
+                                                        label: AppText.lead,
                                                         width:
                                                         fieldWidth /
                                                             2.9,
@@ -968,6 +963,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           2.95,
                                                       heights: 33,
                                                       child:
+
                                                       Container(
 
                                                         // height: 35,
@@ -1008,7 +1004,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ))
                                                               .toList(),
                                                           onChanged:
+
                                                               (v) async{
+
                                                             // O/W, R/N, W/R
                                                                 final storedTemFare = await getFares(
                                                                     multiReservationList: controller.multiReservationList,
@@ -1539,6 +1537,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   });
                                                                 }
                                                               },
+
                                                               child:
                                                               Padding(
                                                                 padding: const EdgeInsets.only(left: 55),

@@ -28,6 +28,7 @@ class ViaLocation extends StatefulWidget {
 }
 
 class _ViaLocationState extends State<ViaLocation> {
+
   final TextEditingController addressController = TextEditingController();
 
   FocusNode textFieldFocusNode = FocusNode();
@@ -291,6 +292,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                       ],
                                     ),
                                   ),
+
                                   ListView.builder(
                                       itemCount: controller.viaPoints.length,
                                       shrinkWrap: true,
@@ -366,6 +368,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                                       ),
                                                     ],
                                                   )),
+
 
                                               Padding(
                                                 padding: const EdgeInsets.only(left: 12.0, top: 8), // Add spacing from left
@@ -458,6 +461,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                        ),
                                      ],
                                    ),
+
                                     ListView.builder(
                                         itemCount: controller.viaPoints.length,
                                         shrinkWrap: true,
@@ -592,6 +596,7 @@ class _ViaLocationState extends State<ViaLocation> {
                         ),
 
                         SizedBox(height: 20),
+
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -609,7 +614,9 @@ class _ViaLocationState extends State<ViaLocation> {
                                 style: TextStyle(color: Colors.white),
                               ),
                             ),
+
                             SizedBox(width: 10),
+
                             TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: Colors.green,
@@ -618,6 +625,7 @@ class _ViaLocationState extends State<ViaLocation> {
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4)),
                               ),
+
                               onPressed: () {
                                 int len = controller.viaPoints.length;
 
@@ -638,6 +646,7 @@ class _ViaLocationState extends State<ViaLocation> {
                       ],
                     ),
                   ),
+
                   Obx(() {
                     if (controller.selectedTextFieldsValue.value !=
                         "via") {
@@ -702,6 +711,7 @@ class _ViaLocationState extends State<ViaLocation> {
                             // Enter intentionally ignored so it does not select anything
                           }
                         },
+
                         child: Container(
                           height: screenHeight * 0.3,
                           // height: screenHeight * 0.3,

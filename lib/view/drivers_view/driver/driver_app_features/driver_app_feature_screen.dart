@@ -60,9 +60,11 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                           ],
                         ),
                       ),
+
                       SizedBox(
                         width: 15,
                       ),
+
                       Text(AppText.currentVersion,
                         style: mozillaTextSemiBoldText(
                             fontSize: 16,
@@ -71,12 +73,14 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                       ),
                     ],
                   ),
+
                   Text(AppText.driverAppFeatures,
                     style: mozillaTextSemiBoldText(
                         fontSize: 16,
                         fontWeight: FontWeight.w800
                     ),
                   ),
+
                   CustomButton(
                     height: 35,
                     verticalPadding: 0.0,
@@ -86,6 +90,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                   )
                 ],
               ),
+
               SizedBox(
                 height: 10,
               ),
