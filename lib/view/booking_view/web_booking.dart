@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
+import 'package:dashboard_new1/view/booking_view/update_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +10,7 @@ import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
+import '../../routes/app_pages.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../dashboard_view/widgets/time_picker_widget.dart';
@@ -194,6 +196,9 @@ class _WebBookingState extends State<WebBooking> {
                             verticalPadding: 0.0,
                             fontSize: 11,
                             btnText: AppText.search,
+                            onTap: (){
+                              navigator?.push(MaterialPageRoute(builder: (context) => UpdateBooking(),));
+                            },
                           ),
                         ],
                       ),
