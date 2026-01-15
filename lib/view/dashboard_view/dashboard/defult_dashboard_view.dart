@@ -410,8 +410,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     ),
 
                                                     // (3) Pickup notes
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(left: 15),
+                                      Obx( () => Padding(
+                                                      padding:  EdgeInsets.only(left: controller.getPickupAddressesLoader.value == false? 0:15 ),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(3),
@@ -437,6 +437,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
+                                      ),
                                                   ],
                                                 ),
                                               ),
@@ -672,7 +673,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     .start,
 
                                                 children: [
-
+                                                    // Name Fields
                                                     FocusTraversalOrder(
                                                       order:
                                                       const NumericFocusOrder(
@@ -691,8 +692,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           TextInputAction
                                                               .next),
                                                     ),
+                                                    // Email Fields
                                                     Padding(
-                                                      padding: const EdgeInsets.only(left: 4),
+                                                      padding: const EdgeInsets.only(left: 0),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(
@@ -714,7 +716,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     ),
                                                    // MOB fields
                                                    Padding(
-                                                     padding: const EdgeInsets.only(left: 18),
+                                                     padding: const EdgeInsets.only(left: 22),
                                                      child: SizedBox(
                                                         width:
                                                         fieldWidth /
@@ -1814,10 +1816,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         isMobile:
                                                         isMobile,
                                                         label:
-                                                        "${AppText.acc}    ",
+                                                        "${AppText.acc}  ",
                                                         width:
                                                         fieldWidth /
-                                                            3,
+                                                            2.8,
                                                         heights: 32,
                                                         child:
                                                         Container(
@@ -1873,7 +1875,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   ),
                                                   // (12) Pay dropdown
                                                   Padding(
-                                                    padding: const EdgeInsets.only(left: 20),
+                                                    padding: EdgeInsets.only(left: controller.jourValue == 'W/R'? 18:38),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                       NumericFocusOrder(controller.jourValue == 'W/R'?36: 23),

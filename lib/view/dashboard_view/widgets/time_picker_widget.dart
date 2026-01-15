@@ -170,260 +170,15 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
 
 
 /// Keyboard-driven DatePicker widget (no packages)
-
-class KeyboardDatePicker extends StatefulWidget {
-  final DateTime initialDate;
-  final void Function(DateTime)? onChanged;
-  final void Function(DateTime)? onSubmitted;
-  final Color? borderClr;
-
-  /// 🔹 NEW
-  final double fontSize;
-  final double iconSize;
-
-  KeyboardDatePicker({
-    Key? key,
-    DateTime? initialDate,
-    this.onChanged,
-    this.onSubmitted,
-    this.borderClr,
-    this.fontSize = 12, // default font size
-    this.iconSize = 14, // default icon size
-  })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
-        super(key: key);
-
-  @override
-  State<KeyboardDatePicker> createState() => _KeyboardDatePickerState();
-}
-
-class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
-  late int day;
-  late int month;
-  late int year;
-
-  int activePart = 0;
-  final List<String> _buffers = ['', '', ''];
-  final FocusNode _focusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    day = widget.initialDate.day;
-    month = widget.initialDate.month;
-    year = widget.initialDate.year;
-    _clampDay();
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  bool _isLeap(int y) =>
-      (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
-
-  int _daysInMonth(int m, int y) {
-    if (m == 2) return _isLeap(y) ? 29 : 28;
-    if ([1, 3, 5, 7, 8, 10, 12].contains(m)) return 31;
-    return 30;
-  }
-
-  void _clampDay() {
-    final dim = _daysInMonth(month, year);
-    day = day.clamp(1, dim);
-  }
-
-  void _notifyChanged() {
-    widget.onChanged?.call(DateTime(year, month, day));
-  }
-
-  void _onIncrementActive(int delta) {
-    setState(() {
-      if (activePart == 0) {
-        day += delta;
-        final dim = _daysInMonth(month, year);
-        if (day > dim) day = 1;
-        if (day < 1) day = dim;
-      } else if (activePart == 1) {
-        month += delta;
-        if (month > 12) month = 1;
-        if (month < 1) month = 12;
-        _clampDay();
-      } else {
-        year = (year + delta).clamp(1, 9999999);
-        _clampDay();
-      }
-      _buffers[activePart] = '';
-      _notifyChanged();
-    });
-  }
-
-  void _onDigit(int d) {
-    setState(() {
-      final b = _buffers[activePart] + d.toString();
-
-      if (activePart == 0) {
-        final val = int.tryParse(b) ?? 0;
-        if (val == 0) return;
-        final dim = _daysInMonth(month, year);
-        _buffers[0] = val > dim ? d.toString() : b;
-        day = int.parse(_buffers[0]).clamp(1, dim);
-      } else if (activePart == 1) {
-        final val = int.tryParse(b) ?? 0;
-        if (val == 0) return;
-        _buffers[1] = val > 12 ? d.toString() : b;
-        month = int.parse(_buffers[1]).clamp(1, 12);
-        _clampDay();
-      } else {
-        final val = int.tryParse(b);
-        if (val != null && val > 0) {
-          _buffers[2] = b;
-          year = val;
-          _clampDay();
-        }
-      }
-
-      _notifyChanged();
-    });
-  }
-
-  void _onBackspace() {
-    setState(() {
-      final b = _buffers[activePart];
-      if (b.isNotEmpty) {
-        _buffers[activePart] = b.substring(0, b.length - 1);
-      }
-      _notifyChanged();
-    });
-  }
-
-  void _onLeft() {
-    setState(() {
-      activePart = (activePart - 1 + 3) % 3;
-      _buffers[activePart] = '';
-    });
-  }
-
-  void _onRight() {
-    setState(() {
-      activePart = (activePart + 1) % 3;
-      _buffers[activePart] = '';
-    });
-  }
-
-  void _onEnter() {
-    widget.onSubmitted?.call(DateTime(year, month, day));
-  }
-
-  Widget _partBox(String text, bool active, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          color: active ? Colors.blue.withOpacity(0.08) : Colors.transparent,
-        ),
-        child: Text(
-          text,
-          style: mozillaTextSemiBoldText(
-            fontSize: widget.fontSize,
-            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
-            color: active ? Colors.blue.shade800 : Colors.black87,
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _onRawKey(RawKeyEvent event) {
-    if (event is! RawKeyDownEvent) return;
-    final key = event.logicalKey;
-
-    if (key == LogicalKeyboardKey.arrowUp) return _onIncrementActive(1);
-    if (key == LogicalKeyboardKey.arrowDown) return _onIncrementActive(-1);
-    if (key == LogicalKeyboardKey.arrowLeft) return _onLeft();
-    if (key == LogicalKeyboardKey.arrowRight) return _onRight();
-    if (key == LogicalKeyboardKey.enter ||
-        key == LogicalKeyboardKey.numpadEnter) return _onEnter();
-    if (key == LogicalKeyboardKey.backspace) return _onBackspace();
-
-    final label = key.keyLabel;
-    if (label.length == 1 && RegExp(r'[0-9]').hasMatch(label)) {
-      _onDigit(int.parse(label));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final dayText = day.toString().padLeft(2, '0');
-    final monthText = month.toString().padLeft(2, '0');
-    final yearText = year.toString();
-
-    return RawKeyboardListener(
-      focusNode: _focusNode,
-      autofocus: true,
-      onKey: _onRawKey,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: widget.borderClr ?? DynamicColors.primaryClr,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                _partBox(dayText, activePart == 0, onTap: () {
-                  setState(() => activePart = 0);
-                  _focusNode.requestFocus();
-                }),
-                _separator(),
-                _partBox(monthText, activePart == 1, onTap: () {
-                  setState(() => activePart = 1);
-                  _focusNode.requestFocus();
-                }),
-                _separator(),
-                _partBox(yearText, activePart == 2, onTap: () {
-                  setState(() => activePart = 2);
-                  _focusNode.requestFocus();
-                }),
-              ],
-            ),
-            Icon(
-              Icons.calendar_month,
-              size: widget.iconSize,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _separator() => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 6),
-    child: Text(
-      '/',
-      style: mozillaTextSemiBoldText(
-        fontSize: widget.fontSize,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
-  );
-}
-
-
-//
-// /// Keyboard-driven DatePicker widget (no packages)
 // class KeyboardDatePicker extends StatefulWidget {
 //   final DateTime initialDate;
 //   final void Function(DateTime)? onChanged;
-//   final void Function(DateTime)? onSubmitted; // optional enter press
-//   Color? borderClr;
+//   final void Function(DateTime)? onSubmitted;
+//   final Color? borderClr;
+//
+//   /// 🔹 NEW
+//   final double fontSize;
+//   final double iconSize;
 //
 //   KeyboardDatePicker({
 //     Key? key,
@@ -431,6 +186,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     this.onChanged,
 //     this.onSubmitted,
 //     this.borderClr,
+//     this.fontSize = 12, // default font size
+//     this.iconSize = 14, // default icon size
 //   })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
 //         super(key: key);
 //
@@ -443,12 +200,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //   late int month;
 //   late int year;
 //
-//   /// 0 = day, 1 = month, 2 = year
 //   int activePart = 0;
-//
-//   /// typed digits buffer per part (to allow multi-digit typing).
 //   final List<String> _buffers = ['', '', ''];
-//
 //   final FocusNode _focusNode = FocusNode();
 //
 //   @override
@@ -457,7 +210,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     day = widget.initialDate.day;
 //     month = widget.initialDate.month;
 //     year = widget.initialDate.year;
-//     // normalize in case initial invalid
 //     _clampDay();
 //   }
 //
@@ -467,32 +219,22 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     super.dispose();
 //   }
 //
-//   // Leap year check
-//   bool _isLeap(int y) {
-//     return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
-//   }
+//   bool _isLeap(int y) =>
+//       (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
 //
 //   int _daysInMonth(int m, int y) {
 //     if (m == 2) return _isLeap(y) ? 29 : 28;
-//     if (m == 1 ||
-//         m == 3 ||
-//         m == 5 ||
-//         m == 7 ||
-//         m == 8 ||
-//         m == 10 ||
-//         m == 12) return 31;
+//     if ([1, 3, 5, 7, 8, 10, 12].contains(m)) return 31;
 //     return 30;
 //   }
 //
 //   void _clampDay() {
 //     final dim = _daysInMonth(month, year);
-//     if (day > dim) day = dim;
-//     if (day < 1) day = 1;
+//     day = day.clamp(1, dim);
 //   }
 //
 //   void _notifyChanged() {
-//     final dt = DateTime(year, month, day);
-//     widget.onChanged?.call(dt);
+//     widget.onChanged?.call(DateTime(year, month, day));
 //   }
 //
 //   void _onIncrementActive(int delta) {
@@ -508,11 +250,10 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //         if (month < 1) month = 12;
 //         _clampDay();
 //       } else {
-//         year += delta;
-//         if (year < 1) year = 1;
+//         year = (year + delta).clamp(1, 9999999);
 //         _clampDay();
 //       }
-//       _buffers[activePart] = ''; // clear buffer when using arrows
+//       _buffers[activePart] = '';
 //       _notifyChanged();
 //     });
 //   }
@@ -520,45 +261,28 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //   void _onDigit(int d) {
 //     setState(() {
 //       final b = _buffers[activePart] + d.toString();
-//       // max sensible length: day(2), month(2), year(4+)
+//
 //       if (activePart == 0) {
-//         // day
-//         final val = int.tryParse(b) ?? 0;
-//         if (val == 0) return; // ignore leading zeros -> user can type 0 then 5 etc.
-//         final dim = _daysInMonth(month, year);
-//         if (val > dim) {
-//           // if typed > allowed, replace buffer with single digit
-//           _buffers[activePart] = d.toString();
-//           final v2 = int.parse(_buffers[activePart]);
-//           day = v2.clamp(1, dim);
-//         } else {
-//           _buffers[activePart] = b;
-//           day = val.clamp(1, dim);
-//         }
-//       } else if (activePart == 1) {
-//         // month
 //         final val = int.tryParse(b) ?? 0;
 //         if (val == 0) return;
-//         if (val > 12) {
-//           _buffers[activePart] = d.toString();
-//           month = int.parse(_buffers[activePart]).clamp(1, 12);
-//         } else {
-//           _buffers[activePart] = b;
-//           month = val.clamp(1, 12);
-//         }
+//         final dim = _daysInMonth(month, year);
+//         _buffers[0] = val > dim ? d.toString() : b;
+//         day = int.parse(_buffers[0]).clamp(1, dim);
+//       } else if (activePart == 1) {
+//         final val = int.tryParse(b) ?? 0;
+//         if (val == 0) return;
+//         _buffers[1] = val > 12 ? d.toString() : b;
+//         month = int.parse(_buffers[1]).clamp(1, 12);
 //         _clampDay();
 //       } else {
-//         // year - allow many digits, but limit to positive int
-//         final val = int.tryParse(b) ?? 0;
-//         if (val == 0 && b.length > 0) {
-//           // started with 0 -> ignore leading zero
-//           _buffers[activePart] = b.replaceFirst(RegExp(r'^0+'), '');
-//         } else {
-//           _buffers[activePart] = b;
-//           if (val > 0) year = val;
+//         final val = int.tryParse(b);
+//         if (val != null && val > 0) {
+//           _buffers[2] = b;
+//           year = val;
+//           _clampDay();
 //         }
-//         _clampDay();
 //       }
+//
 //       _notifyChanged();
 //     });
 //   }
@@ -568,25 +292,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //       final b = _buffers[activePart];
 //       if (b.isNotEmpty) {
 //         _buffers[activePart] = b.substring(0, b.length - 1);
-//         final newB = _buffers[activePart];
-//         if (newB.isEmpty) {
-//           // revert to current value but don't change numeric value
-//         } else {
-//           final parsed = int.tryParse(newB);
-//           if (parsed != null) {
-//             if (activePart == 0) {
-//               day = parsed.clamp(1, _daysInMonth(month, year));
-//             } else if (activePart == 1) {
-//               month = parsed.clamp(1, 12);
-//               _clampDay();
-//             } else {
-//               year = parsed.clamp(1, 9999999);
-//               _clampDay();
-//             }
-//           }
-//         }
-//       } else {
-//         // if buffer empty then clear value back to defaults? We'll keep current value.
 //       }
 //       _notifyChanged();
 //     });
@@ -595,7 +300,6 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //   void _onLeft() {
 //     setState(() {
 //       activePart = (activePart - 1 + 3) % 3;
-//       // clear buffer when moving
 //       _buffers[activePart] = '';
 //     });
 //   }
@@ -615,16 +319,15 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     return GestureDetector(
 //       onTap: onTap,
 //       child: Container(
-//         padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+//         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
 //         decoration: BoxDecoration(
-//           // border: Border.all(color: active ? Colors.blue : Colors.grey.shade400),
 //           borderRadius: BorderRadius.circular(6),
-//           color: active ? Colors.blue.withOpacity(0.06) : Colors.transparent,
+//           color: active ? Colors.blue.withOpacity(0.08) : Colors.transparent,
 //         ),
 //         child: Text(
 //           text,
 //           style: mozillaTextSemiBoldText(
-//             fontSize: 10,
+//             fontSize: widget.fontSize,
 //             fontWeight: active ? FontWeight.w700 : FontWeight.w500,
 //             color: active ? Colors.blue.shade800 : Colors.black87,
 //           ),
@@ -633,66 +336,21 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     );
 //   }
 //
-//   // handle physical keyboard
 //   void _onRawKey(RawKeyEvent event) {
 //     if (event is! RawKeyDownEvent) return;
 //     final key = event.logicalKey;
-//     // arrows
-//     if (key == LogicalKeyboardKey.arrowUp) {
-//       _onIncrementActive(1);
-//       return;
-//     } else if (key == LogicalKeyboardKey.arrowDown) {
-//       _onIncrementActive(-1);
-//       return;
-//     } else if (key == LogicalKeyboardKey.arrowLeft) {
-//       _onLeft();
-//       return;
-//     } else if (key == LogicalKeyboardKey.arrowRight) {
-//       _onRight();
-//       return;
-//     } else if (key == LogicalKeyboardKey.enter ||
-//         key == LogicalKeyboardKey.numpadEnter) {
-//       _onEnter();
-//       return;
-//     } else if (key == LogicalKeyboardKey.backspace) {
-//       _onBackspace();
-//       return;
-//     }
 //
-//     // digits (both numpad and top row)
+//     if (key == LogicalKeyboardKey.arrowUp) return _onIncrementActive(1);
+//     if (key == LogicalKeyboardKey.arrowDown) return _onIncrementActive(-1);
+//     if (key == LogicalKeyboardKey.arrowLeft) return _onLeft();
+//     if (key == LogicalKeyboardKey.arrowRight) return _onRight();
+//     if (key == LogicalKeyboardKey.enter ||
+//         key == LogicalKeyboardKey.numpadEnter) return _onEnter();
+//     if (key == LogicalKeyboardKey.backspace) return _onBackspace();
+//
 //     final label = key.keyLabel;
-//     if (label.length == 1 && RegExp(r'^[0-9]$').hasMatch(label)) {
-//       final d = int.parse(label);
-//       _onDigit(d);
-//       return;
-//     }
-//
-//     // optionally allow +/- keys to change year quickly
-//     if (key == LogicalKeyboardKey.minus || key == LogicalKeyboardKey.numpadSubtract) {
-//       if (activePart == 2) _onIncrementActive(-1);
-//       return;
-//     }
-//     if (key == LogicalKeyboardKey.equal || key == LogicalKeyboardKey.numpadAdd) {
-//       if (activePart == 2) _onIncrementActive(1);
-//       return;
-//     }
-//   }
-//
-//
-//   Future<void> _selectDate(BuildContext context) async {
-//     final DateTime? picked = await showDatePicker(
-//       context: context,
-//       initialDate: DateTime.now(),
-//       firstDate: DateTime(2000),
-//       lastDate: DateTime(2101),
-//     );
-//     if (picked != null) {
-//       setState(() {
-//         day = picked.day;
-//         month = picked.month;
-//         year = picked.year;
-//       });
-//       _notifyChanged();
+//     if (label.length == 1 && RegExp(r'[0-9]').hasMatch(label)) {
+//       _onDigit(int.parse(label));
 //     }
 //   }
 //
@@ -702,73 +360,420 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
 //     final monthText = month.toString().padLeft(2, '0');
 //     final yearText = year.toString();
 //
-//
-//
 //     return RawKeyboardListener(
 //       focusNode: _focusNode,
 //       autofocus: true,
 //       onKey: _onRawKey,
 //       child: Container(
-//         padding: EdgeInsets.symmetric(horizontal: 8),
+//         padding: const EdgeInsets.symmetric(horizontal: 8),
 //         decoration: BoxDecoration(
 //           borderRadius: BorderRadius.circular(4),
-//           border: Border.all(color: widget.borderClr?? DynamicColors.primaryClr),
+//           border: Border.all(
+//             color: widget.borderClr ?? DynamicColors.primaryClr,
+//           ),
 //         ),
 //         child: Row(
 //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           // mainAxisSize: MainAxisSize.min,
 //           children: [
 //             Row(
 //               children: [
-//
 //                 _partBox(dayText, activePart == 0, onTap: () {
-//                   setState(() {
-//                     activePart = 0;
-//                     _focusNode.requestFocus();
-//                   });
+//                   setState(() => activePart = 0);
+//                   _focusNode.requestFocus();
 //                 }),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(horizontal: 6.0),
-//                   child: Text('/', style: mozillaTextSemiBoldText(
-//                       context: context,
-//                       fontSize: 10,
-//                       fontWeight: FontWeight.w800
-//                   ),),
-//                 ),
+//                 _separator(),
 //                 _partBox(monthText, activePart == 1, onTap: () {
-//                   setState(() {
-//                     activePart = 1;
-//                     _focusNode.requestFocus();
-//                   });
+//                   setState(() => activePart = 1);
+//                   _focusNode.requestFocus();
 //                 }),
-//                 Padding(
-//                   padding: const EdgeInsets.symmetric(horizontal: 6.0),
-//                   child: Text('/', style: mozillaTextSemiBoldText(
-//                       context: context,
-//                       fontSize: 10,
-//                       fontWeight: FontWeight.w800
-//                   ),),
-//                 ),
-//
+//                 _separator(),
 //                 _partBox(yearText, activePart == 2, onTap: () {
-//                   setState(() {
-//                     activePart = 2;
-//                     _focusNode.requestFocus();
-//                   });
+//                   setState(() => activePart = 2);
+//                   _focusNode.requestFocus();
 //                 }),
 //               ],
 //             ),
-//             GestureDetector(
-//               onTap: (){
-//                 _selectDate(context);
-//               },
-//               child: Icon(Icons.calendar_month,
-//               size: 10,
-//               ),
+//             Icon(
+//               Icons.calendar_month,
+//               size: widget.iconSize,
 //             )
 //           ],
 //         ),
 //       ),
 //     );
 //   }
+//
+//   Widget _separator() => Padding(
+//     padding: const EdgeInsets.symmetric(horizontal: 6),
+//     child: Text(
+//       '/',
+//       style: mozillaTextSemiBoldText(
+//         fontSize: widget.fontSize,
+//         fontWeight: FontWeight.w800,
+//       ),
+//     ),
+//   );
 // }
+
+
+
+/// Keyboard-driven DatePicker widget (no packages)
+class KeyboardDatePicker extends StatefulWidget {
+  final DateTime initialDate;
+  final void Function(DateTime)? onChanged;
+  final void Function(DateTime)? onSubmitted; // optional enter press
+  Color? borderClr;
+
+    final double fontSize;
+  final double iconSize;
+
+
+  KeyboardDatePicker({
+    Key? key,
+    DateTime? initialDate,
+    this.onChanged,
+    this.onSubmitted,
+    this.borderClr,
+        this.fontSize = 12, // default font size
+    this.iconSize = 14, // default icon size
+  })  : initialDate = initialDate ?? DateTime(2000, 1, 1),
+        super(key: key);
+
+  @override
+  State<KeyboardDatePicker> createState() => _KeyboardDatePickerState();
+}
+
+class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
+  late int day;
+  late int month;
+  late int year;
+
+  /// 0 = day, 1 = month, 2 = year
+  int activePart = 0;
+
+  /// typed digits buffer per part (to allow multi-digit typing).
+  final List<String> _buffers = ['', '', ''];
+
+  final FocusNode _focusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    day = widget.initialDate.day;
+    month = widget.initialDate.month;
+    year = widget.initialDate.year;
+    // normalize in case initial invalid
+    _clampDay();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  // Leap year check
+  bool _isLeap(int y) {
+    return (y % 4 == 0 && y % 100 != 0) || (y % 400 == 0);
+  }
+
+  int _daysInMonth(int m, int y) {
+    if (m == 2) return _isLeap(y) ? 29 : 28;
+    if (m == 1 ||
+        m == 3 ||
+        m == 5 ||
+        m == 7 ||
+        m == 8 ||
+        m == 10 ||
+        m == 12) return 31;
+    return 30;
+  }
+
+  void _clampDay() {
+    final dim = _daysInMonth(month, year);
+    if (day > dim) day = dim;
+    if (day < 1) day = 1;
+  }
+
+  void _notifyChanged() {
+    final dt = DateTime(year, month, day);
+    widget.onChanged?.call(dt);
+  }
+
+  void _onIncrementActive(int delta) {
+    setState(() {
+      if (activePart == 0) {
+        day += delta;
+        final dim = _daysInMonth(month, year);
+        if (day > dim) day = 1;
+        if (day < 1) day = dim;
+      } else if (activePart == 1) {
+        month += delta;
+        if (month > 12) month = 1;
+        if (month < 1) month = 12;
+        _clampDay();
+      } else {
+        year += delta;
+        if (year < 1) year = 1;
+        _clampDay();
+      }
+      _buffers[activePart] = ''; // clear buffer when using arrows
+      _notifyChanged();
+    });
+  }
+
+  void _onDigit(int d) {
+    setState(() {
+      final b = _buffers[activePart] + d.toString();
+      // max sensible length: day(2), month(2), year(4+)
+      if (activePart == 0) {
+        // day
+        final val = int.tryParse(b) ?? 0;
+        if (val == 0) return; // ignore leading zeros -> user can type 0 then 5 etc.
+        final dim = _daysInMonth(month, year);
+        if (val > dim) {
+          // if typed > allowed, replace buffer with single digit
+          _buffers[activePart] = d.toString();
+          final v2 = int.parse(_buffers[activePart]);
+          day = v2.clamp(1, dim);
+        } else {
+          _buffers[activePart] = b;
+          day = val.clamp(1, dim);
+        }
+      } else if (activePart == 1) {
+        // month
+        final val = int.tryParse(b) ?? 0;
+        if (val == 0) return;
+        if (val > 12) {
+          _buffers[activePart] = d.toString();
+          month = int.parse(_buffers[activePart]).clamp(1, 12);
+        } else {
+          _buffers[activePart] = b;
+          month = val.clamp(1, 12);
+        }
+        _clampDay();
+      } else {
+        // year - allow many digits, but limit to positive int
+        final val = int.tryParse(b) ?? 0;
+        if (val == 0 && b.length > 0) {
+          // started with 0 -> ignore leading zero
+          _buffers[activePart] = b.replaceFirst(RegExp(r'^0+'), '');
+        } else {
+          _buffers[activePart] = b;
+          if (val > 0) year = val;
+        }
+        _clampDay();
+      }
+      _notifyChanged();
+    });
+  }
+
+  void _onBackspace() {
+    setState(() {
+      final b = _buffers[activePart];
+      if (b.isNotEmpty) {
+        _buffers[activePart] = b.substring(0, b.length - 1);
+        final newB = _buffers[activePart];
+        if (newB.isEmpty) {
+          // revert to current value but don't change numeric value
+        } else {
+          final parsed = int.tryParse(newB);
+          if (parsed != null) {
+            if (activePart == 0) {
+              day = parsed.clamp(1, _daysInMonth(month, year));
+            } else if (activePart == 1) {
+              month = parsed.clamp(1, 12);
+              _clampDay();
+            } else {
+              year = parsed.clamp(1, 9999999);
+              _clampDay();
+            }
+          }
+        }
+      } else {
+        // if buffer empty then clear value back to defaults? We'll keep current value.
+      }
+      _notifyChanged();
+    });
+  }
+
+  void _onLeft() {
+    setState(() {
+      activePart = (activePart - 1 + 3) % 3;
+      // clear buffer when moving
+      _buffers[activePart] = '';
+    });
+  }
+
+  void _onRight() {
+    setState(() {
+      activePart = (activePart + 1) % 3;
+      _buffers[activePart] = '';
+    });
+  }
+
+  void _onEnter() {
+    widget.onSubmitted?.call(DateTime(year, month, day));
+  }
+
+  Widget _partBox(String text, bool active, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
+        decoration: BoxDecoration(
+          // border: Border.all(color: active ? Colors.blue : Colors.grey.shade400),
+          borderRadius: BorderRadius.circular(6),
+          color: active ? Colors.blue.withOpacity(0.06) : Colors.transparent,
+        ),
+        child: Text(
+          text,
+          style: mozillaTextSemiBoldText(
+            fontSize: widget.fontSize,
+            fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+            color: active ? Colors.blue.shade800 : Colors.black87,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // handle physical keyboard
+  void _onRawKey(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) return;
+    final key = event.logicalKey;
+    // arrows
+    if (key == LogicalKeyboardKey.arrowUp) {
+      _onIncrementActive(1);
+      return;
+    } else if (key == LogicalKeyboardKey.arrowDown) {
+      _onIncrementActive(-1);
+      return;
+    } else if (key == LogicalKeyboardKey.arrowLeft) {
+      _onLeft();
+      return;
+    } else if (key == LogicalKeyboardKey.arrowRight) {
+      _onRight();
+      return;
+    } else if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      _onEnter();
+      return;
+    } else if (key == LogicalKeyboardKey.backspace) {
+      _onBackspace();
+      return;
+    }
+
+    // digits (both numpad and top row)
+    final label = key.keyLabel;
+    if (label.length == 1 && RegExp(r'^[0-9]$').hasMatch(label)) {
+      final d = int.parse(label);
+      _onDigit(d);
+      return;
+    }
+
+    // optionally allow +/- keys to change year quickly
+    if (key == LogicalKeyboardKey.minus || key == LogicalKeyboardKey.numpadSubtract) {
+      if (activePart == 2) _onIncrementActive(-1);
+      return;
+    }
+    if (key == LogicalKeyboardKey.equal || key == LogicalKeyboardKey.numpadAdd) {
+      if (activePart == 2) _onIncrementActive(1);
+      return;
+    }
+  }
+
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        day = picked.day;
+        month = picked.month;
+        year = picked.year;
+      });
+      _notifyChanged();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dayText = day.toString().padLeft(2, '0');
+    final monthText = month.toString().padLeft(2, '0');
+    final yearText = year.toString();
+
+
+
+    return RawKeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKey: _onRawKey,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: widget.borderClr?? DynamicColors.primaryClr),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+
+                _partBox(dayText, activePart == 0, onTap: () {
+                  setState(() {
+                    activePart = 0;
+                    _focusNode.requestFocus();
+                  });
+                }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text('/', style: mozillaTextSemiBoldText(
+                      context: context,
+                      fontSize: widget.fontSize,
+                      fontWeight: FontWeight.w800
+                  ),),
+                ),
+                _partBox(monthText, activePart == 1, onTap: () {
+                  setState(() {
+                    activePart = 1;
+                    _focusNode.requestFocus();
+                  });
+                }),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text('/', style: mozillaTextSemiBoldText(
+                      context: context,
+                      fontSize: widget.fontSize,
+                      fontWeight: FontWeight.w800
+                  ),),
+                ),
+
+                _partBox(yearText, activePart == 2, onTap: () {
+                  setState(() {
+                    activePart = 2;
+                    _focusNode.requestFocus();
+                  });
+                }),
+              ],
+            ),
+            GestureDetector(
+              onTap: (){
+                _selectDate(context);
+              },
+              child: Icon(Icons.calendar_month,
+              size: widget.iconSize,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

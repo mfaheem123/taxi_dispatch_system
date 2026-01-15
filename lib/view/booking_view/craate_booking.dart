@@ -109,7 +109,7 @@ class _CreateBookingState extends State<CreateBooking> {
             builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
-              final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+              final bool isTablet = maxWidth >= 400 && maxWidth < 1024;
 
               // Instead of fixed width, we calculate flexible field widths
               final double fieldWidth = isMobile
@@ -977,9 +977,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                   ],
                                 ],
                               ),
-                              SizedBox(
-                                height: screenHeight * 0.01,
-                              ),
+                              SizedBox(height: screenHeight * 0.01),
 
                               ///todo pickup fields widget
                               // Fields Row / Column Responsive
@@ -1090,15 +1088,15 @@ class _CreateBookingState extends State<CreateBooking> {
                                       ),
                                       // date fields
                                       FocusTraversalOrder(
-                                        order: const NumericFocusOrder(5),
+                                        order:  NumericFocusOrder(5),
                                         child: labeledField(
                                           context: context,
                                           isMobile: isMobile,
                                           label: AppText.date,
-                                          width: fieldWidth / 2.4,
+                                          width: fieldWidth/ 2.4,
                                           child: SizedBox(
                                               height: 30,
-                                              child: KeyboardDatePicker()),
+                                              child: KeyboardDatePicker(fontSize: fieldWidth < 400 ? 7 : 12,iconSize:   fieldWidth < 400 ? 10 : 18, )),
                                         ),
                                       ),
                                       // (6) Time
@@ -1606,30 +1604,36 @@ class _CreateBookingState extends State<CreateBooking> {
                                 decoration: BoxDecoration(
                                     color: DynamicColors.secondaryClr),
                                 child: Wrap(
-                                  spacing: 10,
+                                  spacing: 8,
                                   runSpacing: 16,
                                   children: [
+                                    SizedBox(width: 20),
                                     Icon(Icons.access_time_filled_outlined,
                                         color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 4),
+                                    SizedBox(width: 2),
                                     Text("ETA : 0.0 mins",
                                         style: TextStyle(
                                             color: DynamicColors.textClr,
                                             fontSize: 13)),
+                                    SizedBox(width: 20),
+
                                     Icon(Icons.access_time_filled_outlined,
                                         color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 4),
+                                    SizedBox(width: 2),
                                     Text("JOURNEY : 0.0 mins",
                                         style: TextStyle(
                                             color: DynamicColors.textClr,
                                             fontSize: 13)),
+                                  SizedBox(width: 20),
+
                                     Icon(Icons.location_on,
                                         color: DynamicColors.textClr, size: 18),
-                                    SizedBox(width: 4),
+                                    SizedBox(width: 2),
                                     Text("DISTANCE : 0.0 miles",
                                         style: TextStyle(
                                             color: DynamicColors.textClr,
                                             fontSize: 13)),
+                                    SizedBox(width: 20),
                                     Container(
                                       width: fieldWidth / 3.5,
                                       padding: EdgeInsets.symmetric(
@@ -1668,6 +1672,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                   spacing: 10,
                                   runSpacing: 16,
                                   children: [
+                                    SizedBox(width: 20),
                                     FocusTraversalOrder(
                                       order: const NumericFocusOrder(12),
                                       child: labeledField(
@@ -1771,22 +1776,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                     SizedBox(
                                       width: 15,
                                     ),
-                                    // CustomButton(
-                                    //   btnText: "MULTI BOOKING [F8]",
-                                    //   width: 150,
-                                    //   height: 30,
-                                    //   fontSize: 11,
-                                    //   verticalPadding: 0.0,
-                                    //   borderRadius: 4,
-                                    // ),
-                                    // CustomButton(
-                                    //   btnText: "MULTI VEHICLE [F9]",
-                                    //   width: 150,
-                                    //   height: 30,
-                                    //   fontSize: 11,
-                                    //   verticalPadding: 0.0,
-                                    //   borderRadius: 4,
-                                    // ),
+
                                     CustomButton(
                                       btnText: "CLEAR [F7]",
                                       width: 110,
@@ -1809,7 +1799,7 @@ class _CreateBookingState extends State<CreateBooking> {
                               ),
                               SizedBox(
                                 height: Get.height / 2.1,
-                      child: MapViewWidget(createBooking: true,),
+                                child: MapViewWidget(createBooking: true,),
                               )
                             ],
                           ),
@@ -1957,6 +1947,9 @@ class _CreateBookingState extends State<CreateBooking> {
                             );
                           }),
                         ]),
+
+
+
                       ],
                     ),
                   ),
