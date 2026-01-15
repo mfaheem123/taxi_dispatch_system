@@ -1745,8 +1745,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 .toList(),
                                                             onChanged:
                                                                 (v) {
-                                                              controller.selectDriverValueReturn =
-                                                                  v;
+                                                              controller.selectDriverValueReturn = v;
                                                               controller.update();
                                                             },
                                                           ),

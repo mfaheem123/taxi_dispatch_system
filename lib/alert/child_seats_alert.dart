@@ -242,3 +242,8 @@ class ChildSeatClass{
   String? age, sets;
   ChildSeatClass({this.age,this.sets});
 }
+
+class NoteClass{
+  String? note, title;
+  NoteClass({this.note,this.title});
+}
