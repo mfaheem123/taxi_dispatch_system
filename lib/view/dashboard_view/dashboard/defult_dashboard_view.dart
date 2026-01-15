@@ -160,21 +160,28 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         Row(
                           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+
                             ShortcutKeyWidget(),
+
                             ShortcutKeyWidget(
                                 keyss: "F2",
                                 valuess: "BOOKING FORM"),
+
                             ShortcutKeyWidget(
                                 keyss: "F3",
-                                valuess: "DRIVER VEHICLE"),
+                                  valuess: "DRIVER VEHICLE"),
+
                             ShortcutKeyWidget(
                                 keyss: "F4",
                                 valuess: "DRIVER EARNING"),
+
                             ShortcutKeyWidget(
                                 keyss: "F6", valuess: "QUOTATION"),
                             width >= 1900
                                 ? Spacer()
                                 : SizedBox.shrink(),
+
+
                             Padding(
                               padding:
                               const EdgeInsets.only(right: 6.0),
@@ -310,6 +317,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               // }
                                                             }
                                                           },
+
                                                           child: CustomTextField(
                                                             key: controller.pickupFieldKey,
                                                             controller: controller.pickupController,
@@ -584,31 +592,32 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
 
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal:
-                                                          15.0),
-                                                      child:
-                                                      FocusTraversalOrder(
-                                                        order:
-                                                        const NumericFocusOrder(5),
-                                                        child:
-                                                        RestrictedDrivers(
-                                                          width:
-                                                          fieldWidth / 2.65,
-                                                          height:
-                                                          30,
-                                                          padding:
-                                                          0.0,
-                                                          titleText:
-                                                          "SELECT PLOT",
-                                                          driversList: [
-                                                            "BASE NE7",
-                                                            "WILLESDEN"
-                                                          ],
-                                                        ),
-                                                      ),
+                                                    Obx(
+                                                          () =>
+                                                          Padding(
+                                                            padding: const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal: 15.0),
+                                                            child:
+                                                            FocusTraversalOrder(
+                                                              order:
+                                                              const NumericFocusOrder(2),
+                                                              child:
+                                                              CustomDropdownField<ZoneObject>(
+                                                                label: "Select Zone",
+                                                                width: Get.width / 7,
+                                                                height: 30,
+                                                                items: _controller.updateDLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                                value: _controller.zoneDValue,
+                                                                itemLabel: (templateList) => templateList.name!,
+                                                                onChanged: (val) {
+                                                                  _controller.zoneDValue = val;
+                                                                  controller.dashboardDZoneValue = val;
+                                                                  controller.update();
+                                                                },
+                                                              ),
+                                                            ),
+                                                          ),
                                                     ),
 
                                                     // (3) Pickup notes
@@ -1201,12 +1210,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       label: "Select Zone",
                                                                       width: Get.width / 7,
                                                                       height: 30,
-                                                                      items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
-                                                                      value: _controller.zoneValue,
+                                                                      items: _controller.updateRNLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                                      value: _controller.RNzoneValue,
                                                                       itemLabel: (templateList) => templateList.name!,
                                                                       onChanged: (val) {
-                                                                        _controller.zoneValue = val;
-                                                                        controller.dashboardZoneValue = val;
+                                                                        _controller.RNzoneValue = val;
+                                                                        controller.dashboardRNZoneValue = val;
                                                                         controller.update();
                                                                       },
                                                                     ),
@@ -1366,26 +1375,29 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-                                                          Padding(
-                                                            padding: const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 17.0),
-                                                            child:
-                                                            FocusTraversalOrder(
-                                                              order:
-                                                              const NumericFocusOrder(25),
-                                                              child:
-                                                              RestrictedDrivers(
-                                                                width: fieldWidth / 2.65,
-                                                                height: 30,
-                                                                padding: 0.0,
-                                                                titleText: "SELECT PLOT",
-                                                                driversList: [
-                                                                  "BASE NE7",
-                                                                  "WILLESDEN"
-                                                                ],
-                                                              ),
-                                                            ),
+                                                          Obx(
+                                                                () =>
+                                                                Padding(
+                                                                  padding:
+                                                                  const EdgeInsets.symmetric(horizontal: 17.0),
+                                                                  child:
+                                                                  FocusTraversalOrder(
+                                                                    order: const NumericFocusOrder(22),
+                                                                    child: CustomDropdownField<ZoneObject>(
+                                                                      label: "Select Zone",
+                                                                      width: Get.width / 7,
+                                                                      height: 30,
+                                                                      items: _controller.updateRN1LocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                                      value: _controller.RN1zoneValue,
+                                                                      itemLabel: (templateList) => templateList.name!,
+                                                                      onChanged: (val) {
+                                                                        _controller.RN1zoneValue = val;
+                                                                        controller.dashboardRN1ZoneValue = val;
+                                                                        controller.update();
+                                                                      },
+                                                                    ),
+                                                                  ),
+                                                                ),
                                                           ),
                                                           SizedBox(width: 15),
                                                           // (3) Pickup notes

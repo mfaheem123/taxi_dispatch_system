@@ -1284,6 +1284,8 @@ class DashboardController extends GetxController {
   final pickUpNoteController = TextEditingController();
   final dropUpNoteController = TextEditingController();
   ZoneObject? dashboardZoneValue;
+  ZoneObject? dashboardRNZoneValue;
+  ZoneObject? dashboardRN1ZoneValue;
   ZoneObject? dashboardDZoneValue;
   DateTime? pickUpDate = DateTime.now();
   DateTime? pickUpDateReturn = DateTime.now();
@@ -1482,8 +1484,9 @@ class DashboardController extends GetxController {
       }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      // refreshPostAllFields();
+      refreshPostAllFields();
       print(response.data);
+
     }
   }
 

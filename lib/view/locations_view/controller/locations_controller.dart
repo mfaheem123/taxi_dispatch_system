@@ -56,6 +56,8 @@ class LocationController extends GetxController {
   final addressCtrl = TextEditingController();
 
   ZoneObject? zoneValue;
+  ZoneObject? RNzoneValue;
+  ZoneObject? RN1zoneValue;
   ZoneObject? zoneDValue;
   LocationTypeObject? locationTypeValue;
   RxBool getLocationTypeZoneLoader = false.obs;
@@ -180,6 +182,9 @@ class LocationController extends GetxController {
   }
 
   RxBool updateLocationValue = false.obs;
+  RxBool updateDLocationValue = false.obs;
+  RxBool updateRNLocationValue = false.obs;
+  RxBool updateRN1LocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
   bindLocationUpdateLocation({Locations? locationUpdate}) async {
     print("===== UPDATE LOCATION DATA RECEIVED =====");
