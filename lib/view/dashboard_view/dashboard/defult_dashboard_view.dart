@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/shortcut_key_widget.dart';
 import 'package:flutter/material.dart';
@@ -2711,6 +2712,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   CustomButton(
                                                     onTap:
                                                         () {
+                                                      if(controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty &&
+                                                          controller.dropOffTwoWayController.text.isEmpty){
+                                                        BotToast.showText(text: "Please chose waiting return");
+                                                        return;
+                                                      }
                                                       controller
                                                           .dashBoardApiValidation();
                                                     },

@@ -1209,6 +1209,7 @@ class DashboardController extends GetxController {
     DateTime? endTime,
     required List<String> selectedDays,
     required String time,
+    returnTime,
   }) async {
     if (startTime == null || endTime == null) {
       return BotToast.showText(
@@ -1237,6 +1238,7 @@ class DashboardController extends GetxController {
             day: selectedDays[dayIndex],
             exclude: false,
             returnTime: time,
+            endTime: returnTime,
           ),
         );
       }
@@ -1478,18 +1480,18 @@ class DashboardController extends GetxController {
     };
     print(markers);
     print(formData);
-    // var response = await Api().post(formData, "bookings/add");
-    // if(response.statusCode == 200){
+    var response = await Api().post(formData, "bookings/add");
+    if(response.statusCode == 200){
 
-    //   if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
-    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //   }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
-    //     dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-    //   }
-    //   refreshPostAllFields();
-    //   print(response.data);
-    //
-    // }
+      if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
+        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      }
+      refreshPostAllFields();
+      print(response.data);
+
+    }
   }
 
   restrictedDriversListConfig() async {
@@ -1542,7 +1544,8 @@ class DashboardController extends GetxController {
           "exclude": element.exclude,
           "day": element.day,
           "pickup_date": tempDateStore,
-          "pickup_time": element.returnTime
+          "pickup_time": element.returnTime,
+          "return_pickup_time": element.endTime,
         });
       }
     }

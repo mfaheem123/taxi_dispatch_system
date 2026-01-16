@@ -175,6 +175,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               startTime: controller.multiReservationFromDate,
                               time: controller.multiReservationToTimeController.text,
                               selectedDays: controller.multiReservationDaysList,
+                              returnTime: controller.jourValue == 'W/R'? controller.returnMultiReservationToTimeController.text:null
                             );
                           },
                           btnText: AppText.createreservation,
@@ -453,10 +454,10 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
 
 
 class MultiReservation{
-  String? time,returnTime, day, startDate;
+  String? time,returnTime, day, startDate, endTime;
   bool exclude = false;
   String? selectedTitle;
 
 
-  MultiReservation({this.day, this.time, this.startDate, this.exclude = false, this.returnTime, this.selectedTitle});
+  MultiReservation({this.day, this.time, this.startDate, this.exclude = false, this.returnTime, this.endTime, this.selectedTitle});
 }
