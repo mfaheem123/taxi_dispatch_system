@@ -57,284 +57,291 @@ class _PickupWidgetState extends State<PickupWidget> {
               double notesWidth = isMobile
                   ? constraints.maxWidth * 0.9
                   : isTablet
-                  ? constraints.maxWidth / 4
+                  ? constraints.maxWidth / 6
                   : constraints.maxWidth / 8;
 
               return Column(
                 children: [
                   // ================= PICKUP ROW =================
-                  SingleChildScrollView(
-                    scrollDirection:
-                    isMobile ? Axis.vertical : Axis.horizontal,
-                    child: Flex(
-                      direction: isMobile ? Axis.vertical : Axis.horizontal,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            AppText.pick,
-                            style: mozillaTextSemiBoldText(
-                              context: context,
-                              fontSize: 13,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection:
+                      isMobile ? Axis.vertical : Axis.horizontal,
+                      child: Flex(
+                        direction: isMobile ? Axis.vertical : Axis.horizontal,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Text(
+                              AppText.pick,
+                              style: mozillaTextSemiBoldText(
+                                context: context,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
 
-                        // (1) Pickup textfield
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(1),
-                          child: SizedBox(
-                            width: pickupWidth,
-                            height: 30,
-                            child: RawKeyboardListener(
-                              focusNode: controller.pickupKeyboardFocusNode,
-                              onKey: (event) {
-                                if (event is RawKeyDownEvent) {
-                                  if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowDown &&
-                                      controller.highlightedIndex.value <
-                                          controller.suggestions.length - 1) {
-                                    controller.highlightedIndex.value++;
-                                  } else if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowUp &&
-                                      controller.highlightedIndex.value > 0) {
-                                    controller.highlightedIndex.value--;
-                                  } else if (event.logicalKey ==
-                                      LogicalKeyboardKey.enter) {
-                                    final selected = controller.suggestions[
-                                    controller.highlightedIndex.value];
-                                    // controller.selectSuggestion(selected);
+                          // (1) Pickup textfield
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(1),
+                            child: SizedBox(
+                              width: pickupWidth,
+                              height: 30,
+                              child: RawKeyboardListener(
+                                focusNode: controller.pickupKeyboardFocusNode,
+                                onKey: (event) {
+                                  if (event is RawKeyDownEvent) {
+                                    if (event.logicalKey ==
+                                        LogicalKeyboardKey.arrowDown &&
+                                        controller.highlightedIndex.value <
+                                            controller.suggestions.length - 1) {
+                                      controller.highlightedIndex.value++;
+                                    } else if (event.logicalKey ==
+                                        LogicalKeyboardKey.arrowUp &&
+                                        controller.highlightedIndex.value > 0) {
+                                      controller.highlightedIndex.value--;
+                                    } else if (event.logicalKey ==
+                                        LogicalKeyboardKey.enter) {
+                                      final selected = controller.suggestions[
+                                      controller.highlightedIndex.value];
+                                      // controller.selectSuggestion(selected);
+                                    }
                                   }
-                                }
-                              },
+                                },
 
-                              child: CustomTextField(
-                                key: controller.pickupFieldKey,
-                                controller: controller.pickupController,
-                                focusNode:
-                                controller.pickupTextFieldFocusNode,
-                                hintText: 'PICKUP LOCATION',
-                                borderRadius: 4,
-                                prefixIcon: const Icon(Icons.location_pin,
-                                    color: Colors.red,size: 20,),
-                                textInputAction: TextInputAction.next,
-                                onChanged: (v){
-                                  controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
-                                },
-                                onTap: (){
-                                  // shortCutKeyValue.value = "formKey";
-                                },
-                                onSubmitted: (_) =>
-                                    FocusScope.of(context).nextFocus(),
-                                suffixIcon: KbdActivatable(
-                                  focusNode: swap1FN,
-                                  onActivate: () {
-                                    String tempPic = controller.pickupController.text;
-                                    String tempDrop = controller.dropOffController.text;
-                                    controller.pickupController.text = tempDrop;
-                                    controller.dropOffController.text = tempPic;
-                                    controller.update();
+                                child: CustomTextField(
+                                  key: controller.pickupFieldKey,
+                                  controller: controller.pickupController,
+                                  focusNode:
+                                  controller.pickupTextFieldFocusNode,
+                                  hintText: 'PICKUP LOCATION',
+                                  borderRadius: 4,
+                                  prefixIcon: const Icon(Icons.location_pin,
+                                      color: Colors.red,size: 20,),
+                                  textInputAction: TextInputAction.next,
+                                  onChanged: (v){
+                                    controller.onChangeHandler(fieldName: "PICKUP LOCATION",searchingText: v);
                                   },
-                                  child: const Icon(Icons.swap_vert,
-                                      color: Color(0xFF575797), size: 20),
+                                  onTap: (){
+                                    // shortCutKeyValue.value = "formKey";
+                                  },
+                                  onSubmitted: (_) =>
+                                      FocusScope.of(context).nextFocus(),
+                                  suffixIcon: KbdActivatable(
+                                    focusNode: swap1FN,
+                                    onActivate: () {
+                                      String tempPic = controller.pickupController.text;
+                                      String tempDrop = controller.dropOffController.text;
+                                      controller.pickupController.text = tempDrop;
+                                      controller.dropOffController.text = tempPic;
+                                      controller.update();
+                                    },
+                                    child: const Icon(Icons.swap_vert,
+                                        color: Color(0xFF575797), size: 20),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
 
-                        SizedBox(
-                            width: isMobile ? 0 : 10,
-                            height: isMobile ? 10 : 0),
-                        // (2) Select plot button
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(2),
-                          child: RestrictedDrivers(
-                            width: notesWidth,
-                            height: 30,
-                            padding: 0.0,
-                            titleText: "SELECT PLOT",
-                            driversList: [
-                              "BASE NE7", "WILLESDEN"
-                            ],
-                          ),
-                        ),
+                          SizedBox(
+                              width: isMobile  ? 0 : 10,
+                              height: isMobile ? 10 : 0),
+                          // (2) Select plot button
+                          FocusTraversalOrder(
 
-
-                       /* FocusTraversalOrder(
-                          order: const NumericFocusOrder(2),
-                          child: KbdActivatable(
-                            focusNode: plot1FN,
-                            onActivate: () {
-                              // open first dropdown
-                            },
-                            child: Container(
+                            order: const NumericFocusOrder(2),
+                            child: RestrictedDrivers(
                               width: notesWidth,
                               height: 30,
-                              // padding:
-                              // const EdgeInsets.symmetric(horizontal: 12),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(
-                                    color: DynamicColors.primaryClr,
-                                    width: 1.2),
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                "BASE NE7", "WILLESDEN"
+                              ],
+                            ),
+                          ),
+
+
+                         /* FocusTraversalOrder(
+                            order: const NumericFocusOrder(2),
+                            child: KbdActivatable(
+                              focusNode: plot1FN,
+                              onActivate: () {
+                                // open first dropdown
+                              },
+                              child: Container(
+                                width: notesWidth,
+                                height: 30,
+                                // padding:
+                                // const EdgeInsets.symmetric(horizontal: 12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                      color: DynamicColors.primaryClr,
+                                      width: 1.2),
+                                ),
+                                child: CustomDropdownButton(
+                                  itemList: const ["BASE NE7", "WILLESDEN"],
+                                  hintText: "SELECT PLOT",
+                                ),
                               ),
-                              child: CustomDropdownButton(
-                                itemList: const ["BASE NE7", "WILLESDEN"],
-                                hintText: "SELECT PLOT",
+                            ),
+                          ),*/
+
+                          SizedBox(
+                              width: isMobile ? 0 : 10,
+                              height: isMobile ? 10 : 0),
+
+                          // (3) Pickup notes
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(3),
+                            child: SizedBox(
+                              width: notesWidth,
+                              height: 30,
+                              child: CustomTextField(
+                                controller: TextEditingController(),
+                                hintText: "PICKUP NOTES",
+                                borderRadius: 6,
+                                textInputAction: TextInputAction.next,
+                                onSubmitted: (_) =>
+                                    FocusScope.of(context).nextFocus(),
                               ),
                             ),
                           ),
-                        ),*/
-
-                        SizedBox(
-                            width: isMobile ? 0 : 10,
-                            height: isMobile ? 10 : 0),
-
-                        // (3) Pickup notes
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(3),
-                          child: SizedBox(
-                            width: notesWidth,
-                            height: 30,
-                            child: CustomTextField(
-                              controller: TextEditingController(),
-                              hintText: "PICKUP NOTES",
-                              borderRadius: 6,
-                              textInputAction: TextInputAction.next,
-                              onSubmitted: (_) =>
-                                  FocusScope.of(context).nextFocus(),
-                            ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
 
                   SizedBox(height: screenHeight * 0.019),
 
                   // ================= DROPOFF ROW =================
-                  SingleChildScrollView(
-                    scrollDirection:
-                    isMobile ? Axis.vertical : Axis.horizontal,
-                    child: Flex(
-                      direction: isMobile ? Axis.vertical : Axis.horizontal,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 10),
-                          child: Text(
-                            AppText.drop,
-                            style: mozillaTextSemiBoldText(
-                              context: context,
-                              fontSize: 13,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection:
+                      isMobile ? Axis.vertical : Axis.horizontal,
+                      child: Flex(
+                        direction: isMobile ? Axis.vertical : Axis.horizontal,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Text(
+                              AppText.drop,
+                              style: mozillaTextSemiBoldText(
+                                context: context,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                        ),
 
-                        // (4) Dropoff textfield
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(4),
-                          child: SizedBox(
-                            width: pickupWidth,
-                            height: 30,
-                            child: RawKeyboardListener(
-                              focusNode: controller.dropOffKeyboardFocusNode,
-                              onKey: (event) {
-                                if (event is RawKeyDownEvent) {
-                                  if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowDown &&
-                                      controller.highlightedIndex.value <
-                                          controller.suggestions.length - 1) {
-                                    controller.highlightedIndex.value++;
-                                  } else if (event.logicalKey ==
-                                      LogicalKeyboardKey.arrowUp &&
-                                      controller.highlightedIndex.value > 0) {
-                                    controller.highlightedIndex.value--;
-                                  } else if (event.logicalKey ==
-                                      LogicalKeyboardKey.enter) {
-                                    final selected = controller.suggestions[
-                                    controller.highlightedIndex.value];
-                                    // controller.selectSuggestion(selected);
+                          // (4) Dropoff textfield
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(4),
+                            child: SizedBox(
+                              width: pickupWidth,
+                              height: 30,
+                              child: RawKeyboardListener(
+                                focusNode: controller.dropOffKeyboardFocusNode,
+                                onKey: (event) {
+                                  if (event is RawKeyDownEvent) {
+                                    if (event.logicalKey ==
+                                        LogicalKeyboardKey.arrowDown &&
+                                        controller.highlightedIndex.value <
+                                            controller.suggestions.length - 1) {
+                                      controller.highlightedIndex.value++;
+                                    } else if (event.logicalKey ==
+                                        LogicalKeyboardKey.arrowUp &&
+                                        controller.highlightedIndex.value > 0) {
+                                      controller.highlightedIndex.value--;
+                                    } else if (event.logicalKey ==
+                                        LogicalKeyboardKey.enter) {
+                                      final selected = controller.suggestions[
+                                      controller.highlightedIndex.value];
+                                      // controller.selectSuggestion(selected);
+                                    }
                                   }
-                                }
-                              },
-                              child: CustomTextField(
-                                key: controller.dropOffFieldKey,
-                                controller: controller.dropOffController,
-                                focusNode:
-                                controller.dropOffTextFieldFocusNode,
-                                hintText: 'DROP LOCATION',
-                                borderRadius: 4,
-                                prefixIcon: const Icon(Icons.location_pin,
-                                    color: Colors.red,size: 20,),
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (_) =>
-                                    FocusScope.of(context).nextFocus(),
-                                suffixIcon: KbdActivatable(
-                                  focusNode: swap2FN,
-                                  onActivate: () {
-                                    String tempPic =
-                                        controller.pickupController.text;
-                                    String tempDrop =
-                                        controller.dropOffController.text;
-                                    controller.pickupController.text =
-                                        tempDrop;
-                                    controller.dropOffController.text =
-                                        tempPic;
-                                    controller.update();
-                                  },
-                                  child: const Icon(Icons.swap_vert,
-                                      color: Color(0xFF575797), size: 20),
+                                },
+                                child: CustomTextField(
+                                  key: controller.dropOffFieldKey,
+                                  controller: controller.dropOffController,
+                                  focusNode:
+                                  controller.dropOffTextFieldFocusNode,
+                                  hintText: 'DROP LOCATION',
+                                  borderRadius: 4,
+                                  prefixIcon: const Icon(Icons.location_pin,
+                                      color: Colors.red,size: 20,),
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: (_) =>
+                                      FocusScope.of(context).nextFocus(),
+                                  suffixIcon: KbdActivatable(
+                                    focusNode: swap2FN,
+                                    onActivate: () {
+                                      String tempPic =
+                                          controller.pickupController.text;
+                                      String tempDrop =
+                                          controller.dropOffController.text;
+                                      controller.pickupController.text =
+                                          tempDrop;
+                                      controller.dropOffController.text =
+                                          tempPic;
+                                      controller.update();
+                                    },
+                                    child: const Icon(Icons.swap_vert,
+                                        color: Color(0xFF575797), size: 20),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
 
-                        SizedBox(
-                            width: isMobile ? 0 : 10,
-                            height: isMobile ? 10 : 0),
+                          SizedBox(
+                              width: isMobile ? 0 : 10,
+                              height: isMobile ? 10 : 0),
 
-                        // (5) Select plot button
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(5),
-                          child: RestrictedDrivers(
-                            width: notesWidth,
-                            height: 30,
-                            padding: 0.0,
-                            titleText: "SELECT PLOT",
-                            driversList: [
-                              "BASE NE7", "WILLESDEN"
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(
-                            width: isMobile ? 0 : 10,
-                            height: isMobile ? 10 : 0),
-
-                        // (6) Drop notes
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(6),
-                          child: SizedBox(
-                            width: notesWidth,
-                            height: 30,
-                            child: CustomTextField(
-                              controller: TextEditingController(),
-                              hintText: "DROP NOTES",
-                              borderRadius: 6,
-                              textInputAction: TextInputAction.done,
-                              onSubmitted: (_) =>
-                                  FocusScope.of(context).unfocus(),
+                          // (5) Select plot button
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(5),
+                            child: RestrictedDrivers(
+                              width: notesWidth,
+                              height: 30,
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                "BASE NE7", "WILLESDEN"
+                              ],
                             ),
                           ),
-                        ),
 
-                      ],
+                          SizedBox(
+                              width: isMobile ? 0 : 10,
+                              height: isMobile ? 10 : 0),
+
+                          // (6) Drop notes
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(6),
+                            child: SizedBox(
+                              width: notesWidth,
+                              height: 30,
+                              child: CustomTextField(
+                                controller: TextEditingController(),
+                                hintText: "DROP NOTES",
+                                borderRadius: 6,
+                                textInputAction: TextInputAction.done,
+                                onSubmitted: (_) =>
+                                    FocusScope.of(context).unfocus(),
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
                     ),
                   ),
 

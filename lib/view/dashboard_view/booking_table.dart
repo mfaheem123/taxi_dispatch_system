@@ -1,5 +1,6 @@
 
 import 'dart:ui';
+import 'dart:ui' as html show window;
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -10,9 +11,12 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
+import '../../routes/app_pages.dart';
+import '../booking_view/update_booking.dart';
 import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
 import 'models/dashboard_model.dart';
@@ -494,7 +498,17 @@ class _BookingTableState extends State<BookingTable> {
                                 const Text("|"),
                                 IconButton(
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
-                                  onPressed: () {},
+                                  onPressed: ()async {
+                                      final newTabUrl = Uri.base.origin + Routes.updateBooking;
+                                  if (await canLaunchUrl(Uri.parse(newTabUrl))) {
+                                    await launchUrl(
+                                    Uri.parse(newTabUrl),
+                                    mode: LaunchMode.externalApplication,
+                                    );
+                                    } else {
+                                    throw 'Could not launch $newTabUrl';
+                                    }
+                                  },
                                 ),
                               ],
                             ),

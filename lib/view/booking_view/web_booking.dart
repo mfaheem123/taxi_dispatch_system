@@ -197,7 +197,7 @@ class _WebBookingState extends State<WebBooking> {
                             fontSize: 11,
                             btnText: AppText.search,
                             onTap: (){
-                              navigator?.push(MaterialPageRoute(builder: (context) => UpdateBooking(),));
+
                             },
                           ),
                         ],

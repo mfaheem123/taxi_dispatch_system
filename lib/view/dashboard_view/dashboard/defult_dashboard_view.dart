@@ -30,6 +30,7 @@ import '../widgets/user_info_widget.dart' hide KbdActivatable;
 import 'F8_widget_alert.dart';
 import 'F9_widget_alert.dart';
 import 'booking_form_widget.dart';
+import 'custom_booking_widget/custom_deshboard_ipad_widget.dart';
 import 'drivers.dart';
 import 'form_short_cut_key.dart';
 import 'map_view_widget.dart';
@@ -211,8 +212,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                     ),
                   ),
                 ),
-
-                Stack(
+                  width <= 1024
+                      ?CustomIpadWidget()
+                      :Stack(
                   key: controller.stackKey,
                   children: [
                     Padding(
@@ -2931,7 +2933,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       );
                     }),
                   ],
-                ),
+                ) ,
               ],
             ),
           ),

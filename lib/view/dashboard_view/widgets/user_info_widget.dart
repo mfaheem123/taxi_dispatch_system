@@ -124,127 +124,137 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
               return Column(
                 children: [
-                  SizedBox(height: screenHeight * 0.019),
+                  SizedBox(height: screenHeight * 0.010),
                   // ================= Row 1: Name, Email, Mobile, Tel =================
-                  SingleChildScrollView(
-                    scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
-                    child: Flex(
-                      direction: isMobile ? Axis.vertical : Axis.horizontal,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(1),
-                          child: labeledTextField(context, isMobile, AppText.name, nameCtl,
-                              width: fieldWidth,
-                              textInputAction: TextInputAction.next),
-                        ),
-                        const SizedBox(width: 12),
-                        // _gap(isMobile),
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(2),
-                          child: labeledTextField(context, isMobile, AppText.email, emailCtl,
-                              width: fieldWidth,
-                              textInputAction: TextInputAction.next),
-                        ),
-                        const SizedBox(width: 12),
-                        // _gap(isMobile),
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(3),
-                          child: labeledTextField(context, isMobile, AppText.mobile, mobileCtl,
-                              width: fieldWidth,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.phone,
-                              formatDigitsOnly: false),
-                        ),
-                        const SizedBox(width: 12),
-                        // _gap(isMobile),
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(4),
-                          child: labeledTextField(context, isMobile, AppText.tel, telCtl,
-                              width: fieldWidth,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.phone,
-                              formatDigitsOnly: false),
-                        ),
-                      ],
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
+                      child: Flex(
+                        direction: isMobile ? Axis.vertical : Axis.horizontal,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(1),
+                            child: labeledTextField(context, isMobile, AppText.name, nameCtl,
+                                width: fieldWidth /1.1,
+                                textInputAction: TextInputAction.next),
+                          ),
+                          const SizedBox(width: 10),
+                          // _gap(isMobile),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(2),
+                            child: labeledTextField(context, isMobile, AppText.email, emailCtl,
+                                width: fieldWidth,
+                                textInputAction: TextInputAction.next),
+                          ),
+                          const SizedBox(width: 10),
+                          // _gap(isMobile),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(3),
+                            child: labeledTextField(context, isMobile, AppText.mobile, mobileCtl,
+                                width: fieldWidth/1.1,
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.phone,
+                                formatDigitsOnly: false),
+                          ),
+                          const SizedBox(width: 10),
+                          // _gap(isMobile),
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(4),
+                            child: labeledTextField(context, isMobile, AppText.tel, telCtl,
+                                width: fieldWidth/1.1,
+                                textInputAction: TextInputAction.next,
+                                keyboardType: TextInputType.phone,
+                                formatDigitsOnly: false),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
                   SizedBox(height: screenHeight * 0.019),
 
                   // ============== Row 2: Date, Time, Lead (mins), Journey dropdown ==============
-                  SingleChildScrollView(
-                    scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
-                    child: Wrap(
-                      spacing: 10,
-                      runSpacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        // (5) Date
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(5),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.date,
-                            width: fieldWidth,
-                            child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          // (5) Date
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(5),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.date,
+                              width: fieldWidth/1.1,
+                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                            ),
                           ),
-                        ),
-                        // (6) Time
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(6),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.time,
-                            width: fieldWidth,
-                            child: SizedBox(height: 30, child: CustomTimePicker()),
-                          ),
-                        ),
-
-
-
-                        // (7) Lead (mins)
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(7),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.lead,
-                            width: fieldWidth,
-                            child: SizedBox(
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "MINS",
-                                controller: leadCtl,
-                                borderRadius: 4,
-                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                          // SizedBox(width: 0.1),
+                          // (6) Time
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5),
+                            child: FocusTraversalOrder(
+                              order: const NumericFocusOrder(6),
+                              child: labeledField(
+                                context: context,
+                                isMobile: isMobile,
+                                label: AppText.time,
+                                width: fieldWidth* 0.99,
+                                child: SizedBox(height: 30, child: CustomTimePicker()),
                               ),
                             ),
                           ),
-                        ),
 
 
 
-
-                        // (8) Journey dropdown (O/W, R/N, W/R)
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(8),
-                          child: RestrictedDrivers(
-                            width: fieldWidth,
-                            height: 30,
-                            padding: 0.0,
-                            titleText: "SELECT PLOT",
-                            driversList: [
-                              'DEMO COMPANY 01', 'DEMO COMPANY 02'
-                            ],
+                          // (7) Lead (mins)
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(7),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.lead,
+                              width: fieldWidth/1.1,
+                              child: SizedBox(
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "MINS",
+                                  controller: leadCtl,
+                                  borderRadius: 4,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+
+
+
+SizedBox(width: 30,),
+                          // (8) Journey dropdown (O/W, R/N, W/R)
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(8),
+                            child: RestrictedDrivers(
+                              width: fieldWidth/1.5,
+                              height: 30,
+                              padding: 0.0,
+                              titleText: "SELECT PLOT",
+                              driversList: [
+                                'DEMO COMPANY 01', 'DEMO COMPANY 02'
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
 
@@ -258,157 +268,160 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
 
 
                   // ============== Row 3: Driver, Fare, Account, Pay, Calendar Icon ==============
-                  SingleChildScrollView(
-                    scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
-                    child: Wrap(
-                      spacing: 10,
-                      runSpacing: 8,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        // (9) Driver dropdown
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(9),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.drv,
-                            width: fieldWidth,
-                            child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                              ),
-                              child: // (8) Journey dropdown (O/W, R/N, W/R)
-                              RestrictedDrivers(
-                                width: fieldWidth,
-                                height: 30,
-                                padding: 0.0,
-                                titleText: controller.drvValue,
-                                driversList: [
-                                  "25 GEORGE HAMPTON",
-                                  "26 PAUL DOUBLEDAY",
-                                  "27 RICHARD HARDWICK",
-                                  "28 LANRE OKERJO",
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-
-
-
-                        // (10) Fare (Slugg)
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(10),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.fare,
-                            width: fieldWidth,
-                            child: SizedBox(
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "Slugg",
-                                controller: fareCtl,
-                                borderRadius: 6,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(6),
-                                ],
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                              ),
-                            ),
-                          ),
-                        ),
-
-
-
-
-                        // (11) Account
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(11),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.acc,
-                            width: fieldWidth,
-                            child: SizedBox(
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "SELECT ACCOUNT",
-                                controller: accCtl,
-                                borderRadius: 6,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(6),
-                                ],
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.next,
-                                onSubmitted: (_) => FocusScope.of(context).nextFocus(),
-                              ),
-                            ),
-                          ),
-                        ),
-
-
-                        // (12) Pay dropdown
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(12),
-                          child: labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: AppText.pay,
-                            width: fieldWidth,
-                            child: Container(
-                              height: 30,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(4),
-                                border: Border.all(color: DynamicColors.primaryClr),
-                              ),
-                              child:
-                              RestrictedDrivers(
-                                width: fieldWidth,
-                                height: 30,
-                                padding: 0.0,
-                                titleText: controller.payValue,
-                                driversList: [
-                                  "CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // (13) Calendar icon (keyboard clickable)
-                        FocusTraversalOrder(
-                          order: const NumericFocusOrder(13),
-                          child: SizedBox(
-                            height: 33,
-                            child: KbdActivatable(
-                              focusNode: calendarFN,
-                              onActivate: () {
-                                // TODO: open your calendar modal/sheet
-                                // For demo:
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Calendar icon activated")),
-                                );
-                              },
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SingleChildScrollView(
+                      scrollDirection: isMobile ? Axis.vertical : Axis.horizontal,
+                      child: Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          // (9) Driver dropdown
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(9),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.drv,
+                              width: fieldWidth,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                height: 30,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
                                   borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                 ),
-                                child: const Icon(Icons.calculate, size: 20),
+                                child: // (8) Journey dropdown (O/W, R/N, W/R)
+                                RestrictedDrivers(
+                                  width: fieldWidth,
+                                  height: 30,
+                                  padding: 0.0,
+                                  titleText: controller.drvValue,
+                                  driversList: [
+                                    "25 GEORGE HAMPTON",
+                                    "26 PAUL DOUBLEDAY",
+                                    "27 RICHARD HARDWICK",
+                                    "28 LANRE OKERJO",
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+
+
+
+
+                          // (10) Fare (Slugg)
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(10),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.fare,
+                              width: fieldWidth,
+                              child: SizedBox(
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Slugg",
+                                  controller: fareCtl,
+                                  borderRadius: 6,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                ),
+                              ),
+                            ),
+                          ),
+
+
+
+
+                          // (11) Account
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(11),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.acc,
+                              width: fieldWidth,
+                              child: SizedBox(
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "SELECT ACCOUNT",
+                                  controller: accCtl,
+                                  borderRadius: 6,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  textInputAction: TextInputAction.next,
+                                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                ),
+                              ),
+                            ),
+                          ),
+
+
+                          // (12) Pay dropdown
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(12),
+                            child: labeledField(
+                              context: context,
+                              isMobile: isMobile,
+                              label: AppText.pay,
+                              width: fieldWidth,
+                              child: Container(
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: DynamicColors.primaryClr),
+                                ),
+                                child:
+                                RestrictedDrivers(
+                                  width: fieldWidth,
+                                  height: 30,
+                                  padding: 0.0,
+                                  titleText: controller.payValue,
+                                  driversList: [
+                                    "CASH", "CREDIT CARD", "ACCOUNT", "CREDIT CARD PAID"
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // (13) Calendar icon (keyboard clickable)
+                          FocusTraversalOrder(
+                            order: const NumericFocusOrder(13),
+                            child: SizedBox(
+                              height: 33,
+                              child: KbdActivatable(
+                                focusNode: calendarFN,
+                                onActivate: () {
+                                  // TODO: open your calendar modal/sheet
+                                  // For demo:
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Calendar icon activated")),
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Icon(Icons.calculate, size: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
