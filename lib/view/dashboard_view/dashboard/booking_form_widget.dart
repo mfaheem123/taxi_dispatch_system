@@ -114,202 +114,205 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                   SizedBox(
                     height: screenHeight * 0.01,
                   ),
-                  FocusTraversalGroup(
-                    policy: WidgetOrderTraversalPolicy(),
-                    child: Wrap(
-                      spacing: 38, // Horizontal gap
-                      runSpacing: 10, // Vertical gap when wrapping
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              AppText.veh,
-                              style: mozillaTextSemiBoldText(
-                                context: context,
-                                fontSize: 13,
-                              ),
-                            ),
-
-                            SizedBox(width: 25),
-
-                            GestureDetector(
-                              child: Container(
-                                height: 30,
-                                width: fieldWidth,
-                                // width: Get.width / 13,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  border: Border.all(
-                                      color: DynamicColors.primaryClr),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: FocusTraversalGroup(
+                      policy: WidgetOrderTraversalPolicy(),
+                      child: Wrap(
+                        spacing: 38, // Horizontal gap
+                        runSpacing: 10, // Vertical gap when wrapping
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                AppText.veh,
+                                style: mozillaTextSemiBoldText(
+                                  context: context,
+                                  fontSize: 13,
                                 ),
-                                child:
-                                RestrictedDrivers(
-                                  width: Get.width / 13,
+                              ),
+
+                              SizedBox(width: 17),
+
+                              GestureDetector(
+                                child: Container(
                                   height: 30,
-                                  padding: 0.0,
-                                  titleText: controller.vehKey,
-                                  driversList: [
-                                    "SALOON",
-                                    "ESTATE",
-                                    "MPV6",
-                                    "MPV PLUS",
-                                    "MPV7",
-                                    "MPV EXECUTIVE",
-                                    "MINI BUS"
-                                  ],
+                                  width: fieldWidth/1.1,
+                                  // width: Get.width / 13,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                        color: DynamicColors.primaryClr),
+                                  ),
+                                  child:
+                                  RestrictedDrivers(
+                                    width: Get.width / 13,
+                                    height: 30,
+                                    padding: 0.0,
+                                    titleText: controller.vehKey,
+                                    driversList: [
+                                      "SALOON",
+                                      "ESTATE",
+                                      "MPV6",
+                                      "MPV PLUS",
+                                      "MPV7",
+                                      "MPV EXECUTIVE",
+                                      "MINI BUS"
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        // Switch + Quotation
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                          DynamicSwitch(
-                          controller: controller.switchController,
-                            activeColor: DynamicColors.primaryClr,
-                            inactiveColor: DynamicColors.gryClr,
-                          focusScale: 1.5,
-                          onToggle: () {
-                            print("Switc toggled: ${controller.switchController.value}");
-                          },
-                  ),
-                            // QuotationWidget(
-                            //   controller
-                            // ),
-                            SizedBox(width: 10),
-                            Text(
-                              AppText.quotation,
-                              style: mozillaTextSemiBoldText(
-                                  context: context, fontSize: 13),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                          // Switch + Quotation
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                            DynamicSwitch(
+                            controller: controller.switchController,
+                              activeColor: DynamicColors.primaryClr,
+                              inactiveColor: DynamicColors.gryClr,
+                            focusScale: 1.5,
+                            onToggle: () {
+                              print("Switc toggled: ${controller.switchController.value}");
+                            },
+                    ),
+                              // QuotationWidget(
+                              //   controller
+                              // ),
+                              SizedBox(width: 10),
+                              Text(
+                                AppText.quotation,
+                                style: mozillaTextSemiBoldText(
+                                    context: context, fontSize: 13),
+                              ),
+                            ],
+                          ),
 
-                        // SMS Checkbox
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            RawKeyboardListener(
-                              focusNode: checkboxFocus,
-                              onKey: (event) {
-                                if (event is RawKeyDownEvent &&
-                                    (event.logicalKey == LogicalKeyboardKey.enter ||
-                                        event.logicalKey == LogicalKeyboardKey.space)) {
-                                  setState(() {
-                                    // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
-                                  });
-                                }
-                              },
-                              child: Checkbox(
-                                activeColor: DynamicColors.primaryClr,
-                                value: controller.smsCheckbox.value,
-                                onChanged: (v) {
-                                  // controller.smsCheckbox.value = v!;
-                                  // controller.update();
+                          // SMS Checkbox
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RawKeyboardListener(
+                                focusNode: checkboxFocus,
+                                onKey: (event) {
+                                  if (event is RawKeyDownEvent &&
+                                      (event.logicalKey == LogicalKeyboardKey.enter ||
+                                          event.logicalKey == LogicalKeyboardKey.space)) {
+                                    setState(() {
+                                      // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                    });
+                                  }
                                 },
+                                child: Checkbox(
+                                  activeColor: DynamicColors.primaryClr,
+                                  value: controller.smsCheckbox.value,
+                                  onChanged: (v) {
+                                    // controller.smsCheckbox.value = v!;
+                                    // controller.update();
+                                  },
+                                ),
                               ),
-                            ),
-                            Text(
-                              AppText.sms,
-                              style: mozillaTextSemiBoldText(
-                                  context: context, fontSize: 13),
-                            ),
-                          ],
-                        ),
+                              Text(
+                                AppText.sms,
+                                style: mozillaTextSemiBoldText(
+                                    context: context, fontSize: 13),
+                              ),
+                            ],
+                          ),
 
-                        // Email Checkbox
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            RawKeyboardListener(
-                              focusNode: emailFocus,
-                              onKey: (event) {
-                                if (event is RawKeyDownEvent &&
-                                    (event.logicalKey == LogicalKeyboardKey.enter ||
-                                        event.logicalKey == LogicalKeyboardKey.space)) {
-                                  setState(() {
-                                    controller.emailCheckbox.value = !controller.emailCheckbox.value; // ✅ toggle
-                                  });
-                                }
-                              },
-                              child: Checkbox(
-                                activeColor: DynamicColors.primaryClr,
-                                value: controller.emailCheckbox.value,
-                                onChanged: (v) {
-                                  controller.emailCheckbox.value = v!;
-                                  controller.update();
+                          // Email Checkbox
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              RawKeyboardListener(
+                                focusNode: emailFocus,
+                                onKey: (event) {
+                                  if (event is RawKeyDownEvent &&
+                                      (event.logicalKey == LogicalKeyboardKey.enter ||
+                                          event.logicalKey == LogicalKeyboardKey.space)) {
+                                    setState(() {
+                                      controller.emailCheckbox.value = !controller.emailCheckbox.value; // ✅ toggle
+                                    });
+                                  }
                                 },
+                                child: Checkbox(
+                                  activeColor: DynamicColors.primaryClr,
+                                  value: controller.emailCheckbox.value,
+                                  onChanged: (v) {
+                                    controller.emailCheckbox.value = v!;
+                                    controller.update();
+                                  },
+                                ),
                               ),
-                            ),
-                            Text(
-                              AppText.email,
-                              style: mozillaTextSemiBoldText(
-                                  context: context, fontSize: 13),
-                            ),
-                          ],
-                        ),
+                              Text(
+                                AppText.email,
+                                style: mozillaTextSemiBoldText(
+                                    context: context, fontSize: 13),
+                              ),
+                            ],
+                          ),
 
-                        // Pass, Lugg, Slugg fields
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "Pass",
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(2),
-                                ],
-                                keyboardType: TextInputType.number,
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 4),
-                                controller: TextEditingController(),
-                                borderRadius: 4,
+                          // Pass, Lugg, Slugg fields
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Pass",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            SizedBox(
-                              width: 60,
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "Lugg",
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(2),
-                                ],
-                                keyboardType: TextInputType.number,
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 4),
-                                controller: TextEditingController(),
-                                borderRadius: 4,
+                              SizedBox(width: 8),
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Lugg",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            SizedBox(
-                              width: 60,
-                              height: 30,
-                              child: CustomTextField(
-                                hintText: "Slugg",
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                  LengthLimitingTextInputFormatter(2),
-                                ],
-                                keyboardType: TextInputType.number,
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 4),
-                                controller: TextEditingController(),
-                                borderRadius: 4,
+                              SizedBox(width: 8),
+                              SizedBox(
+                                width: 60,
+                                height: 30,
+                                child: CustomTextField(
+                                  hintText: "Slugg",
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(2),
+                                  ],
+                                  keyboardType: TextInputType.number,
+                                  contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 4),
+                                  controller: TextEditingController(),
+                                  borderRadius: 4,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -372,6 +375,7 @@ class _BookingFormWidgetState extends State<BookingFormWidget> {
                               );
                             },
                           ),
+
                         ],
                       ),
                     ),

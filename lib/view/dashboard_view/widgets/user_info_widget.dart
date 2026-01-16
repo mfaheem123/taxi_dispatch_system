@@ -199,7 +199,7 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
                           // SizedBox(width: 0.1),
                           // (6) Time
                           Padding(
-                            padding: const EdgeInsets.only(left: 5),
+                            padding: const EdgeInsets.only(left: 7),
                             child: FocusTraversalOrder(
                               order: const NumericFocusOrder(6),
                               child: labeledField(
@@ -277,6 +277,7 @@ SizedBox(width: 30,),
                         runSpacing: 8,
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
+
                           // (9) Driver dropdown
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(9),
@@ -284,7 +285,7 @@ SizedBox(width: 30,),
                               context: context,
                               isMobile: isMobile,
                               label: AppText.drv,
-                              width: fieldWidth,
+                              width: fieldWidth/1.1,
                               child: Container(
                                 height: 30,
                                 decoration: BoxDecoration(
@@ -307,11 +308,8 @@ SizedBox(width: 30,),
                               ),
                             ),
                           ),
-
-
-
-
-                          // (10) Fare (Slugg)
+                            SizedBox(width: 5),
+                            // (10) Fare (Slugg)
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(10),
                             child: labeledField(
@@ -347,7 +345,7 @@ SizedBox(width: 30,),
                               context: context,
                               isMobile: isMobile,
                               label: AppText.acc,
-                              width: fieldWidth,
+                              width: fieldWidth/1.1,
                               child: SizedBox(
                                 height: 30,
                                 child: CustomTextField(
@@ -394,7 +392,7 @@ SizedBox(width: 30,),
                               ),
                             ),
                           ),
-
+SizedBox(width: 15),
                           // (13) Calendar icon (keyboard clickable)
                           FocusTraversalOrder(
                             order: const NumericFocusOrder(13),
