@@ -41,22 +41,31 @@ class BookingController extends GetxController{
 
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Pre Booking
 
+  RxList<BookingObjectData> preBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> preBookingFiltered = <BookingObjectData>[].obs;
   DashboardTableModel? dashboardTableModelData;
   RxInt dashboardTableCurrentPage = 1.obs;
   RxInt dashboardTableTotalPages = 1.obs;
   final int dashboardTableLimit = 20;
   final int tableId = 2;
-  getDashboardTableData() async{
+  getDashboardTableData() async {
     var response = await Api().get("bookings/getbytabs/${tableId}",
         queryParameters: {
           "page": dashboardTableCurrentPage.value,
           "limit": dashboardTableLimit,
         }
     );
-    if(response.statusCode ==200){
+
+    if(response.statusCode == 200){
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
-      dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      update();
+
+      // YAHAN MASLA THA: Data list mein assign karna zaroori hai
+      if (dashboardTableModelData?.data != null) {
+        preBookingAll.value = dashboardTableModelData!.data!;
+      }
+
+      dashboardTableTotalPages.value = dashboardTableModelData!.total ?? 1;
+      update(); // Ye GetBuilder ko batayega ke UI update karo
     }
   }
 

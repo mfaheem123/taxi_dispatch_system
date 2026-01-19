@@ -12,6 +12,7 @@ import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/customButton.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -41,12 +42,18 @@ class _PreBookingState extends State<PreBooking> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "PreBooking";
+      controller.getDashboardTableData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final listToShow = controller.preBookingFiltered.isNotEmpty
+        ? controller.preBookingFiltered
+        : controller.preBookingAll;
     return GetBuilder<BookingController>(
+
         builder: (controller) {
+
           return LayoutBuilder(
               builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
@@ -124,52 +131,61 @@ class _PreBookingState extends State<PreBooking> {
 
                             buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                           ],
-                          totalRow: totalRows,
-                          cells: [
-                            const DataCell(Text("OPT")),
-                            const DataCell(Text("BCB75058")),
-                            const DataCell(Text("09-09-25 07:16")),
-                            const DataCell(Text("09-09-25 07:16")),
-                            const DataCell(Text("NADEEM")),
-                            const DataCell(Text("FLAT 12 BLANDFORD COURT 4-6 BRO")),
-                            const DataCell(Text("NORTHWICK AVENUE HARROW HA3")),
-                            const DataCell(Text("CASH")),
-                            const DataCell(Text("CASH")),
-                            const DataCell(Text("SAL.")),
-                            const DataCell(Text("NOTE")),
-                            const DataCell(Text("£ 0.00")),
-                            const DataCell(Text("WAITING")),
-                            const DataCell(Text("o/w")),
-                            const DataCell(Text("DEMO ACCOUNT")),
-                            DataCell(
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero,   // 👈 remove inner padding
-                                      minimumSize: Size(24, 24),  // 👈 shrink button size
-                                      side: BorderSide.none,      // 👈 remove border
+                          totalRow: listToShow.length,
+                          rows: listToShow.map((item) {
+                            return DataRow(
+                              cells: [
+                                DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
+                                DataCell(Center(child: Text(item.pickupDate.toString() ))),
+                                DataCell(Center(child: Text(item.pickupTime ?? '—'))),
+                                DataCell(Center(child: Text(item.name ?? '—'))),
+                                DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.bookingStatus?.bookingStatus.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
+                                DataCell(
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                                          onPressed: () {
+                                          },
+                                          child: Icon(Icons.edit_calendar,
+                                              size: 28),
+                                        ),
+                                        Text("|"),
+                                        OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(color: Colors.transparent),
+                                          ),
+                                          onPressed: () {
+
+                                          },
+                                          child: Icon(Icons.delete_forever,
+                                              size: 28),
+                                        ),
+                                      ],
                                     ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.edit_calendar, size: 20),
                                   ),
-                                  const SizedBox(width: 4), // 👈 replace "|" with small spacing
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size(24, 24),
-                                      side: BorderSide.none,
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(Icons.delete_forever, size: 20),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                ),
+                              ],
+                            );
+                          }).toList(),
                         ),
-                      )
+                      ),
+                      PaginationWidget(
+                          currentPage: controller.dashboardTableCurrentPage.value,
+                          totalPages: controller.dashboardTableTotalPages.value,
+                          onPageChange: controller.dashboardTablePageChange),
                     ],
                   ),
                 );
