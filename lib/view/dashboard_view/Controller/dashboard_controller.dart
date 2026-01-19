@@ -335,8 +335,6 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
 
-  RxBool getPickupTwoWayAddressesLoader = true.obs;
-  RxBool getDropTwoWayAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
 

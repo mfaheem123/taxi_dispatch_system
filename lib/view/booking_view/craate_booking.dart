@@ -24,13 +24,16 @@ import '../../component/suggestion_widget/suggestion_view.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
+import '../../component/time_duration_method.dart';
 import '../../routes/app_pages.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/booking_form_widget.dart';
 import '../dashboard_view/dashboard/map_view_widget.dart';
 import '../dashboard_view/dashboard/shortcut_key_widget.dart';
+import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
+import '../dashboard_view/widgets/fare_configuration.dart';
 import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' as location;
 import '../locations_view/controller/locations_controller.dart';
@@ -54,6 +57,11 @@ class _CreateBookingState extends State<CreateBooking> {
   final FocusNode dropdownFocusNode = FocusNode();
   final FocusNode clearPic = FocusNode();
   final FocusNode clearDrop = FocusNode();
+
+  final FocusNode clearPicTwo = FocusNode();
+  final FocusNode swap2FNTwoWay = FocusNode();
+  final FocusNode swap1FNTwoWay = FocusNode();
+  final FocusNode checkboxFocusReturn = FocusNode();
 
   final List<FocusNode> _focusNodes =
       List.generate(4, (index) => FocusNode()); // 4 icons
@@ -128,7 +136,7 @@ class _CreateBookingState extends State<CreateBooking> {
                   ? maxWidth // full width
                   : isTablet
                       ? maxWidth / 2
-                      : maxWidth / 4;
+                      : maxWidth / 8;
 
               return Center(
                 child: Container(
@@ -271,7 +279,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           FocusTraversalOrder(
                                             order: NumericFocusOrder(1),
                                             child: SizedBox(
-                                              width: fieldWidth,
+                                              width: fieldWidth*2.1,
                                               height: 30,
                                               child: RawKeyboardListener(
                                                 focusNode: controller.pickupKeyboardFocusNode,
@@ -423,7 +431,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     child:
                                                     CustomDropdownField<location.ZoneObject>(
                                                       label: "Select Zone",
-                                                      width: fieldWidth / 2,
+                                                      width: fieldWidth,
                                                       height: 30,
                                                       items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
                                                       value: _controller.zoneValue,
@@ -443,7 +451,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           FocusTraversalOrder(
                                             order: const NumericFocusOrder(3),
                                             child: SizedBox(
-                                              width: fieldWidth / 2,
+                                              width: fieldWidth,
                                               height: 30,
                                               child: CustomTextField(
                                                 controller: TextEditingController(),
@@ -489,7 +497,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             FocusTraversalOrder(
                                               order: const NumericFocusOrder(4),
                                               child: SizedBox(
-                                                width: fieldWidth,
+                                                width: fieldWidth*2.1,
                                                 height: 30,
                                                 child: RawKeyboardListener(
                                                   focusNode: controller
@@ -618,31 +626,42 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                             // Select Plot
                                             SizedBox(width: 35,),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 5),
-                                              child: FocusTraversalOrder(
-                                                order: const NumericFocusOrder(2),
-                                                child: RestrictedDrivers(
-                                                  width: fieldWidth / 3.4,
-                                                  height: 30,
-                                                  padding: 0.0,
-                                                  titleText: "SELECT PLOT",
-                                                  driversList: [
-                                                    "BASE NE7",
-                                                    "WILLESDEN"
-                                                  ],
-                                                ),
-                                              ),
+                                            Obx(
+                                                  () =>
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 15.0),
+                                                    child:
+                                                    FocusTraversalOrder(
+                                                      order:
+                                                      const NumericFocusOrder(5),
+                                                      child:
+                                                      CustomDropdownField<location.ZoneObject>(
+                                                        label: "Select Zone",
+                                                        width: fieldWidth,
+                                                        height: 30,
+                                                        items: _controller.updateDLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                        value: _controller.zoneDValue,
+                                                        itemLabel: (templateList) => templateList.name!,
+                                                        onChanged: (val) {
+                                                          _controller.zoneDValue = val;
+                                                          controller.dashboardDZoneValue = val;
+                                                          controller.update();
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
                                             ),
 
                                             // (3) Pickup notes
                                             SizedBox(width: 60,),
-                                            Padding(
-                                              padding: const EdgeInsets.only(left: 5),
-                                              child: FocusTraversalOrder(
-                                                order: const NumericFocusOrder(3),
+                                            FocusTraversalOrder(
+                                              order: const NumericFocusOrder(6),
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 5),
                                                 child: SizedBox(
-                                                  width: fieldWidth / 2,
+                                                  width: fieldWidth,
                                                   height: 30,
                                                   child: CustomTextField(
                                                     controller: TextEditingController(),
@@ -660,350 +679,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                           ],
                                         ),
                                      ),
-
-                                    if (controller.jourValue == 'W/R') ...[
-                                      SizedBox(
-                                        height: screenHeight * 0.01,
-                                      ),
-                                      SingleChildScrollView(
-                                        scrollDirection: isMobile
-                                            ? Axis.vertical
-                                            : Axis.horizontal,
-                                        child: Flex(
-                                          direction: isMobile
-                                              ? Axis.vertical
-                                              : Axis.horizontal,
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 10),
-                                              child: Text(
-                                                AppText.pick,
-                                                style: mozillaTextSemiBoldText(
-                                                  context: context,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-
-                                            // (1) Pickup textfield
-                                            FocusTraversalOrder(
-                                              order: const NumericFocusOrder(1),
-                                              child: SizedBox(
-                                                width: fieldWidth,
-                                                height: 30,
-                                                child: RawKeyboardListener(
-                                                  focusNode: controller
-                                                      .via1KeyboardFocusNode,
-                                                  onKey: (event) {
-                                                    if (event
-                                                        is RawKeyDownEvent) {
-                                                      if (event.logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .arrowDown &&
-                                                          controller
-                                                                  .highlightedIndex
-                                                                  .value <
-                                                              controller
-                                                                      .suggestions
-                                                                      .length -
-                                                                  1) {
-                                                        controller
-                                                            .highlightedIndex
-                                                            .value++;
-                                                      } else if (event
-                                                                  .logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .arrowUp &&
-                                                          controller
-                                                                  .highlightedIndex
-                                                                  .value >
-                                                              0) {
-                                                        controller
-                                                            .highlightedIndex
-                                                            .value--;
-                                                      } else if (event
-                                                              .logicalKey ==
-                                                          LogicalKeyboardKey
-                                                              .enter) {
-                                                        final selected = controller
-                                                                .suggestions[
-                                                            controller
-                                                                .highlightedIndex
-                                                                .value];
-                                                        // controller
-                                                        //     .selectSuggestion(selected);
-                                                      }
-                                                    }
-                                                  },
-                                                  child: CustomTextField(
-                                                    key: controller.via1FieldKey,
-                                                    controller: controller
-                                                        .viaLocation1Controller,
-                                                    focusNode: controller
-                                                        .via1TextFieldFocusNode,
-                                                    hintText: 'PICKUP LOCATION',
-                                                    borderRadius: 4,
-                                                    prefixIcon: const Icon(
-                                                      Icons.location_pin,
-                                                      color: Colors.red,
-                                                      size: 20,
-                                                    ),
-                                                    textInputAction:
-                                                        TextInputAction.next,
-                                                    onTap: () {
-                                                      shortCutKeyValue.value =
-                                                          "formKey";
-                                                    },
-                                                    onSubmitted: (_) =>
-                                                        FocusScope.of(context)
-                                                            .nextFocus(),
-                                                    suffixIcon: KbdActivatable(
-                                                      focusNode: swap1FN,
-                                                      onActivate: () {
-                                                        String tempPic = controller
-                                                            .viaLocation1Controller
-                                                            .text;
-                                                        String tempDrop = controller
-                                                            .viaLocation2Controller
-                                                            .text;
-                                                        controller
-                                                            .viaLocation1Controller
-                                                            .text = tempDrop;
-                                                        controller
-                                                            .viaLocation2Controller
-                                                            .text = tempPic;
-                                                        controller.update();
-                                                      },
-                                                      child: const Icon(
-                                                          Icons.swap_vert,
-                                                          color:
-                                                              Color(0xFF575797),
-                                                          size: 20),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-
-                                            SizedBox(
-                                                width: isMobile ? 0 : 10,
-                                                height: isMobile ? 10 : 0),
-
-                                            // (2) Select plot button
-                                            FocusTraversalOrder(
-                                              order: const NumericFocusOrder(2),
-                                              child: RestrictedDrivers(
-                                                width: fieldWidth,
-                                                height: 30,
-                                                padding: 0.0,
-                                                titleText: "SELECT PLOT",
-                                                driversList: [
-                                                  "BASE NE7",
-                                                  "WILLESDEN"
-                                                ],
-                                              ),
-                                            ),
-
-                                            SizedBox(
-                                                width: isMobile ? 0 : 10,
-                                                height: isMobile ? 10 : 0),
-
-                                            // (3) Pickup notes
-                                            FocusTraversalOrder(
-                                              order: const NumericFocusOrder(3),
-                                              child: SizedBox(
-                                                width: fieldWidth,
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  controller:
-                                                      TextEditingController(),
-                                                  hintText: "PICKUP NOTES",
-                                                  borderRadius: 6,
-                                                  textInputAction:
-                                                      TextInputAction.next,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .nextFocus(),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-
-                                      SizedBox(height: screenHeight * 0.019),
-
-                                      // ================= DROPOFF ROW =================
-                                      SingleChildScrollView(
-                                        scrollDirection: isMobile
-                                            ? Axis.vertical
-                                            : Axis.horizontal,
-                                        child: Flex(
-                                          direction: isMobile
-                                              ? Axis.vertical
-                                              : Axis.horizontal,
-                                          mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 10),
-                                              child: Text(
-                                                AppText.drop,
-                                                style: mozillaTextSemiBoldText(
-                                                  context: context,
-                                                  fontSize: 13,
-                                                ),
-                                              ),
-                                            ),
-
-                                            // (4) Dropoff textfield
-                                            FocusTraversalOrder(
-                                                order: const NumericFocusOrder(4),
-                                                child: SizedBox(
-                                                  width: fieldWidth,
-                                                  height: 30,
-                                                  child: RawKeyboardListener(
-                                                    focusNode: controller
-                                                        .via2KeyboardFocusNode,
-                                                    onKey: (event) {
-                                                      if (event
-                                                          is RawKeyDownEvent) {
-                                                        if (event.logicalKey ==
-                                                                LogicalKeyboardKey
-                                                                    .arrowDown &&
-                                                            controller
-                                                                    .highlightedIndex
-                                                                    .value <
-                                                                controller
-                                                                        .suggestions
-                                                                        .length -
-                                                                    1) {
-                                                          controller
-                                                              .highlightedIndex
-                                                              .value++;
-                                                        } else if (event
-                                                                    .logicalKey ==
-                                                                LogicalKeyboardKey
-                                                                    .arrowUp &&
-                                                            controller
-                                                                    .highlightedIndex
-                                                                    .value >
-                                                                0) {
-                                                          controller
-                                                              .highlightedIndex
-                                                              .value--;
-                                                        } else if (event
-                                                                .logicalKey ==
-                                                            LogicalKeyboardKey
-                                                                .enter) {
-                                                          final selected = controller
-                                                              .suggestions[controller
-                                                                  .highlightedIndex
-                                                                  .value]
-                                                              .name;
-                                                          controller
-                                                              .selectSuggestion(
-                                                                  selected);
-                                                        }
-                                                      }
-                                                    },
-                                                    child: CustomTextField(
-                                                      key: controller.via2FieldKey,
-                                                      controller: controller
-                                                          .viaLocation2Controller,
-                                                      focusNode: controller
-                                                          .dropOffTextFieldFocusNode,
-                                                      hintText: 'DROP LOCATION',
-                                                      borderRadius: 4,
-                                                      prefixIcon: const Icon(
-                                                        Icons.location_pin,
-                                                        color: Colors.red,
-                                                        size: 20,
-                                                      ),
-                                                      textInputAction:
-                                                          TextInputAction.next,
-                                                      onSubmitted: (_) =>
-                                                          FocusScope.of(context)
-                                                              .nextFocus(),
-                                                      suffixIcon: KbdActivatable(
-                                                        focusNode: swap2FN,
-                                                        onActivate: () {
-                                                          String tempPic = controller
-                                                              .viaLocation1Controller
-                                                              .text;
-                                                          String tempDrop = controller
-                                                              .viaLocation2Controller
-                                                              .text;
-                                                          controller
-                                                              .viaLocation1Controller
-                                                              .text = tempDrop;
-                                                          controller
-                                                              .viaLocation2Controller
-                                                              .text = tempPic;
-                                                          controller.update();
-                                                        },
-                                                        child: const Icon(
-                                                            Icons.swap_vert,
-                                                            color:
-                                                                Color(0xFF575797),
-                                                            size: 20),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-
-
-                                            SizedBox(
-                                                width: isMobile ? 0 : 10,
-                                                height: isMobile ? 10 : 0),
-                                            // (5) Select plot button
-                                            FocusTraversalOrder(
-                                              order: const NumericFocusOrder(5),
-                                              child: RestrictedDrivers(
-                                                width: fieldWidth,
-                                                height: 30,
-                                                padding: 0.0,
-                                                titleText: "SELECT PLOT",
-                                                driversList: [
-                                                  "BASE NE7",
-                                                  "WILLESDEN"
-                                                ],
-                                              ),
-                                            ),
-
-                                            SizedBox(
-                                                width: isMobile ? 0 : 10,
-                                                height: isMobile ? 10 : 0),
-
-                                            // (6) Drop notes
-                                            FocusTraversalOrder(
-                                              order: const NumericFocusOrder(6),
-                                              child: SizedBox(
-                                                width: fieldWidth,
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  controller: TextEditingController(),
-                                                  hintText: "DROP NOTES",
-                                                  borderRadius: 6,
-                                                  textInputAction:
-                                                      TextInputAction.done,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .unfocus(),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
                                 SizedBox(height: screenHeight * 0.01),
@@ -1024,30 +699,41 @@ class _CreateBookingState extends State<CreateBooking> {
                                       crossAxisAlignment: WrapCrossAlignment.center,
                                       alignment: WrapAlignment.start,
                                       children: [
-                                        // name fileds
-                                         FocusTraversalOrder(
-                                            order: const NumericFocusOrder(1),
-                                            child: labeledTextField(context, isMobile,
-                                                AppText.name,
-                                                controller.nameController,
-                                                width: fieldWidth / 2.4,
-                                                textInputAction: TextInputAction.next),
-                                          ),
-                                        // email fileds
+
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(2),
+                                          order: NumericFocusOrder(7),
                                           child: labeledTextField(
                                               context,
                                               isMobile,
-                                              AppText.email,
-                                              controller.emailController,
-                                              width: fieldWidth / 2.3,
-                                              textInputAction: TextInputAction.next),
+                                              AppText
+                                                  .name,
+                                              controller
+                                                  .nameController,
+                                              width: fieldWidth,
+                                              textInputAction:
+                                              TextInputAction
+                                                  .next),
                                         ),
+
+                                        // email fileds
+                                        FocusTraversalOrder(
+                                          order: NumericFocusOrder(8),
+                                          child: labeledTextField(
+                                              context,
+                                              isMobile,
+                                              AppText
+                                                  .email,
+                                              controller
+                                                  .emailController,
+                                              width: fieldWidth,
+                                              textInputAction:
+                                              TextInputAction
+                                                  .next),
+                                        ),
+
                                         // Mob
-                                        SizedBox(width: 8),
                                         SizedBox(
-                                          width: fieldWidth/ 1.62,
+                                          width: fieldWidth,
                                           child: Row(
                                             children: [
                                               Padding(
@@ -1055,7 +741,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                               ),
                                               FocusTraversalOrder(
-                                                order: const NumericFocusOrder(15),
+                                                order: const NumericFocusOrder(9),
                                                 child: RawKeyboardListener(
                                                     focusNode: controller.phoneKeyboardFocusNode,
                                                     onKey: (event) {
@@ -1096,7 +782,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                           controller.onPhoneNoChangeHandler(fieldName: "Phone Number",searchingText: v);
                                                         }
                                                       },
-                                                      width: fieldWidth/2.3,
+                                                      width: fieldWidth/1.3,
                                                     )
                                                 ),
                                               ),
@@ -1105,213 +791,1100 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                         // tel fields
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(4),
+                                          order: const NumericFocusOrder(10),
                                           child: labeledTextField(context,
                                               isMobile,
                                               AppText.tel,
                                               controller.telController,
-                                              width: fieldWidth / 1.97,
+                                              width: fieldWidth,
                                               textInputAction: TextInputAction.next,
                                               keyboardType: TextInputType.phone,
                                               formatDigitsOnly: false),
                                         ),
                                         // date fields
                                         FocusTraversalOrder(
-                                          order:  NumericFocusOrder(5),
-                                          child: labeledField(
-                                            context: context,
-                                            isMobile: isMobile,
+                                          order: NumericFocusOrder(11),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
                                             label: AppText.date,
-                                            width: fieldWidth/ 2.4,
+                                            width: fieldWidth,
                                             child: SizedBox(
                                                 height: 30,
-                                                child: KeyboardDatePicker(fontSize: fieldWidth < 400 ? 7 : 12,iconSize:   fieldWidth < 400 ? 10 : 18, )),
+                                                width: fieldWidth,
+                                                child: KeyboardDatePicker(
+                                                  initialDate:
+                                                  controller.pickUpDate ?? DateTime.now(),
+                                                  borderClr:
+                                                  Colors.blue,
+                                                  onChanged:
+                                                      (date) async{
+                                                    controller.pickUpDate = date;
+                                                    final storedTemFare = await getFares(
+                                                        journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                        multiReservationList: controller.multiReservationList,
+                                                        dropOff: controller.pickupController.text,
+                                                        pickup: controller.dropOffController.text,
+                                                        miles: controller.totalDistance.value,
+                                                        dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                        pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                        pickupTime: controller.pickUpTimeController.text,
+                                                        vehicleTypeId: controller.selectVehicleValue!.id
+                                                    );
+                                                    controller.fixedFare.value = storedTemFare;
+                                                    controller.update();
+                                                  },
+                                                  onSubmitted:
+                                                      (date) {
+                                                    // jab user enter press kare
+                                                    print("User pressed enter: $date");
+                                                  },
+                                                )),
                                           ),
                                         ),
+
                                         // (6) Time
-                                        SizedBox(width: 2),
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(6),
-                                          child: labeledField(
-                                            context: context,
-                                            isMobile: isMobile,
+                                          order:
+                                          const NumericFocusOrder(
+                                              12),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
                                             label: AppText.time,
-                                            width: fieldWidth / 2.3,
+                                            width:
+                                            fieldWidth,
                                             child: SizedBox(
                                                 height: 30,
-                                                child: CustomTimePicker()),
+                                                child: CustomTimePicker(
+                                                  controller:
+                                                  controller.pickUpTimeController, // optional
+                                                  onTimeSelected:
+                                                      (time) async{
+                                                    controller.pickUpTimeController.text = time;
+                                                    final storedTemFare = await getFares(
+                                                        journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                        multiReservationList: controller.multiReservationList,
+                                                        dropOff: controller.pickupController.text,
+                                                        pickup: controller.dropOffController.text,
+                                                        miles: controller.totalDistance.value,
+                                                        dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                        pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                        pickupTime: controller.pickUpTimeController.text,
+                                                        vehicleTypeId: controller.selectVehicleValue!.id
+                                                    );
+                                                    controller.fixedFare.value = storedTemFare;
+                                                    setState(() {
+                                                      print(controller.pickUpTimeController.text);
+                                                    });
+                                                  },
+                                                )),
                                           ),
                                         ),
+
                                         // (7) Lead (mins)
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10),
-                                          child: FocusTraversalOrder(
-                                            order: const NumericFocusOrder(7),
-                                            child: labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                              label: AppText.lead,
-                                              width: fieldWidth / 2.3,
-                                              child: SizedBox(
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "MINS",
-                                                  controller: controller.minController,
-                                                  borderRadius: 4,
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly
-                                                  ],
-                                                  keyboardType: TextInputType.number,
-                                                  textInputAction: TextInputAction.next,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .nextFocus(),
-                                                ),
+                                        FocusTraversalOrder(
+                                          order:
+                                          const NumericFocusOrder(
+                                              13),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
+                                            label: AppText.lead,
+                                            width: fieldWidth,
+                                            child:
+                                            SizedBox(
+                                              height:
+                                              30,
+                                              child:
+                                              CustomTextField(
+                                                hintText:
+                                                "MINS",
+                                                controller:
+                                                controller.minController,
+                                                borderRadius:
+                                                4,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly
+                                                ],
+                                                keyboardType:
+                                                TextInputType.number,
+                                                textInputAction:
+                                                TextInputAction.next,
+                                                onSubmitted:
+                                                    (_) =>
+                                                    FocusScope.of(context).nextFocus(),
                                               ),
                                             ),
                                           ),
                                         ),
                                         // (8) Journey dropdown (O/W, R/N, W/R)
-                                        SizedBox(width: 65),
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(8),
-                                          child: RestrictedDrivers(
-                                            width: fieldWidth / 2.92,
-                                            height: 30,
-                                            padding: 0.0,
-                                            titleText: "SELECT PLOT",
-                                            driversList: [
-                                              'DEMO COMPANY 01',
-                                              'DEMO COMPANY 02',
-                                            ],
-                                          ),
-                                        ),
-                                        // (9) Driver dropdown
-                                        FocusTraversalOrder(
-                                          order: const NumericFocusOrder(9),
-                                          child: labeledField(
-                                            context: context,
-                                            isMobile: isMobile,
-                                            label: AppText.drv,
-                                            width: fieldWidth / 2.3,
-                                            child: Container(
-                                              height: 30,
-                                              decoration: BoxDecoration(
+                                          order:
+                                          const NumericFocusOrder(
+                                              14),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
+                                            label: AppText
+                                                .jour,
+                                            width: fieldWidth,
+                                            heights: 33,
+                                            child:
+
+                                            Container(
+
+                                              // height: 35,
+                                              decoration:
+                                              BoxDecoration(
+
                                                 borderRadius:
-                                                    BorderRadius.circular(6),
+                                                BorderRadius.circular(6),
                                                 border: Border.all(
-                                                    color: DynamicColors.primaryClr,
+                                                    color:
+                                                    DynamicColors.primaryClr,
                                                     width: 1.2),
                                               ),
-                                              child: // (8) Journey dropdown (O/W, R/N, W/R)
-                                                  RestrictedDrivers(
-                                                width: fieldWidth / 2.3,
-                                                height: 30,
-                                                padding: 0.0,
-                                                titleText: controller.drvValue,
-                                                driversList: [
-                                                  "25 GEORGE HAMPTON",
-                                                  "26 PAUL DOUBLEDAY",
-                                                  "27 RICHARD HARDWICK",
-                                                  "28 LANRE OKERJO",
-                                                ],
+                                              child: DropdownButtonFormField<
+                                                  JourneyTypeObject>(
+                                                decoration:
+                                                const InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(),
+                                                  isDense:
+                                                  true,
+                                                ),
+                                                value: controller
+                                                    .selectJourneyTypeValue,
+                                                items: controller
+                                                    .dashboardAllData!
+                                                    .journeyTypes!
+                                                    .map((journey) =>
+                                                    DropdownMenuItem<JourneyTypeObject>(
+                                                      value: journey,
+                                                      child: Text(
+                                                        journey.journeyType ?? "",
+                                                        style: mozillaTextRegularText(
+                                                          fontSize: 12,
+                                                          color: DynamicColors.textClr,
+                                                        ),
+                                                      ),
+                                                    ))
+                                                    .toList(),
+                                                onChanged:
+
+                                                    (v) async{
+
+                                                  // O/W, R/N, W/R
+                                                  final storedTemFare = await getFares(
+                                                      multiReservationList: controller.multiReservationList,
+                                                      // day: ,
+                                                      dropOff: controller.pickupController.text,
+                                                      pickup: controller.dropOffController.text,
+                                                      miles: controller.totalDistance.value,
+                                                      journeyTypeId: v!.id,
+                                                      dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                      pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                      pickupTime: controller.pickUpTimeController.text,
+                                                      vehicleTypeId: controller.selectVehicleValue!.id,
+                                                      partingCharges: controller.partingChargesController.text,
+                                                      congestionCharges: controller.congestionChargesController.text,
+                                                      meetGreet: controller.meetGreetController.text,
+                                                      waitingCharges: controller.waitingChargesController.text,
+                                                      extraDropCharges: controller.extraDropChargesController.text,
+                                                      creditCardCharges: controller.creditCardChargesController.text,
+                                                      companyPrice: controller.companyPriceController.text,
+                                                      returnCompanyPrice: controller.returnCompanyPriceController.text
+                                                  );
+
+                                                  controller.fixedFare.value = storedTemFare;
+
+
+                                                  if (v.journeyType ==
+                                                      "r/n") {
+                                                    controller.jourValue =
+                                                    'W/R';
+                                                  } else {
+                                                    controller.jourValue =
+                                                    null;
+                                                  }
+                                                  controller.selectJourneyTypeValue =
+                                                      v;
+                                                  controller.update();
+                                                },
                                               ),
                                             ),
                                           ),
                                         ),
-                                        // (10) Fare (Slugg)
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 8),
-                                          child: FocusTraversalOrder(
-                                            order: const NumericFocusOrder(10),
-                                            child: labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                              label: AppText.fare,
-                                              width: fieldWidth / 2.3,
+
+                                        // (9) Driver dropdown
+                                        if (controller
+                                            .jourValue ==
+                                            'W/R') ...[
+                                          SizedBox(
+                                            height:
+                                            screenHeight *
+                                                0.01,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets
+                                                .symmetric(
+                                                horizontal:
+                                                0.0),
+                                            child: Row(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .only(
+                                                        right: 15),
+                                                    child:
+                                                    Text(
+                                                      AppText.pick,
+                                                      style:
+                                                      mozillaTextSemiBoldText(
+                                                        context: context,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                // (1) Pickup textfield
+                                                FocusTraversalOrder(
+                                                  order:
+                                                  const NumericFocusOrder(21),
+                                                  child:
+                                                  SizedBox(
+                                                    width:fieldWidth*2.1,
+                                                    height:
+                                                    30,
+                                                    child:
+                                                    RawKeyboardListener(
+                                                      focusNode: controller.pickupTwoWayKeyboardFocusNode,
+                                                      onKey: (event) {
+                                                        if (event is RawKeyDownEvent) {
+                                                          if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
+                                                            controller.highlightedIndex.value++;
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
+                                                            controller.highlightedIndex.value--;
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                                            final selected = controller.suggestions[controller.highlightedIndex.value].name;
+                                                            controller.selectSuggestion(selected);
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
+                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                                          }
+                                                        }
+                                                      },
+                                                      child: CustomTextField(
+                                                        key: controller.pickupTwoWayFieldKey,
+                                                        controller: controller.pickupTwoWayController,
+                                                        focusNode: controller.pickupTwoTextFieldFocusNode,
+                                                        hintText: 'PICKUP LOCATION',
+                                                        borderRadius: 4,
+                                                        prefixIcon: const Icon(
+                                                          Icons.location_pin,
+                                                          color: Colors.red,
+                                                          size: 20,
+                                                        ),
+                                                        textInputAction: TextInputAction.next,
+                                                        onTap: () {
+                                                          shortCutKeyValue.value = "PICKUP Two Way LOCATION";
+                                                        },
+                                                        onChanged: (v) {
+                                                          controller.onChangeHandler(fieldName: "PICKUP TWO WAY LOCATION", searchingText: v);
+                                                        },
+                                                        onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                        suffixIcon: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.end,
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            controller.pickupTwoWayController.text.isEmpty
+                                                                ? SizedBox.shrink()
+                                                                : KbdActivatable(
+                                                              focusNode: clearPicTwo,
+                                                              onActivate: () {
+                                                                FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
+                                                                controller.markers.clear();
+                                                                controller.polyLineMarkerInfo.clear();
+                                                                controller.pickupTwoWayController.clear();
+                                                                controller.dropOffTwoWayController.clear();
+
+                                                                controller.polylinePoints.clear();
+                                                                controller.fetchRouteFromOSRM();
+                                                                controller.fixedFare.value = "0";
+                                                                controller.totalDistance.value = "0";
+                                                                controller.totalTimeDuration.value = "0";
+                                                                controller.update();
+
+                                                                // controller.fetchRouteFromOSRM();
+                                                              },
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: DynamicColors.redClr,
+                                                                size: 15,
+                                                              ),
+                                                            ),
+                                                            KbdActivatable(
+                                                              focusNode: swap1FNTwoWay,
+                                                              onActivate: () {
+                                                                String tempPic = controller.pickupTwoWayController.text;
+                                                                String tempDrop = controller.dropOffTwoWayController.text;
+                                                                controller.pickupTwoWayController.text = tempDrop;
+                                                                controller.dropOffTwoWayController.text = tempPic;
+                                                                controller.update();
+                                                              },
+                                                              child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                // Select Zone
+                                                Obx(
+                                                      () =>
+                                                      Padding(
+                                                        padding:
+                                                        const EdgeInsets.symmetric(horizontal: 17.0),
+                                                        child:
+                                                        FocusTraversalOrder(
+                                                          order: const NumericFocusOrder(22),
+                                                          child: CustomDropdownField<location.ZoneObject>(
+                                                            label: "Select Zone",
+                                                            width: fieldWidth,
+                                                            height: 30,
+                                                            items: _controller.updateRNLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                            value: _controller.RNzoneValue,
+                                                            itemLabel: (templateList) => templateList.name!,
+                                                            onChanged: (val) {
+                                                              _controller.RNzoneValue = val;
+                                                              controller.dashboardRNZoneValue = val;
+                                                              controller.update();
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                ),
+                                                SizedBox(width: 12),
+                                                // (3) Pickup notes
+                                                FocusTraversalOrder(
+                                                  order:
+                                                  const NumericFocusOrder(23),
+                                                  child:
+                                                  SizedBox(
+                                                    width:
+                                                    fieldWidth,
+                                                    height:
+                                                    30,
+                                                    child:
+                                                    CustomTextField(
+                                                      controller: controller.pickUpNoteController,
+                                                      hintText: "PICKUP NOTES",
+                                                      borderRadius: 6,
+                                                      textInputAction: TextInputAction.next,
+                                                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets
+                                                .symmetric(
+                                                horizontal:
+                                                0.0),
+                                            child: Row(
+                                              children: [
+                                                Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .only(
+                                                        right: 10),
+                                                    child:
+                                                    Text(
+                                                      AppText.drop,
+                                                      style:
+                                                      mozillaTextSemiBoldText(
+                                                        context: context,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                // (1) Pickup textfield
+                                                // (4) Dropoff textfield
+                                                FocusTraversalOrder(
+                                                  order:
+                                                  const NumericFocusOrder(24),
+                                                  child:
+                                                  SizedBox(
+                                                    width: fieldWidth*2.1,
+                                                    height:
+                                                    30,
+                                                    child:
+                                                    RawKeyboardListener(
+                                                      focusNode: controller.dropOffTwoDayKeyboardFocusNode,
+                                                      onKey: (event) {
+                                                        if (event is RawKeyDownEvent) {
+                                                          if (event.logicalKey == LogicalKeyboardKey.arrowDown && controller.highlightedIndex.value < controller.suggestions.length - 1) {
+                                                            controller.highlightedIndex.value++;
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp && controller.highlightedIndex.value > 0) {
+                                                            controller.highlightedIndex.value--;
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                                                            final selected = controller.suggestions[controller.highlightedIndex.value].name;
+                                                            controller.selectSuggestion(selected);
+                                                          } else if (event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.tab) {
+                                                            FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                                                          }
+                                                        }
+                                                      },
+                                                      child: CustomTextField(
+                                                        key: controller.dropOffTwoFieldKey,
+                                                        controller: controller.dropOffTwoWayController,
+                                                        focusNode: controller.dropOffTwoWayTextFieldFocusNode,
+                                                        hintText: 'DROP LOCATION',
+                                                        onTap: () {
+                                                          shortCutKeyValue.value = "DROP TWO WAY LOCATION";
+                                                        },
+                                                        borderRadius: 4,
+                                                        onChanged: (v) {
+                                                          controller.onChangeHandler(fieldName: "DROP TWO WAY LOCATION", searchingText: v);
+                                                        },
+                                                        prefixIcon: const Icon(
+                                                          Icons.location_pin,
+                                                          color: Colors.red,
+                                                          size: 20,
+                                                        ),
+                                                        textInputAction: TextInputAction.next,
+                                                        onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                        suffixIcon: Row(
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          mainAxisAlignment: MainAxisAlignment.end,
+                                                          children: [
+                                                            controller.dropOffTwoWayController.text.isEmpty
+                                                                ? SizedBox.shrink()
+                                                                : KbdActivatable(
+                                                              focusNode: clearDrop,
+                                                              onActivate: () {
+
+                                                                FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
+
+                                                                controller.dropOffTwoWayController.clear();
+                                                                controller.markers.clear();
+                                                                controller.polyLineMarkerInfo.clear();
+                                                                controller.pickupController.clear();
+                                                                controller.polylinePoints.clear();
+                                                                controller.fetchRouteFromOSRM();
+                                                                controller.fixedFare.value = "0";
+                                                                controller.totalDistance.value = "0";
+                                                                controller.totalTimeDuration.value = "0";
+                                                                controller.update();
+                                                              },
+                                                              child: Icon(
+                                                                Icons.close,
+                                                                color: DynamicColors.redClr,
+                                                                size: 15,
+                                                              ),
+                                                            ),
+                                                            KbdActivatable(
+                                                              focusNode: swap2FNTwoWay,
+                                                              onActivate: () {
+                                                                String tempPic = controller.pickupTwoWayController.text;
+                                                                String tempDrop = controller.dropOffTwoWayController.text;
+                                                                controller.pickupTwoWayController.text = tempDrop;
+                                                                controller.dropOffTwoWayController.text = tempPic;
+                                                                controller.update();
+                                                              },
+                                                              child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                Obx(
+                                                      () =>
+                                                      Padding(
+                                                        padding:
+                                                        const EdgeInsets.symmetric(horizontal: 17.0),
+                                                        child:
+                                                        FocusTraversalOrder(
+                                                          order: const NumericFocusOrder(22),
+                                                          child: CustomDropdownField<location.ZoneObject>(
+                                                            label: "Select Zone",
+                                                            width: fieldWidth,
+                                                            height: 30,
+                                                            items: _controller.updateRN1LocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                                            value: _controller.RN1zoneValue,
+                                                            itemLabel: (templateList) => templateList.name!,
+                                                            onChanged: (val) {
+                                                              _controller.RN1zoneValue = val;
+                                                              controller.dashboardRN1ZoneValue = val;
+                                                              controller.update();
+                                                            },
+                                                          ),
+                                                        ),
+                                                      ),
+                                                ),
+                                                SizedBox(width: 15),
+                                                // (3) Pickup notes
+                                                FocusTraversalOrder(
+                                                  order:
+                                                  const NumericFocusOrder(26),
+                                                  child:
+                                                  SizedBox(
+                                                    width:
+                                                    fieldWidth,
+                                                    height:
+                                                    30,
+                                                    child:
+                                                    CustomTextField(
+                                                      controller: controller.dropUpNoteController,
+                                                      hintText: "DROP NOTES",
+                                                      borderRadius: 6,
+                                                      textInputAction: TextInputAction.next,
+                                                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                27),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label: "R/${AppText.date}",
+                                              width:
+                                              fieldWidth,
                                               child: SizedBox(
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "Slugg",
-                                                  controller: controller.slugController,
-                                                  borderRadius: 6,
+                                                  height: 30,
+                                                  child: KeyboardDatePicker(
+                                                    initialDate:
+                                                    controller.pickUpDateReturn ?? DateTime.now(),
+                                                    borderClr:
+                                                    Colors.blue,
+                                                    onChanged:
+                                                        (date) {
+                                                      controller.pickUpDateReturn =
+                                                          date;
+                                                      controller.update();
+                                                    },
+                                                    onSubmitted:
+                                                        (date) {
+                                                      // jab user enter press kare
+                                                      print("User pressed enter: $date");
+                                                    },
+                                                  )),
+                                            ),
+                                          ),
+                                          // (6) Time
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                28),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label: "R/${AppText.time}",
+                                              width:
+                                              fieldWidth,
+                                              child: SizedBox(
+                                                  height: 30,
+                                                  child: CustomTimePicker(
+                                                    controller:
+                                                    controller.pickUpTimeControllerReturn, // optional
+                                                    onTimeSelected:
+                                                        (time) {
+                                                      controller.pickUpTimeControllerReturn.text =
+                                                          time;
+                                                      setState(() {
+                                                      });
+                                                    },
+                                                  )),
+                                            ),
+                                          ) ,
+                                          // (7) Lead (mins)
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                29),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile: isMobile,
+                                              label: "R/${AppText.lead}",
+                                              width: fieldWidth,
+                                              child:
+                                              SizedBox(
+                                                height:
+                                                30,
+                                                child:
+                                                CustomTextField(
+                                                  hintText:
+                                                  "MINS",
+                                                  controller:
+                                                  controller.minControllerReturn,
+                                                  borderRadius:
+                                                  4,
+                                                  inputFormatters: [
+                                                    FilteringTextInputFormatter
+                                                        .digitsOnly
+                                                  ],
+                                                  keyboardType:
+                                                  TextInputType.number,
+                                                  textInputAction:
+                                                  TextInputAction.next,
+                                                  onSubmitted:
+                                                      (_) =>
+                                                      FocusScope.of(context).nextFocus(),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                30),
+                                            child:
+                                            SizedBox(
+                                              width: fieldWidth,
+                                              // height: 50 ,
+                                              // width: fieldWidth/6,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  RawKeyboardListener(
+                                                    focusNode: checkboxFocusReturn,
+                                                    onKey: (event) {
+                                                      if (event is RawKeyDownEvent &&
+                                                          (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
+                                                        setState(() {
+                                                          // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                                        });
+                                                      }
+                                                    },
+
+                                                    child:
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(left: 55),
+                                                      child: Checkbox(
+                                                        activeColor:
+                                                        DynamicColors.primaryClr,
+                                                        value: controller.addReturnFare.value,
+                                                        onChanged:
+                                                            (v) {
+                                                          // controller.smsCheckbox.value = v!;
+                                                          // controller.update();
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "ADD RETURN FARE",
+                                                    style: mozillaTextSemiBoldText(
+                                                        context: context,
+                                                        fontSize: 13),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                31),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label: "R/${AppText.fare}",
+                                              width:
+                                              fieldWidth,
+                                              child:
+                                              SizedBox(
+                                                height:
+                                                30,
+                                                child:
+                                                CustomTextField(
+                                                  hintText:
+                                                  "Slugg",
+                                                  controller:
+                                                  controller.slugControllerReturn,
+                                                  borderRadius:
+                                                  6,
                                                   inputFormatters: [
                                                     FilteringTextInputFormatter
                                                         .digitsOnly,
-                                                    LengthLimitingTextInputFormatter(6),
+                                                    LengthLimitingTextInputFormatter(
+                                                        6),
                                                   ],
-                                                  keyboardType: TextInputType.number,
-                                                  textInputAction: TextInputAction.next,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .nextFocus(),
+                                                  keyboardType:
+                                                  TextInputType.number,
+                                                  textInputAction:
+                                                  TextInputAction.next,
+                                                  onSubmitted:
+                                                      (_) =>
+                                                      FocusScope.of(context).nextFocus(),
                                                 ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                32),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label: "R/${AppText.veh} ",
+                                              width:
+                                              fieldWidth,
+                                              heights: 32,
+                                              child:
+                                              Container(
+                                                // height: 35,
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                      color:
+                                                      DynamicColors.primaryClr,
+                                                      width: 1.2),
+                                                ),
+                                                child: DropdownButtonFormField<
+                                                    DashboardVehicleTypeObject>(
+                                                  decoration:
+                                                  const InputDecoration(
+                                                    border:
+                                                    OutlineInputBorder(),
+                                                    isDense:
+                                                    true,
+                                                  ),
+                                                  value: controller.selectVehicleValueReturn,
+                                                  items: controller
+                                                      .dashboardAllData!
+                                                      .vehicleTypes!
+                                                      .map((vehicle) =>
+                                                      DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                        value: vehicle,
+                                                        child: Text(
+                                                          vehicle.name ?? "",
+                                                          style: mozillaTextRegularText(
+                                                            fontSize: 12,
+                                                            color: DynamicColors.textClr,
+                                                          ),
+                                                        ),
+                                                      ))
+                                                      .toList(),
+                                                  onChanged:
+                                                      (v) async {
+                                                    controller.selectVehicleValueReturn =
+                                                        v;
+
+                                                    final fare =
+                                                    await getActiveFareForVehicle(
+                                                      controller.dashboardAllData!.fareConfigurations!,
+                                                      controller.selectVehicleValue!.id!,
+                                                    );
+                                                    if (fare !=
+                                                        null) {
+                                                      print(
+                                                        'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                      );
+
+                                                      double
+                                                      inttt =
+                                                      (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+
+                                                      controller.fixedFare.value =
+                                                          (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                    } else {
+                                                      print('No active fare found for this vehicle');
+                                                    }
+                                                    controller
+                                                        .update();
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          FocusTraversalOrder(
+                                            order:
+                                            const NumericFocusOrder(
+                                                33),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label: "R/${AppText.drv} ",
+                                              width:
+                                              fieldWidth,
+                                              heights:
+                                              32,
+                                              child:
+                                              Container(
+                                                // height: 35,
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                      color: DynamicColors.primaryClr,
+                                                      width: 1.2),
+                                                ),
+                                                child: DropdownButtonFormField<
+                                                    DashboardDriverObject>(
+                                                  decoration:
+                                                  const InputDecoration(
+                                                    border:
+                                                    OutlineInputBorder(),
+                                                    isDense:
+                                                    true,
+                                                  ),
+                                                  value:
+                                                  controller.selectDriverValueReturn,
+                                                  items: controller
+                                                      .dashboardAllData!
+                                                      .drivers!
+                                                      .map((driver) => DropdownMenuItem<DashboardDriverObject>(
+                                                    value: driver,
+                                                    child: Text(
+                                                      driver.name ?? "",
+                                                      style: mozillaTextRegularText(
+                                                        fontSize: 12,
+                                                        color: DynamicColors.textClr,
+                                                      ),
+                                                    ),
+                                                  ))
+                                                      .toList(),
+                                                  onChanged:
+                                                      (v) {
+                                                    controller.selectDriverValueReturn = v;
+                                                    controller.update();
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+
+                                        // (10) Fare (Slugg)
+                                        FocusTraversalOrder(
+                                          order:
+                                          NumericFocusOrder(controller.jourValue == 'W/R'?  34:21),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
+                                            label: AppText
+                                                .fare,
+                                            width:
+                                            fieldWidth,
+                                            child:
+                                            SizedBox(
+                                              height:
+                                              35,
+                                              child:
+                                              CustomTextField(
+                                                hintText:
+                                                "Slugg",
+                                                controller:
+                                                controller.slugController,
+                                                borderRadius:
+                                                6,
+                                                inputFormatters: [
+                                                  FilteringTextInputFormatter
+                                                      .digitsOnly,
+                                                  LengthLimitingTextInputFormatter(
+                                                      6),
+                                                ],
+                                                keyboardType:
+                                                TextInputType.number,
+                                                textInputAction:
+                                                TextInputAction.next,
+                                                onSubmitted:
+                                                    (_) =>
+                                                    FocusScope.of(context).nextFocus(),
                                               ),
                                             ),
                                           ),
                                         ),
                                         // (11) Account
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 15),
+                                          padding: const EdgeInsets.only(left: 2),
                                           child: FocusTraversalOrder(
-                                            order: const NumericFocusOrder(11),
-                                            child: labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                              label: "${AppText.acc} ",
-                                              width: fieldWidth / 2.3,
-                                              child: SizedBox(
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "SELECT ACCOUNT",
-                                                  controller:
-                                                      controller.accountNoController,
-                                                  borderRadius: 6,
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly,
-                                                    LengthLimitingTextInputFormatter(6),
-                                                  ],
-                                                  keyboardType: TextInputType.number,
-                                                  textInputAction: TextInputAction.next,
-                                                  onSubmitted: (_) =>
-                                                      FocusScope.of(context)
-                                                          .nextFocus(),
+                                            order:
+                                            NumericFocusOrder(controller.jourValue == 'W/R'?35: 22),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label:
+                                              "${AppText.acc}  ",
+                                              width:
+                                              fieldWidth,
+                                              heights: 32,
+                                              child:
+                                              Container(
+                                                // height: 35,
+                                                decoration:
+                                                BoxDecoration(
+                                                  borderRadius:
+                                                  BorderRadius.circular(6),
+                                                  border: Border.all(
+                                                      color:
+                                                      DynamicColors.primaryClr,
+                                                      width: 1.2),
+                                                ),
+                                                child: DropdownButtonFormField<
+                                                    DashboardAccountObject>(
+                                                  decoration:
+                                                  const InputDecoration(
+                                                    border:
+                                                    OutlineInputBorder(),
+                                                    isDense:
+                                                    true,
+                                                  ),
+                                                  value: controller
+                                                      .selectAccountValue,
+                                                  items: controller.dashboardAccountData ==
+                                                      null
+                                                      ? []
+                                                      : controller.dashboardAccountData!.accounts!
+                                                      .map((account) => DropdownMenuItem<DashboardAccountObject>(
+                                                    value: account,
+                                                    child: Text(
+                                                      account.name ?? "",
+                                                      style: mozillaTextRegularText(
+                                                        fontSize: 12,
+                                                        color: DynamicColors.textClr,
+                                                      ),
+                                                    ),
+                                                  ))
+                                                      .toList(),
+                                                  onChanged:
+                                                      (v) {
+                                                    controller.selectAccountValue =
+                                                        v;
+                                                    controller.selectDepartmentData =
+                                                    null;
+                                                    controller
+                                                        .update();
+                                                  },
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
+
                                         // (12) Pay dropdown
                                         Padding(
-                                          padding: const EdgeInsets.only(left: 40),
+                                          padding: EdgeInsets.only(left: controller.jourValue == 'W/R'? 18:38),
                                           child: FocusTraversalOrder(
-                                            order: const NumericFocusOrder(12),
-                                            child: labeledField(
-                                              context: context,
-                                              isMobile: isMobile,
-                                              label: AppText.pay,
-                                              width: fieldWidth / 1.95,
-                                              child: Container(
-                                                height: 30,
-                                                decoration: BoxDecoration(
+                                            order:
+                                            NumericFocusOrder(controller.jourValue == 'W/R'?36: 23),
+                                            child:
+                                            labeledField(
+                                              context:
+                                              context,
+                                              isMobile:
+                                              isMobile,
+                                              label:
+                                              AppText
+                                                  .pay,
+                                              width: fieldWidth,
+                                              heights: 32,
+                                              child:
+                                              Container(
+                                                // height: 35,
+                                                decoration:
+                                                BoxDecoration(
                                                   borderRadius:
-                                                      BorderRadius.circular(4),
+                                                  BorderRadius.circular(6),
                                                   border: Border.all(
-                                                      color: DynamicColors.primaryClr),
+                                                      color:
+                                                      DynamicColors.primaryClr,
+                                                      width: 1.2),
                                                 ),
-                                                child: RestrictedDrivers(
-                                                  width: fieldWidth / 2.3,
-                                                  height: 30,
-                                                  padding: 0.0,
-                                                  titleText: controller.payValue,
-                                                  driversList: [
-                                                    "CASH",
-                                                    "CREDIT CARD",
-                                                    "ACCOUNT",
-                                                    "CREDIT CARD PAID"
-                                                  ],
+                                                child: DropdownButtonFormField<
+                                                    PaymentTypeObject>(
+                                                  decoration:
+                                                  const InputDecoration(
+                                                    border:
+                                                    OutlineInputBorder(),
+                                                    isDense:
+                                                    true,
+                                                  ),
+
+                                                  value: controller
+                                                      .selectPaymentTypeValue,
+                                                  items: controller
+                                                      .dashboardAllData!
+                                                      .paymentTypes!
+                                                      .map((payment) =>
+                                                      DropdownMenuItem<PaymentTypeObject>(
+                                                        value: payment,
+                                                        child: Text(
+                                                          payment.name ?? "",
+                                                          style: mozillaTextRegularText(
+                                                            fontSize: 12,
+                                                            color: DynamicColors.textClr,
+                                                          ),
+                                                        ),
+                                                      ))
+                                                      .toList(),
+                                                  onChanged:
+                                                      (v) {
+                                                    controller.selectPaymentTypeValue =
+                                                        v;
+                                                    controller
+                                                        .update();
+                                                  },
                                                 ),
                                               ),
                                             ),
@@ -1319,50 +1892,180 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                         // (12) Pay dropdown
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(9),
-                                          child: labeledField(
-                                            context: context,
-                                            isMobile: isMobile,
-                                            label: AppText.veh,
-                                            width: fieldWidth / 2.3,
-                                            child: Container(
-                                              height: 30,
-                                              decoration: BoxDecoration(
+                                          order:
+                                          NumericFocusOrder(controller.jourValue == 'W/R'?38:25),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
+                                            label:
+                                            AppText
+                                                .veh,
+                                            width:
+                                            fieldWidth,
+                                            heights: 32,
+                                            child:
+                                            Container(
+                                              // height: 35,
+                                              decoration:
+                                              BoxDecoration(
                                                 borderRadius:
-                                                    BorderRadius.circular(6),
+                                                BorderRadius.circular(6),
                                                 border: Border.all(
-                                                    color: DynamicColors.primaryClr,
+                                                    color:
+                                                    DynamicColors.primaryClr,
                                                     width: 1.2),
                                               ),
-                                              child: // (8) Journey dropdown (O/W, R/N, W/R)
-                                                  RestrictedDrivers(
-                                                width: fieldWidth / 2.3,
-                                                height: 30,
-                                                padding: 0.0,
-                                                titleText: controller.vehKey,
-                                                driversList: [
-                                                  "SALOON",
-                                                  "ESTATE",
-                                                  "MPV6",
-                                                  "MPV PLUS",
-                                                  "MPV7",
-                                                  "MPV EXECUTIVE",
-                                                  "MINI BUS"
-                                                ],
+                                              child: DropdownButtonFormField<
+                                                  DashboardVehicleTypeObject>(
+                                                decoration:
+                                                const InputDecoration(
+                                                  border:
+                                                  OutlineInputBorder(),
+                                                  isDense:
+                                                  true,
+                                                ),
+                                                value: controller
+                                                    .selectVehicleValue,
+                                                items: controller
+                                                    .dashboardAllData!
+                                                    .vehicleTypes!
+                                                    .map((vehicle) =>
+                                                    DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                      value: vehicle,
+                                                      child: Text(
+                                                        vehicle.name ?? "",
+                                                        style: mozillaTextRegularText(
+                                                          fontSize: 12,
+                                                          color: DynamicColors.textClr,
+                                                        ),
+                                                      ),
+                                                    ))
+                                                    .toList(),
+                                                onChanged:
+                                                    (v) async {
+                                                  controller.selectVehicleValue = v;
+                                                  final storedTemFare = await getFares(
+                                                      journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                      multiReservationList: controller.multiReservationList,
+                                                      dropOff: controller.pickupController.text,
+                                                      pickup: controller.dropOffController.text,
+                                                      miles: controller.totalDistance.value,
+                                                      dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
+                                                      pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                      pickupTime: controller.pickUpTimeController.text,
+                                                      vehicleTypeId: controller.selectVehicleValue!.id
+                                                  );
+                                                  controller.fixedFare.value = storedTemFare;
+
+                                                  // final fare =
+                                                  // await getActiveFareForVehicle(
+                                                  //   controller.dashboardAllData!.fareConfigurations!,
+                                                  //   controller.selectVehicleValue!.id!,
+                                                  // );
+                                                  // if (fare !=
+                                                  //     null) {
+                                                  //   print(
+                                                  //     'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                  //   );
+                                                  //
+                                                  //   double
+                                                  //   inttt =
+                                                  //   (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                  //
+                                                  //   controller.fixedFare.value =
+                                                  //       (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                  // } else {
+                                                  //   print('No active fare found for this vehicle');
+                                                  // }
+                                                  controller
+                                                      .update();
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        controller.selectAccountValue ==
+                                            null
+                                            ? SizedBox
+                                            .shrink()
+                                            : FocusTraversalOrder(
+                                          order: NumericFocusOrder(controller.jourValue == 'W/R'?39:26),
+                                          child:
+                                          labeledField(
+                                            context:
+                                            context,
+                                            isMobile:
+                                            isMobile,
+                                            label:
+                                            "DEPT",
+                                            width: fieldWidth,
+                                            heights:
+                                            35,
+                                            child:
+                                            Container(
+                                              // height: 35,
+                                              decoration:
+                                              BoxDecoration(
+                                                borderRadius: BorderRadius.circular(6),
+                                                border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                              ),
+                                              child:
+                                              DropdownButtonFormField<DepartmentObject>(
+                                                decoration: const InputDecoration(
+                                                  border: OutlineInputBorder(),
+                                                  isDense: true,
+                                                ),
+                                                value: controller.selectDepartmentData,
+                                                items: controller.selectAccountValue == null
+                                                    ? []
+                                                    : controller.selectAccountValue!.departments!
+                                                    .map((department) => DropdownMenuItem<DepartmentObject>(
+                                                  value: department,
+                                                  child: Text(
+                                                    department.name ?? "",
+                                                    style: mozillaTextRegularText(
+                                                      fontSize: 12,
+                                                      color: DynamicColors.textClr,
+                                                    ),
+                                                  ),
+                                                ))
+                                                    .toList(),
+                                                onChanged: (v) {
+                                                  controller.selectDepartmentData = v;
+                                                  controller.update();
+                                                },
                                               ),
                                             ),
                                           ),
                                         ),
                                         // Switch + Quotation
-                                        DynamicSwitch(
-                                          controller: controller.switchController,
-                                          activeColor: DynamicColors.primaryClr,
-                                          inactiveColor: DynamicColors.gryClr,
-                                          focusScale: 1.5,
-                                          onToggle: () {
-                                            print("Switch toggled: ${controller.switchController.value}");
-                                          },
+                                        FocusTraversalOrder(
+                                          order:
+                                          NumericFocusOrder(controller.jourValue == 'W/R'?40:27),
+                                          child:
+                                          DynamicSwitch(
+                                            controller:
+                                            controller
+                                                .switchController,
+                                            activeColor:
+                                            DynamicColors
+                                                .primaryClr,
+                                            inactiveColor:
+                                            DynamicColors
+                                                .gryClr,
+                                            focusScale:
+                                            1.5,
+                                            onToggle:
+                                                () {
+                                              print(
+                                                  "Switch toggled: ${controller.switchController.value}");
+                                            },
+                                          ),
                                         ),
+
                                         Text(
                                           AppText.quotation,
                                           style: mozillaTextSemiBoldText(
@@ -1370,88 +2073,101 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
 
                                         // SMS Checkbox
-                                        SizedBox(
-                                          // width: fieldWidth/6,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              RawKeyboardListener(
-                                                focusNode: checkboxFocus,
-                                                onKey: (event) {
-                                                  if (event is RawKeyDownEvent &&
-                                                      (event.logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .enter ||
-                                                          event.logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .space)) {
-                                                    setState(() {
-                                                      // controller.smsCheckbox.value =
-                                                      //     !controller.smsCheckbox
-                                                      //         .value; // ✅ toggle
-                                                    });
-                                                  }
-                                                },
-                                                child: Checkbox(
-                                                  activeColor:
-                                                      DynamicColors.primaryClr,
-                                                  value: controller.smsCheckbox.value,
-                                                  onChanged: (v) {
-                                                    // controller.smsCheckbox.value = v!;
-                                                    // controller.update();
+                                        FocusTraversalOrder(
+                                          order:
+                                          NumericFocusOrder(
+                                              controller.jourValue == 'W/R'?41:28),
+                                          child:
+                                          SizedBox(
+                                            // width: fieldWidth/6,
+                                            child: Row(
+                                              mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                              children: [
+                                                RawKeyboardListener(
+                                                  focusNode:
+                                                  checkboxFocus,
+                                                  onKey:
+                                                      (event) {
+                                                    if (event is RawKeyDownEvent &&
+                                                        (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
+                                                      setState(() {
+                                                        // controller.smsCheckbox.value = !controller.smsCheckbox.value; // ✅ toggle
+                                                      });
+                                                    }
                                                   },
+                                                  child:
+                                                  Checkbox(
+                                                    activeColor:
+                                                    DynamicColors.primaryClr,
+                                                    value:
+                                                    controller.smsCheckbox.value,
+                                                    onChanged:
+                                                        (v) {
+                                                      // controller.smsCheckbox.value = v!;
+                                                      // controller.update();
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                AppText.sms,
-                                                style: mozillaTextSemiBoldText(
-                                                    context: context, fontSize: 13),
-                                              ),
-                                            ],
+                                                Text(
+                                                  AppText
+                                                      .sms,
+                                                  style: mozillaTextSemiBoldText(
+                                                      context: context,
+                                                      fontSize: 13),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-
                                         // Email Checkbox
-                                        SizedBox(
-                                          // width: fieldWidth/5,
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              RawKeyboardListener(
-                                                focusNode: emailFocus,
-                                                onKey: (event) {
-                                                  if (event is RawKeyDownEvent &&
-                                                      (event.logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .enter ||
-                                                          event.logicalKey ==
-                                                              LogicalKeyboardKey
-                                                                  .space)) {
-                                                    setState(() {
-                                                      controller.emailCheckbox.value =
-                                                          !controller.emailCheckbox
-                                                              .value; // ✅ toggle
-                                                    });
-                                                  }
-                                                },
-                                                child: Checkbox(
-                                                  activeColor:
-                                                      DynamicColors.primaryClr,
-                                                  value:
-                                                      controller.emailCheckbox.value,
-                                                  onChanged: (v) {
-                                                    controller.emailCheckbox.value =
-                                                        v!;
-                                                    controller.update();
+                                        FocusTraversalOrder(
+                                          order:
+                                          NumericFocusOrder(
+                                              controller.jourValue == 'W/R'?42:    29),
+                                          child:
+                                          SizedBox(
+                                            // width: fieldWidth/5,
+                                            child: Row(
+                                              mainAxisSize:
+                                              MainAxisSize
+                                                  .min,
+                                              children: [
+                                                RawKeyboardListener(
+                                                  focusNode:
+                                                  emailFocus,
+                                                  onKey:
+                                                      (event) {
+                                                    if (event is RawKeyDownEvent &&
+                                                        (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.space)) {
+                                                      setState(() {
+                                                        controller.emailCheckbox.value = !controller.emailCheckbox.value; // ✅ toggle
+                                                      });
+                                                    }
                                                   },
+                                                  child:
+                                                  Checkbox(
+                                                    activeColor:
+                                                    DynamicColors.primaryClr,
+                                                    value:
+                                                    controller.emailCheckbox.value,
+                                                    onChanged:
+                                                        (v) {
+                                                      controller.emailCheckbox.value = v!;
+                                                      controller.update();
+                                                    },
+                                                  ),
                                                 ),
-                                              ),
-                                              Text(
-                                                AppText.email,
-                                                style: mozillaTextSemiBoldText(
-                                                    context: context, fontSize: 13),
-                                              ),
-                                            ],
+                                                Text(
+                                                  AppText
+                                                      .email,
+                                                  style: mozillaTextSemiBoldText(
+                                                      context: context,
+                                                      fontSize: 13),
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
 
@@ -1459,63 +2175,99 @@ class _CreateBookingState extends State<CreateBooking> {
                                         SizedBox(
                                           // width: fieldWidth/2.0,
                                           child: Row(
-                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisSize:
+                                            MainAxisSize
+                                                .min,
                                             children: [
-                                              SizedBox(
-                                                width: 60,
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "Pass",
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly,
-                                                    LengthLimitingTextInputFormatter(
-                                                        2),
-                                                  ],
-                                                  keyboardType: TextInputType.number,
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(horizontal: 4),
-                                                  controller: TextEditingController(),
-                                                  borderRadius: 4,
+                                              FocusTraversalOrder(
+                                                order: NumericFocusOrder(
+                                                    controller.jourValue == 'W/R'?43: 30),
+                                                child:
+                                                SizedBox(
+                                                  width:
+                                                  60,
+                                                  height:
+                                                  30,
+                                                  child:
+                                                  CustomTextField(
+                                                    hintText:
+                                                    "Pass",
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter.digitsOnly,
+                                                      LengthLimitingTextInputFormatter(2),
+                                                    ],
+                                                    keyboardType:
+                                                    TextInputType.number,
+                                                    contentPadding:
+                                                    EdgeInsets.symmetric(horizontal: 4),
+                                                    controller:
+                                                    controller.passController,
+                                                    borderRadius:
+                                                    4,
+                                                  ),
                                                 ),
                                               ),
-                                              SizedBox(width: 8),
+
                                               SizedBox(
-                                                width: 60,
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "Lugg",
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly,
-                                                    LengthLimitingTextInputFormatter(2),
-                                                  ],
-                                                  keyboardType: TextInputType.number,
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 4),
-                                                  controller: TextEditingController(),
-                                                  borderRadius: 4,
+                                                  width:
+                                                  15),
+                                              FocusTraversalOrder(
+                                                order: NumericFocusOrder(
+                                                    controller.jourValue == 'W/R'?44:31),
+                                                child:
+                                                SizedBox(
+                                                  width:
+                                                  60,
+                                                  height:
+                                                  30,
+                                                  child:
+                                                  CustomTextField(
+                                                    hintText:
+                                                    "Lugg",
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter.digitsOnly,
+                                                      LengthLimitingTextInputFormatter(2),
+                                                    ],
+                                                    keyboardType:
+                                                    TextInputType.number,
+                                                    contentPadding:
+                                                    EdgeInsets.symmetric(horizontal: 4),
+                                                    controller:
+                                                    controller.luggController,
+                                                    borderRadius:
+                                                    4,
+                                                  ),
                                                 ),
                                               ),
-                                              SizedBox(width: 8),
                                               SizedBox(
-                                                width: 60,
-                                                height: 30,
-                                                child: CustomTextField(
-                                                  hintText: "Slugg",
-                                                  inputFormatters: [
-                                                    FilteringTextInputFormatter
-                                                        .digitsOnly,
-                                                    LengthLimitingTextInputFormatter(
-                                                        2),
-                                                  ],
-                                                  keyboardType: TextInputType.number,
-                                                  contentPadding:
-                                                      EdgeInsets.symmetric(
-                                                          horizontal: 4),
-                                                  controller: TextEditingController(),
-                                                  borderRadius: 4,
+                                                  width:
+                                                  15),
+                                              FocusTraversalOrder(
+                                                order: NumericFocusOrder(
+                                                    controller.jourValue == 'W/R'?45:32),
+                                                child:
+                                                SizedBox(
+                                                  width:
+                                                  60,
+                                                  height:
+                                                  30,
+                                                  child:
+                                                  CustomTextField(
+                                                    hintText:
+                                                    "Slugg",
+                                                    inputFormatters: [
+                                                      FilteringTextInputFormatter.digitsOnly,
+                                                      LengthLimitingTextInputFormatter(2),
+                                                    ],
+                                                    keyboardType:
+                                                    TextInputType.number,
+                                                    contentPadding:
+                                                    EdgeInsets.symmetric(horizontal: 4),
+                                                    controller:
+                                                    controller.sluggController,
+                                                    borderRadius:
+                                                    4,
+                                                  ),
                                                 ),
                                               ),
                                             ],
