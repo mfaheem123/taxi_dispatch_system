@@ -341,23 +341,6 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                             ),
                                           ),
                                         ),
-                                        Obx(
-                                              () => controller
-                                              .getPickupAddressesLoader.value
-                                              ? SizedBox.shrink()
-                                              : Padding(
-                                            padding:
-                                            const EdgeInsets.all(3.0),
-                                            child: SizedBox(
-                                              width: 20,
-                                              height: 20,
-                                              child: Center(
-                                                child:
-                                                CircularProgressIndicator(),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
 
                                         // (1) Pickup textfield
                                         FocusTraversalOrder(
@@ -558,21 +541,6 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                             style: mozillaTextSemiBoldText(
                                               context: context,
                                               fontSize: 13,
-                                            ),
-                                          ),
-                                        ),
-
-
-                                        Obx(
-                                              () => controller
-                                              .getDropAddressesLoader.value
-                                              ? SizedBox.shrink()
-                                              : SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: Center(
-                                              child:
-                                              CircularProgressIndicator(),
                                             ),
                                           ),
                                         ),

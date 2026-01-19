@@ -276,18 +276,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-                                                    Obx(
-                                                          () => controller.getPickupAddressesLoader.value
-                                                          ? SizedBox.shrink()
-                                                          : Padding(
-                                                        padding: const EdgeInsets.all(3.0),
-                                                        child: SizedBox(
-                                                          width: 20,
-                                                          height: 20,
-                                                          child: CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                    ),
                                                     // (1) Pickup textfield
                                                     FocusTraversalOrder(
                                                       order:
@@ -421,8 +409,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     ),
 
                                                     // (3) Pickup notes
-                                      Obx( () => Padding(
-                                                      padding:  EdgeInsets.only(left: controller.getPickupAddressesLoader.value == false? 0:15 ),
+                                                    Padding(
+                                                      padding:  EdgeInsets.only(left:0),
                                                       child: FocusTraversalOrder(
                                                         order:
                                                         const NumericFocusOrder(3),
@@ -448,7 +436,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ),
                                                     ),
-                                      ),
                                                   ],
                                                 ),
                                               ),
@@ -484,18 +471,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                     // (1) Pickup textfield
-                                                    Obx(
-                                                          () => controller.getDropAddressesLoader.value
-                                                          ? SizedBox.shrink()
-                                                          : Padding(
-                                                        padding: const EdgeInsets.all(3.0),
-                                                        child: SizedBox(
-                                                          width: 20,
-                                                          height: 20,
-                                                          child: CircularProgressIndicator(),
-                                                        ),
-                                                      ),
-                                                    ),
 
                                                     // (4) Dropoff textfield
                                                     FocusTraversalOrder(

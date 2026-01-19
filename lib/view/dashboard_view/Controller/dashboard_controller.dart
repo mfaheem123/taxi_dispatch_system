@@ -335,17 +335,10 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
 
-  RxBool getPickupAddressesLoader = true.obs;
-  RxBool getDropAddressesLoader = true.obs;
   RxBool getPickupTwoWayAddressesLoader = true.obs;
   RxBool getDropTwoWayAddressesLoader = true.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
-    if (fieldsName == "PICKUP LOCATION") {
-      getPickupAddressesLoader(false);
-    } else if (fieldsName == "PICKUP LOCATION") {
-      getDropAddressesLoader(false);
-    }
 
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
@@ -365,7 +358,6 @@ class DashboardController extends GetxController {
               .where((loc) => loc.name!.toUpperCase().contains(searchingText.toLowerCase())).toList();
           highlightedIndex.value = 0;
         }
-        getPickupAddressesLoader(true);
         update();
       } else {
         openStreetMapApi(searchingText: searchingText.toString().toUpperCase());
@@ -414,8 +406,6 @@ class DashboardController extends GetxController {
             .toList(),
       );
       updateKeys();
-      getPickupAddressesLoader(true);
-      getDropAddressesLoader(true);
       update();
     }
   }
