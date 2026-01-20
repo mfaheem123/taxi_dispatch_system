@@ -94,7 +94,7 @@ class BookingController extends GetxController{
     );
     if(response.statusCode == 200){
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
-      preBookingTotalPages.value = dashboardTableModelData!.total ?? 1;
+      preBookingTotalPages.value = dashboardTableModelData!.totalPages ?? 1;
       preBookingAll.value = dashboardTableModelData?.data ?? [];
       preBookingFiltered.value = preBookingAll;
       update();
@@ -112,10 +112,9 @@ class BookingController extends GetxController{
     preBookingCurrentPage.value = 1;
     getDashboardTableData();
   }
+
+
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> web Booking
-
-
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Pre Booking
 
   RxList<BookingObjectData> webBookingAll = <BookingObjectData>[].obs;
   RxList<BookingObjectData> webBookingFiltered = <BookingObjectData>[].obs;
@@ -141,50 +140,120 @@ class BookingController extends GetxController{
   final webvehicleTypeName = TextEditingController();
   final websubsidiary = TextEditingController();
 
-
   final int webBookId = 7;
   getWebBookingData() async {
-    preBookingLoad(true);
+    webBookingLoad(true);
     var response = await Api().get("bookings/getbytabs/${webBookId}",
         queryParameters: {
-          "page": preBookingCurrentPage.value,
-          "limit": dashboardTableLimit,
-          "reference_number": referenceNumber.text,
-          "pickup_date": pickupDate.text,
-          "pickup_time": pickupTime.text,
-          "name": name.text,
-          "pickup": pickup.text,
-          "dropoff": dropOff.text,
-          "account_name": accountName.text,
-          "driver_name": driverName.text,
-          "payment_type": paymentType.text,
-          "vehicle_type_name": vehicleTypeName.text,
-          "notes": notes.text,
-          "fares": fares.text,
-          "booking_status": bookingStatus.text,
-          "journey_type": journeyType.text,
-          "subsidiary" : subsidiary.text,
+          "page": webBookingCurrentPage.value,
+          "limit": webBookingLimit,
+          "reference_number": webreferenceNumber.text,
+          "pickup_date": webpickupDate.text,
+          "pickup_time": webpickupTime.text,
+          "name": webname.text,
+          "pickup": webpickup.text,
+          "dropoff": webdropOff.text,
+          "account_name": webaccountName.text,
+          "driver_name": webdriverName.text,
+          "payment_type": webpaymentType.text,
+          "vehicle_type_name": webvehicleTypeName.text,
+          "notes": webnotes.text,
+          "fares": webfares.text,
+          "booking_status": webbookingStatus.text,
+          "journey_type": webjourneyType.text,
+          "subsidiary" : websubsidiary.text,
         }
     );
     if(response.statusCode == 200){
       webBookingModelData = DashboardTableModel.fromJson(response.data);
-      webBookingTotalPages.value = webBookingModelData!.total ?? 1;
+      webBookingTotalPages.value = webBookingModelData?.totalPages ?? 1;
       webBookingAll.value = webBookingModelData?.data ?? [];
       webBookingFiltered.value = webBookingAll;
-      update();
       webBookingLoad(false);
+      update();
 
     }
   }
-
   void webBookingPageChange(int page) {
     webBookingCurrentPage.value = page;
     getWebBookingData();
   }
-
   void webBookingonSearch() {
     webBookingCurrentPage.value = 1;
     getWebBookingData();
+  }
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Completed Bookings
+
+  RxList<BookingObjectData> completedBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> completedBookingFiltered = <BookingObjectData>[].obs;
+  DashboardTableModel? completedBookingModelData;
+  RxBool completedBookingLoad = false.obs;
+  RxInt completedBookingCurrentPage = 1.obs;
+  RxInt completedBookingTotalPages = 1.obs;
+  final int completedBookingLimit = 20;
+
+  final completedreferenceNumber = TextEditingController();
+  final completedpickupDate = TextEditingController();
+  final completedpickupTime = TextEditingController();
+  final completedname = TextEditingController();
+  final completedpickup = TextEditingController();
+  final completeddropOff = TextEditingController();
+  final completedaccountName = TextEditingController();
+  final completeddriverName = TextEditingController();
+  final completednotes = TextEditingController();
+  final completedfares = TextEditingController();
+  final completedbookingStatus = TextEditingController();
+  final completedjourneyType = TextEditingController();
+  final completedpaymentType = TextEditingController();
+  final completedvehicleTypeName = TextEditingController();
+  final completedsubsidiary = TextEditingController();
+
+  final int completedBookId = 4;
+  getcompletedBookingData() async {
+    webBookingLoad(true);
+    var response = await Api().get("bookings/getbytabs/${completedBookId}",
+        queryParameters: {
+          "page": completedBookingCurrentPage.value,
+          "limit": completedBookingLimit,
+          "reference_number": completedreferenceNumber.text,
+          "pickup_date": completedpickupDate.text,
+          "pickup_time": completedpickupTime.text,
+          "name": completedname.text,
+          "pickup": completedpickup.text,
+          "dropoff": completeddropOff.text,
+          "account_name": completedaccountName.text,
+          "driver_name": completeddriverName.text,
+          "payment_type": completedpaymentType.text,
+          "vehicle_type_name": completedvehicleTypeName.text,
+          "notes": completednotes.text,
+          "fares": completedfares.text,
+          "booking_status": completedbookingStatus.text,
+          "journey_type": completedjourneyType.text,
+          "subsidiary" : completedsubsidiary.text,
+        }
+    );
+    if(response.statusCode == 200){
+      completedBookingModelData = DashboardTableModel.fromJson(response.data);
+      completedBookingTotalPages.value = completedBookingModelData?.totalPages ?? 1;
+      completedBookingAll.value = completedBookingModelData?.data ?? [];
+      completedBookingFiltered.value = completedBookingAll;
+      completedBookingLoad(false);
+      update();
+    }
+  }
+
+  void completedBookingPageChange(int page) {
+    completedBookingCurrentPage.value = page;
+    getcompletedBookingData();
+  }
+
+  void completedBookingonSearch() {
+    completedBookingCurrentPage.value = 1;
+    getcompletedBookingData();
   }
 
 
