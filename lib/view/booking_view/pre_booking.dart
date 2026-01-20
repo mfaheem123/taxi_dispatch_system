@@ -67,14 +67,20 @@ class _PreBookingState extends State<PreBooking> {
                     ? maxWidth / 2
                     : maxWidth / 4;
 
-                return Container(
+                return
+                  controller.preBookingLoad == true? Center(child: CircularProgressIndicator()):
+
+                  Container(
                   color: const Color(0xFFF7F9FC),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text(AppText.preBookings+" (10)",
+                          Text(AppText.preBookings+ " (${
+                                controller.dashboardTableModelData?.total
+                                    .toString()
+                              })",
                             style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 17
@@ -87,19 +93,31 @@ class _PreBookingState extends State<PreBooking> {
                            Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: CustomButton(
+                        onTap: (){
+                          controller.getDashboardTableData();
+                          print("Refresh-------------------");
+                        },
                         height: 40,
                         width: 80,
                         verticalPadding: 0.0,
                         borderRadius: 4,
-                        widget: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                          child: Icon(
-                            Icons.refresh,
-                            color: DynamicColors.whiteClr,
-                            size: 25,
-                          ),
-                        ),
+                widget: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
+                child: controller.preBookingLoad == true
+                ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                color: DynamicColors.whiteClr,
+                strokeWidth: 2,
+                ),
+                )
+                    : Icon(
+                Icons.refresh,
+                color: DynamicColors.whiteClr,
+                size: 25,
+                ),
+                      ),
                       ),
                     ),
                         ],
@@ -113,21 +131,99 @@ class _PreBookingState extends State<PreBooking> {
                         child:
                         DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: "SOURCE"),
-                            buildHeaderWithSearch(title: "REF #"),
-                            buildHeaderWithSearch(title: "DATETIME"),
-                            buildHeaderWithSearch(title: "CUSTOMER"),
-                            buildHeaderWithSearch(title: "PICKUP"),
-                            buildHeaderWithSearch(title: "DROPOFF"),
-                            buildHeaderWithSearch(title: "ACC"),
-                            buildHeaderWithSearch(title: "DRV"),
-                            buildHeaderWithSearch(title: "P/T"),
-                            buildHeaderWithSearch(title: "VEH"),
-                            buildHeaderWithSearch(title: "NOT"),
-                            buildHeaderWithSearch(title: "FARE"),
-                            buildHeaderWithSearch(title: "STATUS"),
-                            buildHeaderWithSearch(title: "J/T"),
-                            buildHeaderWithSearch(title: "SUBS"),
+                            buildHeaderWithSearch(title: "REF #",
+                              onChanged: (v) {
+                                controller.referenceNumber.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "DATE",
+                              onChanged: (v) {
+                                controller.pickupDate.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "TIME"
+                            ,
+                              onChanged: (v) {
+                                controller.pickupTime.text = v;
+                                controller.onSearchpreBooking();
+                              },
+
+                            ),
+                            buildHeaderWithSearch(title: "CUSTOMER",
+                              onChanged: (v) {
+                                controller.name.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "PICKUP",
+                              onChanged: (v) {
+                                controller.pickup.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "DROPOFF",
+                              onChanged: (v) {
+                                controller.dropOff.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "ACC",
+                              onChanged: (v) {
+                                controller.accountName.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "DRV",
+                              onChanged: (v) {
+                                controller.driverName.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "P/T",
+                              onChanged: (v) {
+                                controller.paymentType.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "VEH",
+                              onChanged: (v) {
+                                controller.vehicleTypeName.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "NOT",
+                              onChanged: (v) {
+                                controller.notes.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "FARE",
+                              onChanged: (v) {
+                                controller.fares.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "STATUS",
+                              onChanged: (v) {
+                                controller.bookingStatus.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "J/T",
+                              onChanged: (v) {
+                                controller.journeyType.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
+                            buildHeaderWithSearch(title: "SUBS",
+
+                              onChanged: (v) {
+                                controller.subsidiary.text = v;
+                                controller.onSearchpreBooking();
+                              },
+                            ),
 
                             buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                           ],
@@ -147,7 +243,26 @@ class _PreBookingState extends State<PreBooking> {
                                 DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
                                 DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
                                 DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.bookingStatus?.bookingStatus.toString() ?? 'N/A'))),
+
+                                DataCell(Center(child:
+
+                                 Container(
+                                                                width: double.infinity,
+                                                                height: double.infinity,
+                                                                alignment: Alignment.center,
+
+                                                                // APPLY YOUR COLOR HERE
+                                                                decoration: BoxDecoration(
+                                                                  color: DynamicColors.statusColor,
+                                                                  // Optional: borderRadius: BorderRadius.circular(2),
+                                                                ),
+                                                                child: Text(
+                                                                  item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                                                                  style: TextStyle(color: DynamicColors.whiteClr),
+                                                                ),
+                                                              ),
+
+                                )),
                                 DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
                                 DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
                                 DataCell(
@@ -183,9 +298,9 @@ class _PreBookingState extends State<PreBooking> {
                         ),
                       ),
                       PaginationWidget(
-                          currentPage: controller.dashboardTableCurrentPage.value,
-                          totalPages: controller.dashboardTableTotalPages.value,
-                          onPageChange: controller.dashboardTablePageChange),
+                          currentPage: controller.preBookingCurrentPage.value,
+                          totalPages: controller.preBookingTotalPages.value,
+                          onPageChange: controller.preBookingPageChange),
                     ],
                   ),
                 );

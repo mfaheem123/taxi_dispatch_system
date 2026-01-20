@@ -343,11 +343,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
                   ),
                 ),
               ),
-              // PaginationWidget(
-              //   currentPage: controller.currentPage.value,
-              //   totalPages: controller.totalPages.value,
-              //   onPageChange: controller.onPageCustomer,
-              // )
+              PaginationWidget(
+                currentPage: controller.currentPage.value,
+                totalPages: controller.totalPages.value,
+                onPageChange: controller.onPageCustomer,
+              )
             ],
           ),
         );
