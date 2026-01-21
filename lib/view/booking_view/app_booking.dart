@@ -37,9 +37,9 @@ class _AppBookingState extends State<AppBooking> {
 
   @override
   Widget build(BuildContext context) {
-    final listToShow = controller.preBookingFiltered.isNotEmpty
-        ? controller.preBookingFiltered
-        : controller.preBookingAll;
+    final listToShow = controller.appBookingFiltered.isNotEmpty
+        ? controller.appBookingFiltered
+        : controller.appBookingAll;
     return GetBuilder<BookingController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -53,7 +53,9 @@ class _AppBookingState extends State<AppBooking> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return Container(
+        return
+          controller.appBookingLoad == true? CircularProgressIndicator():
+          Container(
           color: const Color(0xFFF7F9FC),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,7 +186,7 @@ class _AppBookingState extends State<AppBooking> {
                           controller.appBookingonSearch();
                         },
                       ),
-
+                      buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
                     ],
                     totalRow: listToShow.length,
                     rows: listToShow.map((item) {
@@ -218,30 +220,28 @@ class _AppBookingState extends State<AppBooking> {
                           DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
                           DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
                           DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
-                                    onPressed: () {
-                                    },
-                                    child: Icon(Icons.edit_calendar,
-                                        size: 28),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                                  onPressed: () {
+                                  },
+                                  child: Icon(Icons.edit_calendar,
+                                      size: 28),
+                                ),
+                                Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(color: Colors.transparent),
                                   ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.transparent),
-                                    ),
-                                    onPressed: () {
+                                  onPressed: () {
 
-                                    },
-                                    child: Icon(Icons.delete_forever,
-                                        size: 28),
-                                  ),
-                                ],
-                              ),
+                                  },
+                                  child: Icon(Icons.delete_forever,
+                                      size: 28),
+                                ),
+                              ],
                             ),
                           ),
                         ],

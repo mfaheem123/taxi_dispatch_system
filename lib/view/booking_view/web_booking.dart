@@ -64,7 +64,9 @@ class _WebBookingState extends State<WebBooking> {
                     ? maxWidth / 2
                     : maxWidth / 4;
 
-                return Container(
+                return
+                  controller.webBookingLoad == true? Center(child: CircularProgressIndicator(),):
+                  Container(
                   color: const Color(0xFFF7F9FC),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
