@@ -1,8 +1,10 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -30,10 +32,14 @@ class _MultiBookingState extends State<MultiBooking> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "MultiBooking";
+    controller.getMultiBookingData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final listToShow = controller.multiBookingFiltered.isNotEmpty
+        ? controller.multiBookingFiltered
+        : controller.multiBookingAll;
     return GetBuilder<BookingController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -55,7 +61,7 @@ class _MultiBookingState extends State<MultiBooking> {
               Row(
                 children: [
                   Text(
-                    AppText.multiBookings + " (10)",
+                    AppText.multiBookings + " (${controller.multiBookingModelData?.total.toString()})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
@@ -88,81 +94,103 @@ class _MultiBookingState extends State<MultiBooking> {
               // 📋 Data Table
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: DatatableWidget(
-                  columns: [
-                    buildHeaderWithSearch(title: "SOURCE"),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "CUSTOMER"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "ACC"),
-                    buildHeaderWithSearch(title: "DRV"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "NOT"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "STATUS"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "SUBS"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
-                  ],
-                  totalRow: totalRows,
-                  cells: [
-                    const DataCell(Text("OPT")),
-                    const DataCell(Text("BCB75058")),
-                    const DataCell(Text("09-09-25 07:16")),
-                    const DataCell(Text("09-09-25 07:16")),
-                    const DataCell(Text("NADEEM")),
-                    const DataCell(Text("FLAT 12 BLANDFORD COURT 4-6 BRO")),
-                    const DataCell(Text("NORTHWICK AVENUE HARROW HA3")),
-                    const DataCell(Text("CASH")),
-                    const DataCell(Text("CASH")),
-                    const DataCell(Text("SAL.")),
-                    const DataCell(Text("NOTE")),
-                    const DataCell(Text("£ 0.00")),
-                    const DataCell(Text("WAITING")),
-                    const DataCell(Text("o/w")),
-                    const DataCell(Text("DEMO ACCOUNT")),
-                    DataCell(
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding:
-                                  EdgeInsets.zero, // 👈 remove inner padding
-                              minimumSize:
-                                  Size(24, 24), // 👈 shrink button size
-                              side: BorderSide.none, // 👈 remove border
-                            ),
-                            onPressed: () {
-                                setState(() {
-                                  // _currentPage = CompleteBookingsScreen();
-                                  controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
-                                });
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: DatatableWidget(
+                    columns: [
 
-                            },
-                            child: Icon(Icons.edit_calendar, size: 20),
-                          ),
-                          const SizedBox(
-                              width: 4), // 👈 replace "|" with small spacing
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size(24, 24),
-                              side: BorderSide.none,
-                            ),
-                            onPressed: () {},
-                            child: Icon(Icons.delete_forever, size: 20),
-                          ),
-                        ],
+                      buildHeaderWithSearch(title: "DATETIME",
+                        onChanged: (v) {
+                          controller.multipickupDate.text = v;
+                          controller.multiBookingonSearch();
+                        },
+
                       ),
+
+                      buildHeaderWithSearch(title: "CUSTOMER",
+                        onChanged: (v) {
+                          controller.multiCustomerName.text = v;
+                          controller.multiBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "MOBILE",
+                        onChanged: (v) {
+                          controller.multiMobile.text = v;
+                          controller.multiBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "PICKUP"
+                      , onChanged: (v) {
+                          controller.multipickup.text = v;
+                          controller.multiBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "DROPOFF"
+                        , onChanged: (v) {
+                          controller.multidropOff.text = v;
+                          controller.multiBookingonSearch();
+                        },),
+                      buildHeaderWithSearch(
+                          title: "ACTIONS", removeSearching: true),
+                    ],
+
+        totalRow: listToShow.length,
+        rows: listToShow.map((item) {
+        return DataRow(
+          cells: [
+            DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+            DataCell(Center(child: Text(item.customer.toString() ?? "-"))),
+            DataCell(Center(child: Text( item.mobile ?? "-"))),
+            DataCell(Center(child: Text( item.pickup ?? "-"))),
+            DataCell(Center(child: Text(item.dropoff ?? "-"))),
+            DataCell(
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding:
+                      EdgeInsets.zero, // 👈 remove inner padding
+                      minimumSize:
+                      Size(24, 24), // 👈 shrink button size
+                      side: BorderSide.none, // 👈 remove border
                     ),
-                  ],
+                    onPressed: () {
+                      setState(() {
+                        // _currentPage = CompleteBookingsScreen();
+                        controller.menuBarController.menuBarRefresh(title: "COMPLETE BOOKINGS", pageName: CompleteBookingsScreen());
+                      });
+
+                    },
+                    child: Icon(Icons.edit_calendar, size: 20),
+                  ),
+                  const SizedBox(
+                      width: 4), // 👈 replace "|" with small spacing
+                  OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size(24, 24),
+                      side: BorderSide.none,
+                    ),
+                    onPressed: () {},
+                    child: Icon(Icons.delete_forever, size: 20),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],    );}).toList(),
+
+                  ),
                 ),
-              )
+              ),
+              PaginationWidget(
+                currentPage: controller.multiBookingCurrentPage.value,
+                totalPages: controller.multiBookingTotalPages.value,
+                onPageChange: controller.multiBookingPageChange,),
+
+
             ],
           ),
         );

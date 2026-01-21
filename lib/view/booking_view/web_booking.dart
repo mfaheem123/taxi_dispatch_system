@@ -2,6 +2,7 @@ import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:dashboard_new1/view/booking_view/update_booking.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
@@ -282,172 +283,166 @@ class _WebBookingState extends State<WebBooking> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child:
-                        DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(title: "REF #",
-                              onChanged: (v) {
-                                controller.webreferenceNumber.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "DATE",
-                              onChanged: (v) {
-                                controller.webpickupDate.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "TIME"
-                              ,
-                              onChanged: (v) {
-                                controller.webpickupTime.text = v;
-                                controller.onSearchpreBooking();
-                              },
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: DatatableWidget(
+                            columns: [
+                              buildHeaderWithSearch(title: "REF #",
+                                onChanged: (v) {
+                                  controller.webreferenceNumber.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "DATETIME",
+                                onChanged: (v) {
+                                  controller.webpickupDate.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "CUSTOMER",
+                                onChanged: (v) {
+                                  controller.webname.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "PICKUP",
+                                onChanged: (v) {
+                                  controller.webpickup.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "DROPOFF",
+                                onChanged: (v) {
+                                  controller.webdropOff.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "ACC",
+                                onChanged: (v) {
+                                  controller.webaccountName.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "DRV",
+                                onChanged: (v) {
+                                  controller.webdriverName.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "P/T",
+                                onChanged: (v) {
+                                  controller.webpaymentType.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "VEH",
+                                onChanged: (v) {
+                                  controller.webvehicleTypeName.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "NOT",
+                                onChanged: (v) {
+                                  controller.webnotes.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "FARE",
+                                onChanged: (v) {
+                                  controller.webfares.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "STATUS",
+                                onChanged: (v) {
+                                  controller.webbookingStatus.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "J/T",
+                                onChanged: (v) {
+                                  controller.webjourneyType.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
+                              buildHeaderWithSearch(title: "SUBS",
 
-                            ),
-                            buildHeaderWithSearch(title: "CUSTOMER",
-                              onChanged: (v) {
-                                controller.webname.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "PICKUP",
-                              onChanged: (v) {
-                                controller.webpickup.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "DROPOFF",
-                              onChanged: (v) {
-                                controller.webdropOff.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "ACC",
-                              onChanged: (v) {
-                                controller.webaccountName.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "DRV",
-                              onChanged: (v) {
-                                controller.webdriverName.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "P/T",
-                              onChanged: (v) {
-                                controller.webpaymentType.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "VEH",
-                              onChanged: (v) {
-                                controller.webvehicleTypeName.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "NOT",
-                              onChanged: (v) {
-                                controller.webnotes.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "FARE",
-                              onChanged: (v) {
-                                controller.webfares.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "STATUS",
-                              onChanged: (v) {
-                                controller.webbookingStatus.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "J/T",
-                              onChanged: (v) {
-                                controller.webjourneyType.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
-                            buildHeaderWithSearch(title: "SUBS",
+                                onChanged: (v) {
+                                  controller.websubsidiary.text = v;
+                                  controller.onSearchpreBooking();
+                                },
+                              ),
 
-                              onChanged: (v) {
-                                controller.websubsidiary.text = v;
-                                controller.onSearchpreBooking();
-                              },
-                            ),
+                              buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
+                            ],
+                            totalRow: listToShow.length,
+                            rows: listToShow.map((item) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
+                                  DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+                                  DataCell(Center(child: Text(item.name ?? '—'))),
+                                  DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
 
-                            buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
-                          ],
-                          totalRow: listToShow.length,
-                          rows: listToShow.map((item) {
-                            return DataRow(
-                              cells: [
-                                DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
-                                DataCell(Center(child: Text(item.pickupDate.toString() ))),
-                                DataCell(Center(child: Text(item.pickupTime ?? '—'))),
-                                DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
+                                  DataCell(Center(child:
 
-                                DataCell(Center(child:
+                                  Container(
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                    alignment: Alignment.center,
 
-                                Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  alignment: Alignment.center,
-
-                                  // APPLY YOUR COLOR HERE
-                                  decoration: BoxDecoration(
-                                    color: DynamicColors.statusColor,
-                                    // Optional: borderRadius: BorderRadius.circular(2),
-                                  ),
-                                  child: Text(
-                                    item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
-                                    style: TextStyle(color: DynamicColors.whiteClr),
-                                  ),
-                                ),
-
-                                )),
-                                DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
-                                DataCell(
-                                  Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
-                                          onPressed: () {
-                                          },
-                                          child: Icon(Icons.edit_calendar,
-                                              size: 28),
-                                        ),
-                                        Text("|"),
-                                        OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: Colors.transparent),
-                                          ),
-                                          onPressed: () {
-
-                                          },
-                                          child: Icon(Icons.delete_forever,
-                                              size: 28),
-                                        ),
-                                      ],
+                                    // APPLY YOUR COLOR HERE
+                                    decoration: BoxDecoration(
+                                      color: DynamicColors.statusColor,
+                                      // Optional: borderRadius: BorderRadius.circular(2),
+                                    ),
+                                    child: Text(
+                                      item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                                      style: TextStyle(color: DynamicColors.whiteClr),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+
+                                  )),
+                                  DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
+                                  DataCell(
+                                    Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                                            onPressed: () {
+                                            },
+                                            child: Icon(Icons.edit_calendar,
+                                                size: 28),
+                                          ),
+                                          Text("|"),
+                                          OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              side: BorderSide(color: Colors.transparent),
+                                            ),
+                                            onPressed: () {
+
+                                            },
+                                            child: Icon(Icons.delete_forever,
+                                                size: 28),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
                         ),
                       ),
                       PaginationWidget(

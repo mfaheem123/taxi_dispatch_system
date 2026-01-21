@@ -256,6 +256,136 @@ class BookingController extends GetxController{
     getcompletedBookingData();
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Bookings
+
+  RxList<BookingObjectData> multiBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> multiBookingFiltered = <BookingObjectData>[].obs;
+  DashboardTableModel? multiBookingModelData;
+  RxBool multiBookingLoad = false.obs;
+  RxInt multiBookingCurrentPage = 1.obs;
+  RxInt multiBookingTotalPages = 1.obs;
+  final int multiBookingLimit = 20;
+
+
+  final multipickupDate = TextEditingController();
+  final multipickupTime = TextEditingController();
+  final multiCustomerName = TextEditingController();
+  final multipickup = TextEditingController();
+  final multidropOff = TextEditingController();
+  final multiMobile = TextEditingController();
+
+  final int multiBookId = 9;
+  getMultiBookingData() async {
+    webBookingLoad(true);
+    var response = await Api().get("bookings/getbytabs/${multiBookId}",
+        queryParameters: {
+          "page": multiBookingCurrentPage.value,
+          "limit": multiBookingLimit,
+          "pickup_date": multipickupDate.text,
+          "pickup_time": multipickupTime.text,
+          "customer": multiCustomerName.text,
+          "pickup": multipickup.text,
+          "dropoff": multidropOff.text,
+          "mobile": multiMobile.text,
+        }
+    );
+    if(response.statusCode == 200){
+      multiBookingModelData = DashboardTableModel.fromJson(response.data);
+      multiBookingTotalPages.value = multiBookingModelData?.totalPages ?? 1;
+      multiBookingAll.value = multiBookingModelData?.data ?? [];
+      multiBookingFiltered.value = multiBookingAll;
+      multiBookingLoad(false);
+      update();
+    }
+  }
+
+  void multiBookingPageChange(int page) {
+    multiBookingCurrentPage.value = page;
+    getMultiBookingData();
+  }
+
+  void multiBookingonSearch() {
+    multiBookingCurrentPage.value = 1;
+    getMultiBookingData();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> App Bookings
+
+  RxList<BookingObjectData> appBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> appBookingFiltered = <BookingObjectData>[].obs;
+  DashboardTableModel? appBookingModelData;
+  RxBool appBookingLoad = false.obs;
+  RxInt appBookingCurrentPage = 1.obs;
+  RxInt appBookingTotalPages = 1.obs;
+  final int appBookingLimit = 20;
+
+  final appreferenceNumber = TextEditingController();
+  final apppickupDate = TextEditingController();
+  final apppickupTime = TextEditingController();
+  final appname = TextEditingController();
+  final apppickup = TextEditingController();
+  final appdropOff = TextEditingController();
+  final appaccountName = TextEditingController();
+  final appdriverName = TextEditingController();
+  final appnotes = TextEditingController();
+  final appfares = TextEditingController();
+  final appbookingStatus = TextEditingController();
+  final appjourneyType = TextEditingController();
+  final apppaymentType = TextEditingController();
+  final appvehicleTypeName = TextEditingController();
+  final appsubsidiary = TextEditingController();
+
+
+  final int appBookId = 8;
+  getAppBookingData() async {
+    appBookingLoad(true);
+    var response = await Api().get("bookings/getbytabs/${appBookId}",
+        queryParameters: {
+          "page": appBookingCurrentPage.value,
+          "limit": appBookingLimit,
+          "reference_number": appreferenceNumber.text,
+          "pickup_date": apppickupDate.text,
+          "pickup_time": apppickupTime.text,
+          "name": appname.text,
+          "pickup": apppickup.text,
+          "dropoff": appdropOff.text,
+          "account_name": appaccountName.text,
+          "driver_name": appdriverName.text,
+          "payment_type": apppaymentType.text,
+          "vehicle_type_name": appvehicleTypeName.text,
+          "notes": appnotes.text,
+          "fares": appfares.text,
+          "booking_status": appbookingStatus.text,
+          "journey_type": appjourneyType.text,
+          "subsidiary" : appsubsidiary.text,
+        }
+    );
+    if(response.statusCode == 200){
+      appBookingModelData = DashboardTableModel.fromJson(response.data);
+      appBookingTotalPages.value = appBookingModelData?.totalPages ?? 1;
+      appBookingAll.value = appBookingModelData?.data ?? [];
+      appBookingFiltered.value = appBookingAll;
+      appBookingLoad(false);
+      update();
+    }
+  }
+
+  void appBookingPageChange(int page) {
+    appBookingCurrentPage.value = page;
+    getAppBookingData();
+  }
+
+  void appBookingonSearch() {
+    appBookingCurrentPage.value = 1;
+    getAppBookingData();
+  }
+
+
+
+
+
+
+
 
 
 }

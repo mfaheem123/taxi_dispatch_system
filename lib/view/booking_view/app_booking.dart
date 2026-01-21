@@ -1,8 +1,10 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -29,10 +31,15 @@ class _AppBookingState extends State<AppBooking> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "AppBooking";
+    controller.getAppBookingData();
+
   }
 
   @override
   Widget build(BuildContext context) {
+    final listToShow = controller.preBookingFiltered.isNotEmpty
+        ? controller.preBookingFiltered
+        : controller.preBookingAll;
     return GetBuilder<BookingController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -54,7 +61,7 @@ class _AppBookingState extends State<AppBooking> {
               Row(
                 children: [
                   Text(
-                    AppText.appBookings + " (10)",
+                    AppText.appBookings + " (${controller.appBookingModelData?.total.toString()})",
                     style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800, fontSize: 17),
                   ),
@@ -86,75 +93,167 @@ class _AppBookingState extends State<AppBooking> {
               // 📋 Data Table
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: DatatableWidget(
-                  columns: [
-                    buildHeaderWithSearch(title: "SOURCE"),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "CUSTOMER"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "ACC"),
-                    buildHeaderWithSearch(title: "DRV"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "NOT"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "STATUS"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "SUBS"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
-                  ],
-                  totalRow: totalRows,
-                  cells: [
-                    const DataCell(Text("OPT")),
-                    const DataCell(Text("BCB75058")),
-                    const DataCell(Text("09-09-25 07:16")),
-                    const DataCell(Text("09-09-25 07:16")),
-                    const DataCell(Text("NADEEM")),
-                    const DataCell(Text("FLAT 12 BLANDFORD COURT 4-6 BRO")),
-                    const DataCell(Text("NORTHWICK AVENUE HARROW HA3")),
-                    const DataCell(Text("CASH")),
-                    const DataCell(Text("CASH")),
-                    const DataCell(Text("SAL.")),
-                    const DataCell(Text("NOTE")),
-                    const DataCell(Text("£ 0.00")),
-                    const DataCell(Text("WAITING")),
-                    const DataCell(Text("o/w")),
-                    const DataCell(Text("DEMO ACCOUNT")),
-                    DataCell(
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding:
-                                  EdgeInsets.zero, // 👈 remove inner padding
-                              minimumSize:
-                                  Size(24, 24), // 👈 shrink button size
-                              side: BorderSide.none, // 👈 remove border
+                child:
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(title: "REF #",
+                        onChanged: (v) {
+                          controller.appreferenceNumber.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "DATETIME",
+                        onChanged: (v) {
+                          controller.apppickupDate.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+
+                      buildHeaderWithSearch(title: "CUSTOMER",
+                        onChanged: (v) {
+                          controller.appname.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "PICKUP",
+                        onChanged: (v) {
+                          controller.apppickup.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "DROPOFF",
+                        onChanged: (v) {
+                          controller.appdropOff.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "ACC",
+                        onChanged: (v) {
+                          controller.appaccountName.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "DRV",
+                        onChanged: (v) {
+                          controller.appdriverName.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "P/T",
+                        onChanged: (v) {
+                          controller.apppaymentType.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "VEH",
+                        onChanged: (v) {
+                          controller.appvehicleTypeName.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "NOT",
+                        onChanged: (v) {
+                          controller.appnotes.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "FARE",
+                        onChanged: (v) {
+                          controller.appfares.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "STATUS",
+                        onChanged: (v) {
+                          controller.appbookingStatus.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "J/T",
+                        onChanged: (v) {
+                          controller.appjourneyType.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+                      buildHeaderWithSearch(title: "SUBS",
+
+                        onChanged: (v) {
+                          controller.appsubsidiary.text = v;
+                          controller.appBookingonSearch();
+                        },
+                      ),
+
+                    ],
+                    totalRow: listToShow.length,
+                    rows: listToShow.map((item) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
+                          DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+                          DataCell(Center(child: Text(item.name ?? '—'))),
+                          DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
+                          DataCell(Center(child:
+                          Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: DynamicColors.statusColor),
+                            child: Text(
+                              item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                              style: TextStyle(color: DynamicColors.whiteClr),
                             ),
-                            onPressed: () {},
-                            child: Icon(Icons.edit_calendar, size: 20),
                           ),
-                          const SizedBox(
-                              width: 4), // 👈 replace "|" with small spacing
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              padding: EdgeInsets.zero,
-                              minimumSize: Size(24, 24),
-                              side: BorderSide.none,
+
+                          )),
+                          DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
+                          DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
+                                    onPressed: () {
+                                    },
+                                    child: Icon(Icons.edit_calendar,
+                                        size: 28),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(color: Colors.transparent),
+                                    ),
+                                    onPressed: () {
+
+                                    },
+                                    child: Icon(Icons.delete_forever,
+                                        size: 28),
+                                  ),
+                                ],
+                              ),
                             ),
-                            onPressed: () {},
-                            child: Icon(Icons.delete_forever, size: 20),
                           ),
                         ],
-                      ),
-                    ),
-                  ],
+                      );
+                    }).toList(),
+                  ),
                 ),
-              )
+              ),
+              PaginationWidget(
+                  currentPage: controller.preBookingCurrentPage.value,
+                  totalPages: controller.preBookingTotalPages.value,
+                  onPageChange: controller.preBookingPageChange),
             ],
           ),
         );
