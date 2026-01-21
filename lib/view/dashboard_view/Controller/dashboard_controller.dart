@@ -1300,10 +1300,6 @@ class DashboardController extends GetxController {
       return BotToast.showText(text: "Please select pickup location");
     }
 
-    if(dashboardZoneValue == null){
-      return BotToast.showText(text: "Please select location zone");
-    }
-
     if(dropOffController.text.isEmpty){
       return BotToast.showText(text: "Please select dropoff location");
     }
@@ -1470,7 +1466,6 @@ class DashboardController extends GetxController {
     print(formData);
     var response = await Api().post(formData, "bookings/add");
     if(response.statusCode == 200){
-
       if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){

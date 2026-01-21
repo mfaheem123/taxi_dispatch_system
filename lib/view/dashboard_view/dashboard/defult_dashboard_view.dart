@@ -2638,6 +2638,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   order: NumericFocusOrder(controller.jourValue == 'W/R'?51:38),
                                                   child:
                                                   CustomButton(
+                                                    onTap: (){
+                                                      controller.refreshPostAllFields();
+                                                    },
                                                     btnText:
                                                     "CLEAR [F7]",
                                                     width:

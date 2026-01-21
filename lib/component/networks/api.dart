@@ -11,6 +11,7 @@ import 'package:get/get.dart' as getx;
 import 'package:get_storage/get_storage.dart';
 import '../../routes/app_pages.dart';
 import 'Url.dart';
+import 'dio_service.dart';
 import 'interceptor.dart';
 
 final String baseUrl = Environment().config.baseUrl;
@@ -163,11 +164,11 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
       connectTimeout: Duration(seconds: 50),
       receiveTimeout: Duration(seconds: 50),
     ));
-    dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
-    dio.options.headers['Connection'] = "keep-alive";
+    DioService.dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
+    DioService.dio.options.headers['Connection'] = "keep-alive";
 
     try {
-      var response = await dio.delete(
+      var response = await DioService.dio.delete(
         apiUrl + url,
         options: Options(
           method: 'DELETE',
@@ -224,7 +225,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
     }
 
     try {
-      dynamic response = await Dio().post(fullUrl ?? apiUrl + url,
+      dynamic response = await DioService.dio.post(fullUrl ?? apiUrl + url,
           data: formData,
           options: Options(
             method: "POST",

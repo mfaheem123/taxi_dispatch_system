@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/F8_widget_alert.dart';
@@ -235,6 +236,52 @@ class _CreateBookingState extends State<CreateBooking> {
                                       controller.update();
                                     },
                                   ),
+                                ),
+                              ),
+
+                              SizedBox(
+                                width: 15,
+                              ),
+
+                              Text(
+                                'SUB',
+                                style: TextStyle(
+                                  color: DynamicColors.primaryClr,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              SizedBox(
+                                width: 200,
+                                height: 35,
+                                child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      isDense: true,
+                                      filled: true,
+                                      fillColor: DynamicColors.whiteClr
+                                  ),
+                                  value: controller.selectSubsidiariesValue,
+                                  items: controller.dashboardAllData!
+                                      .subsidiaries!
+                                      .map((subsidiaries) =>
+                                      DropdownMenuItem<DashboardSubsidiaryObject>(
+                                        value: subsidiaries,
+                                        child: Text(subsidiaries.name ?? "",
+                                          style: mozillaTextRegularText(
+                                            fontSize: 12,
+                                            color: DynamicColors.textClr,
+                                          ),
+                                        ),
+                                      ))
+                                      .toList(),
+                                  onChanged: (v) {
+                                    controller.selectSubsidiariesValue = v;
+                                    controller.getAccountData(subsidiariesId: controller.selectSubsidiariesValue!.id);
+                                  },
                                 ),
                               ),
                             ],
@@ -2175,6 +2222,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   value: controller
                                                       .selectDriverValueReturn,
                                                   items: controller
+                                                      .dashboardAllData ==null?[]: controller
                                                       .dashboardAllData!
                                                       .drivers!
                                                       .map((driver) =>
@@ -2209,7 +2257,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           order: NumericFocusOrder(
                                               controller.jourValue == 'W/R'
                                                   ? 28
-                                                  : 21),
+                                                  : 15),
                                           child: labeledField(
                                             context: context,
                                             isMobile: isMobile,
@@ -2250,8 +2298,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                           child: FocusTraversalOrder(
                                             order: NumericFocusOrder(
                                                 controller.jourValue == 'W/R'
-                                                    ? 35
-                                                    : 15),
+                                                    ? 29
+                                                    : 16),
                                             child: labeledField(
                                               context: context,
                                               isMobile: isMobile,
@@ -2323,10 +2371,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                         // (12) Pay dropdown
                                         Padding(
                                           padding: EdgeInsets.only(
-                                              left:
-                                                  controller.jourValue == 'W/R'
-                                                      ? 18
-                                                      : 38),
+                                              left: controller.jourValue == 'W/R'
+                                                  ? 30
+                                                  : 17),
                                           child: FocusTraversalOrder(
                                             order: NumericFocusOrder(
                                                 controller.jourValue == 'W/R'
@@ -2396,8 +2443,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(
                                               controller.jourValue == 'W/R'
-                                                  ? 38
-                                                  : 25),
+                                                  ? 31
+                                                  : 18),
                                           child: labeledField(
                                             context: context,
                                             isMobile: isMobile,
@@ -2509,10 +2556,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                             ? SizedBox.shrink()
                                             : FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue ==
-                                                            'W/R'
-                                                        ? 39
-                                                        : 26),
+                                                    controller.jourValue == 'W/R'
+                                                        ? 32
+                                                        : 19),
                                                 child: labeledField(
                                                   context: context,
                                                   isMobile: isMobile,
@@ -2584,8 +2630,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(
                                               controller.jourValue == 'W/R'
-                                                  ? 40
-                                                  : 27),
+                                                  ? 33
+                                                  : 20),
                                           child: DynamicSwitch(
                                             controller:
                                                 controller.switchController,
@@ -2610,8 +2656,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(
                                               controller.jourValue == 'W/R'
-                                                  ? 41
-                                                  : 28),
+                                                  ? 34
+                                                  : 21),
                                           child: SizedBox(
                                             // width: fieldWidth/6,
                                             child: Row(
@@ -2659,8 +2705,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(
                                               controller.jourValue == 'W/R'
-                                                  ? 42
-                                                  : 29),
+                                                  ? 35
+                                                  : 22),
                                           child: SizedBox(
                                             // width: fieldWidth/5,
                                             child: Row(
@@ -2718,10 +2764,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                             children: [
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue ==
-                                                            'W/R'
-                                                        ? 43
-                                                        : 30),
+                                                    controller.jourValue == 'W/R'
+                                                        ? 36
+                                                        : 23),
                                                 child: SizedBox(
                                                   width: 60,
                                                   height: 30,
@@ -2747,10 +2792,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                               SizedBox(width: 15),
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue ==
-                                                            'W/R'
-                                                        ? 44
-                                                        : 31),
+                                                    controller.jourValue == 'W/R'
+                                                        ? 37
+                                                        : 24),
                                                 child: SizedBox(
                                                   width: 60,
                                                   height: 30,
@@ -2776,10 +2820,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                               SizedBox(width: 15),
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue ==
-                                                            'W/R'
-                                                        ? 45
-                                                        : 32),
+                                                    controller.jourValue == 'W/R'
+                                                        ? 38
+                                                        : 25),
                                                 child: SizedBox(
                                                   width: 60,
                                                   height: 30,
@@ -2872,7 +2915,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                         // (13) Calendar icon (keyboard clickable)
                                         FocusTraversalOrder(
-                                          order: const NumericFocusOrder(13),
+                                          order: NumericFocusOrder(controller.jourValue == 'W/R'
+                                              ? 39
+                                              : 26),
                                           child: SizedBox(
                                             height: 33,
                                             child: KbdActivatable(
@@ -2927,7 +2972,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           color: DynamicColors.textClr,
                                           size: 18),
                                       SizedBox(width: 2),
-                                      Text("ETA : 0.0 mins",
+                                      Text("ETA : ${controller.totalTimeDuration}",
                                           style: TextStyle(
                                               color: DynamicColors.textClr,
                                               fontSize: 13)),
@@ -2945,7 +2990,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           color: DynamicColors.textClr,
                                           size: 18),
                                       SizedBox(width: 2),
-                                      Text("DISTANCE : 0.0 miles",
+                                      Text("DISTANCE : ${controller.totalDistance}",
                                           style: TextStyle(
                                               color: DynamicColors.textClr,
                                               fontSize: 13)),
@@ -2962,7 +3007,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         child: FittedBox(
                                           fit: BoxFit.scaleDown,
                                           child: Text(
-                                            "PR: \$ 4.90",
+                                            "PR: \$ ${(double.parse(controller.fixedFare.value) + 5).toStringAsFixed(1)}",
                                             style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.black,
@@ -2990,109 +3035,92 @@ class _CreateBookingState extends State<CreateBooking> {
                                     runSpacing: 16,
                                     children: [
                                       SizedBox(width: 20),
-                                      FocusTraversalOrder(
-                                        order: const NumericFocusOrder(12),
-                                        child: labeledField(
-                                          context: context,
-                                          isMobile: isMobile,
-                                          label: AppText.driver,
-                                          width: fieldWidth / 2.3,
-                                          child: Container(
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              border: Border.all(
-                                                  color:
-                                                      DynamicColors.primaryClr),
-                                            ),
-                                            child: RestrictedDrivers(
-                                              width: fieldWidth / 2.3,
-                                              height: 30,
-                                              padding: 0.0,
-                                              titleText:
-                                                  controller.selectedDriver,
-                                              driversList: [
-                                                "Driver 01",
-                                                "Driver 02",
-                                                "Driver 03",
-                                                "Driver 04"
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Obx(
-                                        () => MouseRegion(
-                                          onEnter: (_) {
-                                            // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                                            //
-                                            // }
+                                      // FocusTraversalOrder(
+                                      //   order: NumericFocusOrder(
+                                      //       controller.jourValue == 'W/R'
+                                      //           ? 40
+                                      //           : 27
+                                      //   ),
+                                      //   child: labeledField(
+                                      //     context: context,
+                                      //     isMobile: isMobile,
+                                      //     label: AppText.driver,
+                                      //     width: fieldWidth / 2.3,
+                                      //     child: Container(
+                                      //       height: 30,
+                                      //       decoration: BoxDecoration(
+                                      //         borderRadius:
+                                      //             BorderRadius.circular(4),
+                                      //         border: Border.all(
+                                      //             color:
+                                      //                 DynamicColors.primaryClr),
+                                      //       ),
+                                      //       child: RestrictedDrivers(
+                                      //         width: fieldWidth / 2.3,
+                                      //         height: 30,
+                                      //         padding: 0.0,
+                                      //         titleText:
+                                      //             controller.selectedDriver,
+                                      //         driversList: [
+                                      //           "Driver 01",
+                                      //           "Driver 02",
+                                      //           "Driver 03",
+                                      //           "Driver 04"
+                                      //         ],
+                                      //       ),
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      GestureDetector(
+                                        onTap: (){
+                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
                                             DashboardF8Alert.show();
-
-                                            controller.isHoveredF8 = true.obs;
-                                          },
-                                          onExit: (_) {
-                                            controller.isHoveredF8 = false.obs;
-                                          },
-                                          child: Container(
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 16, vertical: 3),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color: controller
-                                                          .isHoveredF8.value ==
-                                                      true
-                                                  ? Colors.cyanAccent.shade400
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              '+ MULTI RESERVATION [F8]',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                          }
+                                        },
+                                        child: Container(
+                                          // margin: EdgeInsets.symmetric(
+                                          //     horizontal: 16, vertical: 3),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: controller.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            '+ MULTI RESERVATION [F8]',
+                                            style: TextStyle(
+                                              color: DynamicColors.primaryClr,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
                                       ),
-                                      Obx(
-                                        () => MouseRegion(
-                                          onEnter: (_) {
-                                            // if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
-                                            //
-                                            // }
+
+                                      GestureDetector(
+                                        onTap: (){
+                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
+                                          {
                                             DashboardF9Alert.show();
-                                            controller.isHoveredF9 = true.obs;
-                                          },
-                                          onExit: (_) {
-                                            controller.isHoveredF9 = false.obs;
-                                          },
-                                          child: Container(
-                                            // margin: EdgeInsets.symmetric(
-                                            //     horizontal: 16, vertical: 3),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 8, vertical: 3),
-                                            decoration: BoxDecoration(
-                                              color: controller
-                                                          .isHoveredF9.value ==
-                                                      true
-                                                  ? Colors.cyanAccent.shade400
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                            ),
-                                            child: Text(
-                                              '+ VEHICLES [F9]',
-                                              style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                          }
+                                        },
+                                        child: Container(
+                                          // margin: EdgeInsets.symmetric(
+                                          //     horizontal: 16, vertical: 3),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: controller.isHoveredF9.value == true? Colors.cyanAccent.shade400: Colors.transparent,
+                                            borderRadius:
+                                            BorderRadius.circular(10),
+                                          ),
+                                          child: Text(
+                                            '+ VEHICLES [F9]',
+                                            style: TextStyle(
+                                              color: DynamicColors.primaryClr,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
@@ -3108,8 +3136,21 @@ class _CreateBookingState extends State<CreateBooking> {
                                         btnColor: DynamicColors.redClr,
                                         verticalPadding: 0.0,
                                         borderRadius: 4,
+                                        onTap: (){
+                                          controller.refreshPostAllFields();
+                                        },
                                       ),
                                       CustomButton(
+                                        onTap:
+                                            () {
+                                          if(controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty &&
+                                              controller.dropOffTwoWayController.text.isEmpty){
+                                            BotToast.showText(text: "Please chose waiting return");
+                                            return;
+                                          }
+                                          controller
+                                              .dashBoardApiValidation();
+                                        },
                                         btnText: "SAVE[HOME]",
                                         width: 110,
                                         height: 30,
