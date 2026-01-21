@@ -196,6 +196,7 @@ class BookingController extends GetxController{
   RxInt completedBookingTotalPages = 1.obs;
   final int completedBookingLimit = 20;
 
+  final completedSource = TextEditingController();
   final completedreferenceNumber = TextEditingController();
   final completedpickupDate = TextEditingController();
   final completedpickupTime = TextEditingController();
@@ -219,6 +220,7 @@ class BookingController extends GetxController{
         queryParameters: {
           "page": completedBookingCurrentPage.value,
           "limit": completedBookingLimit,
+          "booking_source": completedSource.text,
           "reference_number": completedreferenceNumber.text,
           "pickup_date": completedpickupDate.text,
           "pickup_time": completedpickupTime.text,
@@ -381,7 +383,150 @@ class BookingController extends GetxController{
   }
 
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Trash Bookings
 
+  RxList<BookingObjectData> trashBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> trashBookingFiltered = <BookingObjectData>[].obs;
+  DashboardTableModel? trashBookingModelData;
+  RxBool trashBookingLoad = false.obs;
+  RxInt trashBookingCurrentPage = 1.obs;
+  RxInt trashBookingTotalPages = 1.obs;
+  final int trashBookingLimit = 20;
+
+  final trashreferenceNumber = TextEditingController();
+  final trashpickupDate = TextEditingController();
+  final trashpickupTime = TextEditingController();
+  final trashname = TextEditingController();
+  final trashpickup = TextEditingController();
+  final trashdropOff = TextEditingController();
+  final trashaccountName = TextEditingController();
+  final trashdriverName = TextEditingController();
+  final trashnotes = TextEditingController();
+  final trashfares = TextEditingController();
+  final trashbookingStatus = TextEditingController();
+  final trashjourneyType = TextEditingController();
+  final trashpaymentType = TextEditingController();
+  final trashvehicleTypeName = TextEditingController();
+  final trashsubsidiary = TextEditingController();
+
+
+  final int trashBookId = 11;
+  getTrashBookingData() async {
+    appBookingLoad(true);
+    var response = await Api().get("bookings/getbytabs/${trashBookId}",
+        queryParameters: {
+          "page": trashBookingCurrentPage.value,
+          "limit": trashBookingLimit,
+          "reference_number": trashreferenceNumber.text,
+          "pickup_date": trashpickupDate.text,
+          "pickup_time": trashpickupTime.text,
+          "name": trashname.text,
+          "pickup": trashpickup.text,
+          "dropoff": trashdropOff.text,
+          "account_name": trashaccountName.text,
+          "driver_name": trashdriverName.text,
+          "payment_type": trashpaymentType.text,
+          "vehicle_type_name": trashvehicleTypeName.text,
+          "notes": trashnotes.text,
+          "fares": trashfares.text,
+          "booking_status": trashbookingStatus.text,
+          "journey_type": trashjourneyType.text,
+          "subsidiary" : trashsubsidiary.text,
+        }
+    );
+    if(response.statusCode == 200){
+      trashBookingModelData = DashboardTableModel.fromJson(response.data);
+      trashBookingTotalPages.value = trashBookingModelData?.totalPages ?? 1;
+      trashBookingAll.value = trashBookingModelData?.data ?? [];
+      trashBookingFiltered.value = trashBookingAll;
+      trashBookingLoad(false);
+      update();
+    }
+  }
+
+  void trashBookingPageChange(int page) {
+    trashBookingCurrentPage.value = page;
+    getTrashBookingData();
+  }
+
+  void trashBookingonSearch() {
+    trashBookingCurrentPage.value = 1;
+    getTrashBookingData();
+  }
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Pending Bookings
+
+  RxList<BookingObjectData> pendingBookingAll = <BookingObjectData>[].obs;
+  RxList<BookingObjectData> pendingBookingFiltered = <BookingObjectData>[].obs;
+  DashboardTableModel? pendingBookingModelData;
+  RxBool pendingBookingLoad = false.obs;
+  RxInt pendingBookingCurrentPage = 1.obs;
+  RxInt pendingBookingTotalPages = 1.obs;
+  final int pendingBookingLimit = 20;
+
+  final pendingreferenceNumber = TextEditingController();
+  final pendingpickupDate = TextEditingController();
+  final pendingpickupTime = TextEditingController();
+  final pendingname = TextEditingController();
+  final pendingpickup = TextEditingController();
+  final pendingdropOff = TextEditingController();
+  final pendingaccountName = TextEditingController();
+  final pendingdriverName = TextEditingController();
+  final pendingnotes = TextEditingController();
+  final pendingfares = TextEditingController();
+  final pendingbookingStatus = TextEditingController();
+  final pendingjourneyType = TextEditingController();
+  final pendingpaymentType = TextEditingController();
+  final pendingvehicleTypeName = TextEditingController();
+  final pendingsubsidiary = TextEditingController();
+
+
+  final int pendingBookId = 10;
+  getPendingBookingData() async {
+    pendingBookingLoad(true);
+    var response = await Api().get("bookings/getbytabs/${pendingBookId}",
+        queryParameters: {
+          "page": pendingBookingCurrentPage.value,
+          "limit": pendingBookingLimit,
+          "reference_number": pendingreferenceNumber.text,
+          "pickup_date": pendingpickupDate.text,
+          "pickup_time": pendingpickupTime.text,
+          "name": pendingname.text,
+          "pickup": pendingpickup.text,
+          "dropoff": pendingdropOff.text,
+          "account_name": pendingaccountName.text,
+          "driver_name": pendingdriverName.text,
+          "payment_type": pendingpaymentType.text,
+          "vehicle_type_name": pendingvehicleTypeName.text,
+          "notes": pendingnotes.text,
+          "fares": pendingfares.text,
+          "booking_status": pendingbookingStatus.text,
+          "journey_type": pendingjourneyType.text,
+          "subsidiary" : pendingsubsidiary.text,
+        }
+    );
+    if(response.statusCode == 200){
+      pendingBookingModelData = DashboardTableModel.fromJson(response.data);
+      pendingBookingTotalPages.value = pendingBookingModelData?.totalPages ?? 1;
+      pendingBookingAll.value = pendingBookingModelData?.data ?? [];
+      pendingBookingFiltered.value = pendingBookingAll;
+      pendingBookingLoad(false);
+      update();
+    }
+  }
+
+  void pendingBookingPageChange(int page) {
+    pendingBookingCurrentPage.value = page;
+    getPendingBookingData();
+  }
+
+  void pendingBookingonSearch() {
+    pendingBookingCurrentPage.value = 1;
+    getPendingBookingData();
+  }
 
 
 

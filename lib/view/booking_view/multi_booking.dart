@@ -53,7 +53,9 @@ class _MultiBookingState extends State<MultiBooking> {
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return Container(
+        return
+          controller.trashBookingLoad == true? Center(child: CircularProgressIndicator(),):
+          Container(
           color: const Color(0xFFF7F9FC),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

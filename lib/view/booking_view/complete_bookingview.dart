@@ -242,7 +242,12 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                     width: MediaQuery.of(context).size.width,
                     child: DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(title: "REF #",
+                        buildHeaderWithSearch(title: "SOURCE",
+                          onChanged: (v) {
+                            controller.completedSource.text = v;
+                            controller.completedBookingonSearch();
+                          },
+                        ),  buildHeaderWithSearch(title: "REF #",
                           onChanged: (v) {
                             controller.completedreferenceNumber.text = v;
                             controller.completedBookingonSearch();
@@ -335,6 +340,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                       rows: listToShow.map((item) {
                         return DataRow(
                           cells: [
+                            DataCell(Center(child: Text(item.bookingSource ?? '—'))),
                             DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
                             DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
                             DataCell(Center(child: Text(item.name ?? '—'))),
