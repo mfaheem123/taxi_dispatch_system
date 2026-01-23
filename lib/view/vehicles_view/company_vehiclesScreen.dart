@@ -34,7 +34,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-    controller.companyVehicle();
+
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -59,26 +59,23 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
-    double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    // final listToShow = controller.filteredCompanyVehicle.isNotEmpty
+    //     ? controller.filteredCompanyVehicle
+    //     : controller.companyAllVehicle;
+    // double width = WidgetsBinding
+    //         .instance.platformDispatcher.views.first.physicalSize.width /
+    //     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<VehicleController>(builder: (controller) {
-        final listToShow = controller.filteredCompanyVehicle.isNotEmpty
-            ? controller.filteredCompanyVehicle
-            : controller.companyAllVehicle;
-
-        return controller.isCompanyVehicle.value == true
+      child: GetBuilder<VehicleController>(
+          initState: (state) {
+            controller.companyVehicle();
+          },
+          builder: (controller) {
+        return controller.companyVehicleModel == null
             ? Center(child: CircularProgressIndicator())
-
-          :(controller.companyVehicleModel?.vehicles == null || controller.companyVehicleModel!.vehicles!.isEmpty)
-? Center(
-          child: Text("NO DATA"),
-        )
 
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
@@ -125,7 +122,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                           buildHeaderWithSearch(
                             title: "VEHICLE #",
                             onChanged: (v) {
-                              controller.searchVehicle.value = v;
+                              controller.searchVehicle.text = v;
                               controller.SearchingOnCompany();
                             },
                           ),
@@ -133,31 +130,31 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                           buildHeaderWithSearch(
                               title: "VEHICLE TYPE",
                               onChanged: (v) {
-                                controller.searchVehicleType.value = v;
+                                controller.searchVehicleType.text = v;
                                 controller.SearchingOnCompany();
                               }),
                           buildHeaderWithSearch(
                               title: "OWNER",
                               onChanged: (v) {
-                                controller.searchOwner.value = v;
+                                controller.searchOwner.text = v;
                                 controller.SearchingOnCompany();
                               }),
                           buildHeaderWithSearch(
                               title: "MAKE",
                               onChanged: (v) {
-                                controller.searchMake.value = v;
+                                controller.searchMake.text = v;
                                 controller.SearchingOnCompany();
                               }),
                           buildHeaderWithSearch(
                               title: "MODEL",
                               onChanged: (v) {
-                                controller.searchModel.value = v;
+                                controller.searchModel.text = v;
                                 controller.SearchingOnCompany();
                               }),
                           buildHeaderWithSearch(
                               title: "COLOR",
                               onChanged: (v) {
-                                controller.searchColor.value = v;
+                                controller.searchColor.text = v;
                                 controller.SearchingOnCompany();
                               }),
                           buildHeaderWithSearch(
