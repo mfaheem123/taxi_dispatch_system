@@ -506,7 +506,7 @@ class BookingController extends GetxController{
           "booking_status": pendingbookingStatus.text,
           "journey_type": pendingjourneyType.text,
           "subsidiary" : pendingsubsidiary.text,
-        }
+        }, auth: true,
     );
     if(response.statusCode == 200){
       pendingBookingModelData = DashboardTableModel.fromJson(response.data);

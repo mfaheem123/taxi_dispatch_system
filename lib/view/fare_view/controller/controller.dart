@@ -981,16 +981,16 @@ DaysClass? selectedDay;
       'vehicle_type_id': createByVehicleTypes!.id,
       'value': fareValueVehicleController.text,
       'operator': fareByVehicleOperater,
-
     };
     print(formData);
     var response = await Api().post(formData, "farebyvehicle/add");
     if(response.statusCode == 200){
-getFareByVehicleSetting();
-      // incrementValueVehicleController.clear();
+    getFareByVehicleSetting();
+    fareValueVehicleController.clear();
+    createByVehicleTypes = null ;
+    fareByVehicleOperater = null;
       print(response.data);
       BotToast.showText(text: "Fare By Vehicle is successfully added");
-
     }
   }
 

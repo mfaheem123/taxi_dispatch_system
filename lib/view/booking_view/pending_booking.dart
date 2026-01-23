@@ -51,6 +51,9 @@ class _PendingBookingState extends State<PendingBooking> {
         : controller.pendingBookingAll;
 
     return GetBuilder<BookingController>(
+      initState: (state) {
+
+      },
         builder: (controller) {
           return LayoutBuilder(
               builder: (context, constraints) {
@@ -66,7 +69,7 @@ class _PendingBookingState extends State<PendingBooking> {
                     : maxWidth / 4;
 
                 return
-                  controller.pendingBookingLoad == true? Center(child: CircularProgressIndicator(),):
+                  controller.pendingBookingLoad == true? Center(child: CircularProgressIndicator()):
                   Container(
                   color: const Color(0xFFF7F9FC),
                   child: Column(
