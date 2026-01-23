@@ -1444,16 +1444,16 @@ class DashboardController extends GetxController {
       /// todo waiting return
       if(pickupTwoWayController.text.isNotEmpty)"return_pickup": pickupTwoWayController.text,
       if(dropOffTwoWayController.text.isNotEmpty)"return_dropoff": dropOffTwoWayController.text,
-      "return_pickup_latitude": pickUpLatTwoLat,
-      "return_pickup_longitude": pickUpLngTwoLat,
-      "return_dropoff_latitude": dropOffLatTwoLat,
-      "return_dropoff_longitude": dropOffLngTwoLat,
-      "return_pickup_date": "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
-      "return_pickup_time": pickUpTimeControllerReturn.text,
+      if(pickUpLatTwoLat != null)"return_pickup_latitude": pickUpLatTwoLat,
+      if(pickUpLngTwoLat != null)"return_pickup_longitude": pickUpLngTwoLat,
+      if(dropOffLatTwoLat != null)"return_dropoff_latitude": dropOffLatTwoLat,
+      if(dropOffLngTwoLat != null)"return_dropoff_longitude": dropOffLngTwoLat,
+     if(pickupTwoWayController.text.isNotEmpty) "return_pickup_date": "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
+     if(dropOffTwoWayController.text.isNotEmpty) "return_pickup_time": pickUpTimeControllerReturn.text,
       if(viaReturnPostList.isNotEmpty)'return_viapoints': jsonEncode(viaReturnPostList),
      if(selectVehicleValueReturn != null) "return_driver_id": selectVehicleValueReturn!.id,
      if(selectDriverValueReturn != null) "return_vehicle_type_id": selectDriverValueReturn!.id,
-      "return_fare": '12345.12',
+     if(pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
      if(extraFaresReturnList.isNotEmpty) "return_notes": jsonEncode(extraFaresReturnList),
 
       /// todo waiting return
@@ -1471,7 +1471,7 @@ class DashboardController extends GetxController {
       }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      refreshPostAllFields();
+      // refreshPostAllFields();
       print(response.data);
 
     }

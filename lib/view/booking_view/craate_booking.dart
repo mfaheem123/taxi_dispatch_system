@@ -290,7 +290,8 @@ class _CreateBookingState extends State<CreateBooking> {
 
                         const SizedBox(height: 8),
 
-                        Stack(key: controller.stackKey, children: [
+                        Stack(key: controller.stackKey,
+                            children: [
                           FocusTraversalGroup(
                             policy: OrderedTraversalPolicy(),
                             child: Column(
@@ -3235,7 +3236,8 @@ class _CreateBookingState extends State<CreateBooking> {
                             return Positioned(
                               top: top,
                               left: left,
-                              width: fieldWidth,
+                              width: fieldWidth * 2.1,
+                              // width: fieldWidth,
                               child: RawKeyboardListener(
                                 focusNode: controller.suggestionFocusNode,
                                 autofocus: true,
