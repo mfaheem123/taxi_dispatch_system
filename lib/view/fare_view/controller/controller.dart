@@ -21,7 +21,9 @@ import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
+import '../../vehicles_view/model/vehicle_type_model.dart';
 import '../airport_charges/airport_model.dart';
+import '../fare_by_vehicle/model/fare_by_vehicle_model.dart';
 import '../fare_charges/fare_charges.dart';
 
 class FareController extends GetxController {
@@ -34,7 +36,6 @@ class FareController extends GetxController {
   final fareController = TextEditingController();
   final fareDescriptionController = TextEditingController();
   final fareDescription2ndController = TextEditingController();
-  final fareValueVehicleController = TextEditingController();
 
 
   VehicleTypee? plotVehicleTypevalue;
@@ -145,7 +146,6 @@ clearFormData(){
 
   VehicleTypeFixed? vehicleTypesFixedvalue;
   LocationType?locationTypevalue;
-
   FixedFareVehicleLocationTypeModel? fixedFareVehicleLocationTypeModel;
   RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
   getFixedFareVehicleLocationType()async{
@@ -943,6 +943,61 @@ DaysClass? selectedDay;
 
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
+
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create Fare by Vehicle Setting
+
+
+  VehicleTypeFixed? createByVehicleTypes;
+  FixedFareVehicleLocationTypeModel? VehicleTypeModel;
+  RxBool getFixedFareVehicleLoader = false.obs;
+  getFixedFareVehicleType()async{
+    getFixedFareVehicleLoader(true);
+    var response = await Api().get("combined/vehicle-location-types");
+    if (response.statusCode == 200) {
+      VehicleTypeModel = FixedFareVehicleLocationTypeModel.fromJson(response.data);
+      getFixedFareVehicleLoader(false);
+      update();
+    }
+  }
+
+  String? fareByVehicleOperater = "AMOUNT";
+  final fareValueVehicleController = TextEditingController();
+
+  FareByVehicleSetting? fareByVehicleSetting;
+  RxBool farebyVehicleLoader = false.obs;
+  getFareByVehicleSetting()async{
+    farebyVehicleLoader(true);
+    var response = await Api().get("farebyvehicle/get");
+    if (response.statusCode == 200) {
+      fareByVehicleSetting = FareByVehicleSetting.fromJson(response.data);
+      farebyVehicleLoader(false);
+      update();
+    }
+  }
+
+
+  postFareByVehicleSetting() async{
+    var formData = {
+      'vehicle_type_id': createByVehicleTypes!.id,
+      'value': fareValueVehicleController.text,
+      'operator': fareByVehicleOperater,
+
+    };
+    print(formData);
+    var response = await Api().post(formData, "farebyvehicle/add");
+    if(response.statusCode == 200){
+getFareByVehicleSetting();
+      // incrementValueVehicleController.clear();
+      print(response.data);
+      BotToast.showText(text: "Fare By Vehicle is successfully added");
+
+    }
+  }
+
+
+
+
+
 
 
 

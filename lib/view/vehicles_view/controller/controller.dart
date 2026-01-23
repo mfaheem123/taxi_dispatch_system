@@ -168,9 +168,9 @@ class VehicleController extends GetxController {
   /// Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 5;
+  final int limit = 20;
   getVehicleTypes() async {
-    try {
+
       isLoading.value = true;
 
       String query = 'page=${currentPage.value}&limit=$limit';
@@ -196,12 +196,8 @@ class VehicleController extends GetxController {
         allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
         filteredVehicleTypes.value = allVehicleTypes;
       }
-    } catch (e) {
-      print("Error in getVehicleType: $e");
-    } finally {
       isLoading.value = false;
       update();
-    }
   }
 
 // Search changes function

@@ -142,7 +142,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 children: [
                                   Text(AppText.fromLocationType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                   CustomDropdownField<LocationType>(
-                                    label: "Select Location Type",
+                                    label: "Select Subsidiary",
                                     width: Get.width / 5,
                                     height: 35,
                                     items: controller.fixedFareVehicleLocationTypeModel!.locationTypes!,
