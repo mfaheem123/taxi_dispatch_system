@@ -37,14 +37,14 @@ class VehicleController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo company vehicle
 
-  VehicleTypes? allVehicleTypeData;
+  VehicleType? allVehicleTypeData;
   RxBool getAllVehicleTypeLoader = false.obs;
   getAllVehicleType() async {
     getAllVehicleTypeLoader(true);
     var response = await Api().get("vehicle-type");
     if (response.statusCode == 200) {
       allVehicleTypeData =
-          VehicleTypes.fromJson(response.data['vehicle_types']);
+          VehicleType.fromJson(response.data['vehicle_types']);
       getAllVehicleTypeLoader(false);
       update();
     }
@@ -154,8 +154,8 @@ class VehicleController extends GetxController {
 
   VehicleTypeModel? vehicleTypeModel;
   RxBool isLoading = false.obs;
-  RxList<VehicleTypes> allVehicleTypes = <VehicleTypes>[].obs;
-  RxList<VehicleTypes> filteredVehicleTypes = <VehicleTypes>[].obs;
+  RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
+  RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
 
 // // ye search fields hain
   RxString searchName = ''.obs;
@@ -195,9 +195,9 @@ class VehicleController extends GetxController {
         totalPages.value = vehicleTypeModel?.totalPages ?? 1;
         allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
         filteredVehicleTypes.value = allVehicleTypes;
-      }
       isLoading.value = false;
       update();
+      }
   }
 
 // Search changes function
@@ -385,7 +385,7 @@ class VehicleController extends GetxController {
   }
 
   /// bind data to edit vehicle
-  VehicleTypes? singleVehicle;
+  VehicleType? singleVehicle;
   vehicleDataBinding({item}) async {
     singleVehicle = item;
     vehicleTypeController.text = singleVehicle!.name!;
