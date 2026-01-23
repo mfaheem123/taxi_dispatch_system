@@ -989,6 +989,7 @@ class DashboardController extends GetxController {
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+      getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
       getDashboardTableData(tableId: bookingTabsList!.first.id);
       dashboardDataLoader(false);
       update();
@@ -1387,12 +1388,12 @@ class DashboardController extends GetxController {
 
     var formData = {
       'pickup': pickupController.text,
-      'pickup_plot': dashboardZoneValue!.id,
+      if(dashboardZoneValue != null)'pickup_plot': dashboardZoneValue!.id,
       'pickup_door_number': pickUpNoteController.text,
       'pickup_latitude': pickUpLatLat,
       'pickup_longitude': pickUpLngLat,
       'dropoff': dropOffController.text,
-      'dropoff_plot': '28',
+      if(dashboardDZoneValue != null)'dropoff_plot': dashboardDZoneValue!.id,
       'dropoff_door_number': dropUpNoteController.text,
       'dropoff_latitude': dropOffLatLat,
       'dropoff_longitude': dropOffLngLat,
@@ -1471,7 +1472,7 @@ class DashboardController extends GetxController {
       }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
         dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      // refreshPostAllFields();
+      refreshPostAllFields();
       print(response.data);
 
     }

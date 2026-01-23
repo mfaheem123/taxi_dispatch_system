@@ -218,7 +218,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                       isDense: true,
                                     ),
                                     value: controller.selectDriverValue,
-                                    items: controller.dashboardAllData!.drivers!
+                                    items: controller.dashboardAllData == null?[]: controller.dashboardAllData!.drivers!
                                         .map((driver) => DropdownMenuItem<
                                                 DashboardDriverObject>(
                                               value: driver,
