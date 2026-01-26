@@ -156,7 +156,7 @@ class Api {
   //   }
   // }
 
-Future<dynamic> delete(String url, {isProgressShow = false}) async {
+Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
      if (isProgressShow == false) {
       BotToast.showLoading();
     }
@@ -169,6 +169,7 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
 
     try {
       var response = await dio.delete(
+        data: formData??{},
         apiUrl + url,
         options: Options(
           method: 'DELETE',
@@ -176,8 +177,8 @@ Future<dynamic> delete(String url, {isProgressShow = false}) async {
             'Content-Type': 'application/json',
           },
         ),
-
-      );Future.delayed(Duration(seconds: 1), () {
+      );
+      Future.delayed(Duration(seconds: 1), () {
         if (isProgressShow == false) {
           BotToast.closeAllLoading();
         }

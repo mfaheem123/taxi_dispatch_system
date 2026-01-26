@@ -38,7 +38,6 @@ import '../widgets/via_location.dart';
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 class DashboardController extends GetxController {
-
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
@@ -46,7 +45,6 @@ class DashboardController extends GetxController {
   RxBool seeZoneOnMappLoader = false.obs;
 
   seeZoneOnMapp() async {
-
     seeZoneOnMappLoader(true);
 
     var response = await Api().get("zones/get");
@@ -73,7 +71,7 @@ class DashboardController extends GetxController {
   menuBarRefresh({title, pageName}) {
     // if(selectedMenuItems.length < 3){
     int index =
-    selectedMenuItems.indexWhere((item) => item.selectedItem == true);
+        selectedMenuItems.indexWhere((item) => item.selectedItem == true);
     if (index != -1) {
       selectedMenuItems[index].selectedItem = false;
     }
@@ -189,8 +187,7 @@ class DashboardController extends GetxController {
     });
 
     viaLocation1Controller.addListener(() {
-      if (viaLocation1Controller.selection.baseOffset != -1)
-      {
+      if (viaLocation1Controller.selection.baseOffset != -1) {
         activeFieldKey.value = via1FieldKey;
         inputText.value = viaLocation1Controller.text;
         onInputChanged(viaLocation1Controller.text);
@@ -198,8 +195,7 @@ class DashboardController extends GetxController {
     });
 
     viaLocation2Controller.addListener(() {
-      if (viaLocation2Controller.selection.baseOffset != -1)
-      {
+      if (viaLocation2Controller.selection.baseOffset != -1) {
         activeFieldKey.value = via2FieldKey;
         inputText.value = viaLocation2Controller.text;
         onInputChanged(viaLocation2Controller.text);
@@ -279,25 +275,31 @@ class DashboardController extends GetxController {
     }
   }
 
-  void selectSuggestion(String? value,{twoWayPickup}) {
+  void selectSuggestion(String? value, {twoWayPickup}) {
     if (activeFieldKey.value == pickupFieldKey) {
       pickupController.text = value!;
-      pickupController.selection = TextSelection.collapsed(offset: value.length);
+      pickupController.selection =
+          TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == dropOffFieldKey) {
       dropOffController.text = value!;
-      dropOffController.selection = TextSelection.collapsed(offset: value.length);
+      dropOffController.selection =
+          TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via1FieldKey) {
       viaLocation1Controller.text = value!;
-      viaLocation1Controller.selection = TextSelection.collapsed(offset: value.length);
+      viaLocation1Controller.selection =
+          TextSelection.collapsed(offset: value.length);
     } else if (activeFieldKey.value == via2FieldKey) {
       viaLocation2Controller.text = value!;
-      viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
-    }else if (activeFieldKey.value == pickupTwoWayFieldKey){
+      viaLocation2Controller.selection =
+          TextSelection.collapsed(offset: value.length);
+    } else if (activeFieldKey.value == pickupTwoWayFieldKey) {
       pickupTwoWayController.text = value!;
-      pickupTwoWayController.selection = TextSelection.collapsed(offset: value.length);
-    }else if (activeFieldKey.value == dropOffTwoFieldKey){
+      pickupTwoWayController.selection =
+          TextSelection.collapsed(offset: value.length);
+    } else if (activeFieldKey.value == dropOffTwoFieldKey) {
       dropOffTwoWayController.text = value!;
-      dropOffTwoWayController.selection = TextSelection.collapsed(offset: value.length);
+      dropOffTwoWayController.selection =
+          TextSelection.collapsed(offset: value.length);
     }
 
     inputText.value = value!;
@@ -337,7 +339,6 @@ class DashboardController extends GetxController {
 
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
-
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
@@ -353,7 +354,9 @@ class DashboardController extends GetxController {
           suggestions.clear();
         } else {
           suggestions = allAddressesData
-              .where((loc) => loc.name!.toUpperCase().contains(searchingText.toLowerCase())).toList();
+              .where((loc) =>
+                  loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
+              .toList();
           highlightedIndex.value = 0;
         }
         update();
@@ -392,7 +395,7 @@ class DashboardController extends GetxController {
         {
           "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
           "postcode": response.data['address']
-          ['postcode'], // e.g. Brondesbury Park, Brent
+              ['postcode'], // e.g. Brondesbury Park, Brent
           "lat": double.parse(response.data['lat']), // 51.542059
           "lon": double.parse(response.data['lon']), // -0.212545
         }
@@ -421,7 +424,7 @@ class DashboardController extends GetxController {
   RxString totalDistance = "0".obs;
   RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
-  RxString fixedFare ="0".obs;
+  RxString fixedFare = "0".obs;
   RxBool viaSelectionOneWay = true.obs;
 
   LatLngBounds calculateBounds(List<LatLng> points) {
@@ -464,9 +467,13 @@ class DashboardController extends GetxController {
       tempPoints.add(p);
       markers.add(
         CustomMarker(
-          withReturnType: item.withReturnWay =="via"? "via": 'via with return',
+          withReturnType:
+              item.withReturnWay == "via" ? "via" : 'via with return',
           child: Icon(Icons.location_pin,
-              color: item.withReturnWay =="via"? DynamicColors.primaryClr:Colors.pink, size: 30),
+              color: item.withReturnWay == "via"
+                  ? DynamicColors.primaryClr
+                  : Colors.pink,
+              size: 30),
           type: "via",
           point: p,
           width: 30,
@@ -493,7 +500,6 @@ class DashboardController extends GetxController {
               height: 30,
             ),
           );
-
         } else if (item.markerType == "DROP LOCATION" ||
             item.markerType == "Create Booking DROP LOCATION") {
           tempPoints.add(p);
@@ -507,19 +513,19 @@ class DashboardController extends GetxController {
               height: 30,
             ),
           );
-        } else if (item.markerType == "PICKUP TWO WAY LOCATION"){
+        } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
               type: "pickup two way",
               point: p,
-              child: Icon(Icons.location_pin,
-                  color: Colors.amberAccent, size: 30),
+              child:
+                  Icon(Icons.location_pin, color: Colors.amberAccent, size: 30),
               width: 30,
               height: 30,
             ),
           );
-        }else if (item.markerType == "DROP TWO WAY LOCATION"){
+        } else if (item.markerType == "DROP TWO WAY LOCATION") {
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -544,7 +550,7 @@ class DashboardController extends GetxController {
 
     // --------- MULTI-POINT: request route from OSRM ----------
     final coordinates =
-    tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
+        tempPoints.map((p) => "${p.longitude},${p.latitude}").join(";");
     final url = Uri.parse(
         'https://router.project-osrm.org/route/v1/driving/$coordinates?overview=full');
 
@@ -567,7 +573,8 @@ class DashboardController extends GetxController {
       totalDistance.value = distanceInMiles.toStringAsFixed(2); // e.g. "0.94"
       tempStoreTotalDistance.value == distanceInMiles.toStringAsFixed(2);
       // totalTimeDuration.value = durationInMinutes.toStringAsFixed(1); // e.g. "443.3"
-      totalTimeDuration.value = formatDuration(durationInMinutes); // e.g. "443.3"
+      totalTimeDuration.value =
+          formatDuration(durationInMinutes); // e.g. "443.3"
 
       List<PointLatLng> result = PolylinePoints.decodePolyline(encodedPolyline);
 
@@ -588,36 +595,36 @@ class DashboardController extends GetxController {
 
         // build bounds from the route or from markers (choose whichever you prefer)
 
-
-        final List<LatLng> focusPoints = tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
-
+        final List<LatLng> focusPoints =
+            tempPoints.isNotEmpty ? tempPoints : polylinePointsCoordinate;
 
         LatLngBounds bounds;
 
         if (focusPoints.length == 1) {
           bounds =
               LatLngBounds.fromPoints([focusPoints.first, focusPoints.first]);
-
         } else {
           bounds = calculateBounds(focusPoints); // your existing helper
         }
 
-        final cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
+        final cameraFit =
+            CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
 
       final storedTemFare = await getFares(
-        // day: ,
+          // day: ,
           journeyTypeId: selectJourneyTypeValue!.id,
-        multiReservationList: multiReservationList,
+          multiReservationList: multiReservationList,
           dropOff: pickupController.text,
           pickup: dropOffController.text,
           miles: totalDistance.value,
-          dropoffPlotId: dashboardZoneValue != null? dashboardZoneValue!.id:null,
-          pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+          dropoffPlotId:
+              dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+          pickupDate:
+              "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
           pickupTime: pickUpTimeController.text,
-          vehicleTypeId: selectVehicleValue!.id
-      );
+          vehicleTypeId: selectVehicleValue!.id);
       print(storedTemFare);
 
       fixedFare.value = storedTemFare;
@@ -647,8 +654,6 @@ class DashboardController extends GetxController {
       print("❌ OSRM error: ${res.statusCode}");
     }
   }
-
-
 
 // inside your controller
   final suggestionFocusNode = FocusNode();
@@ -698,10 +703,10 @@ class DashboardController extends GetxController {
       final itemCtx = suggestionItemKeys[i].currentContext;
 
       final listCtx =
-      /*selectedTextFieldsValue.value !=
+          /*selectedTextFieldsValue.value !=
           "via"?*/
-      suggestionListKey.currentContext
-      /*:suggestionListKeyVia.currentContext*/;
+          suggestionListKey
+              .currentContext /*:suggestionListKeyVia.currentContext*/;
 
       if (itemCtx != null &&
           listCtx != null &&
@@ -710,7 +715,8 @@ class DashboardController extends GetxController {
 
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
-        final Offset itemOffset = itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+        final Offset itemOffset =
+            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
 
         final double itemTopLocal = itemOffset.dy;
 
@@ -825,7 +831,8 @@ class DashboardController extends GetxController {
       pickupController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "DROP LOCATION");
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "DROP LOCATION");
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
@@ -841,7 +848,8 @@ class DashboardController extends GetxController {
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "Create Booking PICKUP") {
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking PICKUP");
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "Create Booking PICKUP");
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
       }
@@ -858,7 +866,8 @@ class DashboardController extends GetxController {
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value ==
         "Create Booking DROP LOCATION") {
-      int index = polyLineMarkerInfo.indexWhere((test) => test.markerType == "Create Booking DROP LOCATION");
+      int index = polyLineMarkerInfo.indexWhere(
+          (test) => test.markerType == "Create Booking DROP LOCATION");
 
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
@@ -876,10 +885,9 @@ class DashboardController extends GetxController {
 
       dropOffController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-
-    }else if ( selectedTextFieldsValue.value== "DROP LOCATION"){
-      int index = polyLineMarkerInfo.indexWhere(
-              (test) => test.markerType == "DROP LOCATION");
+    } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "DROP LOCATION");
 
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
@@ -897,9 +905,9 @@ class DashboardController extends GetxController {
 
       dropOffTwoWayController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    }else if ( selectedTextFieldsValue.value== "DROP TWO WAY LOCATION"){
-      int index = polyLineMarkerInfo.indexWhere(
-              (test) => test.markerType == "DROP TWO WAY LOCATION");
+    } else if (selectedTextFieldsValue.value == "DROP TWO WAY LOCATION") {
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "DROP TWO WAY LOCATION");
 
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
@@ -917,9 +925,9 @@ class DashboardController extends GetxController {
 
       dropOffTwoWayController.text = "$suggestion $postCode";
       fetchRouteFromOSRM();
-    }else if ( selectedTextFieldsValue.value== "PICKUP TWO WAY LOCATION"){
-      int index = polyLineMarkerInfo.indexWhere(
-              (test) => test.markerType == "PICKUP TWO WAY LOCATION");
+    } else if (selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
+      int index = polyLineMarkerInfo
+          .indexWhere((test) => test.markerType == "PICKUP TWO WAY LOCATION");
 
       if (index != -1) {
         polyLineMarkerInfo.remove(polyLineMarkerInfo[index]);
@@ -942,7 +950,6 @@ class DashboardController extends GetxController {
     allAddressesData.clear();
     highlightedIndex.value = 0;
     update();
-
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
@@ -968,24 +975,30 @@ class DashboardController extends GetxController {
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
       bookingTabsList = dashboardAllData!.bookingTabs;
       bookingTabsList!.first.selectedClr!.value = true;
-      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
-        bookingTabs: "JOB DUE BY",
-        id: 0,
-        deletedClr: false.obs,
-        selectedClr: true.obs,
-        dropDownList: [
-          "JOB DUE BY",
-          "15 MIN",
-          "30 MIN",
-          "60 MIN",
-        ],),);
-      bookingTabsList!.add(BookingTabObject(bookingCount: 0,
-        bookingTabs: "DELETE SELECTION",
-        id: 0,
-        selectedClr: false.obs,
-        deletedClr: true.obs,
-        dropDownList: []
-      ),);
+      bookingTabsList!.add(
+        BookingTabObject(
+          bookingCount: 0,
+          bookingTabs: "JOB DUE BY",
+          id: 0,
+          deletedClr: false.obs,
+          selectedClr: true.obs,
+          dropDownList: [
+            "JOB DUE BY",
+            "15 MIN",
+            "30 MIN",
+            "60 MIN",
+          ],
+        ),
+      );
+      bookingTabsList!.add(
+        BookingTabObject(
+            bookingCount: 0,
+            bookingTabs: "DELETE SELECTION",
+            id: 0,
+            selectedClr: false.obs,
+            deletedClr: true.obs,
+            dropDownList: []),
+      );
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
@@ -1038,7 +1051,8 @@ class DashboardController extends GetxController {
     const duration = Duration(milliseconds: 800); // 800ms ka delay]
     // selectedTextFieldsValue.value = "";
     // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
-    if (_tableDashboardBebounce?.isActive ?? false) _tableDashboardBebounce!.cancel();
+    if (_tableDashboardBebounce?.isActive ?? false)
+      _tableDashboardBebounce!.cancel();
 
     // 👇 Naya timer start karo
     _tableDashboardBebounce = Timer(duration, () {
@@ -1051,11 +1065,20 @@ class DashboardController extends GetxController {
     getDashboardTableData(tableId: tableId);
   }
 
-
-
-  getDashboardTableData({tableId}) async{
-    var response = await Api().get("bookings/getbytabs/$tableId",
-    queryParameters: {
+  String? jobDue;
+  getDashboardTableData({tableId}) async {
+    String selectJobDue = "";
+    if (jobDue != null) {
+      if (jobDue == "15 MIN") {
+        selectJobDue = "15";
+      } else if (jobDue == "30 MIN") {
+        selectJobDue = "30";
+      } else {
+        selectJobDue = "60";
+      }
+    }
+    var response =
+        await Api().get("bookings/getbytabs/$tableId", queryParameters: {
       "page": dashboardTableCurrentPage.value,
       "limit": dashboardTableLimit,
       "reference_number": referenceNumber.text,
@@ -1072,9 +1095,9 @@ class DashboardController extends GetxController {
       "journey_type": journeyType.text,
       "payment_type": paymentType.text,
       "vehicle_type_name": vehicleTypeName.text,
-    }
-    );
-    if(response.statusCode ==200){
+      "job_due=": selectJobDue
+    });
+    if (response.statusCode == 200) {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
@@ -1088,27 +1111,64 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
-  getTableDataStatus({index, value}) async{
+  int temSelectedTab = 0;
+  getTableDataStatus({index, value}) async {
     int selectedIndex =
-    bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
+        bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
     if (selectedIndex != -1) {
       bookingTabsList![selectedIndex].selectedClr!.value = false;
     }
-    if(value != null){
+    if (value != null) {
       bookingTabsList![index].selectedDropDownValue = value;
-      bookingTabsList![index].selectedClr!.value = true; // <-- fix selection
-    }else{
-      if(bookingTabsList![index].deletedClr!.value == true){
+      bookingTabsList![temSelectedTab].selectedClr!.value =
+          true; // <-- fix selection
+      jobDue= value;
+    } else {
+      if (bookingTabsList![index].deletedClr!.value == true) {
         return;
       }
-        if (selectedIndex != -1) {
-          bookingTabsList![selectedIndex].selectedClr!.value = false;
-        }
-        bookingTabsList![index].selectedClr!
-            .value = true; // <-- fix selection}
+      if (selectedIndex != -1) {
+        bookingTabsList![selectedIndex].selectedClr!.value = false;
+      }
+      bookingTabsList![index].selectedClr!.value = true; // <-- fix selection}
     }
     getDashboardTableData(tableId: bookingTabsList![index].id);
     update();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete job api
+  List<BookingObjectData>? selectedDeletesItems;
+
+  deleteJobs() async{
+    // 1. Guard clause: Exit early if nothing is selected or list is null
+    if (selectedDeletesItems == null || selectedDeletesItems!.isEmpty) {
+      BotToast.showText(text: "Please select deleted items");
+      return;
+    }
+
+      // 2. Efficiently extract IDs
+      final List<int> idsToDelete = selectedDeletesItems!
+          .map((item) => int.parse(item.id!))
+          .toList();
+
+      final Map<String, dynamic> payload = {
+        "id": idsToDelete
+      };
+
+      // 3. Pass the payload to the delete call
+      final response = await Api().delete("bookings/bulkdelete", formData: payload);
+    if(response.statusCode == 200){
+      // 4. Update the local UI state efficiently
+      // Using removeWhere is faster than a nested for-loop
+      dashboardTableModelData?.data?.removeWhere(
+            (item) => idsToDelete.contains(int.tryParse(item.id ?? '')),
+      );
+
+      // 5. Cleanup selection
+      selectedDeletesItems?.clear();
+
+      update();
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
@@ -1145,9 +1205,9 @@ class DashboardController extends GetxController {
       if (response.data['customer'].isNotEmpty) {
         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
         SuggestionController suggestion_controller =
-        Get.isRegistered<SuggestionController>()
-            ? Get.find<SuggestionController>()
-            : Get.put(SuggestionController());
+            Get.isRegistered<SuggestionController>()
+                ? Get.find<SuggestionController>()
+                : Get.put(SuggestionController());
         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
         // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
@@ -1162,8 +1222,12 @@ class DashboardController extends GetxController {
 
   DateTime? multiReservationFromDate = DateTime.now();
   DateTime? multiReservationToDate = DateTime.now();
-  final multiReservationToTimeController = TextEditingController(text: "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");
-  final returnMultiReservationToTimeController = TextEditingController(text: "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");
+  final multiReservationToTimeController = TextEditingController(
+      text:
+          "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");
+  final returnMultiReservationToTimeController = TextEditingController(
+      text:
+          "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}");
 
   List<MultiReservation> multiReservationList = [];
   List<String> multiReservationDaysList = [];
@@ -1174,7 +1238,6 @@ class DashboardController extends GetxController {
       multiReservationDaysList.add(day);
     }
   }
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> start to end date are filters
   List<DateTime> getDatesBetween({
@@ -1214,8 +1277,7 @@ class DashboardController extends GetxController {
     final allDates = getDatesBetween(start: startTime, end: endTime);
 
     // Convert selected day names → weekday numbers
-    final selectedWeekdays =
-    selectedDays.map(dayNameToWeekday).toList();
+    final selectedWeekdays = selectedDays.map(dayNameToWeekday).toList();
 
     for (final DateTime date in allDates) {
       if (selectedWeekdays.contains(date.weekday)) {
@@ -1235,8 +1297,6 @@ class DashboardController extends GetxController {
 
     refreshMultiReservationData();
   }
-
-
 
   int dayNameToWeekday(String day) {
     switch (day.toLowerCase()) {
@@ -1259,8 +1319,7 @@ class DashboardController extends GetxController {
     }
   }
 
-
-  refreshMultiReservationData() async{
+  refreshMultiReservationData() async {
     multiReservationDaysList.clear();
     mondayValue.value = false;
     tuesdayValue.value = false;
@@ -1296,40 +1355,40 @@ class DashboardController extends GetxController {
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
 
-  dashBoardApiValidation() async{
-    if(pickupController.text.isEmpty){
+  dashBoardApiValidation() async {
+    if (pickupController.text.isEmpty) {
       return BotToast.showText(text: "Please select pickup location");
     }
 
-    if(dropOffController.text.isEmpty){
+    if (dropOffController.text.isEmpty) {
       return BotToast.showText(text: "Please select dropoff location");
     }
 
-    if(selectSubsidiariesValue == null){
+    if (selectSubsidiariesValue == null) {
       return BotToast.showText(text: "Please select subsidiaries");
     }
 
-    if(nameController.text.isEmpty){
+    if (nameController.text.isEmpty) {
       return BotToast.showText(text: "Please write name");
     }
 
-    if(emailController.text.isEmpty){
+    if (emailController.text.isEmpty) {
       return BotToast.showText(text: "Please write email");
     }
 
-    if(mobileController.text.isEmpty){
+    if (mobileController.text.isEmpty) {
       return BotToast.showText(text: "Please write mobile");
     }
-    if(pickUpTimeController.text.isEmpty){
+    if (pickUpTimeController.text.isEmpty) {
       return BotToast.showText(text: "Please select pickup time");
     }
-    if(selectJourneyTypeValue == null){
+    if (selectJourneyTypeValue == null) {
       return BotToast.showText(text: "Please select journey type");
     }
-    if(selectPaymentTypeValue == null){
+    if (selectPaymentTypeValue == null) {
       return BotToast.showText(text: "Please select payment type");
     }
-    if(selectVehicleValue == null){
+    if (selectVehicleValue == null) {
       return BotToast.showText(text: "Please select vehicle type");
     }
     postDashboardApi();
@@ -1337,18 +1396,19 @@ class DashboardController extends GetxController {
   }
 
   postDashboardApi() async {
-
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
     await restrictedDriversListConfig();
 
-    if(viaPoints.isNotEmpty){
+    if (viaPoints.isNotEmpty) {
       await postViaListConfig();
     }
 
-    int pickUpTwoIndex = markers.indexWhere((test) => test.type == "pickup two way");
+    int pickUpTwoIndex =
+        markers.indexWhere((test) => test.type == "pickup two way");
     int pickUpIndex = markers.indexWhere((test) => test.type == "pickup");
     int dropOffIndex = markers.indexWhere((test) => test.type == "dropOff");
-    int dropOffTwoIndex = markers.indexWhere((test) => test.type == "dropOff two way");
+    int dropOffTwoIndex =
+        markers.indexWhere((test) => test.type == "dropOff two way");
     double? pickUpLatLat;
     double? pickUpLngLat;
     double? dropOffLatLat;
@@ -1357,7 +1417,6 @@ class DashboardController extends GetxController {
     double? pickUpLngTwoLat;
     double? dropOffLatTwoLat;
     double? dropOffLngTwoLat;
-
 
     // Check if the marker was actually found to avoid errors
     if (pickUpIndex != -1) {
@@ -1388,98 +1447,129 @@ class DashboardController extends GetxController {
 
     var formData = {
       'pickup': pickupController.text,
-      if(dashboardZoneValue != null)'pickup_plot': dashboardZoneValue!.id,
+      if (dashboardZoneValue != null) 'pickup_plot': dashboardZoneValue!.id,
       'pickup_door_number': pickUpNoteController.text,
       'pickup_latitude': pickUpLatLat,
       'pickup_longitude': pickUpLngLat,
       'dropoff': dropOffController.text,
-      if(dashboardDZoneValue != null)'dropoff_plot': dashboardDZoneValue!.id,
+      if (dashboardDZoneValue != null) 'dropoff_plot': dashboardDZoneValue!.id,
       'dropoff_door_number': dropUpNoteController.text,
       'dropoff_latitude': dropOffLatLat,
       'dropoff_longitude': dropOffLngLat,
-      if(viaPostList.isNotEmpty)'viapoints': jsonEncode(viaPostList),
-      if(nameController.text.isNotEmpty)'name': nameController.text,
-      if(emailController.text.isNotEmpty)'email': emailController.text,
-      if(mobileController.text.isNotEmpty)'mobile': mobileController.text,
-      if(telController.text.isNotEmpty) 'telephone': telController.text,
-      'customer': '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
-      'pickup_date': "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
-      if(pickUpTimeController.text.isNotEmpty) 'pickup_time': pickUpTimeController.text,
-      if(minController.text.isNotEmpty) 'lead_time': minController.text,
-      'journey_type_id': selectJourneyTypeValue !=null ? selectJourneyTypeValue!.id :1,
-      if(selectAccountValue != null) 'account_id': selectAccountValue!.id,
-      if(selectDepartmentData != null) 'department': selectDepartmentData!.id,
+      if (viaPostList.isNotEmpty) 'viapoints': jsonEncode(viaPostList),
+      if (nameController.text.isNotEmpty) 'name': nameController.text,
+      if (emailController.text.isNotEmpty) 'email': emailController.text,
+      if (mobileController.text.isNotEmpty) 'mobile': mobileController.text,
+      if (telController.text.isNotEmpty) 'telephone': telController.text,
+      'customer':
+          '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
+      'pickup_date':
+          "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      if (pickUpTimeController.text.isNotEmpty)
+        'pickup_time': pickUpTimeController.text,
+      if (minController.text.isNotEmpty) 'lead_time': minController.text,
+      'journey_type_id':
+          selectJourneyTypeValue != null ? selectJourneyTypeValue!.id : 1,
+      if (selectAccountValue != null) 'account_id': selectAccountValue!.id,
+      if (selectDepartmentData != null) 'department': selectDepartmentData!.id,
       'quotation': switchController.value,
       'sms': true /*smsCheckbox.value*/,
       'emailFlag': emailCheckbox.value,
-      if(passController.text.isNotEmpty)'passengers': passController.text,
-      if(luggController.text.isNotEmpty)'luggages': luggController.text,
-      if(sluggController.text.isNotEmpty)'hand_luggages': sluggController.text,
-      if(selectPaymentTypeValue != null) 'payment_type_id': selectPaymentTypeValue!.id,
-      if(selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
-      if(restrictedDrivers.isNotEmpty)'restricted_drivers': jsonEncode(restrictedDrivers),
-      if(childSeatList.isNotEmpty)'child_seat': jsonEncode(childSeatList),
-      if(partingChargesController.text.isNotEmpty) 'parking_charges': partingChargesController.text,
-      if(congestionChargesController.text.isNotEmpty) 'congestion_charges': congestionChargesController.text,
-      if(meetGreetController.text.isNotEmpty) 'meet_and_greet': meetGreetController.text,
-      if(waitingChargesController.text.isNotEmpty) 'waiting_charges': waitingChargesController.text,
-      if(extraDropChargesController.text.isNotEmpty) 'extra_drop_charges': extraDropChargesController.text,
-      if(creditCardChargesController.text.isNotEmpty) 'credit_card_charges': creditCardChargesController.text,
-      if(companyPriceController.text.isNotEmpty) 'company_price': companyPriceController.text,
+      if (passController.text.isNotEmpty) 'passengers': passController.text,
+      if (luggController.text.isNotEmpty) 'luggages': luggController.text,
+      if (sluggController.text.isNotEmpty)
+        'hand_luggages': sluggController.text,
+      if (selectPaymentTypeValue != null)
+        'payment_type_id': selectPaymentTypeValue!.id,
+      if (selectVehicleValue != null) 'vehicle_type_id': selectVehicleValue!.id,
+      if (restrictedDrivers.isNotEmpty)
+        'restricted_drivers': jsonEncode(restrictedDrivers),
+      if (childSeatList.isNotEmpty) 'child_seat': jsonEncode(childSeatList),
+      if (partingChargesController.text.isNotEmpty)
+        'parking_charges': partingChargesController.text,
+      if (congestionChargesController.text.isNotEmpty)
+        'congestion_charges': congestionChargesController.text,
+      if (meetGreetController.text.isNotEmpty)
+        'meet_and_greet': meetGreetController.text,
+      if (waitingChargesController.text.isNotEmpty)
+        'waiting_charges': waitingChargesController.text,
+      if (extraDropChargesController.text.isNotEmpty)
+        'extra_drop_charges': extraDropChargesController.text,
+      if (creditCardChargesController.text.isNotEmpty)
+        'credit_card_charges': creditCardChargesController.text,
+      if (companyPriceController.text.isNotEmpty)
+        'company_price': companyPriceController.text,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
-      if(specialRequirementsController.text.isNotEmpty)'special_instructions': specialRequirementsController.text,
-      if(extraFaresList.isNotEmpty)'notes': jsonEncode(extraFaresList),
-      if(selectDriverValue != null)'driver_id': selectDriverValue!.id,
-      if(slugController.text.isNotEmpty)'fares': slugController.text,
+      if (specialRequirementsController.text.isNotEmpty)
+        'special_instructions': specialRequirementsController.text,
+      if (extraFaresList.isNotEmpty) 'notes': jsonEncode(extraFaresList),
+      if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
+      if (slugController.text.isNotEmpty) 'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,
-      if(selectSubsidiariesValue != null) 'subsidiary_id': selectSubsidiariesValue!.id,
+      if (selectSubsidiariesValue != null)
+        'subsidiary_id': selectSubsidiariesValue!.id,
       'booking_status_id': '1',
-      'booking_type_id': multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty?'2':'1',
+      'booking_type_id':
+          multiVehicleTempList.isNotEmpty || multiReservationTemp.isNotEmpty
+              ? '2'
+              : '1',
       'booking_source': 'dashboard',
       'employee_id': '2',
-      if(multiReservationTemp.isNotEmpty) "multi_reservation": jsonEncode(multiReservationTemp),
-      if(multiVehicleTempList.isNotEmpty) "multi_vehicle": jsonEncode(multiVehicleTempList),
-
-
-      /// todo waiting return
-      if(pickupTwoWayController.text.isNotEmpty)"return_pickup": pickupTwoWayController.text,
-      if(dropOffTwoWayController.text.isNotEmpty)"return_dropoff": dropOffTwoWayController.text,
-      if(pickUpLatTwoLat != null)"return_pickup_latitude": pickUpLatTwoLat,
-      if(pickUpLngTwoLat != null)"return_pickup_longitude": pickUpLngTwoLat,
-      if(dropOffLatTwoLat != null)"return_dropoff_latitude": dropOffLatTwoLat,
-      if(dropOffLngTwoLat != null)"return_dropoff_longitude": dropOffLngTwoLat,
-     if(pickupTwoWayController.text.isNotEmpty) "return_pickup_date": "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
-     if(dropOffTwoWayController.text.isNotEmpty) "return_pickup_time": pickUpTimeControllerReturn.text,
-      if(viaReturnPostList.isNotEmpty)'return_viapoints': jsonEncode(viaReturnPostList),
-     if(selectVehicleValueReturn != null) "return_driver_id": selectVehicleValueReturn!.id,
-     if(selectDriverValueReturn != null) "return_vehicle_type_id": selectDriverValueReturn!.id,
-     if(pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
-     if(extraFaresReturnList.isNotEmpty) "return_notes": jsonEncode(extraFaresReturnList),
+      if (multiReservationTemp.isNotEmpty)
+        "multi_reservation": jsonEncode(multiReservationTemp),
+      if (multiVehicleTempList.isNotEmpty)
+        "multi_vehicle": jsonEncode(multiVehicleTempList),
 
       /// todo waiting return
+      if (pickupTwoWayController.text.isNotEmpty)
+        "return_pickup": pickupTwoWayController.text,
+      if (dropOffTwoWayController.text.isNotEmpty)
+        "return_dropoff": dropOffTwoWayController.text,
+      if (pickUpLatTwoLat != null) "return_pickup_latitude": pickUpLatTwoLat,
+      if (pickUpLngTwoLat != null) "return_pickup_longitude": pickUpLngTwoLat,
+      if (dropOffLatTwoLat != null) "return_dropoff_latitude": dropOffLatTwoLat,
+      if (dropOffLngTwoLat != null)
+        "return_dropoff_longitude": dropOffLngTwoLat,
+      if (pickupTwoWayController.text.isNotEmpty)
+        "return_pickup_date":
+            "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
+      if (dropOffTwoWayController.text.isNotEmpty)
+        "return_pickup_time": pickUpTimeControllerReturn.text,
+      if (viaReturnPostList.isNotEmpty)
+        'return_viapoints': jsonEncode(viaReturnPostList),
+      if (selectVehicleValueReturn != null)
+        "return_driver_id": selectVehicleValueReturn!.id,
+      if (selectDriverValueReturn != null)
+        "return_vehicle_type_id": selectDriverValueReturn!.id,
+      if (pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
+      if (extraFaresReturnList.isNotEmpty)
+        "return_notes": jsonEncode(extraFaresReturnList),
 
-
-
-
+      /// todo waiting return
     };
     print(markers);
     print(formData);
     var response = await Api().post(formData, "bookings/add");
-    if(response.statusCode == 200){
-      if("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" == "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 1){
-        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      }else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" != "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" && selectedTabId == 2){
-        dashboardTableModelData!.data!.insert(0, BookingObjectData.fromJson(response.data['bookings'][0]));
+    if (response.statusCode == 200) {
+      if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
+              "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+          selectedTabId == 1) {
+        dashboardTableModelData!.data!.insert(
+            0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
+              "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+          selectedTabId == 2) {
+        dashboardTableModelData!.data!.insert(
+            0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      refreshPostAllFields();
+      // refreshPostAllFields();
       print(response.data);
-
     }
   }
 
   restrictedDriversListConfig() async {
-    if(driversList.isNotEmpty){
+    if (driversList.isNotEmpty) {
       restrictedDrivers.clear();
       for (var driverss in driversList) {
         restrictedDrivers.add({
@@ -1487,8 +1577,9 @@ class DashboardController extends GetxController {
           "username": driverss.username,
           "name": driverss.name,
         });
-      }}
-    if(childSeatAlert.isNotEmpty){
+      }
+    }
+    if (childSeatAlert.isNotEmpty) {
       childSeatList.clear();
       for (var ele in childSeatAlert) {
         childSeatList.add({
@@ -1497,26 +1588,26 @@ class DashboardController extends GetxController {
         });
       }
     }
-    if(controllerAlert.isNotEmpty){
+    if (controllerAlert.isNotEmpty) {
       extraFaresList.clear();
       extraFaresReturnList.clear();
       for (var index in controllerAlert) {
-        if(index.title == "controller return note"){
-          extraFaresReturnList.add({"note": index.note,
-            "created_at":
-            "2025-11-25 16:10",
-            "created_by":"nadeem"
+        if (index.title == "controller return note") {
+          extraFaresReturnList.add({
+            "note": index.note,
+            "created_at": "2025-11-25 16:10",
+            "created_by": "nadeem"
           });
-        }else{
-          extraFaresList.add({"note": index.note,
-            "created_at":
-            "2025-11-25 16:10",
-            "created_by":"nadeem"
+        } else {
+          extraFaresList.add({
+            "note": index.note,
+            "created_at": "2025-11-25 16:10",
+            "created_by": "nadeem"
           });
         }
       }
     }
-    if(multiReservationList.isNotEmpty){
+    if (multiReservationList.isNotEmpty) {
       for (var element in multiReservationList) {
         DateTime parsedDate = DateFormat('yyyy-M-d').parse(element.startDate!);
 
@@ -1534,11 +1625,11 @@ class DashboardController extends GetxController {
       }
     }
 
-    if(multiVehicleList.isNotEmpty){
+    if (multiVehicleList.isNotEmpty) {
       for (var element in multiVehicleList) {
         multiVehicleTempList.add({
-              "vehicle_type": element.id,
-            });
+          "vehicle_type": element.id,
+        });
       }
     }
     update();
@@ -1550,7 +1641,7 @@ class DashboardController extends GetxController {
     print(viaPoints);
     for (var action in viaPoints) {
       print(action.withReturnWay);
-      if(action.withReturnWay == 'via'){
+      if (action.withReturnWay == 'via') {
         viaPostList.add({
           "viapoint": action.address,
           "name": action.name,
@@ -1561,7 +1652,7 @@ class DashboardController extends GetxController {
           "latitude": action.lat,
           "longitude": action.lng
         });
-      }else{
+      } else {
         viaReturnPostList.add({
           "viapoint": action.address,
           "name": action.name,
@@ -1577,10 +1668,11 @@ class DashboardController extends GetxController {
     update();
   }
 
-  refreshPostAllFields() async{
-    final LocationController _controller = Get.isRegistered<LocationController>()
-        ? Get.find<LocationController>()
-        : Get.put(LocationController());
+  refreshPostAllFields() async {
+    final LocationController _controller =
+        Get.isRegistered<LocationController>()
+            ? Get.find<LocationController>()
+            : Get.put(LocationController());
     pickupController.clear();
     pickUpNoteController.clear();
     dropOffController.clear();
@@ -1802,7 +1894,7 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> controller note alert
   List<NoteClass> controllerAlert = [];
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
 }
 
 class DashBoardBindings implements Bindings {

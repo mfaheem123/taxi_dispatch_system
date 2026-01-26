@@ -73,7 +73,12 @@ class _BookingTableState extends State<BookingTable> {
                           btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
                           controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
                           onTap: () {
-                            controller.getTableDataStatus(index: index);
+                            if(controller.bookingTabsList![index].deletedClr!.value == true){
+                              controller.deleteJobs();
+                            }else{
+                              controller.temSelectedTab = index;
+                              controller.getTableDataStatus(index: index);
+                            }
                           },
                         ):
 
@@ -218,12 +223,36 @@ class _BookingTableState extends State<BookingTable> {
                           /// Checkbox ❌ (NO right click)
                           DataCell(
                             Checkbox(
-                              value: isSelected,
-                              onChanged: (value) {
+                              value: controller.selectedDeletesItems?.contains(item) ?? false,
+                              onChanged: (bool? value) { // Checkbox value is nullable bool
+                                if (value == null) return;
+
                                 setState(() {
-                                  selectedRowIndex = value! ? index : -1;
+                                  // 2. Ensure the list exists before using it
+                                  controller.selectedDeletesItems ??= [];
+
+                                  if (value) {
+                                    // If checked, add to list
+                                    controller.selectedDeletesItems!.add(item);
+                                    selectedRowIndex = index;
+                                  } else {
+                                    // If unchecked, remove from list
+                                    controller.selectedDeletesItems!.remove(item);
+                                    selectedRowIndex = -1;
+                                  }
                                 });
                               },
+                              // onChanged: (value) {
+                              //   setState(() {
+                              //     print(item);
+                              //     if(controller.selectedDeletesItems!.contains(item)){
+                              //       controller.selectedDeletesItems!.remove(item);
+                              //     }else{
+                              //       controller.selectedDeletesItems!.add(item);
+                              //     }
+                              //     selectedRowIndex = value! ? index : -1;
+                              //   });
+                              // },
                             ),
                           ),
 

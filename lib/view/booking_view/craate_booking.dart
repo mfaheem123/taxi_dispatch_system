@@ -323,7 +323,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                             spacing: 16,
                                             children: [
                                               Padding(
-                                                padding: const EdgeInsets.only(
+                                                padding: EdgeInsets.only(
                                                     left: 10),
                                                 child: Text(
                                                   AppText.pick,
@@ -1307,6 +1307,8 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                         // (9) Driver dropdown
                                         if (controller.jourValue == 'W/R') ...[
+
+
                                           SizedBox(height: screenHeight * 0.01),
 
                                           Align(
@@ -1315,20 +1317,16 @@ class _CreateBookingState extends State<CreateBooking> {
                                               runSpacing: 10,
                                               spacing: 16,
                                               children: [
-                                                Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 15),
-                                                    child: Text(
-                                                      AppText.pick,
-                                                      style:
-                                                          mozillaTextSemiBoldText(
-                                                        context: context,
-                                                        fontSize: 13,
-                                                      ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 15),
+                                                  child: Text(
+                                                    AppText.pick,
+                                                    style:
+                                                        mozillaTextSemiBoldText(
+                                                      context: context,
+                                                      fontSize: 13,
                                                     ),
                                                   ),
                                                 ),
@@ -1584,7 +1582,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 12),
                                                 // (3) Pickup notes
                                                 FocusTraversalOrder(
                                                   order:
@@ -1616,20 +1613,16 @@ class _CreateBookingState extends State<CreateBooking> {
                                               runSpacing: 10,
                                               spacing: 16,
                                               children: [
-                                                Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 10),
-                                                    child: Text(
-                                                      AppText.drop,
-                                                      style:
-                                                          mozillaTextSemiBoldText(
-                                                        context: context,
-                                                        fontSize: 13,
-                                                      ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 10),
+                                                  child: Text(
+                                                    AppText.drop,
+                                                    style:
+                                                        mozillaTextSemiBoldText(
+                                                      context: context,
+                                                      fontSize: 13,
                                                     ),
                                                   ),
                                                 ),
@@ -1884,7 +1877,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
-                                                SizedBox(width: 15),
                                                 // (3) Pickup notes
                                                 FocusTraversalOrder(
                                                   order:
