@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class ColorPickerWidget extends StatelessWidget {
-  final Color pickerColor;
+  final Color pickerColor; // Keep this as Color
   final void Function(Color) onColorChanged;
   final double? width;
   final double? height;
   final Color? borderColor;
   final void Function(Color)? onColorSelected;
-  double? colorContainerHeight;
+  final double? colorContainerHeight; // Marked as final for StatelessWidget
 
   ColorPickerWidget({
     super.key,
@@ -19,7 +19,7 @@ class ColorPickerWidget extends StatelessWidget {
     this.height,
     this.borderColor = Colors.black,
     this.onColorSelected,
-    this.colorContainerHeight
+    this.colorContainerHeight,
   });
 
   @override
@@ -29,35 +29,45 @@ class ColorPickerWidget extends StatelessWidget {
         showDialog(
           context: context,
           builder: (BuildContext context) {
+            // Use the Color object directly
             Color tempColor = pickerColor;
-            return AlertDialog(
-              title: const Text('Pick a color!'),
-              content: SingleChildScrollView(
-                child: ColorPicker(
-                  pickerColor: tempColor,
-                  onColorChanged: (color) {
-                    tempColor = color;
-                    onColorChanged(color);
-                  },
-                ),
-              ),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: const Text('Got it'),
-                  onPressed: () {
-                    // Call callback if provided
-                    if (onColorSelected != null) {
-                      onColorSelected!(tempColor);
-                    }
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+
+            return StatefulBuilder(
+              builder: (context, setDialogState) {
+                return AlertDialog(
+                  title: const Text('Pick a color!'),
+                  content: SingleChildScrollView(
+                    child: ColorPicker(
+                      pickerColor: tempColor,
+                      onColorChanged: (Color color) {
+                        setDialogState(() {
+                          tempColor = color;
+                        });
+                        // Optional: Live preview update
+                        onColorChanged(color);
+                      },
+                    ),
+                  ),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      child: const Text('Got it'),
+                      onPressed: () {
+                        // Pass the Color object back
+                        onColorChanged(tempColor);
+
+                        if (onColorSelected != null) {
+                          onColorSelected!(tempColor);
+                        }
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
             );
           },
         );
       },
-
       child: Container(
         height: height ?? 30,
         width: width ?? 100,
@@ -67,8 +77,8 @@ class ColorPickerWidget extends StatelessWidget {
         ),
         child: Center(
           child: Container(
-            color: pickerColor,
-            height: colorContainerHeight?? 5,
+            color: pickerColor, // Direct usage
+            height: colorContainerHeight ?? 5,
             width: (width ?? 100) / 1.2,
           ),
         ),

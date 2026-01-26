@@ -365,10 +365,26 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                               item: item,
+
                               onRightClick: () {
                                 print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                               },
-                              child: Text(item.account?.name ?? ""),
+                              child: Container(
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  alignment: Alignment.center,
+
+                                  // APPLY YOUR COLOR HERE
+                                  decoration: BoxDecoration(
+                                    color: item.account!.backgroundColor == null?DynamicColors.whiteClr: Color(int.parse("0xFF${item.account!.backgroundColor}")),
+                                    // Optional: borderRadius: BorderRadius.circular(2),
+                                  ),
+                                  child: Text(item.account?.name ?? "",
+                                    style: mozillaTextRegularText(
+                                      fontSize: 13,
+                                      color: item.account!.foregroundColor == null?DynamicColors.black: Color(int.parse("0xFF${item.account!.foregroundColor}")),
+                                    ),
+                                  )),
                             ),
                           ),
 

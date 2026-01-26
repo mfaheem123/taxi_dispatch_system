@@ -406,21 +406,16 @@ class _AccountViewState extends State<AccountView> {
                                           context: context, fontSize: 13)),
                                   ColorPickerWidget(
                                     pickerColor: controller.pickerColor,
-                                    onColorChanged: (color) {
+                                    onColorChanged: (Color newColor) {
+                                      // This produces your '0xFF2196F3' format
+                                      String hexString = '0x${newColor.value.toRadixString(16).toUpperCase()}';
+                                      print(hexString);
+
                                       setState(() {
-                                        controller.pickerColor =
-                                            color; // live preview
+                                        controller.pickerColor = newColor;
                                       });
                                     },
-                                    onColorSelected: (color) {
-                                      setState(() {
-                                        controller.pickerColor =
-                                            color; // final selected
-                                      });
-                                    },
-                                    width: fieldWidth / 3,
-                                    borderColor: DynamicColors.gryClr,
-                                  ),
+                                  )
                                 ],
                               ),
                               Column(
@@ -439,9 +434,9 @@ class _AccountViewState extends State<AccountView> {
                                             content: SingleChildScrollView(
                                               child: ColorPicker(
                                                 pickerColor:
-                                                    controller.foregroundClr,
+                                                controller.foregroundClr,
                                                 onColorChanged:
-                                                    controller.foregroundColor,
+                                                controller.foregroundColor,
                                               ),
                                             ),
                                             actions: <Widget>[
@@ -477,6 +472,10 @@ class _AccountViewState extends State<AccountView> {
                                   ),
                                 ],
                               ),
+
+
+
+
                               // Column(
                               //   crossAxisAlignment: CrossAxisAlignment.start,
                               //   children: [
