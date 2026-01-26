@@ -31,8 +31,8 @@ class AccountController extends GetxController {
   final accountAddressController = TextEditingController();
   final accountInformationController = TextEditingController();
   final accountContactNameController = TextEditingController();
-  Color pickerColor = Colors.blue; // currently selected color inside picker
-  Color foregroundClr = Colors.blue;
+  Color pickerColor = Color(0xFF2196F3); // Initial value
+  Color foregroundClr = Color(0xFF2196F3); // Initial value
 
   ///====FeeSection
 
@@ -119,6 +119,8 @@ class AccountController extends GetxController {
         "telephone": action.telphone,
       });
     }
+    print(pickerColor);
+    print(foregroundClr);
 
     var formData = {
       "subsidiary_id": subsidiaryStoreValue!.id,
@@ -138,8 +140,8 @@ class AccountController extends GetxController {
       "payment_types": paymentType,
       "information": accountInformationController.text,
       "contact_name": accountContactNameController.text,
-      "background_color": pickerColor,
-      "foreground_color": foregroundClr,
+      "background_color": pickerColor.value.toRadixString(16).substring(2),
+      "foreground_color": foregroundClr.value.toRadixString(16).substring(2),
       "agent_commission_type": commissionDropDown,
       "agent_commission": accountAgentCommissionController.text,
       "admin_fees_type": adminFeesDropDown,
@@ -159,7 +161,7 @@ class AccountController extends GetxController {
       "clear_job_text": clearJobSmsCheckBox.value,
       "bank_information": bankInfoCheckBox.value,
       "web_logins": webLoginsTemp,
-      "departments": [
+     if(dpartmentCtrl.text.isNotEmpty) "departments": [
         {"name": dpartmentCtrl.text},
       ],
       "contacts": [
@@ -171,12 +173,12 @@ class AccountController extends GetxController {
           "telephone": contactAlertTelephoneCtrl.text,
         }
       ],
-      "order_numbers": [
+     if(orderCtrl.text.isNotEmpty) "order_numbers": [
         {
           "order_number": orderCtrl.text,
         },
       ],
-      "company_addresses": [
+     if(addressCtrl.text.isNotEmpty) "company_addresses": [
         {
           "address": addressCtrl.text,
         }
@@ -187,7 +189,7 @@ class AccountController extends GetxController {
 
     var response = await Api().post(
       formData,
-      accountObjectData != null ? "accounts/edit/26" : 'accounts/add',
+      accountObjectData != null ? "accounts/edit/${accountObjectData!.id}" : 'accounts/add',
       auth: true,
     );
 
@@ -198,6 +200,16 @@ class AccountController extends GetxController {
       arrivalSmsCheckBox.value = false;
       clearJobSmsCheckBox.value = false;
       bankInfoCheckBox.value = false;
+
+      orderCheckBox.value = false;
+      bookedByCheckBox.value = false;
+      fareControllerCheckBox.value = false;
+      adminFeeCheckBox.value = false;
+      accountFeeCheckBox.value = false;
+      vatCheckBox.value = false;
+      dispatchSmsCheckBox.value = false;
+      confirmSmsCheckBox.value = false;
+
       dpartmentCtrl.clear();
       contactAlertNameCtrl.clear();
       contactAlertEmailCtrl.clear();
