@@ -143,12 +143,16 @@ class _FareByVehicleState extends State<FareByVehicle> {
                   children: [
                     CustomButton(
                       onTap: (){
+
                         controller.postFareByVehicleSetting();
                         controller.getFareByVehicleSetting();
+                        controller.updateFarebyVehicle(false);
                       },
                       height: 30,
                       width: fieldWidth,
-                      btnText: AppText.save,
+                      btnText:
+                      controller.updateFarebyVehicle.value == false?
+                      AppText.save: "UPDATE" ,
                       verticalPadding: 0.0,
                       borderRadius: 4,
                       style: mozillaTextRegularText(
@@ -157,6 +161,9 @@ class _FareByVehicleState extends State<FareByVehicle> {
                       ),
                     ),
                     CustomButton(
+                      onTap: () {
+                        controller.clearAllFields();
+                      },
                       height: 30,
                       width: fieldWidth,
                       btnText: AppText.clear,
@@ -219,6 +226,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
+controller.deleteCustomer(farefxed.id);
                                       // 🔴 Delete action
                                     },
                                     child: Icon(Icons.delete_forever,

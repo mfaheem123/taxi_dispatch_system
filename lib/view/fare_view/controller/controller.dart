@@ -989,26 +989,39 @@ DaysClass? selectedDay;
     getFareByVehicleSetting();
     fareValueVehicleController.clear();
     createByVehicleTypes = null ;
-    fareByVehicleOperater = null;
+    fareByVehicleOperater = 'AMOUNT';
       print(response.data);
       BotToast.showText(text: "Fare By Vehicle is successfully added");
     }
   }
   RxBool updateFarebyVehicle = false.obs;
   RxInt fareByVehicleUpdateId = 0.obs;
+
   bindFareByVechicle(FareByVehicle fareByVehicleEdit) {
     fareByVehicleUpdateId.value = fareByVehicleEdit.id!;
-    createByVehicleTypes = fareByVehicleEdit.vehicleType!.name as VehicleTypeFixed?;
+    createByVehicleTypes = VehicleTypeModel!.vehicleTypesFixed?.firstWhere(
+            (element) => element.id == fareByVehicleEdit.vehicleTypeId);
     fareValueVehicleController.text = fareByVehicleEdit.value.toString();
-    fareByVehicleOperater = fareByVehicleEdit.fareByVehicleOperator?.toUpperCase();
-
+    fareByVehicleOperater = fareByVehicleEdit.fareByVehicleOperator;
     updateFarebyVehicle(true);
     update();
+
   }
 
+  deleteCustomer(int? id) async {
+    var response = await Api().delete("farebyvehicle/delete/$id");
+    if (response.statusCode == 200) {
+      getFareByVehicleSetting();
+      BotToast.showText(text: "Fare By Vehicle is Deleted");
+    }
+  }
 
-
-
-
+  clearAllFields() {
+    fareValueVehicleController.clear();
+    createByVehicleTypes = null;
+    fareByVehicleOperater = 'AMOUNT';
+    updateFarebyVehicle(false);
+    update();
+  }
 
 }
