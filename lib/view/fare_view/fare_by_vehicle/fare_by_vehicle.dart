@@ -1,6 +1,7 @@
 
 
 
+import 'package:dashboard_new1/view/fare_view/fare_by_vehicle/model/fare_by_vehicle_model.dart' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -201,6 +202,8 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
+                                      controller.bindFareByVechicle(farefxed);
+                                      controller.update();
                                       // 🟢 Edit action
                                     },
                                     child: Icon(Icons.edit_calendar,

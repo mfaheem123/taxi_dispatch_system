@@ -34,7 +34,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-
+    controller.companyVehicle();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -59,221 +59,224 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    // final listToShow = controller.filteredCompanyVehicle.isNotEmpty
-    //     ? controller.filteredCompanyVehicle
-    //     : controller.companyAllVehicle;
-    // double width = WidgetsBinding
-    //         .instance.platformDispatcher.views.first.physicalSize.width /
-    //     WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+    double width = WidgetsBinding
+        .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
     return RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<VehicleController>(
-          initState: (state) {
-            controller.companyVehicle();
-          },
-          builder: (controller) {
-        return controller.companyVehicleModel == null
+      child: GetBuilder<VehicleController>(builder: (controller) {
+        final listToShow = controller.filteredCompanyVehicle.isNotEmpty
+            ? controller.filteredCompanyVehicle
+            : controller.companyAllVehicle;
+
+        return controller.isCompanyVehicle.value == true
             ? Center(child: CircularProgressIndicator())
 
+            :(controller.companyVehicleModel?.vehicles == null || controller.companyVehicleModel!.vehicles!.isEmpty)
+            ? Center(
+          child: Text("NO DATA"),
+        )
+
             : SingleChildScrollView(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "COMPANY VEHICLES" +
-                              " (${controller.companyVehicleModel?.count})",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.w800, fontSize: 17),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        SizedBox(
-                          width: 60,
-                        ),
-                        CustomButton(
-                          height: 40,
-                          width: 80,
-                          verticalPadding: 0.0,
-                          borderRadius: 4,
-                          widget: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 0.0),
-                            child: Icon(
-                              Icons.refresh,
-                              color: DynamicColors.whiteClr,
-                              size: 25,
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Text(
+                    "COMPANY VEHICLES" +
+                        " (${controller.companyVehicleModel?.count})",
+                    style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w800, fontSize: 17),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  SizedBox(
+                    width: 60,
+                  ),
+                  CustomButton(
+                    height: 40,
+                    width: 80,
+                    verticalPadding: 0.0,
+                    borderRadius: 4,
+                    widget: Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 0.0),
+                      child: Icon(
+                        Icons.refresh,
+                        color: DynamicColors.whiteClr,
+                        size: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 12,
+              ),
+              SizedBox(
+                width: Get.width,
+                child: DatatableWidget(
+                  columns: [
+                    buildHeaderWithSearch(
+                      title: "VEHICLE #",
+                      onChanged: (v) {
+                        controller.searchVehicle.text = v;
+                        controller.SearchingOnCompany();
+                      },
+                    ),
+
+                    buildHeaderWithSearch(
+                        title: "VEHICLE TYPE",
+                        onChanged: (v) {
+                          controller.searchVehicleType.text = v;
+                          controller.SearchingOnCompany();
+                        }),
+                    buildHeaderWithSearch(
+                        title: "OWNER",
+                        onChanged: (v) {
+                          controller.searchOwner.text = v;
+                          controller.SearchingOnCompany();
+                        }),
+                    buildHeaderWithSearch(
+                        title: "MAKE",
+                        onChanged: (v) {
+                          controller.searchMake.text = v;
+                          controller.SearchingOnCompany();
+                        }),
+                    buildHeaderWithSearch(
+                        title: "MODEL",
+                        onChanged: (v) {
+                          controller.searchModel.text = v;
+                          controller.SearchingOnCompany();
+                        }),
+                    buildHeaderWithSearch(
+                        title: "COLOR",
+                        onChanged: (v) {
+                          controller.searchColor.text  = v;
+                          controller.SearchingOnCompany();
+                        }),
+                    buildHeaderWithSearch(
+                        title: "ACTIONS", removeSearching: true),
+                  ],
+                  totalRow:
+                  controller.companyVehicleModel?.vehicles?.length ??
+                      0,
+                  rows: (controller.companyVehicleModel?.vehicles ?? [])
+                      .map((item) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Center(
+                            child: Text(item.vehicleNumber.toString()))),
+                        DataCell(Center(
+                            child: Text(
+                                item.vehicleType?.name.toString() ??
+                                    "no data"))),
+                        DataCell(Center(
+                            child: Text(
+                                item.owner.toString() ?? "no data"))),
+                        DataCell(Center(
+                            child:
+                            Text(item.make.toString() ?? "no data"))),
+                        DataCell(Center(
+                            child: Text(
+                                item.model.toString() ?? "no data"))),
+                        DataCell(Center(
+                            child: Text(
+                                item.color.toString() ?? "no data"))),
+                        DataCell(
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {
+                                    controller.companyDataBinding(
+                                        data: item);
+                                    // controller.bindLocationUpdateLocation(locationUpdate: item);
+                                    int index = _controller
+                                        .selectedMenuItems
+                                        .indexWhere((element) =>
+                                    element.title ==
+                                        "LocationForm");
+                                    if (index != -1) {
+                                      _controller.selectedMenuItems[index]
+                                          .selectedItem = true;
+                                      _controller.currentPage.value =
+                                          CreateCompanyVehicle();
+                                    } else {
+                                      _controller.currentPage.value =
+                                          CreateCompanyVehicle();
+                                      _controller.menuBarRefresh(
+                                          title: "CREATE COMPANY VEHICLE",
+                                          pageName:
+                                          CreateCompanyVehicle());
+                                    }
+                                    controller.update();
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 28,
+                                  ),
+                                ),
+                                Text("|"),
+                                OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    side: BorderSide(
+                                      color: Colors.transparent,
+                                    ), // border color & thickness
+                                  ),
+                                  onPressed: () {
+                                    // showDialog(
+                                    //   context: context,
+                                    //   builder: (_) => DeletePermissionAlert(
+                                    //       deleteFunctionName: controller
+                                    //           .deleteCompanyVehicle(
+                                    //               item.id!)),
+                                    // );
+
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) =>
+                                          DeletePermissionAlert(
+                                            deleteFunctionName: () =>
+                                                controller
+                                                    .deleteCompanyVehicle(
+                                                    item.id!),
+                                          ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.delete_forever,
+                                    color: DynamicColors.redClr,
+                                    size: 28,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    SizedBox(
-                      height: 12,
-                    ),
-                    SizedBox(
-                      width: Get.width,
-                      child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(
-                            title: "VEHICLE #",
-                            onChanged: (v) {
-                              controller.searchVehicle.text = v;
-                              controller.SearchingOnCompany();
-                            },
-                          ),
-
-                          buildHeaderWithSearch(
-                              title: "VEHICLE TYPE",
-                              onChanged: (v) {
-                                controller.searchVehicleType.text = v;
-                                controller.SearchingOnCompany();
-                              }),
-                          buildHeaderWithSearch(
-                              title: "OWNER",
-                              onChanged: (v) {
-                                controller.searchOwner.text = v;
-                                controller.SearchingOnCompany();
-                              }),
-                          buildHeaderWithSearch(
-                              title: "MAKE",
-                              onChanged: (v) {
-                                controller.searchMake.text = v;
-                                controller.SearchingOnCompany();
-                              }),
-                          buildHeaderWithSearch(
-                              title: "MODEL",
-                              onChanged: (v) {
-                                controller.searchModel.text = v;
-                                controller.SearchingOnCompany();
-                              }),
-                          buildHeaderWithSearch(
-                              title: "COLOR",
-                              onChanged: (v) {
-                                controller.searchColor.text = v;
-                                controller.SearchingOnCompany();
-                              }),
-                          buildHeaderWithSearch(
-                              title: "ACTIONS", removeSearching: true),
-                        ],
-                        totalRow:
-                            controller.companyVehicleModel?.vehicles?.length ??
-                                0,
-                        rows: (controller.companyVehicleModel?.vehicles ?? [])
-                            .map((item) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Center(
-                                  child: Text(item.vehicleNumber.toString()))),
-                              DataCell(Center(
-                                  child: Text(
-                                      item.vehicleType?.name.toString() ??
-                                          "no data"))),
-                              DataCell(Center(
-                                  child: Text(
-                                      item.owner.toString() ?? "no data"))),
-                              DataCell(Center(
-                                  child:
-                                      Text(item.make.toString() ?? "no data"))),
-                              DataCell(Center(
-                                  child: Text(
-                                      item.model.toString() ?? "no data"))),
-                              DataCell(Center(
-                                  child: Text(
-                                      item.color.toString() ?? "no data"))),
-                              DataCell(
-                                Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {
-                                          controller.companyDataBinding(
-                                              data: item);
-                                          // controller.bindLocationUpdateLocation(locationUpdate: item);
-                                          int index = _controller
-                                              .selectedMenuItems
-                                              .indexWhere((element) =>
-                                                  element.title ==
-                                                  "LocationForm");
-                                          if (index != -1) {
-                                            _controller.selectedMenuItems[index]
-                                                .selectedItem = true;
-                                            _controller.currentPage.value =
-                                                CreateCompanyVehicle();
-                                          } else {
-                                            _controller.currentPage.value =
-                                                CreateCompanyVehicle();
-                                            _controller.menuBarRefresh(
-                                                title: "CREATE COMPANY VEHICLE",
-                                                pageName:
-                                                    CreateCompanyVehicle());
-                                          }
-                                          controller.update();
-                                        },
-                                        child: Icon(
-                                          Icons.edit,
-                                          size: 28,
-                                        ),
-                                      ),
-                                      Text("|"),
-                                      OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: BorderSide(
-                                            color: Colors.transparent,
-                                          ), // border color & thickness
-                                        ),
-                                        onPressed: () {
-                                          // showDialog(
-                                          //   context: context,
-                                          //   builder: (_) => DeletePermissionAlert(
-                                          //       deleteFunctionName: controller
-                                          //           .deleteCompanyVehicle(
-                                          //               item.id!)),
-                                          // );
-
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) =>
-                                                DeletePermissionAlert(
-                                              deleteFunctionName: () =>
-                                                  controller
-                                                      .deleteCompanyVehicle(
-                                                          item.id!),
-                                            ),
-                                          );
-                                        },
-                                        child: Icon(
-                                          Icons.delete_forever,
-                                          color: DynamicColors.redClr,
-                                          size: 28,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    PaginationWidget(
-                        currentPage: controller.companycurrentPage.value,
-                        totalPages: controller.companytotalPages.value,
-                        onPageChange: controller.PageOnCompany)
-                  ],
+                    );
+                  }).toList(),
                 ),
-              );
+              ),
+              PaginationWidget(
+                  currentPage: controller.companycurrentPage.value,
+                  totalPages: controller.companytotalPages.value,
+                  onPageChange: controller.PageOnCompany)
+            ],
+          ),
+        );
       }),
     );
   }

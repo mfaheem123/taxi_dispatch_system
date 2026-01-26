@@ -962,7 +962,6 @@ DaysClass? selectedDay;
 
   String? fareByVehicleOperater = "AMOUNT";
   final fareValueVehicleController = TextEditingController();
-
   FareByVehicleSetting? fareByVehicleSetting;
   RxBool farebyVehicleLoader = false.obs;
   getFareByVehicleSetting()async{
@@ -983,7 +982,9 @@ DaysClass? selectedDay;
       'operator': fareByVehicleOperater,
     };
     print(formData);
-    var response = await Api().post(formData, "farebyvehicle/add");
+    var response = await Api().post(formData,
+        updateFarebyVehicle.value == false ?
+        "farebyvehicle/add": "farebyvehicle/update/${fareByVehicleUpdateId.value}" );
     if(response.statusCode == 200){
     getFareByVehicleSetting();
     fareValueVehicleController.clear();
@@ -993,8 +994,17 @@ DaysClass? selectedDay;
       BotToast.showText(text: "Fare By Vehicle is successfully added");
     }
   }
+  RxBool updateFarebyVehicle = false.obs;
+  RxInt fareByVehicleUpdateId = 0.obs;
+  bindFareByVechicle(FareByVehicle fareByVehicleEdit) {
+    fareByVehicleUpdateId.value = fareByVehicleEdit.id!;
+    createByVehicleTypes = fareByVehicleEdit.vehicleType!.name as VehicleTypeFixed?;
+    fareValueVehicleController.text = fareByVehicleEdit.value.toString();
+    fareByVehicleOperater = fareByVehicleEdit.fareByVehicleOperator?.toUpperCase();
 
-
+    updateFarebyVehicle(true);
+    update();
+  }
 
 
 
