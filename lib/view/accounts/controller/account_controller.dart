@@ -103,6 +103,9 @@ class AccountController extends GetxController {
   String? accountTypeDropDown;
   String? commissionDropDown;
 
+  ///list of departments
+  final List<String> accountDepartmentList = [];
+
   RxBool postAccountDetailsLoader = false.obs;
 
   postAccount() async {
@@ -161,7 +164,7 @@ class AccountController extends GetxController {
       "clear_job_text": clearJobSmsCheckBox.value,
       "bank_information": bankInfoCheckBox.value,
       "web_logins": webLoginsTemp,
-     if(dpartmentCtrl.text.isNotEmpty) "departments": [
+     if(accountDepartmentList.isNotEmpty) "departments": [
         {"name": dpartmentCtrl.text},
       ],
       "contacts": [
@@ -187,66 +190,66 @@ class AccountController extends GetxController {
 
     print(formData);
 
-    var response = await Api().post(
-      formData,
-      accountObjectData != null ? "accounts/edit/${accountObjectData!.id}" : 'accounts/add',
-      auth: true,
-    );
-
-    if (response.statusCode == 200) {
-      print("✅ Account Created Successfully");
-      accountObjectData = null;
-      escoptCheckBox.value = false;
-      arrivalSmsCheckBox.value = false;
-      clearJobSmsCheckBox.value = false;
-      bankInfoCheckBox.value = false;
-
-      orderCheckBox.value = false;
-      bookedByCheckBox.value = false;
-      fareControllerCheckBox.value = false;
-      adminFeeCheckBox.value = false;
-      accountFeeCheckBox.value = false;
-      vatCheckBox.value = false;
-      dispatchSmsCheckBox.value = false;
-      confirmSmsCheckBox.value = false;
-
-      dpartmentCtrl.clear();
-      contactAlertNameCtrl.clear();
-      contactAlertEmailCtrl.clear();
-      contactAlertPasswordCtrl.clear();
-      contactAlertMobileCtrl.clear();
-      contactAlertTelephoneCtrl.clear();
-      orderCtrl.clear();
-      accountType = null;
-      subsidiaryStoreValue = null;
-      addressCtrl.clear();
-      accountNameController.clear();
-      accountCodeController.clear();
-      accountEmailController.clear();
-      accountPasswordController.clear();
-      accountMobileController.clear();
-      accountTelController.clear();
-      accountFaxController.clear();
-      accountWebSiteController.clear();
-      accountNumberController.clear();
-      accountCreditCardController.clear();
-      accountAddressController.clear();
-      accountInformationController.clear();
-      accountContactNameController.clear();
-      accountAdminFeeController.clear();
-      accountAccountFeeController.clear();
-      webLoginaccountCtrl.clear();
-      webLoginusernameCtrl.clear();
-      webLoginpasswordCtrl.clear();
-      webLoginmobileCtrl.clear();
-      webLogintelephoneCtrl.clear();
-      // orderCheckBox = false.obs;
-
-      update();
-    } else {
-      print("❌ Error Creating Account");
-      print(response);
-    }
+    // var response = await Api().post(
+    //   formData,
+    //   accountObjectData != null ? "accounts/edit/${accountObjectData!.id}" : 'accounts/add',
+    //   auth: true,
+    // );
+    //
+    // if (response.statusCode == 200) {
+    //   print("✅ Account Created Successfully");
+    //   accountObjectData = null;
+    //   escoptCheckBox.value = false;
+    //   arrivalSmsCheckBox.value = false;
+    //   clearJobSmsCheckBox.value = false;
+    //   bankInfoCheckBox.value = false;
+    //
+    //   orderCheckBox.value = false;
+    //   bookedByCheckBox.value = false;
+    //   fareControllerCheckBox.value = false;
+    //   adminFeeCheckBox.value = false;
+    //   accountFeeCheckBox.value = false;
+    //   vatCheckBox.value = false;
+    //   dispatchSmsCheckBox.value = false;
+    //   confirmSmsCheckBox.value = false;
+    //
+    //   dpartmentCtrl.clear();
+    //   contactAlertNameCtrl.clear();
+    //   contactAlertEmailCtrl.clear();
+    //   contactAlertPasswordCtrl.clear();
+    //   contactAlertMobileCtrl.clear();
+    //   contactAlertTelephoneCtrl.clear();
+    //   orderCtrl.clear();
+    //   accountType = null;
+    //   subsidiaryStoreValue = null;
+    //   addressCtrl.clear();
+    //   accountNameController.clear();
+    //   accountCodeController.clear();
+    //   accountEmailController.clear();
+    //   accountPasswordController.clear();
+    //   accountMobileController.clear();
+    //   accountTelController.clear();
+    //   accountFaxController.clear();
+    //   accountWebSiteController.clear();
+    //   accountNumberController.clear();
+    //   accountCreditCardController.clear();
+    //   accountAddressController.clear();
+    //   accountInformationController.clear();
+    //   accountContactNameController.clear();
+    //   accountAdminFeeController.clear();
+    //   accountAccountFeeController.clear();
+    //   webLoginaccountCtrl.clear();
+    //   webLoginusernameCtrl.clear();
+    //   webLoginpasswordCtrl.clear();
+    //   webLoginmobileCtrl.clear();
+    //   webLogintelephoneCtrl.clear();
+    //   // orderCheckBox = false.obs;
+    //
+    //   update();
+    // } else {
+    //   print("❌ Error Creating Account");
+    //   print(response);
+    // }
   }
 
 
