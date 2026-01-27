@@ -20,7 +20,7 @@ class LocationForm extends StatelessWidget {
         bool isMobile = constraints.maxWidth < 600;
         return GetBuilder<LocationController>(
             initState: (v) {
-              if (_controller.updateLocationValue.value == false) {
+              if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
                 _controller.getLocationTypeZone();
               }
             },

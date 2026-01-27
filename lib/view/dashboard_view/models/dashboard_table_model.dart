@@ -167,6 +167,7 @@ class BookingObjectData {
   Driver? driver;
   Customer? customer;
   Employee? employee;
+  Airport? airport;
 
   BookingObjectData({
     this.id,
@@ -274,6 +275,7 @@ class BookingObjectData {
     this.driver,
     this.customer,
     this.employee,
+    this.airport,
   });
 
   factory BookingObjectData.fromJson(Map<String, dynamic> json) => BookingObjectData(
@@ -385,6 +387,7 @@ class BookingObjectData {
     driver: Driver.fromJson(json["driver"]),
     customer: Customer.fromJson(json["customer"]),
     employee: Employee.fromJson(json["employee"]),
+    airport: Airport.fromJson(json["airport"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -493,6 +496,79 @@ class BookingObjectData {
     "driver": driver!.toJson(),
     "customer": customer!.toJson(),
     "employee": employee!.toJson(),
+    "airport": airport!.toJson(),
+  };
+}
+
+class Airport {
+  Dropoff? pickup;
+  Dropoff? dropoff;
+
+  Airport({
+    this.pickup,
+    this.dropoff,
+  });
+
+  factory Airport.fromJson(Map<String, dynamic> json) => Airport(
+    pickup: Dropoff.fromJson(json["pickup"]),
+    dropoff: Dropoff.fromJson(json["dropoff"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "pickup": pickup!.toJson(),
+    "dropoff": dropoff!.toJson(),
+  };
+}
+
+class Dropoff {
+  int? id;
+  String? name;
+  Type? locationType;
+
+  Dropoff({
+    this.id,
+    this.name,
+    this.locationType,
+  });
+
+  factory Dropoff.fromJson(Map<String, dynamic> json) => Dropoff(
+    id: json["id"],
+    name: json["name"],
+    locationType: Type.fromJson(json["location_type"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "location_type": locationType!.toJson(),
+  };
+}
+
+class Type {
+  int? id;
+  String? name;
+  String? backgroundColor;
+  String? foregroundColor;
+
+  Type({
+    this.id,
+    this.name,
+    this.backgroundColor,
+    this.foregroundColor,
+  });
+
+  factory Type.fromJson(Map<String, dynamic> json) => Type(
+    id: json["id"],
+    name: json["name"],
+    backgroundColor: json["background_color"],
+    foregroundColor: json["foreground_color"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "background_color": backgroundColor,
+    "foreground_color": foregroundColor,
   };
 }
 
