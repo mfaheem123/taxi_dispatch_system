@@ -580,7 +580,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             child:
                                                             FocusTraversalOrder(
                                                               order:
-                                                              const NumericFocusOrder(2),
+                                                              const NumericFocusOrder(5),
                                                               child:
                                                               CustomDropdownField<ZoneObject>(
                                                                 label: "Select Zone",
