@@ -53,110 +53,118 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                 SizedBox(
                 height: 8,
               ),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(AppText.locationTypeShortcuts, style: titleDesign()),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    CustomButton(
-                      height: 35,
-                      btnText: AppText.save,
-                      verticalPadding: 0.0,
-                      width: 100,
-                      borderRadius: 4,
-                    ),
-                  ],
-                ),
                 SizedBox(
-                height: 8,
+                height: 8
               ),
+                Scrollbar(
+                  thickness: 10,
+                  child: Wrap(
 
-            SizedBox(
-              width: Get.width,
-              child: DatatableWidget(
-              totalRow: controller.locationShortCut!.locationTypes!.length,
-              columns: [
-              buildHeaderWithSearch(title: "LOCATION TYPE",
-              removeSearching: true,
-              ),
-              buildHeaderWithSearch(title: "SHORTCUT",
-                removeSearching: true,
-              ),
-              buildHeaderWithSearch(title: "BACKGROUND COLOR",
-                removeSearching: true,
-              ),
-              buildHeaderWithSearch(title: "FOREGROUND COLOR",
-                removeSearching: true,
-              ),
-              ],
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(AppText.locationTypeShortcuts, style: titleDesign()),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      CustomButton(
+                        height: 35,
+                        btnText: AppText.save,
+                        verticalPadding: 0.0,
+                        width: 100,
+                        borderRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
 
-              // 🔹 Create a list of DataRow, each having 4 DataCell
-              rows: controller.locationShortCut!.locationTypes!.map((item) {
-              return DataRow(
-                  cells: [
-              DataCell(Center(child: Text(item.name!))),
-              DataCell(
-              Center(
-                child: TextField(
-                controller: item.controller,
-                decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                isDense: true,
+            Scrollbar(
+              thickness: 15,
+              child: SizedBox(
+                width: Get.width/1.1 ,
+                child: DatatableWidget(
 
-                contentPadding: EdgeInsets.all(8),
+                totalRow: controller.locationShortCut!.locationTypes!.length,
+                columns: [
+                buildHeaderWithSearch(title: "LOCATION TYPE",
+                removeSearching: true,
+                ),
+                buildHeaderWithSearch(title: "SHORTCUT",
+                  removeSearching: true,
+                ),
+                buildHeaderWithSearch(title: "BACKGROUND COLOR",
+                  removeSearching: true,
+                ),
+                buildHeaderWithSearch(title: "FOREGROUND COLOR",
+                  removeSearching: true,
+                ),
+                ],
+
+                // 🔹 Create a list of DataRow, each having 4 DataCell
+                rows: controller.locationShortCut!.locationTypes!.map((item) {
+                return DataRow(
+                    cells: [
+                DataCell(Center(child: Text(item.name!))),
+                DataCell(
+                Center(
+                  child: TextField(
+                  controller: item.controller,
+                  decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  isDense: true,
+
+                  contentPadding: EdgeInsets.all(8),
+                  ),
+                  ),
                 ),
                 ),
-              ),
-              ),
-             DataCell(Center(
-               child: ColorPickerWidget(
-                 pickerColor: item.backgroundColor!,
-                 // pickerColor: (0xff item.backgroundColor),
-                 onColorChanged: (color) {
-                   setState(() {
-                     item.backgroundColor = color; // live preview
-                   });
-                 },
-                 onColorSelected: (color) {
-                   setState(() {
-                     item.backgroundColor = color; // final selected
-                   });
-                 },
-                 width: fieldWidth,
-                 // height: 10,
-                 colorContainerHeight: 10,
-                 borderColor: DynamicColors.gryClr,
-               ),
-             )),
-             DataCell(Center(
-               child: ColorPickerWidget(
-                 pickerColor: item.foregroundColor!,
-                 onColorChanged: (color) {
-                   setState(() {
-                     item.foregroundColor = color; // live preview
-                   });
-                 },
-                 onColorSelected: (color) {
-                   setState(() {
-                     item.foregroundColor = color; // final selected
-                   });
-                 },
-                 width: fieldWidth,
-                 // height: 10,
-                 colorContainerHeight: 10,
-                 borderColor: DynamicColors.gryClr,
-               ),
-             )),
-              ]);
-              }).toList(),
+                DataCell(Center(
+                 child: ColorPickerWidget(
+                   pickerColor: item.backgroundColor!,
+                   // pickerColor: (0xff item.backgroundColor),
+                   onColorChanged: (color) {
+                     setState(() {
+                       item.backgroundColor = color; // live preview
+                     });
+                   },
+                   onColorSelected: (color) {
+                     setState(() {
+                       item.backgroundColor = color; // final selected
+                     });
+                   },
+                   width: fieldWidth,
+                   // height: 10,
+                   colorContainerHeight: 10,
+                   borderColor: DynamicColors.gryClr,
+                 ),
+               )),
+               DataCell(Center(
+                 child: ColorPickerWidget(
+                   pickerColor: item.foregroundColor!,
+                   onColorChanged: (color) {
+                     setState(() {
+                       item.foregroundColor = color; // live preview
+                     });
+                   },
+                   onColorSelected: (color) {
+                     setState(() {
+                       item.foregroundColor = color; // final selected
+                     });
+                   },
+                   width: fieldWidth,
+                   // height: 10,
+                   colorContainerHeight: 10,
+                   borderColor: DynamicColors.gryClr,
+                 ),
+               )),
+                ]);
+                }).toList(),
+                ),
               ),
             )
             ],
             );
           }
-        );
+                  );
       }
     );
   }
