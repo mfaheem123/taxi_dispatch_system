@@ -334,10 +334,24 @@ class _BookingTableState extends State<BookingTable> {
                                 );
 
                               },
-                              child: SizedBox(
+                              child: Container(
                                 width: 160,
+                                // width: double.infinity,
+                                height: double.infinity,
+                                alignment: Alignment.center,
+                                // APPLY YOUR COLOR HERE
+                                decoration: BoxDecoration(
+                                  color: item.airport!.pickup!.locationType!.backgroundColor == null?DynamicColors.whiteClr:
+                                  Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
+                                  // Optional: borderRadius: BorderRadius.circular(2),
+                                ),
                                 child: Text(
                                   item.pickup ?? "-",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 13,
+                                    color: item.airport!.pickup!.locationType!.foregroundColor == null?DynamicColors.black:
+                                    Color(int.parse("0xFF${item.airport!.pickup!.locationType!.foregroundColor}")),
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
@@ -351,10 +365,24 @@ class _BookingTableState extends State<BookingTable> {
                               onRightClick: () {
                                 print("RIGHT CLICK DROPOFF: ${item.dropoff}");
                               },
-                              child: SizedBox(
+                              child: Container(
                                 width: 160,
+                                // width: double.infinity,
+                                height: double.infinity,
+                                alignment: Alignment.center,
+                                // APPLY YOUR COLOR HERE
+                                decoration: BoxDecoration(
+                                  color: item.airport!.dropoff!.locationType!.backgroundColor == null?DynamicColors.whiteClr:
+                                  Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}")),
+                                  // Optional: borderRadius: BorderRadius.circular(2),
+                                ),
                                 child: Text(
                                   item.dropoff ?? "-",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 13,
+                                    color: item.airport!.dropoff!.locationType!.foregroundColor == null?DynamicColors.black:
+                                    Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.foregroundColor}")),
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
