@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 class DepartmentAlert {
   static void show() {
-    final List<Map<String, String>> rows = [];
-
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
@@ -20,30 +18,6 @@ class DepartmentAlert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-              void saveRow() {
-                if (controller.dpartmentCtrl.text.isEmpty ) return;
-
-                setState(() {
-                  if (editingIndex == null) {
-
-                    rows.add({
-                      "department": controller.dpartmentCtrl.text,
-
-                    });
-                  } else {
-                    rows[editingIndex!] = {
-                      "department": controller.dpartmentCtrl.text,
-
-                    };
-                    editingIndex = null;
-                  }
-
-                  // clear fields
-                  controller.dpartmentCtrl.clear();
-
-                });
-              }
-
               return Container(
                 width: Get.width * 0.6,
                 padding: const EdgeInsets.all(14),
@@ -71,8 +45,11 @@ class DepartmentAlert {
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                         ),
                         InkWell(
-                          onTap: () => Get.back(),
-                          child: const Icon(Icons.close, size: 20, color: Colors.black54),
+                          onTap: () {
+                            print(controller.accountDepartmentList);
+                            Get.back();
+                            },
+                          child: Icon(Icons.close, size: 20, color: Colors.black54),
                         ),
                       ],
                     ),
@@ -92,7 +69,26 @@ class DepartmentAlert {
                               backgroundColor: editingIndex == null ? const Color(0xFF43489A) : Colors.orange,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                             ),
-                            onPressed: saveRow,
+                            onPressed: (){
+
+                              if (controller.dpartmentCtrl.text.isEmpty ) return;
+
+                              setState(() {
+                                if (editingIndex == null) {
+                                  controller.accountDepartmentList.add(controller.dpartmentCtrl.text);
+                                } else {
+                                  controller.accountDepartmentList[editingIndex!] = controller.dpartmentCtrl.text;
+                                  editingIndex = null;
+                                }
+                              });
+
+                              print(controller.accountDepartmentList);
+
+                                // clear fields
+                                controller.dpartmentCtrl.clear();
+
+                            },
+                            // onPressed: saveRow,
                             child: Text(
                               editingIndex == null ? "SAVE" : "UPDATE",
                               style: const TextStyle(fontSize: 13, color: Colors.white),
@@ -125,7 +121,7 @@ class DepartmentAlert {
                     ),
 
                     // Table Body
-                    ...rows.asMap().entries.map((entry) {
+                    ...controller.accountDepartmentList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
                       return Container(
@@ -137,7 +133,7 @@ class DepartmentAlert {
                         ),
                         child: Row(
                           children: [
-                            Expanded(child: Text(row["department"] ?? "")),
+                            Expanded(child: Text(row)),
 
                             Expanded(
                               child: Row(
@@ -147,7 +143,7 @@ class DepartmentAlert {
                                     onPressed: () {
                                       setState(() {
                                         editingIndex = index;
-                                        controller.dpartmentCtrl.text = row["department"] ?? "";
+                                        controller.dpartmentCtrl.text = row;
 
                                       });
                                     },
@@ -156,7 +152,7 @@ class DepartmentAlert {
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
-                                        rows.removeAt(index);
+                                        controller.accountDepartmentList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
                                           controller.dpartmentCtrl.clear();
