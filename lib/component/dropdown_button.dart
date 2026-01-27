@@ -45,6 +45,9 @@ class CustomDropdownField<T> extends StatelessWidget {
               child: DropdownButton<T>(
                 value: value,
                 isDense: true,
+                hint: Text(label ?? "",
+                  style: mozillaTextRegularText(fontSize: 10),
+                ),
                 isExpanded: true,
                   alignment: Alignment.bottomCenter,
                 icon: const Icon(Icons.arrow_drop_down, size: 16),

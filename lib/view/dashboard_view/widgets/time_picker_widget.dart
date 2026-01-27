@@ -77,31 +77,42 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     final offset = renderBox.localToGlobal(Offset.zero);
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        left: offset.dx,
-        top: offset.dy + 80,
-        width: 180,
-        height: 200,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          child: Material(
-            elevation: 4,
-            borderRadius: BorderRadius.circular(8),
-            child: Row(
-              children: [
-                _buildScrollColumn(0, 23, selectedHour, (value) {
-                  _selectAndClose(hour: value);
-                }),
-                _buildScrollColumn(0, 59, selectedMinute, (value) {
-                  _selectAndClose(minute: value);
-                }),
-                // _buildAmPmColumn(),
-              ],
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _closeDropdown,
+            ),
+          ),
+
+        Positioned(
+          left: offset.dx,
+          top: offset.dy + 80,
+          width: 180,
+          height: 200,
+          child: CompositedTransformFollower(
+            link: _layerLink,
+            showWhenUnlinked: false,
+            child: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(8),
+              child: Row(
+                children: [
+                  _buildScrollColumn(0, 23, selectedHour, (value) {
+                    _selectAndClose(hour: value);
+                  }),
+                  _buildScrollColumn(0, 59, selectedMinute, (value) {
+                    _selectAndClose(minute: value);
+                  }),
+                  // _buildAmPmColumn(),
+                ],
+              ),
             ),
           ),
         ),
-      ),
+        ]
+    ),
     );
   }
 
