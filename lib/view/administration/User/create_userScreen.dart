@@ -142,7 +142,7 @@ class CreateUserScreen extends StatelessWidget {
               spacing: 20,
               children: [
                 _buildTextField("USER", controller.userNameController),
-                _buildTextField("EMAIL", controller.emailController),
+                _buildTextField("EMAIL", controller.userEmailController),
                 _buildPasswordField("PASSWORD", controller.passwordController),
                 _buildPasswordField("CONFIRM PASSWORD", controller.confirmController),
                 _buildTextField("PHONE", controller.phoneController),

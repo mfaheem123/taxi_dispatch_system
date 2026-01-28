@@ -19,7 +19,7 @@ class AdministrationController extends GetxController {
 
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List subsDiary api
-
+  RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
   SubsDiaryModel? subsDiaryModel;
   RxBool subsDiaryLoading = false.obs;
   var subsiCurrentPage = 1.obs;
@@ -161,6 +161,7 @@ class AdministrationController extends GetxController {
 
 
   final nameController = TextEditingController();
+  //name
   final emailController = TextEditingController();
   final faxController = TextEditingController();
   final websiteController = TextEditingController();

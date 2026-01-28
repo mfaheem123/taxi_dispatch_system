@@ -73,7 +73,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                   child: Row(
                     children: [
                       Text(
-                        "SUBSIDIARIES",
+                        "SUBSIDIARIES" + " (${controller.subsDiaryModel!.count.toString()})",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800, fontSize: 17),
                       ),
@@ -103,15 +103,19 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                     child: DatatableWidget(
                       columns: [
                         DataColumn(
-                          label: Checkbox(
-                            value:
-                            controller.subsDiaryAllSelection.value ?? false,
+                          label:  Checkbox(
+                            value: controller.selectedSubsDiaryIds.length == listToShow.length,
                             onChanged: (v) {
-                              controller.subsDiaryAllSelection.value =
-                                  v ?? false;
+                              if (v == true) {
+                                controller.selectedSubsDiaryIds
+                                    .addAll(listToShow.map((e) => e.id));
+                              } else {
+                                controller.selectedSubsDiaryIds.clear();
+                              }
                               controller.update();
                             },
                           ),
+
                         ),
                         buildHeaderWithSearch(
                           title: "NAME",
@@ -163,16 +167,19 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                           cells: [
                             DataCell(
                               Checkbox(
-                                value: controller
-                                    .subsDiarySelection.value ??
-                                    false,
+                                value: controller.selectedSubsDiaryIds.contains(item.id),
                                 onChanged: (v) {
-                                  controller.subsDiarySelection.value =
-                                      v ?? false;
+                                  if (v == true) {
+                                    controller.selectedSubsDiaryIds.add(item.id);
+                                  } else {
+                                    controller.selectedSubsDiaryIds.remove(item.id);
+                                  }
                                   controller.update();
                                 },
                               ),
                             ),
+
+
 
                             /// 🔥 Null Safe Fields
                             DataCell(
