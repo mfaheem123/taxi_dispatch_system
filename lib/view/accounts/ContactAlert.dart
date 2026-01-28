@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 class ContactAlert {
   static void show() {
-    final List<Map<String, String>> rows = [];
-
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
@@ -31,7 +29,7 @@ class ContactAlert {
 
                 setState(() {
                   if (editingIndex == null) {
-                    rows.add({
+                    controller.contactsList.add({
                       "name": controller.contactAlertNameCtrl.text,
                       "email": controller.contactAlertEmailCtrl.text,
                       "password": controller.contactAlertPasswordCtrl.text,
@@ -39,7 +37,7 @@ class ContactAlert {
                       "telephone": controller.contactAlertTelephoneCtrl.text,
                     });
                   } else {
-                    rows[editingIndex!] = {
+                    controller.contactsList[editingIndex!] = {
                       "name": controller.contactAlertNameCtrl.text,
                       "email": controller.contactAlertEmailCtrl.text,
                       "password": controller.contactAlertPasswordCtrl.text,
@@ -149,7 +147,7 @@ class ContactAlert {
                     ),
 
                     // Table Body
-                    ...rows.asMap().entries.map((entry) {
+                    ...controller.contactsList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
                       return Container(
@@ -186,7 +184,7 @@ class ContactAlert {
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
-                                        rows.removeAt(index);
+                                        controller.contactsList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
                                           controller.contactAlertNameCtrl.clear();

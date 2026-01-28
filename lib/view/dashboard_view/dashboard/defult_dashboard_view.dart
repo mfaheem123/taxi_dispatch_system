@@ -2696,7 +2696,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                     ),
                                   ),
                                   DriversView(),
-                                  MapViewWidget(),
+                                  // MapViewWidget(),
                                 ],
                               )
                                   : Column(

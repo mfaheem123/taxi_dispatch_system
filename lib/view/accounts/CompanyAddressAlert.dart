@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 class CompanyAddressAlert {
   static void show() {
-    final List<Map<String, String>> rows = [];
-
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
@@ -20,29 +18,9 @@ class CompanyAddressAlert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-              void saveRow() {
-                if (controller.orderCtrl.text.isEmpty ) return;
-
-                setState(() {
-                  if (editingIndex == null) {
-
-                    rows.add({
-                      "address": controller.addressCtrl.text,
-
-                    });
-                  } else {
-                    rows[editingIndex!] = {
-                      "address": controller.addressCtrl.text,
-
-                    };
-                    editingIndex = null;
-                  }
-
-                  // clear fields
-                  controller.addressCtrl.clear();
-
-                });
-              }
+              // void saveRow() {
+              //
+              // }
 
               return Container(
                 width: Get.width * 0.6,
@@ -92,7 +70,29 @@ class CompanyAddressAlert {
                               backgroundColor: editingIndex == null ? const Color(0xFF43489A) : Colors.orange,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                             ),
-                            onPressed: saveRow,
+                            onPressed: (){
+                              if (controller.addressCtrl.text.isEmpty ) return;
+
+                              setState(() {
+                                if (editingIndex == null) {
+
+                                  controller.companyAddressesList.add({
+                                    "address": controller.addressCtrl.text,
+
+                                  });
+                                } else {
+                                  controller.companyAddressesList[editingIndex!] = {
+                                    "address": controller.addressCtrl.text,
+
+                                  };
+                                  editingIndex = null;
+                                }
+
+                                // clear fields
+                                controller.addressCtrl.clear();
+
+                              });
+                            },
                             child: Text(
                               editingIndex == null ? "SAVE" : "UPDATE",
                               style: const TextStyle(fontSize: 13, color: Colors.white),
@@ -125,7 +125,7 @@ class CompanyAddressAlert {
                     ),
 
                     // Table Body
-                    ...rows.asMap().entries.map((entry) {
+                    ...controller.companyAddressesList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
                       return Container(
@@ -156,7 +156,7 @@ class CompanyAddressAlert {
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
-                                        rows.removeAt(index);
+                                        controller.companyAddressesList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
                                           controller.addressCtrl.clear();

@@ -94,7 +94,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                 Row(
                   children: [
                     Text(
-                      "ACCOUNTS" + " (${controller.listofAccount?.count})",
+                      "ACCOUNTS (${controller.listofAccount?.count})",
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w800, fontSize: 17),
                     ),
@@ -137,7 +137,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                 SizedBox(
                   height: 12,
                 ),
-                controller.isLoadingListOfAccount == true
+                controller.isLoadingListOfAccount.value == true
                     ? Center(
                         child: CircularProgressIndicator(),
                       )

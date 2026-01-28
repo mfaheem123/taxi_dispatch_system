@@ -4,8 +4,6 @@ import 'package:get/get.dart';
 
 class OrderAlert {
   static void show() {
-    final List<Map<String, String>> rows = [];
-
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
@@ -26,13 +24,13 @@ class OrderAlert {
                 setState(() {
                   if (editingIndex == null) {
 
-                    rows.add({
-                      "order": controller.orderCtrl.text,
+                    controller.orderAccountList.add({
+                      "order_number": controller.orderCtrl.text,
 
                     });
                   } else {
-                    rows[editingIndex!] = {
-                      "order": controller.orderCtrl.text,
+                    controller.orderAccountList[editingIndex!] = {
+                      "order_number": controller.orderCtrl.text,
 
                     };
                     editingIndex = null;
@@ -125,7 +123,7 @@ class OrderAlert {
                     ),
 
                     // Table Body
-                    ...rows.asMap().entries.map((entry) {
+                    ...controller.orderAccountList.asMap().entries.map((entry) {
                       int index = entry.key;
                       var row = entry.value;
                       return Container(
@@ -156,7 +154,7 @@ class OrderAlert {
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
-                                        rows.removeAt(index);
+                                        controller.orderAccountList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
                                           controller.orderCtrl.clear();
