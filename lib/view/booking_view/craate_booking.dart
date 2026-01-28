@@ -544,13 +544,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                               ),
+                                              const SizedBox(width: 5),
                                               // Select PLots
                                               // Select Zone on pick Up location line
                                               Obx(
                                                 () => Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 15.0),
+                                                      horizontal: 37.0),
                                                   child: FocusTraversalOrder(
                                                     order:
                                                         const NumericFocusOrder(
@@ -586,6 +587,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                               ),
+
+                                              const SizedBox(width: 7),
 
                                               // (3) Pickup notes
                                               FocusTraversalOrder(
@@ -822,12 +825,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                               ),
 
+                                              const SizedBox(width: 10),
                                               // Select Plot
                                               Obx(
                                                 () => Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 15.0),
+                                                      horizontal: 37.0),
                                                   child: FocusTraversalOrder(
                                                     order: NumericFocusOrder(5),
                                                     child: CustomDropdownField<
@@ -861,6 +865,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                               ),
+
+                                              const SizedBox(width: 9),
 
                                               // (3) Pickup notes
                                               FocusTraversalOrder(
@@ -905,6 +911,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               textInputAction:
                                                   TextInputAction.next),
                                         ),
+                                        const SizedBox(width: 7),
 
                                         // email fileds
                                         FocusTraversalOrder(
@@ -922,6 +929,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               textInputAction:
                                                   TextInputAction.next),
                                         ),
+                                        const SizedBox(width: 5),
 
                                         SizedBox(
                                           width: fieldWidth,
@@ -1004,6 +1012,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                         //     ],
                                         //   ),
                                         // ),
+                                        const SizedBox(width: 7),
                                         // tel fields
                                         FocusTraversalOrder(
                                           order: const NumericFocusOrder(10),
@@ -1022,6 +1031,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               keyboardType: TextInputType.phone,
                                               formatDigitsOnly: false),
                                         ),
+
                                         // date fields
                                         FocusTraversalOrder(
                                           order: NumericFocusOrder(11),
@@ -1538,12 +1548,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
+
+                                                const SizedBox(width: 5),
                                                 // Select Zone
                                                 Obx(
                                                   () => Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 17.0),
+                                                        horizontal: 37.0),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                           const NumericFocusOrder(
@@ -1582,6 +1594,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
+                                                const SizedBox(width: 5),
                                                 // (3) Pickup notes
                                                 FocusTraversalOrder(
                                                   order:
@@ -1834,11 +1847,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
+                                                const SizedBox(width: 5),
+
                                                 Obx(
                                                   () => Padding(
                                                     padding: const EdgeInsets
                                                         .symmetric(
-                                                        horizontal: 17.0),
+                                                        horizontal: 37.0),
                                                     child: FocusTraversalOrder(
                                                       order:
                                                           const NumericFocusOrder(
@@ -1877,6 +1892,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     ),
                                                   ),
                                                 ),
+                                                const SizedBox(width: 5),
                                                 // (3) Pickup notes
                                                 FocusTraversalOrder(
                                                   order:
