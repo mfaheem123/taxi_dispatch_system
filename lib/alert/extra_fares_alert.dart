@@ -253,29 +253,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                       height: 35,
                       child: ElevatedButton(
                         onPressed: () async{
-                          final storedTemFare = await getFares(
-                            multiReservationList: controller.multiReservationList,
-                            // day: ,
-                              dropOff: controller.pickupController.text,
-                              pickup: controller.dropOffController.text,
-                              miles: controller.totalDistance.value,
-                              journeyTypeId: controller.selectJourneyTypeValue!.id,
-                              dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                              pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                              pickupTime: controller.pickUpTimeController.text,
-                              vehicleTypeId: controller.selectVehicleValue!.id,
-                              partingCharges: dashBoardCntrl.partingChargesController.text,
-                              congestionCharges: dashBoardCntrl.congestionChargesController.text,
-                              meetGreet: dashBoardCntrl.meetGreetController.text,
-                              waitingCharges: dashBoardCntrl.waitingChargesController.text,
-                              extraDropCharges: dashBoardCntrl.extraDropChargesController.text,
-                              creditCardCharges: dashBoardCntrl.creditCardChargesController.text,
-                              companyPrice: dashBoardCntrl.companyPriceController.text,
-                              returnCompanyPrice: dashBoardCntrl.returnCompanyPriceController.text
-                          );
-
-                          controller.fixedFare.value = storedTemFare;
-                          controller.update();
+                          controller.getFaresCalculation();
                           Get.back();
                         },
                         style: ElevatedButton.styleFrom(
