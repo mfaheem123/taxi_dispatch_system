@@ -135,6 +135,7 @@ class _TopNavBarState extends State<TopNavBar> {
             if (selected != null) {
               setState(() {
                 selectedDropdownItem = selected;
+
               });
               if (widget.onMenuSelect != null) {
                 widget.onMenuSelect!(selected);
@@ -362,6 +363,7 @@ class _TopNavBarssState extends State<TopNavBarss> {
                         widget.onSelect?.call(menus[selectedIndex].subItems[j]);
                         setState(() {
                           isDropdownOpen = false;
+
                         });
                       },
                     ),

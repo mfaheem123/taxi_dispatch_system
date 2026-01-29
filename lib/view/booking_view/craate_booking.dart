@@ -213,6 +213,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                   ),
                                   child: DropdownButtonFormField<
                                       DashboardDriverObject>(
+                                    isExpanded: true,
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                       isDense: true,
@@ -224,6 +225,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                               value: driver,
                                               child: Text(
                                                 driver.name ?? "",
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: mozillaTextRegularText(
                                                   fontSize: 12,
                                                   color: DynamicColors.textClr,
@@ -950,7 +953,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       context,
                                                       isMobile,
                                                       isTablet,
-                                                      fieldWidth),
+                                                      fieldWidth)
+                                                .map((child) => Expanded(child: child))
+                                                .toList(),
                                                 ),
                                         ),
                                         // Mob
@@ -1038,65 +1043,122 @@ class _CreateBookingState extends State<CreateBooking> {
                                           child: labeledField(
                                             context: context,
                                             isMobile: isMobile,
-                                            column: isMobile == true ||
-                                                    isTablet == true
-                                                ? true
-                                                : false,
+                                            column: isMobile == true || isTablet == true,
                                             label: AppText.date,
                                             width: fieldWidth,
-                                            child: SizedBox(
+                                            child: SingleChildScrollView(
+                                              scrollDirection: Axis.horizontal,
+                                              child: SizedBox(
                                                 height: 30,
-                                                width: fieldWidth,
                                                 child: KeyboardDatePicker(
-                                                  initialDate:
-                                                      controller.pickUpDate ??
-                                                          DateTime.now(),
+                                                  initialDate: controller.pickUpDate ?? DateTime.now(),
                                                   borderClr: Colors.blue,
                                                   onChanged: (date) async {
-                                                    controller.pickUpDate =
-                                                        date;
+                                                    controller.pickUpDate = date;
                                                     final storedTemFare = await getFares(
-                                                        journeyTypeId: controller
-                                                            .selectJourneyTypeValue!
-                                                            .id,
-                                                        multiReservationList:
-                                                            controller
-                                                                .multiReservationList,
-                                                        dropOff: controller
-                                                            .pickupController
-                                                            .text,
-                                                        pickup: controller
-                                                            .dropOffController
-                                                            .text,
-                                                        miles: controller
-                                                            .totalDistance
-                                                            .value,
-                                                        dropoffPlotId:
-                                                            controller.dashboardZoneValue != null
-                                                                ? controller
-                                                                    .dashboardZoneValue!
-                                                                    .id
-                                                                : null,
-                                                        pickupDate:
-                                                            "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                        pickupTime: controller
-                                                            .pickUpTimeController
-                                                            .text,
-                                                        vehicleTypeId: controller
-                                                            .selectVehicleValue!
-                                                            .id);
-                                                    controller.fixedFare.value =
-                                                        storedTemFare;
+                                                      journeyTypeId: controller.selectJourneyTypeValue!.id,
+                                                      multiReservationList: controller.multiReservationList,
+                                                      dropOff: controller.pickupController.text,
+                                                      pickup: controller.dropOffController.text,
+                                                      miles: controller.totalDistance.value,
+                                                      dropoffPlotId: controller.dashboardZoneValue?.id,
+                                                      pickupDate:
+                                                      "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                      pickupTime: controller.pickUpTimeController.text,
+                                                      vehicleTypeId: controller.selectVehicleValue!.id,
+                                                    );
+                                                    controller.fixedFare.value = storedTemFare;
                                                     controller.update();
                                                   },
                                                   onSubmitted: (date) {
-                                                    // jab user enter press kare
-                                                    print(
-                                                        "User pressed enter: $date");
+                                                    print("User pressed enter: $date");
                                                   },
-                                                )),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
+
+                                        // FocusTraversalOrder(
+                                        //   order: NumericFocusOrder(11),
+                                        //   child: labeledField(
+                                        //     context: context,
+                                        //     isMobile: isMobile,
+                                        //     column: isMobile == true ||
+                                        //             isTablet == true
+                                        //         ? true
+                                        //         : false,
+                                        //     label: AppText.date,
+                                        //     width: fieldWidth,
+                                        //     child: LayoutBuilder(
+                                        //         builder: (context, constraints) {
+                                        //           return SizedBox(
+                                        //               height: 30,
+                                        //               width: constraints
+                                        //                   .maxWidth,
+                                        //               child: KeyboardDatePicker(
+                                        //                 initialDate:
+                                        //                 controller.pickUpDate ??
+                                        //                     DateTime.now(),
+                                        //                 borderClr: Colors.blue,
+                                        //                 onChanged: (
+                                        //                     date) async {
+                                        //                   controller
+                                        //                       .pickUpDate =
+                                        //                       date;
+                                        //                   final storedTemFare = await getFares(
+                                        //                       journeyTypeId: controller
+                                        //                           .selectJourneyTypeValue!
+                                        //                           .id,
+                                        //                       multiReservationList:
+                                        //                       controller
+                                        //                           .multiReservationList,
+                                        //                       dropOff: controller
+                                        //                           .pickupController
+                                        //                           .text,
+                                        //                       pickup: controller
+                                        //                           .dropOffController
+                                        //                           .text,
+                                        //                       miles: controller
+                                        //                           .totalDistance
+                                        //                           .value,
+                                        //                       dropoffPlotId:
+                                        //                       controller
+                                        //                           .dashboardZoneValue !=
+                                        //                           null
+                                        //                           ? controller
+                                        //                           .dashboardZoneValue!
+                                        //                           .id
+                                        //                           : null,
+                                        //                       pickupDate:
+                                        //                       "${controller
+                                        //                           .pickUpDate!
+                                        //                           .year}-${controller
+                                        //                           .pickUpDate!
+                                        //                           .month}-${controller
+                                        //                           .pickUpDate!
+                                        //                           .day}",
+                                        //                       pickupTime: controller
+                                        //                           .pickUpTimeController
+                                        //                           .text,
+                                        //                       vehicleTypeId: controller
+                                        //                           .selectVehicleValue!
+                                        //                           .id);
+                                        //                   controller.fixedFare
+                                        //                       .value =
+                                        //                       storedTemFare;
+                                        //                   controller.update();
+                                        //                 },
+                                        //                 onSubmitted: (date) {
+                                        //                   // jab user enter press kare
+                                        //                   print(
+                                        //                       "User pressed enter: $date");
+                                        //                 },
+                                        //               ));
+                                        //         },
+                                        //     ),
+                                        //   ),
+                                        // ),
 
                                         // (6) Time
                                         FocusTraversalOrder(
@@ -2410,6 +2472,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                                 child: DropdownButtonFormField<
                                                     PaymentTypeObject>(
+                                                  isExpanded: true,
                                                   decoration:
                                                       const InputDecoration(
                                                     border:
@@ -2428,6 +2491,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                             child: Text(
                                                               payment.name ??
                                                                   "",
+                                                              maxLines: 1,
+                                                              overflow: TextOverflow.ellipsis,
                                                               style:
                                                                   mozillaTextRegularText(
                                                                 fontSize: 12,
@@ -2476,6 +2541,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                               ),
                                               child: DropdownButtonFormField<
                                                   DashboardVehicleTypeObject>(
+                                                isExpanded: true,
                                                 decoration:
                                                     const InputDecoration(
                                                   border: OutlineInputBorder(),
@@ -2492,6 +2558,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                           value: vehicle,
                                                           child: Text(
                                                             vehicle.name ?? "",
+                                                            maxLines: 1,
+                                                            overflow: TextOverflow.ellipsis,
                                                             style:
                                                                 mozillaTextRegularText(
                                                               fontSize: 12,

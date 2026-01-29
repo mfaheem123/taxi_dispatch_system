@@ -251,7 +251,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 screenHeight *
                                                     0.018,
                                               ),
-                                              Padding(
+                                        Padding(
                                                 padding: const EdgeInsets
                                                     .symmetric(
                                                     horizontal:
@@ -1336,7 +1336,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   const EdgeInsets.symmetric(horizontal: 17.0),
                                                                   child:
                                                                   FocusTraversalOrder(
-                                                                    order: const NumericFocusOrder(22),
+                                                                    order: const NumericFocusOrder(25),
                                                                     child: CustomDropdownField<ZoneObject>(
                                                                       label: "Select Zone",
                                                                       width: Get.width / 7,
@@ -1800,6 +1800,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                           child: DropdownButtonFormField<
                                                               DashboardAccountObject>(
+
                                                             decoration:
                                                             const InputDecoration(
                                                               border:
@@ -1843,7 +1844,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                     padding: EdgeInsets.only(left: controller.jourValue == 'W/R'? 18:38),
                                                     child: FocusTraversalOrder(
                                                       order:
-                                                      NumericFocusOrder(controller.jourValue == 'W/R'?36: 23),
+                                                      NumericFocusOrder(controller.jourValue == 'W/R'?36 : 23),
                                                       child:
                                                       labeledField(
                                                         context:
