@@ -42,9 +42,20 @@ Future<String> getFares({
   String? extraDropCharges,
   String? creditCardCharges,
   String? companyPrice,
-  String? returnCompanyPrice,
   List<MultiReservation>? multiReservationList,
-  int? journeyTypeId
+  int? journeyTypeId,
+
+  String? withReturnPickUp,
+  String? withReturnDropOff,
+  String? returnPickupDate,
+  String? returnPickupTime,
+  String? returnParkingCharges,
+  String? returnWaitingCharges,
+  String? returnMeetAndGreet,
+  String? returnCongestionCharges,
+  String? returnExtraDropCharges,
+  String? returnCreditCardCharges,
+  String? returnCompanyPrice,
 }) async {
   // 1. Validation: Return "0" instead of null to match Future<String>
   if (miles == null || miles == "0" || miles == 0) {
@@ -104,7 +115,21 @@ Future<String> getFares({
     if (extraDropCharges != null) "extra_drop_charges": extraDropCharges,
     if (creditCardCharges != null) "credit_card_charges": creditCardCharges,
     if (companyPrice != null) "company_price": companyPrice,
-    if (returnCompanyPrice != null) "return_company_price": returnCompanyPrice,
+
+    /// waiting return fares
+    if(withReturnPickUp != null) "return_pickup": withReturnPickUp,
+    if(withReturnDropOff != null) "return_dropoff": withReturnDropOff,
+    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_date": returnPickupDate,
+    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
+    if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
+    if(withReturnPickUp != null && withReturnDropOff != null) "return_miles": "10",
+    if(withReturnPickUp != null && withReturnDropOff != null && returnParkingCharges != null) "return_parking_charges": returnParkingCharges,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnWaitingCharges != null) "return_waiting_charges": returnWaitingCharges,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnMeetAndGreet != null) "return_meet_and_greet": returnMeetAndGreet,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnCongestionCharges != null) "return_congestion_charges": returnCongestionCharges,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnExtraDropCharges != null) "return_extra_drop_charges": returnExtraDropCharges,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnCreditCardCharges != null) "return_credit_card_charges": returnCreditCardCharges,
+    if(withReturnPickUp != null && withReturnDropOff != null && returnCompanyPrice != null) "return_company_price": returnCompanyPrice,
   };
 
   print(formData);

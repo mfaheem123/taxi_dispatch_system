@@ -624,7 +624,10 @@ class DashboardController extends GetxController {
           pickupDate:
               "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
           pickupTime: pickUpTimeController.text,
-          vehicleTypeId: selectVehicleValue!.id);
+          vehicleTypeId: selectVehicleValue!.id,
+          withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
+          withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
+      );
       print(storedTemFare);
 
       fixedFare.value = storedTemFare;
@@ -1171,6 +1174,7 @@ class DashboardController extends GetxController {
     }
   }
 
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get phone numbers
 
   Timer? _phoneNumberBebounce;
@@ -1216,6 +1220,42 @@ class DashboardController extends GetxController {
       dashboardDataLoader(false);
       update();
     }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
+  getFaresCalculation() async{
+
+    fixedFare.value = await getFares(
+      // day: ,
+      journeyTypeId: selectJourneyTypeValue!.id,
+      multiReservationList: multiReservationList.isEmpty?null: multiReservationList,
+      dropOff: pickupController.text,
+      pickup: dropOffController.text,
+      miles: totalDistance.value,
+      dropoffPlotId:
+      dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+      pickupDate:
+      "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      pickupTime: pickUpTimeController.text,
+      vehicleTypeId: selectVehicleValue == null?null: selectVehicleValue!.id,
+    congestionCharges: congestionChargesController.text.isEmpty?null: congestionChargesController.text,
+    partingCharges: partingChargesController.text.isEmpty?null: partingChargesController.text,
+    meetGreet: meetGreetController.text.isEmpty?null: meetGreetController.text,
+    waitingCharges: waitingChargesController.text.isEmpty?null: waitingChargesController.text,
+    extraDropCharges: extraDropChargesController.text.isEmpty?null: extraDropChargesController.text,
+    creditCardCharges: creditCardChargesController.text.isEmpty?null: creditCardChargesController.text,
+      companyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
+
+      withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
+      withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
+      returnPickupDate: "${pickUpDateReturn!.year}-${pickUpDateReturn!.month}-${pickUpDateReturn!.day}",
+      returnPickupTime: pickUpTimeControllerReturn.text.isEmpty?null: pickUpTimeControllerReturn.text,
+        // selectVehicleValueReturn
+        returnCompanyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
+      returnParkingCharges: returnCompanyPriceController.text.isEmpty?null: returnCompanyPriceController.text,
+    );
+    print(fixedFare.value);
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables

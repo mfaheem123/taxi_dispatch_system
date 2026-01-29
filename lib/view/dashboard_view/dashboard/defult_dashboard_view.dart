@@ -820,19 +820,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             onChanged:
                                                                 (date) async{
                                                               controller.pickUpDate = date;
-                                                              final storedTemFare = await getFares(
-                                                                  journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                                                multiReservationList: controller.multiReservationList,
-                                                                  dropOff: controller.pickupController.text,
-                                                                  pickup: controller.dropOffController.text,
-                                                                  miles: controller.totalDistance.value,
-                                                                  dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                                  pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                                  pickupTime: controller.pickUpTimeController.text,
-                                                                  vehicleTypeId: controller.selectVehicleValue!.id
-                                                              );
-                                                              controller.fixedFare.value = storedTemFare;
-                                                              controller.update();
+                                                              controller.getFaresCalculation();
                                                             },
                                                             onSubmitted:
                                                                 (date) {
@@ -867,18 +855,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               onTimeSelected:
                                                                   (time) async{
                                                                 controller.pickUpTimeController.text = time;
-                                                                final storedTemFare = await getFares(
-                                                                    journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                                                    multiReservationList: controller.multiReservationList,
-                                                                    dropOff: controller.pickupController.text,
-                                                                    pickup: controller.dropOffController.text,
-                                                                    miles: controller.totalDistance.value,
-                                                                    dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                                    pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                                    pickupTime: controller.pickUpTimeController.text,
-                                                                    vehicleTypeId: controller.selectVehicleValue!.id
-                                                                );
-                                                                controller.fixedFare.value = storedTemFare;
+                                                                controller.getFaresCalculation();
                                                                 setState(() {
                                                                   print(controller.pickUpTimeController.text);
                                                                 });
@@ -993,31 +970,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               .toList(),
                                                           onChanged:
 
-                                                              (v) async{
-
-                                                            // O/W, R/N, W/R
-                                                                final storedTemFare = await getFares(
-                                                                    multiReservationList: controller.multiReservationList,
-                                                                    // day: ,
-                                                                    dropOff: controller.pickupController.text,
-                                                                    pickup: controller.dropOffController.text,
-                                                                    miles: controller.totalDistance.value,
-                                                                    journeyTypeId: v!.id,
-                                                                    dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                                    pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                                    pickupTime: controller.pickUpTimeController.text,
-                                                                    vehicleTypeId: controller.selectVehicleValue!.id,
-                                                                    partingCharges: controller.partingChargesController.text,
-                                                                    congestionCharges: controller.congestionChargesController.text,
-                                                                    meetGreet: controller.meetGreetController.text,
-                                                                    waitingCharges: controller.waitingChargesController.text,
-                                                                    extraDropCharges: controller.extraDropChargesController.text,
-                                                                    creditCardCharges: controller.creditCardChargesController.text,
-                                                                    companyPrice: controller.companyPriceController.text,
-                                                                    returnCompanyPrice: controller.returnCompanyPriceController.text
-                                                                );
-
-                                                                controller.fixedFare.value = storedTemFare;
+                                                              (v) {
 
 
                                                             if (v!.journeyType ==
@@ -1030,7 +983,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             }
                                                             controller.selectJourneyTypeValue =
                                                                 v;
-                                                                controller.update();
+                                                            controller.getFaresCalculation();
                                                           },
                                                         ),
                                                       ),
@@ -1402,6 +1355,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   (date) {
                                                                 controller.pickUpDateReturn =
                                                                     date;
+                                                                controller.getFaresCalculation();
                                                                 controller.update();
                                                               },
                                                               onSubmitted:
@@ -1436,6 +1390,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   (time) {
                                                                 controller.pickUpTimeControllerReturn.text =
                                                                     time;
+                                                                controller.getFaresCalculation();
                                                                 setState(() {
                                                                 });
                                                               },
@@ -1555,6 +1510,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             "Slugg",
                                                             controller:
                                                             controller.slugControllerReturn,
+                                                            readOnly: true,
                                                             borderRadius:
                                                             6,
                                                             inputFormatters: [
@@ -1967,41 +1923,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           onChanged:
                                                               (v) async {
                                                             controller.selectVehicleValue = v;
-                                                            final storedTemFare = await getFares(
-                                                                journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                                                multiReservationList: controller.multiReservationList,
-                                                                dropOff: controller.pickupController.text,
-                                                                pickup: controller.dropOffController.text,
-                                                                miles: controller.totalDistance.value,
-                                                                dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
-                                                                pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                                pickupTime: controller.pickUpTimeController.text,
-                                                                vehicleTypeId: controller.selectVehicleValue!.id
-                                                            );
-                                                            controller.fixedFare.value = storedTemFare;
-
-                                                            // final fare =
-                                                            // await getActiveFareForVehicle(
-                                                            //   controller.dashboardAllData!.fareConfigurations!,
-                                                            //   controller.selectVehicleValue!.id!,
-                                                            // );
-                                                            // if (fare !=
-                                                            //     null) {
-                                                            //   print(
-                                                            //     'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                            //   );
-                                                            //
-                                                            //   double
-                                                            //   inttt =
-                                                            //   (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-                                                            //
-                                                            //   controller.fixedFare.value =
-                                                            //       (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                            // } else {
-                                                            //   print('No active fare found for this vehicle');
-                                                            // }
-                                                            controller
-                                                                .update();
+                                                         controller.getFaresCalculation();
                                                           },
                                                         ),
                                                       ),
@@ -2537,7 +2459,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         .scaleDown,
                                                     child:
                                                     Text(
-                                                      "PR: \$ ${(double.parse(controller.fixedFare.value) + 5).toStringAsFixed(1)}",
+                                                      "PR: \$ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
                                                       style:
                                                       TextStyle(
                                                         fontWeight:
@@ -2697,7 +2619,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                     ),
                                   ),
                                   DriversView(),
-                                  // MapViewWidget(),
+                                  MapViewWidget(),
                                 ],
                               )
                                   : Column(
