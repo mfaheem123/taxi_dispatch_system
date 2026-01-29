@@ -1,15 +1,15 @@
+
+
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
-import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../component/image_pick_widget.dart';
-import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import 'controller/account_controller.dart';
 
 class CreateEscortScreen extends StatefulWidget {
   const CreateEscortScreen({super.key});
@@ -22,9 +22,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
-  VehicleController controller = Get.isRegistered<VehicleController>()
-      ? Get.find<VehicleController>()
-      : Get.put(VehicleController());
+  AccountController controller = Get.isRegistered<AccountController>()
+      ? Get.find<AccountController>()
+      : Get.put(AccountController());
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<VehicleController>(builder: (controller) {
+    return GetBuilder<AccountController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -144,7 +144,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             children: [
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.vehicleTypeController,
+                                controller: controller.escortName,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.name,
                                 columnText: true,
@@ -152,7 +152,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.passengersController,
+                                controller: controller.escortEmail,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.email,
                                 columnText: true,
@@ -160,7 +160,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.luggagesController,
+                                controller: controller.escortMobile,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.mobile,
                                 columnText: true,
@@ -178,7 +178,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               CustomTextField(
                                 borderRadius: 4,
                                 controller:
-                                    controller.driverWaitingChargesController,
+                                    controller.escortAddress,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.address,
                                 columnText: true,
@@ -197,52 +197,16 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 context: context,
                                 isMobile: isMobile,
                                 column: true,
-                                label: AppText.safeguardingExpiry,
-                                width: fieldWidth / 1.5,
-                                child: SizedBox(
-                                    height: 35, child: CustomTimePicker()),
-                              ),
-                              labeledField(
-                                column: true,
-                                context: context,
-                                isMobile: isMobile,
                                 label: AppText.patExpiry,
-                                width: fieldWidth / 1.8,
+                                width: fieldWidth / 1.5,
                                 child: SizedBox(
                                     height: 35, child: KeyboardDatePicker()),
                               ),
                               labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                column: true,
-                                label: AppText.patExpiry,
-                                width: fieldWidth / 1.5,
-                                child: SizedBox(
-                                    height: 35, child: CustomTimePicker()),
-                              ),
-                              labeledField(
                                 column: true,
                                 context: context,
                                 isMobile: isMobile,
-                                label: AppText.firstAidExpiry,
-                                width: fieldWidth / 1.8,
-                                child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker()),
-                              ),
-                              labeledField(
-                                context: context,
-                                isMobile: isMobile,
-                                column: true,
-                                label: AppText.firstAidExpiry,
-                                width: fieldWidth / 1.5,
-                                child: SizedBox(
-                                    height: 35, child: CustomTimePicker()),
-                              ),
-                              labeledField(
-                                column: true,
-                                context: context,
-                                isMobile: isMobile,
-                                label: AppText.dbsExpiry,
+                                label: AppText.firstAid,
                                 width: fieldWidth / 1.8,
                                 child: SizedBox(
                                     height: 35, child: KeyboardDatePicker()),
@@ -256,9 +220,10 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 child: SizedBox(
                                     height: 35, child: CustomTimePicker()),
                               ),
+
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.vehicleTypeController,
+                                controller: controller.safeguardingBatch,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.safeguardingBatch,
                                 columnText: true,
@@ -266,7 +231,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.passengersController,
+                                controller: controller.PATBatch,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.patPicBatch,
                                 columnText: true,
@@ -274,7 +239,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.luggagesController,
+                                controller: controller.firstAidBatch,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.firstAidBatch,
                                 columnText: true,
@@ -282,7 +247,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.luggagesController,
+                                controller: controller.DBSBatch,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.dbsBatch,
                                 columnText: true,
@@ -311,258 +276,254 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
             Center(
               child: Wrap(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppText.safeguardingDocument,
-                        style: mozillaTextRegularText(fontSize: 11),
-                      ),
-                      Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Container(
-                            height: isMobile ? 100 : 200,
-                            width: fieldWidth / 1.5,
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              image: controller.phcVehicleDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .phcVehicleDocPic!), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
-                            ),
-                            child: controller.phcVehicleDocPic != null
-                                ? SizedBox.shrink()
-                                : Center(
-                                    child: Text(
-                                      AppText.safeguarding,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (controller.phcVehicleDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.phcVehicleDocPic = image.bytes;
-                                }
-                              } else {
-                                controller.phcVehicleDocPic = null;
-                              }
-                              controller.update();
-                            },
-                            child: Icon(
-                              controller.phcVehicleDocPic != null
-                                  ? Icons.remove_circle
-                                  : Icons.add_circle_outlined,
-                              size: 30,
-                              color: DynamicColors.primaryClr,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppText.patDocument,
-                        style: mozillaTextRegularText(fontSize: 11),
-                      ),
-                      Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Container(
-                            height: isMobile ? 100 : 200,
-                            width: fieldWidth / 1.5,
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              image: controller.motDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .motDocPic!), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
-                            ),
-                            child: controller.motDocPic != null
-                                ? SizedBox.shrink()
-                                : Center(
-                                    child: Text(
-                                      AppText.patPic,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (controller.motDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.motDocPic = image.bytes;
-                                }
-                              } else {
-                                controller.motDocPic = null;
-                              }
-                              controller.update();
-                            },
-                            child: Icon(
-                              controller.motDocPic != null
-                                  ? Icons.remove_circle
-                                  : Icons.add_circle_outlined,
-                              size: 30,
-                              color: DynamicColors.primaryClr,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppText.firstAidDocument,
-                        style: mozillaTextRegularText(fontSize: 11),
-                      ),
-                      Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Container(
-                            height: isMobile ? 100 : 200,
-                            width: fieldWidth / 1.5,
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              image: controller.mot2DocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .mot2DocPic!), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
-                            ),
-                            child: controller.mot2DocPic != null
-                                ? SizedBox.shrink()
-                                : Center(
-                                    child: Text(
-                                      AppText.firstAid,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (controller.mot2DocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.mot2DocPic = image.bytes;
-                                }
-                              } else {
-                                controller.mot2DocPic = null;
-                              }
-                              controller.update();
-                            },
-                            child: Icon(
-                              controller.mot2DocPic != null
-                                  ? Icons.remove_circle
-                                  : Icons.add_circle_outlined,
-                              size: 30,
-                              color: DynamicColors.primaryClr,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppText.dbsDocument,
-                        style: mozillaTextRegularText(fontSize: 11),
-                      ),
-                      Stack(
-                        alignment: Alignment.topRight,
-                        children: [
-                          Container(
-                            height: isMobile ? 100 : 200,
-                            width: fieldWidth / 1.5,
-                            margin: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.grey),
-                              image: controller.insuranceDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .insuranceDocPic!), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
-                            ),
-                            child: controller.insuranceDocPic != null
-                                ? SizedBox.shrink()
-                                : Center(
-                                    child: Text(
-                                      AppText.dbs,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              if (controller.insuranceDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.insuranceDocPic = image.bytes;
-                                }
-                              } else {
-                                controller.insuranceDocPic = null;
-                              }
-                              controller.update();
-                            },
-                            child: Icon(
-                              controller.insuranceDocPic != null
-                                  ? Icons.remove_circle
-                                  : Icons.add_circle_outlined,
-                              size: 30,
-                              color: DynamicColors.primaryClr,
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       AppText.safeguardingDocument,
+                  //       style: mozillaTextRegularText(fontSize: 11),
+                  //     ),
+                  //     Stack(
+                  //       alignment: Alignment.topRight,
+                  //       children: [
+                  //         Container(
+                  //           height: isMobile ? 100 : 200,
+                  //           width: fieldWidth / 1.5,
+                  //           margin: const EdgeInsets.all(8),
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.white,
+                  //             border: Border.all(color: Colors.grey),
+                  //             image:  controller.safeguardingDocPic == null ? null : DecorationImage(
+                  //               image: MemoryImage(controller.safeguardingDocPic!), // ✅ correct provider
+                  //               fit: BoxFit.fill,
+                  //             ),
+                  //           ),
+                  //           child: controller.safeguardingDocPic != null
+                  //               ? SizedBox.shrink()
+                  //               : Center(
+                  //                   child: Text(
+                  //                     AppText.safeguarding,
+                  //                     style: TextStyle(
+                  //                       fontSize: 11,
+                  //                       fontWeight: FontWeight.bold,
+                  //                       color: Colors.black,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //         ),
+                  //         GestureDetector(
+                  //           onTap: () async {
+                  //             if (controller.safeguardingDocPic == null) {
+                  //               final image =
+                  //                   await ImagePickerHelper.pickImage();
+                  //               if (image != null) {
+                  //                 controller.safeguardingDocPic = image.bytes ;
+                  //               }
+                  //             } else {
+                  //               controller.safeguardingDocPic = null;
+                  //             }
+                  //             controller.update();
+                  //           },
+                  //           child: Icon(
+                  //             controller.safeguardingDocPic != null
+                  //                 ? Icons.remove_circle
+                  //                 : Icons.add_circle_outlined,
+                  //             size: 30,
+                  //             color: DynamicColors.primaryClr,
+                  //           ),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       AppText.patDocument,
+                  //       style: mozillaTextRegularText(fontSize: 11),
+                  //     ),
+                  //     Stack(
+                  //       alignment: Alignment.topRight,
+                  //       children: [
+                  //         Container(
+                  //           height: isMobile ? 100 : 200,
+                  //           width: fieldWidth / 1.5,
+                  //           margin: const EdgeInsets.all(8),
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.white,
+                  //             border: Border.all(color: Colors.grey),
+                  //             image: controller.patDocPic == null
+                  //                 ? null
+                  //                 : DecorationImage(
+                  //                     image: MemoryImage(controller
+                  //                         .patDocPic! ), // ✅ correct provider
+                  //                     fit: BoxFit.fill,
+                  //                   ),
+                  //           ),
+                  //           child: controller.patDocPic != null
+                  //               ? SizedBox.shrink()
+                  //               : Center(
+                  //                   child: Text(
+                  //                     AppText.patPic,
+                  //                     style: TextStyle(
+                  //                       fontSize: 11,
+                  //                       fontWeight: FontWeight.bold,
+                  //                       color: Colors.black,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //         ),
+                  //         GestureDetector(
+                  //           onTap: () async {
+                  //             if (controller.patDocPic == null) {
+                  //               final image =
+                  //                   await ImagePickerHelper.pickImage();
+                  //               if (image != null) {
+                  //                 controller.patDocPic = image.bytes ;
+                  //               }
+                  //             } else {
+                  //               controller.patDocPic = null;
+                  //             }
+                  //             controller.update();
+                  //           },
+                  //           child: Icon(
+                  //             controller.patDocPic != null
+                  //                 ? Icons.remove_circle
+                  //                 : Icons.add_circle_outlined,
+                  //             size: 30,
+                  //             color: DynamicColors.primaryClr,
+                  //           ),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       AppText.firstAidDocument,
+                  //       style: mozillaTextRegularText(fontSize: 11),
+                  //     ),
+                  //     Stack(
+                  //       alignment: Alignment.topRight,
+                  //       children: [
+                  //         Container(
+                  //           height: isMobile ? 100 : 200,
+                  //           width: fieldWidth / 1.5,
+                  //           margin: const EdgeInsets.all(8),
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.white,
+                  //             border: Border.all(color: Colors.grey),
+                  //             image: controller.firstAidDocPic == null
+                  //                 ? null
+                  //                 : DecorationImage(
+                  //                     image: MemoryImage(controller
+                  //                         .firstAidDocPic! ), // ✅ correct provider
+                  //                     fit: BoxFit.fill,
+                  //                   ),
+                  //           ),
+                  //           child: controller.firstAidDocPic != null
+                  //               ? SizedBox.shrink()
+                  //               : Center(
+                  //                   child: Text(
+                  //                     AppText.firstAid,
+                  //                     style: TextStyle(
+                  //                       fontSize: 11,
+                  //                       fontWeight: FontWeight.bold,
+                  //                       color: Colors.black,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //         ),
+                  //         GestureDetector(
+                  //           onTap: () async {
+                  //             if (controller.firstAidDocPic == null) {
+                  //               final image =
+                  //                   await ImagePickerHelper.pickImage();
+                  //               if (image != null) {
+                  //                 controller.firstAidDocPic = image.bytes as Uint8List?;
+                  //               }
+                  //             } else {
+                  //               controller.firstAidDocPic = null;
+                  //             }
+                  //             controller.update();
+                  //           },
+                  //           child: Icon(
+                  //             controller.firstAidDocPic != null
+                  //                 ? Icons.remove_circle
+                  //                 : Icons.add_circle_outlined,
+                  //             size: 30,
+                  //             color: DynamicColors.primaryClr,
+                  //           ),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: [
+                  //     Text(
+                  //       AppText.dbsDocument,
+                  //       style: mozillaTextRegularText(fontSize: 11),
+                  //     ),
+                  //     Stack(
+                  //       alignment: Alignment.topRight,
+                  //       children: [
+                  //         Container(
+                  //           height: isMobile ? 100 : 200,
+                  //           width: fieldWidth / 1.5,
+                  //           margin: const EdgeInsets.all(8),
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.white,
+                  //             border: Border.all(color: Colors.grey),
+                  //             image: controller.dbsDocPic == null
+                  //                 ? null
+                  //                 : DecorationImage(
+                  //                     image: MemoryImage(controller.dbsDocPic!), // ✅ correct provider
+                  //                     fit: BoxFit.fill,
+                  //                   ),
+                  //           ),
+                  //           child: controller.dbsDocPic != null
+                  //               ? SizedBox.shrink()
+                  //               : Center(
+                  //                   child: Text(
+                  //                     AppText.dbs,
+                  //                     style: TextStyle(
+                  //                       fontSize: 11,
+                  //                       fontWeight: FontWeight.bold,
+                  //                       color: Colors.black,
+                  //                     ),
+                  //                   ),
+                  //                 ),
+                  //         ),
+                  //         GestureDetector(
+                  //           onTap: () async {
+                  //             if (controller.dbsDocPic == null) {
+                  //               final image =
+                  //                   await ImagePickerHelper.pickImage();
+                  //               if (image != null) {
+                  //                 controller.dbsDocPic = image.bytes as Uint8List? ;
+                  //               }
+                  //             } else {
+                  //               controller.dbsDocPic = null;
+                  //             }
+                  //             controller.update();
+                  //           },
+                  //           child: Icon(
+                  //             controller.dbsDocPic != null
+                  //                 ? Icons.remove_circle
+                  //                 : Icons.add_circle_outlined,
+                  //             size: 30,
+                  //             color: DynamicColors.primaryClr,
+                  //           ),
+                  //         )
+                  //       ],
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),

@@ -5,12 +5,13 @@ import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
 import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
     hide Subsidiary;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'dart:html' as html;
+import '../../../Model/image_model.dart';
 import '../../setting/model/templete_HTML_model.dart';
-import '../../setting/model/templete_by_type_model.dart';
 import '../Invoice/create_customer_invoice.dart';
 
 class AccountController extends GetxController {
@@ -543,7 +544,38 @@ class AccountController extends GetxController {
     // webLoginDataList.addAll(data.web_logins)
     update();
   }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create escort
 
+  final escortName = TextEditingController();
+  final escortEmail = TextEditingController();
+  final escortMobile = TextEditingController();
+  final escortAddress = TextEditingController();
+
+  final safeguardingBatch = TextEditingController();
+  final PATBatch = TextEditingController();
+  final firstAidBatch = TextEditingController();
+  final DBSBatch = TextEditingController();
+
+  // Uint8List? safeguardingDocPic;
+  // Uint8List? patDocPic;
+  // Uint8List? firstAidDocPic;
+  // Uint8List? dbsDocPic;
+
+  ImageModel? profileImg;
+
+  Future<void> pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+    );
+
+    if (result != null && result.files.single.bytes != null) {
+      profileImg = ImageModel(
+          name: result.files.single.name,
+          bytes: result.files.single.bytes!,
+          path: result.files.single.path);
+    }
+    update();
+  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
   EscortModel? listEscortModel;
