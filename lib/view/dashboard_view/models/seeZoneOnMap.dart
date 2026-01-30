@@ -110,8 +110,8 @@ class Vertex {
   });
 
   factory Vertex.fromJson(Map<String, dynamic> json) => Vertex(
-    latitude: json["latitude"]?.toDouble(),
-    longitude: json["longitude"]?.toDouble(),
+    latitude: double.parse(json["latitude"].toString()),
+    longitude: double.parse(json["longitude"].toString()),
   );
 
   Map<String, dynamic> toJson() => {

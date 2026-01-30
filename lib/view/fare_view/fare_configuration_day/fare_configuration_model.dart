@@ -75,13 +75,13 @@ class FareConfiguration {
     toDay: json["to_day"],
     fromTime: json["from_time"],
     toTime: json["to_time"],
-    minimumFares: json["minimum_fares"],
-    minimumMiles: json["minimum_miles"],
+    minimumFares: double.parse(json["minimum_fares"]),
+    minimumMiles: double.parse(json["minimum_miles"]),
     fromDate: json["from_date"],
     toDate: json["to_date"],
     title: json["title"],
     vehicleType: GetFareConfigVehicleType.fromJson(json["vehicle_type"]),
-    account: GetFareConfigAccount.fromJson(json["account"]),
+    account: json["account"] == null?null: GetFareConfigAccount.fromJson(json["account"]),
   );
 
   Map<String, dynamic> toJson() => {

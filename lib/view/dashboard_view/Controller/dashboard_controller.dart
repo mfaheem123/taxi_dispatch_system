@@ -619,39 +619,14 @@ class DashboardController extends GetxController {
           dropOff: pickupController.text,
           pickup: dropOffController.text,
           miles: totalDistance.value,
-          dropoffPlotId:
-              dashboardZoneValue != null ? dashboardZoneValue!.id : null,
-          pickupDate:
-              "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+          dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+          pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
           pickupTime: pickUpTimeController.text,
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
       );
-      print(storedTemFare);
-
       fixedFare.value = storedTemFare;
-      // final fare = await getActiveFareForVehicle(dashboardAllData!.fareConfigurations!, selectVehicleValue!.id!,);
-      //
-      // if (fare != null) {
-      //   print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',);
-      //   double inttt = (double.parse(totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-      //
-      //   fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-      //
-      //   print(fixedFare.value);
-      //
-      // } else {
-      //   print('No active fare found for this vehicle');
-      // }
-      // int index = dashboardAllData!.fareConfigurations!.indexWhere((test)=> test.vehicleTypeId == selectVehicleValue!.id);
-      //
-      // if(index != -1){
-      //   double inttt = (double.parse(totalDistance.value) - double.parse(dashboardAllData!.fareConfigurations![index].minimumMiles.toString()));
-      //
-      //   fixedFare.value = (inttt * double.parse(dashboardAllData!.fareConfigurations![index].minimumFares.toString())).toString();
-      // }
-
       update();
     } else {
       print("❌ OSRM error: ${res.statusCode}");
@@ -1114,7 +1089,7 @@ class DashboardController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
-  int temSelectedTab = 0;
+  int temSelectedTab = 1;
   getTableDataStatus({index, value}) async {
     int selectedIndex =
         bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);
@@ -1135,7 +1110,13 @@ class DashboardController extends GetxController {
       }
       bookingTabsList![index].selectedClr!.value = true; // <-- fix selection}
     }
-    getDashboardTableData(tableId: bookingTabsList![index].id);
+    print(bookingTabsList![index].id);
+    if(value == null){
+      getDashboardTableData(tableId: bookingTabsList![index].id);
+    }else{
+      getDashboardTableData(tableId: bookingTabsList![temSelectedTab].id);
+
+    }
     update();
   }
 
@@ -1506,7 +1487,7 @@ class DashboardController extends GetxController {
       'pickup_date':
           "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       if (pickUpTimeController.text.isNotEmpty)
-        'pickup_time': pickUpTimeController.text,
+        'pickup_time': pickUpTimeController.text.trim(),
       if (minController.text.isNotEmpty) 'lead_time': minController.text,
       'journey_type_id':
           selectJourneyTypeValue != null ? selectJourneyTypeValue!.id : 1,
@@ -1603,7 +1584,7 @@ class DashboardController extends GetxController {
         dashboardTableModelData!.data!.insert(
             0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      // refreshPostAllFields();
+      refreshPostAllFields();
       print(response.data);
     }
   }

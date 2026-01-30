@@ -108,7 +108,9 @@ class _BookingTableState extends State<BookingTable> {
                                 );
                               }).toList(),
                               onChanged: (value) {
-                                controller.getTableDataStatus(index: index,value: value);
+                                print(controller.bookingTabsList![index].id);
+                                print(index);
+                                controller.getTableDataStatus(index: index, value: value);
                                 // });
                               },
                             ),

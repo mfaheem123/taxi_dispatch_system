@@ -590,8 +590,10 @@ clearFormData(){
         .firstWhere((v) => v.id == fare.vehicleTypeId);
 
     /// account dropdown ka same instance select karna
-    accountValue = fareGetVehicleTypeAccount!.accounts!
-        .firstWhere((a) => a.id == fare.accountId);
+    if(fare.account != null){
+      accountValue = fareGetVehicleTypeAccount!.accounts!
+          .firstWhere((a) => a.id == fare.accountId);
+      }
 
     fromDayValue = fare.fromDay;
     toDayValue = fare.toDay;

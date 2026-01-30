@@ -58,7 +58,7 @@ Future<String> getFares({
   String? returnCompanyPrice,
 }) async {
   // 1. Validation: Return "0" instead of null to match Future<String>
-  if (miles == null || miles == "0" || miles == 0) {
+  if (pickup == null || dropOff == null) {
     BotToast.showText(text: "Please add pickup and drop off location");
     return "0";
   }
