@@ -88,10 +88,6 @@ class VehicleController extends GetxController {
       'make': vehicleMakeController.text,
       'model': vehicleModelController.text,
       'color': colorController.text,
-      'owner': 'company',
-      'company': 'true',
-      'assigned': 'false',
-      'vehicle_type_id': '68',
       'log_book_number': logBookingDocController.text,
       'phc_vehicle_expiry': phcVehicleExpireDate,
       'mot_expiry': motExpiryExpireDate,
@@ -101,8 +97,6 @@ class VehicleController extends GetxController {
       'mot_number': motNumberController.text,
       'mot2_number': mot2NumberController.text,
       'insurance_number': insuranceNumberController.text,
-      'start_date': '2024-01-10',
-      'end_date': '2025-01-10',
       'phc_vehicle_document': phcVehicleDocPic,
       'mot_document': motDocPic,
       'mot2_document': mot2DocPic,
@@ -124,8 +118,6 @@ class VehicleController extends GetxController {
       mot2NumberController.clear();
       vehicleNumberController.clear();
       insuranceNumberController.clear();
-    } else {
-      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
     }
   }
 

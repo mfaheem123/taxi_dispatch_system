@@ -46,7 +46,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
         final listToShow = controller.escortFiltered.isNotEmpty
             ? controller.escortFiltered
             : controller.escortAll;
-
+        bool isAllSelected = listToShow.isNotEmpty && controller.selectedIds.length == listToShow.length;
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -105,8 +105,17 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                         columns: [
                           DataColumn(
                             label: Checkbox(
-                              value: false, // a bool you keep in state
-                              onChanged: (val) {},
+                              value: isAllSelected,
+                              tristate: false,
+                              onChanged: (bool? val) {
+                                setState(() {
+                                  if (val == true) {
+                                    controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
+                                  } else {
+                                    controller.selectedIds.clear();
+                                  }
+                                });
+                              },
                             ),
                           ),
                           buildHeaderWithSearch(
@@ -147,14 +156,24 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                         ],
                         totalRow: listToShow.length ?? 0,
                         rows: (listToShow ?? []).map((item) {
+                          bool isRowSelected = controller.selectedIds.contains(item.id.toString());
                           return DataRow(
                             cells: [
                               DataCell(
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (val) {},
+                                  value: isRowSelected,
+                                  onChanged: (bool? val) {
+                                    setState(() {
+                                      if (val == true) {
+                                        controller.selectedIds.add(item.id.toString());
+                                      } else {
+                                        controller.selectedIds.remove(item.id.toString());
+                                      }
+                                    });
+                                  },
                                 ),
                               ),
+
                               DataCell(Center(child: Text(item.name!))),
                               DataCell(Center(child: Text(item.safeguardingExpiry!))),
                               DataCell(Center(child: Text(item.patExpiry!))),

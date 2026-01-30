@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
@@ -556,10 +557,10 @@ class AccountController extends GetxController {
   final firstAidBatch = TextEditingController();
   final DBSBatch = TextEditingController();
 
-  // Uint8List? safeguardingDocPic;
-  // Uint8List? patDocPic;
-  // Uint8List? firstAidDocPic;
-  // Uint8List? dbsDocPic;
+  Uint8List? safeguardingDocPic;
+  Uint8List? patDocPic;
+  Uint8List? firstAidDocPic;
+  Uint8List? dbsDocPic;
 
   ImageModel? profileImg;
 
@@ -578,6 +579,8 @@ class AccountController extends GetxController {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
+  // selected items
+  Set<String> selectedIds = {};
   EscortModel? listEscortModel;
   RxBool listEscortLoding = false.obs;
   RxList<Escorts> escortAll = <Escorts>[].obs;

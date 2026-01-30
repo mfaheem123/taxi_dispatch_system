@@ -340,7 +340,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                         },
                         height: 30,
                         width: fieldWidth,
-                        btnText: AppText.save,
+                        btnText:
+                        controller.singleVehicle == null?
+                        AppText.save: "EDIT",
                         fontSize: 11,
                         verticalPadding: 0.0,
                         borderRadius: 4,
