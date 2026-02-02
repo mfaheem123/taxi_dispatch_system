@@ -79,7 +79,7 @@ class _ExtraFaresAlertState extends State<ExtraFaresAlert> {
                     Expanded(
                       child: CustomTextField(
                         hintText: "PARKING CHARGES",
-                        controller: dashBoardCntrl.partingChargesController,
+                        controller: dashBoardCntrl.parkingChargesController,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter

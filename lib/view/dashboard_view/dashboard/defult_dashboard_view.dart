@@ -1083,7 +1083,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           controller.polyLineMarkerInfo.clear();
                                                                           controller.pickupTwoWayController.clear();
                                                                           controller.dropOffTwoWayController.clear();
-
+                                                                          controller.pickupController.clear();
+                                                                          controller.dropOffController.clear();
                                                                           controller.polylinePoints.clear();
                                                                           controller.fetchRouteFromOSRM();
                                                                           controller.fixedFare.value = "0";
@@ -1247,12 +1248,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         onActivate: () {
 
                                                                          FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
-
+                                                                         controller.pickupController.clear();
+                                                                         controller.dropOffController.clear();
                                                                           controller.dropOffTwoWayController.clear();
                                                                           controller.markers.clear();
                                                                           controller.polyLineMarkerInfo.clear();
                                                                           controller.pickupController.clear();
                                                                           controller.polylinePoints.clear();
+                                                                         controller.pickupTwoWayController.clear();
                                                                           controller.fetchRouteFromOSRM();
                                                                           controller.fixedFare.value = "0";
                                                                           controller.totalDistance.value = "0";
