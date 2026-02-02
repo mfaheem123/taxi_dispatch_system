@@ -34,7 +34,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "customersScreen";
-    controller.getCustomer();
+
   }
 
   // int selectedRowIndex = 0; // currently selected row
@@ -48,7 +48,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(builder: (controller) {
+    return GetBuilder<CustomerController>(
+        initState: (state) {
+          controller.getCustomer();
+        },
+        builder: (controller) {
       final listToShow = controller.filteredCustomer.isNotEmpty
           ? controller.filteredCustomer
           : controller.customerListAll;

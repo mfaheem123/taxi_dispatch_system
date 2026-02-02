@@ -1,3 +1,13 @@
+// To parse this JSON data, do
+//
+//     final userModel = userModelFromJson(jsonString);
+
+import 'dart:convert';
+
+UserModel userModelFromJson(String str) => UserModel.fromJson(json.decode(str));
+
+String userModelToJson(UserModel data) => json.encode(data.toJson());
+
 class UserModel {
   bool? status;
   int? page;
@@ -5,48 +15,40 @@ class UserModel {
   int? total;
   int? totalPages;
   int? count;
-  List<Employees>? employees;
+  List<Employee>? employees;
 
-  UserModel(
-      {this.status,
-      this.page,
-      this.limit,
-      this.total,
-      this.totalPages,
-      this.count,
-      this.employees});
+  UserModel({
+    this.status,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
+    this.count,
+    this.employees,
+  });
 
-  UserModel.fromJson(Map<String, dynamic> json) {
-    status = json['status'];
-    page = json['page'];
-    limit = json['limit'];
-    total = json['total'];
-    totalPages = json['total_pages'];
-    count = json['count'];
-    if (json['employees'] != null) {
-      employees = <Employees>[];
-      json['employees'].forEach((v) {
-        employees!.add(new Employees.fromJson(v));
-      });
-    }
-  }
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
+    status: json["status"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
+    count: json["count"],
+    employees: json["employees"] == null ? [] : List<Employee>.from(json["employees"]!.map((x) => Employee.fromJson(x))),
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['page'] = this.page;
-    data['limit'] = this.limit;
-    data['total'] = this.total;
-    data['total_pages'] = this.totalPages;
-    data['count'] = this.count;
-    if (this.employees != null) {
-      data['employees'] = this.employees!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "status": status,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
+    "count": count,
+    "employees": employees == null ? [] : List<dynamic>.from(employees!.map((x) => x.toJson())),
+  };
 }
 
-class Employees {
+class Employee {
   int? id;
   int? subsidiaryId;
   int? roleId;
@@ -55,104 +57,125 @@ class Employees {
   String? email;
   String? phone;
   String? fax;
-  String? image;
-  String? webDeviceId;
-  String? mobileDeviceId;
-  String? extensionNumber;
+  dynamic image;
+  dynamic webDeviceId;
+  dynamic mobileDeviceId;
+  dynamic extensionNumber;
   bool? releaseNoteViewed;
   String? createdAt;
   String? updatedAt;
+  String? confirmpassword;
+  bool? active;
+  bool? alldrivers;
+  bool? allbookings;
+  bool? allaccounts;
+  bool? callreceiver;
+  bool? allowtransferbookings;
   String? roleName;
   String? subsidiaryName;
   Role? role;
   Role? subsidiary;
 
-  Employees(
-      {this.id,
-      this.subsidiaryId,
-      this.roleId,
-      this.username,
-      this.password,
-      this.email,
-      this.phone,
-      this.fax,
-      this.image,
-      this.webDeviceId,
-      this.mobileDeviceId,
-      this.extensionNumber,
-      this.releaseNoteViewed,
-      this.createdAt,
-      this.updatedAt,
-      this.roleName,
-      this.subsidiaryName,
-      this.role,
-      this.subsidiary});
+  Employee({
+    this.id,
+    this.subsidiaryId,
+    this.roleId,
+    this.username,
+    this.password,
+    this.email,
+    this.phone,
+    this.fax,
+    this.image,
+    this.webDeviceId,
+    this.mobileDeviceId,
+    this.extensionNumber,
+    this.releaseNoteViewed,
+    this.createdAt,
+    this.updatedAt,
+    this.confirmpassword,
+    this.active,
+    this.alldrivers,
+    this.allbookings,
+    this.allaccounts,
+    this.callreceiver,
+    this.allowtransferbookings,
+    this.roleName,
+    this.subsidiaryName,
+    this.role,
+    this.subsidiary,
+  });
 
-  Employees.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    subsidiaryId = json['subsidiary_id'];
-    roleId = json['role_id'];
-    username = json['username'];
-    password = json['password'];
-    email = json['email'];
-    phone = json['phone'];
-    fax = json['fax'];
-    image = json['image'];
-    webDeviceId = json['web_device_id'];
-    mobileDeviceId = json['mobile_device_id'];
-    extensionNumber = json['extension_number'];
-    releaseNoteViewed = json['release_note_viewed'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    roleName = json['role_name'];
-    subsidiaryName = json['subsidiary_name'];
-    role = json['role'] != null ? new Role.fromJson(json['role']) : null;
-    subsidiary = json['subsidiary'] != null
-        ? new Role.fromJson(json['subsidiary'])
-        : null;
-  }
+  factory Employee.fromJson(Map<String, dynamic> json) => Employee(
+    id: json["id"],
+    subsidiaryId: json["subsidiary_id"],
+    roleId: json["role_id"],
+    username: json["username"],
+    password: json["password"],
+    email: json["email"],
+    phone: json["phone"],
+    fax: json["fax"],
+    image: json["image"],
+    webDeviceId: json["web_device_id"],
+    mobileDeviceId: json["mobile_device_id"],
+    extensionNumber: json["extension_number"],
+    releaseNoteViewed: json["release_note_viewed"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+    confirmpassword: json["confirmpassword"],
+    active: json["active"],
+    alldrivers: json["alldrivers"],
+    allbookings: json["allbookings"],
+    allaccounts: json["allaccounts"],
+    callreceiver: json["callreceiver"],
+    allowtransferbookings: json["allowtransferbookings"],
+    roleName: json["role_name"],
+    subsidiaryName: json["subsidiary_name"],
+    role: json["role"] == null ? null : Role.fromJson(json["role"]),
+    subsidiary: json["subsidiary"] == null ? null : Role.fromJson(json["subsidiary"]),
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['subsidiary_id'] = this.subsidiaryId;
-    data['role_id'] = this.roleId;
-    data['username'] = this.username;
-    data['password'] = this.password;
-    data['email'] = this.email;
-    data['phone'] = this.phone;
-    data['fax'] = this.fax;
-    data['image'] = this.image;
-    data['web_device_id'] = this.webDeviceId;
-    data['mobile_device_id'] = this.mobileDeviceId;
-    data['extension_number'] = this.extensionNumber;
-    data['release_note_viewed'] = this.releaseNoteViewed;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['role_name'] = this.roleName;
-    data['subsidiary_name'] = this.subsidiaryName;
-    if (this.role != null) {
-      data['role'] = this.role!.toJson();
-    }
-    if (this.subsidiary != null) {
-      data['subsidiary'] = this.subsidiary!.toJson();
-    }
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "subsidiary_id": subsidiaryId,
+    "role_id": roleId,
+    "username": username,
+    "password": password,
+    "email": email,
+    "phone": phone,
+    "fax": fax,
+    "image": image,
+    "web_device_id": webDeviceId,
+    "mobile_device_id": mobileDeviceId,
+    "extension_number": extensionNumber,
+    "release_note_viewed": releaseNoteViewed,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "confirmpassword": confirmpassword,
+    "active": active,
+    "alldrivers": alldrivers,
+    "allbookings": allbookings,
+    "allaccounts": allaccounts,
+    "callreceiver": callreceiver,
+    "allowtransferbookings": allowtransferbookings,
+    "role_name": roleName,
+    "subsidiary_name": subsidiaryName,
+    "role": role?.toJson(),
+    "subsidiary": subsidiary?.toJson(),
+  };
 }
 
 class Role {
   String? name;
 
-  Role({this.name});
+  Role({
+    this.name,
+  });
 
-  Role.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
-  }
+  factory Role.fromJson(Map<String, dynamic> json) => Role(
+    name: json["name"],
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.name;
-    return data;
-  }
+  Map<String, dynamic> toJson() => {
+    "name": name,
+  };
 }

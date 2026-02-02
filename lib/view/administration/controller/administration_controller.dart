@@ -77,15 +77,16 @@ class AdministrationController extends GetxController {
     listSubsDiary();
   }
 
-//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  api
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get User
 
   UserModel? userModel;
+  Employee? employee;
   RxBool userLoading = false.obs;
   var userCurrentPage = 1.obs;
   var userTotalPage = 1.obs;
-  final int userLlimit = 5;
-  RxList<Employees> userAll = <Employees>[].obs;
-  RxList<Employees> userFliter = <Employees>[].obs;
+  final int userLlimit = 15;
+  RxList<Employee> userAll = <Employee>[].obs;
+  RxList<Employee> userFliter = <Employee>[].obs;
   RxString searchUserName = ''.obs;
   RxString searchUserEmail = ''.obs;
   RxString searchUserPhone = ''.obs;
@@ -94,9 +95,7 @@ class AdministrationController extends GetxController {
   RxString searchUserRole = ''.obs;
   RxString searchUserSubsiDiary = ''.obs;
   userData() async {
-
       userLoading.value = true;
-
       final response = await Api().get('employees/get?',
           queryParameters: {
         'page' : userCurrentPage.value,
@@ -129,6 +128,43 @@ class AdministrationController extends GetxController {
     userCurrentPage.value = page;
     userData();
   }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  Delete
+
+  userDelete(int? id) async {
+    var response = await Api().delete("employees/delete/$id");
+    if (response.statusCode == 200) {
+      userData();
+      print("Customer deleted successfully!");
+
+    }
+  }
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  Update
+
+
+  RxBool isUpdating = false.obs;
+  userUpdate({Employee? userUpdate}) async {
+    if (userUpdate == null) return;
+    isUpdating.value = true;
+    employee = userUpdate;
+    userNameController.text = userUpdate.username ?? "";
+    passwordController.text = userUpdate.password ?? "";
+    confirmController.text = userUpdate.confirmpassword ?? "";
+    userEmailController.text = userUpdate.email ?? "";
+    phoneController.text = userUpdate.phone ?? "";
+    faxUserController.text = userUpdate.fax ?? "";
+    activeValue.value = userUpdate.active ?? false;
+    alldriversValue.value = userUpdate.alldrivers ?? false;
+    allbookingValue.value = userUpdate.allbookings ?? false;
+    accuntValue.value = userUpdate.allaccounts ?? false;
+    receviverValue.value = userUpdate.callreceiver ?? false;
+    transferValue.value = userUpdate.allowtransferbookings ?? false;
+    update();
+  }
+
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary Controller
 
@@ -332,7 +368,11 @@ class AdministrationController extends GetxController {
       'allowtransferbookings': transferValue.value,
       if (multipartFile != null) "image": multipartFile!,
     };
-    var response = await Api().post(formData, 'employees/add', auth : true);
+    var response = await Api().post(formData,
+   isUpdating.value
+        ? "employees/update/${employee!.id}"
+            : "employees/add",
+         auth : true);
     if (response.statusCode == 200) {
       userNameController.clear();
       passwordController.clear();

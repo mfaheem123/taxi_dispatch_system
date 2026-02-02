@@ -267,7 +267,13 @@ class CreateUserScreen extends StatelessWidget {
                 borderRadius: 4,
                 style: mozillaTextSemiBoldText(
                     fontSize: 12, color: DynamicColors.whiteClr),
-                btnText: AppText.save,
+                btnText:
+
+                controller.isLoadUser.value
+                    ? CircularProgressIndicator()
+                    : controller.isUpdating.value ? "UPDATE USER" : AppText.save,
+
+
               ),
             ),
           ),

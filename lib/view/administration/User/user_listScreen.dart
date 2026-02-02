@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
+import 'create_userScreen.dart';
 
 class UserListscreen extends StatefulWidget {
   UserListscreen({super.key});
@@ -26,13 +27,12 @@ class _UserListscreenState extends State<UserListscreen> {
       Get.isRegistered<AdministrationController>()
           ? Get.find<AdministrationController>()
           : Get.put(AdministrationController());
-
+  final DashboardController _controller = Get.find();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-    controller.userData();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -68,7 +68,13 @@ class _UserListscreenState extends State<UserListscreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<AdministrationController>(builder: (controller) {
+      child: GetBuilder<AdministrationController>(
+          initState: (state) {
+            controller.userData();
+
+          },
+
+          builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -221,22 +227,44 @@ class _UserListscreenState extends State<UserListscreen> {
                                     child: Text(
                                         item.subsidiary?.name ?? 'no data'))),
                                 DataCell(Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     IconButton(
                                       icon: Icon(
                                         Icons.edit_calendar,
-                                        color: DynamicColors.redClr,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        controller.isUpdating.value = true;
+                                        controller.userUpdate(userUpdate: item);
+
+                                        int index = _controller.selectedMenuItems
+                                            .indexWhere((element) => element.title == "CREATE USER");
+
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index].selectedItem = true;
+                                        } else {
+                                          _controller.menuBarRefresh(
+                                              title: "CREATE USER",
+                                              pageName: CreateUserScreen());
+                                        }
+
+                                        // Page switch karein
+                                        _controller.currentPage.value = CreateUserScreen();
+                                        controller.update();
+                                      },
                                     ),
                                     const Text("|"),
                                     IconButton(
                                       icon: Icon(
                                         Icons.delete_forever,
-                                        color: DynamicColors.redClr,
+                                        color: DynamicColors.primaryClr,
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+
+                                       controller.userDelete(item.id);
+                                      },
                                     ),
                                   ],
                                 )),

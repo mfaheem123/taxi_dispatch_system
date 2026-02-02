@@ -547,14 +547,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   ),
                                                 ),
                                               ),
-                                              const SizedBox(width: 5),
+                                              // const SizedBox(width: 5),
                                               // Select PLots
                                               // Select Zone on pick Up location line
                                               Obx(
                                                 () => Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 37.0),
+                                                      horizontal: 17.0),
                                                   child: FocusTraversalOrder(
                                                     order:
                                                         const NumericFocusOrder(
@@ -562,7 +562,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     child: CustomDropdownField<
                                                         location.ZoneObject>(
                                                       label: "Select Zone",
-                                                      width: fieldWidth,
+                                                      width: isMobile ? fieldWidth : fieldWidth + 40,
                                                       height: 30,
                                                       items: _controller
                                                                   .updateLocationValue
@@ -591,14 +591,14 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                               ),
 
-                                              const SizedBox(width: 7),
+                                              // const SizedBox(width: 7),
 
                                               // (3) Pickup notes
                                               FocusTraversalOrder(
                                                 order:
                                                     const NumericFocusOrder(3),
                                                 child: SizedBox(
-                                                  width: fieldWidth,
+                                                  width: isMobile ? fieldWidth : fieldWidth + 40,
                                                   height: 30,
                                                   child: CustomTextField(
                                                     controller:
@@ -828,19 +828,19 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                               ),
 
-                                              const SizedBox(width: 10),
+                                              // const SizedBox(width: 10),
                                               // Select Plot
                                               Obx(
                                                 () => Padding(
                                                   padding: const EdgeInsets
                                                       .symmetric(
-                                                      horizontal: 37.0),
+                                                      horizontal: 17.0),
                                                   child: FocusTraversalOrder(
                                                     order: NumericFocusOrder(5),
                                                     child: CustomDropdownField<
                                                         location.ZoneObject>(
                                                       label: "Select Zone",
-                                                      width: fieldWidth,
+                                                      width: isMobile ? fieldWidth : fieldWidth + 40,
                                                       height: 30,
                                                       items: _controller
                                                                   .updateDLocationValue
@@ -869,7 +869,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                               ),
 
-                                              const SizedBox(width: 9),
+                                              // const SizedBox(width: 9),
 
                                               // (3) Pickup notes
                                               FocusTraversalOrder(
@@ -879,7 +879,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       const EdgeInsets.only(
                                                           left: 5),
                                                   child: SizedBox(
-                                                    width: fieldWidth,
+                                                    width: isMobile ? fieldWidth : fieldWidth + 40,
                                                     height: 30,
                                                     child: CustomTextField(
                                                       controller:
@@ -954,8 +954,6 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       isMobile,
                                                       isTablet,
                                                       fieldWidth)
-                                                .map((child) => Expanded(child: child))
-                                                .toList(),
                                                 ),
                                         ),
                                         // Mob
@@ -1043,122 +1041,81 @@ class _CreateBookingState extends State<CreateBooking> {
                                           child: labeledField(
                                             context: context,
                                             isMobile: isMobile,
-                                            column: isMobile == true || isTablet == true,
+                                            column: isMobile == true ||
+                                                    isTablet == true
+                                                ? true
+                                                : false,
                                             label: AppText.date,
                                             width: fieldWidth,
-                                            child: SingleChildScrollView(
-                                              scrollDirection: Axis.horizontal,
-                                              child: SizedBox(
-                                                height: 30,
-                                                child: KeyboardDatePicker(
-                                                  initialDate: controller.pickUpDate ?? DateTime.now(),
-                                                  borderClr: Colors.blue,
-                                                  onChanged: (date) async {
-                                                    controller.pickUpDate = date;
-                                                    final storedTemFare = await getFares(
-                                                      journeyTypeId: controller.selectJourneyTypeValue!.id,
-                                                      multiReservationList: controller.multiReservationList,
-                                                      dropOff: controller.pickupController.text,
-                                                      pickup: controller.dropOffController.text,
-                                                      miles: controller.totalDistance.value,
-                                                      dropoffPlotId: controller.dashboardZoneValue?.id,
-                                                      pickupDate:
-                                                      "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
-                                                      pickupTime: controller.pickUpTimeController.text,
-                                                      vehicleTypeId: controller.selectVehicleValue!.id,
-                                                    );
-                                                    controller.fixedFare.value = storedTemFare;
-                                                    controller.update();
-                                                  },
-                                                  onSubmitted: (date) {
-                                                    print("User pressed enter: $date");
-                                                  },
-                                                ),
-                                              ),
+                                            child: LayoutBuilder(
+                                                builder: (context, constraints) {
+                                                  return SizedBox(
+                                                      height: 30,
+                                                      width: constraints
+                                                          .maxWidth,
+                                                      child: KeyboardDatePicker(
+                                                        initialDate:
+                                                        controller.pickUpDate ??
+                                                            DateTime.now(),
+                                                        borderClr: Colors.blue,
+                                                        onChanged: (
+                                                            date) async {
+                                                          controller
+                                                              .pickUpDate =
+                                                              date;
+                                                          final storedTemFare = await getFares(
+                                                              journeyTypeId: controller
+                                                                  .selectJourneyTypeValue!
+                                                                  .id,
+                                                              multiReservationList:
+                                                              controller
+                                                                  .multiReservationList,
+                                                              dropOff: controller
+                                                                  .pickupController
+                                                                  .text,
+                                                              pickup: controller
+                                                                  .dropOffController
+                                                                  .text,
+                                                              miles: controller
+                                                                  .totalDistance
+                                                                  .value,
+                                                              dropoffPlotId:
+                                                              controller
+                                                                  .dashboardZoneValue !=
+                                                                  null
+                                                                  ? controller
+                                                                  .dashboardZoneValue!
+                                                                  .id
+                                                                  : null,
+                                                              pickupDate:
+                                                              "${controller
+                                                                  .pickUpDate!
+                                                                  .year}-${controller
+                                                                  .pickUpDate!
+                                                                  .month}-${controller
+                                                                  .pickUpDate!
+                                                                  .day}",
+                                                              pickupTime: controller
+                                                                  .pickUpTimeController
+                                                                  .text,
+                                                              vehicleTypeId: controller
+                                                                  .selectVehicleValue!
+                                                                  .id);
+                                                          controller.fixedFare
+                                                              .value =
+                                                              storedTemFare;
+                                                          controller.update();
+                                                        },
+                                                        onSubmitted: (date) {
+                                                          // jab user enter press kare
+                                                          print(
+                                                              "User pressed enter: $date");
+                                                        },
+                                                      ));
+                                                },
                                             ),
                                           ),
                                         ),
-
-                                        // FocusTraversalOrder(
-                                        //   order: NumericFocusOrder(11),
-                                        //   child: labeledField(
-                                        //     context: context,
-                                        //     isMobile: isMobile,
-                                        //     column: isMobile == true ||
-                                        //             isTablet == true
-                                        //         ? true
-                                        //         : false,
-                                        //     label: AppText.date,
-                                        //     width: fieldWidth,
-                                        //     child: LayoutBuilder(
-                                        //         builder: (context, constraints) {
-                                        //           return SizedBox(
-                                        //               height: 30,
-                                        //               width: constraints
-                                        //                   .maxWidth,
-                                        //               child: KeyboardDatePicker(
-                                        //                 initialDate:
-                                        //                 controller.pickUpDate ??
-                                        //                     DateTime.now(),
-                                        //                 borderClr: Colors.blue,
-                                        //                 onChanged: (
-                                        //                     date) async {
-                                        //                   controller
-                                        //                       .pickUpDate =
-                                        //                       date;
-                                        //                   final storedTemFare = await getFares(
-                                        //                       journeyTypeId: controller
-                                        //                           .selectJourneyTypeValue!
-                                        //                           .id,
-                                        //                       multiReservationList:
-                                        //                       controller
-                                        //                           .multiReservationList,
-                                        //                       dropOff: controller
-                                        //                           .pickupController
-                                        //                           .text,
-                                        //                       pickup: controller
-                                        //                           .dropOffController
-                                        //                           .text,
-                                        //                       miles: controller
-                                        //                           .totalDistance
-                                        //                           .value,
-                                        //                       dropoffPlotId:
-                                        //                       controller
-                                        //                           .dashboardZoneValue !=
-                                        //                           null
-                                        //                           ? controller
-                                        //                           .dashboardZoneValue!
-                                        //                           .id
-                                        //                           : null,
-                                        //                       pickupDate:
-                                        //                       "${controller
-                                        //                           .pickUpDate!
-                                        //                           .year}-${controller
-                                        //                           .pickUpDate!
-                                        //                           .month}-${controller
-                                        //                           .pickUpDate!
-                                        //                           .day}",
-                                        //                       pickupTime: controller
-                                        //                           .pickUpTimeController
-                                        //                           .text,
-                                        //                       vehicleTypeId: controller
-                                        //                           .selectVehicleValue!
-                                        //                           .id);
-                                        //                   controller.fixedFare
-                                        //                       .value =
-                                        //                       storedTemFare;
-                                        //                   controller.update();
-                                        //                 },
-                                        //                 onSubmitted: (date) {
-                                        //                   // jab user enter press kare
-                                        //                   print(
-                                        //                       "User pressed enter: $date");
-                                        //                 },
-                                        //               ));
-                                        //         },
-                                        //     ),
-                                        //   ),
-                                        // ),
 
                                         // (6) Time
                                         FocusTraversalOrder(
