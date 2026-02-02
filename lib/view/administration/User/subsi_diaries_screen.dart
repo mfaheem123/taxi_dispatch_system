@@ -26,12 +26,15 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "SubsiDiariesScreen";
-    controller.listSubsDiary();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<AdministrationController>(
+      initState: (state) {
+        controller.listSubsDiary();
+      },
       builder: (controller) {
         // ✅ Null-safe list
         final List listToShow =
@@ -209,7 +212,11 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                   IconButton(
                                     icon: Icon(Icons.delete,
                                         color: DynamicColors.redClr),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                        controller.subsidiariesDelete(item.id);
+
+
+                                    },
                                   ),
                                 ],
                               ),

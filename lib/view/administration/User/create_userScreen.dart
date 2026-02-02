@@ -251,14 +251,15 @@ class CreateUserScreen extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
+
           Container(
-            // height: screenHeight / 20,
             width: double.infinity,
             color: DynamicColors.gryClr,
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: Center(
-              child: CustomButton(
-                onTap: (){
+
+              child: Obx(() => CustomButton(
+                onTap: () {
                   controller.createUser();
                 },
                 height: 30,
@@ -267,16 +268,11 @@ class CreateUserScreen extends StatelessWidget {
                 borderRadius: 4,
                 style: mozillaTextSemiBoldText(
                     fontSize: 12, color: DynamicColors.whiteClr),
-                btnText:
-
-                controller.isLoadUser.value
-                    ? CircularProgressIndicator()
-                    : controller.isUpdating.value ? "UPDATE USER" : AppText.save,
-
-
-              ),
+                btnText: controller.isUpdating.value ? "UPDATE USER" : "SAVE",
+              )),
             ),
           ),
+
         ],
       ),
     );

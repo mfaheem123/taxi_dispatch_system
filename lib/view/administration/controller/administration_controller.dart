@@ -18,7 +18,7 @@ class AdministrationController extends GetxController {
 
 
 
-//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List subsDiary api
+//// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get  List subsDiary api
   RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
   SubsDiaryModel? subsDiaryModel;
   RxBool subsDiaryLoading = false.obs;
@@ -37,7 +37,7 @@ class AdministrationController extends GetxController {
 
   Subsidiaries? selectedSubsidiary;
 
-  Future<void> listSubsDiary() async {
+ listSubsDiary() async {
     try {
       subsDiaryLoading.value = true;
       final response = await Api().get('subsidiaries/get?', queryParameters: {
@@ -77,7 +77,24 @@ class AdministrationController extends GetxController {
     listSubsDiary();
   }
 
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get User
+
+
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete SubsDiary
+
+
+  //
+
+  subsidiariesDelete(int? id) async {
+    var response = await Api().delete("subsidiaries/delete/$id");
+    if (response.statusCode == 200) {
+      listSubsDiary();
+      print("Subsidiaries deleted successfully!");
+
+    }
+  }
+
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get User
 
   UserModel? userModel;
   Employee? employee;
@@ -148,6 +165,21 @@ class AdministrationController extends GetxController {
     if (userUpdate == null) return;
     isUpdating.value = true;
     employee = userUpdate;
+// --- 1. Subsidiary Match Logic ---
+    if (subsiDiaryAll.isNotEmpty) {
+      selectedSubsidiary = subsiDiaryAll.firstWhere(
+            (sub) => sub.id == userUpdate.subsidiaryId,
+        orElse: () => subsiDiaryAll.first, // Agar na mile toh pehla select karle
+      );
+    }
+    // --- 2. Role Match Logic ---
+    if (getRole?.roles != null && getRole!.roles!.isNotEmpty) {
+      selectedRole = getRole!.roles!.firstWhere(
+            (role) => role.id == userUpdate.roleId,
+        orElse: () => getRole!.roles!.first,
+      );
+    }
+
     userNameController.text = userUpdate.username ?? "";
     passwordController.text = userUpdate.password ?? "";
     confirmController.text = userUpdate.confirmpassword ?? "";
@@ -337,10 +369,9 @@ class AdministrationController extends GetxController {
   }
 
 
-
   RxBool isLoadUser = false.obs;
   createUser() async {
-    isLoadVehicleType.value = true;
+    isLoadUser(true);
 
     var multipartFile;
     if (profileImg != null) {
@@ -368,6 +399,12 @@ class AdministrationController extends GetxController {
       'allowtransferbookings': transferValue.value,
       if (multipartFile != null) "image": multipartFile!,
     };
+    // if (profileImg != null) {
+    //   formData["image"] = await dio.MultipartFile.fromBytes(
+    //     profileImg!.bytes,
+    //     filename: profileImg!.name,
+    //   );
+    // }
     var response = await Api().post(formData,
    isUpdating.value
         ? "employees/update/${employee!.id}"
@@ -387,13 +424,13 @@ class AdministrationController extends GetxController {
       receviverValue.value = false;
       transferValue.value = false;
       profileImage = null;
-
-      update();
-      Text("Saved Successfully");
       print("response of body -------------------------${response.data}");
+      isLoadUser(false);
+      isUpdating.value = false;
+      update();
     }
 
-    isLoadVehicleType.value = false;
+
   }
 
 
