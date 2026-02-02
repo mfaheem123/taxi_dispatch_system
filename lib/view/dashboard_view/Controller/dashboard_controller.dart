@@ -140,7 +140,7 @@ class DashboardController extends GetxController {
 
   final noOfChildren = TextEditingController();
   final childAge = TextEditingController();
-  final partingChargesController = TextEditingController();
+  final parkingChargesController = TextEditingController();
   final congestionChargesController = TextEditingController();
   final meetGreetController = TextEditingController();
   final waitingChargesController = TextEditingController();
@@ -1220,7 +1220,7 @@ class DashboardController extends GetxController {
       pickupTime: pickUpTimeController.text,
       vehicleTypeId: selectVehicleValue == null?null: selectVehicleValue!.id,
     congestionCharges: congestionChargesController.text.isEmpty?null: congestionChargesController.text,
-    partingCharges: partingChargesController.text.isEmpty?null: partingChargesController.text,
+    partingCharges: parkingChargesController.text.isEmpty?null: parkingChargesController.text,
     meetGreet: meetGreetController.text.isEmpty?null: meetGreetController.text,
     waitingCharges: waitingChargesController.text.isEmpty?null: waitingChargesController.text,
     extraDropCharges: extraDropChargesController.text.isEmpty?null: extraDropChargesController.text,
@@ -1506,8 +1506,8 @@ class DashboardController extends GetxController {
       if (restrictedDrivers.isNotEmpty)
         'restricted_drivers': jsonEncode(restrictedDrivers),
       if (childSeatList.isNotEmpty) 'child_seat': jsonEncode(childSeatList),
-      if (partingChargesController.text.isNotEmpty)
-        'parking_charges': partingChargesController.text,
+      if (parkingChargesController.text.isNotEmpty)
+        'parking_charges': parkingChargesController.text,
       if (congestionChargesController.text.isNotEmpty)
         'congestion_charges': congestionChargesController.text,
       if (meetGreetController.text.isNotEmpty)
@@ -1707,7 +1707,7 @@ class DashboardController extends GetxController {
     passController.clear();
     luggController.clear();
     sluggController.clear();
-    partingChargesController.clear();
+    parkingChargesController.clear();
     congestionChargesController.clear();
     meetGreetController.clear();
     waitingChargesController.clear();
@@ -1760,6 +1760,104 @@ class DashboardController extends GetxController {
     dashboardDataLoader(false);
     update();
   }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
+  dashBoardDataBinding({required BookingObjectData jobData}) async{
+    print(jobData);
+
+    pickupController.clear();
+    pickUpNoteController.clear();
+    dropOffController.clear();
+    dropUpNoteController.clear();
+
+    viaPostList.clear();
+    restrictedDrivers.clear();
+    childSeatList.clear();
+    extraFaresList.clear();
+    driversList.clear();
+    childSeatAlert.clear();
+    controllerAlert.clear();
+    multiReservationTemp.clear();
+    multiVehicleList.clear();
+    multiVehicleTempList.clear();
+    viaPoints.clear();
+    dashboardZoneValue = null;
+    selectJourneyTypeValue = null;
+    selectAccountValue = null;
+    selectDepartmentData = null;
+    selectPaymentTypeValue = null;
+    selectVehicleValue = null;
+    selectDriverValue = null;
+    selectSubsidiariesValue = null;
+    switchController.value = false;
+    smsCheckbox.value = true;
+    emailCheckbox.value = false;
+    markers.clear();
+    polylines.clear();
+    polylinePointsCoordinate.clear();
+    markers.clear();
+    polyLineMarkerInfo.clear();
+    polylines.clear();
+    polylinePoints.clear();
+
+
+    nameController.text = jobData.name!;
+    emailController.text = jobData.email!;
+    mobileController.text = jobData.mobile!;
+    telController.text = jobData.telephone!;
+    pickUpTimeController.text = jobData.pickupTime!;
+    minController.text = jobData.leadTime!;
+    passController.text = jobData.passengers.toString();
+    luggController.text = jobData.luggages.toString();
+    sluggController.text = jobData.handLuggages.toString();
+    parkingChargesController.text = jobData.parkingCharges.toString();
+    congestionChargesController.text = jobData.congestionCharges.toString();
+    meetGreetController.text = jobData.meetAndGreet.toString();
+    waitingChargesController.text = jobData.waitingCharges.toString();
+    extraDropChargesController.text = jobData.extraDropCharges.toString();
+    creditCardChargesController.text = jobData.creditCardCharges.toString();
+    companyPriceController.text = jobData.companyPrice.toString();
+    specialRequirementsController.text = jobData.specialInstructions.toString();
+    slugController.text = jobData.fares.toString();
+
+
+
+    if(jobData.childSeat!.isNotEmpty){
+      for (var action in jobData.childSeat!) {
+        childSeatAlert.add(ChildSeatClass(
+          sets: action.child,
+          age: action.age,
+        ));
+      }
+    }
+
+    // if(jobData.restrictedDrivers!.isNotEmpty){
+    //   for (var element in jobData.restrictedDrivers!) {
+    //     allDriverData.drivers.forEach((action){
+    //
+    //     });
+    //   }
+    // }
+    //
+    // driversList
+    //
+    // if (restrictedDrivers.isNotEmpty)
+    //   'restricted_drivers': jsonEncode(restrictedDrivers);
+    // if (driversList.isNotEmpty) {
+    //   restrictedDrivers.clear();
+    //   for (var driverss in driversList) {
+    //     restrictedDrivers.add({
+    //       "id": driverss.id,
+    //       "username": driverss.username,
+    //       "name": driverss.name,
+    //     });
+    //   }
+    // }
+
+  }
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
 

@@ -502,7 +502,7 @@ class _BookingTableState extends State<BookingTable> {
                                   // Optional: borderRadius: BorderRadius.circular(2),
                                 ),
                                 child: Text(
-                                  "-",
+                                  "${item.bookingStatus!.bookingStatus}",
                                   style: TextStyle(color: DynamicColors.whiteClr),
                                 ),
                               ),
@@ -573,16 +573,17 @@ class _BookingTableState extends State<BookingTable> {
                                 const Text("|"),
                                 IconButton(
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
-                                  onPressed: ()async {
-                                      final newTabUrl = Uri.base.origin + Routes.updateBooking;
-                                  if (await canLaunchUrl(Uri.parse(newTabUrl))) {
-                                    await launchUrl(
-                                    Uri.parse(newTabUrl),
-                                    mode: LaunchMode.externalApplication,
-                                    );
-                                    } else {
-                                    throw 'Could not launch $newTabUrl';
-                                    }
+                                  onPressed: () async {
+                                    controller.dashBoardDataBinding(jobData: item);
+                                  //     final newTabUrl = Uri.base.origin + Routes.updateBooking;
+                                  // if (await canLaunchUrl(Uri.parse(newTabUrl))) {
+                                  //   await launchUrl(
+                                  //   Uri.parse(newTabUrl),
+                                  //   mode: LaunchMode.externalApplication,
+                                  //   );
+                                  //   } else {
+                                  //   throw 'Could not launch $newTabUrl';
+                                  //   }
                                   },
                                 ),
                               ],

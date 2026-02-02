@@ -1298,7 +1298,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                               .selectVehicleValue!
                                                               .id,
                                                           partingCharges: controller
-                                                              .partingChargesController
+                                                              .parkingChargesController
                                                               .text,
                                                           congestionCharges: controller
                                                               .congestionChargesController
