@@ -65,17 +65,26 @@ class LocationController extends GetxController {
 
   getLocationTypeZone({selectedZoneId, selectedLocationTypeId}) async {
     getLocationTypeZoneLoader(true);
-    var response = await Api().get("locationtype/zone");
-    if (response.statusCode == 200) {
-      locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
-      if (updateLocationValue.value == true) {
-        int index = locationtypezoneModel!.zonesList!
-            .indexWhere((test) => test.id == selectedZoneId);
-        int indexx = locationtypezoneModel!.locationTypesList!
-            .indexWhere((testt) => testt.id == selectedLocationTypeId);
-        zoneValue = locationtypezoneModel!.zonesList![index];
-        locationTypeValue = locationtypezoneModel!.locationTypesList![index];
+    update(); // UI ko loader dikhane ke liye
+
+    try {
+      var response = await Api().get("locationtype/zone");
+      if (response.statusCode == 200) {
+        locationtypezoneModel = LocationtypezoneModel.fromJson(response.data);
+
+        // Agar update mode hai toh list load hote hi matching objects set karein
+        if (updateLocationValue.value == true) {
+          zoneValue = locationtypezoneModel!.zonesList?.firstWhereOrNull(
+                  (z) => z.id == selectedZoneId
+          );
+          locationTypeValue = locationtypezoneModel!.locationTypesList?.firstWhereOrNull(
+                  (lt) => lt.id == selectedLocationTypeId
+          );
+        }
       }
+    } catch (e) {
+      print("Error fetching dropdown data: $e");
+    } finally {
       getLocationTypeZoneLoader(false);
       update();
     }
@@ -101,12 +110,11 @@ class LocationController extends GetxController {
       "latitude": latitudeCtrl.text,
       "longitude": longitudeCtrl.text,
     };
-    print(locationUpdateId.value);
     var response = await Api().post(
         formData,
         updateLocationValue.value == false
-            ? 'locations'
-            : 'locations/${locationUpdateId.value}',
+            ? 'locations/${locationUpdateId.value}'
+            : 'locations',
         auth: true);
     if (response.statusCode == 200) {
       print(formData);
@@ -119,6 +127,7 @@ class LocationController extends GetxController {
       addressCtrl.clear();
       locationTypeValue = null;
       zoneValue = null;
+      updateLocationValue(false);
       update();
       print(response);
     } else {
@@ -141,14 +150,13 @@ class LocationController extends GetxController {
 //   ///------------------------- Pagination
   var locationCurrentPage = 1.obs;
   var locationTotalPages = 1.obs;
-  final int locationLimit = 20;
+  final int locationLimit = 10;
   LocationListModel? locationListModel;
   RxBool getLocationLoader = false.obs;
 
   getLocationList() async {
-
       getLocationLoader(true);
-      var response = await Api().get("locations/get?", queryParameters: {
+      var response = await Api().get("locations/get", queryParameters: {
         'page': locationCurrentPage.value,
         "limit": locationLimit,
         "name": searchLocationName.value.toLowerCase(),
@@ -163,8 +171,7 @@ class LocationController extends GetxController {
         locationTotalPages.value = locationListModel?.totalPages ?? 1;
         locationsAll.value = locationListModel?.locations ?? [];
         locationsFiltered.value = locationsAll;
-        getLocationLoader(false);
-      getLocationLoader.value = false;
+         getLocationLoader.value = false;
         update();
       }
 
@@ -187,42 +194,31 @@ class LocationController extends GetxController {
   RxBool updateRN1LocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
   bindLocationUpdateLocation({Locations? locationUpdate}) async {
-    print("===== UPDATE LOCATION DATA RECEIVED =====");
-    print("ID: ${locationUpdate?.id}");
-    print("Name: ${locationUpdate?.name}");
-    print("Longitude: ${locationUpdate?.longitude}");
-    print("Latitude: ${locationUpdate?.latitude}");
-    print("Postcode: ${locationUpdate?.postcode}");
-    print("Shortcut: ${locationUpdate?.shortcut}");
-    print("Extra Charges: ${locationUpdate?.extraCharges}");
-    print("Address: ${locationUpdate?.address}");
-    print("Zone ID: ${locationUpdate?.zoneId}");
-    print("Zone: ${locationUpdate?.zone}");
-    print("Location Type ID: ${locationUpdate?.locationTypeId}");
-    print("==========================================");
+    if (locationUpdate == null) return;
 
-    locationUpdateId.value = locationUpdate!.id!;
-    locationNameCtrl.text = locationUpdate.name! ;
-    longitudeCtrl.text = locationUpdate.longitude!;
-    postcodeCtrl.text = locationUpdate.postcode!;
-    shortcutCtrl.text = locationUpdate.shortcut!;
-    extraChargesCtrl.text = locationUpdate.extraCharges!;
-    latitudeCtrl.text = locationUpdate.latitude!;
-    addressCtrl.text = locationUpdate.address!;
-    zoneValue!.id = locationUpdate.zoneId;
-
-    /// 👉 ZONE + LOCATION TYPE SELECTION (NULL SAFE)
-    if (locationtypezoneModel != null) {
-      zoneValue = locationtypezoneModel!.zonesList!.firstWhereOrNull((z) => z.id == locationUpdate.zoneId);
-
-      locationTypeValue = locationtypezoneModel!.locationTypesList!.firstWhereOrNull((lt) => lt.id == locationUpdate.locationTypeId);
-    }
+    locationUpdateId.value = locationUpdate.id ?? 0;
+    locationNameCtrl.text = locationUpdate.name ?? '';
+    longitudeCtrl.text = locationUpdate.longitude ?? '';
+    latitudeCtrl.text = locationUpdate.latitude ?? '';
+    postcodeCtrl.text = locationUpdate.postcode ?? '';
+    shortcutCtrl.text = locationUpdate.shortcut ?? '';
+    addressCtrl.text = locationUpdate.address ?? '';
+    extraChargesCtrl.text = (locationUpdate.extraCharges.toString() ?? '');
 
     updateLocationValue(true);
-    getLocationTypeZone(
-      selectedZoneId: locationUpdate.zoneId,
-      selectedLocationTypeId: locationUpdate.locationTypeId,
-    );
+
+    await getLocationTypeZone();
+    if (locationtypezoneModel != null) {
+      zoneValue = locationtypezoneModel!.zonesList?.firstWhereOrNull(
+              (z) => z.id == locationUpdate.zoneId
+      );
+      locationTypeValue = locationtypezoneModel!.locationTypesList?.firstWhereOrNull(
+              (lt) => lt.id == locationUpdate.locationTypeId
+      );
+
+      print("Zone Found: ${zoneValue?.name}");
+    }
+    update();
   }
 
 
@@ -307,30 +303,25 @@ RxBool getZoneLoader = false.obs;
 
 getZoneList() async {
     getZoneLoader(true);
-    print("📡 API Request: zones/get");
-
     var response = await Api().get(
   "zones/get",
-     auth: true,
       queryParameters: {
         "page": zoneCurrentPage.value,
         "limit": zoneLimit,
-        "name": searchZoneName.value,
-        "secondary_name": searchShortName.value,
-        "type": searchType.value,
-        "category": searchCategory.value,
+        "name": searchZoneName.value.toLowerCase(),
+        "secondary_name": searchShortName.value.toLowerCase(),
+        "type": searchType.value.toLowerCase(),
+        "category": searchCategory.value.toLowerCase(),
       },
+     auth: true,
     );
 
     if (response.statusCode == 200) {
       zoneListModel = ZoneModel.fromJson(response.data);
+      zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
       zoneAll.value = zoneListModel?.zones ?? [];
       zoneFiltered.value = zoneAll;
-      zoneTotalPages.value = zoneListModel?.totalPages ?? 1;
-      print("✅ Zones Loaded: ${zoneAll.length}");
-    } else{
-      print("❌ Failed to load zones: ${response.statusCode}");
-
+      update();
     }
 
 }

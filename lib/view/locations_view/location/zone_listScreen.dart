@@ -33,7 +33,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversList";
-    controller.getZoneList();
+
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -69,8 +69,9 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<LocationController>(initState: (v) {
-        // controller.getZoneList();
+        controller.getZoneList();
       }, builder: (controller) {
+
         return
           controller.getZoneLoader.value == false
               ? Center(

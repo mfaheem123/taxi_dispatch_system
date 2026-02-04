@@ -26,7 +26,7 @@ class LocationForm extends StatelessWidget {
             },
             builder: (controller) {
               return controller.getLocationTypeZoneLoader.value == true
-                  ? SizedBox.shrink()
+                  ? CircularProgressIndicator()
                   : SingleChildScrollView(
                 child: Container(
                   width: isMobile ? double.infinity : 800,
@@ -109,8 +109,7 @@ class LocationForm extends StatelessWidget {
 
                           const SizedBox(width: 10),
 
-                          Expanded(
-                            child: 
+
                             CustomDropdownField<ZoneObject>(
                               text: "SELECT ZONE",
                               label: "SELECT ZONE",
@@ -126,7 +125,7 @@ class LocationForm extends StatelessWidget {
                                 controller.update();
                               },
                             ),
-                          ),
+
                         ],
                       ),
 
@@ -167,7 +166,7 @@ class LocationForm extends StatelessWidget {
                             text: "LOCATION TYPE",
                             label: "LOCATION TYPE",
                             width: Get.width / 5,
-                            height: 45,
+                            height: 38,
                             items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
@@ -193,7 +192,7 @@ class LocationForm extends StatelessWidget {
                             label: "Location Type",
 
                             width: Get.width / 5,
-                            height: 45,
+                            height: 40,
                             items: controller.locationtypezoneModel!
                                 .locationTypesList!,
                             value: controller.locationTypeValue,
@@ -221,8 +220,8 @@ class LocationForm extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       ElevatedButton(
-                        onPressed: () {
-                          controller.postLocation();
+                        onPressed: () async{
+                         await controller.postLocation();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
@@ -231,11 +230,9 @@ class LocationForm extends StatelessWidget {
                               vertical: 14, horizontal: 14),
                         ),
                         child: Text(
-                          controller.updateLocationValue
-                              .value ==
-                              true
-                              ? "SAVE"
-                              : "UPDATE",
+                          controller.updateLocationValue.value == true
+                              ? "UPDATE" // Agar update mode hai
+                              : "SAVE",
                           style: const TextStyle(
                               color: Colors.white),
                         ),
