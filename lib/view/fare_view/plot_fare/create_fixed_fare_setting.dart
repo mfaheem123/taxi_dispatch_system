@@ -146,11 +146,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     width: Get.width / 5,
                                     height: 35,
                                     items: controller.fixedFareVehicleLocationTypeModel!.locationTypes!,
-                                    value: controller.locationTypevalue,
+                                    value: controller.fromLocationTypeValue,
                                     itemLabel: (templateList) =>
                                     templateList.name!,
                                     onChanged: (val) {
-                                      controller.locationTypevalue = val;
+                                      controller.fromLocationTypeValue = val;
                                       controller.update();
                                     },
                                   ),
@@ -170,11 +170,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     width: Get.width / 5,
                                     height: 35,
                                     items: controller.fixedFareVehicleLocationTypeModel!.locationTypes!,
-                                    value: controller.locationTypevalue,
+                                    value: controller.toLocationTypeValue,
                                     itemLabel: (templateList) =>
                                     templateList.name!,
                                     onChanged: (val) {
-                                      controller.locationTypevalue = val;
+                                      controller.toLocationTypeValue = val;
                                       controller.update();
                                     },
                                   ),
@@ -253,6 +253,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     fontWeight: FontWeight.w800
                                                 ),
                                                 onTap: (){
+                                                  controller.activeField.value = "from";
                                                 },
                                                 onChanged: (v){
                                                   controller.onChangeHandler(
@@ -370,6 +371,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     fontWeight: FontWeight.w800
                                                 ),
                                                 onTap: (){
+                                                  controller.activeField.value = "to";
                                                 },
                                                 onChanged: (v){
                                                   controller.onChangeHandler1(
@@ -472,8 +474,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               borderRadius: 4,
                               style: mozillaTextRegularText(
                                   fontSize: 13, color: DynamicColors.whiteClr),
-                              onTap: (){
-                                controller.postFixedFare();
+                              onTap: () async {
+                                await controller.postFixedFare();
+                                controller.clearFormData();
                               },
                             ),
                             CustomButton(
@@ -498,7 +501,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width/2,
+                          width: Get.width/1.5,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "VEHICLE"),
@@ -650,13 +653,34 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
                               controller.moveHighlightUp(viaConditionValue: false);
                               return;
-                            }else if (event.logicalKey == LogicalKeyboardKey.enter){
-                              controller.selectedModel = controller.allAddressesData[controller.suggestionSelectedIndex.value];
-                              controller.addressController.text = "${controller.allAddressesData[controller.suggestionSelectedIndex.value].name} ${controller.allAddressesData[controller.suggestionSelectedIndex.value].postcode}";
+                            }
+                            // else if (event.logicalKey == LogicalKeyboardKey.enter){
+                            //   controller.selectedModel = controller.allAddressesData[controller.suggestionSelectedIndex.value];
+                            //   controller.addressController.text = "${controller.allAddressesData[controller.suggestionSelectedIndex.value].name} ${controller.allAddressesData[controller.suggestionSelectedIndex.value].postcode}";
+                            //   controller.allAddressesData.clear();
+                            //   controller.update();
+                            //   print("enter press");
+                            // }
+
+                            else if (event.logicalKey == LogicalKeyboardKey.enter) {
+                              final selected =
+                              controller.allAddressesData[
+                              controller.suggestionSelectedIndex.value];
+
+                              controller.selectedModel = selected;
+
+                              if (controller.activeField.value == "from") {
+                                controller.addressController.text =
+                                "${selected.name} ${selected.postcode}";
+                              } else {
+                                controller.addressController1.text =
+                                "${selected.name} ${selected.postcode}";
+                              }
+
                               controller.allAddressesData.clear();
                               controller.update();
-                              print("enter press");
                             }
+
                             // Enter intentionally ignored so it does not select anything
                           }
                         },
@@ -710,14 +734,21 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                           child: Text(
                                               "${item.name} ${item.postcode}"),
                                         ),
-                                        onTap: (){
+                                        onTap: () {
                                           controller.selectedModel = item;
-                                          controller.addressController.text = "${item.name} ${item.postcode}";
+
+                                          if (controller.activeField.value == "from") {
+                                            controller.addressController.text =
+                                            "${item.name} ${item.postcode}";
+                                          } else {
+                                            controller.addressController1.text =
+                                            "${item.name} ${item.postcode}";
+                                          }
+
                                           controller.allAddressesData.clear();
                                           controller.update();
-                                          /*=>
-                                          controller.tapSelect(index),*/
                                         }
+
                                     ),
                                   );
                                 },

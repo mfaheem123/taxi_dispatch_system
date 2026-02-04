@@ -77,6 +77,9 @@ clearFormData(){
   fareDescriptionController.clear();
   fareController.clear();
   vehicleTypeController.clear();
+  addressController.clear();
+  addressController1.clear();
+  vehicleTypeController.clear();
 }
 
   AllPlotFareModel? allPlotFareModel;
@@ -145,7 +148,10 @@ clearFormData(){
 
 
   VehicleTypeFixed? vehicleTypesFixedvalue;
-  LocationType?locationTypevalue;
+  // LocationType?locationTypevalue;
+  LocationType? fromLocationTypeValue;
+  LocationType? toLocationTypeValue;
+
   FixedFareVehicleLocationTypeModel? fixedFareVehicleLocationTypeModel;
   RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
   getFixedFareVehicleLocationType()async{
@@ -159,48 +165,53 @@ clearFormData(){
   }
 
 
-
+  RxBool postFixedFareLoader = false.obs;
   GetAllFixedFareModel? getAllFixedFareModel;
   RxBool getAllFixedFareLoader = false.obs;
 
-  getAllFixedFare()async{
-    getFixedFareVehicleLocationTypeLoader(true);
-    var response = await Api().get("fixedfares/get");
-    if (response.statusCode == 200) {
-      getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
-      getAllFixedFareLoader(false);
+  postFixedFare() async {
+    postFixedFareLoader(true); // loader start
+    try {
+      var formData = {
+        "vehicle_type_id": "70",
+        "area1": "Islamabad",
+        "area2": "Lahore",
+        "fares": "20",
+        "from_location_id": "1",
+        "to_location_id": "24",
+      };
+
+      var response = await Api().post(formData, 'fixedfares/add', auth: true);
+
+      if (response.statusCode == 200) {
+        print("POST success: ${response.data}");
+        await getAllFixedFare(); // updated data fetch
+      } else {
+        print("POST Error ${response.statusCode}: ${response.data}");
+      }
+    } catch (e) {
+      print("POST Exception: $e");
+    } finally {
+      postFixedFareLoader(false); // loader stop
       update();
     }
   }
 
-
-  RxBool postFixedFareLoader = false.obs;
-
-
-  postFixedFare() async {
-    postFixedFareLoader(true);
-    var formData = {
-      "vehicle_type_id": "70",
-      "area1": "Islamabad",
-      "area2": "Lahore",
-      "fares": "20",
-      "from_location_id": "1",
-      "to_location_id": "24",
-
-    };
-
-    var response = await Api().post(
-        formData,
-        'fixedfares/add',
-        auth: true);
-    if (response.statusCode == 200) {
-
-      getAllFixedFare();
+  getAllFixedFare() async {
+    getAllFixedFareLoader(true); // loader start
+    try {
+      var response = await Api().get("fixedfares/get");
+      if (response.statusCode == 200) {
+        getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
+        print("Fetched fares: ${getAllFixedFareModel}");
+      } else {
+        print("GET Error ${response.statusCode}: ${response.data}");
+      }
+    } catch (e) {
+      print("GET Exception: $e");
+    } finally {
+      getAllFixedFareLoader(false); // loader stop
       update();
-      print(response);
-    } else {
-      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
-      print(response);
     }
   }
 
@@ -227,6 +238,8 @@ clearFormData(){
   final suggestionScrollController = ScrollController();
   AllAddressesModel? selectedModel;
   RxInt suggestionSelectedIndex = 0.obs;
+  RxString activeField = "from".obs;
+
 
 
   void selectSuggestion(String? value) {
