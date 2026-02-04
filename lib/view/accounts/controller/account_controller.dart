@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
@@ -667,6 +668,21 @@ class AccountController extends GetxController {
           multiPart: true
       );
       if (response.statusCode == 200) {
+
+        escortName.clear();
+        escortEmail.clear();
+        escortMobile.clear();
+        escortAddress.clear();
+        safeguardingBatch.clear();
+        PATBatch.clear();
+        firstAidBatch.clear();
+        DBSBatch.clear();
+        profileImg = null;
+        safeguardingDocPic = null;
+        patDocPic = null;
+        firstAidDocPic = null;
+        dbsDocPic = null;
+        BotToast.showText(text: "Success, Escort Created Successfully");
         isEscortUpdating.value = false;
         update();
       }
@@ -674,7 +690,15 @@ class AccountController extends GetxController {
   }
 
 
+  escortDelete(int? id) async {
+    var response = await Api().delete("escorts/delete/$id");
+    if (response.statusCode == 200) {
+      listOFAccount();
+      BotToast.showText(text: "Success, Escort Deleted Successfully");
+      print("Escort deleted successfully!");
 
+    }
+  }
 
 
 
@@ -703,7 +727,7 @@ class AccountController extends GetxController {
 //   ///------------------------- Pagination
   var escortCurrentPage = 1.obs;
   var escortTotalPages = 1.obs;
-  final int escortLimit = 20;
+  final int escortLimit = 10;
   Future<void> listEscort() async {
     try {
       String query = 'page=${escortCurrentPage.value}&limit=${escortLimit}';
