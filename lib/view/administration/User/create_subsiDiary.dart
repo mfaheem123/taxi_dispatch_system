@@ -305,17 +305,18 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                       SizedBox(
                         height: 20,
                       ),
+
                       CustomButton(
                         onTap: () {
                           controller.createSubsiDiary();
                         },
                         height: 30,
                         width: fieldWidth,
-                        btnText: AppText.save,
+                        btnText: controller.isSubsiDiaryUpdating.value ? "UPDATE USER" : "SAVE",
                         fontSize: 11,
                         verticalPadding: 0.0,
                         borderRadius: 4,
-                      )
+                      ),
                     ],
                   ),
                 ),

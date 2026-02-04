@@ -169,14 +169,33 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 height: 35,
                               ),
                               labeledField(
+
                                 column: true,
                                 context: context,
                                 isMobile: isMobile,
                                 label: AppText.dob,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker()),
+                                    height: 35, child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    // jab bhi user change kare
+                                    setState(() {
+                                      controller.dobDate = "${date.year}-${date.month}-${date.day}";
+                                      print(date);
+                                    });
+                                  },
+                                  onSubmitted: (date) {
+                                    // jab user enter press kare
+                                    setState(() {
+                                      controller.dobDate = "${date.year}-${date.month}-${date.day}";
+                                    });
+                                    print("User pressed enter: $date");
+                                  },
+
+                                )),
                               ),
+
                               CustomTextField(
                                 borderRadius: 4,
                                 controller:
@@ -193,7 +212,23 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.safeguardingExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker()),
+                                    height: 35, child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    // jab bhi user change kare
+                                    setState(() {
+                                      controller.safeguardingExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                                      print(date);
+                                    });
+                                  },
+                                  onSubmitted: (date) {
+                                    // jab user enter press kare
+                                    setState(() {
+                                      controller.safeguardingExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
+                                    });
+                                    print("User pressed enter: $date");
+                                  },
+                                )),
                               ),
                               labeledField(
                                 context: context,
@@ -202,7 +237,23 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.patExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker()),
+                                    height: 35, child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    // jab bhi user change kare
+                                    setState(() {
+                                      controller.patExpiryDate = "${date.year}-${date.month}-${date.day}";
+                                      print(date);
+                                    });
+                                  },
+                                  onSubmitted: (date) {
+                                    // jab user enter press kare
+                                    setState(() {
+                                      controller.patExpiryDate = "${date.year}-${date.month}-${date.day}";
+                                    });
+                                    print("User pressed enter: $date");
+                                  },
+                                )),
                               ),
                               labeledField(
                                 column: true,
@@ -211,7 +262,23 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.firstAid,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker()),
+                                    height: 35, child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    // jab bhi user change kare
+                                    setState(() {
+                                      controller.firstAidDate = "${date.year}-${date.month}-${date.day}";
+                                      print(date);
+                                    });
+                                  },
+                                  onSubmitted: (date) {
+                                    // jab user enter press kare
+                                    setState(() {
+                                      controller.firstAidDate = "${date.year}-${date.month}-${date.day}";
+                                    });
+                                    print("User pressed enter: $date");
+                                  },
+                                )),
                               ),
                               labeledField(
                                 context: context,
@@ -220,7 +287,15 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.dbsExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: CustomTimePicker()),
+                                    height: 35, child: CustomTimePicker(
+                                  controller: controller.dbsExpireTime, // optional
+                                  onTimeSelected: (time) {
+                                    setState(() {
+                                      print(controller.dbsExpireTime.text);
+                                      print(time);
+                                    });
+                                  },
+                                )),
                               ),
 
                               CustomTextField(
@@ -531,6 +606,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
             ),
             Center(
               child: CustomButton(
+                onTap: () {
+                  controller.createEscort();
+                },
                 width: Get.width / 2,
                 btnText: AppText.save,
                 verticalPadding: 0.0,

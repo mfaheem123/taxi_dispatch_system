@@ -258,7 +258,8 @@ class CreateUserScreen extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: Center(
 
-              child: Obx(() => CustomButton(
+              child:
+                  CustomButton(
                 onTap: () {
                   controller.createUser();
                 },
@@ -269,7 +270,8 @@ class CreateUserScreen extends StatelessWidget {
                 style: mozillaTextSemiBoldText(
                     fontSize: 12, color: DynamicColors.whiteClr),
                 btnText: controller.isUpdating.value ? "UPDATE USER" : "SAVE",
-              )),
+              )
+
             ),
           ),
 

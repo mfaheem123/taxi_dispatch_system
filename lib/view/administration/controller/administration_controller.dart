@@ -79,6 +79,56 @@ class AdministrationController extends GetxController {
 
 
 
+/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Edit SubsDiary
+
+  RxBool isSubsiDiaryUpdating = false.obs;
+
+  Subsidiaries? subsidiaryToUpdate;
+
+  subsidiaryUpdate({Subsidiaries? data}) async {
+    if (data == null) return;
+
+    isSubsiDiaryUpdating.value = true;
+    subsidiaryToUpdate = data;
+    nameController.text = data.name ?? "";
+    emailController.text = data.email ?? "";
+    faxController.text = data.fax ?? "";
+    websiteController.text = data.website ?? "";
+    telephoneController.text = data.telephoneNumber ?? "";
+    emergencyContactController.text = data.emergencyContactNumber ?? "";
+    companyController.text = data.companyNumber ?? "";
+    currencyController.text = data.currency ?? "";
+    addressController.text = data.address ?? "";
+    balanceController.text = data.balance?.toString() ?? "";
+
+    // --- 2. Color Binding (Hex to Color) ---
+    if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
+      // Remove '#' and parse
+      String bgHex = data.backgroundColor!.replaceAll('#', '');
+      subsiDiarypickerColor = Color(int.parse("0xFF$bgHex"));
+    }
+
+    if (data.foregroundColor != null && data.foregroundColor!.isNotEmpty) {
+      // Remove '#' and parse
+      String fgHex = data.foregroundColor!.replaceAll('#', '');
+      subsiDiaryforegroundColor = Color(int.parse("0xFF$fgHex"));
+    }
+
+    // --- 3. Dropdown/Logic Binding (If needed) ---
+    // Agar aap list se koi specific subsidiary select karwana chahte hain
+    if (subsiDiaryAll.isNotEmpty) {
+      selectedSubsidiary = subsiDiaryAll.firstWhere(
+            (sub) => sub.id == data.id,
+        orElse: () => subsiDiaryAll.first,
+      );
+    }
+
+    update();
+  }
+
+
+
+
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete SubsDiary
 
 
@@ -198,7 +248,7 @@ class AdministrationController extends GetxController {
 
 
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary Controller
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
 
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
@@ -219,14 +269,9 @@ class AdministrationController extends GetxController {
     update();
   }
 
-  
 
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
 
   List bankDetailList = <BankDetailsAlertClass>[].obs;
-
-
 
   final nameController = TextEditingController();
   //name
@@ -284,7 +329,10 @@ class AdministrationController extends GetxController {
       if (multipartFile != null) "image": multipartFile!
     };
 
-    var response = await Api().post(formData, 'subsidiaries/add', auth: true);
+    var response = await Api().post(formData,
+
+        isSubsiDiaryUpdating.value ?
+        "subsidiaries/edit/${subsidiaryToUpdate!.id}":   'subsidiaries/add' , auth: true);
     if (response.statusCode == 200) {
       profileImg = null;
       nameController.clear();
@@ -293,15 +341,15 @@ class AdministrationController extends GetxController {
       websiteController.clear();
       telephoneController.clear();
       emergencyContactController.clear();
-      backgroundColorrController.clear();
-      foregroundColorController.clear();
+      subsiDiarypickerColor = Colors.blue;
+      subsiDiaryforegroundColor = Colors.blue;
       companyController.clear();
       currencyController.clear();
       addressController.clear();
       balanceController.clear();
       profileImg = null;
+      isSubsiDiaryUpdating.value = false;
       update();
-      Text("Saved Successfully");
       print("response of body -------------------------${response.data}");
     }
   }

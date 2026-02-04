@@ -9,11 +9,26 @@ import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:get/get_connect/http/src/multipart/multipart_file.dart' as dio hide MultipartFile;
+import 'package:dio/dio.dart' as dio_package;
 import 'dart:html' as html;
 import '../../../Model/image_model.dart';
 import '../../setting/model/templete_HTML_model.dart';
 import '../Invoice/create_customer_invoice.dart';
+import 'package:file_picker/file_picker.dart';
+import '../../../Model/image_model.dart';
+import 'package:dio/dio.dart' as dio;
+
+
+
+
+
+
+
+
+
+
+
 
 class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
@@ -551,8 +566,12 @@ class AccountController extends GetxController {
   final escortEmail = TextEditingController();
   final escortMobile = TextEditingController();
   final escortAddress = TextEditingController();
-
-  final safeguardingBatch = TextEditingController();
+  String? dobDate = "2000-01-01";
+  String? safeguardingExpiryExpireDate = "2000-01-01";
+  String? patExpiryDate = "2000-01-01";
+  String? firstAidDate = "2000-01-01";
+  final  dbsExpireTime = TextEditingController();
+  final  safeguardingBatch = TextEditingController();
   final PATBatch = TextEditingController();
   final firstAidBatch = TextEditingController();
   final DBSBatch = TextEditingController();
@@ -577,6 +596,95 @@ class AccountController extends GetxController {
     }
     update();
   }
+
+ RxBool isEscortUpdating = false.obs;
+  createEscort() async {
+      isEscortUpdating.value = true;
+      update();
+
+      dio.MultipartFile? profileFile;
+      dio.MultipartFile? safeguardingFile;
+      dio.MultipartFile? patFile;
+      dio.MultipartFile? firstAidFile;
+      dio.MultipartFile? dbsFile;
+    if (profileImg != null) {
+        profileFile = dio.MultipartFile.fromBytes(
+          profileImg!.bytes,
+          filename: profileImg!.name,
+        );
+      }
+      if (safeguardingDocPic != null) {
+        safeguardingFile = dio.MultipartFile.fromBytes(
+          safeguardingDocPic!,
+          filename: "safeguarding.png",
+        );
+      }
+      if (patDocPic != null) {
+        patFile = dio.MultipartFile.fromBytes(
+          patDocPic!,
+          filename: "pat.png",
+        );
+      }
+      if (firstAidDocPic != null) {
+        firstAidFile = dio.MultipartFile.fromBytes(
+          firstAidDocPic!,
+          filename: "firstaid.png",
+        );
+      }
+      if (dbsDocPic != null) {
+        dbsFile = dio.MultipartFile.fromBytes(
+          dbsDocPic!,
+          filename: "dbs.png",
+        );
+      }
+      final Map<String, dynamic> baseData = {
+        if (profileFile != null) "image": profileFile,
+        if (safeguardingFile != null) "safeguarding_document": safeguardingFile,
+        if (patFile != null) "pat_document": patFile,
+        if (firstAidFile != null) "firstaid_document": firstAidFile,
+        if (dbsFile != null) "dbs_document": dbsFile,
+
+        "name": escortName.text,
+        "email": escortEmail.text,
+        "mobile": escortMobile.text,
+        "address": escortAddress.text,
+        "dob": dobDate,
+        "safeguarding_number": safeguardingBatch.text,
+        "pat_number": PATBatch.text,
+        "firstaid_number": firstAidBatch.text,
+        "dbs_number": DBSBatch.text,
+        "safeguarding_expiry": safeguardingExpiryExpireDate,
+        "pat_expiry": patExpiryDate,
+        "firstaid_expiry": firstAidDate,
+        "dbs_expiry": dbsExpireTime.text,
+        "active": "false",
+      };
+      var formData = dio.FormData.fromMap(baseData);
+      var response = await Api().post(
+          formData,
+          'escorts/add',
+          auth: true,
+          multiPart: true
+      );
+      if (response.statusCode == 200) {
+        isEscortUpdating.value = false;
+        update();
+      }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Escort Model
   // selected items
@@ -647,6 +755,7 @@ class AccountController extends GetxController {
   String? subDiary;
   String? status;
 }
+
 
 class WebLoginClass {
   String? account;

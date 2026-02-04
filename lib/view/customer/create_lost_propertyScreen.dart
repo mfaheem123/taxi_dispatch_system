@@ -275,6 +275,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   fontSize: 11,
                   height: 30,
                   btnText: AppText.save,
+                  onTap: (){
+
+                  },
                 ),
 
                 SizedBox(
