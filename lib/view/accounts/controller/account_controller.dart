@@ -5,8 +5,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/accounts/model/get_subsidiary_bank.dart';
 import 'package:dashboard_new1/view/accounts/model/list_escort_model.dart';
-import 'package:dashboard_new1/view/accounts/model/listof_account.dart'
-    hide Subsidiary;
+import 'package:dashboard_new1/view/accounts/model/listof_account.dart' hide Subsidiary;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,11 +13,14 @@ import 'package:get/get_connect/http/src/multipart/multipart_file.dart' as dio h
 import 'package:dio/dio.dart' as dio_package;
 import 'dart:html' as html;
 import '../../../Model/image_model.dart';
+import '../../administration/model/list_subsDiary.dart';
 import '../../setting/model/templete_HTML_model.dart';
 import '../Invoice/create_customer_invoice.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../Model/image_model.dart';
 import 'package:dio/dio.dart' as dio;
+
+import '../model/list_of_account_invoice_model.dart' hide Subsidiary;
 
 
 
@@ -774,10 +776,46 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 
+
+  SubsDiaryModel? subsDiaryModel;
+  Subsidiaries? selectedSubsidiaryForGet;
+
+  bool isSubsidiary = false;
+  getSubsidiary() async {
+    isSubsidiary = true;
+    var response = await Api().get("subsidiaries/get");
+    if (response.statusCode == 200) {
+      selectedSubsidiaryForGet = Subsidiaries.fromJson(response.data);
+      isSubsidiary = false;
+      update();
+    }
+  }
+
+
+
+
+
+
   String? account;
   String? department;
   String? subDiary;
   String? status;
+
+
+  AccountInvoiceModel? accountInvoiceModel;
+
+
+  bool isAccountInvoice = false;
+  getAccountInvoice() async {
+    isAccountInvoice = true;
+    var response = await Api().get("account_invoice/bookings");
+    if (response.statusCode == 200) {
+      accountInvoiceModel = AccountInvoiceModel.fromJson(response.data);
+      isAccountInvoice = false;
+      update();
+    }
+  }
+
 }
 
 

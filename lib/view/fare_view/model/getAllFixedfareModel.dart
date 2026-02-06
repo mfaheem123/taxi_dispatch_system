@@ -10,23 +10,39 @@ String getAllFixedFareModelToJson(GetAllFixedFareModel data) => json.encode(data
 
 class GetAllFixedFareModel {
   bool? status;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
   int? count;
   List<FixedFare>? fixedFares;
 
   GetAllFixedFareModel({
     this.status,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
     this.count,
     this.fixedFares,
   });
 
   factory GetAllFixedFareModel.fromJson(Map<String, dynamic> json) => GetAllFixedFareModel(
     status: json["status"],
+    page: json["page"],
+    limit: json['limit'],
+    total: json['total'],
+    totalPages: json['total_pages'],
     count: json["count"],
     fixedFares: json["fixed_fares"] == null ? [] : List<FixedFare>.from(json["fixed_fares"]!.map((x) => FixedFare.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
     "count": count,
     "fixed_fares": fixedFares == null ? [] : List<dynamic>.from(fixedFares!.map((x) => x.toJson())),
   };

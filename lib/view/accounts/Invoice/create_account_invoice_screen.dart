@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
+import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
@@ -75,7 +76,7 @@ class _CreateAccountInvoiceScreenState
               isMobile: isMobile,
               label: AppText.invoiceDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             labeledField(
@@ -83,14 +84,14 @@ class _CreateAccountInvoiceScreenState
               isMobile: isMobile,
               label: AppText.invoiceDueDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 25),
                 child: RichText(
                     text: TextSpan(
-                        text: 'Invoice',
+                        text: 'Invoice #',
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold),
                         children: [
@@ -143,22 +144,17 @@ class _CreateAccountInvoiceScreenState
               columnText: true,
               height: 30,
             ),
-            CustomDropdownField<String>(
+            CustomDropdownField<Subsidiaries>(
               text: AppText.subsidiary,
               width: fieldWidth / 1.5,
               label: AppText.subsidiary,
-              items: [
-                "DEMO COMPANY 1",
-                "DEMO COMPANY 2",
-                "DEMO COMPANY 3",
-                "DEMO COMPANY 4",
-                "DEMO COMPANY 5",
-              ],
-              value: controller.subDiary,
-              itemLabel: (val) => val, // just show the string
+              items: controller.subsDiaryModel!.subsidiaries!,
+              value: controller.selectedSubsidiaryForGet,
+              itemLabel: (val) => val.name ?? "",
               onChanged: (val) {
-                controller.subDiary = val!;
-                controller.update();
+                controller.selectedSubsidiaryForGet = val;
+                // controller.getTemplateByTypes(
+                //     selectedTempId: val!.id);
               },
             ),
 
