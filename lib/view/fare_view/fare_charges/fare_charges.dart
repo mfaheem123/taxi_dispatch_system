@@ -336,11 +336,17 @@ class _FareChargesState extends State<FareCharges> {
                                         final item = daysList[index];
                                         return Obx(() => GestureDetector(
                                           onTap: () {
-                                            for (var action in daysList) {
-                                              action.selectedDay!.value = false;
+                                            if (item.dayName == "ALL") {
+                                              bool newValue = !item.selectedDay!.value;
+                                              for (var day in daysList) {
+                                                day.selectedDay!.value = newValue;
+                                              }
+                                            } else {
+                                              item.selectedDay!.value = !item.selectedDay!.value;
+                                              if (!item.selectedDay!.value) {
+                                                daysList.firstWhere((e) => e.dayName == "ALL").selectedDay!.value = false;
+                                              }
                                             }
-                                            controller.selectedDay = item;
-                                            item.selectedDay!.value = true;
                                           },
                                           child: Chip(
                                             padding: EdgeInsets.zero,
@@ -512,13 +518,14 @@ class _FareChargesState extends State<FareCharges> {
 }
 
 List<DaysClass> daysList = [
-  DaysClass(dayName: "MON",selectedDay: false.obs),
-  DaysClass(dayName: "TUES",selectedDay: false.obs),
-  DaysClass(dayName: "WED",selectedDay: false.obs),
-  DaysClass(dayName: "THURS",selectedDay: false.obs),
-  DaysClass(dayName: "FRI",selectedDay: false.obs),
-  DaysClass(dayName: "SAT",selectedDay: false.obs),
-  DaysClass(dayName: "SUN",selectedDay: false.obs),
+  DaysClass(dayName: "ALL", selectedDay: false.obs), // Naya option
+  DaysClass(dayName: "MON", selectedDay: false.obs),
+  DaysClass(dayName: "TUE", selectedDay: false.obs),
+  DaysClass(dayName: "WED", selectedDay: false.obs),
+  DaysClass(dayName: "THU", selectedDay: false.obs),
+  DaysClass(dayName: "FRI", selectedDay: false.obs),
+  DaysClass(dayName: "SAT", selectedDay: false.obs),
+  DaysClass(dayName: "SUN", selectedDay: false.obs),
 ];
 
 class DaysClass {
