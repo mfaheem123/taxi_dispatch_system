@@ -9,6 +9,7 @@ import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../alert/delete_permission_alert.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../controller/account_controller.dart';
@@ -107,63 +108,74 @@ class _ListOfAccountInvoiceScreenState
             SizedBox(
               height: 8,
             ),
-            Wrap(
-              spacing: 15,
-              runSpacing: 15,
+            Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child:Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.from,
-                  width: fieldWidth / 1.8,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                labeledField(
-                  context: context,
-                  isMobile: isMobile,
-                  label: AppText.to,
-                  width: fieldWidth / 1.8,
-                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                ),
-                Text("STATUS"),
-                CustomDropdownField<String>(
-                  width: fieldWidth / 4,
-                  label: AppText.status,
-                  items: [
-                    "Paid 1",
-                    "Paid 2",
-                    "Paid 3",
-                    "Paid 4",
-                    "Paid 5",
-                    "Paid 6",
+                Wrap(
+                  spacing: 15,
+                  runSpacing: 15,
+                  children: [
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: AppText.from,
+                      width: fieldWidth / 1.8,
+                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                    ),
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: AppText.to,
+                      width: fieldWidth / 1.8,
+                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                    ),
+                    Text("STATUS"),
+                    CustomDropdownField<String>(
+                      width: fieldWidth / 4,
+                      label: AppText.status,
+                      items: [
+                        "Paid 1",
+                        "Paid 2",
+                        "Paid 3",
+                        "Paid 4",
+                        "Paid 5",
+                        "Paid 6",
+                      ],
+                      value: controller.status,
+                      itemLabel: (val) => val, // just show the string
+                      onChanged: (val) {
+                        controller.status = val!;
+                        controller.update();
+                      },
+                    ),
                   ],
-                  value: controller.status,
-                  itemLabel: (val) => val, // just show the string
-                  onChanged: (val) {
-                    controller.status = val!;
-                    controller.update();
-                  },
+                ),
+                Spacer(),
+                CustomButton(
+                  verticalPadding: 0.0,
+                  width: 60,
+                  height: 40,
+                  borderRadius: 4,
+                  btnText: AppText.clear,
+                  style: mozillaTextRegularText(
+                      fontSize: 10, color: DynamicColors.whiteClr),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                CustomButton(
+                  verticalPadding: 0.0,
+                  width: 60,
+                  height: 40,
+                  borderRadius: 4,
+                  btnText: AppText.search,
+                  style: mozillaTextRegularText(
+                      fontSize: 10, color: DynamicColors.whiteClr),
                 ),
               ],
             ),
-            Spacer(),
-            CustomButton(
-              verticalPadding: 0.0,
-              width: 60,
-              height: 40,
-              borderRadius: 4,
-              btnText: AppText.clear,
-              style: mozillaTextRegularText(
-                  fontSize: 10, color: DynamicColors.whiteClr),
-            ),
-            CustomButton(
-              verticalPadding: 0.0,
-              width: 60,
-              height: 40,
-              borderRadius: 4,
-              btnText: AppText.search,
-              style: mozillaTextRegularText(
-                  fontSize: 10, color: DynamicColors.whiteClr),
             ),
             SizedBox(
               height: 8,
@@ -222,20 +234,22 @@ class _ListOfAccountInvoiceScreenState
                             ),
                             onPressed: () {},
                             child: Icon(
-                              Icons.search,
+                              Icons.edit_calendar_rounded,
                               size: 28,
                               color: DynamicColors.primaryClr,
                             ),
                           ),
+                          Text("|"),
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
                                 color: Colors.transparent,
                               ), // border color & thickness
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                            },
                             child: Icon(
-                              Icons.clear,
+                              Icons.delete_forever,
                               size: 28,
                               color: DynamicColors.redClr,
                             ),

@@ -144,6 +144,54 @@ clearFormData(){
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
 
+  GetAllFixedFareModel? getAllFixedFareModels;
+  RxBool fixedFareLoader = false.obs;
+  ///--------------------- Pagination
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 10;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<FixedFare> fixedFareAll = <FixedFare>[].obs;
+  RxList<FixedFare> fixedFareFiltered = <FixedFare>[].obs;
+  RxString searchVehicle = ''.obs;
+  RxString searchFromLocation = ''.obs;
+  RxString searchToLocation = ''.obs;
+  RxString searchFares = ''.obs;
+
+  getAllFixedFare () async {
+    fixedFareLoader(true);
+    var response = await Api().get("fixedfares/get?",
+        queryParameters: {
+          'page': currentPage.value,
+          'limit': limit,
+          "vehicle": searchVehicle.value.toLowerCase(),
+          "from_location": searchFromLocation.value.toLowerCase(),
+          "to_location": searchToLocation.value.toLowerCase(),
+          "fares": searchFares.value.toLowerCase(),
+        }
+    );
+    if (response.statusCode == 200) {
+      getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
+      totalPages.value = getAllFixedFareModels?.totalPages ?? 1;
+      fixedFareAll.value = getAllFixedFareModels?.fixedFares ?? [];
+      fixedFareFiltered.value = fixedFareAll;
+      fixedFareLoader(false);
+      update();
+    }
+  }
+
+  // -----------Search changes function
+  void onSearchFixedFares() {
+    currentPage.value = 1;
+    getAllFixedFare();
+  }
+
+  /// ------- pagination function
+  void onPageFixedFare(int page) {
+    currentPage.value = page;
+    getAllFixedFare();
+  }
 
 
 
@@ -197,23 +245,23 @@ clearFormData(){
     }
   }
 
-  getAllFixedFare() async {
-    getAllFixedFareLoader(true); // loader start
-    try {
-      var response = await Api().get("fixedfares/get");
-      if (response.statusCode == 200) {
-        getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
-        print("Fetched fares: ${getAllFixedFareModel}");
-      } else {
-        print("GET Error ${response.statusCode}: ${response.data}");
-      }
-    } catch (e) {
-      print("GET Exception: $e");
-    } finally {
-      getAllFixedFareLoader(false); // loader stop
-      update();
-    }
-  }
+  // getAllFixedFare() async {
+  //   getAllFixedFareLoader(true); // loader start
+  //   try {
+  //     var response = await Api().get("fixedfares/get");
+  //     if (response.statusCode == 200) {
+  //       getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
+  //       print("Fetched fares: ${getAllFixedFareModel}");
+  //     } else {
+  //       print("GET Error ${response.statusCode}: ${response.data}");
+  //     }
+  //   } catch (e) {
+  //     print("GET Exception: $e");
+  //   } finally {
+  //     getAllFixedFareLoader(false); // loader stop
+  //     update();
+  //   }
+  // }
 
 
   /// todo testing location ???????????????????????????????????????????????????????????????????????
