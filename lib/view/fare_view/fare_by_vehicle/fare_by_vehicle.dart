@@ -64,127 +64,138 @@ class _FareByVehicleState extends State<FareByVehicle> {
                 : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
-            return Container(
-                    width: Get.width/1.5,
-                      decoration: BoxDecoration(
-            border: Border.all(color: DynamicColors.gryClr)),
-            child: Column(
+
+            return Column(
               children: [
                 Container(
-                  width: Get.width,
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                  color: DynamicColors.gryClr.withOpacity(0.5),
-                  child: Text(AppText.fareByVehicle, style: titleDesign()),
-                ),
-                SizedBox(
-                  height: 6,
-                ),
-                Wrap(
-                  verticalDirection: VerticalDirection.down,
-                  spacing: 30,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                  width: Get.width/1.1,
+                  decoration: BoxDecoration(
+                  border: Border.all(color: DynamicColors.gryClr)),
 
-                        CustomDropdownField<VehicleTypeFixed>(
-                          label: "Select Vehicle Type",
-                          width: Get.width / 5,
-                          height: 35,
-                          items: controller.VehicleTypeModel!.vehicleTypesFixed ?? [],
-                          value: controller.createByVehicleTypes,
-                          itemLabel: (templateList) => templateList.name ?? "",
-                          onChanged: (val) {
-                            controller.createByVehicleTypes = val;
-                            controller.update();
-                          },
-                        ),
-                      ],
+                  child: Column(
+                  children: [
+
+                    Container(
+                      width: Get.width,
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      color: DynamicColors.gryClr.withOpacity(0.5),
+                      child: Text(AppText.fareByVehicle, style: titleDesign()),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    SizedBox(
+                      height: 6,
+                    ),
+                    Wrap(
+                      verticalDirection: VerticalDirection.down,
+                      spacing: 30,
                       children: [
-                        Text(AppText.operator, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-                        CustomDropdownField<String>(
-                          label: "SELECT Operater",
-                          width: Get.width / 6,
-                          height: 35,
-                          items: [
-                            "AMOUNT",
-                            "PERCENTAGE",
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+
+                            CustomDropdownField<VehicleTypeFixed>(
+                              label: "Select Vehicle Type",
+                              width: Get.width / 5,
+                              height: 35,
+                              items: controller.VehicleTypeModel!.vehicleTypesFixed ?? [],
+                              value: controller.createByVehicleTypes,
+                              itemLabel: (templateList) => templateList.name ?? "",
+                              onChanged: (val) {
+                                controller.createByVehicleTypes = val;
+                                controller.update();
+                              },
+                            ),
                           ],
-                          value: controller.fareByVehicleOperater,
-                          itemLabel: (templateList) => templateList,
-                          onChanged: (val) {
-                            controller.fareByVehicleOperater = val;
-                            controller.update();
-                          },
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(AppText.operator, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                            CustomDropdownField<String>(
+                              label: "SELECT Operater",
+                              width: Get.width / 6,
+                              height: 35,
+                              items: [
+                                "AMOUNT",
+                                "PERCENTAGE",
+                              ],
+                              value: controller.fareByVehicleOperater,
+                              itemLabel: (templateList) => templateList,
+                              onChanged: (val) {
+                                controller.fareByVehicleOperater = val;
+                                controller.update();
+                              },
+                            ),
+                          ],
+                        ),
+                        CustomTextField(
+                          borderRadius: 4,
+                          controller: controller.fareValueVehicleController,
+                          width: fieldWidth/1.3,
+                          hintText: AppText.value,
+                          columnText: true,
+                          height: 35,
                         ),
                       ],
                     ),
-                    CustomTextField(
-                      borderRadius: 4,
-                      controller: controller.fareValueVehicleController,
-                      width: fieldWidth/1.3,
-                      hintText: AppText.value,
-                      columnText: true,
-                      height: 35,
+                    SizedBox(
+                      height: 10,
                     ),
-                  ],
-                ),
-                SizedBox(
-                  height: 6,
-                ),
-                Wrap(
-                  verticalDirection: VerticalDirection.down,
-                  spacing: fieldWidth/2,
-                  runSpacing: 6,
-                  children: [
-                    CustomButton(
-                      onTap: (){
+                    Wrap(
+                      verticalDirection: VerticalDirection.down,
+                      spacing: fieldWidth/2,
+                      runSpacing: 6,
+                      children: [
+                        CustomButton(
+                          onTap: (){
 
-                        controller.postFareByVehicleSetting();
-                        controller.getFareByVehicleSetting();
-                        controller.updateFarebyVehicle(false);
-                      },
-                      height: 30,
-                      width: fieldWidth,
-                      btnText:
-                      controller.updateFarebyVehicle.value == false?
-                      AppText.save: "UPDATE" ,
-                      verticalPadding: 0.0,
-                      borderRadius: 4,
-                      style: mozillaTextRegularText(
-                          fontSize: 13,
-                          color: DynamicColors.whiteClr
-                      ),
+                            controller.postFareByVehicleSetting();
+                            controller.getFareByVehicleSetting();
+                            controller.updateFarebyVehicle(false);
+                          },
+                          height: 30,
+                          width: fieldWidth,
+                          btnText:
+                          controller.updateFarebyVehicle.value == false?
+                          AppText.save: "UPDATE" ,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          style: mozillaTextRegularText(
+                              fontSize: 13,
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                        CustomButton(
+                          onTap: () {
+                            controller.clearAllFields();
+                          },
+                          height: 30,
+                          width: fieldWidth,
+                          btnText: AppText.clear,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          btnColor: DynamicColors.redClr,
+                          style: mozillaTextRegularText(
+                              fontSize: 13,
+                              color: DynamicColors.whiteClr
+                          ),
+                        ),
+                      ],
                     ),
-                    CustomButton(
-                      onTap: () {
-                        controller.clearAllFields();
-                      },
-                      height: 30,
-                      width: fieldWidth,
-                      btnText: AppText.clear,
-                      verticalPadding: 0.0,
-                      borderRadius: 4,
-                      btnColor: DynamicColors.redClr,
-                      style: mozillaTextRegularText(
-                          fontSize: 13,
-                          color: DynamicColors.whiteClr
-                      ),
+                    SizedBox(
+                      height: 20,
                     ),
+
                   ],
-                ),
-                SizedBox(
-                  height: 20,
+                              ),
                 ),
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   child: SizedBox(
-                    width: Get.width,
+                    width: Get.width/1.1,
+
                     child: DatatableWidget(
+
                       columns: [
                         buildHeaderWithSearch(title: "VEHICLE TYPE"),
                         buildHeaderWithSearch(title: "OPERATOR"),
@@ -226,7 +237,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                           color: Colors.transparent),
                                     ),
                                     onPressed: () {
-controller.deleteCustomer(farefxed.id);
+                                      controller.deleteCustomer(farefxed.id);
                                       // 🔴 Delete action
                                     },
                                     child: Icon(Icons.delete_forever,
@@ -243,8 +254,7 @@ controller.deleteCustomer(farefxed.id);
                   ),
                 ),
               ],
-            ),
-          );
+            );
         }
       );
       }

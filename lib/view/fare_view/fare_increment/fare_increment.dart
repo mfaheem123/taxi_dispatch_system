@@ -36,6 +36,7 @@ class _FareIncrementState extends State<FareIncrement> {
     super.initState();
     shortCutKeyValue.value = "fareIncrement";
 
+
   }
 
   @override
@@ -43,6 +44,7 @@ class _FareIncrementState extends State<FareIncrement> {
     return GetBuilder<FareController>(
         initState: (v){
           controller.getFareIncrement();
+
         },
 
         builder: (controller) {
@@ -164,11 +166,14 @@ class _FareIncrementState extends State<FareIncrement> {
 
                       /// FIX FARE Button
                       OutlinedButton(
+
                         style: OutlinedButton.styleFrom(
+
                           backgroundColor:
                           controller.selectedType == "fixFare"
                               ? DynamicColors.primaryClr
                               : Colors.transparent,
+
                           side: BorderSide(color: DynamicColors.primaryClr),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),

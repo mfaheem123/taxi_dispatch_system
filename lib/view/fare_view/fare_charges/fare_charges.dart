@@ -336,17 +336,11 @@ class _FareChargesState extends State<FareCharges> {
                                         final item = daysList[index];
                                         return Obx(() => GestureDetector(
                                           onTap: () {
-                                            if (item.dayName == "ALL") {
-                                              bool newValue = !item.selectedDay!.value;
-                                              for (var day in daysList) {
-                                                day.selectedDay!.value = newValue;
-                                              }
-                                            } else {
-                                              item.selectedDay!.value = !item.selectedDay!.value;
-                                              if (!item.selectedDay!.value) {
-                                                daysList.firstWhere((e) => e.dayName == "ALL").selectedDay!.value = false;
-                                              }
-                                            }
+                                            // Yeh line check karegi current state kya hai aur usko ulat (toggle) degi
+                                            item.selectedDay!.value = !item.selectedDay!.value;
+
+                                            // Agar aapko selected item ka reference save karna hai (optional)
+                                            controller.selectedDay = item;
                                           },
                                           child: Chip(
                                             padding: EdgeInsets.zero,
@@ -412,17 +406,17 @@ class _FareChargesState extends State<FareCharges> {
                     child: controller.getSurchargesModel == null?SizedBox.shrink():
                     DatatableWidget(
                       columns: [
-                        buildHeaderWithSearch(title: "TYPE"),
-                        buildHeaderWithSearch(title: "CONDITION"),
-                        buildHeaderWithSearch(title: "POSTCODE"),
-                        buildHeaderWithSearch(title: "FARE"),
-                        buildHeaderWithSearch(title: "PC"),
-                        buildHeaderWithSearch(title: "EDC"),
-                        buildHeaderWithSearch(title: "CC"),
-                        buildHeaderWithSearch(title: "DURATION"),
-                        buildHeaderWithSearch(title: "DAY"),
-                        buildHeaderWithSearch(title: "FROM"),
-                        buildHeaderWithSearch(title: "TO"),
+                        buildHeaderWithSearch(title: "TYPE", removeSearching: true ),
+                        buildHeaderWithSearch(title: "CONDITION", removeSearching: true),
+                        buildHeaderWithSearch(title: "POSTCODE", removeSearching: true),
+                        buildHeaderWithSearch(title: "FARE", removeSearching: true),
+                        buildHeaderWithSearch(title: "PC", removeSearching: true),
+                        buildHeaderWithSearch(title: "EDC", removeSearching: true),
+                        buildHeaderWithSearch(title: "CC", removeSearching: true),
+                        buildHeaderWithSearch(title: "DURATION", removeSearching: true),
+                        buildHeaderWithSearch(title: "DAY", removeSearching: true),
+                        buildHeaderWithSearch(title: "FROM", removeSearching: true),
+                        buildHeaderWithSearch(title: "TO", removeSearching: true),
                         buildHeaderWithSearch(title: "ACTIONS",removeSearching: true),
 
                       ],
@@ -438,9 +432,18 @@ class _FareChargesState extends State<FareCharges> {
                           DataCell(Center(child: Text(surcharges.extraDropCharges! ?? ""))),
                           DataCell(Center(child: Text(surcharges.congestionCharges! ?? ""))),
                           DataCell(Center(child: Text(surcharges.duration! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.day ?? ""))),
-                          DataCell(Center(child: Text(surcharges.fromDate ?? ""))),
-                          DataCell(Center(child: Text(surcharges.toDate ?? ""))),
+                          DataCell(Center(child: Text(surcharges.day ?? "-"))),
+                          DataCell(Center(child: Text(
+                            surcharges.duration == "DATE WISE"
+                                ? "${surcharges.fromDate ?? ""} | ${surcharges.fromTime ?? ""}"
+                                : (surcharges.fromTime ?? "") ))),
+                          DataCell(Center(child: Text(
+                            surcharges.duration == "DATE WISE"
+                                ? "${surcharges.toDate ?? ""} | ${surcharges.toTime ?? ""}"
+                                : (surcharges.toTime ?? "")  ))),
+
+
+
                           DataCell(
                             Center(
                               child: Row(
@@ -518,14 +521,13 @@ class _FareChargesState extends State<FareCharges> {
 }
 
 List<DaysClass> daysList = [
-  DaysClass(dayName: "ALL", selectedDay: false.obs), // Naya option
-  DaysClass(dayName: "MON", selectedDay: false.obs),
-  DaysClass(dayName: "TUE", selectedDay: false.obs),
-  DaysClass(dayName: "WED", selectedDay: false.obs),
-  DaysClass(dayName: "THU", selectedDay: false.obs),
-  DaysClass(dayName: "FRI", selectedDay: false.obs),
-  DaysClass(dayName: "SAT", selectedDay: false.obs),
-  DaysClass(dayName: "SUN", selectedDay: false.obs),
+  DaysClass(dayName: "MON",selectedDay: false.obs),
+  DaysClass(dayName: "TUES",selectedDay: false.obs),
+  DaysClass(dayName: "WED",selectedDay: false.obs),
+  DaysClass(dayName: "THURS",selectedDay: false.obs),
+  DaysClass(dayName: "FRI",selectedDay: false.obs),
+  DaysClass(dayName: "SAT",selectedDay: false.obs),
+  DaysClass(dayName: "SUN",selectedDay: false.obs),
 ];
 
 class DaysClass {
