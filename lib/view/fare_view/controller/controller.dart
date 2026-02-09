@@ -1025,17 +1025,21 @@ DaysClass? selectedDay;
 
   String? fareByVehicleOperater = "AMOUNT";
   final fareValueVehicleController = TextEditingController();
+
   FareByVehicleSetting? fareByVehicleSetting;
   RxBool farebyVehicleLoader = false.obs;
   getFareByVehicleSetting()async{
     farebyVehicleLoader(true);
-    var response = await Api().get("farebyvehicle/get");
+    var response = await Api().get("farebyvehicle/get",
+    );
     if (response.statusCode == 200) {
       fareByVehicleSetting = FareByVehicleSetting.fromJson(response.data);
       farebyVehicleLoader(false);
       update();
     }
   }
+
+
 
 
   postFareByVehicleSetting() async{
