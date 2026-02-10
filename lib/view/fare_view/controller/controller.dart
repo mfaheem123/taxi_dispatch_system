@@ -96,6 +96,17 @@ clearFormData(){
 
 
 
+  plotfareDelete(int? id) async {
+    var response = await Api().delete("plotfares/delete/$id");
+    if (response.statusCode == 200) {
+      getAllPlotFare();
+      BotToast.showText(text: "Success, PlotFare Deleted Successfully");
+      print("PloteFare deleted successfully!");
+
+    }
+  }
+
+
 
 
 
