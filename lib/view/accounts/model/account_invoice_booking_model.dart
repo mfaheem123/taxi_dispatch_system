@@ -1,27 +1,27 @@
 // To parse this JSON data, do
 //
-//     final accountInvoiceModel = accountInvoiceModelFromJson(jsonString);
+//     final accountInvoiceBookingModel = accountInvoiceBookingModelFromJson(jsonString);
 
 import 'dart:convert';
 
-AccountInvoiceModel accountInvoiceModelFromJson(String str) => AccountInvoiceModel.fromJson(json.decode(str));
+AccountInvoiceBookingModel accountInvoiceBookingModelFromJson(String str) => AccountInvoiceBookingModel.fromJson(json.decode(str));
 
-String accountInvoiceModelToJson(AccountInvoiceModel data) => json.encode(data.toJson());
+String accountInvoiceBookingModelToJson(AccountInvoiceBookingModel data) => json.encode(data.toJson());
 
-class AccountInvoiceModel {
+class AccountInvoiceBookingModel {
   bool? status;
   int? count;
   List<Booking>? bookings;
   List<Total>? total;
 
-  AccountInvoiceModel({
+  AccountInvoiceBookingModel({
     this.status,
     this.count,
     this.bookings,
     this.total,
   });
 
-  factory AccountInvoiceModel.fromJson(Map<String, dynamic> json) => AccountInvoiceModel(
+  factory AccountInvoiceBookingModel.fromJson(Map<String, dynamic> json) => AccountInvoiceBookingModel(
     status: json["status"],
     count: json["count"],
     bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),

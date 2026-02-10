@@ -13,7 +13,8 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import '../../../dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
+
 
 class CreateAccountInvoiceScreen extends StatefulWidget {
   const CreateAccountInvoiceScreen({super.key});
@@ -100,42 +101,48 @@ class _CreateAccountInvoiceScreenState
                           style: mozillaTextRegularText(
                               color: DynamicColors.redClr))
                     ]))),
-            CustomDropdownField<String>(
+
+            CustomDropdownField<Subsidiaries>(
+              text: AppText.subsidiary,
+              width: fieldWidth / 1.5,
+              label: AppText.subsidiary,
+              items: controller.subsDiaryModel?.subsidiaries ?? [],
+              value: controller.selectedSubsidiaryForGet.value,
+              itemLabel: (item) => item.name ?? "",
+              onChanged: (val) {
+                controller.selectedSubsidiaryForGet.value = val;
+                if (val != null && val.id != null) {
+                  controller.getAccountsBySubsidiary(val.id!);
+                }
+              },
+            ),
+
+            CustomDropdownField<Account>(
               text: AppText.account,
               width: fieldWidth / 1.5,
               label: AppText.account,
-              items: [
-                "SELECT ACCOUNT 1",
-                "SELECT ACCOUNT 2",
-                "SELECT ACCOUNT 3",
-                "SELECT ACCOUNT 4",
-                "SELECT ACCOUNT 5",
-              ],
-              value: controller.account,
-              itemLabel: (val) => val, // just show the string
+              items: controller.accountList,
+              value: controller.selectedAccount.value,
+              itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.account = val!;
+                controller.selectedAccount.value = val;
                 controller.update();
               },
             ),
+
             CustomDropdownField<String>(
               text: AppText.department,
               width: fieldWidth / 1.5,
               label: AppText.department,
-              items: [
-                "SELECT DEPARTMENT 1",
-                "SELECT DEPARTMENT 2",
-                "SELECT DEPARTMENT 3",
-                "SELECT DEPARTMENT 4",
-                "SELECT DEPARTMENT 5",
-              ],
-              value: controller.department,
-              itemLabel: (val) => val, // just show the string
+              items: controller.departmentList,
+              value: controller.selectedDepartment.value,
+              itemLabel: (val) => val,
               onChanged: (val) {
-                controller.department = val!;
+                controller.selectedDepartment.value = val;
                 controller.update();
               },
             ),
+
             CustomTextField(
               borderRadius: 4,
               controller: controller.customerTelephoneController,
@@ -144,19 +151,7 @@ class _CreateAccountInvoiceScreenState
               columnText: true,
               height: 30,
             ),
-            CustomDropdownField<Subsidiaries>(
-              text: AppText.subsidiary,
-              width: fieldWidth / 1.5,
-              label: AppText.subsidiary,
-              items: controller.subsDiaryModel!.subsidiaries!,
-              value: controller.selectedSubsidiaryForGet,
-              itemLabel: (val) => val.name ?? "",
-              onChanged: (val) {
-                controller.selectedSubsidiaryForGet = val;
-                // controller.getTemplateByTypes(
-                //     selectedTempId: val!.id);
-              },
-            ),
+
 
             SizedBox(
               height: 8,
