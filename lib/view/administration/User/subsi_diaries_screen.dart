@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
+import 'create_subsiDiary.dart';
 
 class SubsiDiariesScreen extends StatefulWidget {
   const SubsiDiariesScreen({super.key});
@@ -21,17 +22,22 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
   Get.isRegistered<AdministrationController>()
       ? Get.find<AdministrationController>()
       : Get.put(AdministrationController());
+  final DashboardController _controller = Get.find();
+
 
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "SubsiDiariesScreen";
-    controller.listSubsDiary();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<AdministrationController>(
+      initState: (state) {
+        controller.listSubsDiary();
+      },
       builder: (controller) {
         // ✅ Null-safe list
         final List listToShow =
@@ -102,21 +108,21 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                         : Get.width,
                     child: DatatableWidget(
                       columns: [
-                        DataColumn(
-                          label:  Checkbox(
-                            value: controller.selectedSubsDiaryIds.length == listToShow.length,
-                            onChanged: (v) {
-                              if (v == true) {
-                                controller.selectedSubsDiaryIds
-                                    .addAll(listToShow.map((e) => e.id));
-                              } else {
-                                controller.selectedSubsDiaryIds.clear();
-                              }
-                              controller.update();
-                            },
-                          ),
-
-                        ),
+                        // DataColumn(
+                        //   label:  Checkbox(
+                        //     value: controller.selectedSubsDiaryIds.length == listToShow.length,
+                        //     onChanged: (v) {
+                        //       if (v == true) {
+                        //         controller.selectedSubsDiaryIds
+                        //             .addAll(listToShow.map((e) => e.id));
+                        //       } else {
+                        //         controller.selectedSubsDiaryIds.clear();
+                        //       }
+                        //       controller.update();
+                        //     },
+                        //   ),
+                        //
+                        // ),
                         buildHeaderWithSearch(
                           title: "NAME",
                           onChanged: (v) {
@@ -165,19 +171,19 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                       rows: listToShow.map<DataRow>((item) {
                         return DataRow(
                           cells: [
-                            DataCell(
-                              Checkbox(
-                                value: controller.selectedSubsDiaryIds.contains(item.id),
-                                onChanged: (v) {
-                                  if (v == true) {
-                                    controller.selectedSubsDiaryIds.add(item.id);
-                                  } else {
-                                    controller.selectedSubsDiaryIds.remove(item.id);
-                                  }
-                                  controller.update();
-                                },
-                              ),
-                            ),
+                            // DataCell(
+                            //   Checkbox(
+                            //     value: controller.selectedSubsDiaryIds.contains(item.id),
+                            //     onChanged: (v) {
+                            //       if (v == true) {
+                            //         controller.selectedSubsDiaryIds.add(item.id);
+                            //       } else {
+                            //         controller.selectedSubsDiaryIds.remove(item.id);
+                            //       }
+                            //       controller.update();
+                            //     },
+                            //   ),
+                            // ),
 
 
 
@@ -201,15 +207,42 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                 MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    icon: Icon(Icons.search,
+                                    icon: Icon(
+                                        Icons.edit_calendar,
                                         color:
                                         DynamicColors.primaryClr),
-                                    onPressed: () {},
+                                    onPressed: () {
+controller.subsidiaryUpdate(data: item);
+
+controller.isSubsiDiaryUpdating.value = true;
+
+int index = _controller.selectedMenuItems
+    .indexWhere((element) => element.title == "CREATE SUBSIDIARY");
+
+if (index != -1) {
+  _controller.selectedMenuItems[index].selectedItem = true;
+} else {
+  _controller.menuBarRefresh(
+      title: "CREATE SUBSIDIARY",
+      pageName: CreateSubsiDiary());
+}
+
+// Page switch karein
+_controller.currentPage.value = CreateSubsiDiary();
+controller.update();
+
+
+                                    },
                                   ),
+                                  Text("|"),
                                   IconButton(
                                     icon: Icon(Icons.delete,
                                         color: DynamicColors.redClr),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                        controller.subsidiariesDelete(item.id);
+
+
+                                    },
                                   ),
                                 ],
                               ),

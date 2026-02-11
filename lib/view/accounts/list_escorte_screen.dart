@@ -41,7 +41,9 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
+    return GetBuilder<AccountController>(
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final listToShow = controller.escortFiltered.isNotEmpty
             ? controller.escortFiltered
@@ -202,7 +204,10 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                           color: Colors.transparent,
                                         ), // border color & thickness
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+
+                                        controller.escortDelete(item.id);
+                                      },
                                       child: Icon(
                                         Icons.delete,
                                         size: 28,

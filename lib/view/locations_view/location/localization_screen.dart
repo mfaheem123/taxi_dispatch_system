@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -286,7 +287,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   Future<void> _fetchPostcodes() async {
     setState(() => isLoading = true);
     try {
-      final response = await _dio.get('http://192.168.110.4:5000/api/localizations/getlocalization',);
+      final response = await _dio.get('http://192.168.110.5:5000/api/localizations/getlocalization',);
       // final response = await _dio.get('https://www.nexustechnologys.com/api/localizations/getlocalization',);
 
       if (response.statusCode == 200 && response.data['status'] == true) {
@@ -297,19 +298,11 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
           postcodes = loaded;
         });
       } else {
-        Get.snackbar('Error', 'Failed to fetch data',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white);
+        BotToast.showText(text: 'Error' + 'Failed to fetch data');
+
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      BotToast.showText(text: 'Error');
     } finally {
       setState(() => isLoading = false);
     }
@@ -318,70 +311,50 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   /// 📌 POST API call for adding postcode
   Future<void> _addPostcodeApi(String code) async {
     try {
-      final response = await _dio.post('http://192.168.110.4:5000/api/localizations', data: FormData.fromMap({'postcode': code,}),);
+      final response = await _dio.post('http://192.168.110.5:5000/api/localizations', data: FormData.fromMap({'postcode': code,}),);
       // final response = await _dio.post('https://www.nexustechnologys.com/api/localizations', data: FormData.fromMap({'postcode': code,}),);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         await _fetchPostcodes();
-        Get.snackbar(
-          'Success',
-          'Postcode added successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+        BotToast.showText(text:
+        'Success'
+          'Postcode added successfully');
+
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to add postcode',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        BotToast.showText(text:
+        'Error' 'Failed to add postcode');
+
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      BotToast.showText(text:
+      'Error');
+
+
     }
   }
 
   /// 🗑️ DELETE API call
   Future<void> _deletePostcodeApi(int id) async {
     try {
-      final response = await _dio.delete('http://192.168.110.4:5000/api/localizations/delete/$id',);
+      final response = await _dio.delete('http://192.168.110.5:5000/api/localizations/delete/$id',);
       // final response = await _dio.delete('https://www.nexustechnologys.com/api/localizations/delete/$id',);
 
       if (response.statusCode == 200) {
         await _fetchPostcodes();
-        Get.snackbar(
-          'Deleted',
-          'Postcode deleted successfully',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+
+        BotToast.showText(text:
+        'Deleted' 'Postcode deleted successfully');
+
       } else {
-        Get.snackbar(
-          'Error',
-          'Failed to delete postcode',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: Colors.white,
-        );
+        BotToast.showText(text:
+        'Error'
+            'Failed to delete postcode');
+
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+      BotToast.showText(text:
+      'Error');
+
     }
   }
 }

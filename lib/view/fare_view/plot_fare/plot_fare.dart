@@ -64,7 +64,7 @@ class _PlotFareState extends State<PlotFare> {
                     : maxWidth / 4;
 
                 return Container(
-                  width: Get.width/1.5,
+                  width: Get.width/1.2,
                   decoration: BoxDecoration(
                       border: Border.all(color: DynamicColors.gryClr)
                   ),
@@ -309,7 +309,10 @@ class _PlotFareState extends State<PlotFare> {
                               },
                               height: 35,
                               width: fieldWidth,
-                              btnText: AppText.save,
+                              btnText:
+                              controller.isUpdatePlot.value ? "UPDATE" : AppText.save,
+
+
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               style: mozillaTextRegularText(
@@ -342,7 +345,7 @@ class _PlotFareState extends State<PlotFare> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width/2,
+                          width: Get.width/1.3,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "VEHICLE",removeSearching: true),
@@ -376,6 +379,8 @@ class _PlotFareState extends State<PlotFare> {
                                           ),
                                           onPressed: () {
                                             // 🟢 Edit action
+                                            controller.bindPlotFare(plot);
+                                            // controller.clearFormData();
                                           },
                                           child: Icon(Icons.edit_calendar,
                                               size: 20,
@@ -390,6 +395,7 @@ class _PlotFareState extends State<PlotFare> {
                                                 color: Colors.transparent),
                                           ),
                                           onPressed: () {
+                                            controller.plotfareDelete(plot.id);
                                             // 🔴 Delete action
                                           },
                                           child: Icon(Icons.delete_forever,

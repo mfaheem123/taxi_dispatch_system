@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
+import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
@@ -12,7 +13,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import '../../../dashboard_view/Controller/dashboard_controller.dart';
+import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
 class CreateAccountInvoiceScreen extends StatefulWidget {
   const CreateAccountInvoiceScreen({super.key});
@@ -42,7 +43,9 @@ class _CreateAccountInvoiceScreenState
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -75,7 +78,7 @@ class _CreateAccountInvoiceScreenState
               isMobile: isMobile,
               label: AppText.invoiceDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             labeledField(
@@ -83,37 +86,48 @@ class _CreateAccountInvoiceScreenState
               isMobile: isMobile,
               label: AppText.invoiceDueDate,
               column: true,
-              width: fieldWidth,
+              width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker()),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 25),
                 child: RichText(
                     text: TextSpan(
-                        text: 'Invoice',
+                        text: 'Invoice #',
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold),
                         children: [
                       TextSpan(
-                          text: "  INV368",
+                          // text: "  INV368",
+                          text: controller.isLoading.value
+                              ? " Loading..."
+                              : "  ${controller.invoiceNumber.value}",
                           style: mozillaTextRegularText(
                               color: DynamicColors.redClr))
                     ]))),
-            CustomDropdownField<String>(
+            CustomDropdownField<Subsidiaries>(
+              text: AppText.subsidiary,
+              width: fieldWidth / 1.5,
+              label: AppText.subsidiary,
+              items: controller.subsDiaryModel?.subsidiaries ?? [],
+              value: controller.selectedSubsidiaryForGet.value,
+              itemLabel: (item) => item.name ?? "",
+              onChanged: (val) {
+                controller.selectedSubsidiaryForGet.value = val;
+                if (val != null && val.id != null) {
+                  controller.getAccountsBySubsidiary(val.id!);
+                }
+              },
+            ),
+            CustomDropdownField<Account>(
               text: AppText.account,
               width: fieldWidth / 1.5,
               label: AppText.account,
-              items: [
-                "SELECT ACCOUNT 1",
-                "SELECT ACCOUNT 2",
-                "SELECT ACCOUNT 3",
-                "SELECT ACCOUNT 4",
-                "SELECT ACCOUNT 5",
-              ],
-              value: controller.account,
-              itemLabel: (val) => val, // just show the string
+              items: controller.accountList,
+              value: controller.selectedAccount.value,
+              itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.account = val!;
+                controller.selectedAccount.value = val;
                 controller.update();
               },
             ),
@@ -121,17 +135,11 @@ class _CreateAccountInvoiceScreenState
               text: AppText.department,
               width: fieldWidth / 1.5,
               label: AppText.department,
-              items: [
-                "SELECT DEPARTMENT 1",
-                "SELECT DEPARTMENT 2",
-                "SELECT DEPARTMENT 3",
-                "SELECT DEPARTMENT 4",
-                "SELECT DEPARTMENT 5",
-              ],
-              value: controller.department,
-              itemLabel: (val) => val, // just show the string
+              items: controller.departmentList,
+              value: controller.selectedDepartment.value,
+              itemLabel: (val) => val,
               onChanged: (val) {
-                controller.department = val!;
+                controller.selectedDepartment.value = val;
                 controller.update();
               },
             ),
@@ -143,29 +151,9 @@ class _CreateAccountInvoiceScreenState
               columnText: true,
               height: 30,
             ),
-            CustomDropdownField<String>(
-              text: AppText.subsidiary,
-              width: fieldWidth / 1.5,
-              label: AppText.subsidiary,
-              items: [
-                "DEMO COMPANY 1",
-                "DEMO COMPANY 2",
-                "DEMO COMPANY 3",
-                "DEMO COMPANY 4",
-                "DEMO COMPANY 5",
-              ],
-              value: controller.subDiary,
-              itemLabel: (val) => val, // just show the string
-              onChanged: (val) {
-                controller.subDiary = val!;
-                controller.update();
-              },
-            ),
-
             SizedBox(
               height: 8,
             ),
-
             Padding(
               padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
               child: Row(
@@ -175,7 +163,14 @@ class _CreateAccountInvoiceScreenState
                     isMobile: isMobile,
                     label: AppText.from,
                     width: fieldWidth / 1.8,
-                    child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                    child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                            initialDate: controller.fromDate ?? DateTime.now(),
+                            onChanged: (pickedDate) {
+                              controller.fromDate = pickedDate;
+                              controller.update();
+                            })),
                   ),
                   SizedBox(
                     width: 15,
@@ -185,11 +180,17 @@ class _CreateAccountInvoiceScreenState
                     isMobile: isMobile,
                     label: AppText.to,
                     width: fieldWidth / 1.8,
-                    child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                    child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.toDate ?? DateTime.now(),
+                          onChanged: (pickedDate) {
+                            controller.toDate = pickedDate;
+                            controller.update();
+                          },
+                        )),
                   ),
-
                   Spacer(),
-
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 40,
@@ -198,6 +199,9 @@ class _CreateAccountInvoiceScreenState
                     btnText: AppText.filter,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.getAccountInvoiceBookings();
+                    },
                   ),
                   SizedBox(
                     width: 15,
@@ -210,10 +214,76 @@ class _CreateAccountInvoiceScreenState
                     btnText: AppText.save,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.postInvoice();
+                    },
                   ),
                 ],
               ),
             ),
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: SizedBox(
+            //     width: Get.width,
+            //     child: DatatableWidget(
+            //       columns: [
+            //         DataColumn(
+            //           label: Checkbox(
+            //             value: false, // a bool you keep in state
+            //             onChanged: (val) {},
+            //           ),
+            //         ),
+            //         buildHeaderWithSearch(title: "REF #"),
+            //         buildHeaderWithSearch(title: "DATETIME"),
+            //         buildHeaderWithSearch(title: "PICKUP"),
+            //         buildHeaderWithSearch(title: "DROPOFF"),
+            //         buildHeaderWithSearch(title: "CUST"),
+            //         buildHeaderWithSearch(title: "VEH"),
+            //         buildHeaderWithSearch(title: "J/T"),
+            //         buildHeaderWithSearch(title: "P/T"),
+            //         buildHeaderWithSearch(title: "FARE"),
+            //         buildHeaderWithSearch(title: "PC"),
+            //         buildHeaderWithSearch(title: "WC"),
+            //         buildHeaderWithSearch(title: "EDC"),
+            //         buildHeaderWithSearch(title: "M&G"),
+            //         buildHeaderWithSearch(title: "Cc"),
+            //         buildHeaderWithSearch(title: "TOTA"),
+            //         buildHeaderWithSearch(
+            //             title: "ACTIONS", removeSearching: true),
+            //       ],
+            //       rows: controller.invoiceBookings.map((booking) {
+            //         return DataRow(cells: [
+            //           DataCell(Checkbox(value: false, onChanged: (val) {})),
+            //           DataCell(Text(booking.referenceNumber ?? "")),
+            //           DataCell(Text(
+            //               "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
+            //           DataCell(Text(booking.pickup ?? "")),
+            //           DataCell(Text(booking.dropoff ?? "")),
+            //           DataCell(Text(booking.customer?.address1 ?? "")),
+            //           DataCell(Text(booking.vehicleType?.name ?? "")),
+            //           DataCell(Text(booking.journeyType?.journeyType ?? "")),
+            //           DataCell(Text(booking.paymentType?.name ?? "")),
+            //           DataCell(Text(booking.fares ?? "0")),
+            //           DataCell(Text(booking.parkingCharges ?? "0")),
+            //           DataCell(Text(booking.waitingCharges ?? "0")),
+            //           DataCell(Text(booking.extraDropCharges ?? "0")),
+            //           DataCell(Text(booking.meetAndGreet ?? "0")),
+            //           DataCell(Text(booking.creditCardCharges ?? "0")),
+            //           DataCell(Text(booking.totalCharges ?? "0")),
+            //           DataCell(Row(
+            //             children: [
+            //               Icon(Icons.search, color: DynamicColors.primaryClr),
+            //               Icon(Icons.clear, color: DynamicColors.redClr),
+            //             ],
+            //           )),
+            //         ]);
+            //       }).toList(),
+            //
+            //     ),
+            //   ),
+            // ),
+
+            //
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -245,66 +315,103 @@ class _CreateAccountInvoiceScreenState
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
-                  totalRow: totalRows,
-                  cells: [
-                    DataCell(
-                      Checkbox(
-                        value: false, // ✅ controlled by your state
-                        onChanged: (val) {
-                          // update your selected index or list here
-                        },
-                      ),
-                    ),
-                    const DataCell(Center(child: Text("SALOON"))),
-                    const DataCell(Center(child: Text("NW7"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("CUST"))),
-                    const DataCell(Center(child: Text("SALOON"))),
-                    const DataCell(Center(child: Text("NW7"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("HEATHROW TERMINAL 2 TW6 1JS"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    const DataCell(Center(child: Text("£55.00"))),
-                    DataCell(
-                      Center(
-                        child: Row(
+                  rows: [
+                    // Add the booking rows
+                    ...controller.invoiceBookings.map((booking) {
+                      return DataRow(cells: [
+                        DataCell(Checkbox(value: false, onChanged: (val) {})),
+                        DataCell(Text(booking.referenceNumber ?? "")),
+                        DataCell(Text(
+                            "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
+                        DataCell(Text(booking.pickup ?? "")),
+                        DataCell(Text(booking.dropoff ?? "")),
+                        DataCell(Text(booking.customer?.address1 ?? "")),
+                        DataCell(Text(booking.vehicleType?.name ?? "")),
+                        DataCell(Text(booking.journeyType?.journeyType ?? "")),
+                        DataCell(Text(booking.paymentType?.name ?? "")),
+                        DataCell(Text(booking.fares ?? "0")),
+                        DataCell(Text(booking.parkingCharges ?? "0")),
+                        DataCell(Text(booking.waitingCharges ?? "0")),
+                        DataCell(Text(booking.extraDropCharges ?? "0")),
+                        DataCell(Text(booking.meetAndGreet ?? "0")),
+                        DataCell(Text(booking.creditCardCharges ?? "0")),
+                        DataCell(Text(booking.totalCharges ?? "0")),
+                        DataCell(Row(
                           children: [
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Colors.transparent,
-                                ), // border color & thickness
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.search,
-                                size: 28,
-                                color: DynamicColors.primaryClr,
-                              ),
-                            ),
-                            OutlinedButton(
-                              style: OutlinedButton.styleFrom(
-                                side: BorderSide(
-                                  color: Colors.transparent,
-                                ), // border color & thickness
-                              ),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.clear,
-                                size: 28,
-                                color: DynamicColors.redClr,
-
-                              ),
-                            ),
+                            Icon(Icons.search, color: DynamicColors.primaryClr),
+                            Icon(Icons.clear, color: DynamicColors.redClr),
                           ],
-                        ),
-                      ),
-                    ),
+                        )),
+                      ]);
+                    }).toList(),
+
+                    // TOTAL row
+                    if (controller.invoiceTotals.isNotEmpty)
+                      DataRow(cells: [
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell(Text(
+                          "TOTAL",
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.bold),
+                        )),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].fareTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].parkingChargesTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].waitingChargesTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].extraDropChargesTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].meetAndGreetTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].congestionChargesTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].total ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell.empty,
+                      ]),
+
+                    // GRAND TOTAL row
+                    if (controller.invoiceTotals.isNotEmpty)
+                      DataRow(cells: [
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell(Text(
+                          "GRAND TOTAL",
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.bold),
+                        )),
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell.empty,
+                        DataCell(Text(
+                            "£${controller.invoiceTotals[0].grandTotal ?? "0"}",
+                            style: TextStyle(fontWeight: FontWeight.bold))),
+                        DataCell.empty,
+                      ]),
                   ],
                 ),
               ),

@@ -62,22 +62,40 @@ class FareController extends GetxController {
 
     };
     print(formData);
-    var response = await Api().post(formData, "plotfares/add");
+    var response = await Api().post(formData,
+
+        isUpdatePlot.value
+            ? "plotfares/update/${plotUpdateId.value}":
+        "plotfares/add"
+
+    );
     if(response.statusCode == 200){
       clearFormData();
       print(response.data);
       BotToast.showText(text: "Plot Fare successfully added");
-
+      getAllPlotFare();
+      BotToast.showText(text: isUpdatePlot.value ? "Plot Fare Updated" : "Plot Fare successfully added");
+      isUpdatePlot(false);
     }
   }
 
-clearFormData(){
-  fareValueVehicleController.clear();
-  fareDescription2ndController.clear();
-  fareDescriptionController.clear();
-  fareController.clear();
-  vehicleTypeController.clear();
-}
+  clearFormData() {
+    fareController.clear();
+    vehicleTypeController.clear();
+    fareDescriptionController.clear();
+    fareDescription2ndController.clear();
+
+    // Variables reset
+    plotVehicleTypevalue = null;
+    Zoneevalue = null;
+    Zonee1value = null;
+
+    // Update logic reset
+    isUpdatePlot(false);
+    plotUpdateId(0);
+
+    update();
+  }
 
   AllPlotFareModel? allPlotFareModel;
   RxBool getAllPlotFareLoader = false.obs;
@@ -91,6 +109,43 @@ clearFormData(){
     }
   }
 
+
+
+  plotfareDelete(int? id) async {
+    var response = await Api().delete("plotfares/delete/$id");
+    if (response.statusCode == 200) {
+      getAllPlotFare();
+      BotToast.showText(text: "Success, PlotFare Deleted Successfully");
+      print("PloteFare deleted successfully!");
+
+    }
+  }
+
+
+
+  RxBool isUpdatePlot = false.obs;
+  RxInt plotUpdateId = 0.obs;
+
+  bindPlotFare(PlotFare fare) {
+    // 1. Controller mein value set karna
+    fareController.text = fare.fares?.toString() ?? "";
+    if (plotVehicleTypeModel?.vehicleTypes != null) {
+      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
+          .firstWhere((v) => v.id == fare.vehicleTypeId);
+    }
+    if (plotVehicleTypeModel?.zones != null && fare.pickupPlot != null) {
+      Zoneevalue = plotVehicleTypeModel!.zones!
+          .firstWhere((z) => z.id == fare.pickupPlot!.id);
+    }
+    if (plotVehicleTypeModel?.zones != null && fare.dropoffPlot != null) {
+      Zonee1value = plotVehicleTypeModel!.zones!
+          .firstWhere((z) => z.id == fare.dropoffPlot!.id);
+    }
+    isUpdatePlot(true);
+    plotUpdateId(fare.id!);
+
+    update(); // UI ko refresh karne ke liye
+  }
 
 
 
@@ -141,11 +196,62 @@ clearFormData(){
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
 
+  GetAllFixedFareModel? getAllFixedFareModels;
+  RxBool fixedFareLoader = false.obs;
+  ///--------------------- Pagination
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 10;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<FixedFare> fixedFareAll = <FixedFare>[].obs;
+  RxList<FixedFare> fixedFareFiltered = <FixedFare>[].obs;
+  RxString searchVehicle = ''.obs;
+  RxString searchFromLocation = ''.obs;
+  RxString searchToLocation = ''.obs;
+  RxString searchFares = ''.obs;
+
+  getAllFixedFare () async {
+    fixedFareLoader(true);
+    var response = await Api().get("fixedfares/get?",
+        queryParameters: {
+          'page': currentPage.value,
+          'limit': limit,
+          "vehicle": searchVehicle.value.toLowerCase(),
+          "from_location": searchFromLocation.value.toLowerCase(),
+          "to_location": searchToLocation.value.toLowerCase(),
+          "fares": searchFares.value.toLowerCase(),
+        }
+    );
+    if (response.statusCode == 200) {
+      getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
+      totalPages.value = getAllFixedFareModels?.totalPages ?? 1;
+      fixedFareAll.value = getAllFixedFareModels?.fixedFares ?? [];
+      fixedFareFiltered.value = fixedFareAll;
+      fixedFareLoader(false);
+      update();
+    }
+  }
+
+  // -----------Search changes function
+  void onSearchFixedFares() {
+    currentPage.value = 1;
+    getAllFixedFare();
+  }
+
+  /// ------- pagination function
+  void onPageFixedFare(int page) {
+    currentPage.value = page;
+    getAllFixedFare();
+  }
 
 
 
   VehicleTypeFixed? vehicleTypesFixedvalue;
-  LocationType?locationTypevalue;
+  // LocationType?locationTypevalue;
+  LocationType? fromLocationTypeValue;
+  LocationType? toLocationTypeValue;
+
   FixedFareVehicleLocationTypeModel? fixedFareVehicleLocationTypeModel;
   RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
   getFixedFareVehicleLocationType()async{
@@ -159,50 +265,47 @@ clearFormData(){
   }
 
 
-
+  RxBool postFixedFareLoader = false.obs;
   GetAllFixedFareModel? getAllFixedFareModel;
   RxBool getAllFixedFareLoader = false.obs;
 
-  getAllFixedFare()async{
-    getFixedFareVehicleLocationTypeLoader(true);
-    var response = await Api().get("fixedfares/get");
-    if (response.statusCode == 200) {
-      getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
-      getAllFixedFareLoader(false);
-      update();
-    }
-  }
-
-
-  RxBool postFixedFareLoader = false.obs;
-
-
   postFixedFare() async {
-    postFixedFareLoader(true);
-    var formData = {
-      "vehicle_type_id": "70",
-      "area1": "Islamabad",
-      "area2": "Lahore",
-      "fares": "20",
-      "from_location_id": "1",
-      "to_location_id": "24",
+    postFixedFareLoader(true); // loader start
 
-    };
+      var formData = {
+        "vehicle_type_id": "70",
+        "area1": "Islamabad",
+        "area2": "Lahore",
+        "fares": "20",
+        "from_location_id": "1",
+        "to_location_id": "24",
+      };
 
-    var response = await Api().post(
-        formData,
-        'fixedfares/add',
-        auth: true);
-    if (response.statusCode == 200) {
+      var response = await Api().post(formData, 'fixedfares/add', auth: true);
+      if (response.statusCode == 200) {
+        print("POST success: ${response.data}");
+        getAllFixedFare(); // updated data fetch
+      }
 
-      getAllFixedFare();
-      update();
-      print(response);
-    } else {
-      print("errorrrrrrrrrrrrrrrrrrrrrrrrrrr");
-      print(response);
-    }
   }
+
+  // getAllFixedFare() async {
+  //   getAllFixedFareLoader(true); // loader start
+  //   try {
+  //     var response = await Api().get("fixedfares/get");
+  //     if (response.statusCode == 200) {
+  //       getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
+  //       print("Fetched fares: ${getAllFixedFareModel}");
+  //     } else {
+  //       print("GET Error ${response.statusCode}: ${response.data}");
+  //     }
+  //   } catch (e) {
+  //     print("GET Exception: $e");
+  //   } finally {
+  //     getAllFixedFareLoader(false); // loader stop
+  //     update();
+  //   }
+  // }
 
 
   /// todo testing location ???????????????????????????????????????????????????????????????????????
@@ -227,6 +330,8 @@ clearFormData(){
   final suggestionScrollController = ScrollController();
   AllAddressesModel? selectedModel;
   RxInt suggestionSelectedIndex = 0.obs;
+  RxString activeField = "from".obs;
+
 
 
   void selectSuggestion(String? value) {
@@ -964,17 +1069,21 @@ DaysClass? selectedDay;
 
   String? fareByVehicleOperater = "AMOUNT";
   final fareValueVehicleController = TextEditingController();
+
   FareByVehicleSetting? fareByVehicleSetting;
   RxBool farebyVehicleLoader = false.obs;
   getFareByVehicleSetting()async{
     farebyVehicleLoader(true);
-    var response = await Api().get("farebyvehicle/get");
+    var response = await Api().get("farebyvehicle/get",
+    );
     if (response.statusCode == 200) {
       fareByVehicleSetting = FareByVehicleSetting.fromJson(response.data);
       farebyVehicleLoader(false);
       update();
     }
   }
+
+
 
 
   postFareByVehicleSetting() async{

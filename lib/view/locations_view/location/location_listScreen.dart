@@ -57,25 +57,27 @@ class _LocationListScreenState extends State<LocationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final listToShow = controller.locationsFiltered.isNotEmpty
+        ? controller.locationsFiltered
+        : controller.locationsAll;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    final listToShow = controller.locationsFiltered.isNotEmpty
-        ? controller.locationsFiltered
-        : controller.locationsAll;
+
 
     return
       RawKeyboardListener(
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<LocationController>(initState: (v) {
+      child: GetBuilder<LocationController>(
+          initState: (v) {
         controller.getLocationList();
       }, builder: (controller) {
         return controller.getLocationLoader.value == true
-            ? SizedBox.shrink()
+            ? CircularProgressIndicator()
             : SingleChildScrollView(
                 padding: const EdgeInsets.all(12),
                 child: Column(
@@ -200,7 +202,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                           onPressed: () {
 
                                             controller
-                                                .bindLocationUpdateLocation(locationUpdate: item!);
+                                                .bindLocationUpdateLocation(locationUpdate: item);
 
                                             int index = _controller
                                                 .selectedMenuItems

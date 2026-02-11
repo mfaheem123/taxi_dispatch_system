@@ -98,7 +98,7 @@ class CustomerController extends GetxController {
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
-  final int limit = 20;
+  final int limit = 10;
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
   RxList<Customer> customerListAll = <Customer>[].obs;
