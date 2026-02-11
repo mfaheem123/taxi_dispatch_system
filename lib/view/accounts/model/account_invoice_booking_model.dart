@@ -135,10 +135,10 @@ class Booking {
   BookingStatus? bookingStatus;
   BookingType? bookingType;
   JourneyType? journeyType;
-  Subsidiary? subsidiary;
+  BookingSubsidiary? subsidiary;
   VehicleType? vehicleType;
   PaymentType? paymentType;
-  Account? account;
+  BookingAccount? account;
   Driver? driver;
   Customer? customer;
   Employee? employee;
@@ -352,10 +352,10 @@ class Booking {
     bookingStatus: json["booking_status"] == null ? null : BookingStatus.fromJson(json["booking_status"]),
     bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
-    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
+    subsidiary: json["subsidiary"] == null ? null : BookingSubsidiary.fromJson(json["subsidiary"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
     paymentType: json["payment_type"] == null ? null : PaymentType.fromJson(json["payment_type"]),
-    account: json["account"] == null ? null : Account.fromJson(json["account"]),
+    account: json["account"] == null ? null : BookingAccount.fromJson(json["account"]),
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
     employee: json["employee"] == null ? null : Employee.fromJson(json["employee"]),
@@ -472,7 +472,7 @@ class Booking {
   };
 }
 
-class Account {
+class BookingAccount {
   int? id;
   String? name;
   String? backgroundColor;
@@ -484,7 +484,7 @@ class Account {
   int? accountFees;
   bool? accountFeesVat;
 
-  Account({
+  BookingAccount({
     this.id,
     this.name,
     this.backgroundColor,
@@ -497,7 +497,7 @@ class Account {
     this.accountFeesVat,
   });
 
-  factory Account.fromJson(Map<String, dynamic> json) => Account(
+  factory BookingAccount.fromJson(Map<String, dynamic> json) => BookingAccount(
     id: json["id"],
     name: json["name"],
     backgroundColor: json["background_color"],
@@ -800,18 +800,18 @@ class PaymentType {
   };
 }
 
-class Subsidiary {
+class BookingSubsidiary {
   int? id;
   String? name;
   String? telephoneNumber;
 
-  Subsidiary({
+  BookingSubsidiary({
     this.id,
     this.name,
     this.telephoneNumber,
   });
 
-  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+  factory BookingSubsidiary.fromJson(Map<String, dynamic> json) => BookingSubsidiary(
     id: json["id"],
     name: json["name"],
     telephoneNumber: json["telephone_number"],
