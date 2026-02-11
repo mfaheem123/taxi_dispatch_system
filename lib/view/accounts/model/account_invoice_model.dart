@@ -44,7 +44,7 @@ class Account {
   String? backgroundColor;
   String? foregroundColor;
   List<Department>? departments;
-  Subsidiary? subsidiary;
+  InvoiceSubsidiary? subsidiary;
 
   Account({
     this.id,
@@ -73,7 +73,7 @@ class Account {
     backgroundColor: json["background_color"],
     foregroundColor: json["foreground_color"],
     departments: json["departments"] == null ? [] : List<Department>.from(json["departments"]!.map((x) => Department.fromJson(x))),
-    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
+    subsidiary: json["subsidiary"] == null ? null : InvoiceSubsidiary.fromJson(json["subsidiary"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -112,20 +112,20 @@ class Department {
   };
 }
 
-class Subsidiary {
+class InvoiceSubsidiary {
   int? id;
   String? name;
   String? email;
   String? telephoneNumber;
 
-  Subsidiary({
+  InvoiceSubsidiary({
     this.id,
     this.name,
     this.email,
     this.telephoneNumber,
   });
 
-  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+  factory InvoiceSubsidiary.fromJson(Map<String, dynamic> json) => InvoiceSubsidiary(
     id: json["id"],
     name: json["name"],
     email: json["email"],

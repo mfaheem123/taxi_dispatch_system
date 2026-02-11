@@ -22,7 +22,8 @@ import 'package:file_picker/file_picker.dart';
 import '../../../Model/image_model.dart';
 import 'package:dio/dio.dart' as dio;
 
-import '../model/account_invoice_model.dart' hide Subsidiary;
+import '../model/account_invoice_booking_model.dart';
+import '../model/account_invoice_model.dart';
 
 class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
@@ -267,7 +268,8 @@ class AccountController extends GetxController {
       if (accountObjectData != null) {
         int index = subsidairyBankModel!.subsidiariesList!
             .indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
-        subsidiaryStoreValue = subsidairyBankModel!.subsidiariesList![index];
+        subsidiaryStoreValue =
+            subsidairyBankModel!.subsidiariesList![index] as Subsidiary?;
       }
       SubsdairyBankLoader(false);
       update();
@@ -296,6 +298,9 @@ class AccountController extends GetxController {
     // Subsidiary fetch
     getSubsidiary();
 
+    // invoiceNumber
+    fetchInvoiceNumber();
+
     // Subsidiary select hone par accounts load
     ever(selectedSubsidiaryForGet, (Subsidiaries? val) {
       if (val != null && val.id != null) {
@@ -313,6 +318,7 @@ class AccountController extends GetxController {
     ever(selectedAccount, (Account? val) {
       updateDepartmentsForSelectedAccount();
     });
+    // getAccountInvoiceBookings();
   }
 
   HtmlTempleteModel? templeteHtmlModel;
@@ -745,6 +751,34 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 
+  var invoiceNumber = ''.obs;
+  var isLoading = false.obs;
+
+  Future<void> fetchInvoiceNumber() async {
+    try {
+      isLoading.value = true;
+
+      final response = await Api().get(
+        ("document/document_numbers/3"),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+
+        if (data['status'] == true) {
+          String prefix = data['document_number']['prefix'];
+          int endNumber = data['document_number']['end_number'];
+
+          invoiceNumber.value = "$prefix$endNumber";
+        }
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   // dropdown API's:
   SubsDiaryModel? subsDiaryModel;
   Rx<Subsidiaries?> selectedSubsidiaryForGet = Rx<Subsidiaries?>(null);
@@ -821,6 +855,178 @@ class AccountController extends GetxController {
     update();
   }
 
+  // filter button
+  AccountInvoiceBookingModel? invoiceBookingModel;
+  List<Booking> invoiceBookings = [];
+  List<Total> invoiceTotals = [];
+
+  DateTime? fromDate;
+  DateTime? toDate;
+  bool isLoadingInvoice = false;
+
+  Future<void> getAccountInvoiceBookings() async {
+    try {
+      isLoadingInvoice = true;
+      update();
+
+      // Debugging - print filter values
+      print("Filters: subsidiary_id=${selectedSubsidiaryForGet.value?.id}, "
+          "account_id=${selectedAccount.value?.id}, "
+          "from_date=${fromDate?.toIso8601String()}, "
+          "to_date=${toDate?.toIso8601String()}");
+
+      var response = await Api().get(
+        "account_invoice/bookings",
+        queryParameters: {
+          "subsidiary_id": selectedSubsidiaryForGet.value?.id,
+          "account_id": selectedAccount.value?.id,
+          // "department": selectedDepartment.value,
+          "from_date": fromDate?.toIso8601String().split('T').first,
+          "to_date": toDate?.toIso8601String().split('T').first,
+        },
+      );
+
+      print("API Response: ${response.data}");
+
+      if (response.statusCode == 200) {
+        invoiceBookingModel =
+            AccountInvoiceBookingModel.fromJson(response.data);
+        invoiceBookings = invoiceBookingModel?.bookings ?? [];
+        invoiceTotals = invoiceBookingModel?.total ?? [];
+
+        print("Invoice Bookings: ${invoiceBookings.length}");
+      }
+    } catch (e) {
+      Get.snackbar("Error", e.toString());
+    } finally {
+      isLoadingInvoice = false;
+      update();
+    }
+  }
+
+  // Save Button
+  RxBool postInvoiceLoader = false.obs;
+
+  Future<void> postInvoice() async {
+    // Validate required fields
+    if (selectedAccount.value == null) {
+      Get.snackbar("Error", "Please select an account");
+      return;
+    }
+    if (selectedSubsidiaryForGet.value == null) {
+      Get.snackbar("Error", "Please select a subsidiary");
+      return;
+    }
+    if (invoiceBookings.isEmpty) {
+      Get.snackbar("Error", "No bookings selected to create invoice");
+      return;
+    }
+    if (invoiceNumber.value.isEmpty) {
+      Get.snackbar("Error", "Invoice number not generated");
+      return;
+    }
+    if (fromDate == null || toDate == null) {
+      Get.snackbar("Error", "Please select date range");
+      return;
+    }
+
+    postInvoiceLoader(true); // loader start
+    update();
+
+    try {
+      // Build line items dynamically from selected bookings
+      List<Map<String, dynamic>> lineItems = invoiceBookings.map((booking) {
+        return {
+          "booking_id": booking.id,
+          "total_charges": booking.totalCharges,
+        };
+      }).toList();
+
+      var formData = {
+        "account_id": selectedAccount.value!.id,
+        "subsidiary_id": selectedSubsidiaryForGet.value!.id,
+        "account_invoice_lineitems": lineItems,
+        "from_date": fromDate!.toIso8601String().split('T').first,
+        "to_date": toDate!.toIso8601String().split('T').first,
+        "invoice_number": invoiceNumber.value,
+        "invoice_date": DateTime.now().toIso8601String().split('T').first,
+        "invoice_due_date":
+        DateTime.now().add(Duration(days: 7)).toIso8601String().split('T').first,
+        "invoice_type": "post",
+        "order_number": "", // optional
+      };
+
+      print("POST DATA >>> $formData");
+
+      var response =
+      await Api().post(formData, 'account_invoice/add', auth: true);
+
+      if (response.statusCode == 200 && response.data['status'] == true) {
+        Get.snackbar("Success", "Invoice created successfully!");
+        print("Invoice ID: ${response.data['account_invoice']['id']}");
+        print("Invoice created successfully! Response:");
+        print(response.data);
+        // Optionally: clear bookings, refresh list etc.
+      } else {
+        Get.snackbar("Error", "Failed to create invoice");
+        print("POST Error: ${response.statusCode}");
+        print(response.data);
+      }
+    } catch (e) {
+      print("POST Exception: $e");
+      Get.snackbar("Error", "Something went wrong");
+    } finally {
+      postInvoiceLoader(false); // loader stop
+      update();
+    }
+  }
+
+
+
+
+  // RxBool postInvoiceLoader = false.obs;
+  // postInvoice({
+  //   required int accountId,
+  //   required int subsidiaryId,
+  //   required List<Map<String, dynamic>> lineItems,
+  //   required String fromDate,
+  //   required String toDate,
+  //   required String invoiceNumber,
+  //   required String invoiceDate,
+  //   required String invoiceDueDate,
+  //   required String invoiceType,
+  //   String orderNumber = "",
+  // }) async {
+  //   postInvoiceLoader(true); // loader start
+  //   try {
+  //     var formData = {
+  //       "account_id": accountId,
+  //       "subsidiary_id": subsidiaryId,
+  //       "account_invoice_lineitems": lineItems,
+  //       "from_date": fromDate,
+  //       "to_date": toDate,
+  //       "invoice_number": invoiceNumber,
+  //       "invoice_date": invoiceDate,
+  //       "invoice_due_date": invoiceDueDate,
+  //       "invoice_type": invoiceType,
+  //       "order_number": orderNumber,
+  //     };
+  //
+  //     var response =
+  //         await Api().post(formData, 'account_invoice/add', auth: true);
+  //
+  //     if (response.statusCode == 200) {
+  //       print("POST success: ${response.data}");
+  //     } else {
+  //       print("POST Error ${response.statusCode}: ${response.data}");
+  //     }
+  //   } catch (e) {
+  //     print("POST Exception: $e");
+  //   } finally {
+  //     postInvoiceLoader(false); // loader stop
+  //     update();
+  //   }
+  // }
 
   // String? account;
   String? department;
