@@ -884,7 +884,7 @@ class RestrictedDriver {
   });
 
   factory RestrictedDriver.fromJson(Map<String, dynamic> json) => RestrictedDriver(
-    id: json["id"],
+    id: json["id"].toString(),
     username: json["username"],
     name: json["name"],
   );

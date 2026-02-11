@@ -1590,7 +1590,7 @@ class DashboardController extends GetxController {
       if (specialRequirementsController.text.isNotEmpty)
         'special_instructions': specialRequirementsController.text,
       if (extraFaresList.isNotEmpty) 'notes': jsonEncode(extraFaresList),
-      if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
+      // if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
       if (slugController.text.isNotEmpty) 'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,
@@ -1650,7 +1650,7 @@ class DashboardController extends GetxController {
         dashboardTableModelData!.data!.insert(
             0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      refreshPostAllFields();
+      // refreshPostAllFields();
       print(response.data);
     }
   }
@@ -1838,7 +1838,6 @@ class DashboardController extends GetxController {
     dropUpNoteController.clear();
 
     viaPostList.clear();
-    restrictedDrivers.clear();
     childSeatList.clear();
     extraFaresList.clear();
     driversList.clear();
@@ -1898,28 +1897,54 @@ class DashboardController extends GetxController {
       }
     }
 
-    // if(jobData.restrictedDrivers!.isNotEmpty){
-    //   for (var element in jobData.restrictedDrivers!) {
-    //     allDriverData.drivers.forEach((action){
-    //
-    //     });
-    //   }
-    // }
-    //
-    // driversList
-    //
-    // if (restrictedDrivers.isNotEmpty)
-    //   'restricted_drivers': jsonEncode(restrictedDrivers);
-    // if (driversList.isNotEmpty) {
-    //   restrictedDrivers.clear();
-    //   for (var driverss in driversList) {
-    //     restrictedDrivers.add({
-    //       "id": driverss.id,
-    //       "username": driverss.username,
-    //       "name": driverss.name,
-    //     });
-    //   }
-    // }
+    if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
+      final restrictedIds = jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
+      driversList.addAll(
+          allDriverData!.drivers.where((driver) => restrictedIds.contains(driver.id.toString()))
+      );
+    }
+
+// 1. Using firstWhereOrNull (Cleanest & Safest)
+    if (jobData.subsidiaryId != null) {
+      selectSubsidiariesValue = dashboardAllData?.subsidiaries?.firstWhereOrNull(
+            (subsidiary) => subsidiary.id == jobData.subsidiaryId,
+      );
+    }
+    ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
+   await getAccountData(subsidiariesId: selectSubsidiariesValue!.id);
+
+// Professional approach using the 'collection' package
+    selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
+          (account) => account.id == jobData.accountId,
+    );
+
+    selectDepartmentData = dashboardAccountData?.accounts
+        ?.expand((account) => account.departments ?? [])
+        .firstWhere(
+          (dept) => dept.id.toString() == jobData.department.toString(),
+      orElse: () => null, // This mimics the 'OrNull' behavior
+    );
+
+// 1. Using firstWhereOrNull (Cleanest & Safest)
+    if (jobData.paymentTypeId != null) {
+      selectPaymentTypeValue = dashboardAllData?.paymentTypes?.firstWhereOrNull(
+            (payment) => payment.id == jobData.paymentTypeId,
+      );
+    }
+
+    // 1. Using firstWhereOrNull (Cleanest & Safest)
+    if (jobData.journeyTypeId != null) {
+      selectJourneyTypeValue = dashboardAllData?.journeyTypes?.firstWhereOrNull(
+            (journey) => journey.id == jobData.journeyTypeId,
+      );
+    }
+
+    // 1. Using firstWhereOrNull (Cleanest & Safest)
+    if (jobData.vehicleTypeId != null) {
+      selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
+            (vehicle) => vehicle.id == jobData.vehicleTypeId,
+      );
+    }
 
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
