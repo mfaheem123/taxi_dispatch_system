@@ -562,9 +562,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 style: mozillaTextRegularText(
                                     fontSize: 13,
                                     color: DynamicColors.whiteClr),
-                                onTap: () async {
-                                  await controller.postFixedFare();
-                                  controller.clearFormData();
+                                onTap: ()  {
+                                   controller.postFixedFare();
+
                                 },
                               ),
                               CustomButton(

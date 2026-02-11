@@ -62,25 +62,40 @@ class FareController extends GetxController {
 
     };
     print(formData);
-    var response = await Api().post(formData, "plotfares/add");
+    var response = await Api().post(formData,
+
+        isUpdatePlot.value
+            ? "plotfares/update/${plotUpdateId.value}":
+        "plotfares/add"
+
+    );
     if(response.statusCode == 200){
       clearFormData();
       print(response.data);
       BotToast.showText(text: "Plot Fare successfully added");
-
+      getAllPlotFare();
+      BotToast.showText(text: isUpdatePlot.value ? "Plot Fare Updated" : "Plot Fare successfully added");
+      isUpdatePlot(false);
     }
   }
 
-clearFormData(){
-  fareValueVehicleController.clear();
-  fareDescription2ndController.clear();
-  fareDescriptionController.clear();
-  fareController.clear();
-  vehicleTypeController.clear();
-  addressController.clear();
-  addressController1.clear();
-  vehicleTypeController.clear();
-}
+  clearFormData() {
+    fareController.clear();
+    vehicleTypeController.clear();
+    fareDescriptionController.clear();
+    fareDescription2ndController.clear();
+
+    // Variables reset
+    plotVehicleTypevalue = null;
+    Zoneevalue = null;
+    Zonee1value = null;
+
+    // Update logic reset
+    isUpdatePlot(false);
+    plotUpdateId(0);
+
+    update();
+  }
 
   AllPlotFareModel? allPlotFareModel;
   RxBool getAllPlotFareLoader = false.obs;
@@ -104,6 +119,32 @@ clearFormData(){
       print("PloteFare deleted successfully!");
 
     }
+  }
+
+
+
+  RxBool isUpdatePlot = false.obs;
+  RxInt plotUpdateId = 0.obs;
+
+  bindPlotFare(PlotFare fare) {
+    // 1. Controller mein value set karna
+    fareController.text = fare.fares?.toString() ?? "";
+    if (plotVehicleTypeModel?.vehicleTypes != null) {
+      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
+          .firstWhere((v) => v.id == fare.vehicleTypeId);
+    }
+    if (plotVehicleTypeModel?.zones != null && fare.pickupPlot != null) {
+      Zoneevalue = plotVehicleTypeModel!.zones!
+          .firstWhere((z) => z.id == fare.pickupPlot!.id);
+    }
+    if (plotVehicleTypeModel?.zones != null && fare.dropoffPlot != null) {
+      Zonee1value = plotVehicleTypeModel!.zones!
+          .firstWhere((z) => z.id == fare.dropoffPlot!.id);
+    }
+    isUpdatePlot(true);
+    plotUpdateId(fare.id!);
+
+    update(); // UI ko refresh karne ke liye
   }
 
 
@@ -230,7 +271,7 @@ clearFormData(){
 
   postFixedFare() async {
     postFixedFareLoader(true); // loader start
-    try {
+
       var formData = {
         "vehicle_type_id": "70",
         "area1": "Islamabad",
@@ -241,19 +282,11 @@ clearFormData(){
       };
 
       var response = await Api().post(formData, 'fixedfares/add', auth: true);
-
       if (response.statusCode == 200) {
         print("POST success: ${response.data}");
-        await getAllFixedFare(); // updated data fetch
-      } else {
-        print("POST Error ${response.statusCode}: ${response.data}");
+        getAllFixedFare(); // updated data fetch
       }
-    } catch (e) {
-      print("POST Exception: $e");
-    } finally {
-      postFixedFareLoader(false); // loader stop
-      update();
-    }
+
   }
 
   // getAllFixedFare() async {

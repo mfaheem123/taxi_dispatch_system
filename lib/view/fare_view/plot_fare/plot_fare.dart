@@ -309,7 +309,10 @@ class _PlotFareState extends State<PlotFare> {
                               },
                               height: 35,
                               width: fieldWidth,
-                              btnText: AppText.save,
+                              btnText:
+                              controller.isUpdatePlot.value ? "UPDATE" : AppText.save,
+
+
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               style: mozillaTextRegularText(
@@ -376,6 +379,8 @@ class _PlotFareState extends State<PlotFare> {
                                           ),
                                           onPressed: () {
                                             // 🟢 Edit action
+                                            controller.bindPlotFare(plot);
+                                            // controller.clearFormData();
                                           },
                                           child: Icon(Icons.edit_calendar,
                                               size: 20,
