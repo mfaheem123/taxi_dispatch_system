@@ -16,7 +16,7 @@ void main() async{
   await GetStorage.init();
 
   /// 🔑 READ TOKEN BEFORE APP START
-  // final String? token = GetStorage().read('token');
+   // final String? token = GetStorage().read('token');
   //
   // /// 🔑 DECIDE INITIAL ROUTE
   // final String initialRoute =
@@ -79,7 +79,7 @@ void disableInspect() {
   html.document.onKeyDown.listen((event) {
     // F12
     if (event.keyCode == 123) {
-      event.preventDefault();
+      event.preventDefault(); 
     }
     // Ctrl+Shift+I or Ctrl+Shift+J or Ctrl+U
     if (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) {
