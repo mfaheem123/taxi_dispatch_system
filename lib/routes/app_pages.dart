@@ -32,11 +32,11 @@ class AppPages {
       page: () => LoginScreen(),
       binding: DashBoardBindings(),
     ),
-    GetPage(
-      name: _Paths.ResponsivePassengerScreen,
-      page: () => ResponsivePassengerScreen(),
-      // binding: DashBoardBindings(),
-    ),
+    // GetPage(
+    //   name: _Paths.ResponsivePassengerScreen,
+    //   page: () => ResponsivePassengerScreen(),
+    //   // binding: DashBoardBindings(),
+    // ),
     GetPage(
       name: _Paths.completeBookingsScreen,
       page: () => CompleteBookingsScreen(),

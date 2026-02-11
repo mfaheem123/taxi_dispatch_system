@@ -20,6 +20,7 @@ import '../../../component/marker_class.dart';
 import '../../../component/suggestion_widget/suggestion_controller.dart';
 import '../../../component/time_duration_method.dart';
 import '../../../tabbarview.dart';
+import '../../cli_Screen.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
@@ -34,10 +35,75 @@ import '../models/users_phone_numbers_model.dart';
 
 import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 class DashboardController extends GetxController {
+
+  WebSocketChannel? _channel;
+  bool isConnected = false;
+
+  // We pass the context here so we can show the Dialog
+  void connectToCli(String extension) {
+    final url = Uri.parse("ws://192.168.110.5:5000/websocket/cli?extension=$extension");
+
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          if (data['event'] == "CLI_OPEN") {
+            print(data['data']);
+            print( data['data']['callerId']);
+            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
+            // _showIncomingCallDialog(
+            //   context,
+            //   data['data']['callId'].toString(),
+            //   data['data']['callerId'].toString(),
+            //   data['data']['extension'].toString(),
+            // );
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () => print("Connection Closed"),
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  void _showIncomingCallDialog(BuildContext context, String callId, String caller, String ext) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // User must click "Close"
+      builder: (context) => AlertDialog(
+        title: const Text("📞 Incoming Call"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Call ID: $callId"),
+            Text("Caller: $caller"),
+            Text("Extension: $ext"),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Close"),
+          ),
+        ],
+      ),
+    );
+  }
+
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
@@ -115,7 +181,6 @@ class DashboardController extends GetxController {
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
   RxBool addReturnFare = true.obs;
-
   RxBool emailCheckbox = false.obs;
   RxBool hideDashBoard = true.obs;
 
@@ -166,6 +231,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
+    connectToCli("202");
 
     getAllDrivers();
 

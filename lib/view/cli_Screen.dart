@@ -1,5 +1,6 @@
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/component/text_field.dart';
+import 'package:dashboard_new1/view/controller/cli_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -11,8 +12,83 @@ import '../component/dropdown_button.dart';
 import 'dashboard_view/booking_table.dart';
 
 /// Drop this widget anywhere. It renders inside a Container (no Scaffold).
-class ResponsivePassengerScreen extends StatelessWidget {
-  const ResponsivePassengerScreen({super.key});
+// class ResponsivePassengerScreen extends StatefulWidget {
+//   const ResponsivePassengerScreen({super.key});
+//
+//   @override
+//   State<ResponsivePassengerScreen> createState() => _ResponsivePassengerScreenState();
+// }
+//
+// class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: const Color(0xFFF7F9FC),
+//       padding: const EdgeInsets.all(16),
+//       alignment: Alignment.topCenter,
+//       child: ConstrainedBox(
+//         constraints: const BoxConstraints(maxWidth: 1400),
+//         child: LayoutBuilder(
+//           builder: (context, c) {
+//
+//             final w = c.maxWidth;
+//
+//             // Breakpoints
+//             final isDesktop = w >= 1200;
+//             final isTablet = w >= 820 && w < 1200;
+//             final isMobile = w < 820;
+//             final leftWidth = isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
+//             final rightWidth = isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
+//             return Container(
+//               decoration: BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.circular(16),
+//                 boxShadow: const [
+//                   BoxShadow(blurRadius: 20, color: Color(0x14000000))
+//                 ],
+//               ),
+//               clipBehavior: Clip.antiAlias,
+//               child: isMobile
+//                   ? _MobileLayout(leftWidth: leftWidth, rightWidth: rightWidth)
+//                   : _WideLayout(leftWidth: leftWidth, rightWidth: rightWidth),
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class ResponsivePassengerScreen extends StatefulWidget {
+  final String extensionNumber;
+  const ResponsivePassengerScreen({super.key, required this.extensionNumber});
+
+  @override
+  State<ResponsivePassengerScreen> createState() =>
+      _ResponsivePassengerScreenState();
+}
+
+class _ResponsivePassengerScreenState
+    extends State<ResponsivePassengerScreen> {
+
+  /// ✅ Socket Controller
+  final CliController socketController =
+  Get.put(CliController(), permanent: true);
+
+  @override
+  void initState() {
+    super.initState();
+print(widget.extensionNumber);
+
+    /// ✅ CLI screen open hote hi socket connect
+    socketController.connectSocket(widget.extensionNumber);
+  }
+
+  @override
+  void dispose() {
+    socketController.disconnectSocket();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +102,15 @@ class ResponsivePassengerScreen extends StatelessWidget {
           builder: (context, c) {
             final w = c.maxWidth;
 
-            // Breakpoints
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
             final isMobile = w < 820;
-            final leftWidth = isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
-            final rightWidth = isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
+
+            final leftWidth =
+            isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
+            final rightWidth =
+            isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
+
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -42,8 +121,14 @@ class ResponsivePassengerScreen extends StatelessWidget {
               ),
               clipBehavior: Clip.antiAlias,
               child: isMobile
-                  ? _MobileLayout(leftWidth: leftWidth, rightWidth: rightWidth)
-                  : _WideLayout(leftWidth: leftWidth, rightWidth: rightWidth),
+                  ? _MobileLayout(
+                leftWidth: leftWidth,
+                rightWidth: rightWidth,
+              )
+                  : _WideLayout(
+                leftWidth: leftWidth,
+                rightWidth: rightWidth,
+              ),
             );
           },
         ),
@@ -51,7 +136,6 @@ class ResponsivePassengerScreen extends StatelessWidget {
     );
   }
 }
-
 
 
 
@@ -299,6 +383,8 @@ class _CenterAreaState extends State<_CenterArea> {
               ),
             ),
           ),
+
+
           SizedBox(height: 28),
 
           // Recent Rides header row
