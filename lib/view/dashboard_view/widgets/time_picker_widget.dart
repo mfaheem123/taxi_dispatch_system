@@ -33,12 +33,14 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   int selectedMinute = 8;
   // String selectedPeriod = "AM";
 
+
   @override
   void initState() {
     super.initState();
     _timeController = widget.controller ?? TextEditingController();
     _updateTimeText();
   }
+
 
   void _updateTimeText() {
     final hourStr = selectedHour.toString().padLeft(2, '0');
@@ -151,7 +153,9 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   void dispose() {
     if (widget.controller == null) {
       _timeController.dispose(); // Only dispose if local
+
     }
+
     _overlayEntry?.remove();
     super.dispose();
   }
@@ -170,7 +174,20 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
             hintText: "Select Time",
-            suffixIcon: const Icon(Icons.access_time, size: 18),
+            suffixIcon:
+
+
+              InkWell(
+                onTap: _toggleTimeDropdown,
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.access_time, size: 18),
+                ),
+              ),
+
+
+
+
             border: const OutlineInputBorder(),
           ),
         ),

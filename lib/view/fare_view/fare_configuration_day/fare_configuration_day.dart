@@ -30,6 +30,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
   FareController controller = Get.isRegistered<FareController>()
       ? Get.find<FareController>()
       : Get.put(FareController());
+  final FocusNode fareConfigFocusNode = FocusNode();
   final DashboardController _controller = Get.find();
   int selectedRowIndex = 0; // currently selected row
   final int totalRows =
@@ -107,8 +108,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       //   ],
                                       // ),
                                       CustomDropdownField<String>(
-                                    label: "SELECT FARE CONFIGURATION",
 
+                                    label: "SELECT FARE CONFIGURATION",
                                     width: Get.width / 6,
                                     height: 30,
 
@@ -120,6 +121,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     value: controller.fareConfiguration,
                                     itemLabel: (templateList) => templateList,
                                     onChanged: (val) {
+
                                       controller.fareConfiguration = val;
                                       controller.getAllFareConfiguration();
                                     },
@@ -190,7 +192,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                             style: mozillaTextSemiBoldText(
                                                 context: context, fontSize: 13)),
                                         CustomDropdownField<String>(
-                                          label: "",
+                                          label: AppText.fromDay,
                                           width: fieldWidth,
                                           height: 35,
                                           items: controller. weekDayList,
@@ -228,7 +230,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                       children: [
                                         Text(AppText.today, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         CustomDropdownField<String>(
-                                          label: "",
+                                          label: AppText.today,
                                           width: fieldWidth,
                                           height: 35,
                                           items: controller.weekDayList,
