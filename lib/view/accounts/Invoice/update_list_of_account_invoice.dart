@@ -15,16 +15,16 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
-class CreateAccountInvoiceScreen extends StatefulWidget {
-  const CreateAccountInvoiceScreen({super.key});
+class UpdateAccountInvoiceScreen extends StatefulWidget {
+  const UpdateAccountInvoiceScreen({super.key});
 
   @override
-  State<CreateAccountInvoiceScreen> createState() =>
-      _CreateAccountInvoiceScreenState();
+  State<UpdateAccountInvoiceScreen> createState() =>
+      _UpdateAccountInvoiceScreenState();
 }
 
-class _CreateAccountInvoiceScreenState
-    extends State<CreateAccountInvoiceScreen> {
+class _UpdateAccountInvoiceScreenState
+    extends State<UpdateAccountInvoiceScreen> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
@@ -36,7 +36,7 @@ class _CreateAccountInvoiceScreenState
   void initState() {
     // TODO: implement initState
     super.initState();
-    shortCutKeyValue.value = "CreateAccountInvoiceScreen";
+    shortCutKeyValue.value = "UpdateAccountInvoiceScreen";
   }
 
   @override
@@ -68,7 +68,98 @@ class _CreateAccountInvoiceScreenState
               width: Get.width,
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               color: DynamicColors.gryClr.withOpacity(0.5),
-              child: Text(AppText.accountInvoice, style: titleDesign()),
+              child: Row(
+                children: [
+                  Text(AppText.accountInvoice, style: titleDesign()),Spacer(),
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 65,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "STRIPE PAY",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+                  SizedBox(width: 5),
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 85,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "MARK AS PAID",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+                  SizedBox(width: 5),
+
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 45,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "EMAIL",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+                  SizedBox(width: 5),
+
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 45,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "EXPORT",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+                  SizedBox(width: 5),
+
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 45,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "VIEW",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+                  SizedBox(width: 5),
+
+                  CustomButton(
+                    verticalPadding: 0.0,
+                    width: 45,
+                    height: 30,
+                    borderRadius: 4,
+                    btnText: "SAVE",
+                    style: mozillaTextRegularText(
+                        fontSize: 10, color: DynamicColors.whiteClr),
+                    onTap: () {
+
+                    },
+                  ),
+
+
+                  SizedBox(width: 30),
+
+
+                ],
+              ),
+
             ),
             SizedBox(
               height: 8,
@@ -221,69 +312,7 @@ class _CreateAccountInvoiceScreenState
                 ],
               ),
             ),
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: SizedBox(
-            //     width: Get.width,
-            //     child: DatatableWidget(
-            //       columns: [
-            //         DataColumn(
-            //           label: Checkbox(
-            //             value: false, // a bool you keep in state
-            //             onChanged: (val) {},
-            //           ),
-            //         ),
-            //         buildHeaderWithSearch(title: "REF #"),
-            //         buildHeaderWithSearch(title: "DATETIME"),
-            //         buildHeaderWithSearch(title: "PICKUP"),
-            //         buildHeaderWithSearch(title: "DROPOFF"),
-            //         buildHeaderWithSearch(title: "CUST"),
-            //         buildHeaderWithSearch(title: "VEH"),
-            //         buildHeaderWithSearch(title: "J/T"),
-            //         buildHeaderWithSearch(title: "P/T"),
-            //         buildHeaderWithSearch(title: "FARE"),
-            //         buildHeaderWithSearch(title: "PC"),
-            //         buildHeaderWithSearch(title: "WC"),
-            //         buildHeaderWithSearch(title: "EDC"),
-            //         buildHeaderWithSearch(title: "M&G"),
-            //         buildHeaderWithSearch(title: "Cc"),
-            //         buildHeaderWithSearch(title: "TOTA"),
-            //         buildHeaderWithSearch(
-            //             title: "ACTIONS", removeSearching: true),
-            //       ],
-            //       rows: controller.invoiceBookings.map((booking) {
-            //         return DataRow(cells: [
-            //           DataCell(Checkbox(value: false, onChanged: (val) {})),
-            //           DataCell(Text(booking.referenceNumber ?? "")),
-            //           DataCell(Text(
-            //               "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-            //           DataCell(Text(booking.pickup ?? "")),
-            //           DataCell(Text(booking.dropoff ?? "")),
-            //           DataCell(Text(booking.customer?.address1 ?? "")),
-            //           DataCell(Text(booking.vehicleType?.name ?? "")),
-            //           DataCell(Text(booking.journeyType?.journeyType ?? "")),
-            //           DataCell(Text(booking.paymentType?.name ?? "")),
-            //           DataCell(Text(booking.fares ?? "0")),
-            //           DataCell(Text(booking.parkingCharges ?? "0")),
-            //           DataCell(Text(booking.waitingCharges ?? "0")),
-            //           DataCell(Text(booking.extraDropCharges ?? "0")),
-            //           DataCell(Text(booking.meetAndGreet ?? "0")),
-            //           DataCell(Text(booking.creditCardCharges ?? "0")),
-            //           DataCell(Text(booking.totalCharges ?? "0")),
-            //           DataCell(Row(
-            //             children: [
-            //               Icon(Icons.search, color: DynamicColors.primaryClr),
-            //               Icon(Icons.clear, color: DynamicColors.redClr),
-            //             ],
-            //           )),
-            //         ]);
-            //       }).toList(),
-            //
-            //     ),
-            //   ),
-            // ),
 
-            //
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,

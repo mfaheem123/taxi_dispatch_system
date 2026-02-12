@@ -998,19 +998,19 @@ class AccountController extends GetxController {
   RxBool isLoadingListOfAccountInvoice = false.obs;
 
   /// >>>>>>>>>>>>>>>>>>>>> Search Work
-  RxList<AccountInvoice> InvoiceList = <AccountInvoice>[].obs;
-  RxList<AccountInvoice> filteredInvoice = <AccountInvoice>[].obs;
-
-  // search Fields
-  RxString searchInvoiceNumber = ''.obs;
-  RxString searchAccountName = ''.obs;
-  RxString searchDepartment = ''.obs;
-  RxString searchOrderNumber = ''.obs;
-  RxString searchDate = ''.obs;
-  RxString searchDueDate = ''.obs;
-  RxString searchStatus = ''.obs;
-  RxString searchAmount = ''.obs;
-  RxString searchSubsidiary = ''.obs;
+  // RxList<AccountInvoice> InvoiceList = <AccountInvoice>[].obs;
+  // RxList<AccountInvoice> filteredInvoice = <AccountInvoice>[].obs;
+  //
+  // // search Fields
+  // RxString searchInvoiceNumber = ''.obs;
+  // RxString searchAccountName = ''.obs;
+  // RxString searchDepartment = ''.obs;
+  // RxString searchOrderNumber = ''.obs;
+  // RxString searchDate = ''.obs;
+  // RxString searchDueDate = ''.obs;
+  // RxString searchStatus = ''.obs;
+  // RxString searchAmount = ''.obs;
+  // RxString searchSubsidiary = ''.obs;
 
   /// Pagination
   // var invoiceCurrentPage = 1.obs;
@@ -1019,65 +1019,17 @@ class AccountController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>> Fetch Invoice List
  listAccountInvoice() async {
+   isLoadingListOfAccountInvoice.value = true;
 
-      // String query = '';
-      // String query = 'page=${invoiceCurrentPage.value}&limit=${invoiceLimit}';
-      // if (searchInvoiceNumber.value.isNotEmpty)
-      //   query += '&invoice_number=${searchInvoiceNumber.value}';
-      // if (searchAccountName.value.isNotEmpty)
-      //   query += '&account_id=${searchAccountName.value}';
-      // if (searchDepartment.value.isNotEmpty)
-      //   query += '&department_id=${searchDepartment.value}';
-      // if (searchOrderNumber.value.isNotEmpty)
-      //   query += '&order_number=${searchOrderNumber.value}';
-      // if (searchDate.value.isNotEmpty)
-      //   query += '&invoice_date=${searchDate.value}';
-      // if (searchDueDate.value.isNotEmpty)
-      //   query += '&invoice_due_date=${searchDueDate.value}';
-      // if (searchStatus.value.isNotEmpty)
-      //   query += '&status=${searchStatus.value}';
-      // if (searchAmount.value.isNotEmpty)
-      //   query += '&amount=${searchAmount.value}';
-      // if (searchSubsidiary.value.isNotEmpty)
-      //   query += '&subsidiary_id=${searchSubsidiary.value}';
-      //
-      // // if (query.isNotEmpty) query = '?${query.substring(1)}';
-      //
-      // print("API Query: account_invoice/get$query");
-
-      isLoadingListOfAccountInvoice.value = true;
-
-      var response = await Api().get("account_invoice/get?",
-          queryParameters: {
-            "invoice_number": searchInvoiceNumber.value.toLowerCase(),
-            "account_id": searchAccountName.value.toLowerCase(),
-            "department_id": searchDepartment.value.toLowerCase(),
-            "order_number": searchOrderNumber.value.toLowerCase(),
-            "invoice_date": searchDate.value.toLowerCase(),
-            "invoice_due_date": searchDueDate.value.toLowerCase(),
-            "status": searchStatus.value.toLowerCase(),
-            "amount": searchAmount.value.toLowerCase(),
-            "subsidiary_id": searchSubsiDiary.value.toLowerCase(),
-          });
-
+      var response = await Api().get("account_invoice/get");
       if (response.statusCode == 200) {
-        listOfAccountInvoice =
-            ListOfAccountInvoiceModel.fromJson(response.data);
-
-        InvoiceList.value = listOfAccountInvoice?.accountInvoices ?? [];
-        filteredInvoice.value = InvoiceList;
-
-        print('Invoices fetched: ${InvoiceList.length}');
+        listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       isLoadingListOfAccountInvoice.value = false;
       update();
       }
 
   }
-  /// -------------------- Search change function
-  void SearchAccountInvoice() {
-    // invoiceCurrentPage.value = 1;
-    listAccountInvoice();
-  }
+
 
 
 
