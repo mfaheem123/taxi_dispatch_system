@@ -13,12 +13,14 @@ class CliCustomerModel {
   bool? isNew;
   CliCustomerModelCustomer? customer;
   List<Booking>? bookings;
+  RideHistory? rideHistory;
 
   CliCustomerModel({
     this.success,
     this.isNew,
     this.customer,
     this.bookings,
+    this.rideHistory,
   });
 
   factory CliCustomerModel.fromJson(Map<String, dynamic> json) => CliCustomerModel(
@@ -26,6 +28,7 @@ class CliCustomerModel {
     isNew: json["is_new"],
     customer: json["customer"] == null ? null : CliCustomerModelCustomer.fromJson(json["customer"]),
     bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
+    rideHistory: json["ride_history"] == null ? null : RideHistory.fromJson(json["ride_history"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -33,6 +36,7 @@ class CliCustomerModel {
     "is_new": isNew,
     "customer": customer?.toJson(),
     "bookings": bookings == null ? [] : List<dynamic>.from(bookings!.map((x) => x.toJson())),
+    "ride_history": rideHistory?.toJson(),
   };
 }
 
@@ -54,31 +58,31 @@ class Booking {
   dynamic dropoffTime;
   String? pickupDoorNumber;
   String? dropoffDoorNumber;
-  int? pickupPlot;
-  int? dropoffPlot;
+  dynamic pickupPlot;
+  dynamic dropoffPlot;
   dynamic pickupLocationTypeId;
   dynamic dropoffLocationTypeId;
   String? pickupLatitude;
   String? pickupLongitude;
   String? dropoffLatitude;
   String? dropoffLongitude;
-  String? viapoints;
-  String? restrictedDrivers;
+  List<dynamic>? viapoints;
+  List<dynamic>? restrictedDrivers;
   dynamic flightNumber;
   dynamic arrivingFrom;
   int? vehicleTypeId;
   dynamic vehicleId;
   dynamic driverId;
-  int? passengers;
-  int? luggages;
-  int? handLuggages;
-  String? childSeat;
+  dynamic passengers;
+  dynamic luggages;
+  dynamic handLuggages;
+  List<dynamic>? childSeat;
   String? name;
   String? email;
   String? mobile;
   String? telephone;
-  String? leadTime;
-  String? notes;
+  dynamic leadTime;
+  List<dynamic>? notes;
   dynamic specialInstructions;
   int? paymentTypeId;
   String? companyPrice;
@@ -111,7 +115,7 @@ class Booking {
   String? invoiceStatus;
   String? commissionStatus;
   bool? commission;
-  String? skippedBookings;
+  List<dynamic>? skippedBookings;
   dynamic permanent;
   dynamic toggleDriverText;
   dynamic togglePassengerText;
@@ -127,7 +131,7 @@ class Booking {
   String? bookedAt;
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
-  String? invoiceNumber;
+  dynamic invoiceNumber;
   dynamic initialSubsidiaryId;
   String? createdAt;
   String? updatedAt;
@@ -279,8 +283,8 @@ class Booking {
     pickupLongitude: json["pickup_longitude"],
     dropoffLatitude: json["dropoff_latitude"],
     dropoffLongitude: json["dropoff_longitude"],
-    viapoints: json["viapoints"],
-    restrictedDrivers: json["restricted_drivers"],
+    viapoints: json["viapoints"] == null ? [] : List<dynamic>.from(json["viapoints"]!.map((x) => x)),
+    restrictedDrivers: json["restricted_drivers"] == null ? [] : List<dynamic>.from(json["restricted_drivers"]!.map((x) => x)),
     flightNumber: json["flight_number"],
     arrivingFrom: json["arriving_from"],
     vehicleTypeId: json["vehicle_type_id"],
@@ -289,13 +293,13 @@ class Booking {
     passengers: json["passengers"],
     luggages: json["luggages"],
     handLuggages: json["hand_luggages"],
-    childSeat: json["child_seat"],
+    childSeat: json["child_seat"] == null ? [] : List<dynamic>.from(json["child_seat"]!.map((x) => x)),
     name: json["name"],
     email: json["email"],
     mobile: json["mobile"],
     telephone: json["telephone"],
     leadTime: json["lead_time"],
-    notes: json["notes"],
+    notes: json["notes"] == null ? [] : List<dynamic>.from(json["notes"]!.map((x) => x)),
     specialInstructions: json["special_instructions"],
     paymentTypeId: json["payment_type_id"],
     companyPrice: json["company_price"],
@@ -328,7 +332,7 @@ class Booking {
     invoiceStatus: json["invoice_status"],
     commissionStatus: json["commission_status"],
     commission: json["commission"],
-    skippedBookings: json["skipped_bookings"],
+    skippedBookings: json["skipped_bookings"] == null ? [] : List<dynamic>.from(json["skipped_bookings"]!.map((x) => x)),
     permanent: json["permanent"],
     toggleDriverText: json["toggle_driver_text"],
     togglePassengerText: json["toggle_passenger_text"],
@@ -388,8 +392,8 @@ class Booking {
     "pickup_longitude": pickupLongitude,
     "dropoff_latitude": dropoffLatitude,
     "dropoff_longitude": dropoffLongitude,
-    "viapoints": viapoints,
-    "restricted_drivers": restrictedDrivers,
+    "viapoints": viapoints == null ? [] : List<dynamic>.from(viapoints!.map((x) => x)),
+    "restricted_drivers": restrictedDrivers == null ? [] : List<dynamic>.from(restrictedDrivers!.map((x) => x)),
     "flight_number": flightNumber,
     "arriving_from": arrivingFrom,
     "vehicle_type_id": vehicleTypeId,
@@ -398,13 +402,13 @@ class Booking {
     "passengers": passengers,
     "luggages": luggages,
     "hand_luggages": handLuggages,
-    "child_seat": childSeat,
+    "child_seat": childSeat == null ? [] : List<dynamic>.from(childSeat!.map((x) => x)),
     "name": name,
     "email": email,
     "mobile": mobile,
     "telephone": telephone,
     "lead_time": leadTime,
-    "notes": notes,
+    "notes": notes == null ? [] : List<dynamic>.from(notes!.map((x) => x)),
     "special_instructions": specialInstructions,
     "payment_type_id": paymentTypeId,
     "company_price": companyPrice,
@@ -437,7 +441,7 @@ class Booking {
     "invoice_status": invoiceStatus,
     "commission_status": commissionStatus,
     "commission": commission,
-    "skipped_bookings": skippedBookings,
+    "skipped_bookings": skippedBookings == null ? [] : List<dynamic>.from(skippedBookings!.map((x) => x)),
     "permanent": permanent,
     "toggle_driver_text": toggleDriverText,
     "toggle_passenger_text": togglePassengerText,
@@ -854,7 +858,7 @@ class CliCustomerModelCustomer {
   String? name;
   String? mobile;
   String? email;
-  dynamic telephone;
+  String? telephone;
 
   CliCustomerModelCustomer({
     this.id,
@@ -881,5 +885,29 @@ class CliCustomerModelCustomer {
     "mobile": mobile,
     "email": email,
     "telephone": telephone,
+  };
+}
+
+class RideHistory {
+  int? used;
+  int? cancelled;
+  int? balanceAmount;
+
+  RideHistory({
+    this.used,
+    this.cancelled,
+    this.balanceAmount,
+  });
+
+  factory RideHistory.fromJson(Map<String, dynamic> json) => RideHistory(
+    used: json["used"],
+    cancelled: json["cancelled"],
+    balanceAmount: json["balance_amount"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "used": used,
+    "cancelled": cancelled,
+    "balance_amount": balanceAmount,
   };
 }

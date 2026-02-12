@@ -15,6 +15,10 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
+import '../../../alert/shift_alert.dart';
+import '../../../alert/stripe_payment.dart';
+import '../../../alert/update_invoice_email_alt.dart';
+
 class UpdateAccountInvoiceScreen extends StatefulWidget {
   const UpdateAccountInvoiceScreen({super.key});
 
@@ -49,6 +53,7 @@ class _UpdateAccountInvoiceScreenState
 
     return GetBuilder<AccountController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
+
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -80,22 +85,23 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-
+                      StripePayment.show();
                     },
                   ),
                   SizedBox(width: 5),
-                  CustomButton(
+                  Obx(() => CustomButton(
                     verticalPadding: 0.0,
-                    width: 85,
+                    width: 100,
                     height: 30,
                     borderRadius: 4,
-                    btnText: "MARK AS PAID",
+                    btnText: controller.isPaid.value ? "MARK AS  PAID" : "MARK AS UNPAID",
+                    btnColor: controller.isPaid.value ? Colors.green : DynamicColors.primaryClr,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-
+                      controller.togglePaidStatus();
                     },
-                  ),
+                  )),
                   SizedBox(width: 5),
 
                   CustomButton(
@@ -107,7 +113,7 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-
+                      EmailInvoiceAlert.show();
                     },
                   ),
                   SizedBox(width: 5),
