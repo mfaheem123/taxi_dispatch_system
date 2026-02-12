@@ -353,9 +353,9 @@ class _PendingBookingState extends State<PendingBooking> {
                                   DataCell(Center(child: Text(item.name ?? '—'))),
                                   DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
                                   DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.account!.name ?? 'N/A'))),
                                   DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.paymentType!.name ?? 'N/A'))),
                                   DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
                                   DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
                                   DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
@@ -374,8 +374,8 @@ class _PendingBookingState extends State<PendingBooking> {
                                   ),
 
                                   )),
-                                  DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.journeyType!.journeyType.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(item.subsidiary!.name ?? 'N/A'))),
                                   DataCell(
                                     Center(
                                       child: Row(

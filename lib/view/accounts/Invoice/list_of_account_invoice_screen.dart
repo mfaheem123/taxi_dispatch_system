@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
+import 'package:dashboard_new1/view/accounts/Invoice/update_list_of_account_invoice.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,9 @@ class _ListOfAccountInvoiceScreenState
 
   @override
   Widget build(BuildContext context) {
+    // final listToShow = controller.filteredInvoice.isNotEmpty
+    //     ? controller.filteredInvoice
+    //     : controller.InvoiceList;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
@@ -53,9 +57,6 @@ controller.listAccountInvoice();
 
         builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
-        final listToShow = controller.filteredInvoice.isNotEmpty
-            ? controller.filteredInvoice
-            : controller.InvoiceList;
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -212,66 +213,72 @@ controller.listAccountInvoice();
                       ),
                       buildHeaderWithSearch(
                         title: "INVOICE #",
-                        onChanged: (v) {
-                          controller.searchInvoiceNumber.value = v;
-                          controller.SearchAccountInvoice();
-                        },
+                        // onChanged: (v) {
+                        //   controller.searchInvoiceNumber.value = v;
+                        //   controller.SearchAccountInvoice();
+                        // },
                       ),
                       buildHeaderWithSearch(
                         title: "ACCOUNT",
-                        onChanged: (v) {
-                          controller.searchAccountName.value = v;
-                          controller.SearchAccountInvoice();
-                        },
+                        // onChanged: (v) {
+                        //   controller.searchAccountName.value = v;
+                        //   controller.SearchAccountInvoice();
+                        // },
                       ),
                       buildHeaderWithSearch(
                         title: "DEPARTMENT",
-                        onChanged: (v) {
-                          controller.searchDepartment.value = v;
-                          controller.SearchAccountInvoice();
-                        },
+                        // onChanged: (v) {
+                        //   controller.searchDepartment.value = v;
+                        //   controller.SearchAccountInvoice();
+                        // },
                       ),
                       buildHeaderWithSearch(
                           title: "ORDER #",
-                          onChanged: (v) {
-                            controller.searchOrderNumber.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchOrderNumber.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                      ),
                       buildHeaderWithSearch(
                           title: "DATE",
-                          onChanged: (v) {
-                            controller.searchDate.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchDate.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                          ),
                       buildHeaderWithSearch(
                           title: "DUE DATE",
-                          onChanged: (v) {
-                            controller.searchDueDate.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchDueDate.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                          ),
                       buildHeaderWithSearch(
                           title: "STATUS",
-                          onChanged: (v) {
-                            controller.searchStatus.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchStatus.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                          ),
                       buildHeaderWithSearch(
                           title: "AMOUNT",
-                          onChanged: (v) {
-                            controller.searchAmount.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchAmount.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                          ),
                       buildHeaderWithSearch(
                           title: "SUBSIDIARY",
-                          onChanged: (v) {
-                            controller.searchSubsiDiary.value = v;
-                            controller.SearchAccountInvoice();
-                          }),
+                          // onChanged: (v) {
+                          //   controller.searchSubsiDiary.value = v;
+                          //   controller.SearchAccountInvoice();
+                          // }
+                          ),
                       buildHeaderWithSearch(
                           title: "ACTIONS", removeSearching: true),
                     ],
-                    totalRow: listToShow.length ?? 0,
-                    rows: (listToShow ?? []).map((item) {
+                    totalRow: controller.listOfAccountInvoice!.accountInvoices!.length ?? 0,
+                    rows: (controller.listOfAccountInvoice!.accountInvoices ?? []).map((item) {
                       return DataRow(cells: [
                         DataCell(
                           Checkbox(
@@ -283,14 +290,14 @@ controller.listAccountInvoice();
                         ),
                         DataCell(
                             Center(child: Text(item.invoiceNumber!))),
-                        DataCell(Center(child: Text(item.accountName!))),
-                        DataCell(Center(child: Text(item.department!))),
+                        DataCell(Center(child: Text(item.account!.name!))),
+                        DataCell(Center(child: Text(item.account!.email ?? ""))),
                         DataCell(Center(child: Text(item.orderNumber!))),
-                        DataCell(Center(child: Text(item.date!))),
-                        DataCell(Center(child: Text(item.dueDate!))),
+                        DataCell(Center(child: Text(item.toDate.toString()))),
+                        DataCell(Center(child: Text(item.fromDate.toString()))),
                         DataCell(Center(child: Text(item.status!))),
                         DataCell(Center(child: Text(item.amount!))),
-                        DataCell(Center(child: Text(item.subsidiary!))),
+                        DataCell(Center(child: Text(item.orderNumber!))),
                         DataCell(
                           Row(
                             children: [
@@ -300,7 +307,10 @@ controller.listAccountInvoice();
                                     color: Colors.transparent,
                                   ),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+Navigator.push(context, MaterialPageRoute(builder: (context) =>UpdateAccountInvoiceScreen() ,));
+                                  // Get.to();
+                                },
                                 child: Icon(
                                   Icons.edit_calendar_rounded,
                                   size: 28,
