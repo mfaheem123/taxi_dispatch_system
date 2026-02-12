@@ -24,6 +24,7 @@ import 'package:dio/dio.dart' as dio;
 
 import '../model/account_invoice_booking_model.dart';
 import '../model/account_invoice_model.dart';
+import '../model/list_of_account_invoice_model.dart';
 
 class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
@@ -301,6 +302,8 @@ class AccountController extends GetxController {
     // invoiceNumber
     fetchInvoiceNumber();
 
+    // listAccountInvoice();
+
     // Subsidiary select hone par accounts load
     ever(selectedSubsidiaryForGet, (Subsidiaries? val) {
       if (val != null && val.id != null) {
@@ -319,6 +322,7 @@ class AccountController extends GetxController {
       updateDepartmentsForSelectedAccount();
     });
     // getAccountInvoiceBookings();
+
   }
 
   HtmlTempleteModel? templeteHtmlModel;
@@ -930,11 +934,15 @@ class AccountController extends GetxController {
       return;
     }
 
-    postInvoiceLoader(true); // loader start
+    postInvoiceLoader(true);
     update();
 
     try {
-      // Build line items dynamically from selected bookings
+      double grandTotal = invoiceBookings.fold(
+        0.0,
+        (sum, booking) =>
+            sum + (double.tryParse(booking.totalCharges ?? "0") ?? 0.0),
+      );
       List<Map<String, dynamic>> lineItems = invoiceBookings.map((booking) {
         return {
           "booking_id": booking.id,
@@ -950,23 +958,26 @@ class AccountController extends GetxController {
         "to_date": toDate!.toIso8601String().split('T').first,
         "invoice_number": invoiceNumber.value,
         "invoice_date": DateTime.now().toIso8601String().split('T').first,
-        "invoice_due_date":
-        DateTime.now().add(Duration(days: 7)).toIso8601String().split('T').first,
+        "invoice_due_date": DateTime.now()
+            .add(Duration(days: 7))
+            .toIso8601String()
+            .split('T')
+            .first,
         "invoice_type": "post",
         "order_number": "", // optional
+        "amount": grandTotal,
       };
 
       print("POST DATA >>> $formData");
 
       var response =
-      await Api().post(formData, 'account_invoice/add', auth: true);
+          await Api().post(formData, 'account_invoice/add', auth: true);
 
       if (response.statusCode == 200 && response.data['status'] == true) {
         Get.snackbar("Success", "Invoice created successfully!");
         print("Invoice ID: ${response.data['account_invoice']['id']}");
         print("Invoice created successfully! Response:");
         print(response.data);
-        // Optionally: clear bookings, refresh list etc.
       } else {
         Get.snackbar("Error", "Failed to create invoice");
         print("POST Error: ${response.statusCode}");
@@ -976,57 +987,99 @@ class AccountController extends GetxController {
       print("POST Exception: $e");
       Get.snackbar("Error", "Something went wrong");
     } finally {
-      postInvoiceLoader(false); // loader stop
+      postInvoiceLoader(false);
       update();
     }
   }
 
 
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Account Invoice Model
+  ListOfAccountInvoiceModel? listOfAccountInvoice;
+  RxBool isLoadingListOfAccountInvoice = false.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<AccountInvoice> InvoiceList = <AccountInvoice>[].obs;
+  RxList<AccountInvoice> filteredInvoice = <AccountInvoice>[].obs;
+
+  // search Fields
+  RxString searchInvoiceNumber = ''.obs;
+  RxString searchAccountName = ''.obs;
+  RxString searchDepartment = ''.obs;
+  RxString searchOrderNumber = ''.obs;
+  RxString searchDate = ''.obs;
+  RxString searchDueDate = ''.obs;
+  RxString searchStatus = ''.obs;
+  RxString searchAmount = ''.obs;
+  RxString searchSubsidiary = ''.obs;
+
+  /// Pagination
+  // var invoiceCurrentPage = 1.obs;
+  // var invoiceTotalPages = 1.obs;
+  // final int invoiceLimit = 10;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Fetch Invoice List
+ listAccountInvoice() async {
+
+      // String query = '';
+      // String query = 'page=${invoiceCurrentPage.value}&limit=${invoiceLimit}';
+      // if (searchInvoiceNumber.value.isNotEmpty)
+      //   query += '&invoice_number=${searchInvoiceNumber.value}';
+      // if (searchAccountName.value.isNotEmpty)
+      //   query += '&account_id=${searchAccountName.value}';
+      // if (searchDepartment.value.isNotEmpty)
+      //   query += '&department_id=${searchDepartment.value}';
+      // if (searchOrderNumber.value.isNotEmpty)
+      //   query += '&order_number=${searchOrderNumber.value}';
+      // if (searchDate.value.isNotEmpty)
+      //   query += '&invoice_date=${searchDate.value}';
+      // if (searchDueDate.value.isNotEmpty)
+      //   query += '&invoice_due_date=${searchDueDate.value}';
+      // if (searchStatus.value.isNotEmpty)
+      //   query += '&status=${searchStatus.value}';
+      // if (searchAmount.value.isNotEmpty)
+      //   query += '&amount=${searchAmount.value}';
+      // if (searchSubsidiary.value.isNotEmpty)
+      //   query += '&subsidiary_id=${searchSubsidiary.value}';
+      //
+      // // if (query.isNotEmpty) query = '?${query.substring(1)}';
+      //
+      // print("API Query: account_invoice/get$query");
+
+      isLoadingListOfAccountInvoice.value = true;
+
+      var response = await Api().get("account_invoice/get?",
+          queryParameters: {
+            "invoice_number": searchInvoiceNumber.value.toLowerCase(),
+            "account_id": searchAccountName.value.toLowerCase(),
+            "department_id": searchDepartment.value.toLowerCase(),
+            "order_number": searchOrderNumber.value.toLowerCase(),
+            "invoice_date": searchDate.value.toLowerCase(),
+            "invoice_due_date": searchDueDate.value.toLowerCase(),
+            "status": searchStatus.value.toLowerCase(),
+            "amount": searchAmount.value.toLowerCase(),
+            "subsidiary_id": searchSubsiDiary.value.toLowerCase(),
+          });
+
+      if (response.statusCode == 200) {
+        listOfAccountInvoice =
+            ListOfAccountInvoiceModel.fromJson(response.data);
+
+        InvoiceList.value = listOfAccountInvoice?.accountInvoices ?? [];
+        filteredInvoice.value = InvoiceList;
+
+        print('Invoices fetched: ${InvoiceList.length}');
+      isLoadingListOfAccountInvoice.value = false;
+      update();
+      }
+
+  }
+  /// -------------------- Search change function
+  void SearchAccountInvoice() {
+    // invoiceCurrentPage.value = 1;
+    listAccountInvoice();
+  }
 
 
-  // RxBool postInvoiceLoader = false.obs;
-  // postInvoice({
-  //   required int accountId,
-  //   required int subsidiaryId,
-  //   required List<Map<String, dynamic>> lineItems,
-  //   required String fromDate,
-  //   required String toDate,
-  //   required String invoiceNumber,
-  //   required String invoiceDate,
-  //   required String invoiceDueDate,
-  //   required String invoiceType,
-  //   String orderNumber = "",
-  // }) async {
-  //   postInvoiceLoader(true); // loader start
-  //   try {
-  //     var formData = {
-  //       "account_id": accountId,
-  //       "subsidiary_id": subsidiaryId,
-  //       "account_invoice_lineitems": lineItems,
-  //       "from_date": fromDate,
-  //       "to_date": toDate,
-  //       "invoice_number": invoiceNumber,
-  //       "invoice_date": invoiceDate,
-  //       "invoice_due_date": invoiceDueDate,
-  //       "invoice_type": invoiceType,
-  //       "order_number": orderNumber,
-  //     };
-  //
-  //     var response =
-  //         await Api().post(formData, 'account_invoice/add', auth: true);
-  //
-  //     if (response.statusCode == 200) {
-  //       print("POST success: ${response.data}");
-  //     } else {
-  //       print("POST Error ${response.statusCode}: ${response.data}");
-  //     }
-  //   } catch (e) {
-  //     print("POST Exception: $e");
-  //   } finally {
-  //     postInvoiceLoader(false); // loader stop
-  //     update();
-  //   }
-  // }
 
   // String? account;
   String? department;
