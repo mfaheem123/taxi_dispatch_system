@@ -1,13 +1,25 @@
+import 'dart:convert';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class CliController extends GetxController {
+
   WebSocketChannel? channel;
   RxBool isConnected = false.obs;
+  RxBool isLoading = false.obs;
 
-  /// ✅ Dynamic extension connect
+  /// 🔹 Customer Data
+  RxString customerName = "".obs;
+  RxString customerMobile = "".obs;
+  RxList bookings = [].obs;
+
+
+  // ================= SOCKET METHODS ========================
+
+
   void connectSocket(String extension) {
-    /// Already connected? Then do nothing
+
     if (channel != null && isConnected.value) return;
 
     channel = WebSocketChannel.connect(
@@ -22,8 +34,6 @@ class CliController extends GetxController {
 
         if (!isConnected.value) {
           isConnected.value = true;
-
-          /// ✅ Open screen only once
           Get.offAllNamed('/socketScreen');
         }
       },
@@ -44,6 +54,57 @@ class CliController extends GetxController {
     channel?.sink.close();
     channel = null;
     isConnected.value = false;
+  }
+
+
+  // ================= API METHOD ONLY =======================
+
+
+
+  Future<void> findCustomerApi(String phone) async {
+    try {
+      isLoading.value = true;
+
+      final uri = Uri.parse(
+        "http://192.168.110.5:5000/api/cli/find-customer",
+      );
+
+      final response = await http.post(
+        uri,
+        body: {
+          "phone": phone,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+
+        if (jsonData["success"] == true) {
+
+          customerName.value =
+              jsonData["customer"]?["name"] ?? "";
+
+          customerMobile.value =
+              jsonData["customer"]?["mobile"] ?? "";
+
+          bookings.value =
+              jsonData["bookings"] ?? [];
+
+          print("✅ Customer Loaded");
+        } else {
+          customerName.value = "No Customer Found";
+          customerMobile.value = "";
+          bookings.clear();
+        }
+      } else {
+        print("❌ Server Error: ${response.statusCode}");
+      }
+
+    } catch (e) {
+      print("❌ API ERROR: $e");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override

@@ -78,10 +78,11 @@ class _ResponsivePassengerScreenState
   @override
   void initState() {
     super.initState();
-print(widget.extensionNumber);
+    print(widget.extensionNumber);
 
     /// ✅ CLI screen open hote hi socket connect
     socketController.connectSocket(widget.extensionNumber);
+    socketController.findCustomerApi(widget.extensionNumber);
   }
 
   @override
@@ -101,16 +102,13 @@ print(widget.extensionNumber);
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
-
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
             final isMobile = w < 820;
-
             final leftWidth =
             isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
             final rightWidth =
             isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
-
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -136,8 +134,6 @@ print(widget.extensionNumber);
     );
   }
 }
-
-
 
 
 /// --------- Wide (Web/Tablet landscape) ----------
@@ -166,9 +162,6 @@ class _WideLayout extends StatelessWidget {
 
 
 
-
-
-
 /// --------- Mobile (Stacked) ----------
 class _MobileLayout extends StatelessWidget {
   const _MobileLayout({required this.leftWidth, required this.rightWidth});
@@ -189,10 +182,6 @@ class _MobileLayout extends StatelessWidget {
     );
   }
 }
-
-
-
-
 
 
 /// --------- LEFT SIDEBAR ----------
@@ -303,91 +292,79 @@ class _CenterArea extends StatefulWidget {
 }
 
 class _CenterAreaState extends State<_CenterArea> {
+
+  final CliController controller = Get.find<CliController>();
+
+  final RxInt selectedIndex = (-1).obs;
+
+  TextEditingController pickUpcontroller = TextEditingController();
+  TextEditingController dropOfUpcontroller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    var isChecked = (0).obs;
 
-    RxString selectDriverObject = "SELECT DRIVER 1".obs;
-    TextEditingController pickUpcontroller = TextEditingController();
-    TextEditingController dropOfUpcontroller = TextEditingController();
     final subtle = const Color(0xFF6B7C8F);
-    final int totalRows = 5;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header Title'
+
+          /// ================= HEADER =================
           Text(
             "Passenger",
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               color: subtle,
               fontWeight: FontWeight.w700,
-              letterSpacing: .2,
             ),
           ),
-          SizedBox(height: 4),
-          Text(
-            "07795116925",
+
+          const SizedBox(height: 4),
+
+          /// 🔥 MOBILE FROM API
+          Obx(() => Text(
+            controller.customerMobile.value.isEmpty
+                ? "Loading..."
+                : controller.customerMobile.value,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: Colors.black87,
               fontWeight: FontWeight.w600,
             ),
-          ),
-          SizedBox(height: 8),
-          // Status
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("Status: ",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: Colors.black54)),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Color(0xFFE9F5FF),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: Color(0xFF94C8FF)),
-                ),
-                child: Text(
-                  "In Use",
-                  style: TextStyle(
-                    color: Color(0xFF2376D9),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-          // Search
+          )),
+
+          const SizedBox(height: 8),
+
+          /// 🔥 CUSTOMER NAME
+          Obx(() => Text(
+            controller.customerName.value,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black54,
+            ),
+          )),
+
+          const SizedBox(height: 16),
+
+          /// ================= SEARCH =================
           SizedBox(
             height: 44,
             child: TextField(
               decoration: InputDecoration(
                 hintText: "Search",
-                prefixIcon: Icon(Icons.search),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                prefixIcon: const Icon(Icons.search),
                 filled: true,
-                fillColor: Color(0xFFF2F5F9),
+                fillColor: const Color(0xFFF2F5F9),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Color(0xFFE2E8F0)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Color(0xFFE2E8F0)),
                 ),
               ),
             ),
           ),
 
+          const SizedBox(height: 28),
 
-          SizedBox(height: 28),
-
-          // Recent Rides header row
+          /// ================= RECENT RIDES =================
           Row(
             children: [
               Text(
@@ -400,281 +377,93 @@ class _CenterAreaState extends State<_CenterArea> {
             ],
           ),
 
-          SizedBox(height: 50),
+          const SizedBox(height: 20),
 
+          /// 🔥 LOADING OR TABLE
+          Obx(() {
 
-          Row(
-            children: [
-              CustomTextField(controller: pickUpcontroller, width: 200, columnText: true, hintText: "PICK UP", ),
-              SizedBox(width: 20),
-              CustomTextField(controller: dropOfUpcontroller,  width: 200, columnText: true, hintText: "DROP OFF",),
-            ],
-          ),
-          SizedBox(height: 10),
+            if (controller.isLoading.value) {
+              return const Padding(
+                padding: EdgeInsets.all(30),
+                child: CircularProgressIndicator(),
+              );
+            }
 
+            if (controller.bookings.isEmpty) {
+              return const Padding(
+                padding: EdgeInsets.all(30),
+                child: Text("No Bookings Found"),
+              );
+            }
 
-          // Table header
-          // Container(
-          //   height: 34,
-          //   width: double.infinity,
-          //   padding: EdgeInsets.symmetric(horizontal: 10),
-          //   decoration: BoxDecoration(
-          //     color: Color(0xFFF7FAFE),
-          //     border: Border.all(color: Color(0xFFE3E9F2)),
-          //     borderRadius: BorderRadius.circular(8),
-          //   ),
-          //   child: Row(
-          //     children: [
-          //       _th(text: "Destination", flex: 3),
-          //       _th(text: "Pick-up", flex: 2),
-          //       _th(text: "Via", flex: 1),
-          //       _th(text: "Fares", flex: 1),
-          //       _th(text: "Action", flex: 2, alignEnd: true),
-          //     ],
-          //   ),
-          // ),
-          // const SizedBox(height: 8),
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width / 2,
+                child: DatatableWidget(
+                  columns: [
+                    buildHeaderWithSearch(title: "Destination", removeSearching: true),
+                    buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+                    buildHeaderWithSearch(title: "Date", removeSearching: true),
+                    buildHeaderWithSearch(title: "Fare", removeSearching: true),
+                    buildHeaderWithSearch(title: "Action", removeSearching: true),
+                  ],
+                  totalRow: controller.bookings.length,
+                  rows: List.generate(
+                    controller.bookings.length,
+                        (index) {
 
-          // Ride list
-          // Expanded(
-          //   child: Container(
-          //     margin: const EdgeInsets.only(bottom: 12),
-          //     decoration: BoxDecoration(
-          //       border: Border.all(color: Color(0xFFE3E9F2)),
-          //       borderRadius: BorderRadius.circular(8),
-          //     ),
-          //     child: ListView.separated(
-          //       padding: const EdgeInsets.only(
-          //           left: 3, right: 10, top: 5, bottom: 5),
-          //       itemCount: 5, // 👈 yahan aap apna data count dal sakte ho
-          //       separatorBuilder: (_, __) => const Divider(height: 1),
-          //       itemBuilder: (_,i) {
-          //         return  Row(
-          //           children: [
-          //             Expanded(
-          //                 flex: 3, child: Text("London City $i")),
-          //             Expanded(flex: 3, child: Row(
-          //               children: [
-          //                 IconButton(
-          //                     onPressed: () {},
-          //                     icon: Icon(
-          //                       Icons.swap_horiz,
-          //                       color: const Color(0xFF748399),
-          //                     )),
-          //                 Text("Pickup $i"),
-          //               ],
-          //             )),
-          //             Expanded(flex: 3, child: Text("Via Point $i")),
-          //             Expanded(flex: 1, child: Text("£${10 + i}")),
-          //             Expanded(
-          //               flex: 2,
-          //               child: Row(
-          //                 mainAxisAlignment: MainAxisAlignment.end,
-          //                 children: [
-          //                   TextButton(
-          //                     onPressed: () {
-          //                       // TODO: edit callback
-          //                     },
-          //                     child: const Text("Edit"),
-          //                   ),
-          //                   const SizedBox(width: 8),
-          //                   ElevatedButton(
-          //                     onPressed: () {
-          //                       // TODO: select callback
-          //                     },
-          //                     style: ElevatedButton.styleFrom(
-          //                       padding: const EdgeInsets.symmetric(
-          //                           horizontal: 12, vertical: 6),
-          //                       textStyle: const TextStyle(fontSize: 13),
-          //                     ),
-          //                     child: const Text("Select"),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ],
-          //         );
-          //
-          //       },
-          //     ),
-          //   ),
-          // ),
+                      var booking = controller.bookings[index];
 
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width / 3,
-              child: DatatableWidget(
-                columns: [
-                  buildHeaderWithSearch(title: "Destination", removeSearching: true),
-                  buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
-                  buildHeaderWithSearch(title: "Via", removeSearching: true),
-                  buildHeaderWithSearch(title: "Fares", removeSearching: true),
-                  buildHeaderWithSearch(title: "Action", removeSearching: true),
-                ],
-                totalRow: totalRows,
-                rows: List.generate(totalRows, (index) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Center(child: Text("London City ${index + 1}"))),
-                      DataCell(Center(child: Text("Pickup ${index + 1}"))),
-                      DataCell(Center(child: Text("Via Point ${index + 1}"))),
-                      DataCell(Center(child: Text("£${10 + index}"))),
-
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-
-
-                              Obx(
-                                    () => Checkbox(
-                                  value: isChecked.value == index,
-                                  onChanged: (v) {
-                                    isChecked.value = index; // Sirf ek row select hogi
-                                  },
-                                ),
-                              ),
-
-                              //
-                              // Checkbox(
-                              //     value: isChecked.value,
-                              //     onChanged: (v) {
-                              //       isChecked.value = v!;
-                              //
-                              //     },
-                              //     ),
-
-                            ],
+                      return DataRow(
+                        cells: [
+                          DataCell(Text(booking["dropoff"] ?? "")),
+                          DataCell(Text(booking["pickup"] ?? "")),
+                          DataCell(Text(booking["pickup_date"] ?? "")),
+                          DataCell(Text("£${booking["fares"] ?? 0}")),
+                          DataCell(
+                            Obx(() => Checkbox(
+                              value: selectedIndex.value == index,
+                              onChanged: (_) {
+                                selectedIndex.value = index;
+                              },
+                            )),
                           ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-            ),
-          ),
-
-
-          // Bottom action row
-          SizedBox(height: 20 ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE3ECF8),
-                    borderRadius: BorderRadius.circular(8),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+            );
+          }),
 
-              // const SizedBox(width: 8),
-              Row(
-                children: [
+          const SizedBox(height: 20),
 
-                  // Obx(
-                  //       ()=> CustomDropdownField<String>(
-                  //     label: "SELECT DRIVERS",
-                  //     width: 200,
-                  //     height: 35,
-                  //     items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
-                  //     value: selectDriverObject.value,
-                  //     itemLabel: (driver) => driver,
-                  //     onChanged: (val) {
-                  //       selectDriverObject.value = val!;
-                  //
-                  //     },
-                  //   ),
-                  // ),
-
-
-
-                  // Obx(
-                  //       ()=> CustomDropdownField<String>(
-                  //     label: "SELECT DRIVERS",
-                  //     width: 200,
-                  //     height: 35,
-                  //     items: ["SELECT DRIVER 1", "SELECT DRIVER 2","SELECT DRIVER 3", "SELECT DRIVER 4"],
-                  //     value: selectDriverObject.value,
-                  //     itemLabel: (driver) => driver,
-                  //     onChanged: (val) {
-                  //       selectDriverObject.value = val!;
-                  //
-                  //     },
-                  //   ),
-                  // ),
-                  ElevatedButton(onPressed: (){}, child:   Text(
-                    "SUBMIT",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),),
-                  SizedBox(width: 30),
-                  Icon(Icons.directions_car),
-                  Text(
-                    "NEW JOB",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-
-
-
-                ],
+          /// ================= BOTTOM BUTTONS =================
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  print("Selected index: ${selectedIndex.value}");
+                },
+                child: const Text("SUBMIT"),
               ),
-              const SizedBox(width: 8),
-              const Icon(Icons.add, size: 20),
+              const SizedBox(width: 20),
+              const Icon(Icons.directions_car),
+              const SizedBox(width: 6),
+              const Text(
+                "NEW JOB",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ],
       ),
     );
   }
-
-  Widget _th({
-    String? text,
-    IconData? icon,
-    VoidCallback? onPressed,
-    int flex = 1,
-    bool alignEnd = false,
-  }) {
-    Widget child;
-
-    if (icon != null) {
-      child = IconButton(
-        icon: Icon(icon),
-        onPressed: onPressed ?? () {},
-        color: const Color(0xFF748399),
-      );
-    } else if (text != null) {
-      child = Text(
-        text,
-        style: const TextStyle(
-          color: Color(0xFF748399),
-          fontWeight: FontWeight.w700,
-        ),
-        textAlign: alignEnd ? TextAlign.right : TextAlign.left,
-      );
-    } else {
-      child = const SizedBox.shrink(); // agar na text ho na icon
-    }
-
-    return Expanded(flex: flex, child: child);
-  }
 }
-
-
-
-
-
 
 
 
