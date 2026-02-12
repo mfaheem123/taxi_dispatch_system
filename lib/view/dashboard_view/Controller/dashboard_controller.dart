@@ -1872,18 +1872,23 @@ class DashboardController extends GetxController {
     mobileController.text = jobData.mobile!;
     telController.text = jobData.telephone!;
     pickUpTimeController.text = jobData.pickupTime!;
-    minController.text = jobData.leadTime!;
+    minController.text = jobData.leadTime??"";
     passController.text = jobData.passengers.toString();
     luggController.text = jobData.luggages.toString();
     sluggController.text = jobData.handLuggages.toString();
     parkingChargesController.text = jobData.parkingCharges.toString();
     congestionChargesController.text = jobData.congestionCharges.toString();
-    meetGreetController.text = jobData.meetAndGreet.toString();
+    if(jobData.meetAndGreet != null){
+      meetGreetController.text = jobData.meetAndGreet.toString();
+    }
     waitingChargesController.text = jobData.waitingCharges.toString();
     extraDropChargesController.text = jobData.extraDropCharges.toString();
     creditCardChargesController.text = jobData.creditCardCharges.toString();
     companyPriceController.text = jobData.companyPrice.toString();
-    specialRequirementsController.text = jobData.specialInstructions.toString();
+    if(jobData.specialInstructions != null){
+      specialRequirementsController.text =
+          jobData.specialInstructions.toString();
+    }
     slugController.text = jobData.fares.toString();
 
 
