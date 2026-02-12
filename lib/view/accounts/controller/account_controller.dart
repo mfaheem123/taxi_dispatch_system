@@ -754,7 +754,11 @@ class AccountController extends GetxController {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
+  var isPaid = false.obs; // .obs lagane se ye reactive ban jata hai
 
+  void togglePaidStatus() {
+    isPaid.value = !isPaid.value;
+  }
   var invoiceNumber = ''.obs;
   var isLoading = false.obs;
 

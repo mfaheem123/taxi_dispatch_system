@@ -479,24 +479,24 @@ class _RightSidebar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Favorite Rides header
-          Row(
-            children: [
-              const CircleAvatar(
-                radius: 20,
-                backgroundColor: Color(0xFFF4F6FA),
-                child: Icon(Icons.person, color: Color(0xFF6B7C8F)),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                "Favorite Rides",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
-              ),
-              const Spacer(),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     const CircleAvatar(
+          //       radius: 20,
+          //       backgroundColor: Color(0xFFF4F6FA),
+          //       child: Icon(Icons.person, color: Color(0xFF6B7C8F)),
+          //     ),
+          //     const SizedBox(width: 12),
+          //     Text(
+          //       "Favorite Rides",
+          //       style: Theme.of(context)
+          //           .textTheme
+          //           .titleMedium
+          //           ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
+          //     ),
+          //     const Spacer(),
+          //   ],
+          // ),
           const SizedBox(height: 24),
 
           // Ride History section
