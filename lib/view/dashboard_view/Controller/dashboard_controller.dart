@@ -231,7 +231,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("202");
+    // connectToCli("202");
 
     getAllDrivers();
 
@@ -1650,7 +1650,7 @@ class DashboardController extends GetxController {
         dashboardTableModelData!.data!.insert(
             0, BookingObjectData.fromJson(response.data['bookings'][0]));
       }
-      // refreshPostAllFields();
+      refreshPostAllFields();
       print(response.data);
     }
   }
@@ -1831,41 +1831,32 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
   dashBoardDataBinding({required BookingObjectData jobData}) async{
     print(jobData);
+    pickupController.text = jobData.pickup.toString();
+    dropOffController.text = jobData.dropoff.toString();
 
-    pickupController.clear();
-    pickUpNoteController.clear();
-    dropOffController.clear();
-    dropUpNoteController.clear();
-
-    viaPostList.clear();
-    childSeatList.clear();
-    extraFaresList.clear();
-    driversList.clear();
-    childSeatAlert.clear();
-    controllerAlert.clear();
-    multiReservationTemp.clear();
-    multiVehicleList.clear();
-    multiVehicleTempList.clear();
-    viaPoints.clear();
-    dashboardZoneValue = null;
-    selectJourneyTypeValue = null;
-    selectAccountValue = null;
-    selectDepartmentData = null;
-    selectPaymentTypeValue = null;
-    selectVehicleValue = null;
-    selectDriverValue = null;
-    selectSubsidiariesValue = null;
-    switchController.value = false;
-    smsCheckbox.value = true;
-    emailCheckbox.value = false;
-    markers.clear();
-    polylines.clear();
-    polylinePointsCoordinate.clear();
-    markers.clear();
-    polyLineMarkerInfo.clear();
-    polylines.clear();
-    polylinePoints.clear();
-
+    markers.add(
+      CustomMarker(
+        withReturnType: "pickup",
+        child: Icon(Icons.location_pin,
+            color: DynamicColors.primaryClr,
+            size: 30),
+        type: "pickup",
+        point: LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
+        width: 30,
+        height: 30,
+      ),
+    );
+    markers.add(
+      CustomMarker(
+        child: Icon(Icons.location_pin,
+            color: DynamicColors.primaryClr,
+            size: 30),
+        type: "dropOff",
+        point: LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
+        width: 30,
+        height: 30,
+      ),
+    );
 
     nameController.text = jobData.name!;
     emailController.text = jobData.email!;
@@ -1891,7 +1882,12 @@ class DashboardController extends GetxController {
     }
     slugController.text = jobData.fares.toString();
 
-
+    if(jobData.pickupDoorNumber != null){
+      pickUpNoteController.text = jobData.pickupDoorNumber.toString();
+    }
+    if(jobData.dropoffDoorNumber != null){
+      dropUpNoteController.text = jobData.dropoffDoorNumber.toString();
+    }
 
     if(jobData.childSeat!.isNotEmpty){
       for (var action in jobData.childSeat!) {
@@ -1916,7 +1912,7 @@ class DashboardController extends GetxController {
       );
     }
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
-   await getAccountData(subsidiariesId: selectSubsidiariesValue!.id);
+   await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
 
 // Professional approach using the 'collection' package
     selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
@@ -1951,6 +1947,31 @@ class DashboardController extends GetxController {
       );
     }
 
+    final LocationController _controller =
+    Get.isRegistered<LocationController>()
+        ? Get.find<LocationController>()
+        : Get.put(LocationController());
+
+    final zones = _controller.locationtypezoneModel?.zonesList;
+
+    if (zones != null) {
+      _controller.updateLocationValue.value == true;
+      // Find pickup zone
+      if (jobData.pickupPlot != null) {
+        dashboardZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+        _controller.zoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+      }
+
+      // Find dropoff zone
+      if (jobData.dropoffPlot != null) {
+        dashboardDZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+        _controller.zoneDValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+      }
+
+      _controller.updateLocationValue.value == false;
+    }
+
+update();
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 
