@@ -31,7 +31,7 @@ class _ListOfAccountInvoiceScreenState
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
       : Get.put(AccountController());
-
+  final DashboardController _controller = Get.find();
   @override
   void initState() {
     // TODO: implement initState
@@ -41,40 +41,42 @@ class _ListOfAccountInvoiceScreenState
 
   @override
   Widget build(BuildContext context) {
-    // final listToShow = controller.filteredInvoice.isNotEmpty
-    //     ? controller.filteredInvoice
-    //     : controller.InvoiceList;
+
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
-            .instance.platformDispatcher.views.first.physicalSize.width /
+        .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(initState: (state) {
-      controller.listAccountInvoice();
-    }, builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return GetBuilder<AccountController>(
+        initState: (state) {
+          controller.listAccountInvoice();
+        },
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
+        builder: (controller) {
+          return LayoutBuilder(builder: (context, constraints) {
+            final double maxWidth = constraints.maxWidth;
+            final bool isMobile = maxWidth < 600;
+            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+            // Instead of fixed width, we calculate flexible field widths
+            final double fieldWidth = isMobile
+                ? maxWidth // full width
+                : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return controller.isLoadingListOfAccountInvoice == true
-            ? CircularProgressIndicator()
-            : Wrap(
+            return
+              controller.isLoadingListOfAccountInvoice == true?
+              CircularProgressIndicator():
+
+              Wrap(
                 runSpacing: 10,
                 spacing: 10,
                 children: [
                   Container(
                     width: Get.width,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 12),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                     color: DynamicColors.gryClr.withOpacity(0.5),
                     child: Row(
                       children: [
@@ -102,8 +104,8 @@ class _ListOfAccountInvoiceScreenState
                           verticalPadding: 0.0,
                           borderRadius: 4,
                           widget: Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 0.0),
+                            padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
                             child: Icon(
                               Icons.refresh,
                               color: DynamicColors.whiteClr,
@@ -131,16 +133,16 @@ class _ListOfAccountInvoiceScreenState
                               isMobile: isMobile,
                               label: AppText.from,
                               width: fieldWidth / 1.8,
-                              child: SizedBox(
-                                  height: 30, child: KeyboardDatePicker()),
+                              child:
+                              SizedBox(height: 30, child: KeyboardDatePicker()),
                             ),
                             labeledField(
                               context: context,
                               isMobile: isMobile,
                               label: AppText.to,
                               width: fieldWidth / 1.8,
-                              child: SizedBox(
-                                  height: 30, child: KeyboardDatePicker()),
+                              child:
+                              SizedBox(height: 30, child: KeyboardDatePicker()),
                             ),
                             Text("STATUS"),
                             CustomDropdownField<String>(
@@ -193,172 +195,166 @@ class _ListOfAccountInvoiceScreenState
                   ),
                   controller.isLoadingListOfAccountInvoice == true
                       ? Center(
-                          child: CircularProgressIndicator(),
-                        )
+                    child: CircularProgressIndicator(),
+                  )
                       : SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: SizedBox(
-                            width: isMobile || isTablet
-                                ? Get.width + 600
-                                : Get.width,
-                            child: DatatableWidget(
-                                columns: [
-                                  DataColumn(
-                                    label: Checkbox(
-                                      value: false, // a bool you keep in state
-                                      onChanged: (val) {},
-                                    ),
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "INVOICE #",
-                                    // onChanged: (v) {
-                                    //   controller.searchInvoiceNumber.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "ACCOUNT",
-                                    // onChanged: (v) {
-                                    //   controller.searchAccountName.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "DEPARTMENT",
-                                    // onChanged: (v) {
-                                    //   controller.searchDepartment.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // },
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "ORDER #",
-                                    // onChanged: (v) {
-                                    //   controller.searchOrderNumber.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "DATE",
-                                    // onChanged: (v) {
-                                    //   controller.searchDate.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "DUE DATE",
-                                    // onChanged: (v) {
-                                    //   controller.searchDueDate.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "STATUS",
-                                    // onChanged: (v) {
-                                    //   controller.searchStatus.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "AMOUNT",
-                                    // onChanged: (v) {
-                                    //   controller.searchAmount.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                    title: "SUBSIDIARY",
-                                    // onChanged: (v) {
-                                    //   controller.searchSubsiDiary.value = v;
-                                    //   controller.SearchAccountInvoice();
-                                    // }
-                                  ),
-                                  buildHeaderWithSearch(
-                                      title: "ACTIONS", removeSearching: true),
-                                ],
-                                totalRow: controller.listOfAccountInvoice!
-                                        .accountInvoices!.length ??
-                                    0,
-                                rows: (controller.listOfAccountInvoice!
-                                            .accountInvoices ??
-                                        [])
-                                    .map((item) {
-                                  return DataRow(cells: [
-                                    DataCell(
-                                      Checkbox(
-                                        value:
-                                            false, // ✅ controlled by your state
-                                        onChanged: (val) {
-                                          // update your selected index or list here
-                                        },
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: isMobile || isTablet ? Get.width + 600 : Get.width,
+                      child: DatatableWidget(
+                          columns: [
+                            DataColumn(
+                              label: Checkbox(
+                                value: false, // a bool you keep in state
+                                onChanged: (val) {},
+                              ),
+                            ),
+                            buildHeaderWithSearch(
+                              title: "INVOICE #",
+                              // onChanged: (v) {
+                              //   controller.searchInvoiceNumber.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "ACCOUNT",
+                              // onChanged: (v) {
+                              //   controller.searchAccountName.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "DEPARTMENT",
+                              // onChanged: (v) {
+                              //   controller.searchDepartment.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // },
+                            ),
+                            buildHeaderWithSearch(
+                              title: "ORDER #",
+                              // onChanged: (v) {
+                              //   controller.searchOrderNumber.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                              title: "DATE",
+                              // onChanged: (v) {
+                              //   controller.searchDate.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                              title: "DUE DATE",
+                              // onChanged: (v) {
+                              //   controller.searchDueDate.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                              title: "STATUS",
+                              // onChanged: (v) {
+                              //   controller.searchStatus.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                              title: "AMOUNT",
+                              // onChanged: (v) {
+                              //   controller.searchAmount.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                              title: "SUBSIDIARY",
+                              // onChanged: (v) {
+                              //   controller.searchSubsiDiary.value = v;
+                              //   controller.SearchAccountInvoice();
+                              // }
+                            ),
+                            buildHeaderWithSearch(
+                                title: "ACTIONS", removeSearching: true),
+                          ],
+                          totalRow: controller.listOfAccountInvoice!.accountInvoices!.length ?? 0,
+                          rows: (controller.listOfAccountInvoice!.accountInvoices ?? []).map((item) {
+                            return DataRow(cells: [
+                              DataCell(
+                                Checkbox(
+                                  value: false, // ✅ controlled by your state
+                                  onChanged: (val) {
+                                    // update your selected index or list here
+                                  },
+                                ),
+                              ),
+                              DataCell(
+                                  Center(child: Text(item.invoiceNumber!))),
+                              DataCell(Center(child: Text(item.account!.name!))),
+                              DataCell(Center(child: Text(item.account!.email ?? ""))),
+                              DataCell(Center(child: Text(item.orderNumber!))),
+                              DataCell(Center(child: Text(item.toDate.toString()))),
+                              DataCell(Center(child: Text(item.fromDate.toString()))),
+                              DataCell(Center(child: Text(item.status!))),
+                              DataCell(Center(child: Text(item.amount!))),
+                              DataCell(Center(child: Text(item.orderNumber!))),
+                              DataCell(
+                                Row(
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ),
+                                      ),
+                                      onPressed: () {
+
+                                        int index = _controller.selectedMenuItems
+                                            .indexWhere((element) =>
+                                        element.title == "UPDATE ACCOUNT INVOICE");
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index]
+                                              .selectedItem = true;
+                                          _controller.currentPage.value =
+                                              UpdateAccountInvoiceScreen();
+                                        } else {
+                                          _controller.currentPage.value =
+                                              UpdateAccountInvoiceScreen();
+                                          _controller.menuBarRefresh(
+                                              title: "UPDATE ACCOUNT INVOICE",
+                                              pageName: UpdateAccountInvoiceScreen());
+                                        }
+                                        controller.update();
+                                        // Get.to();
+                                      },
+                                      child: Icon(
+                                        Icons.edit_calendar_rounded,
+                                        size: 28,
+                                        color: DynamicColors.primaryClr,
                                       ),
                                     ),
-                                    DataCell(Center(
-                                        child: Text(item.invoiceNumber!))),
-                                    DataCell(Center(
-                                        child: Text(item.account!.name!))),
-                                    DataCell(Center(
-                                        child:
-                                            Text(item.account!.email ?? ""))),
-                                    DataCell(
-                                        Center(child: Text(item.orderNumber!))),
-                                    DataCell(Center(
-                                        child: Text(item.toDate.toString()))),
-                                    DataCell(Center(
-                                        child: Text(item.fromDate.toString()))),
-                                    DataCell(Center(child: Text(item.status!))),
-                                    DataCell(Center(child: Text(item.amount!))),
-                                    DataCell(
-                                        Center(child: Text(item.orderNumber!))),
-                                    DataCell(
-                                      Row(
-                                        children: [
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        UpdateAccountInvoiceScreen(),
-                                                  ));
-                                              // Get.to();
-                                            },
-                                            child: Icon(
-                                              Icons.edit_calendar_rounded,
-                                              size: 28,
-                                              color: DynamicColors.primaryClr,
-                                            ),
-                                          ),
-                                          Text("|"),
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ), // border color & thickness
-                                            ),
-                                            onPressed: () {
-                                              controller.accountInvoiceDelete(item.id);
-                                            },
-                                            child: Icon(
-                                              Icons.delete_forever,
-                                              size: 28,
-                                              color: DynamicColors.redClr,
-                                            ),
-                                          ),
-                                        ],
+                                    Text("|"),
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        size: 28,
+                                        color: DynamicColors.redClr,
                                       ),
                                     ),
-                                  ]);
-                                }).toList()),
-                          ),
-                        ),
+                                  ],
+                                ),
+                              ),
+                            ]);
+                          }).toList()),
+                    ),
+                  ),
                 ],
               );
-      });
-    });
+          });
+        });
   }
 }
