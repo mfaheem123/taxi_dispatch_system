@@ -306,6 +306,8 @@ class _ListOfAccountInvoiceScreenState
                                         ),
                                       ),
                                       onPressed: () {
+                                        controller.invoiceUpdate(invoiceUpdate: item);
+
 
                                         int index = _controller.selectedMenuItems
                                             .indexWhere((element) =>
