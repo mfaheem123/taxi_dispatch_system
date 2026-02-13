@@ -753,7 +753,13 @@ class AccountController extends GetxController {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
-  var isPaid = false.obs; // .obs lagane se ye reactive ban jata hai
+
+  // final invoiceDateController = TextEditingController();
+  String? invoiceDateController = "2000-01-01";
+  String? invoiceDueDateController = "2000-01-01";
+
+
+  var isPaid = false.obs; 
 
   void togglePaidStatus() {
     isPaid.value = !isPaid.value;
@@ -974,7 +980,11 @@ class AccountController extends GetxController {
       print("POST DATA >>> $formData");
 
       var response =
-          await Api().post(formData, 'account_invoice/add', auth: true);
+          await Api().post(formData,
+              updateInvoiceValue.value == false
+              ? 'account_invoice/add'
+              : 'account_invoice/update/${invoiceUpdateId.value}',
+              auth: true);
 
       if (response.statusCode == 200 && response.data['status'] == true) {
         Get.snackbar("Success", "Invoice created successfully!");
@@ -996,6 +1006,8 @@ class AccountController extends GetxController {
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Account Invoice Model
+
+
   ListOfAccountInvoiceModel? listOfAccountInvoice;
   RxBool isLoadingListOfAccountInvoice = false.obs;
 
@@ -1030,6 +1042,24 @@ class AccountController extends GetxController {
       update();
     }
   }
+
+  // Edit
+  RxBool updateInvoiceValue = false.obs;
+  RxInt invoiceUpdateId = 0.obs;
+
+  invoiceUpdate({AccountInvoice? invoiceUpdate}) async {
+    invoiceUpdateId.value = invoiceUpdate!.id!;
+    invoiceDateController = invoiceUpdate.invoiceDate.toString();
+    invoiceDueDateController = invoiceUpdate.invoiceDueDate.toString();
+    selectedSubsidiaryForGet.value = invoiceUpdate.subsidiaryId! as Subsidiaries?;
+    selectedAccount.value = invoiceUpdate.accountId! as Account?;
+    selectedDepartment.value = invoiceUpdate.departmentId!;
+    customerTelephoneController.text = invoiceUpdate.orderNumber!;
+    fromDate = invoiceUpdate.fromDate!;
+    toDate = invoiceUpdate.toDate!;
+    updateInvoiceValue(true);
+  }
+
 
   // Delete
   accountInvoiceDelete(int? id) async {

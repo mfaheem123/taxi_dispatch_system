@@ -195,12 +195,13 @@ class _UpdateAccountInvoiceScreenState
                             fontWeight: FontWeight.bold),
                         children: [
                       TextSpan(
-                          // text: "  INV368",
-                          text: controller.isLoading.value
-                              ? " Loading..."
-                              : "  ${controller.invoiceNumber.value}",
-                          style: mozillaTextRegularText(
-                              color: DynamicColors.redClr))
+                          text: "  INV368",
+                          // text: controller.isLoading.value
+                          //     ? " Loading..."
+                          //     : "  ${controller.invoiceNumber.value}",
+                          // style: mozillaTextRegularText(
+                          //     color: DynamicColors.redClr)
+                      )
                     ]))),
             CustomDropdownField<Subsidiaries>(
               text: AppText.subsidiary,
@@ -308,7 +309,7 @@ class _UpdateAccountInvoiceScreenState
                     width: 40,
                     height: 30,
                     borderRadius: 4,
-                    btnText: AppText.save,
+                    btnText: AppText.update,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
