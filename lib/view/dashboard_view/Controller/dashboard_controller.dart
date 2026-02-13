@@ -158,6 +158,8 @@ class DashboardController extends GetxController {
   String selectedAccountType = 'Account';
   String selectedPaymentMethod = 'Cash';
   String selectedDriver = 'Select Driver';
+
+  String? source;
   // Start with shortcut mode that allows navigation; set to "alert" only when showing a modal
 
   // Dropdown selections
@@ -402,12 +404,21 @@ class DashboardController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> searching all locations hit
 
+  var isAirportResponse = false.obs;
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
     var response = await Api().get(
         "services/search?search=${searchingText.toString().toUpperCase()}",
         auth: true);
     if (response.statusCode == 200) {
+
+      // source "airport"
+      if (response.data['source'] == "airport") {
+        isAirportResponse.value = true;
+      } else {
+        isAirportResponse.value = false;
+      }
+
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll((response.data['result'] as List)

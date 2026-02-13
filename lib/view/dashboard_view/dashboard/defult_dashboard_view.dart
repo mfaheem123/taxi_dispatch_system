@@ -408,86 +408,91 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         ),
                                                                       ),
 
-                                                                      SizedBox(
-                                                                        height: screenHeight *
-                                                                            0.018,
-                                                                      ),
-                                                                      // ================= Airport ROW =================
-                                                                      Padding(
-                                                                        padding: const EdgeInsets
-                                                                            .symmetric(
-                                                                            horizontal:
-                                                                                12),
+
+                                                                      // ================= Airport ROW ========================================================
+                                                                      Visibility(
+                                                                        visible: controller.isAirportResponse.value
+                                                                            ? true
+                                                                            : false,
                                                                         child:
-                                                                            Row(
-                                                                          children: [
                                                                             Padding(
-                                                                              padding: const EdgeInsets.only(right: 10),
-                                                                              child: Text(
-                                                                                "FL",
-                                                                                style: mozillaTextSemiBoldText(
-                                                                                  context: context,
-                                                                                  fontSize: 13,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: EdgeInsets.only(left: 15),
-                                                                              child: FocusTraversalOrder(
-                                                                                order: const NumericFocusOrder(4),
-                                                                                child: SizedBox(
-                                                                                  width: fieldWidth / 0.70,
-                                                                                  height: 30,
-                                                                                  child: CustomTextField(
-                                                                                    controller: TextEditingController(),
-                                                                                    hintText: "Select Airport",
-                                                                                    borderRadius: 6,
-                                                                                    textInputAction: TextInputAction.next,
-                                                                                    onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                          padding: const EdgeInsets
+                                                                              .symmetric(
+                                                                              horizontal: 12,
+                                                                          vertical: 10
+                                                                          ),
+                                                                          child:
+                                                                              Row(
+                                                                            children: [
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.only(right: 10),
+                                                                                child: Text(
+                                                                                  "FL",
+                                                                                  style: mozillaTextSemiBoldText(
+                                                                                    context: context,
+                                                                                    fontSize: 13,
                                                                                   ),
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: const EdgeInsets.only(right: 10, left: 5),
-                                                                              child: Text(
-                                                                                "ARR",
-                                                                                style: mozillaTextSemiBoldText(
-                                                                                  context: context,
-                                                                                  fontSize: 13,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                            Padding(
-                                                                              padding: EdgeInsets.only(left: 0),
-                                                                              child: FocusTraversalOrder(
-                                                                                order: const NumericFocusOrder(5),
-                                                                                child: SizedBox(
-                                                                                  width: fieldWidth / 3.1,
-                                                                                  height: 30,
-                                                                                  child: CustomTextField(
-                                                                                    controller: TextEditingController(),
-                                                                                    hintText: "ARR",
-                                                                                    borderRadius: 6,
-                                                                                    textInputAction: TextInputAction.next,
-                                                                                    onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                              Padding(
+                                                                                padding: EdgeInsets.only(left: 15),
+                                                                                child: FocusTraversalOrder(
+                                                                                  order: const NumericFocusOrder(4),
+                                                                                  child: SizedBox(
+                                                                                    width: fieldWidth / 0.70,
+                                                                                    height: 30,
+                                                                                    child: CustomTextField(
+                                                                                      controller: TextEditingController(),
+                                                                                      hintText: "Select Airport",
+                                                                                      borderRadius: 6,
+                                                                                      textInputAction: TextInputAction.next,
+                                                                                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                                    ),
                                                                                   ),
                                                                                 ),
                                                                               ),
-                                                                            ),
-                                                                          ],
+                                                                              Padding(
+                                                                                padding: const EdgeInsets.only(right: 10, left: 5),
+                                                                                child: Text(
+                                                                                  "ARR",
+                                                                                  style: mozillaTextSemiBoldText(
+                                                                                    context: context,
+                                                                                    fontSize: 13,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                              Padding(
+                                                                                padding: EdgeInsets.only(left: 0),
+                                                                                child: FocusTraversalOrder(
+                                                                                  order: const NumericFocusOrder(5),
+                                                                                  child: SizedBox(
+                                                                                    width: fieldWidth / 3.1,
+                                                                                    height: 30,
+                                                                                    child: CustomTextField(
+                                                                                      controller: TextEditingController(),
+                                                                                      hintText: "ARR",
+                                                                                      borderRadius: 6,
+                                                                                      textInputAction: TextInputAction.next,
+                                                                                      onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                                                                                    ),
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+
+                                                                            ],
+                                                                          ),
                                                                         ),
+
                                                                       ),
 
-                                                                      SizedBox(
-                                                                          height:
-                                                                              screenHeight * 0.019),
+
+
                                                                       // ================= DROPOFF ROW =================
                                                                       Padding(
                                                                         padding: const EdgeInsets
                                                                             .symmetric(
                                                                             horizontal:
-                                                                                10.0),
+                                                                                10.0, vertical: 12.0),
                                                                         child:
                                                                             Row(
                                                                           children: [
