@@ -231,7 +231,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("202");
+    // connectToCli("202");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
@@ -1507,14 +1507,14 @@ class DashboardController extends GetxController {
     // Check if the marker was actually found to avoid errors
     if (pickUpIndex != -1) {
       // Assuming 'lat' is a property or constant available in your scope
-      pickUpLatLat = markers[pickUpIndex].point.longitude;
+      pickUpLatLat = markers[pickUpIndex].point.latitude;
       pickUpLngLat = markers[pickUpIndex].point.longitude;
     }
 
     // Check if the marker was actually found to avoid errors
     if (dropOffIndex != -1) {
       // Assuming 'lat' is a property or constant available in your scope
-      dropOffLatLat = markers[dropOffIndex].point.longitude;
+      dropOffLatLat = markers[dropOffIndex].point.latitude;
       dropOffLngLat = markers[dropOffIndex].point.longitude;
     }
 
@@ -1830,32 +1830,52 @@ class DashboardController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
   dashBoardDataBinding({required BookingObjectData jobData}) async{
     print(jobData);
+    polyLineMarkerInfo.clear();
     pickupController.text = jobData.pickup.toString();
     dropOffController.text = jobData.dropoff.toString();
 
-    markers.add(
-      CustomMarker(
-        withReturnType: "pickup",
-        child: Icon(Icons.location_pin,
-            color: DynamicColors.primaryClr,
-            size: 30),
-        type: "pickup",
-        point: LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
-        width: 30,
-        height: 30,
-      ),
+    // markers.add(
+    //   CustomMarker(
+    //     withReturnType: "pickup",
+    //     child: Icon(Icons.location_pin,
+    //         color: DynamicColors.primaryClr,
+    //         size: 30),
+    //     type: "pickup",
+    //     point: LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
+    //     width: 30,
+    //     height: 30,
+    //   ),
+    // );
+    // markers.add(
+    //   CustomMarker(
+    //     child: Icon(Icons.location_pin,
+    //         color: DynamicColors.primaryClr,
+    //         size: 30),
+    //     type: "dropOff",
+    //     point: LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
+    //     width: 30,
+    //     height: 30,
+    //   ),
+    // );
+    polylinePoints.add(
+      LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
     );
-    markers.add(
-      CustomMarker(
-        child: Icon(Icons.location_pin,
-            color: DynamicColors.primaryClr,
-            size: 30),
-        type: "dropOff",
-        point: LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
-        width: 30,
-        height: 30,
-      ),
+    polylinePoints.add(
+      LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
     );
+    polyLineMarkerInfo.add(ViaPoint(
+      lat: double.parse(jobData.pickupLatitude!),
+      lng: double.parse(jobData.pickupLongitude!),
+      markerType: "PICKUP LOCATION",
+      address: '',
+    ));
+    polyLineMarkerInfo.add(ViaPoint(
+      lat: double.parse(jobData.dropoffLatitude!),
+      lng: double.parse(jobData.dropoffLongitude!),
+      markerType: "DROP LOCATION",
+      address: '',
+    ));
+    fetchRouteFromOSRM();
 
     nameController.text = jobData.name!;
     emailController.text = jobData.email!;
