@@ -31,7 +31,7 @@ class _ListOfAccountInvoiceScreenState
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
       : Get.put(AccountController());
-  final DashboardController _controller = Get.find();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -41,7 +41,9 @@ class _ListOfAccountInvoiceScreenState
 
   @override
   Widget build(BuildContext context) {
-
+    // final listToShow = controller.filteredInvoice.isNotEmpty
+    //     ? controller.filteredInvoice
+    //     : controller.InvoiceList;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
@@ -207,7 +209,6 @@ class _ListOfAccountInvoiceScreenState
                                       onChanged: (val) {},
                                     ),
                                   ),
-<<<<<<< HEAD
                                   buildHeaderWithSearch(
                                     title: "INVOICE #",
                                     // onChanged: (v) {
@@ -353,50 +354,6 @@ class _ListOfAccountInvoiceScreenState
                                     ),
                                   ]);
                                 }).toList()),
-
-                                ),
-                                onPressed: () {
-
-                                  int index = _controller.selectedMenuItems
-                                      .indexWhere((element) =>
-                                  element.title == "UPDATE ACCOUNT INVOICE");
-                                  if (index != -1) {
-                                    _controller.selectedMenuItems[index]
-                                        .selectedItem = true;
-                                    _controller.currentPage.value =
-                                        UpdateAccountInvoiceScreen();
-                                  } else {
-                                    _controller.currentPage.value =
-                                        UpdateAccountInvoiceScreen();
-                                    _controller.menuBarRefresh(
-                                        title: "UPDATE ACCOUNT INVOICE",
-                                        pageName: UpdateAccountInvoiceScreen());
-                                  }
-                                  controller.update();
-                                  // Get.to();
-                                },
-                                child: Icon(
-                                  Icons.edit_calendar_rounded,
-                                  size: 28,
-                                  color: DynamicColors.primaryClr,
-                                ),
-                              ),
-                              Text("|"),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ), // border color & thickness
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
-
                           ),
                         ),
                 ],
