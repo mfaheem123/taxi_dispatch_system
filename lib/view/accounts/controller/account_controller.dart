@@ -322,7 +322,6 @@ class AccountController extends GetxController {
       updateDepartmentsForSelectedAccount();
     });
     // getAccountInvoiceBookings();
-
   }
 
   HtmlTempleteModel? templeteHtmlModel;
@@ -992,7 +991,6 @@ class AccountController extends GetxController {
     }
   }
 
-
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Account Invoice Model
   ListOfAccountInvoiceModel? listOfAccountInvoice;
   RxBool isLoadingListOfAccountInvoice = false.obs;
@@ -1018,18 +1016,25 @@ class AccountController extends GetxController {
   // final int invoiceLimit = 10;
 
   /// >>>>>>>>>>>>>>>>>>>>> Fetch Invoice List
- listAccountInvoice() async {
-   isLoadingListOfAccountInvoice.value = true;
+  listAccountInvoice() async {
+    isLoadingListOfAccountInvoice.value = true;
 
-      var response = await Api().get("account_invoice/get");
-      if (response.statusCode == 200) {
-        listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
+    var response = await Api().get("account_invoice/get");
+    if (response.statusCode == 200) {
+      listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       isLoadingListOfAccountInvoice.value = false;
       update();
-      }
-
+    }
   }
 
+  // Delete
+  accountInvoiceDelete(int? id) async {
+    var response = await Api().delete("account_invoice/delete/$id");
+    if (response.statusCode == 200) {
+      listAccountInvoice();
+      print("AccountInvoice deleted successfully!");
+    }
+}
 
 
 
