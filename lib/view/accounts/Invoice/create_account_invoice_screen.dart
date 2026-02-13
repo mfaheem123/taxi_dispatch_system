@@ -79,7 +79,27 @@ class _CreateAccountInvoiceScreenState
               label: AppText.invoiceDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(
+                  height: 30,
+                  child: KeyboardDatePicker(
+                    initialDate: DateTime.now(),
+                    onChanged: (date) {
+                      // jab bhi user change kare
+                      setState(() {
+                        controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+                        print(date);
+                      });
+                    },
+                    onSubmitted: (date) {
+                      // jab user enter press kare
+                      setState(() {
+                        controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+                      });
+                      print("User pressed enter: $date");
+                    },
+
+                  )
+              ),
             ),
             labeledField(
               context: context,
@@ -87,7 +107,25 @@ class _CreateAccountInvoiceScreenState
               label: AppText.invoiceDueDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+
+              )
+              ),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 25),
