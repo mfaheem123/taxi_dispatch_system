@@ -119,6 +119,9 @@ class _UpdateAccountInvoiceScreenState
                   SizedBox(width: 5),
 
                   CustomButton(
+                onTap: () {
+
+                },
                     verticalPadding: 0.0,
                     width: 45,
                     height: 30,
@@ -126,9 +129,7 @@ class _UpdateAccountInvoiceScreenState
                     btnText: "EXPORT",
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
 
-                    },
                   ),
                   SizedBox(width: 5),
 
