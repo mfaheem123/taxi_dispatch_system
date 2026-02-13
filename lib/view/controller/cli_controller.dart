@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../dashboard_view/models/dashboard_model.dart';
+
 class CliController extends GetxController {
 
   WebSocketChannel? channel;
@@ -17,7 +19,9 @@ class CliController extends GetxController {
 
   // ================= SOCKET METHODS ========================
 
-
+  DashboardDriverObject? selectDriverValue;
+  DashboardDataModel? dashboardAllData;
+  DashboardVehicleTypeObject? selectVehicleValue;
   void connectSocket(String extension) {
 
     if (channel != null && isConnected.value) return;

@@ -4,63 +4,17 @@ import 'package:dashboard_new1/view/controller/cli_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import 'package:html_editor_enhanced/utils/utils.dart';
 import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/dropdown_button.dart';
+import '../component/textStyle.dart';
 import 'dashboard_view/booking_table.dart';
-
-/// Drop this widget anywhere. It renders inside a Container (no Scaffold).
-// class ResponsivePassengerScreen extends StatefulWidget {
-//   const ResponsivePassengerScreen({super.key});
-//
-//   @override
-//   State<ResponsivePassengerScreen> createState() => _ResponsivePassengerScreenState();
-// }
-//
-// class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       color: const Color(0xFFF7F9FC),
-//       padding: const EdgeInsets.all(16),
-//       alignment: Alignment.topCenter,
-//       child: ConstrainedBox(
-//         constraints: const BoxConstraints(maxWidth: 1400),
-//         child: LayoutBuilder(
-//           builder: (context, c) {
-//
-//             final w = c.maxWidth;
-//
-//             // Breakpoints
-//             final isDesktop = w >= 1200;
-//             final isTablet = w >= 820 && w < 1200;
-//             final isMobile = w < 820;
-//             final leftWidth = isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
-//             final rightWidth = isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
-//             return Container(
-//               decoration: BoxDecoration(
-//                 color: Colors.white,
-//                 borderRadius: BorderRadius.circular(16),
-//                 boxShadow: const [
-//                   BoxShadow(blurRadius: 20, color: Color(0x14000000))
-//                 ],
-//               ),
-//               clipBehavior: Clip.antiAlias,
-//               child: isMobile
-//                   ? _MobileLayout(leftWidth: leftWidth, rightWidth: rightWidth)
-//                   : _WideLayout(leftWidth: leftWidth, rightWidth: rightWidth),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'dashboard_view/models/dashboard_model.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
   final String extensionNumber;
+
   const ResponsivePassengerScreen({super.key, required this.extensionNumber});
 
   @override
@@ -68,12 +22,10 @@ class ResponsivePassengerScreen extends StatefulWidget {
       _ResponsivePassengerScreenState();
 }
 
-class _ResponsivePassengerScreenState
-    extends State<ResponsivePassengerScreen> {
-
+class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
   /// ✅ Socket Controller
   final CliController socketController =
-  Get.put(CliController(), permanent: true);
+      Get.put(CliController(), permanent: true);
 
   @override
   void initState() {
@@ -98,17 +50,18 @@ class _ResponsivePassengerScreenState
       padding: const EdgeInsets.all(16),
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1400),
+        constraints: const BoxConstraints(maxWidth: 1600),
+        // increased max width
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
             final isDesktop = w >= 1200;
             final isTablet = w >= 820 && w < 1200;
             final isMobile = w < 820;
-            final leftWidth =
-            isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
-            final rightWidth =
-            isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
+
+            final leftWidth = isDesktop ? 280.0 : (isTablet ? 260.0 : 220.0);
+            final rightWidth = isDesktop ? 360.0 : (isTablet ? 320.0 : 300.0);
+
             return Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -120,13 +73,14 @@ class _ResponsivePassengerScreenState
               clipBehavior: Clip.antiAlias,
               child: isMobile
                   ? _MobileLayout(
-                leftWidth: leftWidth,
-                rightWidth: rightWidth,
-              )
+                      leftWidth: leftWidth,
+                      rightWidth: rightWidth,
+                    )
                   : _WideLayout(
-                leftWidth: leftWidth,
-                rightWidth: rightWidth,
-              ),
+                      leftWidth: leftWidth,
+                      rightWidth: rightWidth,
+                      maxWidth: w, // pass full width
+                    ),
             );
           },
         ),
@@ -135,32 +89,38 @@ class _ResponsivePassengerScreenState
   }
 }
 
-
 /// --------- Wide (Web/Tablet landscape) ----------
 class _WideLayout extends StatelessWidget {
-  const _WideLayout({required this.leftWidth, required this.rightWidth});
+  const _WideLayout(
+      {required this.leftWidth,
+      required this.rightWidth,
+      required this.maxWidth});
 
   final double leftWidth;
   final double rightWidth;
+  final double maxWidth;
 
   @override
   Widget build(BuildContext context) {
+    final centerWidth = maxWidth - leftWidth - rightWidth - 1.5;
     return Row(
       children: [
         // LEFT SIDEBAR
         SizedBox(width: leftWidth, child: _LeftSidebar()),
+
         // CENTER
-        Expanded(child: _CenterArea()),
+        SizedBox(
+            width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
+
         // VERTICAL DIVIDER
         Container(width: 1.5, color: Color(0xFFE1E7F0)),
+
         // RIGHT SIDEBAR
         SizedBox(width: rightWidth, child: _RightSidebar()),
       ],
     );
   }
 }
-
-
 
 /// --------- Mobile (Stacked) ----------
 class _MobileLayout extends StatelessWidget {
@@ -183,7 +143,6 @@ class _MobileLayout extends StatelessWidget {
   }
 }
 
-
 /// --------- LEFT SIDEBAR ----------
 class _LeftSidebar extends StatelessWidget {
   @override
@@ -202,10 +161,10 @@ class _LeftSidebar extends StatelessWidget {
               Text(
                 "SEA CARZ",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.1,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.1,
+                    ),
               ),
               Spacer(),
               Icon(Icons.close, color: Colors.white70),
@@ -278,21 +237,14 @@ class _LeftSidebar extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
 /// --------- CENTER AREA ----------
+
 class _CenterArea extends StatefulWidget {
   @override
   State<_CenterArea> createState() => _CenterAreaState();
 }
 
 class _CenterAreaState extends State<_CenterArea> {
-
   final CliController controller = Get.find<CliController>();
 
   final RxInt selectedIndex = (-1).obs;
@@ -300,173 +252,389 @@ class _CenterAreaState extends State<_CenterArea> {
   TextEditingController pickUpcontroller = TextEditingController();
   TextEditingController dropOfUpcontroller = TextEditingController();
 
+  /// Dropdown variables
+  String? selectedDriver;
+  String? selectedVehicle;
+
+  final List<String> drivers = [
+    "Driver 1",
+    "Driver 2",
+    "Driver 3",
+  ];
+
+  final List<String> vehicles = [
+    "Toyota Prius",
+    "Honda Civic",
+    "Suzuki WagonR",
+  ];
+
+  /// Flag to control swapping in table
+  bool isSwapped = false;
+
   @override
   Widget build(BuildContext context) {
-
     final subtle = const Color(0xFF6B7C8F);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            /// ================= HEADER =================
+            Obx(() => Text(
+                  controller.customerName.value,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: subtle,
+                        fontWeight: FontWeight.w700,
+                      ),
+                )),
 
-          /// ================= HEADER =================
-          Text(
-            "Passenger",
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: subtle,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+            const SizedBox(height: 4),
 
-          const SizedBox(height: 4),
+            Obx(() => Text(
+                  controller.customerMobile.value.isEmpty
+                      ? "Loading..."
+                      : controller.customerMobile.value,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
+                      ),
+                )),
 
-          /// 🔥 MOBILE FROM API
-          Obx(() => Text(
-            controller.customerMobile.value.isEmpty
-                ? "Loading..."
-                : controller.customerMobile.value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.black87,
-              fontWeight: FontWeight.w600,
-            ),
-          )),
+            const SizedBox(height: 16),
 
-          const SizedBox(height: 8),
-
-          /// 🔥 CUSTOMER NAME
-          Obx(() => Text(
-            controller.customerName.value,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black54,
-            ),
-          )),
-
-          const SizedBox(height: 16),
-
-          /// ================= SEARCH =================
-          SizedBox(
-            height: 44,
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Search",
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: const Color(0xFFF2F5F9),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 28),
-
-          /// ================= RECENT RIDES =================
-          Row(
-            children: [
-              Text(
-                "Recent Rides",
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 20),
-
-          /// 🔥 LOADING OR TABLE
-          Obx(() {
-
-            if (controller.isLoading.value) {
-              return const Padding(
-                padding: EdgeInsets.all(30),
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (controller.bookings.isEmpty) {
-              return const Padding(
-                padding: EdgeInsets.all(30),
-                child: Text("No Bookings Found"),
-              );
-            }
-
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width / 2,
-                child: DatatableWidget(
-                  columns: [
-                    buildHeaderWithSearch(title: "Destination", removeSearching: true),
-                    buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
-                    buildHeaderWithSearch(title: "Date", removeSearching: true),
-                    buildHeaderWithSearch(title: "Fare", removeSearching: true),
-                    buildHeaderWithSearch(title: "Action", removeSearching: true),
-                  ],
-                  totalRow: controller.bookings.length,
-                  rows: List.generate(
-                    controller.bookings.length,
-                        (index) {
-
-                      var booking = controller.bookings[index];
-
-                      return DataRow(
-                        cells: [
-                          DataCell(Text(booking["dropoff"] ?? "")),
-                          DataCell(Text(booking["pickup"] ?? "")),
-                          DataCell(Text(booking["pickup_date"] ?? "")),
-                          DataCell(Text("£${booking["fares"] ?? 0}")),
-                          DataCell(
-                            Obx(() => Checkbox(
-                              value: selectedIndex.value == index,
-                              onChanged: (_) {
-                                selectedIndex.value = index;
-                              },
-                            )),
-                          ),
-                        ],
-                      );
-                    },
+            /// ================= SEARCH =================
+            SizedBox(
+              height: 44,
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: "Search",
+                  prefixIcon: const Icon(Icons.search),
+                  filled: true,
+                  fillColor: const Color(0xFFF2F5F9),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
-            );
-          }),
+            ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          /// ================= BOTTOM BUTTONS =================
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  print("Selected index: ${selectedIndex.value}");
-                },
-                child: const Text("SUBMIT"),
-              ),
-              const SizedBox(width: 20),
-              const Icon(Icons.directions_car),
-              const SizedBox(width: 6),
-              const Text(
-                "NEW JOB",
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-        ],
+            /// ================= PICKUP & DROPOFF =================
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: pickUpcontroller,
+                    decoration: InputDecoration(
+                      labelText: "Pickup",
+                      filled: true,
+                      fillColor: const Color(0xFFF2F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    controller: dropOfUpcontroller,
+                    decoration: InputDecoration(
+                      labelText: "Drop Off",
+                      filled: true,
+                      fillColor: const Color(0xFFF2F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 28),
+
+            /// ================= RECENT RIDES =================
+            Row(
+              children: [
+                Text(
+                  "Recent Rides",
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            /// ================= TABLE with Swap Button =================
+            Obx(() {
+              if (controller.isLoading.value) {
+                return const Padding(
+                  padding: EdgeInsets.all(30),
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+              if (controller.bookings.isEmpty) {
+                return const Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Text("No Bookings Found"),
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Swap Button near table
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isSwapped = !isSwapped; // Toggle swap flag
+                      });
+                    },
+                    child: const Text("Swap Destination & Pickup"),
+                  ),
+                  const SizedBox(height: 8),
+
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 850),
+                      child: DatatableWidget(
+                        columns: [
+                          buildHeaderWithSearch(
+                              title: "Destination", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "Pick-up", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "Date", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "Fare", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "Action", removeSearching: true),
+                        ],
+                        totalRow: controller.bookings.length,
+                        rows: List.generate(
+                          controller.bookings.length,
+                          (index) {
+                            var booking = controller.bookings[index];
+
+                            return DataRow(
+                              cells: [
+                                // ✅ Swap table values
+                                DataCell(
+                                  SizedBox(
+                                    width: 180,
+                                    child: Text(
+                                      isSwapped
+                                          ? booking["pickup"] ?? ""
+                                          : booking["dropoff"] ?? "",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  SizedBox(
+                                    width: 180,
+                                    child: Text(
+                                      isSwapped
+                                          ? booking["dropoff"] ?? ""
+                                          : booking["pickup"] ?? "",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(Text(booking["pickup_date"] ?? "")),
+                                DataCell(Text("£${booking["fares"] ?? 0}")),
+
+                                // ✅ TOGGLE CHECKBOX
+                                DataCell(
+                                  Obx(() => Checkbox(
+                                        value: selectedIndex.value == index,
+                                        onChanged: (value) {
+                                          if (selectedIndex.value == index) {
+                                            selectedIndex.value =
+                                                -1; // unselect
+                                          } else {
+                                            selectedIndex.value =
+                                                index; // select
+                                          }
+                                        },
+                                      )),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
+
+            const SizedBox(height: 30),
+
+            /// ================= DRIVER + VEHICLE =================
+
+            Row(
+              children: [
+                // ========================== Driver Dropdown===============================
+                Expanded(
+                  child: controller.dashboardAllData?.drivers == null
+                      ? SizedBox(
+                      height: 15,
+                      width: 15,
+                      child: const CircularProgressIndicator()) // Jab tak data na aaye loader dikhayein
+                      : DropdownButtonFormField<DashboardDriverObject>(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    // Check karein ke value list mein exist karti hai ya nahi
+                    value: (controller.selectDriverValue != null &&
+                        controller.dashboardAllData!.drivers!.contains(controller.selectDriverValue))
+                        ? controller.selectDriverValue
+                        : null,
+                    items: controller.dashboardAllData!.drivers!
+                        .map((driver) => DropdownMenuItem<DashboardDriverObject>(
+                      value: driver,
+                      child: Text(
+                        driver.name ?? "No Name",
+                        style: mozillaTextRegularText(
+                          fontSize: 12,
+                          color: DynamicColors.textClr,
+                        ),
+                      ),
+                    )).toList(),
+                    onChanged: (v) {
+                      controller.selectDriverValue = v;
+                      controller.update();
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    value: controller.selectVehicleValue,
+                    items: controller.dashboardAllData!.vehicleTypes!
+                        .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                      value: vehicle,
+                      child: Text(
+                        vehicle.name ?? "",
+                        style: mozillaTextRegularText(
+                          fontSize: 12,
+                          color: DynamicColors.textClr,
+                        ),
+                      ),
+                    ))
+                        .toList(),
+                    onChanged: (v) async {
+                      controller.selectVehicleValue = v;
+                    },
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 30),
+
+            /// ================= SUBMIT =================
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedIndex.value == -1) {
+                      Get.snackbar(
+                        "Error",
+                        "Please select a booking",
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    if (selectedDriver == null || selectedVehicle == null) {
+                      Get.snackbar(
+                        "Error",
+                        "Please select driver and vehicle",
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    print("Booking Index: ${selectedIndex.value}");
+                    print("Driver: $selectedDriver");
+                    print("Vehicle: $selectedVehicle");
+
+                    Get.snackbar(
+                      "Success",
+                      "Job Assigned Successfully",
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  },
+                  child: const Text("SUBMIT"),
+                ),
+                const SizedBox(width: 12),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedIndex.value == -1) {
+                      Get.snackbar(
+                        "Error",
+                        "Please select a booking",
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    if (selectedDriver == null || selectedVehicle == null) {
+                      Get.snackbar(
+                        "Error",
+                        "Please select driver and vehicle",
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white,
+                      );
+                      return;
+                    }
+
+                    print("Booking Index: ${selectedIndex.value}");
+                    print("Driver: $selectedDriver");
+                    print("Vehicle: $selectedVehicle");
+
+                    Get.snackbar(
+                      "Success",
+                      "Job Assigned Successfully",
+                      backgroundColor: Colors.green,
+                      colorText: Colors.white,
+                    );
+                  },
+                  child: const Text("New Booking"),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-
-
+/// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
