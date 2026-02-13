@@ -22,6 +22,7 @@ class CliController extends GetxController {
   DashboardDriverObject? selectDriverValue;
   DashboardDataModel? dashboardAllData;
   DashboardVehicleTypeObject? selectVehicleValue;
+
   void connectSocket(String extension) {
 
     if (channel != null && isConnected.value) return;

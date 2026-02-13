@@ -8,13 +8,10 @@ import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/dropdown_button.dart';
-import '../component/textStyle.dart';
 import 'dashboard_view/booking_table.dart';
-import 'dashboard_view/models/dashboard_model.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
   final String extensionNumber;
-
   const ResponsivePassengerScreen({super.key, required this.extensionNumber});
 
   @override
@@ -23,9 +20,10 @@ class ResponsivePassengerScreen extends StatefulWidget {
 }
 
 class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
+
   /// ✅ Socket Controller
   final CliController socketController =
-      Get.put(CliController(), permanent: true);
+  Get.put(CliController(), permanent: true);
 
   @override
   void initState() {
@@ -50,8 +48,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
       padding: const EdgeInsets.all(16),
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1600),
-        // increased max width
+        constraints: const BoxConstraints(maxWidth: 1600), // increased max width
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
@@ -73,14 +70,14 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
               clipBehavior: Clip.antiAlias,
               child: isMobile
                   ? _MobileLayout(
-                      leftWidth: leftWidth,
-                      rightWidth: rightWidth,
-                    )
+                leftWidth: leftWidth,
+                rightWidth: rightWidth,
+              )
                   : _WideLayout(
-                      leftWidth: leftWidth,
-                      rightWidth: rightWidth,
-                      maxWidth: w, // pass full width
-                    ),
+                leftWidth: leftWidth,
+                rightWidth: rightWidth,
+                maxWidth: w, // pass full width
+              ),
             );
           },
         ),
@@ -92,9 +89,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
 /// --------- Wide (Web/Tablet landscape) ----------
 class _WideLayout extends StatelessWidget {
   const _WideLayout(
-      {required this.leftWidth,
-      required this.rightWidth,
-      required this.maxWidth});
+      {required this.leftWidth, required this.rightWidth, required this.maxWidth});
 
   final double leftWidth;
   final double rightWidth;
@@ -109,8 +104,7 @@ class _WideLayout extends StatelessWidget {
         SizedBox(width: leftWidth, child: _LeftSidebar()),
 
         // CENTER
-        SizedBox(
-            width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
+        SizedBox(width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
 
         // VERTICAL DIVIDER
         Container(width: 1.5, color: Color(0xFFE1E7F0)),
@@ -161,10 +155,10 @@ class _LeftSidebar extends StatelessWidget {
               Text(
                 "SEA CARZ",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.1,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.1,
+                ),
               ),
               Spacer(),
               Icon(Icons.close, color: Colors.white70),
@@ -281,26 +275,27 @@ class _CenterAreaState extends State<_CenterArea> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+
             /// ================= HEADER =================
             Obx(() => Text(
-                  controller.customerName.value,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: subtle,
-                        fontWeight: FontWeight.w700,
-                      ),
-                )),
+              controller.customerName.value,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: subtle,
+                fontWeight: FontWeight.w700,
+              ),
+            )),
 
             const SizedBox(height: 4),
 
             Obx(() => Text(
-                  controller.customerMobile.value.isEmpty
-                      ? "Loading..."
-                      : controller.customerMobile.value,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.black87,
-                        fontWeight: FontWeight.w600,
-                      ),
-                )),
+              controller.customerMobile.value.isEmpty
+                  ? "Loading..."
+                  : controller.customerMobile.value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.black87,
+                fontWeight: FontWeight.w600,
+              ),
+            )),
 
             const SizedBox(height: 16),
 
@@ -408,21 +403,16 @@ class _CenterAreaState extends State<_CenterArea> {
                       constraints: const BoxConstraints(minWidth: 850),
                       child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(
-                              title: "Destination", removeSearching: true),
-                          buildHeaderWithSearch(
-                              title: "Pick-up", removeSearching: true),
-                          buildHeaderWithSearch(
-                              title: "Date", removeSearching: true),
-                          buildHeaderWithSearch(
-                              title: "Fare", removeSearching: true),
-                          buildHeaderWithSearch(
-                              title: "Action", removeSearching: true),
+                          buildHeaderWithSearch(title: "Destination", removeSearching: true),
+                          buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+                          buildHeaderWithSearch(title: "Date", removeSearching: true),
+                          buildHeaderWithSearch(title: "Fare", removeSearching: true),
+                          buildHeaderWithSearch(title: "Action", removeSearching: true),
                         ],
                         totalRow: controller.bookings.length,
                         rows: List.generate(
                           controller.bookings.length,
-                          (index) {
+                              (index) {
                             var booking = controller.bookings[index];
 
                             return DataRow(
@@ -432,9 +422,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                   SizedBox(
                                     width: 180,
                                     child: Text(
-                                      isSwapped
-                                          ? booking["pickup"] ?? ""
-                                          : booking["dropoff"] ?? "",
+                                      isSwapped ? booking["pickup"] ?? "" : booking["dropoff"] ?? "",
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -444,9 +432,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                   SizedBox(
                                     width: 180,
                                     child: Text(
-                                      isSwapped
-                                          ? booking["dropoff"] ?? ""
-                                          : booking["pickup"] ?? "",
+                                      isSwapped ? booking["dropoff"] ?? "" : booking["pickup"] ?? "",
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -458,17 +444,15 @@ class _CenterAreaState extends State<_CenterArea> {
                                 // ✅ TOGGLE CHECKBOX
                                 DataCell(
                                   Obx(() => Checkbox(
-                                        value: selectedIndex.value == index,
-                                        onChanged: (value) {
-                                          if (selectedIndex.value == index) {
-                                            selectedIndex.value =
-                                                -1; // unselect
-                                          } else {
-                                            selectedIndex.value =
-                                                index; // select
-                                          }
-                                        },
-                                      )),
+                                    value: selectedIndex.value == index,
+                                    onChanged: (value) {
+                                      if (selectedIndex.value == index) {
+                                        selectedIndex.value = -1; // unselect
+                                      } else {
+                                        selectedIndex.value = index; // select
+                                      }
+                                    },
+                                  )),
                                 ),
                               ],
                             );
@@ -484,65 +468,54 @@ class _CenterAreaState extends State<_CenterArea> {
             const SizedBox(height: 30),
 
             /// ================= DRIVER + VEHICLE =================
-
             Row(
               children: [
-                // ========================== Driver Dropdown===============================
                 Expanded(
-                  child: controller.dashboardAllData?.drivers == null
-                      ? SizedBox(
-                      height: 15,
-                      width: 15,
-                      child: const CircularProgressIndicator()) // Jab tak data na aaye loader dikhayein
-                      : DropdownButtonFormField<DashboardDriverObject>(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    // Check karein ke value list mein exist karti hai ya nahi
-                    value: (controller.selectDriverValue != null &&
-                        controller.dashboardAllData!.drivers!.contains(controller.selectDriverValue))
-                        ? controller.selectDriverValue
-                        : null,
-                    items: controller.dashboardAllData!.drivers!
-                        .map((driver) => DropdownMenuItem<DashboardDriverObject>(
-                      value: driver,
-                      child: Text(
-                        driver.name ?? "No Name",
-                        style: mozillaTextRegularText(
-                          fontSize: 12,
-                          color: DynamicColors.textClr,
-                        ),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedDriver,
+                    decoration: InputDecoration(
+                      labelText: "Select Driver",
+                      filled: true,
+                      fillColor: const Color(0xFFF2F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    )).toList(),
-                    onChanged: (v) {
-                      controller.selectDriverValue = v;
-                      controller.update();
+                    ),
+                    items: drivers
+                        .map((driver) => DropdownMenuItem<String>(
+                      value: driver,
+                      child: Text(driver),
+                    ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedDriver = value;
+                      });
                     },
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      isDense: true,
-                    ),
-                    value: controller.selectVehicleValue,
-                    items: controller.dashboardAllData!.vehicleTypes!
-                        .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                      value: vehicle,
-                      child: Text(
-                        vehicle.name ?? "",
-                        style: mozillaTextRegularText(
-                          fontSize: 12,
-                          color: DynamicColors.textClr,
-                        ),
+                  child: DropdownButtonFormField<String>(
+                    value: selectedVehicle,
+                    decoration: InputDecoration(
+                      labelText: "Select Vehicle",
+                      filled: true,
+                      fillColor: const Color(0xFFF2F5F9),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                    ),
+                    items: vehicles
+                        .map((vehicle) => DropdownMenuItem<String>(
+                      value: vehicle,
+                      child: Text(vehicle),
                     ))
                         .toList(),
-                    onChanged: (v) async {
-                      controller.selectVehicleValue = v;
+                    onChanged: (value) {
+                      setState(() {
+                        selectedVehicle = value;
+                      });
                     },
                   ),
                 ),
@@ -638,6 +611,7 @@ class _CenterAreaState extends State<_CenterArea> {
 class _RightSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     final subtle = const Color(0xFF6B7C8F);
 
     return Container(
