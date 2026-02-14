@@ -306,7 +306,7 @@ class _ListOfAccountInvoiceScreenState
                                         ),
                                       ),
                                       onPressed: () {
-                                        controller.invoiceUpdate(invoiceUpdate: item);
+                                        controller.bindAccountInvoiceValue(item);
 
 
                                         int index = _controller.selectedMenuItems
@@ -340,7 +340,9 @@ class _ListOfAccountInvoiceScreenState
                                           color: Colors.transparent,
                                         ), // border color & thickness
                                       ),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        controller.accountInvoiceDelete(item.id);
+                                      },
                                       child: Icon(
                                         Icons.delete_forever,
                                         size: 28,
