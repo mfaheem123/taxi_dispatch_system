@@ -79,6 +79,7 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
 
             Scrollbar(
               thickness: 15,
+              radius: const Radius.circular(10),
               child: SizedBox(
                 width: Get.width/1.1 ,
                 child: DatatableWidget(

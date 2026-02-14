@@ -800,19 +800,18 @@ class FareController extends GetxController {
 
     };
     print(formData);
-    var response = await Api().post(formData, "fareincrement/add");
+    var response = await Api().post(formData,
+        isFareIncrementEditMode? "fareincrement/add":
+            "fareincrement/update/${editingId}"
+    );
     if(response.statusCode == 200){
+      getFareIncrement();
       incrementValueVehicleController.clear();
       print(response.data);
-      BotToast.showText(text: "Fare configuration is successfully added");
+      BotToast.showText(text: "Fare Increment is successfully added");
 
     }
   }
-
-
-
-
-
 
 
   GetFareIncrementMoodel? getFareIncrementMoodel;
@@ -827,6 +826,41 @@ class FareController extends GetxController {
       update();
     }
   }
+
+
+  bool isFareIncrementEditMode = false;
+  int? editingId;
+
+
+  bindFareIncrementForEdit(FareIncrement model) {
+    isFareIncrementEditMode = true;
+    editingId = model.id;
+
+    // Ensure dates are not null
+    FareIncrementStart = model.startDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    FareIncrementEnd = model.endDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+
+    operatorType = model.fareIncrementOperator;
+    incrementValueVehicleController.text = model.amount ?? "";
+    isFixedFare = model.fixFare ?? false;
+    isMileage = model.mileage ?? false;
+    selectedType = isFixedFare ? "fixFare" : "mileage";
+
+    update(); // Yeh UI ko refresh karega
+  }
+
+
+
+
+
+  deleteFareIncrement(int? id) async {
+    var response = await Api().delete("fareincrement/delete/$id");
+    if (response.statusCode == 200) {
+      getFareIncrement();
+      BotToast.showText(text: "Fare Increment Deleted successfully");
+    }
+  }
+
 
 
 

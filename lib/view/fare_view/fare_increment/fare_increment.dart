@@ -27,6 +27,7 @@ class _FareIncrementState extends State<FareIncrement> {
       ? Get.find<FareController>()
       : Get.put(FareController());
 
+  final DashboardController _controller = Get.find();
   int selectedRowIndex = 0;
   final int totalRows = 50;
   final ScrollController _scrollController = ScrollController();
@@ -93,14 +94,14 @@ class _FareIncrementState extends State<FareIncrement> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: DateTime.now(),
+                            // 2. String ko DateTime mein convert karein
+                            initialDate: DateTime.tryParse(controller.FareIncrementStart ?? "") ?? DateTime.now(),
+
                             onChanged: (date) {
-                              controller.FareIncrementStart =
-                              "${date.year}-${date.month}-${date.day}";
+                              controller.FareIncrementStart = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
                             },
                             onSubmitted: (date) {
-                              controller.FareIncrementStart =
-                              "${date.year}-${date.month}-${date.day}";
+                              controller.FareIncrementStart = "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
                             },
                           ),
                         ),
@@ -296,6 +297,9 @@ class _FareIncrementState extends State<FareIncrement> {
                                 ),
                                 onPressed: () {
                                   // 🟢 Edit action
+controller.bindFareIncrementForEdit(fareIncrement);
+
+
                                 },
                                 child: Icon(Icons.edit_calendar,
                                     size: 20,
@@ -311,6 +315,7 @@ class _FareIncrementState extends State<FareIncrement> {
                                 ),
                                 onPressed: () {
                                   // 🔴 Delete action
+controller.deleteFareIncrement(fareIncrement.id);
                                 },
                                 child: Icon(Icons.delete_forever,
                                     size: 20,

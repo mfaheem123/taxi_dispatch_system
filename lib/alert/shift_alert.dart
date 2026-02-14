@@ -18,7 +18,8 @@ class ShiftAlert {
         ? Get.find<DriverController>()
         : Get.put(DriverController());
 
-    // int? editingIndex;
+
+    int? editingIndex;
 
     Get.dialog(
       Dialog(
@@ -119,16 +120,28 @@ class ShiftAlert {
                                   width: 150,
                                   height: 35,
                                   verticalPadding: 0.0,
-                                  btnText: "SAVE",
+                                  btnText: editingIndex != null? "UPDATE" : "SAVE",
                                   borderRadius: 4,
                                   style: mozillaTextRegularText(
                                       fontSize: 14, color: DynamicColors.whiteClr),
                                   onTap: () {
-                                    controller.shiftList.add(ShiftAlertClass(
-                                      shiftTitle: shiftCtrl.text,
-                                      endTime: startTimeCtrl.text,
-                                      startTime: endTimeCtrl.text,
-                                    ));
+                                    if (editingIndex != null) {
+                                      controller.shiftList[editingIndex!] = ShiftAlertClass(
+                                        shiftTitle: shiftCtrl.text,
+                                        startTime: startTimeCtrl.text,
+                                        endTime: endTimeCtrl.text,
+                                      );
+                                      editingIndex = null;
+                                    } else {
+                                      controller.shiftList.add(
+                                        ShiftAlertClass(
+                                          shiftTitle: shiftCtrl.text,
+                                          startTime: startTimeCtrl.text,
+                                          endTime: endTimeCtrl.text,
+                                        ),
+                                      );
+                                    }
+
                                     shiftCtrl.clear();
                                     startTimeCtrl.clear();
                                     endTimeCtrl.clear();
@@ -209,12 +222,16 @@ class ShiftAlert {
                                         icon: const Icon(Icons.edit,
                                             size: 18, color: Color(0xFF43489A)),
                                         onPressed: () {
-                                          setState(() {
-                                            shiftCtrl.text = row.shiftTitle.text;
-                                            startTimeCtrl.text = row.startTime ?? "";
-                                            endTimeCtrl.text = row.endTime ?? "";
 
-                                          });
+                                            setState(() {
+                                              editingIndex = index;
+                                              shiftCtrl.text = row.shiftTitle;
+                                              startTimeCtrl.text = row.startTime ?? "";
+                                              endTimeCtrl.text = row.endTime ?? "";
+
+                                            });
+
+
                                         },
                                       ),
                                       IconButton(
@@ -276,7 +293,8 @@ class NoteAlert {
         ? Get.find<DriverController>()
         : Get.put(DriverController());
 
-    // int? editingIndex;
+
+    int? editingIndex;
 
     Get.dialog(
       Dialog(
@@ -351,20 +369,31 @@ class NoteAlert {
                                     width: 150,
                                     height: 35,
                                     verticalPadding: 0.0,
-                                    btnText: "SAVE",
+                                    btnText:    editingIndex != null? "UPDATE" :  "SAVE",
                                     borderRadius: 4,
                                     style: mozillaTextRegularText(
                                         fontSize: 14, color: DynamicColors.whiteClr),
                                     onTap: () {
-                                      controller.noteList.add(NoteAlertClass(
-                                        notesTitle: controller.notesCtrl.text,
-                                        createdItTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
-                                        createdByTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"
-                                      ));
+                                      if (editingIndex != null) {
+                                        controller.noteList[editingIndex!] = NoteAlertClass(
+                                          notesTitle: controller.notesCtrl.text,
+                                          createdItTime: controller.noteList[editingIndex!].createdItTime,
+                                          createdByTime: controller.noteList[editingIndex!].createdByTime,
+                                        );
+                                        editingIndex = null;  // reset
+                                      } else {
+                                        controller.noteList.add(
+                                          NoteAlertClass(
+                                            notesTitle: controller.notesCtrl.text,
+                                            createdItTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+                                            createdByTime: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+                                          ),
+                                        );
+                                      }
                                       controller.notesCtrl.clear();
                                       controller.update();
-                                      // saveShift;
                                     },
+
                                   ),
 
                                 ),
@@ -441,8 +470,8 @@ class NoteAlert {
                                               size: 18, color: Color(0xFF43489A)),
                                           onPressed: () {
                                             setState(() {
-
-                                              controller.notesCtrl.text = row.notesTitle.text;
+                                              editingIndex = index;
+                                              controller.notesCtrl.text = row.notesTitle;
                                             });
                                           },
                                         ),
@@ -452,7 +481,9 @@ class NoteAlert {
                                               size: 18, color: Colors.red),
                                           onPressed: () {
                                             setState(() {
-                                              controller.shiftList.removeAt(index);
+                                              controller.noteList.removeAt(index);
+                                              controller.update();
+
                                             });
                                           },
                                         ),
