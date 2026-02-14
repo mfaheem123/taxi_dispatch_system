@@ -177,7 +177,23 @@ class _UpdateAccountInvoiceScreenState
               label: AppText.invoiceDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.updateInvoiceDateController = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.updateInvoiceDateController = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+              )),
             ),
             labeledField(
               context: context,
@@ -185,7 +201,24 @@ class _UpdateAccountInvoiceScreenState
               label: AppText.invoiceDueDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  // jab bhi user change kare
+                  setState(() {
+                    controller.updateInvoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  // jab user enter press kare
+                  setState(() {
+                    controller.updateInvoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+              )
+              ),
             ),
             Padding(
                 padding: EdgeInsets.only(top: 25),
@@ -196,12 +229,12 @@ class _UpdateAccountInvoiceScreenState
                             fontWeight: FontWeight.bold),
                         children: [
                       TextSpan(
-                          text: "  INV368",
-                          // text: controller.isLoading.value
-                          //     ? " Loading..."
-                          //     : "  ${controller.invoiceNumber.value}",
-                          // style: mozillaTextRegularText(
-                          //     color: DynamicColors.redClr)
+                          // text: "  INV368",
+                          text: controller.isLoading.value
+                              ? " Loading..."
+                              : "  ${controller.updateInvoiceNumber.value}",
+                          style: mozillaTextRegularText(
+                              color: DynamicColors.redClr)
                       )
                     ]))),
             CustomDropdownField<Subsidiaries>(
@@ -209,12 +242,12 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.5,
               label: AppText.subsidiary,
               items: controller.subsDiaryModel?.subsidiaries ?? [],
-              value: controller.selectedSubsidiaryForGet.value,
+              value: controller.updateSelectedSubsidiary.value,
               itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.selectedSubsidiaryForGet.value = val;
+                controller.updateSelectedSubsidiary.value = val;
                 if (val != null && val.id != null) {
-                  controller.getAccountsBySubsidiary(val.id!);
+                  controller.getUpdateAccountsBySubsidiary(val.id!);
                 }
               },
             ),
@@ -223,10 +256,10 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.5,
               label: AppText.account,
               items: controller.accountList,
-              value: controller.selectedAccount.value,
+              value: controller.updateSelectedAccount.value,
               itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.selectedAccount.value = val;
+                controller.updateSelectedAccount.value = val;
                 controller.update();
               },
             ),
@@ -235,16 +268,16 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.5,
               label: AppText.department,
               items: controller.departmentList,
-              value: controller.selectedDepartment.value,
+              value: controller.updateSelectedDepartment.value,
               itemLabel: (val) => val,
               onChanged: (val) {
-                controller.selectedDepartment.value = val;
+                controller.updateSelectedDepartment.value = val;
                 controller.update();
               },
             ),
             CustomTextField(
               borderRadius: 4,
-              controller: controller.customerTelephoneController,
+              controller: controller.updateCustomerTelephoneController,
               width: fieldWidth,
               hintText: AppText.order,
               columnText: true,
@@ -265,9 +298,9 @@ class _UpdateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
-                            initialDate: controller.fromDate ?? DateTime.now(),
+                            initialDate: controller.updateFromDate ?? DateTime.now(),
                             onChanged: (pickedDate) {
-                              controller.fromDate = pickedDate;
+                              controller.updateFromDate = pickedDate;
                               controller.update();
                             })),
                   ),
@@ -282,9 +315,9 @@ class _UpdateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
-                          initialDate: controller.toDate ?? DateTime.now(),
+                          initialDate: controller.updateToDate ?? DateTime.now(),
                           onChanged: (pickedDate) {
-                            controller.toDate = pickedDate;
+                            controller.updateToDate = pickedDate;
                             controller.update();
                           },
                         )),
@@ -299,13 +332,16 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-                      controller.getAccountInvoiceBookings();
+                      controller.getUpdateAccountInvoiceBookings();
                     },
                   ),
                   SizedBox(
                     width: 15,
                   ),
                   CustomButton(
+                    onTap: () {
+                      controller.postUpdateInvoice();
+                    },
                     verticalPadding: 0.0,
                     width: 40,
                     height: 30,
@@ -313,9 +349,6 @@ class _UpdateAccountInvoiceScreenState
                     btnText: AppText.update,
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.postInvoice();
-                    },
                   ),
                 ],
               ),
