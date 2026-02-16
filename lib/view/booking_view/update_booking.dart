@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/F8_widget_alert.dart';
@@ -55,10 +57,22 @@ class _UpdateBookingState extends State<UpdateBooking> {
   final List<FocusNode> _focusNodes =
   List.generate(4, (index) => FocusNode()); // 4 icons
 
+
+  var decodedJson;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    final uri = Uri.base;
+    final encodedData = uri.queryParameters['data'];
+
+    if (encodedData != null) {
+      decodedJson =
+      jsonDecode(utf8.decode(base64Url.decode(encodedData)));
+
+      print(decodedJson); // Your object here
+    }
     if (!Get.isRegistered<DashboardController>()) {
       Get.put(DashboardController());
       print("Controller initialized ✅");
@@ -68,6 +82,9 @@ class _UpdateBookingState extends State<UpdateBooking> {
     final params = Uri.base.queryParameters;
     print(params.length);
     print("value value 111");
+
+    // controller.dashBoardDataBinding(jobData: decodedJson);
+
     Future.delayed(Duration(milliseconds: 300), () {
       FocusScope.of(context).requestFocus(dropdownFocusNode);
     });

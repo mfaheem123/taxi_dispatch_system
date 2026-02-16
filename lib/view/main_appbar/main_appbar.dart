@@ -436,8 +436,6 @@ class _MyHomePageState extends State<MyHomePage> {
           title: "COMPLETE BOOKINGS",
           onTap: () {
             setState(() {
-
-
               controller.currentPage.value = CompleteBookingsScreen();
               controller.menuBarRefresh(
                   title: "COMPLETE BOOKINGS",

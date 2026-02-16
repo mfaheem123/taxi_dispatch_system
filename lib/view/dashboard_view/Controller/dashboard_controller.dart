@@ -1842,32 +1842,11 @@ class DashboardController extends GetxController {
   dashBoardDataBinding({required BookingObjectData jobData}) async{
     print(jobData);
     polyLineMarkerInfo.clear();
+    viaPoints.clear();
+    polylinePoints.clear();
     pickupController.text = jobData.pickup.toString();
     dropOffController.text = jobData.dropoff.toString();
 
-    // markers.add(
-    //   CustomMarker(
-    //     withReturnType: "pickup",
-    //     child: Icon(Icons.location_pin,
-    //         color: DynamicColors.primaryClr,
-    //         size: 30),
-    //     type: "pickup",
-    //     point: LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
-    //     width: 30,
-    //     height: 30,
-    //   ),
-    // );
-    // markers.add(
-    //   CustomMarker(
-    //     child: Icon(Icons.location_pin,
-    //         color: DynamicColors.primaryClr,
-    //         size: 30),
-    //     type: "dropOff",
-    //     point: LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
-    //     width: 30,
-    //     height: 30,
-    //   ),
-    // );
     polylinePoints.add(
       LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
     );
@@ -1886,6 +1865,37 @@ class DashboardController extends GetxController {
       markerType: "DROP LOCATION",
       address: '',
     ));
+
+    for (var item in jobData.viapoints!) {
+      final p = LatLng(double.parse(item.latitude.toString()), double.parse(item.longitude.toString()));
+      polylinePoints.add(
+          LatLng(p.latitude, p.longitude));
+
+      viaPoints.add(ViaPoint(
+        withReturnWay: 'via',
+        // name: currentTypeName,
+        address: item.viapoint!,
+        lat: p.latitude,
+        lng: p.longitude,
+      ));
+      viaTextEditingController.add(
+          ViaTextEditingControllerClass(TextEditingController(text: item.name!), TextEditingController(text: item.mobile!))
+      );
+
+      // markers.add(
+      //   CustomMarker(
+      //     withReturnType: "via",
+      //     child: Icon(Icons.location_pin,
+      //         color: DynamicColors.primaryClr,
+      //         size: 30),
+      //     type: "via",
+      //     point: p,
+      //     width: 30,
+      //     height: 30,
+      //   ),
+      // );
+    }
+
     fetchRouteFromOSRM();
 
     nameController.text = jobData.name!;
@@ -1894,18 +1904,36 @@ class DashboardController extends GetxController {
     telController.text = jobData.telephone!;
     pickUpTimeController.text = jobData.pickupTime!;
     minController.text = jobData.leadTime??"";
-    passController.text = jobData.passengers.toString();
-    luggController.text = jobData.luggages.toString();
-    sluggController.text = jobData.handLuggages.toString();
-    parkingChargesController.text = jobData.parkingCharges.toString();
-    congestionChargesController.text = jobData.congestionCharges.toString();
+    if(jobData.passengers != null){
+      passController.text = jobData.passengers.toString();
+    }
+    if(jobData.luggages != null){
+      luggController.text = jobData.luggages.toString();
+    }
+    if(jobData.handLuggages != null){
+      sluggController.text = jobData.handLuggages.toString();
+    }
+    if(jobData.parkingCharges != null){
+      parkingChargesController.text = jobData.parkingCharges.toString();
+    }
+    if(jobData.congestionCharges != null){
+      congestionChargesController.text = jobData.congestionCharges.toString();
+    }
     if(jobData.meetAndGreet != null){
       meetGreetController.text = jobData.meetAndGreet.toString();
     }
-    waitingChargesController.text = jobData.waitingCharges.toString();
-    extraDropChargesController.text = jobData.extraDropCharges.toString();
-    creditCardChargesController.text = jobData.creditCardCharges.toString();
-    companyPriceController.text = jobData.companyPrice.toString();
+    if(jobData.waitingCharges != null){
+      waitingChargesController.text = jobData.waitingCharges.toString();
+    }
+    if(jobData.extraDropCharges != null){
+      extraDropChargesController.text = jobData.extraDropCharges.toString();
+    }
+    if(jobData.creditCardCharges != null){
+      creditCardChargesController.text = jobData.creditCardCharges.toString();
+    }
+    if(jobData.companyPrice != null){
+      companyPriceController.text = jobData.companyPrice.toString();
+    }
     if(jobData.specialInstructions != null){
       specialRequirementsController.text =
           jobData.specialInstructions.toString();
