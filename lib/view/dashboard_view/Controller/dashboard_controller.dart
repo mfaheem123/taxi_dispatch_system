@@ -233,7 +233,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    // connectToCli("202");
+    connectToCli("202");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
@@ -1839,197 +1839,204 @@ class DashboardController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
-  dashBoardDataBinding({required BookingObjectData jobData}) async{
-    print(jobData);
-    polyLineMarkerInfo.clear();
-    viaPoints.clear();
-    polylinePoints.clear();
-    pickupController.text = jobData.pickup.toString();
-    dropOffController.text = jobData.dropoff.toString();
+  dashBoardDataBinding({BookingObjectData? jobData, id}) async{
 
-    polylinePoints.add(
-      LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
-    );
-    polylinePoints.add(
-      LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
-    );
-    polyLineMarkerInfo.add(ViaPoint(
-      lat: double.parse(jobData.pickupLatitude!),
-      lng: double.parse(jobData.pickupLongitude!),
-      markerType: "PICKUP LOCATION",
-      address: '',
-    ));
-    polyLineMarkerInfo.add(ViaPoint(
-      lat: double.parse(jobData.dropoffLatitude!),
-      lng: double.parse(jobData.dropoffLongitude!),
-      markerType: "DROP LOCATION",
-      address: '',
-    ));
+    print(id);
 
-    for (var item in jobData.viapoints!) {
-      final p = LatLng(double.parse(item.latitude.toString()), double.parse(item.longitude.toString()));
+    var response = await Api().get("bookings/getbyid/$id");
+    // var response = await Api().get("bookings/getbyid/$id");
+    if(response.statusCode == 200){
+      BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
+      polyLineMarkerInfo.clear();
+      viaPoints.clear();
+      polylinePoints.clear();
+      pickupController.text = jobData.pickup.toString();
+      dropOffController.text = jobData.dropoff.toString();
+
       polylinePoints.add(
-          LatLng(p.latitude, p.longitude));
-
-      viaPoints.add(ViaPoint(
-        withReturnWay: 'via',
-        // name: currentTypeName,
-        address: item.viapoint!,
-        lat: p.latitude,
-        lng: p.longitude,
+        LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
+      );
+      polylinePoints.add(
+        LatLng(double.parse(jobData.dropoffLatitude!), double.parse(jobData.dropoffLongitude!)),
+      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: double.parse(jobData.pickupLatitude!),
+        lng: double.parse(jobData.pickupLongitude!),
+        markerType: "PICKUP LOCATION",
+        address: '',
       ));
-      viaTextEditingController.add(
-          ViaTextEditingControllerClass(TextEditingController(text: item.name!), TextEditingController(text: item.mobile!))
-      );
+      polyLineMarkerInfo.add(ViaPoint(
+        lat: double.parse(jobData.dropoffLatitude!),
+        lng: double.parse(jobData.dropoffLongitude!),
+        markerType: "DROP LOCATION",
+        address: '',
+      ));
 
-      // markers.add(
-      //   CustomMarker(
-      //     withReturnType: "via",
-      //     child: Icon(Icons.location_pin,
-      //         color: DynamicColors.primaryClr,
-      //         size: 30),
-      //     type: "via",
-      //     point: p,
-      //     width: 30,
-      //     height: 30,
-      //   ),
-      // );
-    }
+      for (var item in jobData.viapoints!) {
+        final p = LatLng(double.parse(item.latitude.toString()), double.parse(item.longitude.toString()));
+        polylinePoints.add(
+            LatLng(p.latitude, p.longitude));
 
-    fetchRouteFromOSRM();
-
-    nameController.text = jobData.name!;
-    emailController.text = jobData.email!;
-    mobileController.text = jobData.mobile!;
-    telController.text = jobData.telephone!;
-    pickUpTimeController.text = jobData.pickupTime!;
-    minController.text = jobData.leadTime??"";
-    if(jobData.passengers != null){
-      passController.text = jobData.passengers.toString();
-    }
-    if(jobData.luggages != null){
-      luggController.text = jobData.luggages.toString();
-    }
-    if(jobData.handLuggages != null){
-      sluggController.text = jobData.handLuggages.toString();
-    }
-    if(jobData.parkingCharges != null){
-      parkingChargesController.text = jobData.parkingCharges.toString();
-    }
-    if(jobData.congestionCharges != null){
-      congestionChargesController.text = jobData.congestionCharges.toString();
-    }
-    if(jobData.meetAndGreet != null){
-      meetGreetController.text = jobData.meetAndGreet.toString();
-    }
-    if(jobData.waitingCharges != null){
-      waitingChargesController.text = jobData.waitingCharges.toString();
-    }
-    if(jobData.extraDropCharges != null){
-      extraDropChargesController.text = jobData.extraDropCharges.toString();
-    }
-    if(jobData.creditCardCharges != null){
-      creditCardChargesController.text = jobData.creditCardCharges.toString();
-    }
-    if(jobData.companyPrice != null){
-      companyPriceController.text = jobData.companyPrice.toString();
-    }
-    if(jobData.specialInstructions != null){
-      specialRequirementsController.text =
-          jobData.specialInstructions.toString();
-    }
-    slugController.text = jobData.fares.toString();
-
-    if(jobData.pickupDoorNumber != null){
-      pickUpNoteController.text = jobData.pickupDoorNumber.toString();
-    }
-    if(jobData.dropoffDoorNumber != null){
-      dropUpNoteController.text = jobData.dropoffDoorNumber.toString();
-    }
-
-    if(jobData.childSeat!.isNotEmpty){
-      for (var action in jobData.childSeat!) {
-        childSeatAlert.add(ChildSeatClass(
-          sets: action.child,
-          age: action.age,
+        viaPoints.add(ViaPoint(
+          withReturnWay: 'via',
+          // name: currentTypeName,
+          address: item.viapoint!,
+          lat: p.latitude,
+          lng: p.longitude,
         ));
-      }
-    }
+        viaTextEditingController.add(
+            ViaTextEditingControllerClass(TextEditingController(text: item.name!), TextEditingController(text: item.mobile!))
+        );
 
-    if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
-      final restrictedIds = jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
-      driversList.addAll(
-          allDriverData!.drivers.where((driver) => restrictedIds.contains(driver.id.toString()))
-      );
-    }
+        // markers.add(
+        //   CustomMarker(
+        //     withReturnType: "via",
+        //     child: Icon(Icons.location_pin,
+        //         color: DynamicColors.primaryClr,
+        //         size: 30),
+        //     type: "via",
+        //     point: p,
+        //     width: 30,
+        //     height: 30,
+        //   ),
+        // );
+      }
+
+      fetchRouteFromOSRM();
+
+      nameController.text = jobData.name!;
+      emailController.text = jobData.email!;
+      mobileController.text = jobData.mobile!;
+      telController.text = jobData.telephone!;
+      pickUpTimeController.text = jobData.pickupTime!;
+      minController.text = jobData.leadTime??"";
+      if(jobData.passengers != null){
+        passController.text = jobData.passengers.toString();
+      }
+      if(jobData.luggages != null){
+        luggController.text = jobData.luggages.toString();
+      }
+      if(jobData.handLuggages != null){
+        sluggController.text = jobData.handLuggages.toString();
+      }
+      if(jobData.parkingCharges != null){
+        parkingChargesController.text = jobData.parkingCharges.toString();
+      }
+      if(jobData.congestionCharges != null){
+        congestionChargesController.text = jobData.congestionCharges.toString();
+      }
+      if(jobData.meetAndGreet != null){
+        meetGreetController.text = jobData.meetAndGreet.toString();
+      }
+      if(jobData.waitingCharges != null){
+        waitingChargesController.text = jobData.waitingCharges.toString();
+      }
+      if(jobData.extraDropCharges != null){
+        extraDropChargesController.text = jobData.extraDropCharges.toString();
+      }
+      if(jobData.creditCardCharges != null){
+        creditCardChargesController.text = jobData.creditCardCharges.toString();
+      }
+      if(jobData.companyPrice != null){
+        companyPriceController.text = jobData.companyPrice.toString();
+      }
+      if(jobData.specialInstructions != null){
+        specialRequirementsController.text =
+            jobData.specialInstructions.toString();
+      }
+      slugController.text = jobData.fares.toString();
+
+      if(jobData.pickupDoorNumber != null){
+        pickUpNoteController.text = jobData.pickupDoorNumber.toString();
+      }
+      if(jobData.dropoffDoorNumber != null){
+        dropUpNoteController.text = jobData.dropoffDoorNumber.toString();
+      }
+
+      if(jobData.childSeat!.isNotEmpty){
+        for (var action in jobData.childSeat!) {
+          childSeatAlert.add(ChildSeatClass(
+            sets: action.child,
+            age: action.age,
+          ));
+        }
+      }
+
+      if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
+        final restrictedIds = jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
+        driversList.addAll(
+            allDriverData!.drivers.where((driver) => restrictedIds.contains(driver.id.toString()))
+        );
+      }
 
 // 1. Using firstWhereOrNull (Cleanest & Safest)
-    if (jobData.subsidiaryId != null) {
-      selectSubsidiariesValue = dashboardAllData?.subsidiaries?.firstWhereOrNull(
-            (subsidiary) => subsidiary.id == jobData.subsidiaryId,
-      );
-    }
-    ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
-   await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
+      if (jobData.subsidiaryId != null) {
+        selectSubsidiariesValue = dashboardAllData?.subsidiaries?.firstWhereOrNull(
+              (subsidiary) => subsidiary.id == jobData.subsidiaryId,
+        );
+      }
+      ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get account data subsidiaries base
+      await getAccountData(subsidiariesId: selectSubsidiariesValue!.id ?? 1);
 
 // Professional approach using the 'collection' package
-    selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
-          (account) => account.id == jobData.accountId,
-    );
+      selectAccountValue = dashboardAccountData?.accounts?.firstWhereOrNull(
+            (account) => account.id == jobData.accountId,
+      );
 
-    selectDepartmentData = dashboardAccountData?.accounts
-        ?.expand((account) => account.departments ?? [])
-        .firstWhere(
-          (dept) => dept.id.toString() == jobData.department.toString(),
-      orElse: () => null, // This mimics the 'OrNull' behavior
-    );
+      selectDepartmentData = dashboardAccountData?.accounts
+          ?.expand((account) => account.departments ?? [])
+          .firstWhere(
+            (dept) => dept.id.toString() == jobData.department.toString(),
+        orElse: () => null, // This mimics the 'OrNull' behavior
+      );
 
 // 1. Using firstWhereOrNull (Cleanest & Safest)
-    if (jobData.paymentTypeId != null) {
-      selectPaymentTypeValue = dashboardAllData?.paymentTypes?.firstWhereOrNull(
-            (payment) => payment.id == jobData.paymentTypeId,
-      );
-    }
-
-    // 1. Using firstWhereOrNull (Cleanest & Safest)
-    if (jobData.journeyTypeId != null) {
-      selectJourneyTypeValue = dashboardAllData?.journeyTypes?.firstWhereOrNull(
-            (journey) => journey.id == jobData.journeyTypeId,
-      );
-    }
-
-    // 1. Using firstWhereOrNull (Cleanest & Safest)
-    if (jobData.vehicleTypeId != null) {
-      selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
-            (vehicle) => vehicle.id == jobData.vehicleTypeId,
-      );
-    }
-
-    final LocationController _controller =
-    Get.isRegistered<LocationController>()
-        ? Get.find<LocationController>()
-        : Get.put(LocationController());
-
-    final zones = _controller.locationtypezoneModel?.zonesList;
-
-    if (zones != null) {
-      _controller.updateLocationValue.value == true;
-      // Find pickup zone
-      if (jobData.pickupPlot != null) {
-        dashboardZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
-        _controller.zoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+      if (jobData.paymentTypeId != null) {
+        selectPaymentTypeValue = dashboardAllData?.paymentTypes?.firstWhereOrNull(
+              (payment) => payment.id == jobData.paymentTypeId,
+        );
       }
 
-      // Find dropoff zone
-      if (jobData.dropoffPlot != null) {
-        dashboardDZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
-        _controller.zoneDValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+      // 1. Using firstWhereOrNull (Cleanest & Safest)
+      if (jobData.journeyTypeId != null) {
+        selectJourneyTypeValue = dashboardAllData?.journeyTypes?.firstWhereOrNull(
+              (journey) => journey.id == jobData.journeyTypeId,
+        );
       }
 
-      _controller.updateLocationValue.value == false;
-    }
+      // 1. Using firstWhereOrNull (Cleanest & Safest)
+      if (jobData.vehicleTypeId != null) {
+        selectVehicleValue = dashboardAllData?.vehicleTypes?.firstWhereOrNull(
+              (vehicle) => vehicle.id == jobData.vehicleTypeId,
+        );
+      }
 
-update();
+      final LocationController _controller =
+      Get.isRegistered<LocationController>()
+          ? Get.find<LocationController>()
+          : Get.put(LocationController());
+
+      final zones = _controller.locationtypezoneModel?.zonesList;
+
+      if (zones != null) {
+        _controller.updateLocationValue.value == true;
+        // Find pickup zone
+        if (jobData.pickupPlot != null) {
+          dashboardZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+          _controller.zoneValue = zones.firstWhereOrNull((z) => z.id == jobData.pickupPlot);
+        }
+
+        // Find dropoff zone
+        if (jobData.dropoffPlot != null) {
+          dashboardDZoneValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+          _controller.zoneDValue = zones.firstWhereOrNull((z) => z.id == jobData.dropoffPlot);
+        }
+
+        _controller.updateLocationValue.value == false;
+      }
+
+      update();
+    }
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 

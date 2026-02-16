@@ -575,9 +575,8 @@ class _BookingTableState extends State<BookingTable> {
                                 IconButton(
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
                                   onPressed: () async {
-                                    // controller.dashBoardDataBinding(jobData: item);
+                                    // controller.dashBoardDataBinding(id: item.id!);
 
-                                    String encodedData = base64Url.encode(utf8.encode(jsonEncode(item)));
                                     final newTabUrl =
                                         "${Uri.base.origin}${Routes.updateBooking}?data=${item.id}";
                                       // final newTabUrl = Uri.base.origin + Routes.updateBooking;
@@ -589,6 +588,15 @@ class _BookingTableState extends State<BookingTable> {
                                     } else {
                                     throw 'Could not launch $newTabUrl';
                                     }
+
+
+                                    // Instead of launchUrl
+                                    // Navigator.pushNamed(
+                                    //   context,
+                                    //   Routes.updateBooking,
+                                    //   arguments: item.id,
+                                    // );
+
                                   },
                                 ),
                               ],
