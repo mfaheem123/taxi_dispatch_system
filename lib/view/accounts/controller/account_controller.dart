@@ -759,8 +759,7 @@ class AccountController extends GetxController {
   String? invoiceDueDateController = "2000-01-01";
 
   // update controller
-  TextEditingController updateCustomerTelephoneController =
-      TextEditingController();
+  TextEditingController updateCustomerTelephoneController = TextEditingController();
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";
 
