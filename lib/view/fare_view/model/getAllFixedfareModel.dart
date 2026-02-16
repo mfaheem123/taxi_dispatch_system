@@ -10,39 +10,23 @@ String getAllFixedFareModelToJson(GetAllFixedFareModel data) => json.encode(data
 
 class GetAllFixedFareModel {
   bool? status;
-  int? page;
-  int? limit;
-  int? total;
-  int? totalPages;
   int? count;
   List<FixedFare>? fixedFares;
 
   GetAllFixedFareModel({
     this.status,
-    this.page,
-    this.limit,
-    this.total,
-    this.totalPages,
     this.count,
     this.fixedFares,
   });
 
   factory GetAllFixedFareModel.fromJson(Map<String, dynamic> json) => GetAllFixedFareModel(
     status: json["status"],
-    page: json["page"],
-    limit: json['limit'],
-    total: json['total'],
-    totalPages: json['total_pages'],
     count: json["count"],
     fixedFares: json["fixed_fares"] == null ? [] : List<FixedFare>.from(json["fixed_fares"]!.map((x) => FixedFare.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "page": page,
-    "limit": limit,
-    "total": total,
-    "total_pages": totalPages,
     "count": count,
     "fixed_fares": fixedFares == null ? [] : List<dynamic>.from(fixedFares!.map((x) => x.toJson())),
   };
@@ -59,6 +43,8 @@ class FixedFare {
   String? createdAt;
   String? updatedAt;
   String? vehicleTypeName;
+  String? fromLocationName;
+  String? toLocationName;
 
   FixedFare({
     this.id,
@@ -71,6 +57,8 @@ class FixedFare {
     this.createdAt,
     this.updatedAt,
     this.vehicleTypeName,
+    this.fromLocationName,
+    this.toLocationName,
   });
 
   factory FixedFare.fromJson(Map<String, dynamic> json) => FixedFare(
@@ -84,6 +72,8 @@ class FixedFare {
     createdAt: json["created_at"],
     updatedAt: json["updated_at"],
     vehicleTypeName: json["vehicle_type_name"],
+    fromLocationName: json["from_location_name"],
+    toLocationName: json["to_location_name"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -97,5 +87,7 @@ class FixedFare {
     "created_at": createdAt,
     "updated_at": updatedAt,
     "vehicle_type_name": vehicleTypeName,
+    "from_location_name": fromLocationName,
+    "to_location_name": toLocationName,
   };
 }

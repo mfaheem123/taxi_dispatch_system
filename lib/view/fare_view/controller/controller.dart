@@ -127,7 +127,6 @@ class FareController extends GetxController {
   RxInt plotUpdateId = 0.obs;
 
   bindPlotFare(PlotFare fare) {
-    // 1. Controller mein value set karna
     fareController.text = fare.fares?.toString() ?? "";
     if (plotVehicleTypeModel?.vehicleTypes != null) {
       plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
@@ -213,10 +212,8 @@ class FareController extends GetxController {
 
   getAllFixedFare () async {
     fixedFareLoader(true);
-    var response = await Api().get("fixedfares/get?",
+    var response = await Api().get("fixedfares/get",
         queryParameters: {
-          'page': currentPage.value,
-          'limit': limit,
           "vehicle": searchVehicle.value.toLowerCase(),
           "from_location": searchFromLocation.value.toLowerCase(),
           "to_location": searchToLocation.value.toLowerCase(),
@@ -225,7 +222,6 @@ class FareController extends GetxController {
     );
     if (response.statusCode == 200) {
       getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
-      totalPages.value = getAllFixedFareModels?.totalPages ?? 1;
       fixedFareAll.value = getAllFixedFareModels?.fixedFares ?? [];
       fixedFareFiltered.value = fixedFareAll;
       fixedFareLoader(false);
@@ -239,11 +235,7 @@ class FareController extends GetxController {
     getAllFixedFare();
   }
 
-  /// ------- pagination function
-  void onPageFixedFare(int page) {
-    currentPage.value = page;
-    getAllFixedFare();
-  }
+
 
   /// ----------------------------------------- Delete fixed fare
   deleteFixedFareSetting(int? id) async{
@@ -293,30 +285,57 @@ class FareController extends GetxController {
         "to_location_id": toLocationTypeValue!.id,
       };
 
-      var response = await Api().post(formData, 'fixedfares/add', auth: true);
+      var response = await Api().post(formData,
+          isUpdateFixedFare.value?
+          "fixedfares/edit/${fixedFareUpdateId.value}":
+          'fixedfares/add',
+          auth: true);
       if (response.statusCode ==  200) {
+        clearForm();
         print("POST success: ${response.data}");
         getAllFixedFare(); // updated data fetch
       }
   }
 
-  // getAllFixedFare() async {
-  //   getAllFixedFareLoader(true); // loader start
-  //   try {
-  //     var response = await Api().get("fixedfares/get");
-  //     if (response.statusCode == 200) {
-  //       getAllFixedFareModel = GetAllFixedFareModel.fromJson(response.data);
-  //       print("Fetched fares: ${getAllFixedFareModel}");
-  //     } else {
-  //       print("GET Error ${response.statusCode}: ${response.data}");
-  //     }
-  //   } catch (e) {
-  //     print("GET Exception: $e");
-  //   } finally {
-  //     getAllFixedFareLoader(false); // loader stop
-  //     update();
-  //   }
-  // }
+  void clearForm() {
+
+    vehicleTypesFixedvalue = null;
+    fromLocationTypeValue = null;
+    toLocationTypeValue = null;
+    addressController.clear();
+    addressController1.clear();
+    fareController.clear();
+    update();
+  }
+
+  RxBool isUpdateFixedFare = false.obs;
+  RxInt fixedFareUpdateId = 0.obs;
+  void fixedFareBinding(FixedFare editModel) {
+    addressController.text = editModel.area1 ?? "";
+    addressController1.text = editModel.area2 ?? "";
+    fareController.text = editModel.fares?.toString() ?? "";
+
+    if (fixedFareVehicleLocationTypeModel != null) {
+      vehicleTypesFixedvalue = fixedFareVehicleLocationTypeModel!.vehicleTypesFixed?.firstWhere(
+            (item) => item.id == editModel.vehicleTypeId,
+        orElse: () => vehicleTypesFixedvalue!,
+      );
+
+      fromLocationTypeValue = fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
+            (item) => item.id == editModel.fromLocationId,
+        orElse: () => fromLocationTypeValue!,
+      );
+
+      toLocationTypeValue = fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
+            (item) => item.id == editModel.toLocationId,
+        orElse: () => toLocationTypeValue!,
+      );
+    }
+    isUpdateFixedFare(true);
+    fixedFareUpdateId(editModel.id);
+    update();
+  }
+
 
 
   /// todo testing location ???????????????????????????????????????????????????????????????????????
