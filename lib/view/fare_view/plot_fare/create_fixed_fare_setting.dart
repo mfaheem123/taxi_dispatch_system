@@ -216,21 +216,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
-                                          // RestrictedDrivers(
-                                          //   width: fieldWidth,
-                                          //   height: 35,
-                                          //   padding: 0.0,
-                                          //   border: Border.all(
-                                          //     color: DynamicColors.gryClr,
-                                          //   ),
-                                          //   titleText: "SELECT PLOT",
-                                          //   driversList: [
-                                          //     "25 GEORGE HAMPTON",
-                                          //     "26 PAUL DOUBLEDAY",
-                                          //     "27 RICHARD HARDWICK",
-                                          //     "28 LANRE OKERJO",
-                                          //   ],
-                                          // ),
+
                                           RawKeyboardListener(
                                             focusNode: controller
                                                 .searchingAddressViaFocusNode,
@@ -628,9 +614,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         child:
                                             Text(item.vehicleTypeName ?? ""))),
                                     DataCell(
-                                        Center(child: Text(item.area1 ?? ""))),
+                                        Center(child: Text(item.area1.toString() ?? ""))),
                                     DataCell(
-                                        Center(child: Text(item.area2 ?? ""))),
+                                        Center(child: Text(item.area2.toString() ?? ""))),
                                     DataCell(
                                         Center(child: Text(item.fares ?? ""))),
                                     DataCell(
@@ -663,6 +649,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               ),
                                               onPressed: () {
                                                 // 🔴 Delete action
+                                                controller.deleteFixedFareSetting(item.id);
                                               },
                                               child: Icon(Icons.delete_forever,
                                                   size: 20,

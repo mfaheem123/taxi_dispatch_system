@@ -72,17 +72,22 @@ class DriverPersonalInfo extends StatelessWidget {
                  crossAxisAlignment: WrapCrossAlignment.center,
                  children: [
                    Focus(
-                     onKey: (node, event) {
-                       if (event.logicalKey == LogicalKeyboardKey.space) {
-                         controller.hasPDA.value = !controller.hasPDA.value;
-                         controller.update();
-                         return KeyEventResult.handled;
+                     onKeyEvent: (node, event) {
+                       if (event is KeyDownEvent) {
+                         if (event.logicalKey == LogicalKeyboardKey.space ||
+                             event.logicalKey == LogicalKeyboardKey.enter ||
+                             event.logicalKey == LogicalKeyboardKey.numpadEnter) {
+                           controller.hasPDA.value = !controller.hasPDA.value;
+                           controller.update();
+                           return KeyEventResult.handled;
+                         }
                        }
-                       return KeyEventResult.ignored;
+                       return KeyEventResult.ignored; // Tab ko ignore karo
                      },
                      child: FocusTraversalOrder(
                        order: NumericFocusOrder(1),
                        child: Checkbox(
+                         autofocus: true,
                          value: controller.hasPDA.value,
                          onChanged: (val) {
                            controller.hasPDA.value = val!;
@@ -91,6 +96,7 @@ class DriverPersonalInfo extends StatelessWidget {
                        ),
                      ),
                    ),
+
                    Text(AppText.hasPDA),
                    FocusTraversalOrder(
                      order: NumericFocusOrder(2),
@@ -252,8 +258,6 @@ class DriverPersonalInfo extends StatelessWidget {
                              width: Get.width / 5,
                              height: 35,
                              items: ['Commission', "Rent/Week"],
-                             // items: controller.locationtypezoneModel!
-                             //     .zonesList!,
                              value: controller.driverType,
                              itemLabel: (templateList) =>
                              templateList,
@@ -262,10 +266,6 @@ class DriverPersonalInfo extends StatelessWidget {
                                controller.update();
                              },
                            ),
-                           // RestrictedDrivers(
-                           //   width: fieldWidth,
-                           //   driversList: ['Commission', "Other Driver"],
-                           // ),
                          ),
                          column: true
                      ),

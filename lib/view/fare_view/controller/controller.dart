@@ -245,6 +245,18 @@ class FareController extends GetxController {
     getAllFixedFare();
   }
 
+  /// ----------------------------------------- Delete fixed fare
+  deleteFixedFareSetting(int? id) async{
+    var response = await Api().delete( "fixedfares/delete/${id}");
+    if(response.statusCode == 200){
+      getAllFixedFare();
+      BotToast.showText(text: "Fixed Fare Setting Deleted successfully ");
+      update();
+    }
+  }
+
+
+
 
 
   VehicleTypeFixed? vehicleTypesFixedvalue;
@@ -273,20 +285,19 @@ class FareController extends GetxController {
     postFixedFareLoader(true); // loader start
 
       var formData = {
-        "vehicle_type_id": "70",
-        "area1": "Islamabad",
-        "area2": "Lahore",
-        "fares": "20",
-        "from_location_id": "1",
-        "to_location_id": "24",
+        "vehicle_type_id": vehicleTypesFixedvalue!.id,
+        "area1": addressController.text,
+        "area2": addressController1.text,
+        "fares": fareController.text,
+        "from_location_id": fromLocationTypeValue!.id,
+        "to_location_id": toLocationTypeValue!.id,
       };
 
       var response = await Api().post(formData, 'fixedfares/add', auth: true);
-      if (response.statusCode == 200) {
+      if (response.statusCode ==  200) {
         print("POST success: ${response.data}");
         getAllFixedFare(); // updated data fetch
       }
-
   }
 
   // getAllFixedFare() async {
