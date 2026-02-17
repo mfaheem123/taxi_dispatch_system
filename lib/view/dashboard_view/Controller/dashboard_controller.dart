@@ -180,6 +180,8 @@ class DashboardController extends GetxController {
   final pickupTwoWayController = TextEditingController();
   final dropOffController = TextEditingController();
   final dropOffTwoWayController = TextEditingController();
+  final selectAirportController = TextEditingController();
+  final arrivalTimeController = TextEditingController();
   final switchController = ValueNotifier<bool>(false);
   RxBool smsCheckbox = true.obs;
   RxBool addReturnFare = true.obs;
@@ -413,12 +415,11 @@ class DashboardController extends GetxController {
     if (response.statusCode == 200) {
 
       // source "airport"
-      if (response.data['source'] == "airport") {
+      if (response.data['source'] == "airport" && selectedTextFieldsValue.value == "PICKUP LOCATION") {
         isAirportResponse.value = true;
-      } else {
+      } else if(response.data['source'] != "airport" && selectedTextFieldsValue.value == "PICKUP LOCATION"){
         isAirportResponse.value = false;
       }
-
       if (response.data.isNotEmpty) {
         allAddressesData.clear();
         allAddressesData.addAll((response.data['result'] as List)
@@ -1596,6 +1597,7 @@ class DashboardController extends GetxController {
         'credit_card_charges': creditCardChargesController.text,
       if (companyPriceController.text.isNotEmpty)
         'company_price': companyPriceController.text,
+      // "total_charges": ,
       // "RETURN COMPANY PRICE": "????????????????????????????????????????????? taj missing",
       if (specialRequirementsController.text.isNotEmpty)
         'special_instructions': specialRequirementsController.text,
@@ -1642,6 +1644,9 @@ class DashboardController extends GetxController {
       if (pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
       if (extraFaresReturnList.isNotEmpty)
         "return_notes": jsonEncode(extraFaresReturnList),
+      if(selectAirportController.text.isNotEmpty)"flight_number": selectAirportController.text,
+      if(arrivalTimeController.text.isNotEmpty)"arriving_from": arrivalTimeController.text,
+      "total_charges": double.parse(fixedFare.value).toStringAsFixed(1)
 
       /// todo waiting return
     };
@@ -1777,6 +1782,8 @@ class DashboardController extends GetxController {
     nameController.clear();
     emailController.clear();
     mobileController.clear();
+    selectAirportController.clear();
+    arrivalTimeController.clear();
     telController.clear();
     pickUpTimeController.clear();
     minController.clear();

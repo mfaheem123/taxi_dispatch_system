@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/controller/cli_controller.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -8,7 +11,12 @@ import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
 import '../component/dropdown_button.dart';
+import '../component/textStyle.dart';
+import '../component/text_widget.dart';
+import 'dashboard_view/Controller/dashboard_controller.dart';
 import 'dashboard_view/booking_table.dart';
+import 'dashboard_view/models/dashboard_model.dart';
+import 'dashboard_view/widgets/user_info_widget.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
   final String extensionNumber;
@@ -265,66 +273,60 @@ class _CenterAreaState extends State<_CenterArea> {
   /// Flag to control swapping in table
   bool isSwapped = false;
 
+  DashboardController _controller = Get.find();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (_controller.dashboardAllData == null) {
+      _controller.dashboardData();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final subtle = const Color(0xFF6B7C8F);
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-
-            /// ================= HEADER =================
-            Obx(() => Text(
-              controller.customerName.value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: subtle,
-                fontWeight: FontWeight.w700,
-              ),
-            )),
-
-            const SizedBox(height: 4),
-
-            Obx(() => Text(
-              controller.customerMobile.value.isEmpty
-                  ? "Loading..."
-                  : controller.customerMobile.value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.black87,
-                fontWeight: FontWeight.w600,
-              ),
-            )),
-
-            const SizedBox(height: 16),
-
-            /// ================= SEARCH =================
-            SizedBox(
-              height: 44,
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: const Color(0xFFF2F5F9),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            /// ================= PICKUP & DROPOFF =================
-            Row(
+    return GetBuilder<DashboardController>(
+      builder: (homeController) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
+
+                /// ================= HEADER =================
+                Obx(() => Text(
+                  controller.customerName.value,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: subtle,
+                    fontWeight: FontWeight.w700,
+                  ),
+                )),
+
+                const SizedBox(height: 4),
+
+                Obx(() => Text(
+                  controller.customerMobile.value.isEmpty
+                      ? "Loading..."
+                      : controller.customerMobile.value,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )),
+
+                const SizedBox(height: 16),
+
+                /// ================= SEARCH =================
+                SizedBox(
+                  height: 44,
                   child: TextField(
-                    controller: pickUpcontroller,
                     decoration: InputDecoration(
-                      labelText: "Pickup",
+                      hintText: "Search",
+                      prefixIcon: const Icon(Icons.search),
                       filled: true,
                       fillColor: const Color(0xFFF2F5F9),
                       border: OutlineInputBorder(
@@ -333,279 +335,407 @@ class _CenterAreaState extends State<_CenterArea> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: dropOfUpcontroller,
-                    decoration: InputDecoration(
-                      labelText: "Drop Off",
-                      filled: true,
-                      fillColor: const Color(0xFFF2F5F9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 28),
+                const SizedBox(height: 20),
 
-            /// ================= RECENT RIDES =================
-            Row(
-              children: [
-                Text(
-                  "Recent Rides",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            /// ================= TABLE with Swap Button =================
-            Obx(() {
-              if (controller.isLoading.value) {
-                return const Padding(
-                  padding: EdgeInsets.all(30),
-                  child: CircularProgressIndicator(),
-                );
-              }
-
-              if (controller.bookings.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(30),
-                  child: Text("No Bookings Found"),
-                );
-              }
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Swap Button near table
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isSwapped = !isSwapped; // Toggle swap flag
-                      });
-                    },
-                    child: const Text("Swap Destination & Pickup"),
-                  ),
-                  const SizedBox(height: 8),
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minWidth: 850),
-                      child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "Destination", removeSearching: true),
-                          buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
-                          buildHeaderWithSearch(title: "Date", removeSearching: true),
-                          buildHeaderWithSearch(title: "Fare", removeSearching: true),
-                          buildHeaderWithSearch(title: "Action", removeSearching: true),
-                        ],
-                        totalRow: controller.bookings.length,
-                        rows: List.generate(
-                          controller.bookings.length,
-                              (index) {
-                            var booking = controller.bookings[index];
-
-                            return DataRow(
-                              cells: [
-                                // ✅ Swap table values
-                                DataCell(
-                                  SizedBox(
-                                    width: 180,
-                                    child: Text(
-                                      isSwapped ? booking["pickup"] ?? "" : booking["dropoff"] ?? "",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  SizedBox(
-                                    width: 180,
-                                    child: Text(
-                                      isSwapped ? booking["dropoff"] ?? "" : booking["pickup"] ?? "",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(Text(booking["pickup_date"] ?? "")),
-                                DataCell(Text("£${booking["fares"] ?? 0}")),
-
-                                // ✅ TOGGLE CHECKBOX
-                                DataCell(
-                                  Obx(() => Checkbox(
-                                    value: selectedIndex.value == index,
-                                    onChanged: (value) {
-                                      if (selectedIndex.value == index) {
-                                        selectedIndex.value = -1; // unselect
-                                      } else {
-                                        selectedIndex.value = index; // select
-                                      }
-                                    },
-                                  )),
-                                ),
-                              ],
-                            );
-                          },
+                /// ================= PICKUP & DROPOFF =================
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: pickUpcontroller,
+                        decoration: InputDecoration(
+                          labelText: "Pickup",
+                          filled: true,
+                          fillColor: const Color(0xFFF2F5F9),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            }),
-
-            const SizedBox(height: 30),
-
-            /// ================= DRIVER + VEHICLE =================
-            Row(
-              children: [
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedDriver,
-                    decoration: InputDecoration(
-                      labelText: "Select Driver",
-                      filled: true,
-                      fillColor: const Color(0xFFF2F5F9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: dropOfUpcontroller,
+                        decoration: InputDecoration(
+                          labelText: "Drop Off",
+                          filled: true,
+                          fillColor: const Color(0xFFF2F5F9),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
                     ),
-                    items: drivers
-                        .map((driver) => DropdownMenuItem<String>(
-                      value: driver,
-                      child: Text(driver),
-                    ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDriver = value;
-                      });
-                    },
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedVehicle,
-                    decoration: InputDecoration(
-                      labelText: "Select Vehicle",
-                      filled: true,
-                      fillColor: const Color(0xFFF2F5F9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+
+                const SizedBox(height: 28),
+
+                /// ================= RECENT RIDES =================
+                Row(
+                  children: [
+                    Text(
+                      "Recent Rides",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(color: subtle, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                /// ================= TABLE with Swap Button =================
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return const Padding(
+                      padding: EdgeInsets.all(30),
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (controller.bookings.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.all(30),
+                      child: Text("No Bookings Found"),
+                    );
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Swap Button near table
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isSwapped = !isSwapped; // Toggle swap flag
+                          });
+                        },
+                        child: const Text("Swap Destination & Pickup"),
+                      ),
+                      const SizedBox(height: 8),
+
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(minWidth: 850),
+                          child: DatatableWidget(
+                            columns: [
+                              buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+                              buildHeaderWithSearch(title: "Drop off", removeSearching: true),
+                              buildHeaderWithSearch(title: "Date", removeSearching: true),
+                              buildHeaderWithSearch(title: "Fare", removeSearching: true),
+                              buildHeaderWithSearch(title: "Action", removeSearching: true),
+                            ],
+                            totalRow: controller.bookings.length,
+                            rows: List.generate(
+                              controller.bookings.length,
+                                  (index) {
+                                var booking = controller.bookings[index];
+
+                                return DataRow(
+                                  cells: [
+                                    // ✅ Swap table values
+                                    DataCell(
+                                      rightClickTextCell(
+                                        item: booking,
+                                        onRightClick: () {
+                                          print("RIGHT CLICK REF #: ");
+                                        },
+                                        child:  SizedBox(
+                                          width: 180,
+                                          child: Text(
+                                            isSwapped ? booking["dropoff"] ?? "" : booking["pickup"] ?? "",
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ),
+
+                                    ),
+                                    DataCell(
+
+                                      rightClickTextCell(
+                                        item: booking,
+                                        onRightClick: () {
+                                          print("RIGHT CLICK REF #: ");
+                                        },
+                                        child: Text(
+                                          isSwapped ? booking["pickup"] ?? "" : booking["dropoff"] ?? "",
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(Text(booking["pickup_date"] ?? "")),
+                                    DataCell(Text("£${booking["fares"] ?? 0}")),
+
+                                    // ✅ TOGGLE CHECKBOX
+                                    DataCell(
+                                      Obx(() => Checkbox(
+                                        value: selectedIndex.value == index,
+                                        onChanged: (value) {
+                                          if (selectedIndex.value == index) {
+                                            selectedIndex.value = -1; // unselect
+                                          } else {
+                                            selectedIndex.value = index; // select
+                                          }
+                                        },
+                                      )),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+
+                const SizedBox(height: 30),
+
+                /// ================= DRIVER + VEHICLE =================
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Select driver"),
+                          Container(
+                            height: 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                            ),
+                            child: DropdownButtonFormField<DashboardDriverObject>(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                              value: homeController.selectDriverValue,
+                              items: homeController.dashboardAllData!.drivers!
+                                  .map((driver) => DropdownMenuItem<DashboardDriverObject>(
+                                value: driver,
+                                child: Text(
+                                  driver.name ?? "",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 12,
+                                    color: DynamicColors.textClr,
+                                  ),
+                                ),
+                              ))
+                                  .toList(),
+                              onChanged: (v) {
+                                homeController.selectDriverValue = v;
+                                homeController.update();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    items: vehicles
-                        .map((vehicle) => DropdownMenuItem<String>(
-                      value: vehicle,
-                      child: Text(vehicle),
-                    ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedVehicle = value;
-                      });
-                    },
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Select vehicle"),
+                          Container(
+                            // height: 35,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                            ),
+                            child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                isDense: true,
+                              ),
+                              value: homeController.selectVehicleValue,
+                              items: homeController.dashboardAllData!.vehicleTypes!
+                                  .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                                value: vehicle,
+                                child: Text(
+                                  vehicle.name ?? "",
+                                  style: mozillaTextRegularText(
+                                    fontSize: 12,
+                                    color: DynamicColors.textClr,
+                                  ),
+                                ),
+                              ))
+                                  .toList(),
+                              onChanged: (v) async {
+                                homeController.selectVehicleValue = v;
+                                homeController.getFaresCalculation();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                /// ================= SUBMIT =================
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (selectedIndex.value == -1) {
+                          Get.snackbar(
+                            "Error",
+                            "Please select a booking",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        if (selectedDriver == null || selectedVehicle == null) {
+                          Get.snackbar(
+                            "Error",
+                            "Please select driver and vehicle",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        print("Booking Index: ${selectedIndex.value}");
+                        print("Driver: $selectedDriver");
+                        print("Vehicle: $selectedVehicle");
+
+                        Get.snackbar(
+                          "Success",
+                          "Job Assigned Successfully",
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                        );
+                      },
+                      child: const Text("SUBMIT"),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (selectedIndex.value == -1) {
+                          Get.snackbar(
+                            "Error",
+                            "Please select a booking",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        if (selectedDriver == null || selectedVehicle == null) {
+                          Get.snackbar(
+                            "Error",
+                            "Please select driver and vehicle",
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                          );
+                          return;
+                        }
+
+                        print("Booking Index: ${selectedIndex.value}");
+                        print("Driver: $selectedDriver");
+                        print("Vehicle: $selectedVehicle");
+
+                        Get.snackbar(
+                          "Success",
+                          "Job Assigned Successfully",
+                          backgroundColor: Colors.green,
+                          colorText: Colors.white,
+                        );
+                      },
+                      child: const Text("New Booking"),
+                    ),
+                  ],
                 ),
               ],
             ),
-
-            const SizedBox(height: 30),
-
-            /// ================= SUBMIT =================
-            Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedIndex.value == -1) {
-                      Get.snackbar(
-                        "Error",
-                        "Please select a booking",
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-
-                    if (selectedDriver == null || selectedVehicle == null) {
-                      Get.snackbar(
-                        "Error",
-                        "Please select driver and vehicle",
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-
-                    print("Booking Index: ${selectedIndex.value}");
-                    print("Driver: $selectedDriver");
-                    print("Vehicle: $selectedVehicle");
-
-                    Get.snackbar(
-                      "Success",
-                      "Job Assigned Successfully",
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                    );
-                  },
-                  child: const Text("SUBMIT"),
-                ),
-                const SizedBox(width: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedIndex.value == -1) {
-                      Get.snackbar(
-                        "Error",
-                        "Please select a booking",
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-
-                    if (selectedDriver == null || selectedVehicle == null) {
-                      Get.snackbar(
-                        "Error",
-                        "Please select driver and vehicle",
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
-                      return;
-                    }
-
-                    print("Booking Index: ${selectedIndex.value}");
-                    print("Driver: $selectedDriver");
-                    print("Vehicle: $selectedVehicle");
-
-                    Get.snackbar(
-                      "Success",
-                      "Job Assigned Successfully",
-                      backgroundColor: Colors.green,
-                      colorText: Colors.white,
-                    );
-                  },
-                  child: const Text("New Booking"),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
+
+
+  Widget rightClickTextCell({
+    required Widget child,
+    required VoidCallback onRightClick,
+    required dynamic item,
+  }) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.mouse &&
+            event.buttons == kSecondaryMouseButton) {
+          final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              event.position,
+              event.position,
+            ),
+            Offset.zero & overlay.size,
+          );
+          // onRightClick();
+          showRowContextMenu(
+            context: context,
+            position: position,
+            item: item,
+          );
+        }
+      },
+      child: child,
+    );
+  }
+
+  void showRowContextMenu({
+    required BuildContext context,
+    required RelativeRect position,
+    required dynamic item,
+  }) {
+    showMenu(
+      context: context,
+      position: position
+      /*RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        0,
+        0,
+      )*/,
+      items: const [
+        PopupMenuItem(value: 'accept', child: Text('DROP OFF')),
+        PopupMenuItem(value: 'decline', child: Text('PICKUP')),
+      ],
+
+    ).then((value) {
+      if (value == null) return;
+
+      switch (value) {
+        case 'accept':
+          print("ACCEPT ${item.referenceNumber}");
+          break;
+        case 'decline':
+          print("DECLINE ${item.referenceNumber}");
+          break;
+      }
+    });
+  }
+
 }
+
 
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
