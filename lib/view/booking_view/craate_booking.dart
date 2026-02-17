@@ -219,21 +219,26 @@ class _CreateBookingState extends State<CreateBooking> {
                                       isDense: true,
                                     ),
                                     value: controller.selectDriverValue,
-                                    items: controller.dashboardAllData == null?[]: controller.dashboardAllData!.drivers!
-                                        .map((driver) => DropdownMenuItem<
-                                                DashboardDriverObject>(
-                                              value: driver,
-                                              child: Text(
-                                                driver.name ?? "",
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: mozillaTextRegularText(
-                                                  fontSize: 12,
-                                                  color: DynamicColors.textClr,
-                                                ),
-                                              ),
-                                            ))
-                                        .toList(),
+                                    items: controller.dashboardAllData == null
+                                        ? []
+                                        : controller.dashboardAllData!.drivers!
+                                            .map((driver) => DropdownMenuItem<
+                                                    DashboardDriverObject>(
+                                                  value: driver,
+                                                  child: Text(
+                                                    driver.name ?? "",
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style:
+                                                        mozillaTextRegularText(
+                                                      fontSize: 12,
+                                                      color:
+                                                          DynamicColors.textClr,
+                                                    ),
+                                                  ),
+                                                ))
+                                            .toList(),
                                     onChanged: (v) {
                                       controller.selectDriverValue = v;
                                       controller.update();
@@ -260,30 +265,33 @@ class _CreateBookingState extends State<CreateBooking> {
                               SizedBox(
                                 width: 200,
                                 height: 35,
-                                child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                                child: DropdownButtonFormField<
+                                    DashboardSubsidiaryObject>(
                                   decoration: InputDecoration(
                                       border: OutlineInputBorder(),
                                       isDense: true,
                                       filled: true,
-                                      fillColor: DynamicColors.whiteClr
-                                  ),
+                                      fillColor: DynamicColors.whiteClr),
                                   value: controller.selectSubsidiariesValue,
-                                  items: controller.dashboardAllData!
-                                      .subsidiaries!
-                                      .map((subsidiaries) =>
-                                      DropdownMenuItem<DashboardSubsidiaryObject>(
-                                        value: subsidiaries,
-                                        child: Text(subsidiaries.name ?? "",
-                                          style: mozillaTextRegularText(
-                                            fontSize: 12,
-                                            color: DynamicColors.textClr,
-                                          ),
-                                        ),
-                                      ))
+                                  items: controller
+                                      .dashboardAllData!.subsidiaries!
+                                      .map((subsidiaries) => DropdownMenuItem<
+                                              DashboardSubsidiaryObject>(
+                                            value: subsidiaries,
+                                            child: Text(
+                                              subsidiaries.name ?? "",
+                                              style: mozillaTextRegularText(
+                                                fontSize: 12,
+                                                color: DynamicColors.textClr,
+                                              ),
+                                            ),
+                                          ))
                                       .toList(),
                                   onChanged: (v) {
                                     controller.selectSubsidiariesValue = v;
-                                    controller.getAccountData(subsidiariesId: controller.selectSubsidiariesValue!.id);
+                                    controller.getAccountData(
+                                        subsidiariesId: controller
+                                            .selectSubsidiariesValue!.id);
                                   },
                                 ),
                               ),
@@ -293,8 +301,7 @@ class _CreateBookingState extends State<CreateBooking> {
 
                         const SizedBox(height: 8),
 
-                        Stack(key: controller.stackKey,
-                            children: [
+                        Stack(key: controller.stackKey, children: [
                           FocusTraversalGroup(
                             policy: OrderedTraversalPolicy(),
                             child: Column(
@@ -304,6 +311,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                 ///todo pickup fields widget
                                 // Fields Row / Column Responsive
                                 /*PickupWidget(),*/
+
                                 ///todo pickup fields widget
 
                                 Align(
@@ -326,8 +334,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                             spacing: 16,
                                             children: [
                                               Padding(
-                                                padding: EdgeInsets.only(
-                                                    left: 10),
+                                                padding:
+                                                    EdgeInsets.only(left: 10),
                                                 child: Text(
                                                   AppText.pick,
                                                   style:
@@ -562,7 +570,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     child: CustomDropdownField<
                                                         location.ZoneObject>(
                                                       label: "Select Zone",
-                                                      width: isMobile ? fieldWidth : fieldWidth + 40,
+                                                      width: isMobile
+                                                          ? fieldWidth
+                                                          : fieldWidth + 40,
                                                       height: 30,
                                                       items: _controller
                                                                   .updateLocationValue
@@ -598,7 +608,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 order:
                                                     const NumericFocusOrder(3),
                                                 child: SizedBox(
-                                                  width: isMobile ? fieldWidth : fieldWidth + 40,
+                                                  width: isMobile
+                                                      ? fieldWidth
+                                                      : fieldWidth + 40,
                                                   height: 30,
                                                   child: CustomTextField(
                                                     controller:
@@ -840,7 +852,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                     child: CustomDropdownField<
                                                         location.ZoneObject>(
                                                       label: "Select Zone",
-                                                      width: isMobile ? fieldWidth : fieldWidth + 40,
+                                                      width: isMobile
+                                                          ? fieldWidth
+                                                          : fieldWidth + 40,
                                                       height: 30,
                                                       items: _controller
                                                                   .updateDLocationValue
@@ -879,7 +893,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       const EdgeInsets.only(
                                                           left: 5),
                                                   child: SizedBox(
-                                                    width: isMobile ? fieldWidth : fieldWidth + 40,
+                                                    width: isMobile
+                                                        ? fieldWidth
+                                                        : fieldWidth + 40,
                                                     height: 30,
                                                     child: CustomTextField(
                                                       controller:
@@ -953,8 +969,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                       context,
                                                       isMobile,
                                                       isTablet,
-                                                      fieldWidth)
-                                                ),
+                                                      fieldWidth)),
                                         ),
                                         // Mob
                                         // SizedBox(
@@ -1048,71 +1063,61 @@ class _CreateBookingState extends State<CreateBooking> {
                                             label: AppText.date,
                                             width: fieldWidth,
                                             child: LayoutBuilder(
-                                                builder: (context, constraints) {
-                                                  return SizedBox(
-                                                      height: 30,
-                                                      width: constraints
-                                                          .maxWidth,
-                                                      child: KeyboardDatePicker(
-                                                        initialDate:
-                                                        controller.pickUpDate ??
-                                                            DateTime.now(),
-                                                        borderClr: Colors.blue,
-                                                        onChanged: (
-                                                            date) async {
-                                                          controller
-                                                              .pickUpDate =
-                                                              date;
-                                                          final storedTemFare = await getFares(
-                                                              journeyTypeId: controller
-                                                                  .selectJourneyTypeValue!
-                                                                  .id,
-                                                              multiReservationList:
-                                                              controller
-                                                                  .multiReservationList,
-                                                              dropOff: controller
-                                                                  .pickupController
-                                                                  .text,
-                                                              pickup: controller
-                                                                  .dropOffController
-                                                                  .text,
-                                                              miles: controller
-                                                                  .totalDistance
-                                                                  .value,
-                                                              dropoffPlotId:
-                                                              controller
-                                                                  .dashboardZoneValue !=
-                                                                  null
-                                                                  ? controller
-                                                                  .dashboardZoneValue!
-                                                                  .id
-                                                                  : null,
-                                                              pickupDate:
-                                                              "${controller
-                                                                  .pickUpDate!
-                                                                  .year}-${controller
-                                                                  .pickUpDate!
-                                                                  .month}-${controller
-                                                                  .pickUpDate!
-                                                                  .day}",
-                                                              pickupTime: controller
-                                                                  .pickUpTimeController
-                                                                  .text,
-                                                              vehicleTypeId: controller
-                                                                  .selectVehicleValue!
-                                                                  .id);
-                                                          controller.fixedFare
-                                                              .value =
-                                                              storedTemFare;
-                                                          controller.update();
-                                                        },
-                                                        onSubmitted: (date) {
-                                                          // jab user enter press kare
-                                                          print(
-                                                              "User pressed enter: $date");
-                                                        },
-                                                      ));
-                                                },
+                                              builder: (context, constraints) {
+                                                return SizedBox(
+                                                    height: 30,
+                                                    width: constraints.maxWidth,
+                                                    child: KeyboardDatePicker(
+                                                      initialDate: controller
+                                                              .pickUpDate ??
+                                                          DateTime.now(),
+                                                      borderClr: Colors.blue,
+                                                      onChanged: (date) async {
+                                                        controller.pickUpDate =
+                                                            date;
+                                                        final storedTemFare = await getFares(
+                                                            journeyTypeId: controller
+                                                                .selectJourneyTypeValue!
+                                                                .id,
+                                                            multiReservationList:
+                                                                controller
+                                                                    .multiReservationList,
+                                                            dropOff: controller
+                                                                .pickupController
+                                                                .text,
+                                                            pickup: controller
+                                                                .dropOffController
+                                                                .text,
+                                                            miles: controller
+                                                                .totalDistance
+                                                                .value,
+                                                            dropoffPlotId:
+                                                                controller.dashboardZoneValue != null
+                                                                    ? controller
+                                                                        .dashboardZoneValue!
+                                                                        .id
+                                                                    : null,
+                                                            pickupDate:
+                                                                "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
+                                                            pickupTime: controller
+                                                                .pickUpTimeController
+                                                                .text,
+                                                            vehicleTypeId:
+                                                                controller
+                                                                    .selectVehicleValue!
+                                                                    .id);
+                                                        controller.fixedFare
+                                                                .value =
+                                                            storedTemFare;
+                                                        controller.update();
+                                                      },
+                                                      onSubmitted: (date) {
+                                                        // jab user enter press kare
+                                                        print(
+                                                            "User pressed enter: $date");
+                                                      },
+                                                    ));
+                                              },
                                             ),
                                           ),
                                         ),
@@ -1133,7 +1138,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 height: 30,
                                                 child: CustomTimePicker(
                                                   controller: controller
-                                                      .pickUpTimeController, // optional
+                                                      .pickUpTimeController,
+                                                  // optional
                                                   onTimeSelected: (time) async {
                                                     controller
                                                         .pickUpTimeController
@@ -1336,8 +1342,6 @@ class _CreateBookingState extends State<CreateBooking> {
 
                                         // (9) Driver dropdown
                                         if (controller.jourValue == 'W/R') ...[
-
-
                                           SizedBox(height: screenHeight * 0.01),
 
                                           Align(
@@ -1361,8 +1365,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                                 ),
                                                 // (1) Pickup textfield
                                                 FocusTraversalOrder(
-                                                  order:
-                                                      NumericFocusOrder(15),
+                                                  order: NumericFocusOrder(15),
                                                   child: SizedBox(
                                                     width: isMobile == true ||
                                                             isTablet == true
@@ -1985,7 +1988,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   height: 30,
                                                   child: CustomTimePicker(
                                                     controller: controller
-                                                        .pickUpTimeControllerReturn, // optional
+                                                        .pickUpTimeControllerReturn,
+                                                    // optional
                                                     onTimeSelected: (time) {
                                                       controller
                                                           .pickUpTimeControllerReturn
@@ -2250,25 +2254,29 @@ class _CreateBookingState extends State<CreateBooking> {
                                                   value: controller
                                                       .selectDriverValueReturn,
                                                   items: controller
-                                                      .dashboardAllData ==null?[]: controller
-                                                      .dashboardAllData!
-                                                      .drivers!
-                                                      .map((driver) =>
-                                                          DropdownMenuItem<
-                                                              DashboardDriverObject>(
-                                                            value: driver,
-                                                            child: Text(
-                                                              driver.name ?? "",
-                                                              style:
-                                                                  mozillaTextRegularText(
-                                                                fontSize: 12,
-                                                                color:
-                                                                    DynamicColors
+                                                              .dashboardAllData ==
+                                                          null
+                                                      ? []
+                                                      : controller
+                                                          .dashboardAllData!
+                                                          .drivers!
+                                                          .map((driver) =>
+                                                              DropdownMenuItem<
+                                                                  DashboardDriverObject>(
+                                                                value: driver,
+                                                                child: Text(
+                                                                  driver.name ??
+                                                                      "",
+                                                                  style:
+                                                                      mozillaTextRegularText(
+                                                                    fontSize:
+                                                                        12,
+                                                                    color: DynamicColors
                                                                         .textClr,
-                                                              ),
-                                                            ),
-                                                          ))
-                                                      .toList(),
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                          .toList(),
                                                   onChanged: (v) {
                                                     controller
                                                         .selectDriverValueReturn = v;
@@ -2399,9 +2407,10 @@ class _CreateBookingState extends State<CreateBooking> {
                                         // (12) Pay dropdown
                                         Padding(
                                           padding: EdgeInsets.only(
-                                              left: controller.jourValue == 'W/R'
-                                                  ? 30
-                                                  : 17),
+                                              left:
+                                                  controller.jourValue == 'W/R'
+                                                      ? 30
+                                                      : 17),
                                           child: FocusTraversalOrder(
                                             order: NumericFocusOrder(
                                                 controller.jourValue == 'W/R'
@@ -2449,7 +2458,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                               payment.name ??
                                                                   "",
                                                               maxLines: 1,
-                                                              overflow: TextOverflow.ellipsis,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
                                                               style:
                                                                   mozillaTextRegularText(
                                                                 fontSize: 12,
@@ -2516,7 +2527,9 @@ class _CreateBookingState extends State<CreateBooking> {
                                                           child: Text(
                                                             vehicle.name ?? "",
                                                             maxLines: 1,
-                                                            overflow: TextOverflow.ellipsis,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                             style:
                                                                 mozillaTextRegularText(
                                                               fontSize: 12,
@@ -2590,7 +2603,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                             ? SizedBox.shrink()
                                             : FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue == 'W/R'
+                                                    controller.jourValue ==
+                                                            'W/R'
                                                         ? 32
                                                         : 19),
                                                 child: labeledField(
@@ -2798,7 +2812,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                             children: [
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue == 'W/R'
+                                                    controller.jourValue ==
+                                                            'W/R'
                                                         ? 36
                                                         : 23),
                                                 child: SizedBox(
@@ -2826,7 +2841,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                               SizedBox(width: 15),
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue == 'W/R'
+                                                    controller.jourValue ==
+                                                            'W/R'
                                                         ? 37
                                                         : 24),
                                                 child: SizedBox(
@@ -2854,7 +2870,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                               SizedBox(width: 15),
                                               FocusTraversalOrder(
                                                 order: NumericFocusOrder(
-                                                    controller.jourValue == 'W/R'
+                                                    controller.jourValue ==
+                                                            'W/R'
                                                         ? 38
                                                         : 25),
                                                 child: SizedBox(
@@ -2949,9 +2966,10 @@ class _CreateBookingState extends State<CreateBooking> {
                                         ),
                                         // (13) Calendar icon (keyboard clickable)
                                         FocusTraversalOrder(
-                                          order: NumericFocusOrder(controller.jourValue == 'W/R'
-                                              ? 39
-                                              : 26),
+                                          order: NumericFocusOrder(
+                                              controller.jourValue == 'W/R'
+                                                  ? 39
+                                                  : 26),
                                           child: SizedBox(
                                             height: 33,
                                             child: KbdActivatable(
@@ -3006,7 +3024,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                           color: DynamicColors.textClr,
                                           size: 18),
                                       SizedBox(width: 2),
-                                      Text("ETA : ${controller.totalTimeDuration}",
+                                      Text(
+                                          "ETA : ${controller.totalTimeDuration}",
                                           style: TextStyle(
                                               color: DynamicColors.textClr,
                                               fontSize: 13)),
@@ -3024,7 +3043,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                           color: DynamicColors.textClr,
                                           size: 18),
                                       SizedBox(width: 2),
-                                      Text("DISTANCE : ${controller.totalDistance}",
+                                      Text(
+                                          "DISTANCE : ${controller.totalDistance}",
                                           style: TextStyle(
                                               color: DynamicColors.textClr,
                                               fontSize: 13)),
@@ -3106,8 +3126,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                       //   ),
                                       // ),
                                       GestureDetector(
-                                        onTap: (){
-                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                                        onTap: () {
+                                          if (controller.pickupController.text
+                                                  .isNotEmpty &&
+                                              controller.dropOffController.text
+                                                  .isNotEmpty) {
                                             DashboardF8Alert.show();
                                           }
                                         },
@@ -3117,9 +3140,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 3),
                                           decoration: BoxDecoration(
-                                            color: controller.isHoveredF8.value == true? Colors.cyanAccent.shade400:Colors.transparent,
+                                            color:
+                                                controller.isHoveredF8.value ==
+                                                        true
+                                                    ? Colors.cyanAccent.shade400
+                                                    : Colors.transparent,
                                             borderRadius:
-                                            BorderRadius.circular(10),
+                                                BorderRadius.circular(10),
                                           ),
                                           child: Text(
                                             '+ MULTI RESERVATION [F8]',
@@ -3133,9 +3160,11 @@ class _CreateBookingState extends State<CreateBooking> {
                                       ),
 
                                       GestureDetector(
-                                        onTap: (){
-                                          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
-                                          {
+                                        onTap: () {
+                                          if (controller.pickupController.text
+                                                  .isNotEmpty &&
+                                              controller.dropOffController.text
+                                                  .isNotEmpty) {
                                             DashboardF9Alert.show();
                                           }
                                         },
@@ -3145,9 +3174,13 @@ class _CreateBookingState extends State<CreateBooking> {
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 3),
                                           decoration: BoxDecoration(
-                                            color: controller.isHoveredF9.value == true? Colors.cyanAccent.shade400: Colors.transparent,
+                                            color:
+                                                controller.isHoveredF9.value ==
+                                                        true
+                                                    ? Colors.cyanAccent.shade400
+                                                    : Colors.transparent,
                                             borderRadius:
-                                            BorderRadius.circular(10),
+                                                BorderRadius.circular(10),
                                           ),
                                           child: Text(
                                             '+ VEHICLES [F9]',
@@ -3170,20 +3203,23 @@ class _CreateBookingState extends State<CreateBooking> {
                                         btnColor: DynamicColors.redClr,
                                         verticalPadding: 0.0,
                                         borderRadius: 4,
-                                        onTap: (){
+                                        onTap: () {
                                           controller.refreshPostAllFields();
                                         },
                                       ),
                                       CustomButton(
-                                        onTap:
-                                            () {
-                                          if(controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty &&
-                                              controller.dropOffTwoWayController.text.isEmpty){
-                                            BotToast.showText(text: "Please chose waiting return");
+                                        onTap: () {
+                                          if (controller.jourValue == 'W/R' &&
+                                              controller.pickupTwoWayController
+                                                  .text.isEmpty &&
+                                              controller.dropOffTwoWayController
+                                                  .text.isEmpty) {
+                                            BotToast.showText(
+                                                text:
+                                                    "Please chose waiting return");
                                             return;
                                           }
-                                          controller
-                                              .dashBoardApiValidation();
+                                          controller.dashBoardApiValidation();
                                         },
                                         btnText: "SAVE[HOME]",
                                         width: 110,

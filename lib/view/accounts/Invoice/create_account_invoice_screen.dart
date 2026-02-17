@@ -15,6 +15,9 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
+import '../../dashboard_view/models/account_darshboard_model.dart';
+import '../controller/invoice_controller.dart';
+
 class CreateAccountInvoiceScreen extends StatefulWidget {
   const CreateAccountInvoiceScreen({super.key});
 
@@ -31,6 +34,9 @@ class _CreateAccountInvoiceScreenState
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
       : Get.put(AccountController());
+  InvoiceController invoiceController = Get.isRegistered<InvoiceController>()
+      ? Get.find<InvoiceController>()
+      : Get.put(InvoiceController());
 
   @override
   void initState() {
@@ -47,7 +53,7 @@ class _CreateAccountInvoiceScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
+    return GetBuilder<InvoiceController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -84,14 +90,12 @@ class _CreateAccountInvoiceScreenState
                   child: KeyboardDatePicker(
                     initialDate: DateTime.now(),
                     onChanged: (date) {
-                      // jab bhi user change kare
                       setState(() {
                         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
                         print(date);
                       });
                     },
                     onSubmitted: (date) {
-                      // jab user enter press kare
                       setState(() {
                         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
                       });
@@ -110,14 +114,12 @@ class _CreateAccountInvoiceScreenState
               child: SizedBox(height: 30, child: KeyboardDatePicker(
                 initialDate: DateTime.now(),
                 onChanged: (date) {
-                  // jab bhi user change kare
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
                     print(date);
                   });
                 },
                 onSubmitted: (date) {
-                  // jab user enter press kare
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
                   });
@@ -135,11 +137,7 @@ class _CreateAccountInvoiceScreenState
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold),
                         children: [
-                      TextSpan(
-                          // text: "  INV368",
-                          text: controller.isLoading.value
-                              ? " Loading..."
-                              : "  ${controller.invoiceNumber.value}",
+                      TextSpan(text: "  ${controller.invoiceNumberModel!.documentNumber!.prefix}" "${controller.invoiceNumberModel!.documentNumber!.endNumber}",
                           style: mozillaTextRegularText(
                               color: DynamicColors.redClr))
                     ]))),
@@ -148,180 +146,163 @@ class _CreateAccountInvoiceScreenState
               width: fieldWidth / 1.5,
               label: AppText.subsidiary,
               items: controller.subsDiaryModel?.subsidiaries ?? [],
-              value: controller.selectedSubsidiaryForGet.value,
+              value: controller.subsidiaries,
               itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.selectedSubsidiaryForGet.value = val;
-                if (val != null && val.id != null) {
-                  controller.getAccountsBySubsidiary(val.id!);
-                }
+                controller.subsidiaries = val;
+                controller.getAccountData(subsidiariesId: val!.id);
+
               },
             ),
-            CustomDropdownField<Account>(
-              text: AppText.account,
-              width: fieldWidth / 1.5,
-              label: AppText.account,
-              items: controller.accountList,
-              value: controller.selectedAccount.value,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.selectedAccount.value = val;
+            DropdownButtonFormField<DashboardAccountObject>(
+              decoration:const InputDecoration(
+                border:OutlineInputBorder(),isDense: true,),
+              value: controller.selectAccountValue,
+              items: controller.dashboardAccountData == null ? []
+                  : controller.dashboardAccountData!.accounts!
+                  .map((account) =>DropdownMenuItem<DashboardAccountObject>(
+                    value: account,
+                    child: Text(
+                      account.name ??
+                          "",
+                      style:mozillaTextRegularText(
+                        fontSize:12,
+                        color: DynamicColors.textClr,
+                      ),
+                    ),
+                  ))
+                  .toList(),
+              onChanged: (v) {
+                controller.selectAccountValue = v;
+                controller.selectDepartmentData = null;
                 controller.update();
               },
             ),
-            CustomDropdownField<String>(
-              text: AppText.department,
-              width: fieldWidth / 1.5,
-              label: AppText.department,
-              items: controller.departmentList,
-              value: controller.selectedDepartment.value,
-              itemLabel: (val) => val,
-              onChanged: (val) {
-                controller.selectedDepartment.value = val;
-                controller.update();
-              },
+            Container(
+              // height: 35,
+              decoration: BoxDecoration(
+                borderRadius:
+                BorderRadius.circular(
+                    6),
+                border: Border.all(
+                    color: DynamicColors
+                        .primaryClr,
+                    width: 1.2),
+              ),
+              child:
+              DropdownButtonFormField<
+                  DepartmentObject>(
+                decoration:
+                const InputDecoration(
+                  border:
+                  OutlineInputBorder(),
+                  isDense: true,
+                ),
+                value: controller
+                    .selectDepartmentData,
+                items: controller
+                    .selectAccountValue ==
+                    null
+                    ? []
+                    : controller
+                    .selectAccountValue!
+                    .departments!
+                    .map((department) =>
+                    DropdownMenuItem<
+                        DepartmentObject>(
+                      value:
+                      department,
+                      child: Text(
+                        department
+                            .name ??
+                            "",
+                        style:
+                        mozillaTextRegularText(
+                          fontSize:
+                          12,
+                          color: DynamicColors
+                              .textClr,
+                        ),
+                      ),
+                    ))
+                    .toList(),
+                onChanged: (v) {
+                  controller
+                      .selectDepartmentData = v;
+                  controller.update();
+                },
+              ),
             ),
             CustomTextField(
               borderRadius: 4,
-              controller: controller.customerTelephoneController,
+              controller: controller.orderNumber,
               width: fieldWidth,
               hintText: AppText.order,
               columnText: true,
               height: 30,
             ),
-            SizedBox(
-              height: 8,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
-              child: Row(
-                children: [
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.from,
-                    width: fieldWidth / 1.8,
-                    child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                            initialDate: controller.fromDate ?? DateTime.now(),
-                            onChanged: (pickedDate) {
-                              controller.fromDate = pickedDate;
-                              controller.update();
-                            })),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.to,
-                    width: fieldWidth / 1.8,
-                    child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                          initialDate: controller.toDate ?? DateTime.now(),
-                          onChanged: (pickedDate) {
-                            controller.toDate = pickedDate;
-                            controller.update();
-                          },
-                        )),
-                  ),
-                  Spacer(),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.filter,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.getAccountInvoiceBookings();
-                    },
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.save,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.postInvoice();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: SizedBox(
-            //     width: Get.width,
-            //     child: DatatableWidget(
-            //       columns: [
-            //         DataColumn(
-            //           label: Checkbox(
-            //             value: false, // a bool you keep in state
-            //             onChanged: (val) {},
-            //           ),
-            //         ),
-            //         buildHeaderWithSearch(title: "REF #"),
-            //         buildHeaderWithSearch(title: "DATETIME"),
-            //         buildHeaderWithSearch(title: "PICKUP"),
-            //         buildHeaderWithSearch(title: "DROPOFF"),
-            //         buildHeaderWithSearch(title: "CUST"),
-            //         buildHeaderWithSearch(title: "VEH"),
-            //         buildHeaderWithSearch(title: "J/T"),
-            //         buildHeaderWithSearch(title: "P/T"),
-            //         buildHeaderWithSearch(title: "FARE"),
-            //         buildHeaderWithSearch(title: "PC"),
-            //         buildHeaderWithSearch(title: "WC"),
-            //         buildHeaderWithSearch(title: "EDC"),
-            //         buildHeaderWithSearch(title: "M&G"),
-            //         buildHeaderWithSearch(title: "Cc"),
-            //         buildHeaderWithSearch(title: "TOTA"),
-            //         buildHeaderWithSearch(
-            //             title: "ACTIONS", removeSearching: true),
-            //       ],
-            //       rows: controller.invoiceBookings.map((booking) {
-            //         return DataRow(cells: [
-            //           DataCell(Checkbox(value: false, onChanged: (val) {})),
-            //           DataCell(Text(booking.referenceNumber ?? "")),
-            //           DataCell(Text(
-            //               "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-            //           DataCell(Text(booking.pickup ?? "")),
-            //           DataCell(Text(booking.dropoff ?? "")),
-            //           DataCell(Text(booking.customer?.address1 ?? "")),
-            //           DataCell(Text(booking.vehicleType?.name ?? "")),
-            //           DataCell(Text(booking.journeyType?.journeyType ?? "")),
-            //           DataCell(Text(booking.paymentType?.name ?? "")),
-            //           DataCell(Text(booking.fares ?? "0")),
-            //           DataCell(Text(booking.parkingCharges ?? "0")),
-            //           DataCell(Text(booking.waitingCharges ?? "0")),
-            //           DataCell(Text(booking.extraDropCharges ?? "0")),
-            //           DataCell(Text(booking.meetAndGreet ?? "0")),
-            //           DataCell(Text(booking.creditCardCharges ?? "0")),
-            //           DataCell(Text(booking.totalCharges ?? "0")),
-            //           DataCell(Row(
-            //             children: [
-            //               Icon(Icons.search, color: DynamicColors.primaryClr),
-            //               Icon(Icons.clear, color: DynamicColors.redClr),
-            //             ],
-            //           )),
-            //         ]);
-            //       }).toList(),
-            //
-            //     ),
-            //   ),
-            // ),
 
-            //
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.from,
+              width: fieldWidth / 1.8,
+              child: SizedBox(
+                  height: 30,
+                  child: KeyboardDatePicker(
+                      initialDate: controller.fromDate ?? DateTime.now(),
+                      onChanged: (fromDate) {
+                        controller.fromDate = fromDate;
+                        controller.update();
+                      })),
+            ),
+            SizedBox(
+              width: 15,
+            ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.to,
+              width: fieldWidth / 1.8,
+              child: SizedBox(
+                  height: 30,
+                  child: KeyboardDatePicker(
+                    initialDate: controller.toDate ?? DateTime.now(),
+                    onChanged: (toDate) {
+                      controller.toDate = toDate;
+                      controller.update();
+                    },
+                  )),
+            ),
+            Spacer(),
+            CustomButton(
+              verticalPadding: 0.0,
+              width: 40,
+              height: 30,
+              borderRadius: 4,
+              btnText: AppText.filter,
+              style: mozillaTextRegularText(
+                  fontSize: 10, color: DynamicColors.whiteClr),
+              onTap: () {
+                controller.getAccountInvoiceByFilter();
+              },
+            ),
+            SizedBox(
+              width: 15,
+            ),
+            CustomButton(
+              verticalPadding: 0.0,
+              width: 40,
+              height: 30,
+              borderRadius: 4,
+              btnText: AppText.save,
+              style: mozillaTextRegularText(
+                  fontSize: 10, color: DynamicColors.whiteClr),
+              onTap: () {
+
+              },
+            ),
+
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -354,8 +335,7 @@ class _CreateAccountInvoiceScreenState
                         title: "ACTIONS", removeSearching: true),
                   ],
                   rows: [
-                    // Add the booking rows
-                    ...controller.invoiceBookings.map((booking) {
+                    ...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
                       return DataRow(cells: [
                         DataCell(Checkbox(value: false, onChanged: (val) {})),
                         DataCell(Text(booking.referenceNumber ?? "")),
@@ -384,7 +364,8 @@ class _CreateAccountInvoiceScreenState
                     }).toList(),
 
                     // TOTAL row
-                    if (controller.invoiceTotals.isNotEmpty)
+        ...controller.accountInvoiceBookingModel!.total!.map((booking) {
+        return
                       DataRow(cells: [
                         DataCell.empty,
                         DataCell.empty,
@@ -400,31 +381,33 @@ class _CreateAccountInvoiceScreenState
                               fontWeight: FontWeight.bold),
                         )),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].fareTotal ?? "0"}",
+                            "£${booking.fareTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].parkingChargesTotal ?? "0"}",
+                            "£${booking.parkingChargesTotal?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].waitingChargesTotal ?? "0"}",
+                            "£${booking.waitingChargesTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].extraDropChargesTotal ?? "0"}",
+                            "£${booking.extraDropChargesTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].meetAndGreetTotal ?? "0"}",
+                            "£${booking.meetAndGreetTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].congestionChargesTotal ?? "0"}",
+                            "£${booking.congestionChargesTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].total ?? "0"}",
+                            "£${booking.total ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell.empty,
-                      ]),
+                      ]);         }).toList(),
 
                     // GRAND TOTAL row
-                    if (controller.invoiceTotals.isNotEmpty)
+
+                        ...controller.accountInvoiceBookingModel!.total!.map((booking) {
+        return
                       DataRow(cells: [
                         DataCell.empty,
                         DataCell.empty,
@@ -446,10 +429,10 @@ class _CreateAccountInvoiceScreenState
                         DataCell.empty,
                         DataCell.empty,
                         DataCell(Text(
-                            "£${controller.invoiceTotals[0].grandTotal ?? "0"}",
+                            "£${booking.grandTotal ?? "0"}",
                             style: TextStyle(fontWeight: FontWeight.bold))),
                         DataCell.empty,
-                      ]),
+                      ]); }).toList(),
                   ],
                 ),
               ),
