@@ -411,9 +411,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                                       // ================= Airport ROW ========================================================
                                                                       Visibility(
-                                                                        visible: controller.isAirportResponse.value
-                                                                            ? true
-                                                                            : false,
+                                                                        visible: controller.isAirportResponse.value,
                                                                         child:
                                                                             Padding(
                                                                           padding: const EdgeInsets
@@ -442,7 +440,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     width: fieldWidth / 0.70,
                                                                                     height: 30,
                                                                                     child: CustomTextField(
-                                                                                      controller: TextEditingController(),
+                                                                                      controller: controller.selectAirportController,
                                                                                       hintText: "Select Airport",
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,
@@ -469,7 +467,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     width: fieldWidth / 3.1,
                                                                                     height: 30,
                                                                                     child: CustomTextField(
-                                                                                      controller: TextEditingController(),
+                                                                                      controller: controller.arrivalTimeController,
                                                                                       hintText: "ARR",
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,

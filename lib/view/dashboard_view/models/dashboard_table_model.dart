@@ -89,8 +89,8 @@ class BookingObjectData {
   String? dropoffLongitude;
   List<Viapoint>? viapoints;
   List<RestrictedDriver>? restrictedDrivers;
-  dynamic flightNumber;
-  dynamic arrivingFrom;
+  String? flightNumber;
+  String? arrivingFrom;
   int? vehicleTypeId;
   dynamic vehicleId;
   int? driverId;
