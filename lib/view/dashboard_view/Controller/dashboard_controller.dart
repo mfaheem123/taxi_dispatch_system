@@ -233,7 +233,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("202");
+    // connectToCli("202");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey

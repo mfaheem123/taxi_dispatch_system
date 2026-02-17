@@ -31,10 +31,8 @@ class _CreateAccountInvoiceScreenState
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
-  AccountController controller = Get.isRegistered<AccountController>()
-      ? Get.find<AccountController>()
-      : Get.put(AccountController());
-  InvoiceController invoiceController = Get.isRegistered<InvoiceController>()
+
+  InvoiceController Controller = Get.isRegistered<InvoiceController>()
       ? Get.find<InvoiceController>()
       : Get.put(InvoiceController());
 
@@ -53,8 +51,16 @@ class _CreateAccountInvoiceScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<InvoiceController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
+    return GetBuilder<InvoiceController>(
+        initState: (state) {
+          Controller.getSubsidiary();
+          Controller.getInvoiceNumber();
+
+        },
+        builder: (controller) {
+      return LayoutBuilder(
+
+          builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -66,7 +72,10 @@ class _CreateAccountInvoiceScreenState
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-        return Wrap(
+        return
+          controller.isSubsidiary == true? Center(child: CircularProgressIndicator()):
+
+          Wrap(
           runSpacing: 10,
           spacing: 10,
           children: [
@@ -137,7 +146,7 @@ class _CreateAccountInvoiceScreenState
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold),
                         children: [
-                      TextSpan(text: "  ${controller.invoiceNumberModel!.documentNumber!.prefix}" "${controller.invoiceNumberModel!.documentNumber!.endNumber}",
+                      TextSpan(text: " ${controller.invoiceNumberModel!.documentNumber!.prefix}" "${controller.invoiceNumberModel!.documentNumber!.endNumber}",
                           style: mozillaTextRegularText(
                               color: DynamicColors.redClr))
                     ]))),
@@ -151,87 +160,87 @@ class _CreateAccountInvoiceScreenState
               onChanged: (val) {
                 controller.subsidiaries = val;
                 controller.getAccountData(subsidiariesId: val!.id);
+              },
+            ),
 
-              },
-            ),
-            DropdownButtonFormField<DashboardAccountObject>(
-              decoration:const InputDecoration(
-                border:OutlineInputBorder(),isDense: true,),
-              value: controller.selectAccountValue,
-              items: controller.dashboardAccountData == null ? []
-                  : controller.dashboardAccountData!.accounts!
-                  .map((account) =>DropdownMenuItem<DashboardAccountObject>(
-                    value: account,
-                    child: Text(
-                      account.name ??
-                          "",
-                      style:mozillaTextRegularText(
-                        fontSize:12,
-                        color: DynamicColors.textClr,
-                      ),
-                    ),
-                  ))
-                  .toList(),
-              onChanged: (v) {
-                controller.selectAccountValue = v;
-                controller.selectDepartmentData = null;
-                controller.update();
-              },
-            ),
-            Container(
-              // height: 35,
-              decoration: BoxDecoration(
-                borderRadius:
-                BorderRadius.circular(
-                    6),
-                border: Border.all(
-                    color: DynamicColors
-                        .primaryClr,
-                    width: 1.2),
-              ),
-              child:
-              DropdownButtonFormField<
-                  DepartmentObject>(
-                decoration:
-                const InputDecoration(
-                  border:
-                  OutlineInputBorder(),
-                  isDense: true,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("ACCOUNT",style:  mozillaTextSemiBoldText(context: context, fontSize: 13, )),
+                SizedBox(
+                  height: 30,
+                  width:  fieldWidth / 1.5,
+                  child: DropdownButtonFormField<DashboardAccountObject>(
+                    decoration:const InputDecoration(
+                      border:OutlineInputBorder(),isDense: true,),
+                    value: controller.selectAccountValue,
+                    items: controller.dashboardAccountData == null ? []
+                        : controller.dashboardAccountData!.accounts!
+                        .map((account) =>DropdownMenuItem<DashboardAccountObject>(
+                          value: account,
+                          child: Text(
+                            account.name ?? "",
+                            style:mozillaTextRegularText(
+                              fontSize:12,
+                              color: DynamicColors.textClr,
+                            ),
+                          ),
+                        )).toList(),
+                    onChanged: (v) {
+                      controller.selectAccountValue = v;
+                      controller.selectDepartmentData = null;
+                      controller.update();
+                    },
+                  ),
                 ),
-                value: controller
-                    .selectDepartmentData,
-                items: controller
-                    .selectAccountValue ==
-                    null
-                    ? []
-                    : controller
-                    .selectAccountValue!
-                    .departments!
-                    .map((department) =>
-                    DropdownMenuItem<
-                        DepartmentObject>(
-                      value:
-                      department,
-                      child: Text(
-                        department
-                            .name ??
-                            "",
-                        style:
-                        mozillaTextRegularText(
-                          fontSize:
-                          12,
-                          color: DynamicColors
-                              .textClr,
-                        ),
-                      ),
-                    ))
-                    .toList(),
-                onChanged: (v) {
-                  controller
-                      .selectDepartmentData = v;
-                  controller.update();
-                },
-              ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                  Text("DEPARTMENT" ,
+                      style:  mozillaTextSemiBoldText(context: context, fontSize: 13, ) ),
+                Container(
+                  height: 30,
+                  width:  fieldWidth / 1.5,
+                  decoration: BoxDecoration(
+                    borderRadius:
+                    BorderRadius.circular(
+                        6),
+                    border: Border.all(
+                        color: DynamicColors
+                            .primaryClr,
+                        width: 1.2),
+                  ),
+                  child:DropdownButtonFormField< DepartmentObject>(
+                    decoration:const InputDecoration(
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                    value: controller.selectDepartmentData,
+                    items: controller.selectAccountValue == null ? []
+                        : controller
+                        .selectAccountValue!
+                        .departments!.map((department) =>
+                        DropdownMenuItem<DepartmentObject>(
+                          value: department,
+                          child: Text(
+                            department.name ?? "",
+                            style:
+                            mozillaTextRegularText(
+                              fontSize: 12,
+                              color: DynamicColors.textClr,
+                            ),
+                          ),
+                        ))
+                        .toList(),
+                    onChanged: (v) {
+                      controller.selectDepartmentData = v;
+                      controller.update();
+                    },
+                  ),
+                ),
+              ],
             ),
             CustomTextField(
               borderRadius: 4,
@@ -243,6 +252,7 @@ class _CreateAccountInvoiceScreenState
             ),
 
             labeledField(
+              column: true,
               context: context,
               isMobile: isMobile,
               label: AppText.from,
@@ -260,6 +270,7 @@ class _CreateAccountInvoiceScreenState
               width: 15,
             ),
             labeledField(
+              column: true,
               context: context,
               isMobile: isMobile,
               label: AppText.to,
@@ -300,6 +311,8 @@ class _CreateAccountInvoiceScreenState
                   fontSize: 10, color: DynamicColors.whiteClr),
               onTap: () {
 
+Controller.addAccountInvoice();
+
               },
             ),
 
@@ -334,13 +347,12 @@ class _CreateAccountInvoiceScreenState
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
-                  rows: [
-                    ...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
+                  rows: controller.accountInvoiceBookingModel == null ? []
+                      : [...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
                       return DataRow(cells: [
                         DataCell(Checkbox(value: false, onChanged: (val) {})),
                         DataCell(Text(booking.referenceNumber ?? "")),
-                        DataCell(Text(
-                            "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
+                        DataCell(Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
                         DataCell(Text(booking.pickup ?? "")),
                         DataCell(Text(booking.dropoff ?? "")),
                         DataCell(Text(booking.customer?.address1 ?? "")),
@@ -351,88 +363,48 @@ class _CreateAccountInvoiceScreenState
                         DataCell(Text(booking.parkingCharges ?? "0")),
                         DataCell(Text(booking.waitingCharges ?? "0")),
                         DataCell(Text(booking.extraDropCharges ?? "0")),
-                        DataCell(Text(booking.meetAndGreet.toString() ?? "0")),
+                        DataCell(Text(booking.meetAndGreet?.toString() ?? "0")),
                         DataCell(Text(booking.creditCardCharges ?? "0")),
-                        DataCell(Text(booking.totalCharges.toString() ?? "0")),
-                        DataCell(Row(
+                        DataCell(Text(booking.totalCharges?.toString() ?? "0")),
+                        DataCell(Row(mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.search, color: DynamicColors.primaryClr),
-                            Icon(Icons.clear, color: DynamicColors.redClr),
+                            Icon(Icons.search, color: DynamicColors.primaryClr, size: 18),
+                            Icon(Icons.clear, color: DynamicColors.redClr, size: 18),
                           ],
                         )),
                       ]);
                     }).toList(),
-
-                    // TOTAL row
-        ...controller.accountInvoiceBookingModel!.total!.map((booking) {
-        return
-                      DataRow(cells: [
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                          "TOTAL",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.bold),
-                        )),
-                        DataCell(Text(
-                            "£${booking.fareTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.parkingChargesTotal?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.waitingChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.extraDropChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.meetAndGreetTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.congestionChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${booking.total ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell.empty,
-                      ]);         }).toList(),
-
-                    // GRAND TOTAL row
-
-                        ...controller.accountInvoiceBookingModel!.total!.map((booking) {
-        return
-                      DataRow(cells: [
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                          "GRAND TOTAL",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.bold),
-                        )),
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                            "£${booking.grandTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell.empty,
-                      ]); }).toList(),
+                    if (controller.accountInvoiceBookingModel?.total != null)
+                      ...controller.accountInvoiceBookingModel!.total!.map((booking) {
+                        return DataRow(cells: [
+                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
+                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
+                          DataCell(Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold))),
+                          DataCell(Text("£${booking.fareTotal ?? "0"}",  style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ) )),
+                          DataCell(Text("£${booking.parkingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
+                          DataCell(Text("£${booking.waitingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
+                          DataCell(Text("£${booking.extraDropChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
+                          DataCell(Text("£${booking.meetAndGreetTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
+                          DataCell(Text("£${booking.congestionChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
+                          DataCell(Text("£${booking.total ?? "0"}" , style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ),
+                          )),
+                          DataCell.empty,
+                        ]);
+                      }).toList(),
+                    if (controller.accountInvoiceBookingModel?.total != null)
+                      ...controller.accountInvoiceBookingModel!.total!.map((booking) {
+                        return DataRow(cells: [
+                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
+                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
+                          DataCell(Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold))),
+                            DataCell.empty, DataCell.empty,
+                            DataCell.empty, DataCell.empty,
+                            DataCell.empty, DataCell.empty,
+                          DataCell(Text("£${booking.grandTotal ?? "0"}",style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ),
+                          )),
+                          DataCell.empty,
+                        ]);
+                      }).toList(),
                   ],
                 ),
               ),

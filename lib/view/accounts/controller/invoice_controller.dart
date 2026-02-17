@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,8 +12,10 @@ import '../model/invoice_number_model.dart';
 class InvoiceController extends GetxController {
 
 
-/// ================================ Invoice Number Api
+/// ============================================== Account Invoice ====================================================
 
+
+  // =================== Invoice Number Api
   String? invoiceDateController = "2000-01-01";
   String? invoiceDueDateController = "2000-01-01";
   final orderNumber = TextEditingController();
@@ -32,9 +36,7 @@ class InvoiceController extends GetxController {
     }
   }
 
-
-
-
+  // ============ Subsidiary
   SubsDiaryModel? subsDiaryModel;
   Subsidiaries? subsidiaries;
   bool isSubsidiary = false;
@@ -66,7 +68,6 @@ class InvoiceController extends GetxController {
   bool isLoadingInvoice = false;
   getAccountInvoiceByFilter() async {
       isLoadingInvoice = true;
-
       var response = await Api().get( "account_invoice/bookings",
         queryParameters: {
           "subsidiary_id": subsidiaries!.id,
@@ -77,14 +78,48 @@ class InvoiceController extends GetxController {
           "order_number": orderNumber.text,
         },
       );
-
       if (response.statusCode == 200) {
         accountInvoiceBookingModel =  AccountInvoiceBookingModel.fromJson(response.data);
       }
     isLoadingInvoice = false;
     update();
-
   }
+
+// ============================ Invoice Add
+
+  RxBool addAccountInvoiceLoad = false.obs;
+  addAccountInvoice() async {
+    addAccountInvoiceLoad(true);
+    List<Map<String, dynamic>> lineItems = accountInvoiceBookingModel!.bookings!.map((booking) {
+      return {
+        "booking_id": booking.id,
+        "total_charges": booking.totalCharges ?? "0",
+      };
+    }).toList();
+    var formData = {
+      'account_id': selectAccountValue!.id,
+      'subsidiary_id': subsidiaries!.id,
+      'account_invoice_lineitems': jsonEncode(lineItems),
+      'amount': accountInvoiceBookingModel!.total![0].total ?? "0",
+      'department_id': selectDepartmentData?.id, // Optional check
+      'from_date': fromDate?.toIso8601String().split('T').first,
+      'to_date': toDate?.toIso8601String().split('T').first,
+      'invoice_number': "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel?.documentNumber?.endNumber ?? ''}",
+      'invoice_date': invoiceDateController,
+      'invoice_due_date': invoiceDueDateController,
+      'invoice_type': 'post',
+      'order_number': orderNumber.text,
+    };
+    print("Payload: $formData");
+      var response = await Api().post(
+        formData,
+        "account_invoice/add",
+        auth: true,
+      );
+      if (response.statusCode == 200) {}
+    addAccountInvoiceLoad(false);
+  }
+
 
 
 
