@@ -86,14 +86,11 @@ class CliController extends GetxController {
 
         if (jsonData["success"] == true) {
 
-          customerName.value =
-              jsonData["customer"]?["name"] ?? "";
+          customerName.value = jsonData["customer"]?["name"] ?? "";
 
-          customerMobile.value =
-              jsonData["customer"]?["mobile"] ?? "";
+          customerMobile.value = jsonData["customer"]?["mobile"] ?? "";
 
-          bookings.value =
-              jsonData["bookings"] ?? [];
+          bookings.value = jsonData["bookings"] ?? [];
 
           print("✅ Customer Loaded");
         } else {
