@@ -286,206 +286,206 @@ class _UpdateAccountInvoiceScreenState
             SizedBox(
               height: 8,
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
-              child: Row(
-                children: [
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.from,
-                    width: fieldWidth / 1.8,
-                    child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                            initialDate: controller.updateFromDate ?? DateTime.now(),
-                            onChanged: (pickedDate) {
-                              controller.updateFromDate = pickedDate;
-                              controller.update();
-                            })),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.to,
-                    width: fieldWidth / 1.8,
-                    child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                          initialDate: controller.updateToDate ?? DateTime.now(),
-                          onChanged: (pickedDate) {
-                            controller.updateToDate = pickedDate;
-                            controller.update();
-                          },
-                        )),
-                  ),
-                  Spacer(),
-                  CustomButton(
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.filter,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-                      controller.getUpdateAccountInvoiceBookings();
-                    },
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  CustomButton(
-                    onTap: () {
-                      controller.postUpdateInvoice();
-                    },
-                    verticalPadding: 0.0,
-                    width: 40,
-                    height: 30,
-                    borderRadius: 4,
-                    btnText: AppText.update,
-                    style: mozillaTextRegularText(
-                        fontSize: 10, color: DynamicColors.whiteClr),
-                  ),
-                ],
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
+            //   child: Row(
+            //     children: [
+            //       labeledField(
+            //         context: context,
+            //         isMobile: isMobile,
+            //         label: AppText.from,
+            //         width: fieldWidth / 1.8,
+            //         child: SizedBox(
+            //             height: 30,
+            //             child: KeyboardDatePicker(
+            //                 initialDate: controller.updateFromDate ?? DateTime.now(),
+            //                 onChanged: (pickedDate) {
+            //                   controller.updateFromDate = pickedDate;
+            //                   controller.update();
+            //                 })),
+            //       ),
+            //       SizedBox(
+            //         width: 15,
+            //       ),
+            //       labeledField(
+            //         context: context,
+            //         isMobile: isMobile,
+            //         label: AppText.to,
+            //         width: fieldWidth / 1.8,
+            //         child: SizedBox(
+            //             height: 30,
+            //             child: KeyboardDatePicker(
+            //               initialDate: controller.updateToDate ?? DateTime.now(),
+            //               onChanged: (pickedDate) {
+            //                 controller.updateToDate = pickedDate;
+            //                 controller.update();
+            //               },
+            //             )),
+            //       ),
+            //       Spacer(),
+            //       CustomButton(
+            //         verticalPadding: 0.0,
+            //         width: 40,
+            //         height: 30,
+            //         borderRadius: 4,
+            //         btnText: AppText.filter,
+            //         style: mozillaTextRegularText(
+            //             fontSize: 10, color: DynamicColors.whiteClr),
+            //         onTap: () {
+            //           controller.getUpdateAccountInvoiceBookings();
+            //         },
+            //       ),
+            //       SizedBox(
+            //         width: 15,
+            //       ),
+            //       CustomButton(
+            //         onTap: () {
+            //           controller.postUpdateInvoice();
+            //         },
+            //         verticalPadding: 0.0,
+            //         width: 40,
+            //         height: 30,
+            //         borderRadius: 4,
+            //         btnText: AppText.update,
+            //         style: mozillaTextRegularText(
+            //             fontSize: 10, color: DynamicColors.whiteClr),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
 
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SizedBox(
-                width: Get.width,
-                child: DatatableWidget(
-                  columns: [
-                    DataColumn(
-                      label: Checkbox(
-                        value: false, // a bool you keep in state
-                        onChanged: (val) {},
-                      ),
-                    ),
-                    buildHeaderWithSearch(title: "REF #"),
-                    buildHeaderWithSearch(title: "DATETIME"),
-                    buildHeaderWithSearch(title: "PICKUP"),
-                    buildHeaderWithSearch(title: "DROPOFF"),
-                    buildHeaderWithSearch(title: "CUST"),
-                    buildHeaderWithSearch(title: "VEH"),
-                    buildHeaderWithSearch(title: "J/T"),
-                    buildHeaderWithSearch(title: "P/T"),
-                    buildHeaderWithSearch(title: "FARE"),
-                    buildHeaderWithSearch(title: "PC"),
-                    buildHeaderWithSearch(title: "WC"),
-                    buildHeaderWithSearch(title: "EDC"),
-                    buildHeaderWithSearch(title: "M&G"),
-                    buildHeaderWithSearch(title: "Cc"),
-                    buildHeaderWithSearch(title: "TOTA"),
-                    buildHeaderWithSearch(
-                        title: "ACTIONS", removeSearching: true),
-                  ],
-                  rows: [
-                    // Add the booking rows
-                    ...controller.invoiceBookings.map((booking) {
-                      return DataRow(cells: [
-                        DataCell(Checkbox(value: false, onChanged: (val) {})),
-                        DataCell(Text(booking.referenceNumber ?? "")),
-                        DataCell(Text(
-                            "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-                        DataCell(Text(booking.pickup ?? "")),
-                        DataCell(Text(booking.dropoff ?? "")),
-                        DataCell(Text(booking.customer?.address1 ?? "")),
-                        DataCell(Text(booking.vehicleType?.name ?? "")),
-                        DataCell(Text(booking.journeyType?.journeyType ?? "")),
-                        DataCell(Text(booking.paymentType?.name ?? "")),
-                        DataCell(Text(booking.fares ?? "0")),
-                        DataCell(Text(booking.parkingCharges ?? "0")),
-                        DataCell(Text(booking.waitingCharges ?? "0")),
-                        DataCell(Text(booking.extraDropCharges ?? "0")),
-                        DataCell(Text(booking.meetAndGreet.toString() ?? "0")),
-                        DataCell(Text(booking.creditCardCharges ?? "0")),
-                        DataCell(Text(booking.totalCharges.toString() ?? "0")),
-                        DataCell(Row(
-                          children: [
-                            Icon(Icons.search, color: DynamicColors.primaryClr),
-                            Icon(Icons.clear, color: DynamicColors.redClr),
-                          ],
-                        )),
-                      ]);
-                    }).toList(),
-
-                    // TOTAL row
-                    if (controller.invoiceTotals.isNotEmpty)
-                      DataRow(cells: [
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                          "TOTAL",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.bold),
-                        )),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].fareTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].parkingChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].waitingChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].extraDropChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].meetAndGreetTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].congestionChargesTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].total ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell.empty,
-                      ]),
-
-                    // GRAND TOTAL row
-                    if (controller.invoiceTotals.isNotEmpty)
-                      DataRow(cells: [
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                          "GRAND TOTAL",
-                          style: mozillaTextSemiBoldText(
-                              fontWeight: FontWeight.bold),
-                        )),
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell.empty,
-                        DataCell(Text(
-                            "£${controller.invoiceTotals[0].grandTotal ?? "0"}",
-                            style: TextStyle(fontWeight: FontWeight.bold))),
-                        DataCell.empty,
-                      ]),
-                  ],
-                ),
-              ),
-            ),
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: SizedBox(
+            //     width: Get.width,
+            //     child: DatatableWidget(
+            //       columns: [
+            //         DataColumn(
+            //           label: Checkbox(
+            //             value: false, // a bool you keep in state
+            //             onChanged: (val) {},
+            //           ),
+            //         ),
+            //         buildHeaderWithSearch(title: "REF #"),
+            //         buildHeaderWithSearch(title: "DATETIME"),
+            //         buildHeaderWithSearch(title: "PICKUP"),
+            //         buildHeaderWithSearch(title: "DROPOFF"),
+            //         buildHeaderWithSearch(title: "CUST"),
+            //         buildHeaderWithSearch(title: "VEH"),
+            //         buildHeaderWithSearch(title: "J/T"),
+            //         buildHeaderWithSearch(title: "P/T"),
+            //         buildHeaderWithSearch(title: "FARE"),
+            //         buildHeaderWithSearch(title: "PC"),
+            //         buildHeaderWithSearch(title: "WC"),
+            //         buildHeaderWithSearch(title: "EDC"),
+            //         buildHeaderWithSearch(title: "M&G"),
+            //         buildHeaderWithSearch(title: "Cc"),
+            //         buildHeaderWithSearch(title: "TOTA"),
+            //         buildHeaderWithSearch(
+            //             title: "ACTIONS", removeSearching: true),
+            //       ],
+            //       rows: [
+            //         // Add the booking rows
+            //         ...controller.invoiceBookings.map((booking) {
+            //           return DataRow(cells: [
+            //             DataCell(Checkbox(value: false, onChanged: (val) {})),
+            //             DataCell(Text(booking.referenceNumber ?? "")),
+            //             DataCell(Text(
+            //                 "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
+            //             DataCell(Text(booking.pickup ?? "")),
+            //             DataCell(Text(booking.dropoff ?? "")),
+            //             DataCell(Text(booking.customer?.address1 ?? "")),
+            //             DataCell(Text(booking.vehicleType?.name ?? "")),
+            //             DataCell(Text(booking.journeyType?.journeyType ?? "")),
+            //             DataCell(Text(booking.paymentType?.name ?? "")),
+            //             DataCell(Text(booking.fares ?? "0")),
+            //             DataCell(Text(booking.parkingCharges ?? "0")),
+            //             DataCell(Text(booking.waitingCharges ?? "0")),
+            //             DataCell(Text(booking.extraDropCharges ?? "0")),
+            //             DataCell(Text(booking.meetAndGreet.toString() ?? "0")),
+            //             DataCell(Text(booking.creditCardCharges ?? "0")),
+            //             DataCell(Text(booking.totalCharges.toString() ?? "0")),
+            //             DataCell(Row(
+            //               children: [
+            //                 Icon(Icons.search, color: DynamicColors.primaryClr),
+            //                 Icon(Icons.clear, color: DynamicColors.redClr),
+            //               ],
+            //             )),
+            //           ]);
+            //         }).toList(),
+            //
+            //         // TOTAL row
+            //         if (controller.invoiceTotals.isNotEmpty)
+            //           DataRow(cells: [
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell(Text(
+            //               "TOTAL",
+            //               style: mozillaTextSemiBoldText(
+            //                   fontWeight: FontWeight.bold),
+            //             )),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].fareTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].parkingChargesTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].waitingChargesTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].extraDropChargesTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].meetAndGreetTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].congestionChargesTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].total ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell.empty,
+            //           ]),
+            //
+            //         // GRAND TOTAL row
+            //         if (controller.invoiceTotals.isNotEmpty)
+            //           DataRow(cells: [
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell(Text(
+            //               "GRAND TOTAL",
+            //               style: mozillaTextSemiBoldText(
+            //                   fontWeight: FontWeight.bold),
+            //             )),
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell.empty,
+            //             DataCell(Text(
+            //                 "£${controller.invoiceTotals[0].grandTotal ?? "0"}",
+            //                 style: TextStyle(fontWeight: FontWeight.bold))),
+            //             DataCell.empty,
+            //           ]),
+            //       ],
+            //     ),
+            //   ),
+            // ),
           ],
         );
       });

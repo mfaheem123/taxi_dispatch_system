@@ -306,7 +306,7 @@ class _ListOfAccountInvoiceScreenState
                                         ),
                                       ),
                                       onPressed: () {
-                                        controller.bindAccountInvoiceValue(item);
+                                        // controller.bindAccountInvoiceValue(item);
 
 
                                         int index = _controller.selectedMenuItems

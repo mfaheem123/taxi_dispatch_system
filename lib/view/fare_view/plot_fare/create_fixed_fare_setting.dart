@@ -43,6 +43,8 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
     return GetBuilder<FareController>(initState: (v) {
       controller.getFixedFareVehicleLocationType();
       controller.getAllFixedFare();
+      controller.getFixedFareVehicleLocationType();
+
     }, builder: (controller) {
       final listToShow = controller.fixedFareFiltered.isNotEmpty
           ? controller.fixedFareFiltered
@@ -103,7 +105,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                       items: controller
                                           .fixedFareVehicleLocationTypeModel!
                                           .vehicleTypesFixed!,
-                                      value: controller.vehicleTypesFixedvalue,
+                                      value: controller.fixedFareVehicleLocationTypeModel?.vehicleTypesFixed?.contains(controller.vehicleTypesFixedvalue) == true
+                                          ? controller.vehicleTypesFixedvalue
+                                          : null,
                                       itemLabel: (templateList) =>
                                           templateList.name!,
                                       onChanged: (val) {
@@ -272,6 +276,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
+
                                                   focusNode: controller
                                                       .viaFieldFocusNode,
                                                   controller: controller
@@ -285,11 +290,13 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                   onTap: () {
                                                     controller.activeField
                                                         .value = "from";
+
                                                   },
                                                   onChanged: (v) {
                                                     controller.onChangeHandler(
                                                         fieldName: "via",
                                                         searchingText: v);
+
                                                   },
                                                   decoration: InputDecoration(
                                                     hintText: "Search Address",
@@ -542,7 +549,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               CustomButton(
                                 height: 35,
                                 width: fieldWidth,
-                                btnText: AppText.save,
+                                btnText:
+                                controller.fixedFareVehicleLocationTypeModel != null? "UPDATE":
+                                AppText.save,
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 style: mozillaTextRegularText(
@@ -633,6 +642,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     color: Colors.transparent),
                                               ),
                                               onPressed: () {
+                                                controller.fixedFareBinding(item);
                                                 // 🟢 Edit action
                                               },
                                               child: Icon(Icons.edit_calendar,

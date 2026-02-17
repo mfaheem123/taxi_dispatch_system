@@ -49,11 +49,16 @@ class LocationType {
   String? name;
   String? shortcut;
 
-  LocationType({
-    this.id,
-    this.name,
-    this.shortcut,
-  });
+  LocationType({this.id, this.name, this.shortcut});
+
+  // Ye do functions add karein:
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is LocationType && runtimeType == other.runtimeType && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 
   factory LocationType.fromJson(Map<String, dynamic> json) => LocationType(
     id: json["id"],
@@ -61,11 +66,7 @@ class LocationType {
     shortcut: json["shortcut"],
   );
 
-  Map<String, dynamic> toJson() => {
-    "id": id,
-    "name": name,
-    "shortcut": shortcut,
-  };
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "shortcut": shortcut};
 }
 
 class  VehicleTypeFixed {

@@ -270,7 +270,7 @@ class AccountController extends GetxController {
         int index = subsidairyBankModel!.subsidiariesList!
             .indexWhere((test) => test.id == accountObjectData!.subsidiaryId);
         subsidiaryStoreValue =
-            subsidairyBankModel!.subsidiariesList![index] as Subsidiary?;
+        subsidairyBankModel!.subsidiariesList![index] as Subsidiary?;
       }
       SubsdairyBankLoader(false);
       update();
@@ -292,36 +292,8 @@ class AccountController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
     // Template fetch
     getTemplateHtmlText();
-
-    // Subsidiary fetch
-    getSubsidiary();
-
-    // invoiceNumber
-    fetchInvoiceNumber();
-
-    // listAccountInvoice();
-
-    // Subsidiary select hone par accounts load
-    ever(selectedSubsidiaryForGet, (Subsidiaries? val) {
-      if (val != null && val.id != null) {
-        getAccountsBySubsidiary(val.id!);
-      } else {
-        accountList.clear();
-        selectedAccount.value = null;
-        departmentList.clear();
-        selectedDepartment.value = null;
-        update();
-      }
-    });
-
-    // Account select hone par departments load
-    ever(selectedAccount, (Account? val) {
-      updateDepartmentsForSelectedAccount();
-    });
-    // getAccountInvoiceBookings();
   }
 
   HtmlTempleteModel? templeteHtmlModel;
@@ -660,7 +632,7 @@ class AccountController extends GetxController {
     };
     var formData = dio.FormData.fromMap(baseData);
     var response =
-        await Api().post(formData, 'escorts/add', auth: true, multiPart: true);
+    await Api().post(formData, 'escorts/add', auth: true, multiPart: true);
     if (response.statusCode == 200) {
       escortName.clear();
       escortEmail.clear();
@@ -755,8 +727,7 @@ class AccountController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
 
   // create controller
-  String? invoiceDateController = "2000-01-01";
-  String? invoiceDueDateController = "2000-01-01";
+
 
   // update controller
   TextEditingController updateCustomerTelephoneController = TextEditingController();
@@ -774,81 +745,15 @@ class AccountController extends GetxController {
 
   var isLoading = false.obs;
 
-  Future<void> fetchInvoiceNumber() async {
-    try {
-      isLoading.value = true;
-
-      final response = await Api().get(
-        ("document/document_numbers/3"),
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-
-        if (data['status'] == true) {
-          String prefix = data['document_number']['prefix'];
-          int endNumber = data['document_number']['end_number'];
-
-          invoiceNumber.value = "$prefix$endNumber";
-        }
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-    isLoading.value = false;
-    update();
-  }
-
   // for update screen
-  Future<void> fetchUpdateInvoiceNumber() async {
-    try {
-      isLoading.value = true;
 
-      final response = await Api().get("document/document_numbers/3");
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-
-        if (data['status'] == true) {
-          String prefix = data['document_number']['prefix'];
-          int endNumber = data['document_number']['end_number'];
-
-          updateInvoiceNumber.value = "$prefix$endNumber";
-        }
-      }
-    } catch (e) {
-      print("Error: $e");
-    }
-    isLoading.value = false;
-    update();
-  }
 
   // dropdown API's:
   SubsDiaryModel? subsDiaryModel;
-  // create invoice
-  Rx<Subsidiaries?> selectedSubsidiaryForGet = Rx<Subsidiaries?>(null);
   // update invoice
   Rx<Subsidiaries?> updateSelectedSubsidiary = Rx<Subsidiaries?>(null);
 
   bool isSubsidiary = false;
-
-  // ===== CREATE FUNCTION =====
-  getSubsidiary() async {
-    isSubsidiary = true;
-    update();
-
-    var response = await Api().get("subsidiaries/get");
-    if (response.statusCode == 200) {
-      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-      if (subsDiaryModel!.subsidiaries!.isNotEmpty) {
-        if (selectedSubsidiaryForGet.value?.id != null) {
-          await getAccountsBySubsidiary(selectedSubsidiaryForGet.value!.id!);
-        }
-      }
-      isSubsidiary = false;
-      update();
-    }
-  }
 
   // ===== UPDATE FUNCTION =====
   getUpdateSubsidiary() async {
@@ -923,9 +828,9 @@ class AccountController extends GetxController {
   void updateDepartmentsForSelectedAccount() {
     if (selectedAccount.value != null) {
       departmentList.value = selectedAccount.value!.departments
-              ?.where((d) => d.name != null)
-              .map((d) => d.name!)
-              .toList() ??
+          ?.where((d) => d.name != null)
+          .map((d) => d.name!)
+          .toList() ??
           [];
     } else {
       departmentList.clear();
@@ -938,9 +843,9 @@ class AccountController extends GetxController {
   void updateDepartmentsForSelectedAccountUpdate() {
     if (updateSelectedAccount.value != null) {
       departmentList.value = updateSelectedAccount.value!.departments
-              ?.where((d) => d.name != null)
-              .map((d) => d.name!)
-              .toList() ??
+          ?.where((d) => d.name != null)
+          .map((d) => d.name!)
+          .toList() ??
           [];
     } else {
       departmentList.clear();
@@ -949,196 +854,9 @@ class AccountController extends GetxController {
     update();
   }
 
-  // filter button
-  AccountInvoiceBookingModel? invoiceBookingModel;
-  List<Booking> invoiceBookings = [];
-  List<Total> invoiceTotals = [];
 
-  // create invoice
-  DateTime? fromDate;
-  DateTime? toDate;
-  // update invoice
-  DateTime? updateFromDate;
-  DateTime? updateToDate;
 
-  bool isLoadingInvoice = false;
 
-  getAccountInvoiceBookings() async {
-    try {
-      isLoadingInvoice = true;
-      update();
-
-      var response = await Api().get(
-        "account_invoice/bookings",
-        queryParameters: {
-          "subsidiary_id": selectedSubsidiaryForGet.value?.id,
-          "account_id": selectedAccount.value?.id,
-          // "department": selectedDepartment.value,
-          "from_date": fromDate?.toIso8601String().split('T').first,
-          "to_date": toDate?.toIso8601String().split('T').first,
-        },
-      );
-      if (response.statusCode == 200) {
-        invoiceBookingModel =
-            AccountInvoiceBookingModel.fromJson(response.data);
-        invoiceBookings = invoiceBookingModel?.bookings ?? [];
-        invoiceTotals = invoiceBookingModel?.total ?? [];
-      }
-    } catch (e) {
-      // Error toast
-      BotToast.showText(text: "Error: ${e.toString()}");
-    }
-    isLoadingInvoice = false;
-    update();
-  }
-
-  // for update screen
-  getUpdateAccountInvoiceBookings() async {
-    try {
-      isLoadingInvoice = true;
-      update();
-
-      var response = await Api().get(
-        "account_invoice/bookings",
-        queryParameters: {
-          "subsidiary_id": updateSelectedSubsidiary.value?.id,
-          "account_id": updateSelectedAccount.value?.id,
-          "department": updateSelectedDepartment.value,
-          "from_date": updateFromDate?.toIso8601String().split('T').first,
-          "to_date": updateToDate?.toIso8601String().split('T').first,
-        },
-      );
-
-      if (response.statusCode == 200) {
-        invoiceBookingModel =
-            AccountInvoiceBookingModel.fromJson(response.data);
-        invoiceBookings = invoiceBookingModel?.bookings ?? [];
-        invoiceTotals = invoiceBookingModel?.total ?? [];
-      }
-    } catch (e) {
-      BotToast.showText(text: "Error: ${e.toString()}");
-    }
-    isLoadingInvoice = false;
-    update();
-  }
-
-  // Save Button
-  RxBool postInvoiceLoader = false.obs;
-  RxBool postUpdateInvoiceLoader = false.obs;
-
-  postInvoice() async {
-    postInvoiceLoader(true);
-    update();
-
-    double grandTotal = invoiceBookings.fold(
-      0.0,
-      (sum, booking) =>
-          sum + (double.tryParse(booking.totalCharges ?? "0") ?? 0.0),
-    );
-    List<Map<String, dynamic>> lineItems = invoiceBookings.map((booking) {
-      return {
-        "booking_id": booking.id,
-        "total_charges": booking.totalCharges,
-      };
-    }).toList();
-
-    var formData = {
-      "account_id": selectedAccount.value!.id,
-      "subsidiary_id": selectedSubsidiaryForGet.value!.id,
-      "account_invoice_lineitems": lineItems,
-      "from_date": fromDate!.toIso8601String().split('T').first,
-      "to_date": toDate!.toIso8601String().split('T').first,
-      "invoice_number": invoiceNumber.value,
-      "invoice_date": DateTime.now().toIso8601String().split('T').first,
-      "invoice_due_date": DateTime.now()
-          .add(Duration(days: 7))
-          .toIso8601String()
-          .split('T')
-          .first,
-      "invoice_type": "post",
-      "order_number": "", // optional
-      "amount": grandTotal,
-    };
-
-    print("POST DATA >>> $formData");
-
-    var response =
-        await Api().post(formData, 'account_invoice/add', auth: true);
-
-    if (response.statusCode == 200) {
-      BotToast.showText(text: "Invoice created successfully!");
-      print(
-          "Invoice created successfully! ID: ${response.data['account_invoice']['id']}");
-    } else {
-      BotToast.showText(text: "Failed to create invoice");
-      print("POST Error: ${response.statusCode}");
-      print(response.data);
-    }
-    postInvoiceLoader(false);
-    update();
-  }
-
-  // for update screen
-
-  postUpdateInvoice() async {
-    postUpdateInvoiceLoader(true);
-    update();
-
-    // calculate grand total
-    double grandTotal = invoiceBookings.fold(
-      0.0,
-      (sum, booking) =>
-          sum + (double.tryParse(booking.totalCharges ?? "0") ?? 0.0),
-    );
-
-    // prepare line items
-    List<Map<String, dynamic>> lineItems = invoiceBookings.map((booking) {
-      return {
-        "booking_id": booking.id,
-        "total_charges": booking.totalCharges,
-      };
-    }).toList();
-
-    // form data for update
-    var formData = {
-      "account_id": updateSelectedAccount.value!.id,
-      "subsidiary_id": updateSelectedSubsidiary.value!.id,
-      "account_invoice_lineitems": lineItems,
-      "from_date": updateFromDate!.toIso8601String().split('T').first,
-      "to_date": updateToDate!.toIso8601String().split('T').first,
-      "invoice_number": updateInvoiceNumber.value,
-      "invoice_date": DateTime.now().toIso8601String().split('T').first,
-      "invoice_due_date": DateTime.now()
-          .add(Duration(days: 7))
-          .toIso8601String()
-          .split('T')
-          .first,
-      "invoice_type": "post",
-      "order_number": "", // optional
-      "amount": grandTotal,
-    };
-
-    print("POST UPDATE DATA >>> $formData");
-
-    var response = await Api().post(
-      formData,
-      'account_invoice/update/${isEditing}',
-      auth: true,
-    );
-
-    if (response.statusCode == 200) {
-      BotToast.showText(text: "Invoice updated successfully!");
-      print(
-          "Invoice updated successfully! ID: ${response.data['account_invoice']['id']}");
-    } else {
-      BotToast.showText(text: "Failed to update invoice");
-      print("POST UPDATE Error: ${response.statusCode}");
-      print(response.data);
-    }
-
-    postUpdateInvoiceLoader(false);
-    update();
-  }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Account Invoice Model
 
@@ -1178,23 +896,6 @@ class AccountController extends GetxController {
     }
   }
 
-  // Edit
-  RxBool updateInvoiceValue = false.obs;
-  RxInt invoiceUpdateId = 0.obs;
-
-int? isEditing;
-  bindAccountInvoiceValue(isEditing) async {
-
-    invoiceDateController = updateInvoiceDateController.toString();
-    invoiceDueDateController = updateInvoiceDueDateController.toString();
-    invoiceNumber = updateInvoiceNumber!;
-    selectedSubsidiaryForGet = updateSelectedSubsidiary!;
-    selectedAccount = updateSelectedAccount!;
-    selectedDepartment = updateSelectedDepartment!;
-    customerTelephoneController.text = updateCustomerTelephoneController.text.toString();
-    fromDate = updateFromDate!;
-    toDate = updateToDate!;
-  }
 
   // invoiceUpdate({AccountInvoice? invoiceUpdate}) async {
   //
