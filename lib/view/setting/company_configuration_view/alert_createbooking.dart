@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
@@ -424,7 +426,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   pickupTime: controller.pickUpTimeController.text,
                                   vehicleTypeId: controller.selectVehicleValue!.id
                               );
-                              controller.fixedFare.value = storedTemFare;
+                              var fareValue = jsonDecode(storedTemFare);
+                              controller.fixedFare.value = fareValue['total_fare'].toString();
+                              controller.slugController.text = fareValue['fare'].toString();
                               controller.update();
                               Get.back();
                             },

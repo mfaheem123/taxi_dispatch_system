@@ -63,6 +63,11 @@ Future<String> getFares({
     return "0";
   }
 
+  if(pickupTime == null){
+    BotToast.showText(text: "Please select time");
+    return "0";
+  }
+
   List<Map<String, dynamic>> multiReservationTemp = [];
 
   // 2. Safe Null Check for the list
@@ -139,8 +144,8 @@ Future<String> getFares({
 
     if (response != null && response.statusCode == 200) {
       // Check if data and total_fare exist to avoid null errors
-      var fare = response.data['data']?['total_fare'];
-      return fare?.toString() ?? "0";
+      return jsonEncode(response.data['data']);
+      // return fare?.toString() ?? "0";
     } else {
       print("API Error: ${response?.statusCode}");
       return "0";

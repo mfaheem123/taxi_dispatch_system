@@ -703,7 +703,9 @@ class DashboardController extends GetxController {
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
       );
-      fixedFare.value = storedTemFare;
+      var fareValue = jsonDecode(storedTemFare);
+      fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
+      slugController.text = fareValue== null?"0": fareValue['fare'].toString();
       update();
     } else {
       print("❌ OSRM error: ${res.statusCode}");
@@ -1283,7 +1285,7 @@ class DashboardController extends GetxController {
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async{
 
-    fixedFare.value = await getFares(
+   final storedTemFare = await getFares(
       // day: ,
       journeyTypeId: selectJourneyTypeValue!.id,
       multiReservationList: multiReservationList.isEmpty?null: multiReservationList,
@@ -1312,6 +1314,9 @@ class DashboardController extends GetxController {
         returnCompanyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
       returnParkingCharges: returnCompanyPriceController.text.isEmpty?null: returnCompanyPriceController.text,
     );
+    var fareValue = jsonDecode(storedTemFare);
+    fixedFare.value = fareValue['total_fare'].toString();
+    slugController.text = fareValue['fare'].toString();
     print(fixedFare.value);
     update();
   }
@@ -1785,7 +1790,7 @@ class DashboardController extends GetxController {
     selectAirportController.clear();
     arrivalTimeController.clear();
     telController.clear();
-    pickUpTimeController.clear();
+    // pickUpTimeController.clear();
     minController.clear();
     passController.clear();
     luggController.clear();
