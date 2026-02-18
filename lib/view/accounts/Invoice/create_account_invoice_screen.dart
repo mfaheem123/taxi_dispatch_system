@@ -264,7 +264,11 @@ class _CreateAccountInvoiceScreenState
                       onChanged: (fromDate) {
                         controller.fromDate = fromDate;
                         controller.update();
-                      })),
+                      }
+
+                      )
+
+              ),
             ),
             SizedBox(
               width: 15,

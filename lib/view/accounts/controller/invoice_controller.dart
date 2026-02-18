@@ -8,6 +8,7 @@ import '../../administration/model/list_subsDiary.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../model/account_invoice_booking_model.dart';
 import '../model/invoice_number_model.dart';
+import '../model/list_of_account_invoice_model.dart';
 
 class InvoiceController extends GetxController {
 
@@ -18,6 +19,7 @@ class InvoiceController extends GetxController {
   // =================== Invoice Number Api
   String? invoiceDateController = "2000-01-01";
   String? invoiceDueDateController = "2000-01-01";
+
   final orderNumber = TextEditingController();
 
   DateTime? fromDate = DateTime.now();
@@ -119,6 +121,80 @@ class InvoiceController extends GetxController {
       if (response.statusCode == 200) {}
     addAccountInvoiceLoad(false);
   }
+
+
+
+
+
+///================================================ list of Account Invoice
+
+
+  String? listInvoiceFromDate = "2000-01-01";
+  String? listInvoiceToDate = "2000-01-01";
+ String? status;
+  DateTime? invoiceListFromDate = DateTime.now();
+  DateTime? invoiceListToDate = DateTime.now();
+
+  RxList<AccountInvoice> accountInvoiceListAll = <AccountInvoice>[].obs;
+  RxList<AccountInvoice> filteredAccountInvoice = <AccountInvoice>[].obs;
+
+  RxString invoiceNumber = ''.obs;
+  RxString searchAccount = ''.obs;
+  RxString searchDepartment = ''.obs;
+  RxString searchOrder = ''.obs;
+  RxString searchStatus = ''.obs;
+  RxString searchAmount = ''.obs;
+  RxString searchSubsidiary = ''.obs;
+  RxString searchDate = ''.obs;
+  RxString searchDueDate = ''.obs;
+
+  ListOfAccountInvoiceModel? listOfAccountInvoice;
+  RxBool isLoadingListOfAccountInvoice = false.obs;
+  AccountInvoice? accountInvoiceData;
+  listAccountInvoice() async {
+    isLoadingListOfAccountInvoice.value = true;
+
+    var response = await Api().get("account_invoice/get",
+    queryParameters: {
+      "invoice_number": invoiceNumber.value.toLowerCase(),
+      "account_name": searchAccount.value.toLowerCase(),
+      "department_name": searchDepartment.value.toLowerCase(),
+      "order_number": searchOrder.value.toLowerCase(),
+      "invoice_date": searchDate.value.toString(),
+      "invoice_due_date": searchDueDate.value.toString(),
+      "status": status,
+      "amount": searchAmount.value.toLowerCase(),
+      "subsidiary_name": searchSubsidiary.value.toLowerCase(),
+      "to_date": invoiceListToDate?.toIso8601String().split('T').first,
+      "from_date": invoiceListFromDate?.toIso8601String().split('T').first,
+    }
+    );
+    if (response.statusCode == 200) {
+      listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
+      accountInvoiceListAll.value = listOfAccountInvoice?.accountInvoices ?? [];
+      filteredAccountInvoice.value = accountInvoiceListAll;
+      isLoadingListOfAccountInvoice.value = false;
+      update();
+    }
+  }
+
+  // Delete
+  accountInvoiceDelete(int? id) async {
+    var response = await Api().delete("account_invoice/delete/$id");
+    if (response.statusCode == 200) {
+      listAccountInvoice();
+      print("AccountInvoice deleted successfully!");
+    }
+  }
+
+
+
+
+
+
+
+
+
 
 
 

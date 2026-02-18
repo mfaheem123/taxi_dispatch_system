@@ -237,32 +237,32 @@ class _UpdateAccountInvoiceScreenState
                               color: DynamicColors.redClr)
                       )
                     ]))),
-            CustomDropdownField<Subsidiaries>(
-              text: AppText.subsidiary,
-              width: fieldWidth / 1.5,
-              label: AppText.subsidiary,
-              items: controller.subsDiaryModel?.subsidiaries ?? [],
-              value: controller.updateSelectedSubsidiary.value,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.updateSelectedSubsidiary.value = val;
-                if (val != null && val.id != null) {
-                  controller.getUpdateAccountsBySubsidiary(val.id!);
-                }
-              },
-            ),
-            CustomDropdownField<Account>(
-              text: AppText.account,
-              width: fieldWidth / 1.5,
-              label: AppText.account,
-              items: controller.accountList,
-              value: controller.updateSelectedAccount.value,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.updateSelectedAccount.value = val;
-                controller.update();
-              },
-            ),
+            // CustomDropdownField<Subsidiaries>(
+            //   text: AppText.subsidiary,
+            //   width: fieldWidth / 1.5,
+            //   label: AppText.subsidiary,
+            //   items: controller.subsDiaryModel?.subsidiaries ?? [],
+            //   value: controller.updateSelectedSubsidiary.value,
+            //   itemLabel: (item) => item.name ?? "",
+            //   onChanged: (val) {
+            //     controller.updateSelectedSubsidiary.value = val;
+            //     if (val != null && val.id != null) {
+            //       controller.getUpdateAccountsBySubsidiary(val.id!);
+            //     }
+            //   },
+            // ),
+            // CustomDropdownField<Account>(
+            //   text: AppText.account,
+            //   width: fieldWidth / 1.5,
+            //   label: AppText.account,
+            //   items: controller.accountList,
+            //   value: controller.updateSelectedAccount.value,
+            //   itemLabel: (item) => item.name ?? "",
+            //   onChanged: (val) {
+            //     controller.updateSelectedAccount.value = val;
+            //     controller.update();
+            //   },
+            // ),
             CustomDropdownField<String>(
               text: AppText.department,
               width: fieldWidth / 1.5,

@@ -24,7 +24,7 @@ import 'package:dio/dio.dart' as dio;
 
 import '../model/account_invoice_booking_model.dart';
 import '../model/account_invoice_model.dart';
-import '../model/list_of_account_invoice_model.dart';
+import '../model/list_of_account_invoice_model.dart' hide Subsidiary;
 
 class AccountController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create account form functionality
@@ -765,59 +765,44 @@ class AccountController extends GetxController {
       subsDiaryModel = SubsDiaryModel.fromJson(response.data);
       if (subsDiaryModel!.subsidiaries!.isNotEmpty) {
         // update ke liye selected value
-        if (updateSelectedSubsidiary.value?.id != null) {
-          await getAccountsBySubsidiary(updateSelectedSubsidiary.value!.id!);
-        }
+        // if (updateSelectedSubsidiary.value?.id != null) {
+        //   await getAccountsBySubsidiary(updateSelectedSubsidiary.value!.id!);
+        // }
       }
       isSubsidiary = false;
       update();
     }
   }
-
-  AccountInvoiceModel? accountInvoiceModel;
-  // create invoice
-  Rx<Account?> selectedAccount = Rx<Account?>(null);
-  // update invoice
-  Rx<Account?> updateSelectedAccount = Rx<Account?>(null);
-
-  List<Account> accountList = [];
-  bool isAccountLoading = false;
-
-  getAccountsBySubsidiary(int subsidiaryId) async {
-    isAccountLoading = true;
-    update();
-
-    var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-    if (response.statusCode == 200) {
-      accountInvoiceModel = AccountInvoiceModel.fromJson(response.data);
-      accountList = accountInvoiceModel?.accounts ?? [];
-    } else {
-      accountInvoiceModel = null;
-      accountList = [];
-    }
-    selectedAccount.value = null;
-    isAccountLoading = false;
-    update();
-  }
-
-  //for update screen
-  getUpdateAccountsBySubsidiary(int subsidiaryId) async {
-    isAccountLoading = true;
-    update();
-
-    var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-    if (response.statusCode == 200) {
-      accountInvoiceModel = AccountInvoiceModel.fromJson(response.data);
-      accountList = accountInvoiceModel?.accounts ?? [];
-    } else {
-      accountInvoiceModel = null;
-      accountList = [];
-    }
-    updateSelectedAccount.value = null;
-    isAccountLoading = false;
-    update();
-  }
-
+  //
+  // AccountInvoiceModel? accountInvoiceModel;
+  // // create invoice
+  // Rx<Account?> selectedAccount = Rx<Account?>(null);
+  // // update invoice
+  // Rx<Account?> updateSelectedAccount = Rx<Account?>(null);
+  //
+  // List<Account> accountList = [];
+  // bool isAccountLoading = false;
+  //
+  //
+  //
+  // //for update screen
+  // getUpdateAccountsBySubsidiary(int subsidiaryId) async {
+  //   isAccountLoading = true;
+  //   update();
+  //
+  //   var response = await Api().get("accounts/subsidiary/$subsidiaryId");
+  //   if (response.statusCode == 200) {
+  //     accountInvoiceModel = AccountInvoiceModel.fromJson(response.data);
+  //     accountList = accountInvoiceModel?.accounts ?? [];
+  //   } else {
+  //     accountInvoiceModel = null;
+  //     accountList = [];
+  //   }
+  //   updateSelectedAccount.value = null;
+  //   isAccountLoading = false;
+  //   update();
+  // }
+  //
   // department dropdown
   RxList<String> departmentList = RxList<String>([]);
   // create invoice
@@ -825,104 +810,40 @@ class AccountController extends GetxController {
   // update invoice
   Rx<String?> updateSelectedDepartment = Rx<String?>(null);
 
-  void updateDepartmentsForSelectedAccount() {
-    if (selectedAccount.value != null) {
-      departmentList.value = selectedAccount.value!.departments
-          ?.where((d) => d.name != null)
-          .map((d) => d.name!)
-          .toList() ??
-          [];
-    } else {
-      departmentList.clear();
-    }
-    selectedDepartment.value = null;
-    update();
-  }
-
-  // for update screen
-  void updateDepartmentsForSelectedAccountUpdate() {
-    if (updateSelectedAccount.value != null) {
-      departmentList.value = updateSelectedAccount.value!.departments
-          ?.where((d) => d.name != null)
-          .map((d) => d.name!)
-          .toList() ??
-          [];
-    } else {
-      departmentList.clear();
-    }
-    updateSelectedDepartment.value = null;
-    update();
-  }
-
-
-
-
-
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  List Account Invoice Model
-
-  ListOfAccountInvoiceModel? listOfAccountInvoice;
-  RxBool isLoadingListOfAccountInvoice = false.obs;
-  AccountInvoice? accountInvoiceData;
-
-  /// >>>>>>>>>>>>>>>>>>>>> Search Work
-  // RxList<AccountInvoice> InvoiceList = <AccountInvoice>[].obs;
-  // RxList<AccountInvoice> filteredInvoice = <AccountInvoice>[].obs;
-  //
-  // // search Fields
-  // RxString searchInvoiceNumber = ''.obs;
-  // RxString searchAccountName = ''.obs;
-  // RxString searchDepartment = ''.obs;
-  // RxString searchOrderNumber = ''.obs;
-  // RxString searchDate = ''.obs;
-  // RxString searchDueDate = ''.obs;
-  // RxString searchStatus = ''.obs;
-  // RxString searchAmount = ''.obs;
-  // RxString searchSubsidiary = ''.obs;
-
-  /// Pagination
-  // var invoiceCurrentPage = 1.obs;
-  // var invoiceTotalPages = 1.obs;
-  // final int invoiceLimit = 10;
-
-  /// >>>>>>>>>>>>>>>>>>>>> Fetch Invoice List
-  listAccountInvoice() async {
-    isLoadingListOfAccountInvoice.value = true;
-
-    var response = await Api().get("account_invoice/get");
-    if (response.statusCode == 200) {
-      listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
-      isLoadingListOfAccountInvoice.value = false;
-      update();
-    }
-  }
-
-
-  // invoiceUpdate({AccountInvoice? invoiceUpdate}) async {
-  //
-  //
-  //   invoiceUpdateId.value = invoiceUpdate!.id!;
-  //
-  //   // invoiceDateController = invoiceUpdate.invoiceDate.toString();
-  //   invoiceDateController = invoiceUpdate.invoiceDate.toString();
-  //   invoiceDueDateController = invoiceUpdate.invoiceDueDate.toString();
-  //   selectedSubsidiaryForGet.value =
-  //       invoiceUpdate.subsidiaryId! as Subsidiaries?;
-  //   selectedAccount.value = invoiceUpdate.accountId! as Account?;
-  //   selectedDepartment.value = invoiceUpdate.departmentId!;
-  //   customerTelephoneController.text = invoiceUpdate.orderNumber!;
-  //   fromDate = invoiceUpdate.fromDate!;
-  //   toDate = invoiceUpdate.toDate!;
-  //   updateInvoiceValue(true);
+  // void updateDepartmentsForSelectedAccount() {
+  //   if (selectedAccount.value != null) {
+  //     departmentList.value = selectedAccount.value!.departments
+  //         ?.where((d) => d.name != null)
+  //         .map((d) => d.name!)
+  //         .toList() ??
+  //         [];
+  //   } else {
+  //     departmentList.clear();
+  //   }
+  //   selectedDepartment.value = null;
+  //   update();
   // }
 
-  // Delete
-  accountInvoiceDelete(int? id) async {
-    var response = await Api().delete("account_invoice/delete/$id");
-    if (response.statusCode == 200) {
-      listAccountInvoice();
-      print("AccountInvoice deleted successfully!");
-    }
-  }
+  // // for update screen
+  // void updateDepartmentsForSelectedAccountUpdate() {
+  //   if (updateSelectedAccount.value != null) {
+  //     departmentList.value = updateSelectedAccount.value!.departments
+  //         ?.where((d) => d.name != null)
+  //         .map((d) => d.name!)
+  //         .toList() ??
+  //         [];
+  //   } else {
+  //     departmentList.clear();
+  //   }
+  //   updateSelectedDepartment.value = null;
+  //   update();
+  // }
+
+
+
+
+
+
 
   // String? account;
   String? department;
