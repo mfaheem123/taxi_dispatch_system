@@ -11,9 +11,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../alert/delete_permission_alert.dart';
+import '../../../component/pagination.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../controller/account_controller.dart';
+import '../controller/invoice_controller.dart';
+import 'create_account_invoice_screen.dart';
 
 class ListOfAccountInvoiceScreen extends StatefulWidget {
   const ListOfAccountInvoiceScreen({super.key});
@@ -28,9 +31,12 @@ class _ListOfAccountInvoiceScreenState
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
-  AccountController controller = Get.isRegistered<AccountController>()
-      ? Get.find<AccountController>()
-      : Get.put(AccountController());
+
+  InvoiceController controller = Get.isRegistered<InvoiceController>()?
+      Get.find<InvoiceController>()
+      :Get.put(InvoiceController());
+
+
   final DashboardController _controller = Get.find();
   @override
   void initState() {
@@ -48,13 +54,17 @@ class _ListOfAccountInvoiceScreenState
         .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(
+    return GetBuilder<InvoiceController>(
         initState: (state) {
-          controller.listAccountInvoice();
+          controller.listAccountInvoice(isFirstTime: true);
         },
-
         builder: (controller) {
+          final listToShow = controller.filteredAccountInvoice.isNotEmpty
+              ? controller.filteredAccountInvoice
+              : controller.accountInvoiceListAll;
           return LayoutBuilder(builder: (context, constraints) {
+
+
             final double maxWidth = constraints.maxWidth;
             final bool isMobile = maxWidth < 600;
             final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -81,7 +91,7 @@ class _ListOfAccountInvoiceScreenState
                     child: Row(
                       children: [
                         Text(
-                          "ACCOUNTS Invoice (0)",
+                          "ACCOUNTS Invoice (${controller.listOfAccountInvoice!.count ?? "0"})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -94,11 +104,32 @@ class _ListOfAccountInvoiceScreenState
                           btnText: AppText.create,
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
+                          onTap: () {
+                            int index = _controller.selectedMenuItems
+                                .indexWhere((element) =>
+                            element.title == "CREATE ACCOUNT INVOICE");
+                            if (index != -1) {
+                              _controller.selectedMenuItems[index]
+                                  .selectedItem = true;
+                              _controller.currentPage.value =
+                                  CreateAccountInvoiceScreen();
+                            } else {
+                              _controller.currentPage.value =
+                                  CreateAccountInvoiceScreen();
+                              _controller.menuBarRefresh(
+                                  title: "CREATE ACCOUNT INVOICE",
+                                  pageName: CreateAccountInvoiceScreen());
+                            }
+                            controller.update();
+                          },
                         ),
                         SizedBox(
                           width: 12,
                         ),
                         CustomButton(
+onTap: () {
+  controller.listAccountInvoice();
+},
                           height: 40,
                           width: 80,
                           verticalPadding: 0.0,
@@ -134,7 +165,17 @@ class _ListOfAccountInvoiceScreenState
                               label: AppText.from,
                               width: fieldWidth / 1.8,
                               child:
-                              SizedBox(height: 30, child: KeyboardDatePicker()),
+                              SizedBox(height: 30, child: KeyboardDatePicker(
+
+                                  initialDate: controller.invoiceListFromDate ?? DateTime.now(),
+                                  onChanged: (fromDate) {
+                                    controller.invoiceListFromDate = fromDate;
+                                    controller.update();
+                                  }
+
+
+
+                              )),
                             ),
                             labeledField(
                               context: context,
@@ -142,31 +183,43 @@ class _ListOfAccountInvoiceScreenState
                               label: AppText.to,
                               width: fieldWidth / 1.8,
                               child:
-                              SizedBox(height: 30, child: KeyboardDatePicker()),
+                              SizedBox(height: 30, child: KeyboardDatePicker(
+                                  initialDate: controller.invoiceListToDate ?? DateTime.now(),
+                                  onChanged: (fromDate) {
+                                    controller.invoiceListToDate = fromDate;
+                                    controller.update();
+                                  }
+                              )),
                             ),
-                            Text("STATUS"),
-                            CustomDropdownField<String>(
-                              width: fieldWidth / 4,
-                              label: AppText.status,
-                              items: [
-                                "Paid 1",
-                                "Paid 2",
-                                "Paid 3",
-                                "Paid 4",
-                                "Paid 5",
-                                "Paid 6",
+                            Row(
+                              children: [
+                            Text("STATUS", style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                            SizedBox(width: 14),
+                                CustomDropdownField<String>(
+                                  width: fieldWidth / 4,
+                                  label: "Status",
+                                  items: ["all", "paid", "unpaid"],
+                                  value: controller.status,
+                                  itemLabel: (val) => val, // just show the string
+                                  onChanged: (val) {
+                                    controller.status = val!.toLowerCase();
+                                    controller.update();
+                                  },
+                                ),
                               ],
-                              value: controller.status,
-                              itemLabel: (val) => val, // just show the string
-                              onChanged: (val) {
-                                controller.status = val!;
-                                controller.update();
-                              },
                             ),
                           ],
                         ),
                         Spacer(),
                         CustomButton(
+                          onTap: () {
+                            controller.invoiceNumber.value = "";
+                            controller.searchAccount.value = "";
+                            controller.status = "all";
+                            controller.invoiceListFromDate = DateTime.now();
+                            controller.invoiceListToDate = DateTime.now();
+                            controller.listAccountInvoice();
+                          },
                           verticalPadding: 0.0,
                           width: 60,
                           height: 40,
@@ -179,6 +232,9 @@ class _ListOfAccountInvoiceScreenState
                           width: 15,
                         ),
                         CustomButton(
+                          onTap: () {
+                            controller.listAccountInvoice();
+                          },
                           verticalPadding: 0.0,
                           width: 60,
                           height: 40,
@@ -193,11 +249,7 @@ class _ListOfAccountInvoiceScreenState
                   SizedBox(
                     height: 8,
                   ),
-                  controller.isLoadingListOfAccountInvoice == true
-                      ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                      : SingleChildScrollView(
+              SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: isMobile || isTablet ? Get.width + 600 : Get.width,
@@ -211,91 +263,93 @@ class _ListOfAccountInvoiceScreenState
                             ),
                             buildHeaderWithSearch(
                               title: "INVOICE #",
-                              // onChanged: (v) {
-                              //   controller.searchInvoiceNumber.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // },
+                              onChanged: (v) {
+                                controller.invoiceNumber.value = v;
+                                controller.listAccountInvoice(activeFilter: "invoice");
+                              },
                             ),
                             buildHeaderWithSearch(
                               title: "ACCOUNT",
-                              // onChanged: (v) {
-                              //   controller.searchAccountName.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // },
+                              onChanged: (v) {
+                                controller.searchAccount.value = v;
+                                controller.listAccountInvoice(activeFilter: "account");
+                              },
                             ),
                             buildHeaderWithSearch(
                               title: "DEPARTMENT",
-                              // onChanged: (v) {
-                              //   controller.searchDepartment.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // },
+                              onChanged: (v) {
+                                controller.searchDepartment.value = v;
+                                controller.listAccountInvoice(activeFilter: "department");
+                                },
                             ),
                             buildHeaderWithSearch(
                               title: "ORDER #",
-                              // onChanged: (v) {
-                              //   controller.searchOrderNumber.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchOrder.value = v;
+                                controller.listAccountInvoice(activeFilter: "order");
+                              }
                             ),
                             buildHeaderWithSearch(
                               title: "DATE",
-                              // onChanged: (v) {
-                              //   controller.searchDate.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchDate.value = v;
+                                controller.listAccountInvoice(activeFilter: "invoicedate");
+                               }
                             ),
                             buildHeaderWithSearch(
                               title: "DUE DATE",
-                              // onChanged: (v) {
-                              //   controller.searchDueDate.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchDueDate.value = v;
+                                controller.listAccountInvoice(activeFilter: "duedate");
+                              }
                             ),
                             buildHeaderWithSearch(
                               title: "STATUS",
-                              // onChanged: (v) {
-                              //   controller.searchStatus.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchStatus.value = v;
+                                controller.listAccountInvoice(activeFilter: "status");;
+                              }
                             ),
                             buildHeaderWithSearch(
                               title: "AMOUNT",
-                              // onChanged: (v) {
-                              //   controller.searchAmount.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchAmount.value = v;
+                                controller.listAccountInvoice(activeFilter: "amount");
+                              }
                             ),
                             buildHeaderWithSearch(
                               title: "SUBSIDIARY",
-                              // onChanged: (v) {
-                              //   controller.searchSubsiDiary.value = v;
-                              //   controller.SearchAccountInvoice();
-                              // }
+                              onChanged: (v) {
+                                controller.searchSubsidiary.value = v;
+                                controller.listAccountInvoice(activeFilter: "subsidiary");
+                              }
                             ),
                             buildHeaderWithSearch(
                                 title: "ACTIONS", removeSearching: true),
                           ],
-                          totalRow: controller.listOfAccountInvoice!.accountInvoices!.length ?? 0,
-                          rows: (controller.listOfAccountInvoice!.accountInvoices ?? []).map((item) {
+                          totalRow: listToShow.length ?? 0,
+                          rows: (listToShow ?? []).map((item) {
                             return DataRow(cells: [
                               DataCell(
                                 Checkbox(
-                                  value: false, // ✅ controlled by your state
+                                  value: false,
                                   onChanged: (val) {
-                                    // update your selected index or list here
+
                                   },
                                 ),
                               ),
-                              DataCell(
-                                  Center(child: Text(item.invoiceNumber!))),
-                              DataCell(Center(child: Text(item.account!.name!))),
-                              DataCell(Center(child: Text(item.account!.email ?? ""))),
-                              DataCell(Center(child: Text(item.orderNumber!))),
-                              DataCell(Center(child: Text(item.toDate.toString()))),
-                              DataCell(Center(child: Text(item.fromDate.toString()))),
-                              DataCell(Center(child: Text(item.status!))),
-                              DataCell(Center(child: Text(item.amount!))),
-                              DataCell(Center(child: Text(item.orderNumber!))),
+                              // 1. Invoice Number
+                              DataCell(Center(child: Text(item.invoiceNumber ?? "-"))),
+                              DataCell(Center(child: Text(item.account?.name ?? "-"))),
+                              DataCell(Center(child: Text(item.department is Map ? (item.department["name"] ?? "-")
+                                  : (item.department?.toString() ?? "-")))),
+                              DataCell(Center(child: Text(item.orderNumber ?? "-"))),
+                              DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
+                              DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
+                              DataCell(Center(
+                                child: Text(item.status?.toUpperCase() ?? "-",))),
+                              DataCell(Center(child: Text(item.amount ?? "0.00"))),
+                              DataCell(Center(child: Text(item.account?.subsidiary?.name ?? "-"))),
                               DataCell(
                                 Row(
                                   children: [
@@ -306,7 +360,7 @@ class _ListOfAccountInvoiceScreenState
                                         ),
                                       ),
                                       onPressed: () {
-                                        // controller.bindAccountInvoiceValue(item);
+                                        controller.getAccountInvoice();
 
 
                                         int index = _controller.selectedMenuItems
@@ -356,6 +410,11 @@ class _ListOfAccountInvoiceScreenState
                           }).toList()),
                     ),
                   ),
+                  PaginationWidget(
+                    currentPage: controller.currentPage.value,
+                    totalPages: controller.totalPages.value,
+                    onPageChange: controller.onPageAccountInvoice,
+                  )
                 ],
               );
           });
