@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -15,6 +16,28 @@ class CliController extends GetxController {
   RxString customerName = "".obs;
   RxString customerMobile = "".obs;
   RxList bookings = [].obs;
+
+
+
+
+  RxBool CLIJOBLoader = false.obs;
+  postCLIJob(bid,date,time,did,vid) async {
+    CLIJOBLoader(false);
+    var formData = {
+      'booking_id': bid,
+      'vehicle_type_id':vid ,
+      'pickup_date': date,
+      'pickup_time': time,
+      'driver_id': did,
+
+    };
+
+    var response = await Api().post(formData, 'bookings/cli', auth: true);
+    if (response.statusCode == 200) {
+      CLIJOBLoader(true);
+      update();
+    }
+  }
 
 
   // ================= SOCKET METHODS ========================
