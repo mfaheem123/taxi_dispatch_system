@@ -119,6 +119,7 @@ class VehicleController extends GetxController {
       vehicleNumberController.clear();
       insuranceNumberController.clear();
     }
+
   }
 
   Vehicles? singleVehicleData;
