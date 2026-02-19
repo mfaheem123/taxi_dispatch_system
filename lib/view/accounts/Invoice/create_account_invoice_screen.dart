@@ -55,6 +55,12 @@ class _CreateAccountInvoiceScreenState
         initState: (state) {
           Controller.getSubsidiary();
           Controller.getInvoiceNumber();
+          Controller.subsidiaries = null;
+          Controller. selectAccountValue = null;
+          Controller.selectDepartmentData = null;
+          Controller.orderNumber.clear();
+          Controller.fromDate = DateTime.now();
+          Controller.toDate = DateTime.now();
 
         },
         builder: (controller) {
@@ -289,7 +295,7 @@ class _CreateAccountInvoiceScreenState
                     },
                   )),
             ),
-            Spacer(),
+          SizedBox(width: 50),
             CustomButton(
               verticalPadding: 0.0,
               width: 40,

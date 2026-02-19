@@ -11,14 +11,16 @@ String listOfAccountInvoiceModelToJson(ListOfAccountInvoiceModel data) => json.e
 class ListOfAccountInvoiceModel {
   bool? status;
   int? count;
-  int? offset;
+  int? page;
+  int? totalPages;
   int? limit;
   List<AccountInvoice>? accountInvoices;
 
   ListOfAccountInvoiceModel({
     this.status,
     this.count,
-    this.offset,
+    this.page,
+    this.totalPages,
     this.limit,
     this.accountInvoices,
   });
@@ -26,7 +28,8 @@ class ListOfAccountInvoiceModel {
   factory ListOfAccountInvoiceModel.fromJson(Map<String, dynamic> json) => ListOfAccountInvoiceModel(
     status: json["status"],
     count: json["count"],
-    offset: json["offset"],
+    page: json["page"],
+    totalPages: json["total_pages"],
     limit: json["limit"],
     accountInvoices: json["account_invoices"] == null ? [] : List<AccountInvoice>.from(json["account_invoices"]!.map((x) => AccountInvoice.fromJson(x))),
   );
@@ -34,7 +37,8 @@ class ListOfAccountInvoiceModel {
   Map<String, dynamic> toJson() => {
     "status": status,
     "count": count,
-    "offset": offset,
+    "page": page,
+    "total_pages": totalPages,
     "limit": limit,
     "account_invoices": accountInvoices == null ? [] : List<dynamic>.from(accountInvoices!.map((x) => x.toJson())),
   };
@@ -50,7 +54,7 @@ class AccountInvoice {
   DateTime? fromDate;
   DateTime? toDate;
   String? invoiceType;
-  dynamic departmentId;
+  int? departmentId;
   String? orderNumber;
   String? amount;
   String? status;
@@ -59,7 +63,7 @@ class AccountInvoice {
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
   Account? account;
-  dynamic department;
+  Department? department;
 
   AccountInvoice({
     this.id,
@@ -102,7 +106,7 @@ class AccountInvoice {
     stripeCustomerId: json["stripe_customer_id"],
     stripePaymentId: json["stripe_payment_id"],
     account: json["account"] == null ? null : Account.fromJson(json["account"]),
-    department: json["department"],
+    department: json["department"] == null ? null : Department.fromJson(json["department"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -124,7 +128,7 @@ class AccountInvoice {
     "stripe_customer_id": stripeCustomerId,
     "stripe_payment_id": stripePaymentId,
     "account": account?.toJson(),
-    "department": department,
+    "department": department?.toJson(),
   };
 }
 
@@ -132,7 +136,7 @@ class Account {
   String? name;
   String? email;
   int? subsidiaryId;
-  Subsidiary? subsidiary;
+  Department? subsidiary;
 
   Account({
     this.name,
@@ -145,7 +149,7 @@ class Account {
     name: json["name"],
     email: json["email"],
     subsidiaryId: json["subsidiary_id"],
-    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
+    subsidiary: json["subsidiary"] == null ? null : Department.fromJson(json["subsidiary"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -156,16 +160,16 @@ class Account {
   };
 }
 
-class Subsidiary {
+class Department {
   int? id;
   String? name;
 
-  Subsidiary({
+  Department({
     this.id,
     this.name,
   });
 
-  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+  factory Department.fromJson(Map<String, dynamic> json) => Department(
     id: json["id"],
     name: json["name"],
   );

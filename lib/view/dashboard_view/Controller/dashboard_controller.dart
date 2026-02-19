@@ -1459,6 +1459,7 @@ class DashboardController extends GetxController {
   List multiVehicleTempList = [];
 
   dashBoardApiValidation() async {
+
     if (pickupController.text.isEmpty) {
       return BotToast.showText(text: "Please select pickup location");
     }
@@ -1494,6 +1495,7 @@ class DashboardController extends GetxController {
     if (selectVehicleValue == null) {
       return BotToast.showText(text: "Please select vehicle type");
     }
+
     postDashboardApi();
     return null;
   }
@@ -1607,7 +1609,7 @@ class DashboardController extends GetxController {
       if (specialRequirementsController.text.isNotEmpty)
         'special_instructions': specialRequirementsController.text,
       if (extraFaresList.isNotEmpty) 'notes': jsonEncode(extraFaresList),
-      // if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
+      if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
       if (slugController.text.isNotEmpty) 'fares': slugController.text,
       'eta': totalTimeDuration,
       'miles': totalDistance,

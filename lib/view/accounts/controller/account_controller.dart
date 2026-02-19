@@ -731,19 +731,12 @@ class AccountController extends GetxController {
 
   // update controller
   TextEditingController updateCustomerTelephoneController = TextEditingController();
-  String updateInvoiceDateController = "2000-01-01";
-  String updateInvoiceDueDateController = "2000-01-01";
 
-  var isPaid = false.obs;
-
-  void togglePaidStatus() {
-    isPaid.value = !isPaid.value;
-  }
 
   var invoiceNumber = ''.obs; //create
   var updateInvoiceNumber = ''.obs; // update
 
-  var isLoading = false.obs;
+
 
   // for update screen
 
