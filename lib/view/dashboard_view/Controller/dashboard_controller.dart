@@ -43,7 +43,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
-class DashboardController extends GetxController {
+ class DashboardController extends GetxController {
 
   WebSocketChannel? _channel;
   bool isConnected = false;
@@ -235,7 +235,7 @@ class DashboardController extends GetxController {
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("202");
+    connectToCli("200");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
