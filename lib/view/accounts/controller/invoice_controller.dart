@@ -235,25 +235,13 @@ class InvoiceController extends GetxController {
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
   Account? account;
   bool isLoadingUpdate = false;
-  getAccountInvoice() async {
+  getAccountInvoice({selectedInvoiceId}) async {
     isLoadingUpdate = true;
-    var response = await Api().get( "account_invoice/getid/55"
-      // ,
-      // queryParameters: {
-      //   "subsidiary_id": subsidiaries!.id,
-      //   "account_id": selectAccountValue!.id,
-      //   "department": selectDepartmentData!.id,
-      //   "from_date": fromDate?.toIso8601String().split('T').first,
-      //   "to_date": toDate?.toIso8601String().split('T').first,
-      //   "order_number": orderNumber.text,
-      // },
-    );
+    var response = await Api().get( "account_invoice/getid/${selectedInvoiceId}");
     if (response.statusCode == 200) {
       accountInvoiceBookingModel =  AccountInvoiceBookingModel.fromJson(response.data);
-      // API Success ke baad controller mein:
       if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null) {
         var data = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
-        // Is line se TextField mein purana Order Number likha hua aa jayega
         orderNumber.text = data.orderNumber ?? "";
       }
       BotToast.showText(text: 'Filter Done');

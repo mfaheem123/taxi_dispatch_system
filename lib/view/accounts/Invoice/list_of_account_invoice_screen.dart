@@ -360,8 +360,7 @@ onTap: () {
                                         ),
                                       ),
                                       onPressed: () {
-                                        controller.getAccountInvoice();
-
+                                        controller.getAccountInvoice(selectedInvoiceId: item.id);
 
                                         int index = _controller.selectedMenuItems
                                             .indexWhere((element) =>
