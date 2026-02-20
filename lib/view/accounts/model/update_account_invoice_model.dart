@@ -54,7 +54,7 @@ class AccountInvoiceAccountInvoice {
   DateTime? fromDate;
   DateTime? toDate;
   String? invoiceType;
-  dynamic departmentId;
+  int? departmentId;
   String? orderNumber;
   String? amount;
   String? status;
@@ -63,7 +63,7 @@ class AccountInvoiceAccountInvoice {
   dynamic stripeCustomerId;
   dynamic stripePaymentId;
   Account? account;
-  dynamic accountDepartment;
+  AccountDepartment? accountDepartment;
   List<AccountInvoiceLineitem>? accountInvoiceLineitems;
 
   AccountInvoiceAccountInvoice({
@@ -108,7 +108,7 @@ class AccountInvoiceAccountInvoice {
     stripeCustomerId: json["stripe_customer_id"],
     stripePaymentId: json["stripe_payment_id"],
     account: json["account"] == null ? null : Account.fromJson(json["account"]),
-    accountDepartment: json["account_department"],
+    accountDepartment: json["account_department"] == null ? null : AccountDepartment.fromJson(json["account_department"]),
     accountInvoiceLineitems: json["account_invoice_lineitems"] == null ? [] : List<AccountInvoiceLineitem>.from(json["account_invoice_lineitems"]!.map((x) => AccountInvoiceLineitem.fromJson(x))),
   );
 
@@ -131,7 +131,7 @@ class AccountInvoiceAccountInvoice {
     "stripe_customer_id": stripeCustomerId,
     "stripe_payment_id": stripePaymentId,
     "account": account?.toJson(),
-    "account_department": accountDepartment,
+    "account_department": accountDepartment?.toJson(),
     "account_invoice_lineitems": accountInvoiceLineitems == null ? [] : List<dynamic>.from(accountInvoiceLineitems!.map((x) => x.toJson())),
   };
 }
@@ -424,6 +424,26 @@ class Subsidiary {
   };
 }
 
+class AccountDepartment {
+  int? id;
+  String? name;
+
+  AccountDepartment({
+    this.id,
+    this.name,
+  });
+
+  factory AccountDepartment.fromJson(Map<String, dynamic> json) => AccountDepartment(
+    id: json["id"],
+    name: json["name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+  };
+}
+
 class AccountInvoiceLineitem {
   int? id;
   Booking? booking;
@@ -463,6 +483,7 @@ class Booking {
   String? pickupTime;
   JourneyType? journeyType;
   dynamic orderNumber;
+  AccountDepartment? paymentType;
   VehicleType? vehicleType;
   int? companyPrice;
   int? totalCharges;
@@ -484,6 +505,7 @@ class Booking {
     this.pickupTime,
     this.journeyType,
     this.orderNumber,
+    this.paymentType,
     this.vehicleType,
     this.companyPrice,
     this.totalCharges,
@@ -506,6 +528,7 @@ class Booking {
     pickupTime: json["pickup_time"],
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     orderNumber: json["order_number"],
+    paymentType: json["payment_type"] == null ? null : AccountDepartment.fromJson(json["payment_type"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
     companyPrice: json["company_price"],
     totalCharges: json["total_charges"],
@@ -528,6 +551,7 @@ class Booking {
     "pickup_time": pickupTime,
     "journey_type": journeyType?.toJson(),
     "order_number": orderNumber,
+    "payment_type": paymentType?.toJson(),
     "vehicle_type": vehicleType?.toJson(),
     "company_price": companyPrice,
     "total_charges": totalCharges,
