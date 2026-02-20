@@ -239,6 +239,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                       ),
                       buildHeaderWithSearch(
                           title: "ACTIONS",
+
                           customWidget: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

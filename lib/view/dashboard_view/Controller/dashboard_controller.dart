@@ -1459,6 +1459,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   List multiVehicleTempList = [];
 
   dashBoardApiValidation() async {
+
     if (pickupController.text.isEmpty) {
       return BotToast.showText(text: "Please select pickup location");
     }
@@ -1494,6 +1495,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     if (selectVehicleValue == null) {
       return BotToast.showText(text: "Please select vehicle type");
     }
+
     postDashboardApi();
     return null;
   }
@@ -1851,14 +1853,14 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
+  BookingObjectData? jobDetails;
   dashBoardDataBinding({BookingObjectData? jobData, id}) async{
-
-    print(id);
 
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if(response.statusCode == 200){
       BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
+      jobDetails = jobData;
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();
