@@ -61,7 +61,7 @@ class Environment {
   static final Environment _singleton = Environment._internal();
 
   static const String dev = 'dev';
-  static const String production = 'production';
+  static const String production = 'production'; 
 
   late BaseConfig config;
 
