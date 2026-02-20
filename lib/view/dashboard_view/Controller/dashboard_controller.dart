@@ -1853,14 +1853,14 @@ class DashboardController extends GetxController {
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
+  BookingObjectData? jobDetails;
   dashBoardDataBinding({BookingObjectData? jobData, id}) async{
-
-    print(id);
 
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
     if(response.statusCode == 200){
       BookingObjectData jobData = BookingObjectData.fromJson(response.data['booking']);
+      jobDetails = jobData;
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();

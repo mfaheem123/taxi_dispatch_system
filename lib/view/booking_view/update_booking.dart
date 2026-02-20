@@ -163,76 +163,11 @@ class _UpdateBookingState extends State<UpdateBooking> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: DynamicColors.textClr),
                   ),
-                  child: SingleChildScrollView(
+                  child: controller.dashboardAllData == null && controller.jobDetails == null?Center(
+                      child: CircularProgressIndicator(),
+                  ): SingleChildScrollView(
                     child: Column(
                       children: [
-                        // Shortcut Keys Row
-                        // Padding(
-                        //                         //   padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        //                         //   child: SingleChildScrollView(
-                        //                         //     scrollDirection: Axis.horizontal,
-                        //                         //     child: Row(
-                        //                         //       children: [
-                        //                         //         ShortcutKeyWidget(
-                        //                         //             keyss: "F1", valuess: "BASE ADDRESS"),
-                        //                         //         const SizedBox(width: 10),
-                        //                         //         ShortcutKeyWidget(
-                        //                         //             keyss: "F2", valuess: "BOOKING FORM"),
-                        //                         //         const SizedBox(width: 10),
-                        //                         //         ShortcutKeyWidget(
-                        //                         //             keyss: "F6", valuess: "QUOTATION"),
-                        //                         //         const SizedBox(width: 10),
-                        //                         //         // Add more shortcut buttons here if needed
-                        //                         //       ],
-                        //                         //     ),
-                        //                         //   ),
-                        //                         // ),
-                        // Booking Title
-                        // Top Row aligned with fields
-
-
-                        // Container(
-                        //   width: Get.width,
-                        //   padding: const EdgeInsets.symmetric(
-                        //       vertical: 8, horizontal: 8),
-                        //   decoration:
-                        //   BoxDecoration(color: DynamicColors.secondaryClr),
-                        //   child: Wrap(
-                        //     crossAxisAlignment: WrapCrossAlignment.center,
-                        //     children: [
-                        //       Text(
-                        //         AppText.booking,
-                        //         style: mozillaTextSemiBoldText(fontSize: 17),
-                        //       ),
-                        //       SizedBox(
-                        //         width: 15,
-                        //       ),
-                        //       //
-                        //       // SizedBox(
-                        //       //   width: fieldWidth / 3,
-                        //       // ),
-                        //       Container(
-                        //         width: fieldWidth / 1.5,
-                        //         height: 35,
-                        //         decoration: BoxDecoration(
-                        //           border: Border.all(
-                        //               color: DynamicColors.primaryClr),
-                        //           borderRadius: BorderRadius.circular(4),
-                        //         ),
-                        //         child: RestrictedDrivers(
-                        //           width: fieldWidth / 1.5,
-                        //           titleText: "SELECT PLOT",
-                        //           driversList: [
-                        //             "DEMO COMPANY 01",
-                        //             "DEMO COMPANY 02",
-                        //             "DEMO COMPANY 03",
-                        //             "DEMO COMPANY 04",
-                        //           ],
-                        //         ),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         Container(
                           width: Get.width,
                           padding:
