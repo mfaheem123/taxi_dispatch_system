@@ -13,9 +13,6 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
-
-import '../../../alert/shift_alert.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
@@ -78,9 +75,8 @@ class _UpdateAccountInvoiceScreenState
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Row(
                 children: [
-                  Text(AppText.accountInvoice, style: titleDesign()),Spacer(),
-
-
+                  Text(AppText.accountInvoice, style: titleDesign()),
+                  Spacer(),
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 65,
@@ -108,7 +104,6 @@ class _UpdateAccountInvoiceScreenState
                     },
                   )),
                   SizedBox(width: 5),
-
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 45,
@@ -122,7 +117,6 @@ class _UpdateAccountInvoiceScreenState
                     },
                   ),
                   SizedBox(width: 5),
-
                   // EXPORT
                   PopupMenuButton<String>(
                     tooltip: "Export Options",
