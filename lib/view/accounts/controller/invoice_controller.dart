@@ -90,7 +90,7 @@ class InvoiceController extends GetxController {
           AccountInvoiceBookingModel.fromJson(response.data);
       BotToast.showText(text: 'Filter Done');
       print(
-          '====================================================== Filter Data');
+          ' Filter Data');
     }
     isLoadingInvoice = false;
     update();
