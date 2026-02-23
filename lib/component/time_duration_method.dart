@@ -23,6 +23,11 @@ String formatDuration(double minutes) {
   }
 }
 
+String formatCreatedAt(DateTime dateTime) {
+  // dd: Day, MM: Month, yy: Year (2 digits), HH: 24-hour, mm: Minutes
+  return DateFormat('dd-MM-yy HH:mm').format(dateTime);
+}
+
 
 Future<String> getFares({
   dynamic miles,

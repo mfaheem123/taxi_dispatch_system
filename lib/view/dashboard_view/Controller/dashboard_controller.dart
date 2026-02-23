@@ -1458,7 +1458,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   List<DashboardVehicleTypeObject> multiVehicleList = [];
   List multiVehicleTempList = [];
 
-  dashBoardApiValidation() async {
+  dashBoardApiValidation({int? id}) async {
 
     if (pickupController.text.isEmpty) {
       return BotToast.showText(text: "Please select pickup location");
@@ -1496,11 +1496,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       return BotToast.showText(text: "Please select vehicle type");
     }
 
-    postDashboardApi();
+    postDashboardApi(id: id);
     return null;
   }
 
-  postDashboardApi() async {
+  postDashboardApi({int? id}) async {
     ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> send restricted driver and child set configuration
     await restrictedDriversListConfig();
 
@@ -1644,10 +1644,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         "return_pickup_time": pickUpTimeControllerReturn.text,
       if (viaReturnPostList.isNotEmpty)
         'return_viapoints': jsonEncode(viaReturnPostList),
-      if (selectVehicleValueReturn != null)
-        "return_driver_id": selectVehicleValueReturn!.id,
       if (selectDriverValueReturn != null)
-        "return_vehicle_type_id": selectDriverValueReturn!.id,
+        "return_driver_id": selectDriverValueReturn!.id,
+      if (selectVehicleValueReturn != null)
+        "return_vehicle_type_id": selectVehicleValueReturn!.id,
       if (pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
       if (extraFaresReturnList.isNotEmpty)
         "return_notes": jsonEncode(extraFaresReturnList),
@@ -1659,7 +1659,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     };
     print(markers);
     print(formData);
-    var response = await Api().post(formData, "bookings/add");
+    var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id");
     if (response.statusCode == 200) {
       if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
               "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
@@ -1791,6 +1791,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     mobileController.clear();
     selectAirportController.clear();
     arrivalTimeController.clear();
+    pickupTwoWayController.clear();
+    dropOffTwoWayController.clear();
     telController.clear();
     // pickUpTimeController.clear();
     minController.clear();
@@ -1818,6 +1820,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     multiVehicleTempList.clear();
     viaPoints.clear();
     dashboardZoneValue = null;
+    dashboardDZoneValue = null;
     _controller.zoneValue = null;
     selectJourneyTypeValue = null;
     selectAccountValue = null;
@@ -1921,9 +1924,12 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       nameController.text = jobData.name!;
       emailController.text = jobData.email!;
       mobileController.text = jobData.mobile!;
-      telController.text = jobData.telephone!;
+      if(jobData.telephone != null){
+        telController.text = jobData.telephone!;
+      }
       pickUpTimeController.text = jobData.pickupTime!;
       minController.text = jobData.leadTime??"";
+
       if(jobData.passengers != null){
         passController.text = jobData.passengers.toString();
       }

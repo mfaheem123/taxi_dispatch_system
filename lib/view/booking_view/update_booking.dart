@@ -27,6 +27,7 @@ import '../../component/suggestion_widget/suggestion_view.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
+import '../../component/time_duration_method.dart';
 import '../../routes/app_pages.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/dashboard/booking_form_widget.dart';
@@ -189,7 +190,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                       color: DynamicColors.textClr,
                                       fontSize: 12)),
                               // SizedBox(width: 1),
-                              Text("DCB75295",
+                              Text("${controller.jobDetails!.id}",
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12)),
@@ -203,7 +204,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
                                       fontSize: 12)),
-                              Text("NADEEM",
+                              Text("${controller.jobDetails!.name}",
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12)),
@@ -217,7 +218,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                   style: TextStyle(
                                       color: DynamicColors.textClr,
                                       fontSize: 12)),
-                              Text("15-01-26 11:02",
+                              Text(formatCreatedAt(controller.jobDetails!.createdAt!),
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12)),
@@ -235,7 +236,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                       color: Colors.red,
                                       fontSize: 12)),
                               SizedBox(width: screenWidth/25),
-                              Text("R/Reference # dcb75241 ",
+                              Text("R/Reference # ${controller.jobDetails!.referenceNumber} ",
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12)),
@@ -636,14 +637,21 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                                             ),
                                                             KbdActivatable(
                                                               focusNode: swap2FN,
-                                                              onActivate: () {
-                                                                String tempPic = controller.pickupController.text;
-                                                                String tempDrop = controller.dropOffController.text;
-                                                                controller.pickupController.text = tempDrop;
-                                                                controller.dropOffController.text = tempPic;
-                                                                controller.update();
+                                                              // onActivate: () {
+                                                              //   String tempPic = controller.pickupController.text;
+                                                              //   String tempDrop = controller.dropOffController.text;
+                                                              //   controller.pickupController.text = tempDrop;
+                                                              //   controller.dropOffController.text = tempPic;
+                                                              //   controller.update();
+                                                              // },
+                                                              onActivate: (){
+                                                                showDialog(
+                                                                    context:
+                                                                    context,
+                                                                    builder: (_) =>
+                                                                        ViaLocation());
                                                               },
-                                                              child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
+                                                              child: const Icon(Icons.my_location, color: Color(0xFF575797), size: 20),
                                                             ),
                                                           ],
                                                         ),
@@ -2221,8 +2229,12 @@ class _UpdateBookingState extends State<UpdateBooking> {
                                       fontSize: 11,
                                       verticalPadding: 0.0,
                                       borderRadius: 4,
-                                    ),     CustomButton(
+                                    ),
+                                    CustomButton(
                                       btnText: "SAVE",
+                                    onTap: (){
+                                        controller.dashBoardApiValidation(id: int.parse(controller.jobDetails!.id!));
+                                    },
                                       width: 110,
                                       height: 30,
                                       fontSize: 11,
