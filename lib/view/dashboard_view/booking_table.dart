@@ -576,7 +576,6 @@ class _BookingTableState extends State<BookingTable> {
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
                                   onPressed: () async {
                                     // controller.dashBoardDataBinding(id: item.id!);
-                                    //
 
 
                                     final newTabUrl =

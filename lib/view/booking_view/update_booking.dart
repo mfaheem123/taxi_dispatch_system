@@ -93,9 +93,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
       FocusScope.of(context).requestFocus(dropdownFocusNode);
     });
 
-    if (controller.dashboardAllData == null) {
-      controller.dashboardData();
-    }
+    controller.dashboardData();
   }
 
   @override

@@ -1902,7 +1902,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           lng: p.longitude,
         ));
         viaTextEditingController.add(
-            ViaTextEditingControllerClass(TextEditingController(text: item.name!), TextEditingController(text: item.mobile!))
+            ViaTextEditingControllerClass(TextEditingController(text: item.name??""), TextEditingController(text: item.mobile??""))
         );
 
         // markers.add(
