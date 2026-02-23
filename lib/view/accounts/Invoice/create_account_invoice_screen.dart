@@ -321,11 +321,9 @@ class _CreateAccountInvoiceScreenState
                   fontSize: 10, color: DynamicColors.whiteClr),
               onTap: () {
 
-Controller.addAccountInvoice();
-
+              Controller.addAccountInvoice();
               },
             ),
-
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,

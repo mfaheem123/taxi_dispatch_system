@@ -136,7 +136,7 @@ class InvoiceController extends GetxController {
               "";
       BotToast.showText(text: 'Account Invoice Created');
       print(
-          '====================================================== Account Invoice Created');
+          ' Account Invoice Created');
       update();
     }
     addAccountInvoiceLoad(false);
@@ -189,8 +189,7 @@ class InvoiceController extends GetxController {
           : null,
       "order_number":
           activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount":
-          activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
       "subsidiary_name": activeFilter == "subsidiary"
           ? searchSubsidiary.value.toLowerCase()
           : null,
@@ -235,6 +234,7 @@ class InvoiceController extends GetxController {
       print("AccountInvoice deleted successfully!");
     }
   }
+  ///================================================ list of Account Invoice END
 
   ///================================================ Update Invoice Screen
   var isLoading = false.obs;
@@ -272,15 +272,12 @@ class InvoiceController extends GetxController {
     update();
   }
 
-  /// ========================= UPDATE SCREEN VARIABLES =======================
+  ///  UPDATE SCREEN VARIABLES
 
   SubsDiaryModel? updateSubsidiaryModel;
   Subsidiaries? selectedUpdateSubsidiary;
   DashboardAccountModel? updateAccountModel;
   DashboardAccountObject? selectedUpdateAccount;
-  DateTime? updateFromDate;
-  DateTime? updateToDate;
-  UpdateInvoiceByIdModel? updateInvoiceModel;
 
   UpdateInvoiceByIdModel? invoiceData;
   Subsidiary? selectedSubsidiary;
@@ -288,7 +285,8 @@ class InvoiceController extends GetxController {
   void loadInvoiceData(String jsonString) {
     invoiceData = updateInvoiceByIdModelFromJson(jsonString);
     if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
-      selectedSubsidiary = invoiceData!.accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
+      selectedSubsidiary = invoiceData!
+          .accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
     } else {
       print("Data incomplete hai: Account null mila");
     }
@@ -304,17 +302,14 @@ class InvoiceController extends GetxController {
     }
   }
 
-
-
-
+  /// Download PDF
   Future<void> downloadApiContentAsFile() async {
     if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice == null) {
       Get.snackbar("Error", "No invoice data found to export.");
       return;
     }
 
-    final mainData =
-    updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
+    final mainData = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
     final accountData = mainData.account;
     final subsidiaryData = accountData?.subsidiary;
     final List lineItems = mainData.accountInvoiceLineitems ?? [];
@@ -488,8 +483,7 @@ CC: CONGESTION CHARGES
     }
   }
 
-
-
+  ///  Download Excel
   Future<void> downloadApiContentAsExcel() async {
     if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice == null) {
       Get.snackbar("Error", "No invoice data found to export.");
@@ -506,8 +500,20 @@ CC: CONGESTION CHARGES
 
     // 2. Add Header Row
     List<String> headers = [
-      "REF #", "DATE", "TIME", "VEHICLE", "CUSTOMER",
-      "PICKUP", "DROPOFF", "FARE", "PC", "WC", "EDC", "M&G", "CC", "TOTAL"
+      "REF #",
+      "DATE",
+      "TIME",
+      "VEHICLE",
+      "CUSTOMER",
+      "PICKUP",
+      "DROPOFF",
+      "FARE",
+      "PC",
+      "WC",
+      "EDC",
+      "M&G",
+      "CC",
+      "TOTAL"
     ];
     sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
 
@@ -549,9 +555,18 @@ CC: CONGESTION CHARGES
     sheetObject.appendRow([TextCellValue("")]); // Khali row gap ke liye
     sheetObject.appendRow([
       TextCellValue("GRAND TOTAL"),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
       DoubleCellValue(grandTotal),
     ]);
 
@@ -561,7 +576,8 @@ CC: CONGESTION CHARGES
       if (fileBytes != null) {
         final content = base64Encode(fileBytes);
         final anchor = html.AnchorElement(
-            href: "data:application/octet-stream;charset=utf-16le;base64,$content")
+            href:
+                "data:application/octet-stream;charset=utf-16le;base64,$content")
           ..setAttribute("download", "Invoice_${mainData.invoiceNumber}.xlsx")
           ..click();
       }
@@ -570,4 +586,36 @@ CC: CONGESTION CHARGES
     }
   }
 
+  /// Edit Charges Function
+  void recalculateRowTotal(dynamic lineItem) {
+    final booking = lineItem.booking;
+    if (booking != null) {
+      // Sab fields ka sum nikalna
+      int fare = int.tryParse(booking.companyPrice?.toString() ?? "0") ?? 0;
+      int pc = int.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0;
+      int wc = int.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0;
+      int edc = int.tryParse(booking.extraDropCharges?.toString() ?? "0") ?? 0;
+      int mg = int.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0;
+      int cc = int.tryParse(booking.congestionCharges?.toString() ?? "0") ?? 0;
+      // Row ka total update karna
+      booking.totalCharges = fare + pc + wc + edc + mg + cc;
+      // Pura Grand Total bhi recalculate karein
+      double tempGrandTotal = 0;
+      for (var item in (updateInvoiceByIdModel
+              ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
+          [])) {
+        tempGrandTotal += (item.booking?.totalCharges ?? 0);
+      }
+      // Admin fees add karke final amount set karein
+      double adminFees = double.tryParse(updateInvoiceByIdModel
+                  ?.accountInvoice?.accountInvoice?.account?.adminFees
+                  ?.toString() ??
+              "0") ??
+          0.0;
+      updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
+          (tempGrandTotal + adminFees).toString();
+
+      update();
+    }
+  }
 }

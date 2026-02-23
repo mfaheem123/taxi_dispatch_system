@@ -341,8 +341,11 @@ onTap: () {
                               // 1. Invoice Number
                               DataCell(Center(child: Text(item.invoiceNumber ?? "-"))),
                               DataCell(Center(child: Text(item.account?.name ?? "-"))),
-                              DataCell(Center(child: Text(item.department is Map ? (item.department["name"] ?? "-")
-                                  : (item.department?.toString() ?? "-")))),
+                              DataCell(Center(child: Text(
+                                  item.department is Map
+                                      ? item.department['name'] ?? "-"
+                                      : item.department?.name ?? "-"
+                              ))),
                               DataCell(Center(child: Text(item.orderNumber ?? "-"))),
                               DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
                               DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
