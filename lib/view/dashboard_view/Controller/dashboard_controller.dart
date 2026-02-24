@@ -50,7 +50,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   // We pass the context here so we can show the Dialog
   void connectToCli(String extension) {
-    final url = Uri.parse("ws://192.168.110.5:5000/websocket/cli?extension=$extension");
+    final url = Uri.parse("$socketUrl/cli?extension=$extension");
 
     try {
       _channel = WebSocketChannel.connect(url);
