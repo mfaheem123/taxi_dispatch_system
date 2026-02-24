@@ -12,7 +12,7 @@ import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../model/account_invoice_booking_model.dart';
 import '../model/invoice_number_model.dart' hide Subsidiary;
 import '../model/list_of_account_invoice_model.dart';
-import '../model/update_account_invoice_model.dart' hide Account, Subsidiary;
+import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Booking;
 
 class InvoiceController extends GetxController {
   /// ============================================== Account Invoice ====================================================
@@ -590,32 +590,80 @@ CC: CONGESTION CHARGES
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
     if (booking != null) {
-      // Sab fields ka sum nikalna
-      int fare = int.tryParse(booking.companyPrice?.toString() ?? "0") ?? 0;
-      int pc = int.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0;
-      int wc = int.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0;
-      int edc = int.tryParse(booking.extraDropCharges?.toString() ?? "0") ?? 0;
-      int mg = int.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0;
-      int cc = int.tryParse(booking.congestionCharges?.toString() ?? "0") ?? 0;
-      // Row ka total update karna
-      booking.totalCharges = fare + pc + wc + edc + mg + cc;
-      // Pura Grand Total bhi recalculate karein
-      double tempGrandTotal = 0;
-      for (var item in (updateInvoiceByIdModel
-              ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
-          [])) {
-        tempGrandTotal += (item.booking?.totalCharges ?? 0);
-      }
-      // Admin fees add karke final amount set karein
-      double adminFees = double.tryParse(updateInvoiceByIdModel
-                  ?.accountInvoice?.accountInvoice?.account?.adminFees
-                  ?.toString() ??
-              "0") ??
-          0.0;
-      updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
-          (tempGrandTotal + adminFees).toString();
+      // 1. Current Booking ke saare fields ko update karein
+      booking.companyPrice = booking.companyPrice ?? 0;
+      booking.parkingCharges = booking.parkingCharges ?? 0;
+      booking.waitingCharges = booking.waitingCharges ?? 0;
+      booking.extraDropCharges = booking.extraDropCharges ?? 0;
+      booking.meetAndGreet = booking.meetAndGreet ?? 0;
+      booking.congestionCharges = booking.congestionCharges ?? 0;
 
+      // 2. Row ka total calculate karein
+      booking.totalCharges = (booking.companyPrice as int) +
+          (booking.parkingCharges as int) +
+          (booking.waitingCharges as int) +
+          (booking.extraDropCharges as int) +
+          (booking.meetAndGreet as int) +
+          (booking.congestionCharges as int);
+
+      // 3. Poori Invoice ka Grand Total calculate karein
+      double newGrandTotal = 0;
+      var lineItems = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
+
+      for (var item in lineItems) {
+        newGrandTotal += (item.booking?.totalCharges ?? 0);
+      }
+
+      // 4. Admin Fees add karein
+      double adminFees = double.tryParse(updateInvoiceByIdModel
+          ?.accountInvoice?.accountInvoice?.account?.adminFees
+          ?.toString() ?? "0") ?? 0.0;
+
+      // 5. Final Amount update karein (String type hai model mein)
+      updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
+          (newGrandTotal + adminFees).toStringAsFixed(2);
+
+      // 6. UI ko refresh karein
       update();
     }
   }
+
+
+
+
+  updateBookingCharges(dynamic booking) async {
+
+      var formData = {
+        "company_price": booking.companyPrice.toString(),
+        "parking_charges": booking.parkingCharges.toString(),
+        "waiting_charges": booking.waitingCharges.toString(),
+        "extra_drop_charges": booking.extraDropCharges.toString(),
+        "meet_and_greet": booking.meetAndGreet.toString(),
+        "congestion_charges": booking.congestionCharges.toString(),
+        "total_charges": booking.totalCharges.toString(),
+      };
+
+      var response = await Api().post(formData, "bookings/update/${booking.id}", auth: true);
+
+      if (response != null) {
+        Get.snackbar("Success", "Charges updated!", backgroundColor: Colors.green);
+
+        getAccountInvoice();
+        // SABSE ZAROORI: Yahan apni fetch data wali function call karein
+        // Example: fetchInvoiceDetails(invoiceId);
+        // Taake API se fresh values (non-zero) dobara load hon.
+      }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,6 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
-import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
+import 'package:dashboard_new1/view/accounts/model/account_invoice_booking_model.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
@@ -17,7 +17,7 @@ import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
-import '../model/update_account_invoice_model.dart' hide Subsidiary;
+import '../model/update_account_invoice_model.dart' hide Booking;
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {
   const UpdateAccountInvoiceScreen({super.key});
@@ -321,6 +321,8 @@ class _UpdateAccountInvoiceScreenState
                             child: SizedBox(
                               width: 70,
                               child: TextFormField(
+                                // Yeh Key Flutter ko refresh hone par purani value bhulne nahi degi
+                                key: UniqueKey(),
                                 initialValue: initialValue?.toString() ?? "0",
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
@@ -330,7 +332,10 @@ class _UpdateAccountInvoiceScreenState
                                   contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                                   border: OutlineInputBorder(),
                                 ),
-                                onChanged: onChanged,
+                                onChanged: (val) {
+                                  // Typing ke waqt model foran update hona chahiye
+                                  onChanged(val);
+                                },
                               ),
                             ),
                           ),
@@ -347,6 +352,7 @@ class _UpdateAccountInvoiceScreenState
                         DataCell(Center(child: Text(booking?.vehicleType?.name ?? "-"))),
                         DataCell(Center(child: Text(booking?.journeyType?.journeyType ?? "-"))),
                         DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))),
+
                         editableCell(booking?.companyPrice, (val) {
                           booking?.companyPrice = int.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
@@ -388,14 +394,26 @@ class _UpdateAccountInvoiceScreenState
                               btnText: "SAVE",
                               style: mozillaTextRegularText(
                                   fontSize: 10, color: DynamicColors.whiteClr),
-                              onTap: () {},
+                              onTap: () {
+
+                                if (booking != null) {
+                                  controller.updateBookingCharges(booking);
+                                  print("Updating Booking ID: ${booking.id}");
+                                }
+
+                              },
                             ),
                           ),
                         ),
                       ]);
                     }).toList(),
 
-                          //  Admin Row
+
+
+
+
+                    //  Admin Row
+
                     if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
                       DataRow(cells: [
                         for (var i = 0; i < 8; i++) DataCell.empty,
