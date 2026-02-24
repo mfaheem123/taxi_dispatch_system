@@ -1985,7 +1985,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
         final restrictedIds = jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
         driversList.addAll(
-            allDriverData!.drivers.where((driver) => restrictedIds.contains(driver.id.toString()))
+            allDriverData!.drivers!.where((driver) => restrictedIds.contains(driver.id.toString()))
         );
       }
 

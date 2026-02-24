@@ -178,7 +178,7 @@ class _RestrictDriversAlertState extends State<RestrictDriversAlert> {
                                 ),
                                Padding(
                                  padding: EdgeInsets.only(left: 8.0),
-                                 child: Text(controller.driversList[index].name,
+                                 child: Text(controller.driversList[index].name!,
                                    style: mozillaTextSemiBoldText(
                                        fontSize: 12,
                                    ),
