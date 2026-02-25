@@ -1,6 +1,6 @@
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
-import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
+import 'package:dashboard_new1/view/accounts/model/account_invoice_booking_model.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
@@ -13,14 +13,11 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
-
-import '../../../alert/shift_alert.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
-import '../model/update_account_invoice_model.dart' hide Subsidiary;
+import '../model/update_account_invoice_model.dart' hide Booking;
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {
   const UpdateAccountInvoiceScreen({super.key});
@@ -54,7 +51,12 @@ class _UpdateAccountInvoiceScreenState
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<InvoiceController>(builder: (controller) {
+    return GetBuilder<InvoiceController>(
+        initState: (state) {
+
+        },
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
 
         final double maxWidth = constraints.maxWidth;
@@ -78,9 +80,8 @@ class _UpdateAccountInvoiceScreenState
               color: DynamicColors.gryClr.withOpacity(0.5),
               child: Row(
                 children: [
-                  Text(AppText.accountInvoice, style: titleDesign()),Spacer(),
-
-
+                  Text(AppText.accountInvoice, style: titleDesign()),
+                  Spacer(),
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 65,
@@ -108,7 +109,6 @@ class _UpdateAccountInvoiceScreenState
                     },
                   )),
                   SizedBox(width: 5),
-
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 45,
@@ -122,7 +122,6 @@ class _UpdateAccountInvoiceScreenState
                     },
                   ),
                   SizedBox(width: 5),
-
                   // EXPORT
                   PopupMenuButton<String>(
                     tooltip: "Export Options",
@@ -173,7 +172,6 @@ class _UpdateAccountInvoiceScreenState
                     ),
                   ),
                   SizedBox(width: 5),
-
                   CustomButton(
                     verticalPadding: 0.0,
                     width: 45,
@@ -237,15 +235,15 @@ class _UpdateAccountInvoiceScreenState
                       )
                     ]))),
 
-            CustomDropdownField<Subsidiary>(
+            CustomDropdownField<Subsidiaries>(
               text: "SUBSIDIARY",
               width: fieldWidth / 1.5,
               label: "subsidiary",
-              items: controller.selectedSubsidiary != null ? [controller.selectedSubsidiary!] : [],
-              value: controller.selectedSubsidiary,
-              itemLabel: (item) => item.name ?? "No Name",
+              items: controller.subsDiaryModel?.subsidiaries ?? [],
+              value: controller.subsidiaries,
+              itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.selectedSubsidiary = val;
+                controller.subsidiaries = val;
                 controller.update();
               },
             ),
@@ -255,7 +253,6 @@ class _UpdateAccountInvoiceScreenState
               text: "DEPARTMENT",
               width: fieldWidth / 1.5,
               label: "DEPARTMENT",
-
               items: controller.selectAccountValue?.departments ?? [],
               value: controller.selectDepartmentData,
               itemLabel: (item) => item.name ?? "",
@@ -279,7 +276,6 @@ class _UpdateAccountInvoiceScreenState
 
             CustomTextField(
               borderRadius: 4,
-              // Controller ke andar orderNumber wala TextEditingController use karein
               controller: controller.orderNumber,
               width: fieldWidth,
               hintText: AppText.order,
@@ -290,74 +286,6 @@ class _UpdateAccountInvoiceScreenState
             SizedBox(
               height: 8,
             ),
-            // Padding(
-            //   padding: const EdgeInsets.only(top: 5, left: 20, right: 15),
-            //   child: Row(
-            //     children: [
-            //       labeledField(
-            //         context: context,
-            //         isMobile: isMobile,
-            //         label: AppText.from,
-            //         width: fieldWidth / 1.8,
-            //         child: SizedBox(
-            //             height: 30,
-            //             child: KeyboardDatePicker(
-            //                 initialDate: controller.updateFromDate ?? DateTime.now(),
-            //                 onChanged: (pickedDate) {
-            //                   controller.updateFromDate = pickedDate;
-            //                   controller.update();
-            //                 })),
-            //       ),
-            //       SizedBox(
-            //         width: 15,
-            //       ),
-            //       labeledField(
-            //         context: context,
-            //         isMobile: isMobile,
-            //         label: AppText.to,
-            //         width: fieldWidth / 1.8,
-            //         child: SizedBox(
-            //             height: 30,
-            //             child: KeyboardDatePicker(
-            //               initialDate: controller.updateToDate ?? DateTime.now(),
-            //               onChanged: (pickedDate) {
-            //                 controller.updateToDate = pickedDate;
-            //                 controller.update();
-            //               },
-            //             )),
-            //       ),
-            //       Spacer(),
-            //       CustomButton(
-            //         verticalPadding: 0.0,
-            //         width: 40,
-            //         height: 30,
-            //         borderRadius: 4,
-            //         btnText: AppText.filter,
-            //         style: mozillaTextRegularText(
-            //             fontSize: 10, color: DynamicColors.whiteClr),
-            //         onTap: () {
-            //           controller.getUpdateAccountInvoiceBookings();
-            //         },
-            //       ),
-            //       SizedBox(
-            //         width: 15,
-            //       ),
-            //       CustomButton(
-            //         onTap: () {
-            //           controller.postUpdateInvoice();
-            //         },
-            //         verticalPadding: 0.0,
-            //         width: 40,
-            //         height: 30,
-            //         borderRadius: 4,
-            //         btnText: AppText.update,
-            //         style: mozillaTextRegularText(
-            //             fontSize: 10, color: DynamicColors.whiteClr),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-
 
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -386,6 +314,30 @@ class _UpdateAccountInvoiceScreenState
                   rows: [
                     ...(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? []).map((lineItem) {
                       final booking = lineItem.booking; // Short reference
+                        // Helper function to create editable cell
+                      DataCell editableCell(dynamic initialValue, Function(String) onChanged) {
+                        return DataCell(
+                          Center(
+                            child: SizedBox(
+                              width: 70,
+                              child: TextFormField(
+
+                                initialValue: initialValue?.toString() ?? "0",
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 12),
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                  border: OutlineInputBorder(),
+                                ),
+                                onChanged: onChanged,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
                       return DataRow(cells: [
                         DataCell(Checkbox(value: false, onChanged: (val) {})),
                         DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
@@ -395,26 +347,69 @@ class _UpdateAccountInvoiceScreenState
                         DataCell(Center(child: Text(booking?.name ?? "-"))), // Customer Name
                         DataCell(Center(child: Text(booking?.vehicleType?.name ?? "-"))),
                         DataCell(Center(child: Text(booking?.journeyType?.journeyType ?? "-"))),
-                        DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))), // Payment Type (Model check karein agar missing hai)
-                        DataCell(Center(child: Text(booking?.companyPrice?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.parkingCharges?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.waitingCharges?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.extraDropCharges?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.meetAndGreet?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.congestionCharges?.toString() ?? "0"))),
-                        DataCell(Center(child: Text(booking?.totalCharges?.toString() ?? "0", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w100),))),
-                        DataCell(Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.search, color: DynamicColors.primaryClr, size: 18),
-                            const SizedBox(width: 8),
-                            Icon(Icons.clear, color: DynamicColors.redClr, size: 18),
-                          ],
+                        DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))),
+
+                        editableCell(booking?.companyPrice, (val) {
+                          booking?.companyPrice = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        editableCell(booking?.parkingCharges, (val) {
+                          booking?.parkingCharges = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        editableCell(booking?.waitingCharges, (val) {
+                          booking?.waitingCharges = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        editableCell(booking?.extraDropCharges, (val) {
+                          booking?.extraDropCharges = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        editableCell(booking?.meetAndGreet, (val) {
+                          booking?.meetAndGreet = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        editableCell(booking?.congestionCharges, (val) {
+                          booking?.congestionCharges = int.tryParse(val) ?? 0;
+                          controller.recalculateRowTotal(lineItem);
+                        }),
+                        DataCell(Center(
+                          child: Text(
+                            "£${booking?.totalCharges ?? 0}",
+                            style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                          ),
                         )),
+
+                        DataCell(
+                          Center(
+                            child: CustomButton(
+                              verticalPadding: 0.0,
+                              width: 45,
+                              height: 30,
+                              borderRadius: 4,
+                              btnText: "SAVE",
+                              style: mozillaTextRegularText(
+                                  fontSize: 10, color: DynamicColors.whiteClr),
+                              onTap: () {
+
+                                if (booking != null) {
+                                  controller.updateBookingCharges(booking);
+                                  print("Updating Booking ID: ${booking.id}");
+                                }
+
+                              },
+                            ),
+                          ),
+                        ),
                       ]);
                     }).toList(),
 
-                          //  Admin Row
+
+
+
+
+                    //  Admin Row
+
                     if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
                       DataRow(cells: [
                         for (var i = 0; i < 8; i++) DataCell.empty,

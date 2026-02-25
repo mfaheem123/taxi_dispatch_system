@@ -17,7 +17,6 @@ import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
 import '../../routes/app_pages.dart';
-import '../../tessting.dart';
 import '../booking_view/update_booking.dart';
 import 'Controller/dashboard_controller.dart';
 import 'dashboard/F3_alert.dart';
@@ -577,8 +576,7 @@ class _BookingTableState extends State<BookingTable> {
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
                                   onPressed: () async {
                                     // controller.dashBoardDataBinding(id: item.id!);
-                                    //
-                                    // Get.to(DynamicStepperScreen());
+
 
                                     final newTabUrl =
                                         "${Uri.base.origin}${Routes.updateBooking}?data=${item.id}";

@@ -24,10 +24,10 @@ class CustomerController extends GetxController {
   RxBool restricDriverLoader = false.obs;
 
   List<Map<String, dynamic>> get apiDriversList {
-    if (restricDriverModel == null || restricDriverModel!.drivers.isEmpty) {
+    if (restricDriverModel == null || restricDriverModel!.drivers!.isEmpty) {
       return [];
     }
-    return restricDriverModel!.drivers.map((d) {
+    return restricDriverModel!.drivers!.map((d) {
       return {
         'id': d.id,
         'username': d.username,

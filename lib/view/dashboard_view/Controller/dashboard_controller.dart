@@ -50,7 +50,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   // We pass the context here so we can show the Dialog
   void connectToCli(String extension) {
-    final url = Uri.parse("ws://192.168.110.5:5000/websocket/cli?extension=$extension");
+    final url = Uri.parse("$socketUrl/cli?extension=$extension");
 
     try {
       _channel = WebSocketChannel.connect(url);
@@ -1902,7 +1902,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           lng: p.longitude,
         ));
         viaTextEditingController.add(
-            ViaTextEditingControllerClass(TextEditingController(text: item.name!), TextEditingController(text: item.mobile!))
+            ViaTextEditingControllerClass(TextEditingController(text: item.name??""), TextEditingController(text: item.mobile??""))
         );
 
         // markers.add(
@@ -1985,7 +1985,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       if (jobData.restrictedDrivers?.isNotEmpty ?? false) {
         final restrictedIds = jobData.restrictedDrivers!.map((e) => e.id.toString()).toSet();
         driversList.addAll(
-            allDriverData!.drivers.where((driver) => restrictedIds.contains(driver.id.toString()))
+            allDriverData!.drivers!.where((driver) => restrictedIds.contains(driver.id.toString()))
         );
       }
 

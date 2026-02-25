@@ -9,22 +9,22 @@ RestricDriverModel restricDriverModelFromJson(String str) => RestricDriverModel.
 String restricDriverModelToJson(RestricDriverModel data) => json.encode(data.toJson());
 
 class RestricDriverModel {
-    bool status;
-    int page;
-    int limit;
-    int total;
-    int totalPages;
-    int count;
-    List<DriverObject> drivers;
+    bool? status;
+    int? page;
+    int? limit;
+    int? total;
+    int? totalPages;
+    int? count;
+    List<DriverObject>? drivers;
 
     RestricDriverModel({
-        required this.status,
-        required this.page,
-        required this.limit,
-        required this.total,
-        required this.totalPages,
-        required this.count,
-        required this.drivers,
+        this.status,
+        this.page,
+        this.limit,
+        this.total,
+        this.totalPages,
+        this.count,
+        this.drivers,
     });
 
     factory RestricDriverModel.fromJson(Map<String, dynamic> json) => RestricDriverModel(
@@ -44,37 +44,37 @@ class RestricDriverModel {
         "total": total,
         "total_pages": totalPages,
         "count": count,
-        "drivers": List<dynamic>.from(drivers.map((x) => x.toJson())),
+        "drivers": List<dynamic>.from(drivers!.map((x) => x.toJson())),
     };
 }
 
 class DriverObject {
-    int id;
-    int subsidiaryId;
-    String username;
-    String password;
-    String name;
-    String email;
-    String mobile;
-    String telephone;
-    String address;
-    String dob;
-    String driverType;
-    String driverCommission;
-    String rentLimit;
-    bool rentPaid;
-    String balance;
-    bool hasPda;
-    bool useCompanyVehicle;
-    bool active;
-    String startDate;
-    String endDate;
+    int? id;
+    int? subsidiaryId;
+    String? username;
+    String? password;
+    String? name;
+    String? email;
+    String? mobile;
+    String? telephone;
+    String? address;
+    String? dob;
+    String? driverType;
+    String? driverCommission;
+    String? rentLimit;
+    bool? rentPaid;
+    String? balance;
+    bool? hasPda;
+    bool? useCompanyVehicle;
+    bool? active;
+    String? startDate;
+    String? endDate;
     String? licenceNumber;
     String? licenceExpiry;
     String? phcDriverNumber;
     String? phcDriverExpiry;
     String? insuranceNumber;
-    String insuranceExpiry;
+    String? insuranceExpiry;
     String? rentalAgreementNumber;
     String? rentalAgreementExpiry;
     String? roadTaxNumber;
@@ -82,14 +82,14 @@ class DriverObject {
     String? v5RegistrationNumber;
     String? v5RegistrationExpiry;
     String? motNumber;
-    String motExpiry;
+    String? motExpiry;
     String? mot2Number;
-    String mot2Expiry;
+    String? mot2Expiry;
     String? phcVehicleNumber;
-    String phcVehicleExpiry;
-    String ni;
-    String image;
-    String createdAt;
+    String? phcVehicleExpiry;
+    String? ni;
+    String? image;
+    String? createdAt;
     int? vehicleId;
     dynamic driverStatus;
     dynamic sessionStatus;
@@ -107,7 +107,7 @@ class DriverObject {
     dynamic zoneUpdatedAt;
     dynamic os;
     dynamic version;
-    String sinBinTimer;
+    String? sinBinTimer;
     dynamic position;
     dynamic pdaRent;
     int? companyVehicleId;
@@ -120,85 +120,85 @@ class DriverObject {
     String? v5RegistrationExpiryTime;
     String? roadTaxExpiryTime;
     String? rentalAgreementExpiryTime;
-    String subsidiaryName;
-    Vehicle vehicle;
-    Subsidiary subsidiary;
+    String? subsidiaryName;
+    Vehicle? vehicle;
+    Subsidiary? subsidiary;
 
     DriverObject({
-        required this.id,
-        required this.subsidiaryId,
-        required this.username,
-        required this.password,
-        required this.name,
-        required this.email,
-        required this.mobile,
-        required this.telephone,
-        required this.address,
-        required this.dob,
-        required this.driverType,
-        required this.driverCommission,
-        required this.rentLimit,
-        required this.rentPaid,
-        required this.balance,
-        required this.hasPda,
-        required this.useCompanyVehicle,
-        required this.active,
-        required this.startDate,
-        required this.endDate,
-        required this.licenceNumber,
-        required this.licenceExpiry,
-        required this.phcDriverNumber,
-        required this.phcDriverExpiry,
-        required this.insuranceNumber,
-        required this.insuranceExpiry,
-        required this.rentalAgreementNumber,
-        required this.rentalAgreementExpiry,
-        required this.roadTaxNumber,
-        required this.roadTaxExpiry,
-        required this.v5RegistrationNumber,
-        required this.v5RegistrationExpiry,
-        required this.motNumber,
-        required this.motExpiry,
-        required this.mot2Number,
-        required this.mot2Expiry,
-        required this.phcVehicleNumber,
-        required this.phcVehicleExpiry,
-        required this.ni,
-        required this.image,
-        required this.createdAt,
-        required this.vehicleId,
-        required this.driverStatus,
-        required this.sessionStatus,
-        required this.bookingStatus,
-        required this.latitude,
-        required this.longitude,
-        required this.webDeviceId,
-        required this.mobileDeviceId,
-        required this.lastBooking,
-        required this.lastVehicle,
-        required this.notes,
-        required this.zone,
-        required this.rank,
-        required this.waitingTime,
-        required this.zoneUpdatedAt,
-        required this.os,
-        required this.version,
-        required this.sinBinTimer,
-        required this.position,
-        required this.pdaRent,
-        required this.companyVehicleId,
-        required this.licenceExpiryTime,
-        required this.phcDriverExpiryTime,
-        required this.insuranceExpiryTime,
-        required this.phcVehicleExpiryTime,
-        required this.motExpiryTime,
-        required this.mot2ExpiryTime,
-        required this.v5RegistrationExpiryTime,
-        required this.roadTaxExpiryTime,
-        required this.rentalAgreementExpiryTime,
-        required this.subsidiaryName,
-        required this.vehicle,
-        required this.subsidiary,
+        this.id,
+        this.subsidiaryId,
+        this.username,
+        this.password,
+        this.name,
+        this.email,
+        this.mobile,
+        this.telephone,
+        this.address,
+        this.dob,
+        this.driverType,
+        this.driverCommission,
+        this.rentLimit,
+        this.rentPaid,
+        this.balance,
+        this.hasPda,
+        this.useCompanyVehicle,
+        this.active,
+        this.startDate,
+        this.endDate,
+        this.licenceNumber,
+        this.licenceExpiry,
+        this.phcDriverNumber,
+        this.phcDriverExpiry,
+        this.insuranceNumber,
+        this.insuranceExpiry,
+        this.rentalAgreementNumber,
+        this.rentalAgreementExpiry,
+        this.roadTaxNumber,
+        this.roadTaxExpiry,
+        this.v5RegistrationNumber,
+        this.v5RegistrationExpiry,
+        this.motNumber,
+        this.motExpiry,
+        this.mot2Number,
+        this.mot2Expiry,
+        this.phcVehicleNumber,
+        this.phcVehicleExpiry,
+        this.ni,
+        this.image,
+        this.createdAt,
+        this.vehicleId,
+        this.driverStatus,
+        this.sessionStatus,
+        this.bookingStatus,
+        this.latitude,
+        this.longitude,
+        this.webDeviceId,
+        this.mobileDeviceId,
+        this.lastBooking,
+        this.lastVehicle,
+        this.notes,
+        this.zone,
+        this.rank,
+        this.waitingTime,
+        this.zoneUpdatedAt,
+        this.os,
+        this.version,
+        this.sinBinTimer,
+        this.position,
+        this.pdaRent,
+        this.companyVehicleId,
+        this.licenceExpiryTime,
+        this.phcDriverExpiryTime,
+        this.insuranceExpiryTime,
+        this.phcVehicleExpiryTime,
+        this.motExpiryTime,
+        this.mot2ExpiryTime,
+        this.v5RegistrationExpiryTime,
+        this.roadTaxExpiryTime,
+        this.rentalAgreementExpiryTime,
+        this.subsidiaryName,
+        this.vehicle,
+        this.subsidiary,
     });
 
     factory DriverObject.fromJson(Map<String, dynamic> json) => DriverObject(
@@ -351,8 +351,8 @@ class DriverObject {
         "road_tax_expiry_time": roadTaxExpiryTime,
         "rental_agreement_expiry_time": rentalAgreementExpiryTime,
         "subsidiary_name": subsidiaryName,
-        "vehicle": vehicle.toJson(),
-        "subsidiary": subsidiary.toJson(),
+        "vehicle": vehicle!.toJson(),
+        "subsidiary": subsidiary!.toJson(),
     };
 }
 
@@ -373,20 +373,20 @@ class Subsidiary {
 }
 
 class Vehicle {
-    String vehicleNumber;
+    String? vehicleNumber;
     String? make;
     String? model;
     String? color;
     String? endDate;
-    VehicleType vehicleType;
+    VehicleType? vehicleType;
 
     Vehicle({
         required this.vehicleNumber,
-        required this.make,
-        required this.model,
-        required this.color,
-        required this.endDate,
-        required this.vehicleType,
+        this.make,
+        this.model,
+        this.color,
+        this.endDate,
+        this.vehicleType,
     });
 
     factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
@@ -404,23 +404,23 @@ class Vehicle {
         "model": model,
         "color": color,
         "end_date": endDate,
-        "vehicle_type": vehicleType.toJson(),
+        "vehicle_type": vehicleType!.toJson(),
     };
 }
 
 class VehicleType {
-    int id;
-    String name;
-    int passengers;
-    int luggages;
-    int driverWaitingCharges;
+    int? id;
+    String? name;
+    int? passengers;
+    int? luggages;
+    int? driverWaitingCharges;
 
     VehicleType({
-        required this.id,
-        required this.name,
-        required this.passengers,
-        required this.luggages,
-        required this.driverWaitingCharges,
+       this.id,
+       this.name,
+       this.passengers,
+       this.luggages,
+       this.driverWaitingCharges,
     });
 
     factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(

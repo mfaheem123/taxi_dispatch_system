@@ -12,7 +12,7 @@ import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../model/account_invoice_booking_model.dart';
 import '../model/invoice_number_model.dart' hide Subsidiary;
 import '../model/list_of_account_invoice_model.dart';
-import '../model/update_account_invoice_model.dart' hide Account, Subsidiary;
+import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Booking;
 
 class InvoiceController extends GetxController {
   /// ============================================== Account Invoice ====================================================
@@ -90,7 +90,7 @@ class InvoiceController extends GetxController {
           AccountInvoiceBookingModel.fromJson(response.data);
       BotToast.showText(text: 'Filter Done');
       print(
-          '====================================================== Filter Data');
+          ' Filter Data');
     }
     isLoadingInvoice = false;
     update();
@@ -136,7 +136,7 @@ class InvoiceController extends GetxController {
               "";
       BotToast.showText(text: 'Account Invoice Created');
       print(
-          '====================================================== Account Invoice Created');
+          ' Account Invoice Created');
       update();
     }
     addAccountInvoiceLoad(false);
@@ -189,8 +189,7 @@ class InvoiceController extends GetxController {
           : null,
       "order_number":
           activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount":
-          activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
       "subsidiary_name": activeFilter == "subsidiary"
           ? searchSubsidiary.value.toLowerCase()
           : null,
@@ -235,6 +234,7 @@ class InvoiceController extends GetxController {
       print("AccountInvoice deleted successfully!");
     }
   }
+  ///================================================ list of Account Invoice END
 
   ///================================================ Update Invoice Screen
   var isLoading = false.obs;
@@ -250,6 +250,14 @@ class InvoiceController extends GetxController {
 
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
+
+  ///  UPDATE SCREEN VARIABLES
+  SubsDiaryModel? updateSubsidiaryModel;
+  Subsidiaries? selectedUpdateSubsidiary;
+  DashboardAccountModel? updateAccountModel;
+  DashboardAccountObject? selectedUpdateAccount;
+  UpdateInvoiceByIdModel? invoiceData;
+  Subsidiary? selectedSubsidiary;
   Account? account;
   bool isLoadingUpdate = false;
 
@@ -272,49 +280,35 @@ class InvoiceController extends GetxController {
     update();
   }
 
-  /// ========================= UPDATE SCREEN VARIABLES =======================
 
-  SubsDiaryModel? updateSubsidiaryModel;
-  Subsidiaries? selectedUpdateSubsidiary;
-  DashboardAccountModel? updateAccountModel;
-  DashboardAccountObject? selectedUpdateAccount;
-  DateTime? updateFromDate;
-  DateTime? updateToDate;
-  UpdateInvoiceByIdModel? updateInvoiceModel;
+  // void loadInvoiceData(String jsonString) {
+  //   invoiceData = updateInvoiceByIdModelFromJson(jsonString);
+  //   if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
+  //     selectedSubsidiary = invoiceData!
+  //         .accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
+  //   } else {
+  //     print("Data incomplete hai: Account null mila");
+  //   }
+  //
+  //   update();
+  // }
 
-  UpdateInvoiceByIdModel? invoiceData;
-  Subsidiary? selectedSubsidiary;
+  // getUpdateAccounts(int subsidiaryId) async {
+  //   var response = await Api().get("accounts/subsidiary/$subsidiaryId");
+  //   if (response.statusCode == 200) {
+  //     updateAccountModel = DashboardAccountModel.fromJson(response.data);
+  //     update();
+  //   }
+  // }
 
-  void loadInvoiceData(String jsonString) {
-    invoiceData = updateInvoiceByIdModelFromJson(jsonString);
-    if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
-      selectedSubsidiary = invoiceData!.accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
-    } else {
-      print("Data incomplete hai: Account null mila");
-    }
-
-    update();
-  }
-
-  getUpdateAccounts(int subsidiaryId) async {
-    var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-    if (response.statusCode == 200) {
-      updateAccountModel = DashboardAccountModel.fromJson(response.data);
-      update();
-    }
-  }
-
-
-
-
+  /// Download PDF
   Future<void> downloadApiContentAsFile() async {
     if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice == null) {
       Get.snackbar("Error", "No invoice data found to export.");
       return;
     }
 
-    final mainData =
-    updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
+    final mainData = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
     final accountData = mainData.account;
     final subsidiaryData = accountData?.subsidiary;
     final List lineItems = mainData.accountInvoiceLineitems ?? [];
@@ -488,8 +482,7 @@ CC: CONGESTION CHARGES
     }
   }
 
-
-
+  ///  Download Excel
   Future<void> downloadApiContentAsExcel() async {
     if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice == null) {
       Get.snackbar("Error", "No invoice data found to export.");
@@ -506,8 +499,20 @@ CC: CONGESTION CHARGES
 
     // 2. Add Header Row
     List<String> headers = [
-      "REF #", "DATE", "TIME", "VEHICLE", "CUSTOMER",
-      "PICKUP", "DROPOFF", "FARE", "PC", "WC", "EDC", "M&G", "CC", "TOTAL"
+      "REF #",
+      "DATE",
+      "TIME",
+      "VEHICLE",
+      "CUSTOMER",
+      "PICKUP",
+      "DROPOFF",
+      "FARE",
+      "PC",
+      "WC",
+      "EDC",
+      "M&G",
+      "CC",
+      "TOTAL"
     ];
     sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
 
@@ -549,9 +554,18 @@ CC: CONGESTION CHARGES
     sheetObject.appendRow([TextCellValue("")]); // Khali row gap ke liye
     sheetObject.appendRow([
       TextCellValue("GRAND TOTAL"),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
-      TextCellValue(""), TextCellValue(""), TextCellValue(""), TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
       DoubleCellValue(grandTotal),
     ]);
 
@@ -561,7 +575,8 @@ CC: CONGESTION CHARGES
       if (fileBytes != null) {
         final content = base64Encode(fileBytes);
         final anchor = html.AnchorElement(
-            href: "data:application/octet-stream;charset=utf-16le;base64,$content")
+            href:
+                "data:application/octet-stream;charset=utf-16le;base64,$content")
           ..setAttribute("download", "Invoice_${mainData.invoiceNumber}.xlsx")
           ..click();
       }
@@ -569,5 +584,81 @@ CC: CONGESTION CHARGES
       print("Excel Download Error: $e");
     }
   }
+
+  /// Edit Charges Function
+  void recalculateRowTotal(dynamic lineItem) {
+    final booking = lineItem.booking;
+    if (booking != null) {
+      // 1. Current Booking ke saare fields ko update karein
+      booking.companyPrice = booking.companyPrice ?? 0;
+      booking.parkingCharges = booking.parkingCharges ?? 0;
+      booking.waitingCharges = booking.waitingCharges ?? 0;
+      booking.extraDropCharges = booking.extraDropCharges ?? 0;
+      booking.meetAndGreet = booking.meetAndGreet ?? 0;
+      booking.congestionCharges = booking.congestionCharges ?? 0;
+
+      // 2. Row ka total calculate karein
+      booking.totalCharges = (booking.companyPrice as int) +
+          (booking.parkingCharges as int) +
+          (booking.waitingCharges as int) +
+          (booking.extraDropCharges as int) +
+          (booking.meetAndGreet as int) +
+          (booking.congestionCharges as int);
+
+      // 3. Poori Invoice ka Grand Total calculate karein
+      double newGrandTotal = 0;
+      var lineItems = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
+
+      for (var item in lineItems) {
+        newGrandTotal += (item.booking?.totalCharges ?? 0);
+      }
+
+      // 4. Admin Fees add karein
+      double adminFees = double.tryParse(updateInvoiceByIdModel
+          ?.accountInvoice?.accountInvoice?.account?.adminFees
+          ?.toString() ?? "0") ?? 0.0;
+
+      // 5. Final Amount update karein (String type hai model mein)
+      updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
+          (newGrandTotal + adminFees).toStringAsFixed(2);
+
+      // 6. UI ko refresh karein
+      update();
+    }
+  }
+
+
+
+
+  updateBookingCharges(dynamic booking) async {
+
+      var formData = {
+        "fares": booking.companyPrice.toString(),
+        "parking_charges": booking.parkingCharges.toString(),
+        "waiting_charges": booking.waitingCharges.toString(),
+        "extra_drop_charges": booking.extraDropCharges.toString(),
+        "meet_and_greet": booking.meetAndGreet.toString(),
+        "congestion_charges": booking.congestionCharges.toString(),
+        "total_charges": booking.totalCharges.toString(),
+      };
+      var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
+      if (response.statusCode == 200) {
+        Get.snackbar("Success", "Charges updated!", backgroundColor: Colors.green);
+
+
+
+      }
+
+  }
+
+
+
+
+
+
+
+
+
+
 
 }

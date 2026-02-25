@@ -44,7 +44,7 @@ class ProductionConfig implements BaseConfig {
   // String get apiUrl => "https://www.nexustechnologys.com/api/";
 
   @override
-  String get socketUrl => "ws://apis.bloodlines.info:8088";
+  String get socketUrl => "wss://www.nexustechnologys.com/websocket";
 
 
 // String get mapKey => "AIzaSyDLtchj3AddQGK3mlMgqA6HKbLQlEkEa38";
