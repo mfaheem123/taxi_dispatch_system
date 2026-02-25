@@ -364,7 +364,7 @@ class Subsidiary {
     });
 
     factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
-        name: json["name"],
+        name: json["name"]??"",
     );
 
     Map<String, dynamic> toJson() => {
