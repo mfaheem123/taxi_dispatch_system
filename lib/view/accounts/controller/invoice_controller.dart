@@ -250,6 +250,14 @@ class InvoiceController extends GetxController {
 
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
+
+  ///  UPDATE SCREEN VARIABLES
+  SubsDiaryModel? updateSubsidiaryModel;
+  Subsidiaries? selectedUpdateSubsidiary;
+  DashboardAccountModel? updateAccountModel;
+  DashboardAccountObject? selectedUpdateAccount;
+  UpdateInvoiceByIdModel? invoiceData;
+  Subsidiary? selectedSubsidiary;
   Account? account;
   bool isLoadingUpdate = false;
 
@@ -272,35 +280,26 @@ class InvoiceController extends GetxController {
     update();
   }
 
-  ///  UPDATE SCREEN VARIABLES
 
-  SubsDiaryModel? updateSubsidiaryModel;
-  Subsidiaries? selectedUpdateSubsidiary;
-  DashboardAccountModel? updateAccountModel;
-  DashboardAccountObject? selectedUpdateAccount;
+  // void loadInvoiceData(String jsonString) {
+  //   invoiceData = updateInvoiceByIdModelFromJson(jsonString);
+  //   if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
+  //     selectedSubsidiary = invoiceData!
+  //         .accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
+  //   } else {
+  //     print("Data incomplete hai: Account null mila");
+  //   }
+  //
+  //   update();
+  // }
 
-  UpdateInvoiceByIdModel? invoiceData;
-  Subsidiary? selectedSubsidiary;
-
-  void loadInvoiceData(String jsonString) {
-    invoiceData = updateInvoiceByIdModelFromJson(jsonString);
-    if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
-      selectedSubsidiary = invoiceData!
-          .accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
-    } else {
-      print("Data incomplete hai: Account null mila");
-    }
-
-    update();
-  }
-
-  getUpdateAccounts(int subsidiaryId) async {
-    var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-    if (response.statusCode == 200) {
-      updateAccountModel = DashboardAccountModel.fromJson(response.data);
-      update();
-    }
-  }
+  // getUpdateAccounts(int subsidiaryId) async {
+  //   var response = await Api().get("accounts/subsidiary/$subsidiaryId");
+  //   if (response.statusCode == 200) {
+  //     updateAccountModel = DashboardAccountModel.fromJson(response.data);
+  //     update();
+  //   }
+  // }
 
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
@@ -634,7 +633,7 @@ CC: CONGESTION CHARGES
   updateBookingCharges(dynamic booking) async {
 
       var formData = {
-        "company_price": booking.companyPrice.toString(),
+        "fares": booking.companyPrice.toString(),
         "parking_charges": booking.parkingCharges.toString(),
         "waiting_charges": booking.waitingCharges.toString(),
         "extra_drop_charges": booking.extraDropCharges.toString(),
@@ -642,16 +641,12 @@ CC: CONGESTION CHARGES
         "congestion_charges": booking.congestionCharges.toString(),
         "total_charges": booking.totalCharges.toString(),
       };
-
-      var response = await Api().post(formData, "bookings/update/${booking.id}", auth: true);
-
-      if (response != null) {
+      var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
+      if (response.statusCode == 200) {
         Get.snackbar("Success", "Charges updated!", backgroundColor: Colors.green);
 
-        getAccountInvoice();
-        // SABSE ZAROORI: Yahan apni fetch data wali function call karein
-        // Example: fetchInvoiceDetails(invoiceId);
-        // Taake API se fresh values (non-zero) dobara load hon.
+
+
       }
 
   }

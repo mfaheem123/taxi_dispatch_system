@@ -321,8 +321,7 @@ class _UpdateAccountInvoiceScreenState
                             child: SizedBox(
                               width: 70,
                               child: TextFormField(
-                                // Yeh Key Flutter ko refresh hone par purani value bhulne nahi degi
-                                key: UniqueKey(),
+
                                 initialValue: initialValue?.toString() ?? "0",
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
@@ -332,10 +331,7 @@ class _UpdateAccountInvoiceScreenState
                                   contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                                   border: OutlineInputBorder(),
                                 ),
-                                onChanged: (val) {
-                                  // Typing ke waqt model foran update hona chahiye
-                                  onChanged(val);
-                                },
+                                onChanged: onChanged,
                               ),
                             ),
                           ),
