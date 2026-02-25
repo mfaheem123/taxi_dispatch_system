@@ -255,7 +255,6 @@ class _UpdateAccountInvoiceScreenState
               },
             ),
 
-
             CustomDropdownField<DepartmentObject>(
               text: "DEPARTMENT",
               width: fieldWidth / 1.5,
@@ -268,6 +267,7 @@ class _UpdateAccountInvoiceScreenState
                 controller.update();
               },
             ),
+
             CustomDropdownField<DashboardAccountObject>(
               text: "ACCOUNT",
               width: fieldWidth / 1.5,

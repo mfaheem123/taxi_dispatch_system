@@ -367,6 +367,7 @@ class _CreateAccountInvoiceScreenState
                         DataCell(Text(booking.vehicleType?.name ?? "")),
                         DataCell(Text(booking.journeyType?.journeyType ?? "")),
                         DataCell(Text(booking.paymentType?.name ?? "")),
+
                         DataCell(Text(booking.fares ?? "0")),
                         DataCell(Text(booking.parkingCharges ?? "0")),
                         DataCell(Text(booking.waitingCharges ?? "0")),
@@ -374,6 +375,7 @@ class _CreateAccountInvoiceScreenState
                         DataCell(Text(booking.meetAndGreet?.toString() ?? "0")),
                         DataCell(Text(booking.creditCardCharges ?? "0")),
                         DataCell(Text(booking.totalCharges?.toString() ?? "0")),
+                        
                         DataCell(Row(mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.search, color: DynamicColors.primaryClr, size: 18),
@@ -382,6 +384,8 @@ class _CreateAccountInvoiceScreenState
                         )),
                       ]);
                     }).toList(),
+
+
                     if (controller.accountInvoiceBookingModel?.total != null)
                       ...controller.accountInvoiceBookingModel!.total!.map((booking) {
                         return DataRow(cells: [
@@ -399,6 +403,8 @@ class _CreateAccountInvoiceScreenState
                           DataCell.empty,
                         ]);
                       }).toList(),
+
+
                     if (controller.accountInvoiceBookingModel?.total != null)
                       ...controller.accountInvoiceBookingModel!.total!.map((booking) {
                         return DataRow(cells: [

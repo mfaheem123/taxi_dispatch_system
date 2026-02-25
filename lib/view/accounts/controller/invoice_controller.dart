@@ -274,7 +274,7 @@ class InvoiceController extends GetxController {
         print("Invoice Number: ${data.invoiceNumber}");
         print("Total Line Items: ${data.accountInvoiceLineitems?.length}");
       }
-      BotToast.showText(text: 'Filter Done');
+      BotToast.showText(text: 'EDIT INVOICE');
     }
     isLoadingUpdate = false;
     update();
