@@ -281,25 +281,6 @@ class InvoiceController extends GetxController {
   }
 
 
-  // void loadInvoiceData(String jsonString) {
-  //   invoiceData = updateInvoiceByIdModelFromJson(jsonString);
-  //   if (invoiceData?.accountInvoice?.accountInvoice?.account != null) {
-  //     selectedSubsidiary = invoiceData!
-  //         .accountInvoice!.accountInvoice!.account!.subsidiary as Subsidiary?;
-  //   } else {
-  //     print("Data incomplete hai: Account null mila");
-  //   }
-  //
-  //   update();
-  // }
-
-  // getUpdateAccounts(int subsidiaryId) async {
-  //   var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-  //   if (response.statusCode == 200) {
-  //     updateAccountModel = DashboardAccountModel.fromJson(response.data);
-  //     update();
-  //   }
-  // }
 
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
@@ -643,10 +624,29 @@ CC: CONGESTION CHARGES
       };
       var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
       if (response.statusCode == 200) {
-        Get.snackbar("Success", "Charges updated!", backgroundColor: Colors.green);
+        BotToast.showText(text: "Success" "Charges updated!");
+
+      }
+
+  }
 
 
 
+
+  updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {
+    String? amountToSend = invoice.amount;
+
+    var formData = {
+      "amount": amountToSend ?? "0",
+    };
+      var response = await Api().post(
+          formData,
+          "account_invoice/update/${invoice.id}",
+          auth: true
+      );
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "Success: Charges updated!");
       }
 
   }

@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_booking_model.dart';
@@ -195,7 +196,13 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-
+                      final invoice = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+                      if (invoice != null) {
+                        // Maine pichle jawab mein jo function bataya tha wahi call hoga
+                        controller.updateBookingAmount(invoice);
+                      } else {
+                        BotToast.showText(text: "No invoice data found to save");
+                      }
                     },
                   ),
                   SizedBox(width: 30),
