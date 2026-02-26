@@ -191,7 +191,7 @@ class InvoiceController extends GetxController {
 
 
   ///================================================ list of Account Invoice
-
+  Set<String> selectedIds = {};
   String? listInvoiceFromDate = "2000-01-01";
   String? listInvoiceToDate = "2000-01-01";
   String? status;
@@ -626,12 +626,12 @@ CC: CONGESTION CHARGES
       booking.meetAndGreet = booking.meetAndGreet ?? 0;
       booking.congestionCharges = booking.congestionCharges ?? 0;
 
-      booking.totalCharges = (booking.companyPrice as int) +
-          (booking.parkingCharges as int) +
-          (booking.waitingCharges as int) +
-          (booking.extraDropCharges as int) +
-          (booking.meetAndGreet as int) +
-          (booking.congestionCharges as int);
+      booking.totalCharges = (booking.companyPrice as double) +
+          (booking.parkingCharges as double) +
+          (booking.waitingCharges as double) +
+          (booking.extraDropCharges as double) +
+          (booking.meetAndGreet as double) +
+          (booking.congestionCharges as double);
 
       double newGrandTotal = 0;
       var lineItems = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../../../alert/driver_commission_alt.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
@@ -10,6 +11,7 @@ import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
+import '../../model/driver_commission_model.dart';
 
 class DriverCommission extends StatefulWidget {
   const DriverCommission({super.key});
@@ -20,7 +22,9 @@ class DriverCommission extends StatefulWidget {
 
 class _DriverCommissionState extends State<DriverCommission> {
   int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  // final int totalRows = 5;
+  late final totalRows =
+      controller.driverCommission?.driverCommissions?.length ?? 1;
 
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
@@ -31,6 +35,7 @@ class _DriverCommissionState extends State<DriverCommission> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "driversCommission";
+    // controller.getDriverCommission();
   }
 
   void _handleKey(RawKeyEvent event) {
@@ -41,10 +46,10 @@ class _DriverCommissionState extends State<DriverCommission> {
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         setState(() {
-          selectedRowIndex =
-              (selectedRowIndex - 1 + totalRows) % totalRows; // move up
-        });
+          selectedRowIndex = ((selectedRowIndex - 1 + totalRows) % totalRows);
+        }); // move up
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
+        // DriverCommissionAlt.show();
         // Enter dabane par row ke action button ka kaam
         debugPrint("Row $selectedRowIndex Enter Pressed (Search/Delete)");
       }
@@ -63,6 +68,9 @@ class _DriverCommissionState extends State<DriverCommission> {
       focusNode: FocusNode(),
       onKey: _handleKey,
       child: GetBuilder<DriverController>(builder: (controller) {
+        final driverList = controller.driverCommission?.driverCommissions ?? [];
+        final countList = controller.driverCommission?.count ?? [];
+
         return SingleChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Column(
@@ -74,7 +82,8 @@ class _DriverCommissionState extends State<DriverCommission> {
                     style: titleDesign(),
                   ),
                   Text(
-                    "(5)",
+                    // "(5)",
+                    "(${driverList.length})",
                     style: titleDesign(),
                   ),
                   SizedBox(
@@ -94,6 +103,7 @@ class _DriverCommissionState extends State<DriverCommission> {
                         size: 25,
                       ),
                     ),
+                    onTap: () => controller.getDriverCommission(),
                   ),
                 ],
               ),
@@ -112,13 +122,57 @@ class _DriverCommissionState extends State<DriverCommission> {
                       buildHeaderWithSearch(title: "COMMISSION"),
                       buildHeaderWithSearch(title: "LAST MODIFIED"),
                     ],
-                    totalRow: totalRows,
+                    totalRow: driverList.length,
                     cells: [
-                       DataCell(Center(child: Text("20/10/2025"))),
-                       DataCell(Center(child: Text("#PHC VEHICLE"))),
-                       DataCell(Center(child: Text("PHC VEHICLE"))),
-                       DataCell(Center(child: Text("20/10/2025"))),
-                       DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      ...driverList.map((driverItem) {
+                        final countItem = countList.firstWhere(
+                          (c) => c.driverId == driverItem.driverId,
+                          orElse: () => Count(lastModified: "-"),
+                        );
+
+                        return DataCell(
+                          Center(
+                              child: Text(driverItem.driver?.username ?? "-")),
+                          onTap: () => DriverCommissionAlt.show(
+                              id: driverItem.driverId ?? 0),
+                        );
+                      }).toList(),
+                      ...driverList.map((driverItem) {
+                        return DataCell(
+                          Center(child: Text(driverItem.driver?.name ?? "-")),
+                          onTap: () => DriverCommissionAlt.show(
+                              id: driverItem.driverId ?? 0),
+                        );
+                      }).toList(),
+                      ...driverList.map((driverItem) {
+                        return DataCell(
+                          Center(
+                              child:
+                                  Text(driverItem.driver?.driverType ?? "-")),
+                          onTap: () => DriverCommissionAlt.show(
+                              id: driverItem.driverId ?? 0),
+                        );
+                      }).toList(),
+                      ...driverList.map((driverItem) {
+                        return DataCell(
+                          Center(
+                              child: Text(
+                                  "${driverItem.driver?.driverCommission ?? "0"}%")),
+                          onTap: () => DriverCommissionAlt.show(
+                              id: driverItem.driverId ?? 0),
+                        );
+                      }).toList(),
+                      ...driverList.map((driverItem) {
+                        final countItem = countList.firstWhere(
+                          (c) => c.driverId == driverItem.driverId,
+                          orElse: () => Count(lastModified: "-"),
+                        );
+                        return DataCell(
+                          Center(child: Text(countItem.lastModified ?? "-")),
+                          onTap: () => DriverCommissionAlt.show(
+                              id: driverItem.driverId ?? 0),
+                        );
+                      }).toList(),
                     ],
                   ),
                 ),

@@ -357,27 +357,27 @@ class _UpdateAccountInvoiceScreenState
                         DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))),
 
                         editableCell(booking?.companyPrice, (val) {
-                          booking?.companyPrice = int.tryParse(val) ?? 0;
+                          booking?.companyPrice = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.parkingCharges, (val) {
-                          booking?.parkingCharges = int.tryParse(val) ?? 0;
+                          booking?.parkingCharges = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.waitingCharges, (val) {
-                          booking?.waitingCharges = int.tryParse(val) ?? 0;
+                          booking?.waitingCharges = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.extraDropCharges, (val) {
-                          booking?.extraDropCharges = int.tryParse(val) ?? 0;
+                          booking?.extraDropCharges = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.meetAndGreet, (val) {
-                          booking?.meetAndGreet = int.tryParse(val) ?? 0;
+                          booking?.meetAndGreet = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.congestionCharges, (val) {
-                          booking?.congestionCharges = int.tryParse(val) ?? 0;
+                          booking?.congestionCharges = double.tryParse(val) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         DataCell(Center(
