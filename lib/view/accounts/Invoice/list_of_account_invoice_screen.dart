@@ -62,6 +62,8 @@ class _ListOfAccountInvoiceScreenState
           final listToShow = controller.filteredAccountInvoice.isNotEmpty
               ? controller.filteredAccountInvoice
               : controller.accountInvoiceListAll;
+          bool isAllSelected = listToShow.isNotEmpty && controller.selectedIds.length == listToShow.length;
+
           return LayoutBuilder(builder: (context, constraints) {
 
 
@@ -257,8 +259,17 @@ onTap: () {
                           columns: [
                             DataColumn(
                               label: Checkbox(
-                                value: false, // a bool you keep in state
-                                onChanged: (val) {},
+                                value: isAllSelected,
+                                tristate: false,
+                                onChanged: (bool? val) {
+                                  setState(() {
+                                    if (val == true) {
+                                      controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
+                                    } else {
+                                      controller.selectedIds.clear();
+                                    }
+                                  });
+                                },
                               ),
                             ),
                             buildHeaderWithSearch(
@@ -329,12 +340,19 @@ onTap: () {
                           ],
                           totalRow: listToShow.length ?? 0,
                           rows: (listToShow ?? []).map((item) {
+                            bool isRowSelected = controller.selectedIds.contains(item.id.toString());
                             return DataRow(cells: [
                               DataCell(
                                 Checkbox(
-                                  value: false,
-                                  onChanged: (val) {
-
+                                  value: isRowSelected,
+                                  onChanged: (bool? val) {
+                                    setState(() {
+                                      if (val == true) {
+                                        controller.selectedIds.add(item.id.toString());
+                                      } else {
+                                        controller.selectedIds.remove(item.id.toString());
+                                      }
+                                    });
                                   },
                                 ),
                               ),

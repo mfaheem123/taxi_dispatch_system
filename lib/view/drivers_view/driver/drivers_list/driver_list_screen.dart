@@ -225,7 +225,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                     },
                                   ),
                                   buildHeaderWithSearch(
-                                    title: "SUBSIDIARY",
+                                    title: "DRIVER ACCESS",
                                     onChanged: (v) {
                                       controller.searchSubsiDiary.value = v;
                                       controller.driverSearch();
@@ -269,7 +269,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                           child:
                                               Text(item.mobile ?? "-"))),
                                       DataCell(Center(
-                                          child: Text(item.subsidiary?.name ??
+                                          child: Text(item.driverAccessToken ??
                                               "-"))),
                                       DataCell(
                                         Center(

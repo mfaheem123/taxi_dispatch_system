@@ -485,14 +485,14 @@ class Booking {
   dynamic orderNumber;
   AccountDepartment? paymentType;
   VehicleType? vehicleType;
-  int? companyPrice;
-  int? totalCharges;
-  int? meetAndGreet;
-  int? parkingCharges;
-  int? waitingCharges;
+  double? companyPrice;
+  double? totalCharges;
+  double? meetAndGreet;
+  double? parkingCharges;
+  double? waitingCharges;
   String? referenceNumber;
-  int? congestionCharges;
-  int? extraDropCharges;
+  double? congestionCharges;
+  double? extraDropCharges;
 
   Booking({
     this.id,

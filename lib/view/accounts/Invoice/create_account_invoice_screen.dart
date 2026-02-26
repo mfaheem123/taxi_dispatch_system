@@ -28,8 +28,8 @@ class CreateAccountInvoiceScreen extends StatefulWidget {
 
 class _CreateAccountInvoiceScreenState
     extends State<CreateAccountInvoiceScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
 
   InvoiceController Controller = Get.isRegistered<InvoiceController>()
@@ -355,50 +355,127 @@ class _CreateAccountInvoiceScreenState
                     buildHeaderWithSearch(
                         title: "ACTIONS", removeSearching: true),
                   ],
-                  rows: controller.accountInvoiceBookingModel == null ? []
-                      : [...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
-                      return DataRow(cells: [
-                        DataCell(Checkbox(value: false, onChanged: (val) {})),
-                        DataCell(Text(booking.referenceNumber ?? "")),
-                        DataCell(Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-                        DataCell(Text(booking.pickup ?? "")),
-                        DataCell(Text(booking.dropoff ?? "")),
-                        DataCell(Text(booking.customer?.address1 ?? "")),
-                        DataCell(Text(booking.vehicleType?.name ?? "")),
-                        DataCell(Text(booking.journeyType?.journeyType ?? "")),
-                        DataCell(Text(booking.paymentType?.name ?? "")),
-                        DataCell(Text(booking.fares ?? "0")),
-                        DataCell(Text(booking.parkingCharges ?? "0")),
-                        DataCell(Text(booking.waitingCharges ?? "0")),
-                        DataCell(Text(booking.extraDropCharges ?? "0")),
-                        DataCell(Text(booking.meetAndGreet?.toString() ?? "0")),
-                        DataCell(Text(booking.creditCardCharges ?? "0")),
-                        DataCell(Text(booking.totalCharges?.toString() ?? "0")),
-                        DataCell(Row(mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.search, color: DynamicColors.primaryClr, size: 18),
-                            Icon(Icons.clear, color: DynamicColors.redClr, size: 18),
-                          ],
-                        )),
-                      ]);
-                    }).toList(),
-                    if (controller.accountInvoiceBookingModel?.total != null)
-                      ...controller.accountInvoiceBookingModel!.total!.map((booking) {
+                    rows: controller.accountInvoiceBookingModel == null
+                        ? []
+                        : [
+
+                      ...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
+
+                        // Reusable Editable Cell
+                        DataCell editableCell(dynamic initialValue, Function(String) onChanged) {
+                          return DataCell(
+                            Center(
+                              child: SizedBox(
+                                width: 70,
+                                child: TextFormField(
+                                  initialValue: initialValue?.toString() ?? "0",
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(fontSize: 12),
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onChanged: onChanged,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+
                         return DataRow(cells: [
-                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
-                          DataCell.empty, DataCell.empty, DataCell.empty, DataCell.empty,
-                          DataCell(Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold))),
-                          DataCell(Text("£${booking.fareTotal ?? "0"}",  style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ) )),
-                          DataCell(Text("£${booking.parkingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
-                          DataCell(Text("£${booking.waitingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
-                          DataCell(Text("£${booking.extraDropChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
-                          DataCell(Text("£${booking.meetAndGreetTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
-                          DataCell(Text("£${booking.congestionChargesTotal ?? "0"}", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ))),
-                          DataCell(Text("£${booking.total ?? "0"}" , style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold ),
+                          DataCell(
+                              Checkbox(value: false, onChanged: (val) {
+
+
+                          })
+                          ),
+                          DataCell(Text(booking.referenceNumber ?? "")),
+                          DataCell(Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
+                          DataCell(Text(booking.pickup ?? "")),
+                          DataCell(Text(booking.dropoff ?? "")),
+                          DataCell(Text(booking.customer?.address1 ?? "")),
+                          DataCell(Text(booking.vehicleType?.name ?? "")),
+                          DataCell(Text(booking.journeyType?.journeyType ?? "")),
+                          DataCell(Text(booking.paymentType?.name ?? "")),
+
+                          editableCell(booking.companyPrice, (val) {
+                            booking.companyPrice = (double.tryParse(val) ?? 0.0).toString() ;
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell(booking.parkingCharges, (val) {
+                            booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell(booking.waitingCharges, (val) {
+                            booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell(booking.extraDropCharges, (val) {
+                            booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell(booking.meetAndGreet, (val) {
+                            booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          editableCell(booking.congestionCharges, (val) {
+                            booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
+                            controller.recalculateCreateInvoiceTotal(booking);
+                          }),
+                          DataCell(Center(
+                            child: Text(
+                              "£${booking.totalCharges.toString() ?? 0.0}",
+                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
+                            ),
                           )),
-                          DataCell.empty,
+                          DataCell(
+                            Center(
+                              child:  CustomButton(
+                                verticalPadding: 0.0,
+                                width: 45,
+                                height: 30,
+                                borderRadius: 4,
+                                btnText: "SAVE",
+                                style: mozillaTextRegularText(
+                                    fontSize: 10, color: DynamicColors.whiteClr),
+                                onTap: () {
+
+                                  if (booking != null) {
+                                    controller.updateBookingCharges(booking);
+                                    print("Updating Booking ID: ${booking.id}");
+                                  }
+                                  controller.getAccountInvoiceByFilter();
+
+                                },
+                              ),
+                            ),
+                          ),
                         ]);
                       }).toList(),
+
+                      // 2. Footer TOTAL Row
+                      if (controller.accountInvoiceBookingModel?.total != null)
+                        ...controller.accountInvoiceBookingModel!.total!.map((totalData) {
+                          return DataRow(
+                              color: MaterialStateProperty.all(Colors.grey.withOpacity(0.1)),
+                              cells: [
+                                for (var i = 0; i < 8; i++) DataCell.empty,
+                                DataCell(Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold))),
+                                DataCell(Text("£${totalData.fareTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.parkingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.waitingChargesTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.extraDropChargesTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.meetAndGreetTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.congestionChargesTotal ?? "0"}", style: mozillaTextSemiBoldText())),
+                                DataCell(Text("£${totalData.total ?? "0"}", style: mozillaTextSemiBoldText(color: Colors.blue))),
+                                DataCell.empty,
+                              ]);
+                        }).toList(),
+
+
+
                     if (controller.accountInvoiceBookingModel?.total != null)
                       ...controller.accountInvoiceBookingModel!.total!.map((booking) {
                         return DataRow(cells: [
