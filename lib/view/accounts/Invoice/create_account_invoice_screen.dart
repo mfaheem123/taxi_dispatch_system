@@ -28,8 +28,8 @@ class CreateAccountInvoiceScreen extends StatefulWidget {
 
 class _CreateAccountInvoiceScreenState
     extends State<CreateAccountInvoiceScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
 
   InvoiceController Controller = Get.isRegistered<InvoiceController>()
@@ -358,7 +358,7 @@ class _CreateAccountInvoiceScreenState
                     rows: controller.accountInvoiceBookingModel == null
                         ? []
                         : [
-                      // 1. Main Booking Rows
+
                       ...controller.accountInvoiceBookingModel!.bookings!.map((booking) {
 
                         // Reusable Editable Cell
@@ -368,7 +368,6 @@ class _CreateAccountInvoiceScreenState
                               child: SizedBox(
                                 width: 70,
                                 child: TextFormField(
-                                  // key: ValueKey(booking.id), // Important for focus stability
                                   initialValue: initialValue?.toString() ?? "0",
                                   keyboardType: TextInputType.number,
                                   textAlign: TextAlign.center,
@@ -386,7 +385,12 @@ class _CreateAccountInvoiceScreenState
                         }
 
                         return DataRow(cells: [
-                          DataCell(Checkbox(value: false, onChanged: (val) {})),
+                          DataCell(
+                              Checkbox(value: false, onChanged: (val) {
+
+
+                          })
+                          ),
                           DataCell(Text(booking.referenceNumber ?? "")),
                           DataCell(Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
                           DataCell(Text(booking.pickup ?? "")),
@@ -397,32 +401,32 @@ class _CreateAccountInvoiceScreenState
                           DataCell(Text(booking.paymentType?.name ?? "")),
 
                           editableCell(booking.companyPrice, (val) {
-                            booking.companyPrice = (int.tryParse(val) ?? 0).toString() ;
+                            booking.companyPrice = (double.tryParse(val) ?? 0.0).toString() ;
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.parkingCharges, (val) {
-                            booking.parkingCharges = (int.tryParse(val) ?? 0).toString();
+                            booking.parkingCharges = (double.tryParse(val) ?? 0.0).toString();
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.waitingCharges, (val) {
-                            booking.waitingCharges = (int.tryParse(val) ?? 0).toString();
+                            booking.waitingCharges = (double.tryParse(val) ?? 0.0).toString();
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.extraDropCharges, (val) {
-                            booking.extraDropCharges = (int.tryParse(val) ?? 0).toString();
+                            booking.extraDropCharges = (double.tryParse(val) ?? 0.0).toString();
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.meetAndGreet, (val) {
-                            booking.meetAndGreet = int.tryParse(val) ?? 0;
+                            booking.meetAndGreet = (double.tryParse(val) ?? 0.0).toString();
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.congestionCharges, (val) {
-                            booking.congestionCharges = (int.tryParse(val) ?? 0).toString();
+                            booking.congestionCharges = (double.tryParse(val) ?? 0.0).toString();
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           DataCell(Center(
                             child: Text(
-                              "£${booking.totalCharges ?? 0}",
+                              "£${booking.totalCharges.toString() ?? 0.0}",
                               style: mozillaTextSemiBoldText(fontWeight: FontWeight.bold),
                             ),
                           )),
