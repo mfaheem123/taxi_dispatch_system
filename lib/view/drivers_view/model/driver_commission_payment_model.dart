@@ -1,23 +1,23 @@
 // To parse this JSON data, do
 //
-//     final driverCommissionCheckboxModel = driverCommissionCheckboxModelFromJson(jsonString);
+//     final driverCommissionPaymentModel = driverCommissionPaymentModelFromJson(jsonString);
 
 import 'dart:convert';
 
-DriverCommissionCheckboxModel driverCommissionCheckboxModelFromJson(String str) => DriverCommissionCheckboxModel.fromJson(json.decode(str));
+DriverCommissionPaymentModel driverCommissionPaymentModelFromJson(String str) => DriverCommissionPaymentModel.fromJson(json.decode(str));
 
-String driverCommissionCheckboxModelToJson(DriverCommissionCheckboxModel data) => json.encode(data.toJson());
+String driverCommissionPaymentModelToJson(DriverCommissionPaymentModel data) => json.encode(data.toJson());
 
-class DriverCommissionCheckboxModel {
+class DriverCommissionPaymentModel {
   bool? status;
   List<PaymentType>? paymentTypes;
 
-  DriverCommissionCheckboxModel({
+  DriverCommissionPaymentModel({
     this.status,
     this.paymentTypes,
   });
 
-  factory DriverCommissionCheckboxModel.fromJson(Map<String, dynamic> json) => DriverCommissionCheckboxModel(
+  factory DriverCommissionPaymentModel.fromJson(Map<String, dynamic> json) => DriverCommissionPaymentModel(
     status: json["status"],
     paymentTypes: json["payment_types"] == null ? [] : List<PaymentType>.from(json["payment_types"]!.map((x) => PaymentType.fromJson(x))),
   );
