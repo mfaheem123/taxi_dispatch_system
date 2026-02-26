@@ -94,7 +94,7 @@ class CliController extends GetxController {
       isLoading.value = true;
 
       final uri = Uri.parse(
-        "http://192.168.110.5:5000/api/cli/find-customer",
+        "${baseUrl}cli/find-customer",
       );
 
       final response = await http.post(
