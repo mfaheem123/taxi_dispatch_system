@@ -15,7 +15,7 @@ import '../model/list_of_account_invoice_model.dart';
 import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Booking;
 
 class InvoiceController extends GetxController {
-  /// ============================================== Account Invoice ====================================================
+  /// ==============================================Create Account Invoice ====================================================
 
   String? invoiceDateController = "2000-01-01";
   String? invoiceDueDateController = "2000-01-01";
@@ -141,6 +141,54 @@ class InvoiceController extends GetxController {
     }
     addAccountInvoiceLoad(false);
   }
+
+  void recalculateCreateInvoiceTotal(dynamic booking) {
+    if (booking == null) return;
+
+    double parseValue(dynamic value) {
+      if (value == null) return 0.0;
+      return double.tryParse(value.toString().trim()) ?? 0.0;
+    }
+
+    double fare = parseValue(booking.companyPrice);
+    double pc = parseValue(booking.parkingCharges);
+    double wc = parseValue(booking.waitingCharges);
+    double edc = parseValue(booking.extraDropCharges);
+    double mg = parseValue(booking.meetAndGreet);
+    double cc = parseValue(booking.congestionCharges);
+
+    double rowSum = fare + pc + wc + edc + mg + cc;
+
+    booking.totalCharges = rowSum.toStringAsFixed(2);
+
+    if (accountInvoiceBookingModel?.bookings != null &&
+        accountInvoiceBookingModel!.bookings!.isNotEmpty) {
+
+      double gSum = 0;
+
+      for (var b in accountInvoiceBookingModel!.bookings!) {
+        double total = parseValue(b.companyPrice) +
+            parseValue(b.parkingCharges) +
+            parseValue(b.waitingCharges) +
+            parseValue(b.extraDropCharges) +
+            parseValue(b.meetAndGreet) +
+            parseValue(b.congestionCharges);
+
+        gSum += total;
+      }
+
+      if (accountInvoiceBookingModel!.total != null &&
+          accountInvoiceBookingModel!.total!.isNotEmpty) {
+        accountInvoiceBookingModel!.total![0].grandTotal =
+            gSum.toStringAsFixed(2);
+      }
+    }
+
+    update();
+  }
+
+
+
 
   ///================================================ list of Account Invoice
 
@@ -570,7 +618,7 @@ CC: CONGESTION CHARGES
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
     if (booking != null) {
-      // 1. Current Booking ke saare fields ko update karein
+
       booking.companyPrice = booking.companyPrice ?? 0;
       booking.parkingCharges = booking.parkingCharges ?? 0;
       booking.waitingCharges = booking.waitingCharges ?? 0;
@@ -578,7 +626,6 @@ CC: CONGESTION CHARGES
       booking.meetAndGreet = booking.meetAndGreet ?? 0;
       booking.congestionCharges = booking.congestionCharges ?? 0;
 
-      // 2. Row ka total calculate karein
       booking.totalCharges = (booking.companyPrice as int) +
           (booking.parkingCharges as int) +
           (booking.waitingCharges as int) +
@@ -586,7 +633,6 @@ CC: CONGESTION CHARGES
           (booking.meetAndGreet as int) +
           (booking.congestionCharges as int);
 
-      // 3. Poori Invoice ka Grand Total calculate karein
       double newGrandTotal = 0;
       var lineItems = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
 
@@ -594,16 +640,13 @@ CC: CONGESTION CHARGES
         newGrandTotal += (item.booking?.totalCharges ?? 0);
       }
 
-      // 4. Admin Fees add karein
       double adminFees = double.tryParse(updateInvoiceByIdModel
           ?.accountInvoice?.accountInvoice?.account?.adminFees
           ?.toString() ?? "0") ?? 0.0;
 
-      // 5. Final Amount update karein (String type hai model mein)
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
           (newGrandTotal + adminFees).toStringAsFixed(2);
 
-      // 6. UI ko refresh karein
       update();
     }
   }
