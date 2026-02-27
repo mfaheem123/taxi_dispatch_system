@@ -19,8 +19,15 @@ class InvoiceController extends GetxController {
 
   String? invoiceDateController = "2000-01-01";
   String? invoiceDueDateController = "2000-01-01";
-  final orderNumber = TextEditingController();
 
+
+  bool isFilterApplied = false;
+  List<int> selectedCreateBookingIds = [];
+  bool isAllSelected = false;
+
+
+
+  final orderNumber = TextEditingController();
   DateTime? fromDate = DateTime.now();
   DateTime? toDate = DateTime.now();
 
@@ -292,6 +299,32 @@ class InvoiceController extends GetxController {
   void togglePaidStatus() {
     isPaid.value = !isPaid.value;
   }
+
+  // CheckBox
+  RxList<int> selectedBookingIds = <int>[].obs;
+
+// Sab ko select ya deselect karne ka function
+  void toggleAllSelection(List<AccountInvoiceLineitem>? items) {
+    if (items == null) return;
+
+    if (selectedBookingIds.length == items.length) {
+      selectedBookingIds.clear(); // Agar pehle se sab select hain tw khali kardo
+    } else {
+      selectedBookingIds.assignAll(items.map((e) => e.booking?.id ?? 0).toList());
+    }
+    update();
+  }
+
+// CheckBox Single item
+  void toggleSingleSelection(int id) {
+    if (selectedBookingIds.contains(id)) {
+      selectedBookingIds.remove(id);
+    } else {
+      selectedBookingIds.add(id);
+    }
+    update();
+  }
+
 
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";

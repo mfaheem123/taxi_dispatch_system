@@ -37,7 +37,7 @@ class AccountInvoiceBookingModel {
 }
 
 class Booking {
-  String? id;
+  int? id;
   String? referenceNumber;
   int? subsidiaryId;
   int? bookingTypeId;
@@ -254,7 +254,7 @@ class Booking {
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
-    id: json["id"],
+    id: json["id"] is String ? int.tryParse(json["id"]) : json["id"],
     referenceNumber: json["reference_number"],
     subsidiaryId: json["subsidiary_id"],
     bookingTypeId: json["booking_type_id"],

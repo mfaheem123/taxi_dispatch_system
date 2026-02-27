@@ -333,8 +333,21 @@ class _CreateAccountInvoiceScreenState
                   columns: [
                     DataColumn(
                       label: Checkbox(
-                        value: false, // a bool you keep in state
-                        onChanged: (val) {},
+                        value: controller.isAllSelected,
+                        onChanged: (val) {
+                          controller.isAllSelected = val ?? false;
+
+                          controller.selectedCreateBookingIds.clear();
+
+                          if (controller.isAllSelected) {
+                            controller.selectedCreateBookingIds.addAll(
+                                controller.accountInvoiceBookingModel!.bookings!
+                                    .map((e) => e.id!)
+                            );
+                          }
+
+                          controller.update();
+                        },
                       ),
                     ),
                     buildHeaderWithSearch(title: "REF #"),
@@ -386,10 +399,24 @@ class _CreateAccountInvoiceScreenState
 
                         return DataRow(cells: [
                           DataCell(
-                              Checkbox(value: false, onChanged: (val) {
+                            Checkbox(
+                              value: controller.selectedCreateBookingIds.contains(booking.id),
+                              onChanged: (val) {
 
+                                if (val == true) {
+                                  controller.selectedCreateBookingIds.add(booking.id!);
+                                } else {
+                                  controller.selectedCreateBookingIds.remove(booking.id);
+                                }
 
-                          })
+                                // Check if all selected
+                                controller.isAllSelected =
+                                    controller.selectedCreateBookingIds.length ==
+                                        controller.accountInvoiceBookingModel!.bookings!.length;
+
+                                controller.update();
+                              },
+                            ),
                           ),
                           DataCell(Text(booking.referenceNumber ?? "")),
                           DataCell(Text("${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),

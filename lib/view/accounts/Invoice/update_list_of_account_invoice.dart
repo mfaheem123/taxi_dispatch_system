@@ -300,7 +300,18 @@ class _UpdateAccountInvoiceScreenState
                 width: Get.width,
                 child: DatatableWidget(
                   columns: [
-                    DataColumn(label: Checkbox(value: false, onChanged: (val) {})),
+                    // Header row wala checkbox
+                    DataColumn(
+                      label: Obx(() {
+                        final items = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
+                        return Checkbox(
+                          value: items.isNotEmpty && controller.selectedBookingIds.length == items.length,
+                          onChanged: (val) {
+                            controller.toggleAllSelection(items);
+                          },
+                        );
+                      }),
+                    ),
                     buildHeaderWithSearch(title: "REF #"),
                     buildHeaderWithSearch(title: "DATETIME"),
                     buildHeaderWithSearch(title: "PICKUP"),
@@ -346,7 +357,17 @@ class _UpdateAccountInvoiceScreenState
                       }
 
                       return DataRow(cells: [
-                        DataCell(Checkbox(value: false, onChanged: (val) {})),
+
+                        DataCell(
+                          Obx(() => Checkbox(
+                            value: controller.selectedBookingIds.contains(lineItem.booking?.id),
+                            onChanged: (val) {
+                              if (lineItem.booking?.id != null) {
+                                controller.toggleSingleSelection(lineItem.booking!.id!);
+                              }
+                            },
+                          )),
+                        ),
                         DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
                         DataCell(Center(child: Text("${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}"))),
                         DataCell(Center(child: Text(booking?.pickup ?? "-"))),
