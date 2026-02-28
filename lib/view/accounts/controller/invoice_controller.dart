@@ -300,38 +300,15 @@ class InvoiceController extends GetxController {
     isPaid.value = !isPaid.value;
   }
 
-  // CheckBox
-  RxList<int> selectedBookingIds = <int>[].obs;
-
-// Sab ko select ya deselect karne ka function
-  void toggleAllSelection(List<AccountInvoiceLineitem>? items) {
-    if (items == null) return;
-
-    if (selectedBookingIds.length == items.length) {
-      selectedBookingIds.clear(); // Agar pehle se sab select hain tw khali kardo
-    } else {
-      selectedBookingIds.assignAll(items.map((e) => e.booking?.id ?? 0).toList());
-    }
-    update();
-  }
-
-// CheckBox Single item
-  void toggleSingleSelection(int id) {
-    if (selectedBookingIds.contains(id)) {
-      selectedBookingIds.remove(id);
-    } else {
-      selectedBookingIds.add(id);
-    }
-    update();
-  }
+  bool isFilterUpdateApplied = false;
+  List<int> selectedBookingIds = [];
+  bool isAllUpdateSelected = false;
 
 
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";
-
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
-
   ///  UPDATE SCREEN VARIABLES
   SubsDiaryModel? updateSubsidiaryModel;
   Subsidiaries? selectedUpdateSubsidiary;
@@ -705,8 +682,6 @@ CC: CONGESTION CHARGES
       }
 
   }
-
-
 
 
   updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {

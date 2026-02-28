@@ -162,7 +162,7 @@ class _UpdateBookingState extends State<UpdateBooking> {
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(color: DynamicColors.textClr),
                   ),
-                  child: controller.dashboardAllData == null && controller.jobDetails == null?Center(
+                  child: controller.jobDetails == null?Center(
                       child: CircularProgressIndicator(),
                   ): SingleChildScrollView(
                     child: Column(

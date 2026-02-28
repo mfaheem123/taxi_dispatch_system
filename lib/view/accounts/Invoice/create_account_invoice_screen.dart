@@ -305,6 +305,7 @@ class _CreateAccountInvoiceScreenState
               style: mozillaTextRegularText(
                   fontSize: 10, color: DynamicColors.whiteClr),
               onTap: () {
+                controller.getInvoiceNumber();
                 controller.getAccountInvoiceByFilter();
               },
             ),

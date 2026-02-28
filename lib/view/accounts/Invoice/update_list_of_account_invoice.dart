@@ -300,17 +300,24 @@ class _UpdateAccountInvoiceScreenState
                 width: Get.width,
                 child: DatatableWidget(
                   columns: [
-                    // Header row wala checkbox
                     DataColumn(
-                      label: Obx(() {
-                        final items = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
-                        return Checkbox(
-                          value: items.isNotEmpty && controller.selectedBookingIds.length == items.length,
-                          onChanged: (val) {
-                            controller.toggleAllSelection(items);
-                          },
-                        );
-                      }),
+                label: Checkbox(
+                value: controller.isAllUpdateSelected,
+                  onChanged: (val) {
+                    controller.isAllUpdateSelected = val ?? false;
+                    controller.selectedBookingIds.clear();
+
+                    if (controller.isAllUpdateSelected) {
+                      controller.selectedBookingIds.addAll(
+                          controller.accountInvoiceBookingModel!.bookings!
+                              .map((e) => e.id!)
+                      );
+                    }
+
+                    controller.update();
+                  },
+                ),
+
                     ),
                     buildHeaderWithSearch(title: "REF #"),
                     buildHeaderWithSearch(title: "DATETIME"),
@@ -359,14 +366,23 @@ class _UpdateAccountInvoiceScreenState
                       return DataRow(cells: [
 
                         DataCell(
-                          Obx(() => Checkbox(
-                            value: controller.selectedBookingIds.contains(lineItem.booking?.id),
+                          Checkbox(
+                            value: controller.selectedBookingIds.contains(booking?.id),
                             onChanged: (val) {
-                              if (lineItem.booking?.id != null) {
-                                controller.toggleSingleSelection(lineItem.booking!.id!);
+
+                              if (val == true) {
+                                controller.selectedBookingIds.add(booking!.id!);
+                              } else {
+                                controller.selectedBookingIds.remove(booking?.id);
                               }
+
+                              controller.isAllUpdateSelected =
+                                  controller.selectedBookingIds.length ==
+                                      controller.accountInvoiceBookingModel!.bookings!.length;
+
+                              controller.update();
                             },
-                          )),
+                          ),
                         ),
                         DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
                         DataCell(Center(child: Text("${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}"))),

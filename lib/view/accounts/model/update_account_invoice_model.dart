@@ -327,7 +327,7 @@ class Subsidiary {
   String? companyNumber;
   String? vatNumber;
   String? iban;
-  int? balance;
+  double? balance;
   String? currency;
   String? webAccessToken;
   String? mobileAccessToken;
@@ -384,7 +384,7 @@ class Subsidiary {
     companyNumber: json["company_number"],
     vatNumber: json["vat_number"],
     iban: json["iban"],
-    balance: json["balance"],
+    balance: json["balance"]?.toDouble(),
     currency: json["currency"],
     webAccessToken: json["web_access_token"],
     mobileAccessToken: json["mobile_access_token"],
