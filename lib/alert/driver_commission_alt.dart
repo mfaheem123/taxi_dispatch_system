@@ -35,7 +35,7 @@ class DriverCommissionAlt {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "DRIVER COMMISSION OF DRIVER ($id)",
+                      "DRIVER COMMISSION OF DRIVER (${controller.driverCommissionAlert!.count})",
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -51,66 +51,75 @@ class DriverCommissionAlt {
                 const Divider(height: 30),
                 SingleChildScrollView(
                   // scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   child: SizedBox(
                     width: Get.width,
                     child: DatatableWidget(
                       columns: [
                         DataColumn(
-                            label: Text("  TRANSACTION #",
+                            label: Text("    TRANSACTION #",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  TRANSACTION DATE",
+                            label: Text("    TRANSACTION DATE",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  DRIVER",
+                            label: Text("    DRIVER",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  JOB TOTAL",
+                            label: Text("    JOB TOTAL",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  COMMISSION TOTAL",
+                            label: Text("    COMMISSION TOTAL",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  PREVIOUS BALANCE",
+                            label: Text("    PREVIOUS BALANCE",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  CURRENT BALANCE",
+                            label: Text("    CURRENT BALANCE",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                         DataColumn(
-                            label: Text("  ACTIONS",
+                            label: Text("    ACTIONS",
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18))),
                       ],
-                      totalRow: controller.driverCommissionAlert!.driverCommissions?.length,
-                      rows: controller.driverCommissionAlert!.driverCommissions?.map((item) {
+                      totalRow: controller
+                          .driverCommissionAlert!.driverCommissions?.length,
+                      rows: controller.driverCommissionAlert!.driverCommissions
+                          ?.map((item) {
                         return DataRow(
                           cells: [
-                            DataCell(Text(item.transactionNumber ?? "-")),
-                            DataCell(Text(item.transactionDate
+                            DataCell(Center( child:Text(item.transactionNumber ?? "-"))),
+                            DataCell(Center( child:Text(item.transactionDate
                                     ?.toIso8601String()
                                     .split('T')[0] ??
-                                "-")),
-                            DataCell(Text(item.driver?.username ?? "-")),
-                            DataCell(Text(item.jobsTotal ?? "0")),
-                            DataCell(Text(item.commissionTotal ?? "0")),
-                            DataCell(Text(item.oldBalance ?? "0")),
-                            DataCell(Text(item.currentBalance ?? "0")),
-                            DataCell(Row(
+                                "-"))),
+                            DataCell(Center(
+                                child: Text(item.driver?.username ?? "-"))),
+                            DataCell(
+                                Center(child: Text("£${item.jobsTotal ?? "0"}"))),
+                            DataCell(Center(
+                                child: Text("£${item.commissionTotal ?? "0"}"))),
+                            DataCell(
+                                Center(child: Text("£${item.oldBalance ?? "0"}"))),
+                            DataCell(Center(
+                                child: Text("£${item.currentBalance ?? "0"}"))),
+                            DataCell(Center(
+                                child: Row(
                               children: [
                                 Icon(Icons.edit,
                                     size: 18, color: Color(0xFF43489A)),
@@ -123,7 +132,7 @@ class DriverCommissionAlt {
                                 Icon(Icons.mail,
                                     size: 18, color: Colors.black87),
                               ],
-                            )),
+                            ))),
                           ],
                         );
                       }).toList(),

@@ -53,6 +53,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     final url = Uri.parse("$socketUrl/cli?extension=$extension");
 
     try {
+
       _channel = WebSocketChannel.connect(url);
 
       _channel!.stream.listen(
@@ -235,7 +236,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    // connectToCli("200");
+    connectToCli("200");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
@@ -401,6 +402,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   @override
   void dispose() {
     _debounce?.cancel();
+
     super.dispose();
   }
 
@@ -1010,6 +1012,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+   FocusNode driverDropdownFocusNode = FocusNode();
+
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardDriverObject? selectDriverValueReturn;

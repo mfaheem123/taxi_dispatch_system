@@ -19,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
 import '../../vehicles_view/model/vehicle_type_model.dart';
@@ -36,6 +37,8 @@ class FareController extends GetxController {
   final fareController = TextEditingController();
   final fareDescriptionController = TextEditingController();
   final fareDescription2ndController = TextEditingController();
+  final ploteFareDescriptionController = TextEditingController();
+  final ploteFareDescription2ndController = TextEditingController();
 
 
   VehicleTypee? plotVehicleTypevalue;
@@ -210,18 +213,25 @@ class FareController extends GetxController {
   RxString searchToLocation = ''.obs;
   RxString searchFares = ''.obs;
 
+  ///--------------------- Pagination
+  var currentPageFixedFare = 1.obs;
+  var totalPagesFixedFare = 1.obs;
+  final int limitFixedFare = 10;
+
+
   getAllFixedFare () async {
     fixedFareLoader(true);
     var response = await Api().get("fixedfares/get",
         queryParameters: {
-          "vehicle": searchVehicle.value.toLowerCase(),
-          "from_location": searchFromLocation.value.toLowerCase(),
-          "to_location": searchToLocation.value.toLowerCase(),
+          "vehicle_type_name": searchVehicle.value.toLowerCase(),
+          "area1": searchFromLocation.value.toLowerCase(),
+          "area2": searchToLocation.value.toLowerCase(),
           "fares": searchFares.value.toLowerCase(),
         }
     );
     if (response.statusCode == 200) {
       getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
+      totalPagesFixedFare.value = getAllFixedFareModels?.totalPages ?? 1;
       fixedFareAll.value = getAllFixedFareModels?.fixedFares ?? [];
       fixedFareFiltered.value = fixedFareAll;
       fixedFareLoader(false);
@@ -231,11 +241,15 @@ class FareController extends GetxController {
 
   // -----------Search changes function
   void onSearchFixedFares() {
-    currentPage.value = 1;
+    currentPageFixedFare.value = 1;
     getAllFixedFare();
   }
 
-
+  /// ------- pagination function
+  void onPageFixedFare(int page) {
+    currentPageFixedFare.value = page;
+    getAllFixedFare();
+  }
 
   /// ----------------------------------------- Delete fixed fare
   deleteFixedFareSetting(int? id) async{
@@ -831,14 +845,19 @@ class FareController extends GetxController {
     };
     print(formData);
     var response = await Api().post(formData,
-        isFareIncrementEditMode? "fareincrement/add":
-            "fareincrement/update/${editingId}"
+        isFareIncrementEditMode?
+            "fareincrement/update/${editingId}":
+        "fareincrement/add"
     );
     if(response.statusCode == 200){
       getFareIncrement();
       incrementValueVehicleController.clear();
+      isFareIncrementEditMode = false;
       print(response.data);
-      BotToast.showText(text: "Fare Increment is successfully added");
+      String msg = isFareIncrementEditMode
+          ? "Fare Increment Updated successfully"
+          : "Fare Increment Added successfully";
+      BotToast.showText(text: msg);
 
     }
   }
@@ -866,9 +885,12 @@ class FareController extends GetxController {
     isFareIncrementEditMode = true;
     editingId = model.id;
 
-    // Ensure dates are not null
-    FareIncrementStart = model.startDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-    FareIncrementEnd = model.endDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    // model.startDate agar 2026-03-10 14:30:00 hai, to ye sirf 2026-03-10 nikalega
+    FareIncrementStart = model.startDate?.toIso8601String().split('T')[0] ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    FareIncrementEnd = model.endDate?.toIso8601String().split('T')[0] ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     operatorType = model.fareIncrementOperator;
     incrementValueVehicleController.text = model.amount ?? "";
@@ -876,7 +898,7 @@ class FareController extends GetxController {
     isMileage = model.mileage ?? false;
     selectedType = isFixedFare ? "fixFare" : "mileage";
 
-    update(); // Yeh UI ko refresh karega
+    update();
   }
 
 

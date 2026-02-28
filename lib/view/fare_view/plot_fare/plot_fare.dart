@@ -265,6 +265,7 @@ class _PlotFareState extends State<PlotFare> {
                           ],
                         ),
                       ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         child: Wrap(
@@ -275,7 +276,7 @@ class _PlotFareState extends State<PlotFare> {
                             CustomTextField(
                               borderRadius: 4,
                               contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                              controller: controller.fareDescriptionController,
+                              controller: controller.ploteFareDescriptionController,
                               width: fieldWidth,
                               hintText: "",
                               columnText: true,
@@ -286,7 +287,7 @@ class _PlotFareState extends State<PlotFare> {
                             CustomTextField(
                               borderRadius: 4,
                               contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                              controller: controller.fareDescription2ndController,
+                              controller: controller.ploteFareDescription2ndController,
                               width: fieldWidth,
                               hintText: "",
                               columnText: true,
@@ -297,6 +298,7 @@ class _PlotFareState extends State<PlotFare> {
                           ],
                         ),
                       ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15),
                         child: Wrap(

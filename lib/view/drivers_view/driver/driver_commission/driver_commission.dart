@@ -67,7 +67,17 @@ class _DriverCommissionState extends State<DriverCommission> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<DriverController>(builder: (controller) {
+      child: GetBuilder<DriverController>(initState: (state) async {
+        await controller.getDriverCommission();
+
+        if (controller.driverCommission?.driverCommissions?.isNotEmpty ??
+            false) {
+          var firstDriverId =
+              controller.driverCommission!.driverCommissions!.first.driverId;
+          controller.getDriverCommissionDetails(firstDriverId);
+        }
+
+      }, builder: (controller) {
         final driverList = controller.driverCommission?.driverCommissions ?? [];
         final countList = controller.driverCommission?.count ?? [];
 
@@ -133,15 +143,21 @@ class _DriverCommissionState extends State<DriverCommission> {
                         return DataCell(
                           Center(
                               child: Text(driverItem.driver?.username ?? "-")),
-                          onTap: () => DriverCommissionAlt.show(
-                              id: driverItem.driverId ?? 0),
+                          onTap: () async {
+                            print("Click hua!");
+                            await controller.getDriverCommissionDetails(driverItem.driverId);
+                            print("Data mil gaya, ab alert khulega");
+                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                          },
                         );
                       }).toList(),
                       ...driverList.map((driverItem) {
                         return DataCell(
                           Center(child: Text(driverItem.driver?.name ?? "-")),
-                          onTap: () => DriverCommissionAlt.show(
-                              id: driverItem.driverId ?? 0),
+                          onTap: () async {
+                            await controller.getDriverCommissionDetails(driverItem.driverId);
+                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                          },
                         );
                       }).toList(),
                       ...driverList.map((driverItem) {
@@ -149,8 +165,10 @@ class _DriverCommissionState extends State<DriverCommission> {
                           Center(
                               child:
                                   Text(driverItem.driver?.driverType ?? "-")),
-                          onTap: () => DriverCommissionAlt.show(
-                              id: driverItem.driverId ?? 0),
+                          onTap: () async {
+                            await controller.getDriverCommissionDetails(driverItem.driverId);
+                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                          },
                         );
                       }).toList(),
                       ...driverList.map((driverItem) {
@@ -158,8 +176,10 @@ class _DriverCommissionState extends State<DriverCommission> {
                           Center(
                               child: Text(
                                   "${driverItem.driver?.driverCommission ?? "0"}%")),
-                          onTap: () => DriverCommissionAlt.show(
-                              id: driverItem.driverId ?? 0),
+                          onTap: () async {
+                            await controller.getDriverCommissionDetails(driverItem.driverId);
+                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                          },
                         );
                       }).toList(),
                       ...driverList.map((driverItem) {
@@ -169,8 +189,10 @@ class _DriverCommissionState extends State<DriverCommission> {
                         );
                         return DataCell(
                           Center(child: Text(countItem.lastModified ?? "-")),
-                          onTap: () => DriverCommissionAlt.show(
-                              id: driverItem.driverId ?? 0),
+                          onTap: () async {
+                            await controller.getDriverCommissionDetails(driverItem.driverId);
+                            DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
+                          },
                         );
                       }).toList(),
                     ],

@@ -610,7 +610,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                   controller.createEscort();
                 },
                 width: Get.width / 2,
-                btnText: AppText.save,
+                btnText: controller.selectedEscort != null?"Update": AppText.save,
                 verticalPadding: 0.0,
                 height: 40,
                 borderRadius: 4,

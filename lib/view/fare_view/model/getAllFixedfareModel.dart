@@ -10,24 +10,44 @@ String getAllFixedFareModelToJson(GetAllFixedFareModel data) => json.encode(data
 
 class GetAllFixedFareModel {
   bool? status;
-  int? count;
+  int? totalRecords;
+  int? totalPages;
+  int? currentPage;
+  int? limit;
+  bool? hasNext;
+  bool? hasPrev;
   List<FixedFare>? fixedFares;
 
   GetAllFixedFareModel({
     this.status,
-    this.count,
+    this.totalRecords,
+    this.totalPages,
+    this.currentPage,
+    this.limit,
+    this.hasNext,
+    this.hasPrev,
     this.fixedFares,
   });
 
   factory GetAllFixedFareModel.fromJson(Map<String, dynamic> json) => GetAllFixedFareModel(
     status: json["status"],
-    count: json["count"],
+    totalRecords: json["total_records"],
+    totalPages: json["total_pages"],
+    currentPage: json["current_page"],
+    limit: json["limit"],
+    hasNext: json["has_next"],
+    hasPrev: json["has_prev"],
     fixedFares: json["fixed_fares"] == null ? [] : List<FixedFare>.from(json["fixed_fares"]!.map((x) => FixedFare.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "count": count,
+    "total_records": totalRecords,
+    "total_pages": totalPages,
+    "current_page": currentPage,
+    "limit": limit,
+    "has_next": hasNext,
+    "has_prev": hasPrev,
     "fixed_fares": fixedFares == null ? [] : List<dynamic>.from(fixedFares!.map((x) => x.toJson())),
   };
 }

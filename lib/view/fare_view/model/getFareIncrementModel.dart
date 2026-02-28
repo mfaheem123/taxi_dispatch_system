@@ -8,7 +8,7 @@ GetFareIncrementMoodel getFareIncrementMoodelFromJson(String str) => GetFareIncr
 
 String getFareIncrementMoodelToJson(GetFareIncrementMoodel data) => json.encode(data.toJson());
 
-class GetFareIncrementMoodel {
+class   GetFareIncrementMoodel {
   bool? status;
   int? count;
   List<FareIncrement>? fareIncrement;
@@ -34,8 +34,8 @@ class GetFareIncrementMoodel {
 
 class FareIncrement {
   int? id;
-  String? startDate;
-  String? endDate;
+  DateTime? startDate;
+  DateTime? endDate;
   String? fareIncrementOperator;
   String? amount;
   bool? fixFare;
@@ -51,10 +51,27 @@ class FareIncrement {
     this.mileage,
   });
 
+  // Helper function to handle non-standard date formats
+  static DateTime? _parseDate(dynamic dateStr) {
+    if (dateStr == null || dateStr == "") return null;
+    try {
+      return DateTime.parse(dateStr.toString());
+    } catch (e) {
+      List<String> parts = dateStr.toString().split('-');
+      if (parts.length == 3) {
+        int year = int.parse(parts[0]);
+        int month = int.parse(parts[1]);
+        int day = int.parse(parts[2]);
+        return DateTime(year, month, day);
+      }
+      return null;
+    }
+  }
+
   factory FareIncrement.fromJson(Map<String, dynamic> json) => FareIncrement(
     id: json["id"],
-    startDate: json["start_date"],
-    endDate: json["end_date"],
+    startDate: _parseDate(json["start_date"]),
+    endDate: _parseDate(json["end_date"]),
     fareIncrementOperator: json["operator"],
     amount: json["amount"],
     fixFare: json["fix_fare"],
@@ -63,8 +80,8 @@ class FareIncrement {
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "start_date": startDate,
-    "end_date": endDate,
+    "start_date": startDate?.toIso8601String(),
+    "end_date": endDate?.toIso8601String(),
     "operator": fareIncrementOperator,
     "amount": amount,
     "fix_fare": fixFare,

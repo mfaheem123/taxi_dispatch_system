@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
+import 'create_escort_screen.dart';
 
 class ESCORTScreen extends StatefulWidget {
   const ESCORTScreen({super.key});
@@ -24,6 +25,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
   AccountController controller = Get.isRegistered<AccountController>()
       ? Get.find<AccountController>()
       : Get.put(AccountController());
+  final DashboardController _controller = Get.find();
 
   @override
   void initState() {
@@ -184,7 +186,10 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                               DataCell(
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+
                                   children: [
+
                                     OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
@@ -192,6 +197,26 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                         ), // border color & thickness
                                       ),
                                       onPressed: () {
+
+                                        controller.setEscortData(item);
+
+                                        int index = _controller.selectedMenuItems
+                                            .indexWhere((element) =>
+                                        element.title == "UPDATE ESCORT INVOICE");
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index]
+                                              .selectedItem = true;
+                                          _controller.currentPage.value =
+                                              CreateEscortScreen();
+                                        } else {
+                                          _controller.currentPage.value =
+                                              CreateEscortScreen();
+                                          _controller.menuBarRefresh(
+                                              title: "UPDATE ESCORT INVOICE",
+                                              pageName: CreateEscortScreen());
+                                        }
+                                        controller.update();
+
 
 
                                       },
