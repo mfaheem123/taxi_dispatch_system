@@ -428,8 +428,8 @@ class _CreateAccountInvoiceScreenState
                           DataCell(Text(booking.journeyType?.journeyType ?? "")),
                           DataCell(Text(booking.paymentType?.name ?? "")),
 
-                          editableCell(booking.companyPrice, (val) {
-                            booking.companyPrice = (double.tryParse(val) ?? 0.0).toString() ;
+                          editableCell(booking.fares, (val) {
+                            booking.fares = (double.tryParse(val) ?? 0.0).toString() ;
                             controller.recalculateCreateInvoiceTotal(booking);
                           }),
                           editableCell(booking.parkingCharges, (val) {

@@ -1661,17 +1661,22 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     print(formData);
     var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id");
     if (response.statusCode == 200) {
-      if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
-              "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-          selectedTabId == 1) {
-        dashboardTableModelData!.data!.insert(
-            0, BookingObjectData.fromJson(response.data['bookings'][0]));
-      } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
-              "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-          selectedTabId == 2) {
-        dashboardTableModelData!.data!.insert(
-            0, BookingObjectData.fromJson(response.data['bookings'][0]));
+      if(id == null){
+        if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
+            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+            selectedTabId == 1) {
+          dashboardTableModelData!.data!.insert(
+              0, BookingObjectData.fromJson(response.data['bookings'][0]));
+        } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
+            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+            selectedTabId == 2) {
+          dashboardTableModelData!.data!.insert(
+              0, BookingObjectData.fromJson(response.data['bookings'][0]));
+        }
+      }else{
+        getDashboardTableData(tableId: 1);
       }
+
       refreshPostAllFields();
       print(response.data);
     }
@@ -1822,6 +1827,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     dashboardZoneValue = null;
     dashboardDZoneValue = null;
     _controller.zoneValue = null;
+    _controller.zoneDValue = null;
     selectJourneyTypeValue = null;
     selectAccountValue = null;
     selectDepartmentData = null;
@@ -1850,6 +1856,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
     selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+    jobDetails = null;
     dashboardDataLoader(false);
     update();
   }
@@ -1972,6 +1979,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       if(jobData.dropoffDoorNumber != null){
         dropUpNoteController.text = jobData.dropoffDoorNumber.toString();
       }
+      slugController.text = jobData.fares.toString();
 
       if(jobData.childSeat!.isNotEmpty){
         for (var action in jobData.childSeat!) {

@@ -17,8 +17,8 @@ import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Bo
 class InvoiceController extends GetxController {
   /// ==============================================Create Account Invoice ====================================================
 
-  String? invoiceDateController = "2000-01-01";
-  String? invoiceDueDateController = "2000-01-01";
+  String? invoiceDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? invoiceDueDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
 
   bool isFilterApplied = false;
@@ -157,7 +157,7 @@ class InvoiceController extends GetxController {
       return double.tryParse(value.toString().trim()) ?? 0.0;
     }
 
-    double fare = parseValue(booking.companyPrice);
+    double fare = parseValue(booking.fares);
     double pc = parseValue(booking.parkingCharges);
     double wc = parseValue(booking.waitingCharges);
     double edc = parseValue(booking.extraDropCharges);
@@ -174,7 +174,7 @@ class InvoiceController extends GetxController {
       double gSum = 0;
 
       for (var b in accountInvoiceBookingModel!.bookings!) {
-        double total = parseValue(b.companyPrice) +
+        double total = parseValue(b.fares) +
             parseValue(b.parkingCharges) +
             parseValue(b.waitingCharges) +
             parseValue(b.extraDropCharges) +
@@ -667,7 +667,7 @@ CC: CONGESTION CHARGES
   updateBookingCharges(dynamic booking) async {
 
       var formData = {
-        "fares": booking.companyPrice.toString(),
+        "fares": booking.fares.toString(),
         "parking_charges": booking.parkingCharges.toString(),
         "waiting_charges": booking.waitingCharges.toString(),
         "extra_drop_charges": booking.extraDropCharges.toString(),
@@ -685,10 +685,18 @@ CC: CONGESTION CHARGES
 
 
   updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {
-    String? amountToSend = invoice.amount;
 
     var formData = {
-      "amount": amountToSend ?? "0",
+     if(invoice.amount != null) "amount": invoice.amount,
+     if(invoice.accountId !=null) "account_id": invoice.accountId,
+     if(invoice.subsidiaryId != null) "subsidiary_id": invoice.subsidiaryId,
+     if(invoice.departmentId != null) "department_id": invoice.departmentId,
+     if(invoice.fromDate != null) "from_date": "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
+     if(invoice.toDate != null) "to_date": "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+     if(invoiceDateController != null) "invoice_date": invoiceDateController,
+     if(invoiceDueDateController != null) "invoice_due_date": invoiceDueDateController,
+     if(invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
+     if(invoice.status != null) "status": invoice.status,
     };
       var response = await Api().post(
           formData,

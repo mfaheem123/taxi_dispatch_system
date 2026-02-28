@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 UpdateInvoiceByIdModel updateInvoiceByIdModelFromJson(String str) => UpdateInvoiceByIdModel.fromJson(json.decode(str));
 
 String updateInvoiceByIdModelToJson(UpdateInvoiceByIdModel data) => json.encode(data.toJson());
@@ -94,10 +96,18 @@ class AccountInvoiceAccountInvoice {
     subsidiaryId: json["subsidiary_id"],
     accountId: json["account_id"],
     invoiceNumber: json["invoice_number"],
-    invoiceDate: json["invoice_date"] == null ? null : DateTime.parse(json["invoice_date"]),
-    invoiceDueDate: json["invoice_due_date"] == null ? null : DateTime.parse(json["invoice_due_date"]),
-    fromDate: json["from_date"] == null ? null : DateTime.parse(json["from_date"]),
-    toDate: json["to_date"] == null ? null : DateTime.parse(json["to_date"]),
+    invoiceDate: json["invoice_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["invoice_date"])
+        : null,
+    invoiceDueDate: json["invoice_due_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["invoice_due_date"])
+        : null,
+    fromDate: json["from_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["from_date"])
+        : null,
+    toDate: json["to_date"] != null
+        ? DateFormat("yyyy-M-d").parse(json["to_date"])
+        : null,
     invoiceType: json["invoice_type"],
     departmentId: json["department_id"],
     orderNumber: json["order_number"],

@@ -219,14 +219,46 @@ class _UpdateAccountInvoiceScreenState
               label: AppText.invoiceDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker())),
+              child: SizedBox(height: 30, child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  setState(() {
+                    controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  setState(() {
+                    controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+
+              ))),
             labeledField(
               context: context,
               isMobile: isMobile,
               label: AppText.invoiceDueDate,
               column: true,
               width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker())),
+              child: SizedBox(height: 30,
+                  child: KeyboardDatePicker(
+                initialDate: DateTime.now(),
+                onChanged: (date) {
+                  setState(() {
+                    controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                    print(date);
+                  });
+                },
+                onSubmitted: (date) {
+                  setState(() {
+                    controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
+                  });
+                  print("User pressed enter: $date");
+                },
+
+              )
+              )),
             Padding(
                 padding: EdgeInsets.only(top: 25),
                 child: RichText(
