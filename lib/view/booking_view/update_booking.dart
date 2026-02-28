@@ -42,7 +42,9 @@ import '../locations_view/Model/location_types_zoneModel.dart' as zone;
 import '../locations_view/controller/locations_controller.dart';
 
 class UpdateBooking extends StatefulWidget {
-  const UpdateBooking({super.key});
+  UpdateBooking({super.key, this.data});
+  String? data;
+
 
   @override
   State<UpdateBooking> createState() => _UpdateBookingState();
@@ -128,17 +130,17 @@ class _UpdateBookingState extends State<UpdateBooking> {
       backgroundColor: DynamicColors.whiteClr,
       body: GetBuilder<DashboardController>(
         initState: (v){
-          final uri = Uri.base;
-          final data = uri.queryParameters['data']; // This is "709"
-
-// If "709" is just a number/string and NOT a JSON object:
-          print(data);
+//           final uri = Uri.base;
+//           final data = uri.queryParameters['data']; // This is "709"
+//
+// // If "709" is just a number/string and NOT a JSON object:
+//           print(data);
           controller.seeZoneOnMapp();
           // controller.getMobileNumberWithName();
           if (_controller.locationtypezoneModel == null) {
             _controller.getLocationTypeZone();
           }
-          controller.dashBoardDataBinding(id: data);
+          controller.dashBoardDataBinding(id: widget.data);
         },
         builder: (controller) {
           return LayoutBuilder(
@@ -164,7 +166,8 @@ class _UpdateBookingState extends State<UpdateBooking> {
                   ),
                   child: controller.dashboardAllData == null && controller.jobDetails == null?Center(
                       child: CircularProgressIndicator(),
-                  ): SingleChildScrollView(
+                  ):
+                  SingleChildScrollView(
                     child: Column(
                       children: [
                         Container(
@@ -2249,149 +2252,150 @@ class _UpdateBookingState extends State<UpdateBooking> {
                             ],
                           ),
 
-                          Obx(() {
-                            if (controller.selectedTextFieldsValue.value ==
-                                "via") {
-                              return SizedBox();
-                            }
-                            if (controller.selectedTextFieldsValue.value == "Phone Number") {
-                              return SuggestionView(
-                                allListData: controller.customerPhoneNumber!.customerInfo!,
-                                topPositions: MediaQuery.of(context).size.height * 0.125,
-                                leftPositions: Get.width/3.3,
-                                onSelect: (value) {
-                                  controller.suggestionPhoneFocusNode.value.unfocus();
-                                  controller.selectedTextFieldsValue.value = "";
-                                  FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
-                                  controller.mobileController.text = value.mobile.toString();   // <-- store anywhere
-                                  controller.nameController.text = value.name.toString();
-                                },
-                              );
-                            }
-                            if (controller.allAddressesData.isEmpty) {
-                              return const SizedBox();
-                            }
-                            final GlobalKey<State<StatefulWidget>>? activeKey =
-                                controller.activeFieldKey.value;
-                            final RenderBox? fieldBox =
-                            activeKey?.currentContext?.findRenderObject()
-                            as RenderBox?;
-                            final RenderBox? stackBox = controller
-                                .stackKey.currentContext
-                                ?.findRenderObject() as RenderBox?;
-
-                            double top = 0.0;
-                            double left = 0.0;
-                            double width = screenWidth;
-
-                            if (fieldBox != null && stackBox != null) {
-                              final Offset localOffset = fieldBox.localToGlobal(
-                                  Offset.zero,
-                                  ancestor: stackBox);
-                              final double fieldHeight = fieldBox.size.height;
-                              width = fieldBox.size.width;
-                              top = localOffset.dy + fieldHeight;
-                              left = localOffset.dx;
-                            }
-
-                            // ensure RawKeyboardListener gets focus when suggestions appear
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (controller.allAddressesData.isNotEmpty &&
-                                  !controller.suggestionFocusNode.hasFocus) {
-                                // FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
-                                // FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
-                              }
-                            });
-
-                            return Positioned(
-                              top: top,
-                              left: left,
-                              width: fieldWidth,
-                              child: RawKeyboardListener(
-                                focusNode: controller.suggestionFocusNode,
-                                autofocus: true,
-                                onKey: (RawKeyEvent event) {
-                                  if (event is RawKeyDownEvent) {
-                                    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-                                      controller.moveHighlightDown();
-                                      return;
-                                    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-                                      controller.moveHighlightUp();
-                                      return;
-                                    }else if (event.logicalKey == LogicalKeyboardKey.enter){
-                                      controller.tapSelect(controller.suggestionSelectedIndex.value);
-                                      print("enter press");
-                                    }
-                                    // Enter intentionally ignored so it does not select anything
-                                  }
-                                },
-                                child: Container(
-                                  height: screenHeight * 0.3,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFEFF0F2),
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                          color: Colors.black12,
-                                          blurRadius: 5,
-                                          offset: Offset(0, 2)),
-                                    ],
-                                  ),
-
-                                  // Rebuild list when highlightedIndex or data changes
-                                  child: Obx(() => ListView.builder(
-                                    key: controller.suggestionListKey,
-                                    controller: controller.suggestionScrollController,
-                                    itemCount: controller.allAddressesData.length,
-                                    padding: EdgeInsets.only(top: 15),
-                                    itemBuilder: (context, index) {
-                                      final item = controller.allAddressesData[index];
-                                      final isHighlighted = controller.highlightedIndex.value == index;
-
-                                      print("controller.highlightedIndex.value");
-                                      print(controller.highlightedIndex.value);
-                                      print(index);
-                                      print("controller.highlightedIndex.value");
-
-                                      return Obx(
-                                            () {
-                                          final isHighlighted = controller.highlightedIndex.value == index;
-                                          return Container(
-                                            key: controller.suggestionItemKeys[index],
-                                            color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
-                                            child: ListTile(
-                                              dense: true,
-                                              visualDensity:
-                                              VisualDensity.compact,
-                                              // Animated text style so color/weight changes step-by-step
-                                              title: AnimatedDefaultTextStyle(
-                                                duration: const Duration(
-                                                    milliseconds: 120),
-                                                style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontWeight: isHighlighted
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal,
-                                                  color: isHighlighted
-                                                      ? Colors.blue
-                                                      : Colors.black,
-                                                ),
-                                                child: Text(
-                                                    "${item.name} ${item.postcode}"),
-                                              ),
-                                              onTap: () =>
-                                                  controller.tapSelect(index),
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                  )),
-                                ),
-                              ),
-                            );
-                          }),
-                        ]),
+                          // Obx(() {
+                          //   if (controller.selectedTextFieldsValue.value ==
+                          //       "via") {
+                          //     return SizedBox();
+                          //   }
+                          //   if (controller.selectedTextFieldsValue.value == "Phone Number") {
+                          //     return SuggestionView(
+                          //       allListData: controller.customerPhoneNumber!.customerInfo!,
+                          //       topPositions: MediaQuery.of(context).size.height * 0.125,
+                          //       leftPositions: Get.width/3.3,
+                          //       onSelect: (value) {
+                          //         controller.suggestionPhoneFocusNode.value.unfocus();
+                          //         controller.selectedTextFieldsValue.value = "";
+                          //         FocusScope.of(Get.context!).requestFocus(controller.phoneKeyboardFocusNode);
+                          //         controller.mobileController.text = value.mobile.toString();   // <-- store anywhere
+                          //         controller.nameController.text = value.name.toString();
+                          //       },
+                          //     );
+                          //   }
+                          //   if (controller.allAddressesData.isEmpty) {
+                          //     return const SizedBox();
+                          //   }
+                          //   final GlobalKey<State<StatefulWidget>>? activeKey =
+                          //       controller.activeFieldKey.value;
+                          //   final RenderBox? fieldBox =
+                          //   activeKey?.currentContext?.findRenderObject()
+                          //   as RenderBox?;
+                          //   final RenderBox? stackBox = controller
+                          //       .stackKey.currentContext
+                          //       ?.findRenderObject() as RenderBox?;
+                          //
+                          //   double top = 0.0;
+                          //   double left = 0.0;
+                          //   double width = screenWidth;
+                          //
+                          //   if (fieldBox != null && stackBox != null) {
+                          //     final Offset localOffset = fieldBox.localToGlobal(
+                          //         Offset.zero,
+                          //         ancestor: stackBox);
+                          //     final double fieldHeight = fieldBox.size.height;
+                          //     width = fieldBox.size.width;
+                          //     top = localOffset.dy + fieldHeight;
+                          //     left = localOffset.dx;
+                          //   }
+                          //
+                          //   // ensure RawKeyboardListener gets focus when suggestions appear
+                          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+                          //     if (controller.allAddressesData.isNotEmpty &&
+                          //         !controller.suggestionFocusNode.hasFocus) {
+                          //       // FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
+                          //       // FocusScope.of(context).requestFocus(controller.pickupTextFieldFocusNode);
+                          //     }
+                          //   });
+                          //
+                          //   return Positioned(
+                          //     top: top,
+                          //     left: left,
+                          //     width: fieldWidth,
+                          //     child: RawKeyboardListener(
+                          //       focusNode: controller.suggestionFocusNode,
+                          //       autofocus: true,
+                          //       onKey: (RawKeyEvent event) {
+                          //         if (event is RawKeyDownEvent) {
+                          //           if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+                          //             controller.moveHighlightDown();
+                          //             return;
+                          //           } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+                          //             controller.moveHighlightUp();
+                          //             return;
+                          //           }else if (event.logicalKey == LogicalKeyboardKey.enter){
+                          //             controller.tapSelect(controller.suggestionSelectedIndex.value);
+                          //             print("enter press");
+                          //           }
+                          //           // Enter intentionally ignored so it does not select anything
+                          //         }
+                          //       },
+                          //       child: Container(
+                          //         height: screenHeight * 0.3,
+                          //         decoration: BoxDecoration(
+                          //           color: const Color(0xFFEFF0F2),
+                          //           borderRadius: BorderRadius.circular(5),
+                          //           boxShadow: const [
+                          //             BoxShadow(
+                          //                 color: Colors.black12,
+                          //                 blurRadius: 5,
+                          //                 offset: Offset(0, 2)),
+                          //           ],
+                          //         ),
+                          //
+                          //         // Rebuild list when highlightedIndex or data changes
+                          //         child: Obx(() => ListView.builder(
+                          //           key: controller.suggestionListKey,
+                          //           controller: controller.suggestionScrollController,
+                          //           itemCount: controller.allAddressesData.length,
+                          //           padding: EdgeInsets.only(top: 15),
+                          //           itemBuilder: (context, index) {
+                          //             final item = controller.allAddressesData[index];
+                          //             final isHighlighted = controller.highlightedIndex.value == index;
+                          //
+                          //             print("controller.highlightedIndex.value");
+                          //             print(controller.highlightedIndex.value);
+                          //             print(index);
+                          //             print("controller.highlightedIndex.value");
+                          //
+                          //             return Obx(
+                          //                   () {
+                          //                 final isHighlighted = controller.highlightedIndex.value == index;
+                          //                 return Container(
+                          //                   key: controller.suggestionItemKeys[index],
+                          //                   color: isHighlighted ? const Color(0xffA0DCFF) : Colors.transparent,
+                          //                   child: ListTile(
+                          //                     dense: true,
+                          //                     visualDensity:
+                          //                     VisualDensity.compact,
+                          //                     // Animated text style so color/weight changes step-by-step
+                          //                     title: AnimatedDefaultTextStyle(
+                          //                       duration: const Duration(
+                          //                           milliseconds: 120),
+                          //                       style: TextStyle(
+                          //                         fontSize: 13,
+                          //                         fontWeight: isHighlighted
+                          //                             ? FontWeight.bold
+                          //                             : FontWeight.normal,
+                          //                         color: isHighlighted
+                          //                             ? Colors.blue
+                          //                             : Colors.black,
+                          //                       ),
+                          //                       child: Text(
+                          //                           "${item.name} ${item.postcode}"),
+                          //                     ),
+                          //                     onTap: () =>
+                          //                         controller.tapSelect(index),
+                          //                   ),
+                          //                 );
+                          //               },
+                          //             );
+                          //           },
+                          //         )),
+                          //       ),
+                          //     ),
+                          //   );
+                          // }),
+                        ]
+                        ),
 
 
 

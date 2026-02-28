@@ -1446,7 +1446,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               child: SizedBox(
                                                                                 height: 35,
                                                                                 child: CustomTextField(
-                                                                                  hintText: "Slugg",
+                                                                                  hintText: "Fare",
                                                                                   controller: controller.slugController,
                                                                                   borderRadius: 6,
                                                                                   inputFormatters: [
@@ -2138,7 +2138,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 BotToast.showText(text: "Please chose waiting return");
                                                                                 return;
                                                                               }
-                                                                              controller.dashBoardApiValidation();
+                                                                              controller.dashBoardApiValidation(id: controller.jobDetails == null?null: int.parse(controller.jobDetails!.id!));
                                                                             },
                                                                             btnText:
                                                                                 "SAVE[HOME]",

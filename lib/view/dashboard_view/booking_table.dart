@@ -575,20 +575,21 @@ class _BookingTableState extends State<BookingTable> {
                                 IconButton(
                                   icon: const Icon(Icons.more_horiz, color: Colors.green),
                                   onPressed: () async {
-                                    // controller.dashBoardDataBinding(id: item.id!);
+                                    controller.dashBoardDataBinding(id: item.id!);
 
+                                  // Get.to(UpdateBooking(data: item.id,));
 
-                                    final newTabUrl =
-                                        "${Uri.base.origin}${Routes.updateBooking}?data=${item.id}";
-                                      // final newTabUrl = Uri.base.origin + Routes.updateBooking;
-                                  if (await canLaunchUrl(Uri.parse(newTabUrl))) {
-                                    await launchUrl(
-                                    Uri.parse(newTabUrl),
-                                    mode: LaunchMode.externalApplication,
-                                    );
-                                    } else {
-                                    throw 'Could not launch $newTabUrl';
-                                    }
+                                  //   final newTabUrl =
+                                  //       "${Uri.base.origin}${Routes.updateBooking}?data=${item.id}";
+                                  //     // final newTabUrl = Uri.base.origin + Routes.updateBooking;
+                                  // if (await canLaunchUrl(Uri.parse(newTabUrl))) {
+                                  //   await launchUrl(
+                                  //   Uri.parse(newTabUrl),
+                                  //   mode: LaunchMode.externalApplication,
+                                  //   );
+                                  //   } else {
+                                  //   throw 'Could not launch $newTabUrl';
+                                  //   }
 
 
                                     // Instead of launchUrl
