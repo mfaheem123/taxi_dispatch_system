@@ -401,6 +401,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   @override
   void dispose() {
     _debounce?.cancel();
+
     super.dispose();
   }
 

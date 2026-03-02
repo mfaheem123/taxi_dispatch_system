@@ -441,7 +441,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     height: 30,
                                                                                     child: CustomTextField(
                                                                                       controller: controller.selectAirportController,
-                                                                                      hintText: "Select Airport",
+                                                                                      hintText: "Flight Number",
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,
                                                                                       onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -1235,6 +1235,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       controller: controller.pickUpTimeControllerReturn,
                                                                                       // optional
                                                                                       onTimeSelected: (time) {
+
                                                                                         controller.pickUpTimeControllerReturn.text = time;
                                                                                         controller.getFaresCalculation();
                                                                                         setState(() {});
@@ -1390,7 +1391,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
 
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(33),
+                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R'
+                                                                                  ? 33
+                                                                                  : 21),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1404,6 +1407,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                                   ),
                                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
+                                                                                    focusNode: FocusNode(),
                                                                                     decoration: const InputDecoration(
                                                                                       border: OutlineInputBorder(),
                                                                                       isDense: true,

@@ -29,16 +29,33 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 
-  int selectedHour = 9;
-  int selectedMinute = 8;
-  // String selectedPeriod = "AM";
-
+  late int selectedHour;
+  late int selectedMinute;
 
   @override
   void initState() {
     super.initState();
     _timeController = widget.controller ?? TextEditingController();
-    _updateTimeText();
+
+
+    final now = DateTime.now();
+
+
+    if (_timeController.text.isEmpty) {
+      selectedHour = now.hour;
+      selectedMinute = now.minute;
+      _updateTimeText();
+    } else {
+
+      try {
+        List<String> parts = _timeController.text.trim().split(':');
+        selectedHour = int.parse(parts[0]);
+        selectedMinute = int.parse(parts[1]);
+      } catch (e) {
+        selectedHour = now.hour;
+        selectedMinute = now.minute;
+      }
+    }
   }
 
 
@@ -48,7 +65,7 @@ class _CustomTimePickerState extends State<CustomTimePicker> {
     _timeController.text = "$hourStr:$minuteStr ";
   }
 
-  void _toggleTimeDropdown() {
+  void  _toggleTimeDropdown() {
     if (_overlayEntry == null) {
       _overlayEntry = _buildOverlayEntry();
       Overlay.of(context).insert(_overlayEntry!);
