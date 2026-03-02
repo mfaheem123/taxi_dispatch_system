@@ -199,8 +199,8 @@ class InvoiceController extends GetxController {
 
   ///================================================ list of Account Invoice
   Set<String> selectedIds = {};
-  String? listInvoiceFromDate = "2000-01-01";
-  String? listInvoiceToDate = "2000-01-01";
+  // String? listInvoiceFromDate = "2000-01-01";
+  // String? listInvoiceToDate = "2000-01-01";
   String? status;
   DateTime? invoiceListFromDate = DateTime.now();
   DateTime? invoiceListToDate = DateTime.now();

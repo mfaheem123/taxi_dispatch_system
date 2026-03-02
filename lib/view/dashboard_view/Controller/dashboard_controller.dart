@@ -402,6 +402,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   @override
   void dispose() {
     _debounce?.cancel();
+
     super.dispose();
   }
 
@@ -1011,6 +1012,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+   FocusNode driverDropdownFocusNode = FocusNode();
+
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardDriverObject? selectDriverValueReturn;
