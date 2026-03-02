@@ -19,6 +19,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../../dashboard_view/models/all_addresses_model.dart';
 import '../../vehicles_view/model/vehicle_type_model.dart';
@@ -831,14 +832,19 @@ class FareController extends GetxController {
     };
     print(formData);
     var response = await Api().post(formData,
-        isFareIncrementEditMode? "fareincrement/add":
-            "fareincrement/update/${editingId}"
+        isFareIncrementEditMode?
+            "fareincrement/update/${editingId}":
+        "fareincrement/add"
     );
     if(response.statusCode == 200){
       getFareIncrement();
       incrementValueVehicleController.clear();
+      isFareIncrementEditMode = false;
       print(response.data);
-      BotToast.showText(text: "Fare Increment is successfully added");
+      String msg = isFareIncrementEditMode
+          ? "Fare Increment Updated successfully"
+          : "Fare Increment Added successfully";
+      BotToast.showText(text: msg);
 
     }
   }
@@ -866,9 +872,12 @@ class FareController extends GetxController {
     isFareIncrementEditMode = true;
     editingId = model.id;
 
-    // Ensure dates are not null
-    FareIncrementStart = model.startDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-    FareIncrementEnd = model.endDate ?? "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+    // model.startDate agar 2026-03-10 14:30:00 hai, to ye sirf 2026-03-10 nikalega
+    FareIncrementStart = model.startDate?.toIso8601String().split('T')[0] ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+    FareIncrementEnd = model.endDate?.toIso8601String().split('T')[0] ??
+        DateFormat('yyyy-MM-dd').format(DateTime.now());
 
     operatorType = model.fareIncrementOperator;
     incrementValueVehicleController.text = model.amount ?? "";
@@ -876,7 +885,7 @@ class FareController extends GetxController {
     isMileage = model.mileage ?? false;
     selectedType = isFixedFare ? "fixFare" : "mileage";
 
-    update(); // Yeh UI ko refresh karega
+    update();
   }
 
 

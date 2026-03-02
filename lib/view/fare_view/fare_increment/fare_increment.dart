@@ -94,7 +94,7 @@ class _FareIncrementState extends State<FareIncrement> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            // 2. String ko DateTime mein convert karein
+
                             initialDate: DateTime.tryParse(controller.FareIncrementStart ?? "") ?? DateTime.now(),
 
                             onChanged: (date) {
@@ -275,8 +275,9 @@ class _FareIncrementState extends State<FareIncrement> {
                       .getFareIncrementMoodel!.fareIncrement!
                       .map((fareIncrement) => DataRow(
                     cells: [
-                      DataCell(Center(child: Text(fareIncrement.startDate! ?? ""))),
-                      DataCell(Center(child: Text(fareIncrement.endDate! ?? ""))),
+                      // UI Tables ke liye
+                      DataCell(Center(child: Text(fareIncrement.startDate?.toString().split(' ')[0] ?? ""))),
+                      DataCell(Center(child: Text(fareIncrement.endDate?.toString().split(' ')[0] ?? ""))),
                       DataCell(Center(child: Text(fareIncrement.fareIncrementOperator! ?? ""))),
                       DataCell(Center(child: Text(fareIncrement.amount! ?? ""))),
                       fareIncrement.fixFare!.toString()=="true"?
