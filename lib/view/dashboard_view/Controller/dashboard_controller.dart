@@ -1011,6 +1011,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+   FocusNode driverDropdownFocusNode = FocusNode();
+
   DashboardDataModel? dashboardAllData;
   DashboardDriverObject? selectDriverValue;
   DashboardDriverObject? selectDriverValueReturn;

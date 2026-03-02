@@ -285,7 +285,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
                                                                                         final selected = controller.suggestions[controller.highlightedIndex.value].name;
                                                                                         controller.selectSuggestion(selected);
-                                                                                      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp || event.logicalKey == LogicalKeyboardKey.tab) {
+                                                                                      } else if (event.logicalKey == LogicalKeyboardKey.arrowDown || event.logicalKey == LogicalKeyboardKey.arrowUp
+                                                                                          || event.logicalKey == LogicalKeyboardKey.tab
+                                                                                      ) {
                                                                                         FocusScope.of(Get.context!).requestFocus(controller.suggestionFocusNode);
                                                                                       }
                                                                                       // }else if(event.logicalKey == LogicalKeyboardKey.tab){
@@ -508,7 +510,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                                                                             // (4) Dropoff textfield
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(4),
+                                                                              order: const NumericFocusOrder(6),
                                                                               child: SizedBox(
                                                                                 width: fieldWidth / 1.2,
                                                                                 height: 30,
@@ -600,7 +602,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               () => Padding(
                                                                                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                                                                                 child: FocusTraversalOrder(
-                                                                                  order: const NumericFocusOrder(5),
+                                                                                  order: const NumericFocusOrder(7),
                                                                                   child: CustomDropdownField<ZoneObject>(
                                                                                     label: "Select Zone",
                                                                                     width: Get.width / 7,
@@ -622,7 +624,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             Padding(
                                                                               padding: const EdgeInsets.only(left: 15),
                                                                               child: FocusTraversalOrder(
-                                                                                order: const NumericFocusOrder(6),
+                                                                                order: const NumericFocusOrder(8),
                                                                                 child: SizedBox(
                                                                                   width: fieldWidth / 3,
                                                                                   height: 30,
@@ -679,7 +681,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           // Name Fields
                                                                           FocusTraversalOrder(
                                                                             order:
-                                                                                const NumericFocusOrder(13),
+                                                                                const NumericFocusOrder(9),
                                                                             child: labeledTextField(
                                                                                 context,
                                                                                 isMobile,
@@ -694,7 +696,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 const EdgeInsets.only(left: 0),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(14),
+                                                                              order: const NumericFocusOrder(10),
                                                                               child: labeledTextField(context, isMobile, AppText.email, controller.emailController, width: fieldWidth / 2.8, textInputAction: TextInputAction.next),
                                                                             ),
                                                                           ),
@@ -714,7 +716,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     child: Text(AppText.mobile, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                                                                   ),
                                                                                   FocusTraversalOrder(
-                                                                                    order: const NumericFocusOrder(15),
+                                                                                    order: const NumericFocusOrder(11),
                                                                                     child: RawKeyboardListener(
                                                                                         focusNode: controller.phoneKeyboardFocusNode,
                                                                                         onKey: (event) {
@@ -761,14 +763,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 const EdgeInsets.only(left: 4),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(16),
+                                                                              order: const NumericFocusOrder(12),
                                                                               child: labeledTextField(context, isMobile, AppText.tel, controller.telController, width: fieldWidth / 3, textInputAction: TextInputAction.next, keyboardType: TextInputType.phone, formatDigitsOnly: false),
                                                                             ),
                                                                           ),
                                                                           // date fileds
                                                                           FocusTraversalOrder(
                                                                             order:
-                                                                                const NumericFocusOrder(17),
+                                                                                const NumericFocusOrder(13),
                                                                             child:
                                                                                 labeledField(
                                                                               context: context,
@@ -797,7 +799,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 const EdgeInsets.only(left: 4),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(18),
+                                                                              order: const NumericFocusOrder(14),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -825,7 +827,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 const EdgeInsets.only(left: 28),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(19),
+                                                                              order: const NumericFocusOrder(15),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -852,7 +854,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           // (8) Journey dropdown (O/W, R/N, W/R)
                                                                           FocusTraversalOrder(
                                                                             order:
-                                                                                const NumericFocusOrder(20),
+                                                                                const NumericFocusOrder(16),
                                                                             child:
                                                                                 labeledField(
                                                                               context: context,
@@ -923,7 +925,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   ),
                                                                                   // (1) Pickup textfield
                                                                                   FocusTraversalOrder(
-                                                                                    order: const NumericFocusOrder(21),
+                                                                                    order: const NumericFocusOrder(17),
                                                                                     child: SizedBox(
                                                                                       width: fieldWidth / 1.2,
                                                                                       height: 30,
@@ -1015,7 +1017,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     () => Padding(
                                                                                       padding: const EdgeInsets.symmetric(horizontal: 17.0),
                                                                                       child: FocusTraversalOrder(
-                                                                                        order: const NumericFocusOrder(22),
+                                                                                        order: const NumericFocusOrder(18),
                                                                                         child: CustomDropdownField<ZoneObject>(
                                                                                           label: "Select Zone",
                                                                                           width: Get.width / 7,
@@ -1035,7 +1037,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   SizedBox(width: 12),
                                                                                   // (3) Pickup notes
                                                                                   FocusTraversalOrder(
-                                                                                    order: const NumericFocusOrder(23),
+                                                                                    order: const NumericFocusOrder(19),
                                                                                     child: SizedBox(
                                                                                       width: fieldWidth / 3,
                                                                                       height: 30,
@@ -1071,7 +1073,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   // (1) Pickup textfield
                                                                                   // (4) Dropoff textfield
                                                                                   FocusTraversalOrder(
-                                                                                    order: const NumericFocusOrder(24),
+                                                                                    order: const NumericFocusOrder(20),
                                                                                     child: SizedBox(
                                                                                       width: fieldWidth / 1.2,
                                                                                       height: 30,
@@ -1161,7 +1163,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     () => Padding(
                                                                                       padding: const EdgeInsets.symmetric(horizontal: 17.0),
                                                                                       child: FocusTraversalOrder(
-                                                                                        order: const NumericFocusOrder(25),
+                                                                                        order: const NumericFocusOrder(21),
                                                                                         child: CustomDropdownField<ZoneObject>(
                                                                                           label: "Select Zone",
                                                                                           width: Get.width / 7,
@@ -1181,7 +1183,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   SizedBox(width: 15),
                                                                                   // (3) Pickup notes
                                                                                   FocusTraversalOrder(
-                                                                                    order: const NumericFocusOrder(26),
+                                                                                    order: const NumericFocusOrder(22),
                                                                                     child: SizedBox(
                                                                                       width: fieldWidth / 3,
                                                                                       height: 30,
@@ -1198,7 +1200,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               ),
                                                                             ),
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(27),
+                                                                              order: const NumericFocusOrder(23),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1223,7 +1225,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
                                                                             // (6) Time
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(28),
+                                                                              order: const NumericFocusOrder(24),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1245,7 +1247,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
                                                                             // (7) Lead (mins)
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(29),
+                                                                              order: const NumericFocusOrder(25),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1269,7 +1271,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
 
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(30),
+                                                                              order: const NumericFocusOrder(26),
                                                                               child: SizedBox(
                                                                                 width: fieldWidth / 2,
                                                                                 // height: 50 ,
@@ -1308,7 +1310,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
 
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(31),
+                                                                              order: const NumericFocusOrder(27),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1334,7 +1336,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
 
                                                                             FocusTraversalOrder(
-                                                                              order: const NumericFocusOrder(32),
+                                                                              order: const NumericFocusOrder(28),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1391,9 +1393,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ),
 
                                                                             FocusTraversalOrder(
-                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R'
-                                                                                  ? 33
-                                                                                  : 21),
+                                                                              order: const NumericFocusOrder(29),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1407,7 +1407,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                                   ),
                                                                                   child: DropdownButtonFormField<DashboardDriverObject>(
-                                                                                    focusNode: FocusNode(),
+                                                                                    focusNode: controller.driverDropdownFocusNode,
                                                                                     decoration: const InputDecoration(
                                                                                       border: OutlineInputBorder(),
                                                                                       isDense: true,
@@ -1440,7 +1440,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 34
-                                                                                : 21),
+                                                                                : 30),
                                                                             child:
                                                                                 labeledField(
                                                                               context: context,
@@ -1471,7 +1471,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 const EdgeInsets.only(left: 2),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R' ? 35 : 22),
+                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R' ? 35 : 31),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1520,7 +1520,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 EdgeInsets.only(left: controller.jourValue == 'W/R' ? 18 : 38),
                                                                             child:
                                                                                 FocusTraversalOrder(
-                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R' ? 36 : 23),
+                                                                              order: NumericFocusOrder(controller.jourValue == 'W/R' ? 36 : 32),
                                                                               child: labeledField(
                                                                                 context: context,
                                                                                 isMobile: isMobile,
@@ -1565,7 +1565,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 38
-                                                                                : 25),
+                                                                                : 33),
                                                                             child:
                                                                                 labeledField(
                                                                               context: context,
@@ -1608,7 +1608,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           controller.selectAccountValue == null
                                                                               ? SizedBox.shrink()
                                                                               : FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 39 : 26),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 39 : 34),
                                                                                   child: labeledField(
                                                                                     context: context,
                                                                                     isMobile: isMobile,
@@ -1655,7 +1655,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 40
-                                                                                : 27),
+                                                                                : 35),
                                                                             child:
                                                                                 DynamicSwitch(
                                                                               controller: controller.switchController,
@@ -1676,7 +1676,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 41
-                                                                                : 28),
+                                                                                : 36),
                                                                             child:
                                                                                 SizedBox(
                                                                               // width: fieldWidth/6,
@@ -1713,7 +1713,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 42
-                                                                                : 29),
+                                                                                : 37),
                                                                             child:
                                                                                 SizedBox(
                                                                               // width: fieldWidth/5,
@@ -1758,7 +1758,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               mainAxisSize: MainAxisSize.min,
                                                                               children: [
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 43 : 30),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 43 : 38),
                                                                                   child: SizedBox(
                                                                                     width: 60,
                                                                                     height: 30,
@@ -1777,7 +1777,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 ),
                                                                                 SizedBox(width: 15),
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 44 : 31),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 44 : 39),
                                                                                   child: SizedBox(
                                                                                     width: 60,
                                                                                     height: 30,
@@ -1796,7 +1796,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 ),
                                                                                 SizedBox(width: 15),
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 45 : 32),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 45 : 40),
                                                                                   child: SizedBox(
                                                                                     width: 60,
                                                                                     height: 30,
@@ -1834,7 +1834,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               mainAxisSize: MainAxisSize.min,
                                                                               children: [
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 46 : 33),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 46 : 41),
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.person,
                                                                                     focusNode: _focusNodes[0],
@@ -1845,7 +1845,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 ),
                                                                                 SizedBox(width: 5),
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 47 : 34),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 47 : 42),
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.shopping_cart_checkout_outlined,
                                                                                     focusNode: _focusNodes[1],
@@ -1859,7 +1859,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 ),
                                                                                 SizedBox(width: 5),
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 48 : 35),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 48 : 43),
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.attach_money,
                                                                                     focusNode: _focusNodes[2],
@@ -1874,7 +1874,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 ),
                                                                                 SizedBox(width: 5),
                                                                                 FocusTraversalOrder(
-                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 49 : 36),
+                                                                                  order: NumericFocusOrder(controller.jourValue == 'W/R' ? 49 : 44),
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.note_add_sharp,
                                                                                     focusNode: _focusNodes[3],
@@ -1895,7 +1895,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           FocusTraversalOrder(
                                                                             order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                                 ? 37
-                                                                                : 24),
+                                                                                : 45),
                                                                             child:
                                                                                 SizedBox(
                                                                               height: 40,
@@ -2051,7 +2051,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         FocusTraversalOrder(
                                                                           order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                               ? 50
-                                                                              : 37),
+                                                                              : 46),
                                                                           child:
                                                                               labeledField(
                                                                             context:
@@ -2103,7 +2103,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         FocusTraversalOrder(
                                                                           order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                               ? 51
-                                                                              : 38),
+                                                                              : 47),
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
@@ -2133,7 +2133,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                         FocusTraversalOrder(
                                                                           order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                                               ? 52
-                                                                              : 39),
+                                                                              : 48),
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
