@@ -113,8 +113,9 @@ class LocationController extends GetxController {
     var response = await Api().post(
         formData,
         updateLocationValue.value == false
-            ? 'locations/${locationUpdateId.value}'
-            : 'locations',
+        ?'locations':
+        'locations/${locationUpdateId.value}'
+             ,
         auth: true);
     if (response.statusCode == 200) {
       print(formData);
@@ -139,8 +140,8 @@ class LocationController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Create Location Form
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  todo List Location Work
 
-  RxList<Locations> locationsAll = <Locations>[].obs;
-  RxList<Locations> locationsFiltered = <Locations>[].obs;
+  RxList<Location> locationsAll = <Location>[].obs;
+  RxList<Location> locationsFiltered = <Location>[].obs;
   RxString searchLocationName = ''.obs;
   RxString searchPostCode = ''.obs;
   RxString searchShortCuts = ''.obs;
@@ -193,7 +194,7 @@ class LocationController extends GetxController {
   RxBool updateRNLocationValue = false.obs;
   RxBool updateRN1LocationValue = false.obs;
   RxInt locationUpdateId = 0.obs;
-  bindLocationUpdateLocation({Locations? locationUpdate}) async {
+  bindLocationUpdateLocation({Location? locationUpdate}) async {
     if (locationUpdate == null) return;
 
     locationUpdateId.value = locationUpdate.id ?? 0;

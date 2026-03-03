@@ -7,6 +7,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/pagination.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -718,7 +719,14 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               // ),
                             ),
                           ),
+                        ),
+
+                        PaginationWidget(
+                          currentPage: controller.currentPageFixedFare.value,
+                          totalPages: controller.totalPagesFixedFare.value,
+                          onPageChange: controller.onPageFixedFare,
                         )
+
                       ],
                     ),
                     Obx(() {

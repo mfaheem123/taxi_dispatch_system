@@ -527,10 +527,19 @@ class AccountController extends GetxController {
         "address": action.address,
       });
     }
-
     // webLoginDataList.addAll(data.web_logins)
     update();
   }
+
+  listOfAccountDelete(int? id) async {
+    var response = await Api().delete("accounts/delete/$id");
+    if (response.statusCode == 200) {
+      listOFAccount();
+      BotToast.showText(text: "Account Deleted Successfully");
+      print("Escort deleted successfully!");
+    }
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create escort
 
@@ -632,7 +641,11 @@ class AccountController extends GetxController {
     };
     var formData = dio.FormData.fromMap(baseData);
     var response =
-    await Api().post(formData, 'escorts/add', auth: true, multiPart: true);
+    await Api().post(formData,
+        selectedEscort != null
+            ? 'escorts/edit/${selectedEscort!.id}'
+            : 'escorts/add',
+        auth: true, multiPart: true);
     if (response.statusCode == 200) {
       escortName.clear();
       escortEmail.clear();
@@ -647,7 +660,14 @@ class AccountController extends GetxController {
       patDocPic = null;
       firstAidDocPic = null;
       dbsDocPic = null;
-      BotToast.showText(text: "Success, Escort Created Successfully");
+      selectedEscort = null;
+      listEscort();
+
+      BotToast.showText(
+          text: selectedEscort != null ? "Escort Updated Successfully" : "Escort Created Successfully"
+      );
+
+      isEscortUpdating.value = false;
       isEscortUpdating.value = false;
       update();
     }
@@ -656,7 +676,7 @@ class AccountController extends GetxController {
   escortDelete(int? id) async {
     var response = await Api().delete("escorts/delete/$id");
     if (response.statusCode == 200) {
-      listOFAccount();
+      listEscort();
       BotToast.showText(text: "Success, Escort Deleted Successfully");
       print("Escort deleted successfully!");
     }
@@ -666,6 +686,7 @@ class AccountController extends GetxController {
   // selected items
   Set<String> selectedIds = {};
   EscortModel? listEscortModel;
+  Escorts? selectedEscort;
   RxBool listEscortLoding = false.obs;
   RxList<Escorts> escortAll = <Escorts>[].obs;
   RxList<Escorts> escortFiltered = <Escorts>[].obs;
@@ -680,7 +701,7 @@ class AccountController extends GetxController {
   var escortCurrentPage = 1.obs;
   var escortTotalPages = 1.obs;
   final int escortLimit = 10;
-  Future<void> listEscort() async {
+  listEscort() async {
     try {
       String query = 'page=${escortCurrentPage.value}&limit=${escortLimit}';
       if (searchEscortName.value.isNotEmpty)
@@ -724,114 +745,34 @@ class AccountController extends GetxController {
     listEscort();
   }
 
-  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  create account invoice
-
-  // create controller
-
-
-  // update controller
-  TextEditingController updateCustomerTelephoneController = TextEditingController();
-
-
-  var invoiceNumber = ''.obs; //create
-  var updateInvoiceNumber = ''.obs; // update
 
 
 
-  // for update screen
+  void setEscortData(Escorts escort) {
+    selectedEscort = escort;
 
+    escortName.text = escort.name ?? '';
+    escortEmail.text = escort.email ?? '';
+    escortMobile.text = escort.mobile ?? '';
+    escortAddress.text = escort.address ?? '';
+    dobDate = escort.dob;
+    safeguardingExpiryExpireDate = escort.safeguardingExpiry;
+    patExpiryDate = escort.patExpiry;
+    firstAidDate = escort.firstaidExpiry;
+    dbsExpireTime.text = escort.dbsExpiry ?? '';
+    safeguardingBatch.text = escort.safeguardingNumber ?? '';
+    PATBatch.text = escort.patNumber ?? '';
+    firstAidBatch.text = escort.firstaidNumber ?? '';
+    DBSBatch.text = escort.dbsNumber ?? '';
 
-  // dropdown API's:
-  SubsDiaryModel? subsDiaryModel;
-  // update invoice
-  Rx<Subsidiaries?> updateSelectedSubsidiary = Rx<Subsidiaries?>(null);
+    profileImg = null;
+    safeguardingDocPic = null;
+    patDocPic = null;
+    firstAidDocPic = null;
+    dbsDocPic = null;
 
-  bool isSubsidiary = false;
-
-  // ===== UPDATE FUNCTION =====
-  getUpdateSubsidiary() async {
-    isSubsidiary = true;
     update();
-
-    var response = await Api().get("subsidiaries/get");
-    if (response.statusCode == 200) {
-      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
-      if (subsDiaryModel!.subsidiaries!.isNotEmpty) {
-        // update ke liye selected value
-        // if (updateSelectedSubsidiary.value?.id != null) {
-        //   await getAccountsBySubsidiary(updateSelectedSubsidiary.value!.id!);
-        // }
-      }
-      isSubsidiary = false;
-      update();
-    }
   }
-  //
-  // AccountInvoiceModel? accountInvoiceModel;
-  // // create invoice
-  // Rx<Account?> selectedAccount = Rx<Account?>(null);
-  // // update invoice
-  // Rx<Account?> updateSelectedAccount = Rx<Account?>(null);
-  //
-  // List<Account> accountList = [];
-  // bool isAccountLoading = false;
-  //
-  //
-  //
-  // //for update screen
-  // getUpdateAccountsBySubsidiary(int subsidiaryId) async {
-  //   isAccountLoading = true;
-  //   update();
-  //
-  //   var response = await Api().get("accounts/subsidiary/$subsidiaryId");
-  //   if (response.statusCode == 200) {
-  //     accountInvoiceModel = AccountInvoiceModel.fromJson(response.data);
-  //     accountList = accountInvoiceModel?.accounts ?? [];
-  //   } else {
-  //     accountInvoiceModel = null;
-  //     accountList = [];
-  //   }
-  //   updateSelectedAccount.value = null;
-  //   isAccountLoading = false;
-  //   update();
-  // }
-  //
-  // department dropdown
-  RxList<String> departmentList = RxList<String>([]);
-  // create invoice
-  Rx<String?> selectedDepartment = Rx<String?>(null);
-  // update invoice
-  Rx<String?> updateSelectedDepartment = Rx<String?>(null);
-
-  // void updateDepartmentsForSelectedAccount() {
-  //   if (selectedAccount.value != null) {
-  //     departmentList.value = selectedAccount.value!.departments
-  //         ?.where((d) => d.name != null)
-  //         .map((d) => d.name!)
-  //         .toList() ??
-  //         [];
-  //   } else {
-  //     departmentList.clear();
-  //   }
-  //   selectedDepartment.value = null;
-  //   update();
-  // }
-
-  // // for update screen
-  // void updateDepartmentsForSelectedAccountUpdate() {
-  //   if (updateSelectedAccount.value != null) {
-  //     departmentList.value = updateSelectedAccount.value!.departments
-  //         ?.where((d) => d.name != null)
-  //         .map((d) => d.name!)
-  //         .toList() ??
-  //         [];
-  //   } else {
-  //     departmentList.clear();
-  //   }
-  //   updateSelectedDepartment.value = null;
-  //   update();
-  // }
-
 
 
 

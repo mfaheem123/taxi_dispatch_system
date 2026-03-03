@@ -66,7 +66,7 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("LONGITUDE",
                                   controller.longitudeCtrl,
-                                  inputType: "text")),
+                                  inputType: "number")),
                         ],
                       ),
 
@@ -264,14 +264,13 @@ class LocationForm extends StatelessWidget {
       String label,
       TextEditingController controller, {
         String inputType = "text", // text, number, both
-      })
-  {
-    // Decide Regex Based on inputType
-    RegExp pattern;
-
+      }) {
+    // Pattern selection
+    Pattern pattern;
     switch (inputType) {
       case "number":
-        pattern = RegExp(r'[0-9]');
+      // Yeh pattern digits, ek dot, aur ek leading minus sign allow karega
+        pattern = RegExp(r'^[-+]?[0-9]*\.?[0-9]*');
         break;
       case "both":
         pattern = RegExp(r'[a-zA-Z0-9 ]');
@@ -294,15 +293,20 @@ class LocationForm extends StatelessWidget {
         const SizedBox(height: 5),
         TextField(
           controller: controller,
+          // Number ke liye decimal aur signed (minus) options enable karein
           keyboardType: inputType == "number"
-              ? TextInputType.number
+              ? const TextInputType.numberWithOptions(decimal: true, signed: true)
               : TextInputType.text,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(pattern),
+            // Filter use karne ka sahi tarika
+            inputType == "number"
+                ? FilteringTextInputFormatter.allow(RegExp(r'[0-9.-]'))
+                : FilteringTextInputFormatter.allow(pattern),
           ],
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             isDense: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
           ),
         ),
       ],
