@@ -343,7 +343,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
         await _fetchPostcodes();
 
         BotToast.showText(text:
-        'Deleted' 'Postcode deleted successfully');
+        'Deleted' ' Postcode deleted successfully');
 
       } else {
         BotToast.showText(text:

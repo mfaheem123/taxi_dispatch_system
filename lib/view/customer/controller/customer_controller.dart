@@ -1,4 +1,5 @@
  import 'dart:convert';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
@@ -69,6 +70,9 @@ class CustomerController extends GetxController {
       auth: true,
     );
     if (response.statusCode == 200) {
+      BotToast.showText(text:
+      updateCustomerValue.value ? "'Account Updated Successfully'" : 'Account Created Successfully');
+
       print("✅ Account Created Successfully");
       enableSms.value = false;
       nameController.clear();
@@ -79,6 +83,7 @@ class CustomerController extends GetxController {
       noteController.clear();
       address1Controller.clear();
       address2Controller.clear();
+      updateCustomerValue(false);
       update();
     } else {
       print("❌ Error Creating Account");
