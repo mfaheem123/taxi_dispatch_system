@@ -708,6 +708,212 @@ class _LeftSidebar extends StatelessWidget {
 // }
 
 /// --------- CENTER AREA ----------
+// class _CenterArea extends StatefulWidget {
+//   @override
+//   State<_CenterArea> createState() => _CenterAreaState();
+// }
+//
+// class _CenterAreaState extends State<_CenterArea> {
+//   final CliController controller = Get.find<CliController>();
+//   DashboardController dashboard = Get.find();
+//
+//   final RxInt selectedIndex = (-1).obs;
+//
+//   /// ✅ Selected booking
+//   Map<String, dynamic>? selectedBooking;
+//
+//   /// ✅ Selected IDs
+//   int? selectedDriverId;
+//   int? selectedVehicleId;
+//
+//   bool isSwapped = false;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     if (dashboard.dashboardAllData == null) {
+//       dashboard.dashboardData();
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GetBuilder<DashboardController>(
+//       builder: (homeController) {
+//         return Padding(
+//           padding: const EdgeInsets.all(24),
+//           child: SingleChildScrollView(
+//             child: Column(
+//               children: [
+//
+//                 /// HEADER
+//                 Obx(() => Text(controller.customerName.value)),
+//                 Obx(() => Text(controller.customerMobile.value)),
+//
+//                 const SizedBox(height: 20),
+//
+//                 /// BOOKINGS TABLE
+//                 Obx(() {
+//                   if (controller.isLoading.value) {
+//                     return const CircularProgressIndicator();
+//                   }
+//
+//                   if (controller.bookings.isEmpty) {
+//                     return const Text("No Bookings");
+//                   }
+//
+//                   return Column(
+//                     children: [
+//                       ElevatedButton(
+//                         onPressed: () => setState(() => isSwapped = !isSwapped),
+//                         child: const Text("Swap Pickup/Drop"),
+//                       ),
+//
+//                       const SizedBox(height: 10),
+//
+//                       SingleChildScrollView(
+//                         scrollDirection: Axis.horizontal,
+//                         child: DatatableWidget(
+//                           columns: [
+//                             buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+//                             buildHeaderWithSearch(title: "Drop off", removeSearching: true),
+//                             buildHeaderWithSearch(title: "Date", removeSearching: true),
+//                             buildHeaderWithSearch(title: "Fare", removeSearching: true),
+//                             buildHeaderWithSearch(title: "Action", removeSearching: true),
+//                           ],
+//                           totalRow: controller.bookings.length,
+//                           rows: List.generate(controller.bookings.length, (index) {
+//                             var booking = controller.bookings[index];
+//
+//                             return DataRow(
+//                               cells: [
+//                                 DataCell(Text(isSwapped
+//                                     ? booking["dropoff"] ?? ""
+//                                     : booking["pickup"] ?? "")),
+//
+//                                 DataCell(Text(isSwapped
+//                                     ? booking["pickup"] ?? ""
+//                                     : booking["dropoff"] ?? "")),
+//
+//                                 DataCell(Text(booking["pickup_date"] ?? "")),
+//                                 DataCell(Text("£${booking["fares"] ?? 0}")),
+//
+//                                 /// ACTION
+//                                 DataCell(
+//                                   Obx(() => Checkbox(
+//                                     value: selectedIndex.value == index,
+//                                     onChanged: (value) {
+//                                       if (selectedIndex.value == index) {
+//                                         selectedIndex.value = -1;
+//                                         selectedBooking = null;
+//                                       } else {
+//                                         selectedIndex.value = index;
+//                                         selectedBooking = booking;
+//
+//                                         print("Selected booking: $selectedBooking");
+//                                       }
+//                                     },
+//                                   )),
+//                                 ),
+//                               ],
+//                             );
+//                           }),
+//                         ),
+//                       ),
+//                     ],
+//                   );
+//                 }),
+//
+//                 const SizedBox(height: 30),
+//
+//                 /// DRIVER + VEHICLE
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: DropdownButtonFormField<DashboardDriverObject>(
+//                         decoration: const InputDecoration(
+//                           labelText: "Select Driver",
+//                           border: OutlineInputBorder(),
+//                         ),
+//                         value: homeController.selectDriverValue,
+//                         items: homeController.dashboardAllData!.drivers!
+//                             .map((d) => DropdownMenuItem(
+//                           value: d,
+//                           child: Text(d.name ?? ""),
+//                         ))
+//                             .toList(),
+//                         onChanged: (v) {
+//                           homeController.selectDriverValue = v;
+//                           selectedDriverId = v?.id; // ✅ SAVE ID
+//                           homeController.update();
+//                         },
+//                       ),
+//                     ),
+//                     const SizedBox(width: 16),
+//                     Expanded(
+//                       child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+//                         decoration: const InputDecoration(
+//                           labelText: "Select Vehicle",
+//                           border: OutlineInputBorder(),
+//                         ),
+//                         value: homeController.selectVehicleValue,
+//                         items: homeController.dashboardAllData!.vehicleTypes!
+//                             .map((v) => DropdownMenuItem(
+//                           value: v,
+//                           child: Text(v.name ?? ""),
+//                         ))
+//                             .toList(),
+//                         onChanged: (v) {
+//                           homeController.selectVehicleValue = v;
+//                           selectedVehicleId = v?.id; // ✅ SAVE ID
+//                           homeController.update();
+//                         },
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//
+//                 const SizedBox(height: 30),
+//
+//                 /// SUBMIT
+//                 ElevatedButton(
+//                   onPressed: () {
+//                     if (selectedBooking == null) {
+//                       Get.snackbar("Error", "Select booking first");
+//                       return;
+//                     }
+//
+//                     if (selectedDriverId == null || selectedVehicleId == null) {
+//                       Get.snackbar("Error", "Select driver & vehicle");
+//                       return;
+//                     }
+//
+//                     final bookingId = selectedBooking!["id"];
+//                     final bookingDate = selectedBooking!["pickup_date"];
+//                     final bookingTime = selectedBooking!["pickup_time"];
+//
+//                     print("========== SUBMIT ==========");
+//                     print("Booking ID: $bookingId");
+//                     print("Date: $bookingDate");
+//                     print("Time: $bookingTime");
+//                     print("Driver ID: $selectedDriverId");
+//                     print("Vehicle ID: $selectedVehicleId");
+//                     print("============================");
+//
+//
+//                     controller.postCLIJob(bookingId,bookingDate,bookingTime,selectedDriverId,selectedVehicleId);
+//                   },
+//                   child: const Text("SUBMIT"),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
 class _CenterArea extends StatefulWidget {
   @override
   State<_CenterArea> createState() => _CenterAreaState();
@@ -728,12 +934,23 @@ class _CenterAreaState extends State<_CenterArea> {
 
   bool isSwapped = false;
 
+  /// ✅ NEW TextEditingControllers
+  final TextEditingController pickupController = TextEditingController();
+  final TextEditingController dropoffController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     if (dashboard.dashboardAllData == null) {
       dashboard.dashboardData();
     }
+  }
+
+  @override
+  void dispose() {
+    pickupController.dispose();
+    dropoffController.dispose();
+    super.dispose();
   }
 
   @override
@@ -764,8 +981,46 @@ class _CenterAreaState extends State<_CenterArea> {
 
                   return Column(
                     children: [
+
+                      /// ✅ PICKUP & DROPOFF TEXTFIELDS
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: pickupController,
+                              decoration: const InputDecoration(
+                                labelText: "Pick Up",
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: TextField(
+                              controller: dropoffController,
+                              decoration: const InputDecoration(
+                                labelText: "Drop Off",
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 15),
+
+                      /// SWAP BUTTON
                       ElevatedButton(
-                        onPressed: () => setState(() => isSwapped = !isSwapped),
+                        onPressed: () {
+                          setState(() {
+                            isSwapped = !isSwapped;
+
+                            /// swap textfields data also
+                            final temp = pickupController.text;
+                            pickupController.text = dropoffController.text;
+                            dropoffController.text = temp;
+                          });
+                        },
                         child: const Text("Swap Pickup/Drop"),
                       ),
 
@@ -806,9 +1061,17 @@ class _CenterAreaState extends State<_CenterArea> {
                                       if (selectedIndex.value == index) {
                                         selectedIndex.value = -1;
                                         selectedBooking = null;
+
+                                        pickupController.clear();
+                                        dropoffController.clear();
                                       } else {
                                         selectedIndex.value = index;
                                         selectedBooking = booking;
+
+                                        pickupController.text =
+                                            booking["pickup"] ?? "";
+                                        dropoffController.text =
+                                            booking["dropoff"] ?? "";
 
                                         print("Selected booking: $selectedBooking");
                                       }
@@ -844,7 +1107,7 @@ class _CenterAreaState extends State<_CenterArea> {
                             .toList(),
                         onChanged: (v) {
                           homeController.selectDriverValue = v;
-                          selectedDriverId = v?.id; // ✅ SAVE ID
+                          selectedDriverId = v?.id;
                           homeController.update();
                         },
                       ),
@@ -865,7 +1128,7 @@ class _CenterAreaState extends State<_CenterArea> {
                             .toList(),
                         onChanged: (v) {
                           homeController.selectVehicleValue = v;
-                          selectedVehicleId = v?.id; // ✅ SAVE ID
+                          selectedVehicleId = v?.id;
                           homeController.update();
                         },
                       ),
@@ -900,10 +1163,38 @@ class _CenterAreaState extends State<_CenterArea> {
                     print("Vehicle ID: $selectedVehicleId");
                     print("============================");
 
-
-                    controller.postCLIJob(bookingId,bookingDate,bookingTime,selectedDriverId,selectedVehicleId);
+                    controller.postCLIJob(
+                      bookingId,
+                      bookingDate,
+                      bookingTime,
+                      selectedDriverId,
+                      selectedVehicleId,
+                    );
                   },
                   child: const Text("SUBMIT"),
+                ),
+
+                const SizedBox(height: 15),
+
+                /// ✅ EXTRA BUTTON AFTER SUBMIT
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                  ),
+                  onPressed: () {
+                    selectedIndex.value = -1;
+                    selectedBooking = null;
+                    selectedDriverId = null;
+                    selectedVehicleId = null;
+
+                    pickupController.clear();
+                    dropoffController.clear();
+
+                    homeController.selectDriverValue = null;
+                    homeController.selectVehicleValue = null;
+                    homeController.update();
+                  },
+                  child: const Text("New Booking"),
                 ),
               ],
             ),
@@ -913,8 +1204,6 @@ class _CenterAreaState extends State<_CenterArea> {
     );
   }
 }
-
-
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
   @override
