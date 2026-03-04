@@ -69,7 +69,8 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if (controller.profileImg == null) {
+                        // Sirf tab pick kare jab dono images null hon
+                        if (controller.profileImg == null && controller.selectedEscort?.image == null) {
                           controller.pickImage();
                         }
                       },
@@ -80,38 +81,51 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(color: Colors.grey),
-                          image: controller.profileImg == null
-                              ? null
-                              : DecorationImage(
-                                  image: MemoryImage(controller
-                                      .profileImg!.bytes), // ✅ correct provider
-                                  fit: BoxFit.fill,
-                                ),
+                          image: controller.profileImg != null
+                              ? DecorationImage(
+                            image: MemoryImage(controller.profileImg!.bytes),
+                            fit: BoxFit.fill,
+                          )
+                              : (controller.selectedEscort?.image != null
+                              ? DecorationImage(
+                            image: NetworkImage(controller.selectedEscort!.image!),
+                            fit: BoxFit.fill,
+                          )
+                              : null),
                         ),
-                        child: controller.profileImg != null
+                        // Check karein ke kya koi bhi image (Local ya Network) maujood hai?
+                        child: (controller.profileImg != null || controller.selectedEscort?.image != null)
                             ? Align(
-                                alignment: Alignment.topRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    controller.profileImg = null;
-                                    controller.update();
-                                  },
-                                  child: Icon(
-                                    Icons.close_rounded,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              )
-                            : Center(
-                                child: Text(
-                                  "UPLOAD IMAGE",
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Image remove karne ki logic
+                              controller.profileImg = null;
+                              if (controller.selectedEscort != null) {
+                                controller.selectedEscort!.image = null; // Purani image hide karne ke liye
+                              }
+                              controller.update();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(4),
+                              color: Colors.white.withOpacity(0.7), // Icon nazar aaye isliye background
+                              child: Icon(
+                                Icons.close_rounded,
+                                color: DynamicColors.redClr,
                               ),
+                            ),
+                          ),
+                        )
+                            : Center(
+                          child: Text(
+                            "UPLOAD IMAGE",
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -370,43 +384,58 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.grey),
-                              image:  controller.safeguardingDocPic == null ? null : DecorationImage(
-                                image: MemoryImage(controller.safeguardingDocPic!), // ✅ correct provider
+                              image: controller.safeguardingDocPic != null
+                                  ? DecorationImage(
+                                image: MemoryImage(controller.safeguardingDocPic!),
                                 fit: BoxFit.fill,
-                              ),
+                              )
+                                  : (controller.selectedEscort?.safeguardingDocument != null
+                                  ? DecorationImage(
+                                image: NetworkImage(controller.selectedEscort!.safeguardingDocument!),
+                                fit: BoxFit.fill,
+                              )
+                                  : null),
                             ),
-                            child: controller.safeguardingDocPic != null
+                            // Agar bytes hain YA server ka image path hai, to text hide kar do
+                            child: (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
                                 ? SizedBox.shrink()
                                 : Center(
-                                    child: Text(
-                                      AppText.safeguarding,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                              child: Text(
+                                AppText.safeguarding,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (controller.safeguardingDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.safeguardingDocPic = image.bytes ;
+                              // Agar koi bhi image (Local ya Network) maujood hai, to usay remove karo
+                              if (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null) {
+                                controller.safeguardingDocPic = null;
+                                if (controller.selectedEscort != null) {
+                                  controller.selectedEscort!.safeguardingDocument = null;
                                 }
                               } else {
-                                controller.safeguardingDocPic = null;
+                                // Warna nayi image pick karo
+                                final image = await ImagePickerHelper.pickImage();
+                                if (image != null) {
+                                  controller.safeguardingDocPic = image.bytes;
+                                }
                               }
                               controller.update();
                             },
                             child: Icon(
-                              controller.safeguardingDocPic != null
+                              // Icon change logic based on both conditions
+                              (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: DynamicColors.primaryClr,
+                              color: (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
+                                  ? DynamicColors.redClr // Remove ke liye red color behtar hai
+                                  : DynamicColors.primaryClr,
                             ),
                           )
                         ],
@@ -430,46 +459,57 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.grey),
-                              image: controller.patDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .patDocPic! ), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
+                              image: controller.patDocPic != null
+                                  ? DecorationImage(
+                                image: MemoryImage(controller.patDocPic!),
+                                fit: BoxFit.fill,
+                              )
+                                  : (controller.selectedEscort?.patDocument != null
+                                  ? DecorationImage(
+                                image: NetworkImage(controller.selectedEscort!.patDocument!),
+                                fit: BoxFit.fill,
+                              )
+                                  : null),
                             ),
-                            child: controller.patDocPic != null
+                            // Agar image (Local ya Network) mil gayi to text hide kar do
+                            child: (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
                                 ? SizedBox.shrink()
                                 : Center(
-                                    child: Text(
-                                      AppText.patPic,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                              child: Text(
+                                AppText.patPic,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (controller.patDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.patDocPic = image.bytes ;
+                              // Agar pehle se koi image hai to usay remove karo
+                              if (controller.patDocPic != null || controller.selectedEscort?.patDocument != null) {
+                                controller.patDocPic = null;
+                                if (controller.selectedEscort != null) {
+                                  controller.selectedEscort!.patDocument = null; // Model se path clear karein
                                 }
                               } else {
-                                controller.patDocPic = null;
+                                // Warna nayi image pick karo
+                                final image = await ImagePickerHelper.pickImage();
+                                if (image != null) {
+                                  controller.patDocPic = image.bytes;
+                                }
                               }
                               controller.update();
                             },
                             child: Icon(
-                              controller.patDocPic != null
+                              (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: DynamicColors.primaryClr,
+                              color: (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
+                                  ? DynamicColors.redClr
+                                  : DynamicColors.primaryClr,
                             ),
                           )
                         ],
@@ -493,46 +533,57 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.grey),
-                              image: controller.firstAidDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller
-                                          .firstAidDocPic! ), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
+                              image: controller.firstAidDocPic != null
+                                  ? DecorationImage(
+                                image: MemoryImage(controller.firstAidDocPic!),
+                                fit: BoxFit.fill,
+                              )
+                                  : (controller.selectedEscort?.firstaidDocument != null
+                                  ? DecorationImage(
+                                image: NetworkImage(controller.selectedEscort!.firstaidDocument!),
+                                fit: BoxFit.fill,
+                              )
+                                  : null),
                             ),
-                            child: controller.firstAidDocPic != null
+                            // Check for both Local and Network image to hide text
+                            child: (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
                                 ? SizedBox.shrink()
                                 : Center(
-                                    child: Text(
-                                      AppText.firstAid,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                              child: Text(
+                                AppText.firstAid,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (controller.firstAidDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
+                              // Agar koi bhi image exist karti hai to pehle clear karo
+                              if (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null) {
+                                controller.firstAidDocPic = null;
+                                if (controller.selectedEscort != null) {
+                                  controller.selectedEscort!.firstaidDocument = null; // UI se purani image hatane ke liye
+                                }
+                              } else {
+                                // Warna nayi image pick karo
+                                final image = await ImagePickerHelper.pickImage();
                                 if (image != null) {
                                   controller.firstAidDocPic = image.bytes;
                                 }
-                              } else {
-                                controller.firstAidDocPic = null;
                               }
                               controller.update();
                             },
                             child: Icon(
-                              controller.firstAidDocPic != null
+                              (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: DynamicColors.primaryClr,
+                              color: (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
+                                  ? DynamicColors.redClr
+                                  : DynamicColors.primaryClr,
                             ),
                           )
                         ],
@@ -556,45 +607,57 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(color: Colors.grey),
-                              image: controller.dbsDocPic == null
-                                  ? null
-                                  : DecorationImage(
-                                      image: MemoryImage(controller.dbsDocPic!), // ✅ correct provider
-                                      fit: BoxFit.fill,
-                                    ),
+                              image: controller.dbsDocPic != null
+                                  ? DecorationImage(
+                                image: MemoryImage(controller.dbsDocPic!),
+                                fit: BoxFit.fill,
+                              )
+                                  : (controller.selectedEscort?.dbsDocument != null
+                                  ? DecorationImage(
+                                image: NetworkImage(controller.selectedEscort!.dbsDocument!),
+                                fit: BoxFit.fill,
+                              )
+                                  : null),
                             ),
-                            child: controller.dbsDocPic != null
+                            // Dono conditions check karein taake placeholder text hide ho jaye
+                            child: (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
                                 ? SizedBox.shrink()
                                 : Center(
-                                    child: Text(
-                                      AppText.dbs,
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
+                              child: Text(
+                                AppText.dbs,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (controller.dbsDocPic == null) {
-                                final image =
-                                    await ImagePickerHelper.pickImage();
-                                if (image != null) {
-                                  controller.dbsDocPic = image.bytes ;
+                              // Agar koi image hai (Local ya Network) to usay remove karein
+                              if (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null) {
+                                controller.dbsDocPic = null;
+                                if (controller.selectedEscort != null) {
+                                  controller.selectedEscort!.dbsDocument = null; // Purani image path clear karein
                                 }
                               } else {
-                                controller.dbsDocPic = null;
+                                // Warna nayi image pick karein
+                                final image = await ImagePickerHelper.pickImage();
+                                if (image != null) {
+                                  controller.dbsDocPic = image.bytes;
+                                }
                               }
                               controller.update();
                             },
                             child: Icon(
-                              controller.dbsDocPic != null
+                              (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: DynamicColors.primaryClr,
+                              color: (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
+                                  ? DynamicColors.redClr
+                                  : DynamicColors.primaryClr,
                             ),
                           )
                         ],
