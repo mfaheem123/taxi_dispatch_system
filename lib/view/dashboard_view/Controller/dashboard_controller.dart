@@ -25,19 +25,14 @@ import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
-
 import '../models/all_addresses_model.dart';
-
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
-
 import '../models/dashboard_table_model.dart';
 import '../models/users_phone_numbers_model.dart';
-
 import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
