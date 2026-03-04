@@ -662,11 +662,9 @@ class AccountController extends GetxController {
       dbsDocPic = null;
       selectedEscort = null;
       listEscort();
-
       BotToast.showText(
           text: selectedEscort != null ? "Escort Updated Successfully" : "Escort Created Successfully"
       );
-
       isEscortUpdating.value = false;
       isEscortUpdating.value = false;
       update();
