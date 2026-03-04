@@ -152,7 +152,7 @@ class VehicleController extends GetxController {
       update();
   }
 
-// Helper function to clear fields
+
   _clearAllFields() {
     colorController.clear();
     vehicleMakeController.clear();
@@ -163,7 +163,6 @@ class VehicleController extends GetxController {
     mot2NumberController.clear();
     vehicleNumberController.clear();
     insuranceNumberController.clear();
-    // Clear images as well
     phcVehicleDocPic = null;
     motDocPic = null;
     mot2DocPic = null;
@@ -189,25 +188,14 @@ class VehicleController extends GetxController {
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
     insuranceExpiryTimeController.text = data.insuranceExpiryTime?.toString() ?? '';
 
-
-
-
-
-
-
-
-    // Dates ko bhi bind karein
     phcVehicleExpireDate = data.phcVehicleExpiry;
     motExpiryExpireDate = data.motExpiry;
     mot2ExpiryExpireDate = data.mot2Expiry;
     insuranceExpiryDate = data.insuranceExpiry;
-
-    // IMPORTANT: Reset local bytes taake Network Image nazar aaye
     phcVehicleDocPic = null;
     motDocPic = null;
     mot2DocPic = null;
     insuranceDocPic = null;
-
     singleVehicleData = data;
     update();
   }
@@ -280,7 +268,8 @@ class VehicleController extends GetxController {
     var response = await Api().delete('vehicle-type/delete/$id');
     if (response.statusCode == 200) {
       getVehicleTypes();
-      print("✅ VehicleType deleted successfully!");
+
+      print(" VehicleType deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -350,7 +339,7 @@ class VehicleController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Create Vehicle type
-  /// bool variable
+
   RxBool defaultVehicleValue = false.obs;
   RxBool minimumMilesValue = false.obs;
   RxBool minimumFaresValue = false.obs;
