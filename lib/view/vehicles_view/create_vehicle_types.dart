@@ -65,7 +65,8 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (controller.profileImg == null) {
+                    // Agar koi image nahi hai (na local na network), tabhi picker khule
+                    if (controller.profileImg == null && controller.singleVehicle?.image == null) {
                       controller.pickImage();
                     }
                   },
@@ -76,42 +77,55 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(color: Colors.grey),
-                      image: controller.profileImg == null
-                          ? ((controller.singleVehicle != null) &&( controller.singleVehicle!.image !=null))?
-                      DecorationImage(
-                        image: NetworkImage(controller.singleVehicle!.image!), // ✅ correct provider
+                      image: controller.profileImg != null
+                          ? DecorationImage(
+                        image: MemoryImage(controller.profileImg!.bytes),
                         fit: BoxFit.fill,
-                      ): null
-                          : DecorationImage(
-                              image: MemoryImage(controller
-                                  .profileImg!.bytes), // ✅ correct provider
-                              fit: BoxFit.fill,
-                            ),
+                      )
+                          : (controller.singleVehicle?.image != null
+                          ? DecorationImage(
+                        // Agar server se sirf path aata hai to base URL lazmi lagayein
+                        image: NetworkImage(controller.singleVehicle!.image!),
+                        fit: BoxFit.fill,
+                      )
+                          : null),
                     ),
-                    child: controller.profileImg != null
+                    // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
+                    child: (controller.profileImg != null || controller.singleVehicle?.image != null)
                         ? Align(
-                            alignment: Alignment.topRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                controller.profileImg = null;
-                                controller.update();
-                              },
-                              child: Icon(
-                                Icons.close_rounded,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "UPLOAD IMAGE",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          controller.profileImg = null;
+                          if (controller.singleVehicle != null) {
+                            controller.singleVehicle!.image = null; // Purani image hide karne ke liye
+                          }
+                          controller.update();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          margin: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            shape: BoxShape.circle,
                           ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: DynamicColors.redClr,
+                          ),
+                        ),
+                      ),
+                    )
+                        : Center(
+                      child: Text(
+                        "UPLOAD IMAGE",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -342,7 +356,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                         width: fieldWidth,
                         btnText:
                         controller.singleVehicle == null?
-                        AppText.save: "EDIT",
+                        AppText.save: "UPDATE",
                         fontSize: 11,
                         verticalPadding: 0.0,
                         borderRadius: 4,

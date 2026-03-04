@@ -965,6 +965,7 @@ DaysClass? selectedDay;
       }
       sureChargeObject = null;
       clearSurchargesData();
+      BotToast.showText(text:  sureChargeObject !=null ? "Surcharges Updated": " Surecharge Add sucessfully");
     }
   }
 
@@ -1028,12 +1029,9 @@ DaysClass? selectedDay;
   
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete sure charge api
-  ///
-  ///
-  ///
-  ///
-  ///
-  ///
+
+
+
   deleteSureCharge({id}) async{
     var response = await Api().delete("surcharges/delete/$id");
     if(response.statusCode == 200){
@@ -1077,6 +1075,7 @@ DaysClass? selectedDay;
       airportChargesData!.locations![index] = Location.fromJson(response.data['location']);
       pickUpChargesController.clear();
       dropOffChargesController.clear();
+      BotToast.showText(text: "Airport Charges Updated");
       update();
     }
   }
@@ -1129,6 +1128,7 @@ DaysClass? selectedDay;
     if(response.statusCode == 200){
       int index = getAllFareMeterRateModel!.fareMeters!.indexWhere((test) => test.id == fareMeterObj.id);
       getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['fareMeter']);
+      BotToast.showText(text: "Fare Add Sucessfully");
       update();
     }
   }

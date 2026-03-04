@@ -117,12 +117,10 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                       border: OutlineInputBorder(),
                       isDense: true,
                     ),
-                    value: controllerdesh.selectVehicleValue,
-                    items: controllerdesh.dashboardAllData!
-                        .vehicleTypes!
-                        .map((vehicle) =>
-                        DropdownMenuItem<DashboardVehicleTypeObject>(
-                          value: vehicle,
+                    value: controller.selectVehicleValue,
+                    items: (controllerdesh.dashboardAllData?.vehicleTypes ?? [])
+                        .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                      value: vehicle,
                           child: Text(vehicle.name ?? "",
                             style: mozillaTextRegularText(
                               fontSize: 12,
@@ -132,8 +130,8 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                         ))
                         .toList(),
                     onChanged: (v) {
-                      controllerdesh.selectVehicleValue = v;
-                      controllerdesh.update();
+                      controller.selectVehicleValue = v;
+                      controller.update();
                     },
                   ),
                 ),
@@ -406,25 +404,40 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppText.phcVehicleDoc,
-                          style: mozillaTextRegularText(fontSize: 11),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 7),
+                          child: Text(AppText.phcVehicleDoc,
+                            style: mozillaTextRegularText(fontSize: 11),
+                          ),
                         ),
                         Stack(
                           alignment: Alignment.topRight,
                           children: [
                             Container(
                               height: isMobile ? 100 : 200,
-                              width: fieldWidth/1.5,
+                              width: fieldWidth / 1.5,
                               margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(color: Colors.grey),
-                                image:  controller.phcVehicleDocPic == null ? null : DecorationImage(
-                                  image: MemoryImage(controller.phcVehicleDocPic!), // ✅ correct provider
+                                image: controller.phcVehicleDocPic != null
+                                    ? DecorationImage(
+                                  image: MemoryImage(controller.phcVehicleDocPic!), // Nayi picked image
                                   fit: BoxFit.fill,
-                                ),
+                                )
+                                    : (controller.singleVehicleData?.phcVehicleDocument != null
+                                    ? DecorationImage(
+                                  // Edit mode ki purani image
+                                  // Note: Agar API sirf path bhej rahi hai to Base URL add karein
+                                  image: NetworkImage(controller.singleVehicleData!.phcVehicleDocument!),
+                                  fit: BoxFit.fill,
+                                )
+                                    : null),
                               ),
-                              child: controller.phcVehicleDocPic != null ? SizedBox.shrink() : Center(
+                              // Text tab hide hoga jab local image ho YA network image ho
+                              child: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                  ? SizedBox.shrink()
+                                  : Center(
                                 child: Text(
                                   AppText.phcVehicleDoc,
                                   style: TextStyle(
@@ -437,19 +450,29 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                if(controller.phcVehicleDocPic == null){
-                              final image = await ImagePickerHelper.pickImage();
-                              if (image != null) {
-                                controller.phcVehicleDocPic = image.bytes;
-                              }
-                            }else{
+                                // Agar pehle se koi image hai (Local ya Network), to usay remove karo
+                                if (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null) {
                                   controller.phcVehicleDocPic = null;
+                                  if (controller.singleVehicleData != null) {
+                                    controller.singleVehicleData!.phcVehicleDocument = null; // Model se clear karein
+                                  }
+                                } else {
+                                  // Nayi image pick karo
+                                  final image = await ImagePickerHelper.pickImage();
+                                  if (image != null) {
+                                    controller.phcVehicleDocPic = image.bytes;
+                                  }
                                 }
                                 controller.update();
-                          },
-                              child: Icon(controller.phcVehicleDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
-                              size: 30,
-                              color: DynamicColors.primaryClr,
+                              },
+                              child: Icon(
+                                (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                    ? Icons.remove_circle
+                                    : Icons.add_circle_outlined,
+                                size: 30,
+                                color: (controller.phcVehicleDocPic != null || controller.singleVehicleData?.phcVehicleDocument != null)
+                                    ? DynamicColors.redClr // Remove ke liye Red color
+                                    : DynamicColors.primaryClr,
                               ),
                             )
                           ],
@@ -459,25 +482,39 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppText.motDoc,
-                          style: mozillaTextRegularText(fontSize: 11),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 7),
+                          child: Text(AppText.motDoc,
+                            style: mozillaTextRegularText(fontSize: 11),
+                          ),
                         ),
                         Stack(
                           alignment: Alignment.topRight,
                           children: [
                             Container(
                               height: isMobile ? 100 : 200,
-                              width: fieldWidth/1.5,
+                              width: fieldWidth / 1.5,
                               margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(color: Colors.grey),
-                                image:  controller.motDocPic == null ? null : DecorationImage(
-                                  image: MemoryImage(controller.motDocPic!), // ✅ correct provider
+                                image: controller.motDocPic != null
+                                    ? DecorationImage(
+                                  image: MemoryImage(controller.motDocPic!), // Nayi picked image (Bytes)
                                   fit: BoxFit.fill,
-                                ),
+                                )
+                                    : (controller.singleVehicleData?.motDocument != null
+                                    ? DecorationImage(
+                                  // Edit mode ki purani image (Network URL)
+                                  image: NetworkImage(controller.singleVehicleData!.motDocument!),
+                                  fit: BoxFit.fill,
+                                )
+                                    : null),
                               ),
-                              child: controller.motDocPic != null ? SizedBox.shrink() :Center(
+                              // Child logic: Agar koi bhi image (Local ya Network) mil gayi to text hide kar do
+                              child: (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
+                                  ? SizedBox.shrink()
+                                  : Center(
                                 child: Text(
                                   AppText.motDoc,
                                   style: TextStyle(
@@ -490,19 +527,29 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                if(controller.motDocPic == null){
+                                // Agar pehle se koi image hai (Local ya Network), to usay remove karo
+                                if (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null) {
+                                  controller.motDocPic = null;
+                                  if (controller.singleVehicleData != null) {
+                                    controller.singleVehicleData!.motDocument = null; // Model se path clear karein
+                                  }
+                                } else {
+                                  // Warna nayi image pick karo
                                   final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.motDocPic = image.bytes;
                                   }
-                                }else{
-                                  controller.motDocPic = null;
                                 }
                                 controller.update();
                               },
-                              child: Icon(controller.motDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                              child: Icon(
+                                (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
+                                    ? Icons.remove_circle
+                                    : Icons.add_circle_outlined,
                                 size: 30,
-                                color: DynamicColors.primaryClr,
+                                color: (controller.motDocPic != null || controller.singleVehicleData?.motDocument != null)
+                                    ? DynamicColors.redClr // Image hai to remove icon red dikhao
+                                    : DynamicColors.primaryClr,
                               ),
                             )
                           ],
@@ -512,26 +559,41 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppText.mot2Doc,
-                          style: mozillaTextRegularText(fontSize: 11),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 7),
+                          child: Text(AppText.mot2Doc,
+                            style: mozillaTextRegularText(fontSize: 11),
+                          ),
                         ),
                         Stack(
                           alignment: Alignment.topRight,
                           children: [
                             Container(
                               height: isMobile ? 100 : 200,
-                              width: fieldWidth/1.5,
+                              width: fieldWidth / 1.5,
                               margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(color: Colors.grey),
-                                image:  controller.mot2DocPic == null ? null : DecorationImage(
-                                  image: MemoryImage(controller.mot2DocPic!), // ✅ correct provider
+                                image: controller.mot2DocPic != null
+                                    ? DecorationImage(
+                                  image: MemoryImage(controller.mot2DocPic!), // Nayi picked image (Bytes)
                                   fit: BoxFit.fill,
-                                ),
+                                )
+                                    : (controller.singleVehicleData?.mot2Document != null
+                                    ? DecorationImage(
+                                  // Edit mode ki purani image (Network URL)
+                                  image: NetworkImage(controller.singleVehicleData!.mot2Document!),
+                                  fit: BoxFit.fill,
+                                )
+                                    : null),
                               ),
-                              child: controller.mot2DocPic != null ? SizedBox.shrink() : Center(
-                                child: Text(AppText.mot2Doc,
+                              // Child logic: Agar koi bhi image (Local ya Network) mil gayi to text hide kar do
+                              child: (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
+                                  ? SizedBox.shrink()
+                                  : Center(
+                                child: Text(
+                                  AppText.mot2Doc, // ✅ MOT2 text
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
@@ -542,19 +604,29 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                if(controller.mot2DocPic == null){
+                                // Agar pehle se koi image hai (Local ya Network), to usay remove karo
+                                if (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null) {
+                                  controller.mot2DocPic = null;
+                                  if (controller.singleVehicleData != null) {
+                                    controller.singleVehicleData!.mot2Document = null; // ✅ MOT2 model clear
+                                  }
+                                } else {
+                                  // Warna nayi image pick karo
                                   final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.mot2DocPic = image.bytes;
                                   }
-                                }else{
-                                  controller.mot2DocPic = null;
                                 }
                                 controller.update();
                               },
-                              child: Icon(controller.mot2DocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                              child: Icon(
+                                (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
+                                    ? Icons.remove_circle
+                                    : Icons.add_circle_outlined,
                                 size: 30,
-                                color: DynamicColors.primaryClr,
+                                color: (controller.mot2DocPic != null || controller.singleVehicleData?.mot2Document != null)
+                                    ? DynamicColors.redClr
+                                    : DynamicColors.primaryClr,
                               ),
                             )
                           ],
@@ -564,25 +636,39 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppText.insuranceDoc,
-                          style: mozillaTextRegularText(fontSize: 11),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 7),
+                          child: Text(AppText.insuranceDoc,
+                            style: mozillaTextRegularText(fontSize: 11),
+                          ),
                         ),
                         Stack(
                           alignment: Alignment.topRight,
                           children: [
                             Container(
                               height: isMobile ? 100 : 200,
-                              width: fieldWidth/1.5,
+                              width: fieldWidth / 1.5,
                               margin: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(color: Colors.grey),
-                                image:  controller.insuranceDocPic == null ? null : DecorationImage(
-                                  image: MemoryImage(controller.insuranceDocPic!), // ✅ correct provider
+                                image: controller.insuranceDocPic != null
+                                    ? DecorationImage(
+                                  image: MemoryImage(controller.insuranceDocPic!), // Nayi picked image (Bytes)
                                   fit: BoxFit.fill,
-                                ),
+                                )
+                                    : (controller.singleVehicleData?.insuranceDocument != null
+                                    ? DecorationImage(
+                                  // Edit mode ki purani image (Network URL)
+                                  image: NetworkImage(controller.singleVehicleData!.insuranceDocument!),
+                                  fit: BoxFit.fill,
+                                )
+                                    : null),
                               ),
-                              child: controller.insuranceDocPic != null ? SizedBox.shrink() : Center(
+                              // Child logic: Agar koi bhi image (Local ya Network) mil gayi to text hide kar do
+                              child: (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
+                                  ? SizedBox.shrink()
+                                  : Center(
                                 child: Text(
                                   AppText.insuranceDoc,
                                   style: TextStyle(
@@ -595,19 +681,29 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                             ),
                             GestureDetector(
                               onTap: () async {
-                                if(controller.insuranceDocPic == null){
+                                // Agar pehle se koi image hai (Local ya Network), to usay remove karo
+                                if (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null) {
+                                  controller.insuranceDocPic = null;
+                                  if (controller.singleVehicleData != null) {
+                                    controller.singleVehicleData!.insuranceDocument = null; // Model se path clear karein
+                                  }
+                                } else {
+                                  // Warna nayi image pick karo
                                   final image = await ImagePickerHelper.pickImage();
                                   if (image != null) {
                                     controller.insuranceDocPic = image.bytes;
                                   }
-                                }else{
-                                  controller.insuranceDocPic = null;
                                 }
                                 controller.update();
                               },
-                              child: Icon(controller.insuranceDocPic != null ? Icons.remove_circle :Icons.add_circle_outlined,
+                              child: Icon(
+                                (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
+                                    ? Icons.remove_circle
+                                    : Icons.add_circle_outlined,
                                 size: 30,
-                                color: DynamicColors.primaryClr,
+                                color: (controller.insuranceDocPic != null || controller.singleVehicleData?.insuranceDocument != null)
+                                    ? DynamicColors.redClr
+                                    : DynamicColors.primaryClr,
                               ),
                             )
                           ],
@@ -624,7 +720,9 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                   verticalPadding: 0.0,
                   borderRadius: 4,
                   fontSize: 12,
-                  btnText: AppText.save,
+                  btnText:
+                 controller.singleVehicleData !=null?
+                  "UPDATE" :  AppText.save,
                   onTap: (){
                     controller.postCompanyVehicle();
                   },

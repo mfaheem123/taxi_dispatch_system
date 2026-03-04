@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
@@ -349,6 +350,7 @@ class AdministrationController extends GetxController {
       balanceController.clear();
       profileImg = null;
       isSubsiDiaryUpdating.value = false;
+      BotToast.showText(text: isSubsiDiaryUpdating.value? "Subsidiary Add Sucessfully":"Subsidiary Update Sucessfully");
       update();
       print("response of body -------------------------${response.data}");
     }
@@ -447,14 +449,9 @@ class AdministrationController extends GetxController {
       'allowtransferbookings': transferValue.value,
       if (multipartFile != null) "image": multipartFile!,
     };
-    // if (profileImg != null) {
-    //   formData["image"] = await dio.MultipartFile.fromBytes(
-    //     profileImg!.bytes,
-    //     filename: profileImg!.name,
-    //   );
-    // }
+
     var response = await Api().post(formData,
-   isUpdating.value
+        employee != null
         ? "employees/update/${employee!.id}"
             : "employees/add",
          auth : true);
@@ -474,7 +471,9 @@ class AdministrationController extends GetxController {
       profileImage = null;
       print("response of body -------------------------${response.data}");
       isLoadUser(false);
-      isUpdating.value = false;
+      employee = null;
+      BotToast.showText(text:   "Sucessfully Done"  );
+
       update();
     }
 

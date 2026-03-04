@@ -236,24 +236,11 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                     ), // border color & thickness
                                   ),
                                   onPressed: () {
-                                    // showDialog(
-                                    //   context: context,
-                                    //   builder: (_) => DeletePermissionAlert(
-                                    //       deleteFunctionName: controller
-                                    //           .deleteCompanyVehicle(
-                                    //               item.id!)),
-                                    // );
+                                    controller
+                                        .deleteCompanyVehicle(
+                                        item.id!);
 
-                                    showDialog(
-                                      context: context,
-                                      builder: (_) =>
-                                          DeletePermissionAlert(
-                                            deleteFunctionName: () =>
-                                                controller
-                                                    .deleteCompanyVehicle(
-                                                    item.id!),
-                                          ),
-                                    );
+
                                   },
                                   child: Icon(
                                     Icons.delete_forever,

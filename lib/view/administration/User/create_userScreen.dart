@@ -175,8 +175,18 @@ class CreateUserScreen extends StatelessWidget {
 
 
                 // _buildTextField("DIDIC COMPANY", controller.didic_Controller),
+
+                // _buildCheckBox("CALL RECEIVER"),
+                // _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
+              ],
+            ),
+          ),
+            Wrap(
+              runSpacing: 16,
+              spacing: 10,
+              children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 20),
+                  padding: const EdgeInsets.only(left: 18),
                   child: KeyboardCheckbox(
                     onChanged: (v) {
                       controller.activeValue.value = v;
@@ -189,20 +199,17 @@ class CreateUserScreen extends StatelessWidget {
                     label: "ACTIVE",
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: KeyboardCheckbox(
-                    onChanged: (v) {
-                      print("CHECKBOX VALUE RECEIVED: $v");
-                      controller.alldriversValue.value = v;
-                      controller.update();
-                    },
+                KeyboardCheckbox(
+                  onChanged: (v) {
+                    print("CHECKBOX VALUE RECEIVED: $v");
+                    controller.alldriversValue.value = v;
+                    controller.update();
+                  },
 
-                    value: controller.alldriversValue.value,
-                    focusNode: controller.alldriversNode,
-                    width: 120,
-                    label: "ALL DRIVERS",
-                  ),
+                  value: controller.alldriversValue.value,
+                  focusNode: controller.alldriversNode,
+                  width: 120,
+                  label: "ALL DRIVERS",
                 ),
                 KeyboardCheckbox(
                   onChanged: (v) {
@@ -245,11 +252,12 @@ class CreateUserScreen extends StatelessWidget {
                   label: "ALLOW TRANSFER BOOKINGS",
                 ),
 
-                // _buildCheckBox("CALL RECEIVER"),
-                // _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
               ],
             ),
-          ),
+
+
+
+
           SizedBox(height: 20),
 
           Container(
@@ -269,7 +277,7 @@ class CreateUserScreen extends StatelessWidget {
                 borderRadius: 4,
                 style: mozillaTextSemiBoldText(
                     fontSize: 12, color: DynamicColors.whiteClr),
-                btnText: controller.isUpdating.value ? "UPDATE USER" : "SAVE",
+                btnText: controller.employee!=null ? "UPDATE USER" : "SAVE",
               )
 
             ),

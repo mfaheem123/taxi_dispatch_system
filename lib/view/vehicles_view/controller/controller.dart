@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/vehicles_view/model/comapny_vehicle_model.dart'
     hide VehicleType;
@@ -12,6 +13,7 @@ import 'package:get/get.dart';
 import '../../../Model/image_model.dart';
 import 'package:dio/dio.dart' as dio;
 
+import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
 
 class VehicleController extends GetxController {
@@ -79,11 +81,37 @@ class VehicleController extends GetxController {
   DashboardDataModel? dashboardAllData;
   DashboardVehicleTypeObject? selectVehicleValue;
 
-
-
   postCompanyVehicle() async {
-    companyVehicleLoader(false);
-    var formData = {
+    companyVehicleLoader(true);
+    update();
+
+    dio.MultipartFile? phcFile;
+    dio.MultipartFile? motFile;
+    dio.MultipartFile? mot2File;
+    dio.MultipartFile? insuranceFile;
+
+    if (phcVehicleDocPic != null) {
+      phcFile = dio.MultipartFile.fromBytes(phcVehicleDocPic!, filename: "phc.png");
+    }
+    if (motDocPic != null) {
+      motFile = dio.MultipartFile.fromBytes(motDocPic!, filename: "mot.png");
+    }
+    if (mot2DocPic != null) {
+      mot2File = dio.MultipartFile.fromBytes(mot2DocPic!, filename: "mot2.png");
+    }
+    if (insuranceDocPic != null) {
+      insuranceFile = dio.MultipartFile.fromBytes(insuranceDocPic!, filename: "insurance.png");
+    }
+
+    if (vehicleNumberController.text.isEmpty  ) {
+      BotToast.showText(text: "Please Fill Vehicle Number");
+      companyVehicleLoader(false);
+      update();
+      return;
+    }
+
+    var formData = dio.FormData.fromMap({
+      "vehicle_type_id": selectVehicleValue!.id,
       'vehicle_number': vehicleNumberController.text,
       'make': vehicleMakeController.text,
       'model': vehicleModelController.text,
@@ -97,46 +125,89 @@ class VehicleController extends GetxController {
       'mot_number': motNumberController.text,
       'mot2_number': mot2NumberController.text,
       'insurance_number': insuranceNumberController.text,
-      'phc_vehicle_document': phcVehicleDocPic,
-      'mot_document': motDocPic,
-      'mot2_document': mot2DocPic,
-      'insurance_document': insuranceDocPic,
+      // Images files yahan add karein
+      if (phcFile != null) 'phc_vehicle_document': phcFile,
+      if (motFile != null) 'mot_document': motFile,
+      if (mot2File != null) 'mot2_document': mot2File,
+      if (insuranceFile != null) 'insurance_document': insuranceFile,
       "phc_vehicle_expiry_time": phcVehicleExpireTimeController.text,
       "mot_expiry_time": motExpiryExpireTimeController.text,
       "mot2_expiry_time": mot2ExpiryExpireTimeController.text,
       "insurance_expiry_time": insuranceExpiryTimeController.text,
-    };
+    });
+      var response = await Api().post(
+          formData,
+          singleVehicleData !=null?
+           "company-vehicles/update/${singleVehicleData!.id}" :
+          'company-vehicles/add',
+          auth: true,
+          multiPart: true
+      );
+      if (response.statusCode == 200) {
+        _clearAllFields();
+        singleVehicleData = null;
+        BotToast.showText(text: singleVehicleData !=null ? "Company Vehicle Added Successfully" :"Company Vehicle Update Successfully" );
+      }
+      companyVehicleLoader(false);
+      update();
+  }
 
-    var response = await Api().post(formData, 'company-vehicles/add', auth: true);
-    if (response.statusCode == 200) {
-      colorController.clear();
-      vehicleMakeController.clear();
-      vehicleModelController.clear();
-      logBookingDocController.clear();
-      phcVehicleNumberController.clear();
-      motNumberController.clear();
-      mot2NumberController.clear();
-      vehicleNumberController.clear();
-      insuranceNumberController.clear();
-    }
-
+// Helper function to clear fields
+  _clearAllFields() {
+    colorController.clear();
+    vehicleMakeController.clear();
+    vehicleModelController.clear();
+    logBookingDocController.clear();
+    phcVehicleNumberController.clear();
+    motNumberController.clear();
+    mot2NumberController.clear();
+    vehicleNumberController.clear();
+    insuranceNumberController.clear();
+    // Clear images as well
+    phcVehicleDocPic = null;
+    motDocPic = null;
+    mot2DocPic = null;
+    insuranceDocPic = null;
   }
 
   Vehicles? singleVehicleData;
   companyDataBinding({Vehicles? data}) async {
-    vehicleMakeController.text = data!.make.toString();
-    vehicleModelController.text = data.model.toString();
-    colorController.text = data.color.toString();
-    logBookingDocController.text = data.logBookDocument.toString();
-    phcVehicleNumberController.text = data.phcVehicleNumber.toString();
-    motNumberController.text = data.motNumber.toString();
-    mot2NumberController.text = data.mot2Number.toString();
-    insuranceNumberController.text = data.insuranceNumber.toString();
-    vehicleNumberController.text = data.vehicleNumber.toString();
-    phcVehicleExpireTimeController.text = data.phcVehicleExpiryTime.toString();
-    motExpiryExpireTimeController.text = data.motExpiryTime.toString();
-    mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime.toString();
-    insuranceExpiryTimeController.text = data.insuranceExpiryTime.toString();
+    if (data == null) return;
+
+    vehicleMakeController.text = data.make?.toString() ?? '';
+    vehicleModelController.text = data.model?.toString() ?? '';
+    colorController.text = data.color?.toString() ?? '';
+    logBookingDocController.text = data.logBookNumber?.toString() ?? ''; // Sahi field map karein
+    phcVehicleNumberController.text = data.phcVehicleNumber?.toString() ?? '';
+    motNumberController.text = data.motNumber?.toString() ?? '';
+    mot2NumberController.text = data.mot2Number?.toString() ?? '';
+    insuranceNumberController.text = data.insuranceNumber?.toString() ?? '';
+    vehicleNumberController.text = data.vehicleNumber?.toString() ?? '';
+
+    phcVehicleExpireTimeController.text = data.phcVehicleExpiryTime?.toString() ?? '';
+    motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
+    mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
+    insuranceExpiryTimeController.text = data.insuranceExpiryTime?.toString() ?? '';
+
+
+
+
+
+
+
+
+    // Dates ko bhi bind karein
+    phcVehicleExpireDate = data.phcVehicleExpiry;
+    motExpiryExpireDate = data.motExpiry;
+    mot2ExpiryExpireDate = data.mot2Expiry;
+    insuranceExpiryDate = data.insuranceExpiry;
+
+    // IMPORTANT: Reset local bytes taake Network Image nazar aaye
+    phcVehicleDocPic = null;
+    motDocPic = null;
+    mot2DocPic = null;
+    insuranceDocPic = null;
+
     singleVehicleData = data;
     update();
   }
@@ -361,17 +432,33 @@ class VehicleController extends GetxController {
   VehicleType? singleVehicle;
   vehicleDataBinding({item}) async {
     singleVehicle = item;
-    vehicleTypeController.text = singleVehicle!.name!;
-    passengersController.text = singleVehicle!.passengers!.toString();
-    luggagesController.text = singleVehicle!.luggages.toString();
-    handLuggagesController.text = singleVehicle!.handLuggages.toString();
-    minimumFaresController.text = singleVehicle!.minimumFares.toString();
-    minimumMilesController.text = singleVehicle!.minimumMiles.toString();
-    waitingTimeController.text = singleVehicle!.waitingTime.toString();
-    driverWaitingChargesController.text =
-        singleVehicle!.driverWaitingCharges.toString();
-    accountWaitingChargesController.text =
-        singleVehicle!.accountWaitingCharges.toString();
+
+    // Text Fields
+    vehicleTypeController.text = singleVehicle!.name ?? '';
+    passengersController.text = singleVehicle!.passengers?.toString() ?? '0';
+    luggagesController.text = singleVehicle!.luggages?.toString() ?? '0';
+    handLuggagesController.text = singleVehicle!.handLuggages?.toString() ?? '0';
+    minimumFaresController.text = singleVehicle!.minimumFares?.toString() ?? '0.0';
+    minimumMilesController.text = singleVehicle!.minimumMiles?.toString() ?? '0';
+    waitingTimeController.text = singleVehicle!.waitingTime?.toString() ?? '0';
+    driverWaitingChargesController.text = singleVehicle!.driverWaitingCharges?.toString() ?? '0';
+    accountWaitingChargesController.text = singleVehicle!.accountWaitingCharges?.toString() ?? '0';
+
+    // Booleans
+    defaultVehicleValue.value = singleVehicle!.defaultVehicle ?? false;
+    minimumFaresValue.value = singleVehicle!.vehicleTypeMinimumFares ?? false;
+
+    // Colors (Hex String to Color conversion)
+    if (singleVehicle!.backgroundColor != null) {
+      pickerColor = Color(int.parse("0xFF${singleVehicle!.backgroundColor!}"));
+    }
+    if (singleVehicle!.foregroundColor != null) {
+      foregroundColor = Color(int.parse("0xFF${singleVehicle!.foregroundColor!}"));
+    }
+
+    // Reset local image bytes to null so UI uses singleVehicle!.image
+    profileImg = null;
+
     update();
   }
 }

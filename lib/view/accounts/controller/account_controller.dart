@@ -749,19 +749,26 @@ class AccountController extends GetxController {
   void setEscortData(Escorts escort) {
     selectedEscort = escort;
 
+    // Text Fields
     escortName.text = escort.name ?? '';
     escortEmail.text = escort.email ?? '';
     escortMobile.text = escort.mobile ?? '';
     escortAddress.text = escort.address ?? '';
+
+    // Dates
     dobDate = escort.dob;
     safeguardingExpiryExpireDate = escort.safeguardingExpiry;
     patExpiryDate = escort.patExpiry;
     firstAidDate = escort.firstaidExpiry;
     dbsExpireTime.text = escort.dbsExpiry ?? '';
+
+    // Batch Numbers
     safeguardingBatch.text = escort.safeguardingNumber ?? '';
     PATBatch.text = escort.patNumber ?? '';
     firstAidBatch.text = escort.firstaidNumber ?? '';
     DBSBatch.text = escort.dbsNumber ?? '';
+
+
 
     profileImg = null;
     safeguardingDocPic = null;
