@@ -202,7 +202,6 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                   onPressed: () {
                                     controller.companyDataBinding(
                                         data: item);
-                                    // controller.bindLocationUpdateLocation(locationUpdate: item);
                                     int index = _controller
                                         .selectedMenuItems
                                         .indexWhere((element) =>

@@ -134,6 +134,7 @@ class VehicleController extends GetxController {
       "mot_expiry_time": motExpiryExpireTimeController.text,
       "mot2_expiry_time": mot2ExpiryExpireTimeController.text,
       "insurance_expiry_time": insuranceExpiryTimeController.text,
+
     });
       var response = await Api().post(
           formData,
@@ -141,7 +142,7 @@ class VehicleController extends GetxController {
            "company-vehicles/update/${singleVehicleData!.id}" :
           'company-vehicles/add',
           auth: true,
-          multiPart: true
+          multiPart: true,
       );
       if (response.statusCode == 200) {
         _clearAllFields();
@@ -168,21 +169,26 @@ class VehicleController extends GetxController {
     mot2DocPic = null;
     insuranceDocPic = null;
   }
-
+  List<VehicleType> vehicleTypeList = [];
+  VehicleType? selectVehicleValue1;
   Vehicles? singleVehicleData;
   companyDataBinding({Vehicles? data}) async {
     if (data == null) return;
 
+    if (data.vehicleTypeId != null) {
+      selectVehicleValue1 = vehicleTypeList.firstWhereOrNull(
+              (element) => element.id == data.vehicleTypeId
+      );
+    }
     vehicleMakeController.text = data.make?.toString() ?? '';
     vehicleModelController.text = data.model?.toString() ?? '';
     colorController.text = data.color?.toString() ?? '';
-    logBookingDocController.text = data.logBookNumber?.toString() ?? ''; // Sahi field map karein
+    logBookingDocController.text = data.logBookNumber?.toString() ?? '';
     phcVehicleNumberController.text = data.phcVehicleNumber?.toString() ?? '';
     motNumberController.text = data.motNumber?.toString() ?? '';
     mot2NumberController.text = data.mot2Number?.toString() ?? '';
     insuranceNumberController.text = data.insuranceNumber?.toString() ?? '';
     vehicleNumberController.text = data.vehicleNumber?.toString() ?? '';
-
     phcVehicleExpireTimeController.text = data.phcVehicleExpiryTime?.toString() ?? '';
     motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';

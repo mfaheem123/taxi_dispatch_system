@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../../alert/restrict_drivers_alert.dart';
-import '../../component/dropdown_button.dart';
 import '../../component/image_pick_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';

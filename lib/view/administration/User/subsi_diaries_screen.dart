@@ -19,17 +19,15 @@ class SubsiDiariesScreen extends StatefulWidget {
 
 class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
   final AdministrationController controller =
-  Get.isRegistered<AdministrationController>()
-      ? Get.find<AdministrationController>()
-      : Get.put(AdministrationController());
+      Get.isRegistered<AdministrationController>()
+          ? Get.find<AdministrationController>()
+          : Get.put(AdministrationController());
   final DashboardController _controller = Get.find();
-
 
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "SubsiDiariesScreen";
-
   }
 
   @override
@@ -40,8 +38,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
       },
       builder: (controller) {
         // ✅ Null-safe list
-        final List listToShow =
-        controller.filteredSubsiDiary.isNotEmpty
+        final List listToShow = controller.filteredSubsiDiary.isNotEmpty
             ? controller.filteredSubsiDiary
             : (controller.subsiDiaryAll ?? []);
 
@@ -74,12 +71,13 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                 Container(
                   width: Get.width,
                   padding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
                   color: DynamicColors.gryClr.withOpacity(0.5),
                   child: Row(
                     children: [
                       Text(
-                        "SUBSIDIARIES" + " (${controller.subsDiaryModel!.count.toString()})",
+                        "SUBSIDIARIES" +
+                            " (${controller.subsDiaryModel!.count.toString()})",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800, fontSize: 17),
                       ),
@@ -103,9 +101,7 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
-                    width: isMobile || isTablet
-                        ? Get.width + 700
-                        : Get.width,
+                    width: isMobile || isTablet ? Get.width + 700 : Get.width,
                     child: DatatableWidget(
                       columns: [
                         // DataColumn(
@@ -185,53 +181,44 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                             //   ),
                             // ),
 
-
-
                             /// 🔥 Null Safe Fields
-                            DataCell(
-                                Center(child: Text(item.name ?? "-"))),
-                            DataCell(
-                                Center(child: Text(item.email ?? "-"))),
+                            DataCell(Center(child: Text(item.name ?? "-"))),
+                            DataCell(Center(child: Text(item.email ?? "-"))),
                             DataCell(Center(
-                                child:
-                                Text(item.telephoneNumber ?? "-"))),
-                            DataCell(
-                                Center(child: Text(item.address ?? "-"))),
-                            DataCell(
-                                Center(child: Text(item.fax ?? "-"))),
+                                child: Text(item.telephoneNumber ?? "-"))),
+                            DataCell(Center(child: Text(item.address ?? "-"))),
+                            DataCell(Center(child: Text(item.fax ?? "-"))),
 
                             /// Actions
                             DataCell(
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    icon: Icon(
-                                        Icons.edit_calendar,
-                                        color:
-                                        DynamicColors.primaryClr),
+                                    icon: Icon(Icons.edit_calendar,
+                                        color: DynamicColors.primaryClr),
                                     onPressed: () {
-controller.subsidiaryUpdate(data: item);
+                                      controller.subsidiaryUpdate(data: item);
 
-controller.isSubsiDiaryUpdating.value = true;
+                                      controller.isSubsiDiaryUpdating.value =
+                                          true;
 
-int index = _controller.selectedMenuItems
-    .indexWhere((element) => element.title == "CREATE SUBSIDIARY");
-
-if (index != -1) {
-  _controller.selectedMenuItems[index].selectedItem = true;
-} else {
-  _controller.menuBarRefresh(
-      title: "CREATE SUBSIDIARY",
-      pageName: CreateSubsiDiary());
-}
-
-// Page switch karein
-_controller.currentPage.value = CreateSubsiDiary();
-controller.update();
-
-
+                                      int index = _controller.selectedMenuItems
+                                          .indexWhere((element) =>
+                                              element.title ==
+                                              "CREATE SUBSIDIARY");
+                                      if (index != -1) {
+                                        _controller.selectedMenuItems[index]
+                                            .selectedItem = true;
+                                      } else {
+                                        _controller.menuBarRefresh(
+                                            title: "CREATE SUBSIDIARY",
+                                            pageName: CreateSubsiDiary());
+                                      }
+                                        // Page switch karein
+                                      _controller.currentPage.value =
+                                          CreateSubsiDiary();
+                                      controller.update();
                                     },
                                   ),
                                   Text("|"),
@@ -239,9 +226,7 @@ controller.update();
                                     icon: Icon(Icons.delete,
                                         color: DynamicColors.redClr),
                                     onPressed: () {
-                                        controller.subsidiariesDelete(item.id);
-
-
+                                      controller.subsidiariesDelete(item.id);
                                     },
                                   ),
                                 ],
