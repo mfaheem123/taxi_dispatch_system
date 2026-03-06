@@ -202,7 +202,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
 
                                         int index = _controller.selectedMenuItems
                                             .indexWhere((element) =>
-                                        element.title == "UPDATE ESCORT INVOICE");
+                                        element.title == "UPDATE ESCORT");
                                         if (index != -1) {
                                           _controller.selectedMenuItems[index]
                                               .selectedItem = true;
@@ -212,7 +212,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                           _controller.currentPage.value =
                                               CreateEscortScreen();
                                           _controller.menuBarRefresh(
-                                              title: "UPDATE ESCORT INVOICE",
+                                              title: "UPDATE ESCORT ",
                                               pageName: CreateEscortScreen());
                                         }
                                         controller.update();

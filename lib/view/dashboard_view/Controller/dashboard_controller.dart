@@ -231,7 +231,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("200");
+    // connectToCli("200");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
