@@ -685,8 +685,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         controller.rectCurrent != null) {
       final rectPts = _rectFromDiagonal(
           // controller.rectStart! as LatLng
-          controller.rectStart!
-          , controller.rectCurrent! as LatLng);
+          controller.rectStart!, controller.rectCurrent! as LatLng);
       set.add(Polygon(
         polygonId: const PolygonId('live_rect'),
         points: rectPts,
