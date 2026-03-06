@@ -37,6 +37,8 @@ class FareController extends GetxController {
   final fareController = TextEditingController();
   final fareDescriptionController = TextEditingController();
   final fareDescription2ndController = TextEditingController();
+  final ploteFareDescriptionController = TextEditingController();
+  final ploteFareDescription2ndController = TextEditingController();
 
 
   VehicleTypee? plotVehicleTypevalue;
@@ -211,18 +213,25 @@ class FareController extends GetxController {
   RxString searchToLocation = ''.obs;
   RxString searchFares = ''.obs;
 
+  ///--------------------- Pagination
+  var currentPageFixedFare = 1.obs;
+  var totalPagesFixedFare = 1.obs;
+  final int limitFixedFare = 10;
+
+
   getAllFixedFare () async {
     fixedFareLoader(true);
     var response = await Api().get("fixedfares/get",
         queryParameters: {
-          "vehicle": searchVehicle.value.toLowerCase(),
-          "from_location": searchFromLocation.value.toLowerCase(),
-          "to_location": searchToLocation.value.toLowerCase(),
+          "vehicle_type_name": searchVehicle.value.toLowerCase(),
+          "area1": searchFromLocation.value.toLowerCase(),
+          "area2": searchToLocation.value.toLowerCase(),
           "fares": searchFares.value.toLowerCase(),
         }
     );
     if (response.statusCode == 200) {
       getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
+      totalPagesFixedFare.value = getAllFixedFareModels?.totalPages ?? 1;
       fixedFareAll.value = getAllFixedFareModels?.fixedFares ?? [];
       fixedFareFiltered.value = fixedFareAll;
       fixedFareLoader(false);
@@ -232,11 +241,15 @@ class FareController extends GetxController {
 
   // -----------Search changes function
   void onSearchFixedFares() {
-    currentPage.value = 1;
+    currentPageFixedFare.value = 1;
     getAllFixedFare();
   }
 
-
+  /// ------- pagination function
+  void onPageFixedFare(int page) {
+    currentPageFixedFare.value = page;
+    getAllFixedFare();
+  }
 
   /// ----------------------------------------- Delete fixed fare
   deleteFixedFareSetting(int? id) async{
@@ -952,6 +965,7 @@ DaysClass? selectedDay;
       }
       sureChargeObject = null;
       clearSurchargesData();
+      BotToast.showText(text:  sureChargeObject !=null ? "Surcharges Updated": " Surecharge Add sucessfully");
     }
   }
 
@@ -1015,12 +1029,9 @@ DaysClass? selectedDay;
   
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete sure charge api
-  ///
-  ///
-  ///
-  ///
-  ///
-  ///
+
+
+
   deleteSureCharge({id}) async{
     var response = await Api().delete("surcharges/delete/$id");
     if(response.statusCode == 200){
@@ -1064,6 +1075,7 @@ DaysClass? selectedDay;
       airportChargesData!.locations![index] = Location.fromJson(response.data['location']);
       pickUpChargesController.clear();
       dropOffChargesController.clear();
+      BotToast.showText(text: "Airport Charges Updated");
       update();
     }
   }
@@ -1116,6 +1128,7 @@ DaysClass? selectedDay;
     if(response.statusCode == 200){
       int index = getAllFareMeterRateModel!.fareMeters!.indexWhere((test) => test.id == fareMeterObj.id);
       getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['fareMeter']);
+      BotToast.showText(text: "Fare Add Sucessfully");
       update();
     }
   }

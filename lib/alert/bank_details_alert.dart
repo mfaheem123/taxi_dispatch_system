@@ -2,6 +2,7 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:get/get.dart';
 
 import '../view/administration/User/create_subsiDiary.dart';
@@ -24,7 +25,7 @@ class BankDetailsAlert {
         ? Get.find<AdministrationController>()
         : Get.put(AdministrationController());
 
-    // int? editingIndex;
+    int? editingIndex;
 
     Get.dialog(
       Dialog(
@@ -34,8 +35,6 @@ class BankDetailsAlert {
           alignment: Alignment.topCenter,
           child: StatefulBuilder(
             builder: (context, setState) {
-
-
               return GetBuilder<AdministrationController>(
                   builder: (controller) {
                     return Container(
@@ -80,19 +79,19 @@ class BankDetailsAlert {
                           Row(
                             children: [
                               Expanded(
-                                  flex: 2, child: _buildField("BANK", bank)),
+                                  flex: 2, child: _buildField("BANK", bank, TextInputType.text)),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle)),
+                                  flex: 2, child: _buildField("ACCOUNT TITLE", accountTitle,TextInputType.text )),
                               const SizedBox(width: 8),
                               Expanded(
-                                  flex: 2, child: _buildField("ACCOUNT #", account)),
+                                  flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true) )),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("IBAN", iban)),
+                                  flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("SORT CODE", sortCode)),
+                                  flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("VAT #", vat)),
+                                  flex: 2, child: _buildField("VAT #", vat, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8),
 
                               Expanded(
@@ -103,20 +102,35 @@ class BankDetailsAlert {
                                     width: 150,
                                     height: 35,
                                     verticalPadding: 0.0,
-                                    btnText: "SAVE",
+                                    btnText: editingIndex == null ? "SAVE" : "UPDATE",
                                     borderRadius: 4,
                                     style: mozillaTextRegularText(
                                         fontSize: 14, color: DynamicColors.whiteClr),
                                     onTap: () {
-                                      controller.bankDetailList.add(
-                                          BankDetailsAlertClass(
-                                        bank: bank.text,
-                                        accountTitle: accountTitle.text,
-                                        account: account.text,
-                                        iban: iban.text,
-                                        sortCode: sortCode.text,
-                                        vat: vat.text,
-                                      ));
+                                      if (bank.text.isEmpty) {
+                                        Get.snackbar("Error", "Bank name is required");
+                                        return;
+                                      }
+                                      if (editingIndex != null) {
+                                        controller.bankDetailList[editingIndex!] = BankDetailsAlertClass(
+                                          bank: bank.text,
+                                          accountTitle: accountTitle.text,
+                                          account: account.text,
+                                          iban: iban.text,
+                                          sortCode: sortCode.text,
+                                          vat: vat.text,
+                                        );
+                                        editingIndex = null;
+                                      } else {
+                                        controller.bankDetailList.add(BankDetailsAlertClass(
+                                          bank: bank.text,
+                                          accountTitle: accountTitle.text,
+                                          account: account.text,
+                                          iban: iban.text,
+                                          sortCode: sortCode.text,
+                                          vat: vat.text,
+                                        ));
+                                      }
                                       bank.clear();
                                       accountTitle.clear();
                                       account.clear();
@@ -124,7 +138,7 @@ class BankDetailsAlert {
                                       sortCode.clear();
                                       vat.clear();
                                       controller.update();
-                                      // saveShift;
+                                      setState(() {});
                                     },
                                   ),
 
@@ -138,7 +152,6 @@ class BankDetailsAlert {
                           const SizedBox(height: 14),
 
                           /// Table Header
-
                           Container(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 6,),
@@ -219,7 +232,8 @@ class BankDetailsAlert {
                                               size: 18, color: Color(0xFF43489A)),
                                           onPressed: () {
                                             setState(() {
-                                              bank.text = row.bank.text;
+                                              editingIndex = index;
+                                              bank.text = row.bank;
                                               accountTitle.text = row.accountTitle ?? "";
                                               account.text = row.account ?? "";
                                               iban.text = row.iban ?? "";
@@ -261,11 +275,15 @@ class BankDetailsAlert {
     );
   }
 
-  static Widget _buildField(String label, TextEditingController controller) {
+  static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
     return SizedBox(
       height: 32,
       child: TextField(
+        keyboardType: keyboardType,
         controller: controller,
+        inputFormatters: keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
+            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))]
+            : [],
         style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
@@ -291,7 +309,6 @@ class NoteAlert {
         : Get.put(DriverController());
 
     // int? editingIndex;
-
     Get.dialog(
       Dialog(
         insetPadding: const EdgeInsets.only(top: 40, left: 60, right: 60),

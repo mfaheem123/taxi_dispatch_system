@@ -144,9 +144,7 @@ class _DriverCommissionState extends State<DriverCommission> {
                           Center(
                               child: Text(driverItem.driver?.username ?? "-")),
                           onTap: () async {
-                            print("Click hua!");
                             await controller.getDriverCommissionDetails(driverItem.driverId);
-                            print("Data mil gaya, ab alert khulega");
                             DriverCommissionAlt.show(id: driverItem.driverId ?? 0);
                           },
                         );

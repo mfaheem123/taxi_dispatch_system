@@ -278,26 +278,53 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
   }
 
+  // Widget _modeButton(DrawMode m, IconData icon, String tip) {
+  //   final active = mode == m;
+  //   return IconButton(
+  //     tooltip: tip,
+  //     icon: Icon(icon,
+  //         color: active ? Theme.of(context).colorScheme.primary : null),
+  //     onPressed: () => setState(() {
+  //       mode = m;
+  //       controller.draft.clear();
+  //       controller.rectStart;
+  //       controller.rectCurrent;
+  //       controller.pointsDraft.clear();
+  //       if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
+  //         _selectedPolyId = null;
+  //       }
+  //       _cancelActiveRectDrag();
+  //     }),
+  //   );
+  // }
   Widget _modeButton(DrawMode m, IconData icon, String tip) {
     final active = mode == m;
     return IconButton(
       tooltip: tip,
-      icon: Icon(icon,
-          color: active ? Theme.of(context).colorScheme.primary : null),
-      onPressed: () => setState(() {
-        mode = m;
-        controller.draft.clear();
-        controller.rectStart;
-        controller.rectCurrent;
-        controller.pointsDraft.clear();
-        if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
-          _selectedPolyId = null;
-        }
-        _cancelActiveRectDrag();
-      }),
+      icon: Icon(
+        icon,
+        color: active ? Theme.of(context).colorScheme.primary : null,
+      ),
+      onPressed: () {
+        setState(() {
+          mode = m;
+
+          controller.draft.clear();
+          controller.pointsDraft.clear();
+
+          // ✅ reset rectangle draft
+          controller.rectStart = null;
+          controller.rectCurrent = null;
+
+          if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
+            _selectedPolyId = null;
+          }
+
+          _cancelActiveRectDrag();
+        });
+      },
     );
   }
-
   Future<void> _goToPostcode(String postcode) async {
     if (postcode.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -404,6 +431,67 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
   }
 
+  // void _onPanStart(Offset global) async {
+  //   _isDragging = true;
+  //   final p = await _screenToLatLng(global);
+  //   if (p == null) return;
+  //
+  //   if (mode == DrawMode.freehand) {
+  //     setState(() {
+  //       controller.draft
+  //         ..clear()
+  //         ..add(p);
+  //     });
+  //     return;
+  //   }
+  //
+  //   if (mode == DrawMode.rectangle) {
+  //     // 1) Try to pick grips on a saved selected rectangle first.
+  //     if (_selectedPolyId != null) {
+  //       final pts = _polyPoints[_selectedPolyId!];
+  //       if (pts != null && _isAxisAlignedRect(pts)) {
+  //         final b = _boundsFromPts(pts);
+  //         final hit = await _nearestRectGripAt(global, b);
+  //         if (hit != null) {
+  //           setState(() {
+  //             _activeDragSource = _RectDragSource.savedRect;
+  //             _activeStartBounds = b;
+  //             _draggingCenter = hit.isCenter;
+  //             _activeHandle = hit.handle;
+  //           });
+  //           return;
+  //         }
+  //       }
+  //     }
+  //
+  //     // 2) Else try live rectangle’s grips (unsaved)
+  //     if (controller.rectStart != null && controller.rectCurrent != null) {
+  //       final b = _boundsFromTwo(
+  //           // controller.rectStart! as LatLng
+  //           controller.rectStart!
+  //           , controller.rectCurrent! as LatLng);
+  //       final hit = await _nearestRectGripAt(global, b);
+  //       if (hit != null) {
+  //         setState(() {
+  //           _activeDragSource = _RectDragSource.liveDraft;
+  //           _activeStartBounds = b;
+  //           _draggingCenter = hit.isCenter;
+  //           _activeHandle = hit.handle;
+  //         });
+  //         return;
+  //       }
+  //     }
+  //
+  //     // 3) If we didn’t hit any grip and no live rect, start a brand-new draft
+  //     setState(() {
+  //       if (_selectedPolyId == null) {
+  //         controller.rectStart = p;
+  //         controller.rectCurrent = p;
+  //         _cancelActiveRectDrag();
+  //       }
+  //     });
+  //   }
+  // }
   void _onPanStart(Offset global) async {
     _isDragging = true;
     final p = await _screenToLatLng(global);
@@ -419,7 +507,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     }
 
     if (mode == DrawMode.rectangle) {
-      // 1) Try to pick grips on a saved selected rectangle first.
+      // Saved rectangle grips
       if (_selectedPolyId != null) {
         final pts = _polyPoints[_selectedPolyId!];
         if (pts != null && _isAxisAlignedRect(pts)) {
@@ -437,10 +525,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
         }
       }
 
-      // 2) Else try live rectangle’s grips (unsaved)
+      // Live rectangle grips
       if (controller.rectStart != null && controller.rectCurrent != null) {
-        final b = _boundsFromTwo(
-            controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
+        final b = _boundsFromTwo(controller.rectStart!, controller.rectCurrent!);
         final hit = await _nearestRectGripAt(global, b);
         if (hit != null) {
           setState(() {
@@ -453,13 +540,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
         }
       }
 
-      // 3) If we didn’t hit any grip and no live rect, start a brand-new draft
+      // Start new rectangle draft
       setState(() {
-        if (_selectedPolyId == null) {
-          controller.rectStart = p;
-          controller.rectCurrent = p;
-          _cancelActiveRectDrag();
-        }
+        controller.rectStart = p;
+        controller.rectCurrent = p;
+        _selectedPolyId = null;
+        _cancelActiveRectDrag();
       });
     }
   }
@@ -598,7 +684,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
         controller.rectStart != null &&
         controller.rectCurrent != null) {
       final rectPts = _rectFromDiagonal(
-          controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
+          // controller.rectStart! as LatLng
+          controller.rectStart!
+          , controller.rectCurrent! as LatLng);
       set.add(Polygon(
         polygonId: const PolygonId('live_rect'),
         points: rectPts,
@@ -656,7 +744,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
         controller.rectStart != null &&
         controller.rectCurrent != null) {
       final b = _boundsFromTwo(
-          controller.rectStart! as LatLng, controller.rectCurrent! as LatLng);
+          // controller.rectStart! as LatLng
+          controller.rectStart!
+          , controller.rectCurrent! as LatLng);
       final hp = _handlePositions(b);
       for (final entry in hp.entries) {
         final handle = entry.key;
@@ -934,7 +1024,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   child: Stack(children: [
                     RepaintBoundary(
                         key: controller.mapKey,
+
                         child: GoogleMap(
+
                           key: ValueKey("main-map"),
                           initialCameraPosition: _initialCamera,
                           onMapCreated: (c) {

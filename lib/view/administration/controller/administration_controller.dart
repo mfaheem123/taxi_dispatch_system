@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
@@ -38,7 +39,6 @@ class AdministrationController extends GetxController {
   Subsidiaries? selectedSubsidiary;
 
  listSubsDiary() async {
-    try {
       subsDiaryLoading.value = true;
       final response = await Api().get('subsidiaries/get?', queryParameters: {
         "page" : subsiCurrentPage.value,
@@ -56,13 +56,9 @@ class AdministrationController extends GetxController {
         subsiDiaryAll.value = subsDiaryModel?.subsidiaries ?? [];
         filteredSubsiDiary.value = subsiDiaryAll;
         print('SubsiDiary ${SubsDiaryModel}');
+        subsDiaryLoading.value = false;
+        update();
       }
-    } catch (e) {
-      print("Error in subsDiary: $e");
-    } finally {
-      subsDiaryLoading.value = false;
-      update();
-    }
   }
 
 // -----------Search changes function
@@ -114,8 +110,6 @@ class AdministrationController extends GetxController {
       subsiDiaryforegroundColor = Color(int.parse("0xFF$fgHex"));
     }
 
-    // --- 3. Dropdown/Logic Binding (If needed) ---
-    // Agar aap list se koi specific subsidiary select karwana chahte hain
     if (subsiDiaryAll.isNotEmpty) {
       selectedSubsidiary = subsiDiaryAll.firstWhere(
             (sub) => sub.id == data.id,
@@ -132,7 +126,6 @@ class AdministrationController extends GetxController {
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete SubsDiary
 
 
-  //
 
   subsidiariesDelete(int? id) async {
     var response = await Api().delete("subsidiaries/delete/$id");
@@ -330,7 +323,6 @@ class AdministrationController extends GetxController {
     };
 
     var response = await Api().post(formData,
-
         isSubsiDiaryUpdating.value ?
         "subsidiaries/edit/${subsidiaryToUpdate!.id}":   'subsidiaries/add' , auth: true);
     if (response.statusCode == 200) {
@@ -349,8 +341,9 @@ class AdministrationController extends GetxController {
       balanceController.clear();
       profileImg = null;
       isSubsiDiaryUpdating.value = false;
+      BotToast.showText(text: isSubsiDiaryUpdating.value? "Subsidiary Add Sucessfully":"Subsidiary Update Sucessfully");
       update();
-      print("response of body -------------------------${response.data}");
+      print(response.data);
     }
   }
 
@@ -377,11 +370,11 @@ class AdministrationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getRoleUser();   // <--- API call yahan se hoga
+    getRoleUser();
     listSubsDiary();
   }
   getRoleUser() async {
-    userRoleLoading.value = true;   // <-- IMPORTANT
+    userRoleLoading.value = true;
       final response = await Api().get('roles');
       if (response.statusCode == 200) {
         getRole = GetRole.fromJson(response.data);
@@ -447,14 +440,9 @@ class AdministrationController extends GetxController {
       'allowtransferbookings': transferValue.value,
       if (multipartFile != null) "image": multipartFile!,
     };
-    // if (profileImg != null) {
-    //   formData["image"] = await dio.MultipartFile.fromBytes(
-    //     profileImg!.bytes,
-    //     filename: profileImg!.name,
-    //   );
-    // }
+
     var response = await Api().post(formData,
-   isUpdating.value
+        employee != null
         ? "employees/update/${employee!.id}"
             : "employees/add",
          auth : true);
@@ -472,9 +460,11 @@ class AdministrationController extends GetxController {
       receviverValue.value = false;
       transferValue.value = false;
       profileImage = null;
-      print("response of body -------------------------${response.data}");
+      print("response of body ----${response.data}");
       isLoadUser(false);
-      isUpdating.value = false;
+      employee = null;
+      BotToast.showText(text: "Sucessfully Done"  );
+
       update();
     }
 

@@ -87,7 +87,7 @@ AuthController controller = Get.put(AuthController());
             ),
           ),
 
-          // ✅ Gradient Overlay for readability
+          //  Gradient Overlay for readability
           Container(
             width: width,
             height: height,
@@ -102,7 +102,7 @@ AuthController controller = Get.put(AuthController());
               ),
             ),
           ),
-          // ✅ Centered Card with form
+          //  Centered Card with form
           Center(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -153,13 +153,7 @@ AuthController controller = Get.put(AuthController());
                         // obscureText: true,
                         prefixIcon: const Icon(Icons.lock),
                       ),
-
-
-
                       const SizedBox(height: 15),
-
-
-
                       const SizedBox(height: 25),
 
                       // Login Button
