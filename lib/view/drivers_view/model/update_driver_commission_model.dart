@@ -115,7 +115,7 @@ class CommissionDriver {
   String? email;
   int? driverCommission;
   int? pdaRent;
-  int? balance;
+  double? balance;
   int? subsidiaryId;
 
   CommissionDriver({
@@ -136,7 +136,7 @@ class CommissionDriver {
     email: json["email"],
     driverCommission: json["driver_commission"],
     pdaRent: json["pda_rent"],
-    balance: json["balance"],
+    balance: json["balance"]?.toDouble(),
     subsidiaryId: json["subsidiary_id"],
   );
 
