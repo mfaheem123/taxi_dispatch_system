@@ -1,13 +1,13 @@
 // import 'package:flutter/material.dart';
-
+//
 // class CompanyVehicleForm extends StatelessWidget {
 //   const CompanyVehicleForm({super.key});
-
+//
 //   @override
 //   Widget build(BuildContext context) {
 //     final screenWidth = MediaQuery.of(context).size.width;
 //     int columnCount = screenWidth > 900 ? 2 : 1; // Web = 2 columns, Mobile = 1
-
+//
 //     return Center(
 //       child: ConstrainedBox(
 //         constraints: const BoxConstraints(maxWidth: 1200),
@@ -21,7 +21,7 @@
 //             padding: const EdgeInsets.all(20),
 //             child: Column(
 //               crossAxisAlignment: CrossAxisAlignment.start,
-
+//
 //               children: [
 //                 // Title
 //                 Container(
@@ -34,9 +34,9 @@
 //                         fontSize: 18, fontWeight: FontWeight.bold),
 //                   ),
 //                 ),
-
+//
 //                 const SizedBox(height: 20),
-
+//
 //                 // Grid Form
 //                 GridView.count(
 //                   crossAxisCount: columnCount,
@@ -67,9 +67,9 @@
 //                     _buildFilePicker("Insurance Document"),
 //                   ],
 //                 ),
-
+//
 //                 const SizedBox(height: 20),
-
+//
 //                 Center(
 //                   child: ElevatedButton(
 //                     style: ElevatedButton.styleFrom(
@@ -88,7 +88,7 @@
 //       ),
 //     );
 //   }
-
+//
 //   // Text Field
 //   static Widget _buildTextField(String label) {
 //     return TextField(
@@ -102,11 +102,12 @@
 //       ),
 //     );
 //   }
-
+//
 //   // Dropdown
 //   static Widget _buildDropdown(String label, List<String> items) {
 //     return DropdownButtonFormField<String>(
 //       decoration: InputDecoration(
+//
 //         labelText: label,
 //         labelStyle: const TextStyle(fontSize: 13),
 //         border: const OutlineInputBorder(),
@@ -119,7 +120,7 @@
 //       onChanged: (val) {},
 //     );
 //   }
-
+//
 //   // Date Field
 //   static Widget _buildDateField(String label) {
 //     return TextField(
@@ -138,7 +139,7 @@
 //       },
 //     );
 //   }
-
+//
 //   // File Picker (placeholder)
 // // File Picker
 //   static Widget _buildFilePicker(String label) {
@@ -162,5 +163,6 @@
 //       ),
 //     );
 //   }
-
+//
+//
 // }

@@ -25,6 +25,7 @@ import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
 
 import '../model/list_driver_commission_model.dart';
+import '../model/update_driver_commission_model.dart';
 
 class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
@@ -893,8 +894,7 @@ class DriverController extends GetxController {
   }
 
   /// Editable cell
-
-  String calculateFinalDriverComm(Booking booking) {
+  String calculateFinalDriverComm(dynamic booking) {
     if (booking.commission == false) {
       return "0.00";
     }
@@ -907,7 +907,8 @@ class DriverController extends GetxController {
     return result.toStringAsFixed(2);
   }
 
-  void recalculateDriverCommissionRow(Booking booking) {
+
+  void recalculateDriverCommissionRow(dynamic booking) {
     double parse(dynamic value) =>
         double.tryParse(value?.toString() ?? "0") ?? 0.0;
 
@@ -920,11 +921,11 @@ class DriverController extends GetxController {
     double total = f + pc + wc + edc + cc;
 
     booking.totalCharges = total.toStringAsFixed(2);
-
+    // calculateAllTotals();
     update();
   }
 
-  String calculateWithoutCommission(Booking booking) {
+  String calculateWithoutCommission(dynamic booking) {
     double parse(dynamic value) =>
         double.tryParse(value?.toString() ?? "0") ?? 0.0;
 
@@ -936,7 +937,7 @@ class DriverController extends GetxController {
     return totalWithoutComm.toStringAsFixed(2);
   }
 
-  updateBookingCharges(Booking booking) async {
+  updateBookingCharges(dynamic booking) async {
     var formData = {
       "fares": (booking.fares ?? "0").toString(),
       "parking_charges": (booking.parkingCharges ?? "0").toString(),
@@ -1020,7 +1021,9 @@ class DriverController extends GetxController {
       });
 
       //   par/con Total
-      parkingCongestionVar = selectedBookings.fold(0.0, (sum, b) {
+      parkingCongestionVar = selectedBookings
+          .where((b) => b.paymentType?.id == 3)
+          .fold(0.0, (sum, b) {
         double pc = double.tryParse(b.parkingCharges?.toString() ?? "0") ?? 0.0;
         double cc =
             double.tryParse(b.congestionCharges?.toString() ?? "0") ?? 0.0;
@@ -1048,9 +1051,9 @@ class DriverController extends GetxController {
     update();
   }
 
+  // Save
   bool saveDriverCommissionLoad = false;
   saveDriverCommission() async {
-
     saveDriverCommissionLoad = true;
     update();
 
@@ -1125,6 +1128,49 @@ class DriverController extends GetxController {
       isLoadingDriverCommission = false;
       update();
     }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen
+
+  String updateTransactionDateController = "2000-01-01";
+  String updateFilterFromDate = "2000-01-01";
+  String updateFilterToDate = "2000-01-01";
+
+  UpdateDriverCommissionByIdModel? updateDriverCommissionByIdModel;
+  UpdateDriverCommission? updateDriverCommission;
+
+  ListDriverCommissionModel? updateDriverCommissionModel;
+  CreateDriverCommission? UpdatedDriverCommission;
+  bool isLoadingUpdate = false;
+
+  getDriverCommissionData({selectedId}) async {
+    isLoadingUpdate = true;
+    update();
+
+    var response = await Api().get("driver_commission/getbyid/$selectedId");
+    if (response.statusCode == 200) {
+      updateDriverCommissionByIdModel =
+          UpdateDriverCommissionByIdModel.fromJson(response.data);
+
+      var items = updateDriverCommissionByIdModel
+              ?.driverCommission?.driverCommissionLineitems ??
+          [];
+
+      for (var lineItem in items) {
+        if (lineItem.booking != null) {
+          recalculateDriverCommissionRow(lineItem.booking);
+        }
+      }
+
+      // calculateAllTotals();
+
+      print("Data Fetched for ID: $selectedId");
+    } else {
+      print("Error fetching data");
+      print(response.data);
+    }
+    isLoadingUpdate = false;
+    update();
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality

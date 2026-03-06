@@ -3,13 +3,16 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import '../component/datatable_widget.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
+import '../view/drivers_view/driver/driver_commission/update_driver_commission.dart';
 
 class DriverCommissionAlt {
   static void show({required int id}) async {
     final controller = Get.isRegistered<DriverController>()
         ? Get.find<DriverController>()
         : Get.put(DriverController());
+    final DashboardController _controller = Get.find();
 
     // var transactions = controller.getDriverCommissionDetails(id);
 
@@ -121,8 +124,24 @@ class DriverCommissionAlt {
                             DataCell(Center(
                                 child: Row(
                               children: [
-                                Icon(Icons.edit,
-                                    size: 18, color: Color(0xFF43489A)),
+                                IconButton(
+                                  icon: Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
+                                  onPressed: () {
+                                    Get.back();
+                                    controller.getDriverCommissionData(selectedId:  item.id);
+                                    int index = _controller.selectedMenuItems.indexWhere(
+                                            (element) => element.title == "DRIVER COMMISSION UPDATE");
+                                    if (index != -1) {
+                                      _controller.selectedMenuItems[index].selectedItem = true;
+                                      _controller.currentPage.value = UpdateDriverCommissionScreen();
+                                    }else{
+                                      _controller.currentPage.value = UpdateDriverCommissionScreen();
+                                      _controller.menuBarRefresh(
+                                          title: "DRIVER COMMISSION UPDATE", pageName: UpdateDriverCommissionScreen());
+                                    }
+                                    controller.update();
+                                  },
+                                ),
                                 SizedBox(width: 8),
                                 Icon(Icons.delete, size: 18, color: Colors.red),
                                 SizedBox(width: 8),
