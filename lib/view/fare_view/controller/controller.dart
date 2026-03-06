@@ -87,16 +87,11 @@ class FareController extends GetxController {
     vehicleTypeController.clear();
     fareDescriptionController.clear();
     fareDescription2ndController.clear();
-
-    // Variables reset
     plotVehicleTypevalue = null;
     Zoneevalue = null;
     Zonee1value = null;
-
-    // Update logic reset
     isUpdatePlot(false);
     plotUpdateId(0);
-
     update();
   }
 
@@ -281,7 +276,29 @@ class FareController extends GetxController {
       update();
     }
   }
+// Controller ke andar
+  var fromAddressList = <String>[].obs;
+  var toAddressList = <String>[].obs;
 
+// Add function for From Location
+  void addFromAddress() {
+    if (addressController.text.isNotEmpty) {
+      fromAddressList.add(addressController.text);
+      // UI field me dikhane ke liye update karein
+      fareDescriptionController.text = fromAddressList.join("\n");
+      addressController.clear();
+    }
+  }
+
+// Add function for To Location
+  void addToAddress() {
+    if (addressController1.text.isNotEmpty) {
+      toAddressList.add(addressController1.text);
+      // UI field me dikhane ke liye update karein
+      fareDescription2ndController.text = toAddressList.join("\n");
+      addressController1.clear();
+    }
+  }
 
   RxBool postFixedFareLoader = false.obs;
   GetAllFixedFareModel? getAllFixedFareModel;
@@ -292,8 +309,13 @@ class FareController extends GetxController {
 
       var formData = {
         "vehicle_type_id": vehicleTypesFixedvalue!.id,
-        "area1": addressController.text,
-        "area2": addressController1.text,
+        "area1": isUpdateFixedFare.value
+            ? addressController.text
+            : fromAddressList.toList(),
+
+        "area2": isUpdateFixedFare.value
+            ? addressController1.text
+            : toAddressList.toList(),
         "fares": fareController.text,
         "from_location_id": fromLocationTypeValue!.id,
         "to_location_id": toLocationTypeValue!.id,
@@ -312,13 +334,15 @@ class FareController extends GetxController {
   }
 
   void clearForm() {
-
-    vehicleTypesFixedvalue = null;
-    fromLocationTypeValue = null;
-    toLocationTypeValue = null;
     addressController.clear();
     addressController1.clear();
     fareController.clear();
+    fareDescriptionController.clear();
+    fareDescription2ndController.clear();
+    fromAddressList.clear();
+    toAddressList.clear();
+    isUpdateFixedFare.value = false;
+    fixedFareUpdateId.value = 0;
     update();
   }
 

@@ -191,11 +191,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 fontSize: 11,
                                                 color: DynamicColors.whiteClr),
                                             onTap: () {
-                                              Get.to(ResponsivePassengerScreen(extensionNumber: '1546965422.09833',));
-                                              // controller.hideDashBoard.value =
-                                              //     !controller
-                                              //         .hideDashBoard.value;
-                                              // controller.update();
+                                              controller.hideDashBoard.value =
+                                                  !controller
+                                                      .hideDashBoard.value;
+                                              controller.update();
                                             },
                                             btnText:
                                                 controller.hideDashBoard.value

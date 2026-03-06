@@ -45,7 +45,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
       controller.getFixedFareVehicleLocationType();
       controller.getAllFixedFare();
       controller.getFixedFareVehicleLocationType();
-
     }, builder: (controller) {
       final listToShow = controller.fixedFareFiltered.isNotEmpty
           ? controller.fixedFareFiltered
@@ -106,7 +105,12 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                       items: controller
                                           .fixedFareVehicleLocationTypeModel!
                                           .vehicleTypesFixed!,
-                                      value: controller.fixedFareVehicleLocationTypeModel?.vehicleTypesFixed?.contains(controller.vehicleTypesFixedvalue) == true
+                                      value: controller
+                                                  .fixedFareVehicleLocationTypeModel
+                                                  ?.vehicleTypesFixed
+                                                  ?.contains(controller
+                                                      .vehicleTypesFixedvalue) ==
+                                              true
                                           ? controller.vehicleTypesFixedvalue
                                           : null,
                                       itemLabel: (templateList) =>
@@ -221,7 +225,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
-
                                           RawKeyboardListener(
                                             focusNode: controller
                                                 .searchingAddressViaFocusNode,
@@ -277,7 +280,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
-
                                                   focusNode: controller
                                                       .viaFieldFocusNode,
                                                   controller: controller
@@ -291,13 +293,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                   onTap: () {
                                                     controller.activeField
                                                         .value = "from";
-
                                                   },
                                                   onChanged: (v) {
                                                     controller.onChangeHandler(
                                                         fieldName: "via",
                                                         searchingText: v);
-
                                                   },
                                                   decoration: InputDecoration(
                                                     hintText: "Search Address",
@@ -327,7 +327,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               color: DynamicColors
                                                   .gryClr), // optional border color
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+
+                                          controller.addFromAddress();
+                                        },
+
                                         child: Icon(Icons.add)),
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
@@ -342,7 +346,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               color: DynamicColors
                                                   .gryClr), // optional border color
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          controller.addressController.clear();
+                                        },
                                         child: Icon(
                                           Icons.delete_forever,
                                           color: DynamicColors.redClr,
@@ -367,21 +373,6 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
-                                          // RestrictedDrivers(
-                                          //   width: fieldWidth,
-                                          //   height: 35,
-                                          //   padding: 0.0,
-                                          //   border: Border.all(
-                                          //     color: DynamicColors.gryClr,
-                                          //   ),
-                                          //   titleText: "SELECT PLOT",
-                                          //   driversList: [
-                                          //     "25 GEORGE HAMPTON",
-                                          //     "26 PAUL DOUBLEDAY",
-                                          //     "27 RICHARD HARDWICK",
-                                          //     "28 LANRE OKERJO",
-                                          //   ],
-                                          // ),
                                           RawKeyboardListener(
                                             focusNode: controller
                                                 .searchingAddress1ViaFocusNode,
@@ -483,22 +474,29 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               color: DynamicColors
                                                   .gryClr), // optional border color
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+
+                                          controller.addToAddress();
+
+
+                                        },
                                         child: Icon(Icons.add)),
                                     OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           minimumSize: const Size(
-                                              43, 42), // width & height
+                                              43, 42),
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.circular(
-                                                4), // <-- border radius here
+                                                4),
                                           ),
                                           side: BorderSide(
                                               color: DynamicColors
-                                                  .gryClr), // optional border color
+                                                  .gryClr),
                                         ),
-                                        onPressed: () {},
+                                        onPressed: () {
+                                          controller.addressController1.clear();
+                                        },
                                         child: Icon(
                                           Icons.delete_forever,
                                           color: DynamicColors.redClr,
@@ -550,17 +548,18 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               CustomButton(
                                 height: 35,
                                 width: fieldWidth,
-                                btnText:
-                                controller.fixedFareVehicleLocationTypeModel != null? "UPDATE":
-                                AppText.save,
+                                btnText: controller
+                                            .fixedFareVehicleLocationTypeModel !=
+                                        null
+                                    ? "UPDATE"
+                                    : AppText.save,
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 style: mozillaTextRegularText(
                                     fontSize: 13,
                                     color: DynamicColors.whiteClr),
-                                onTap: ()  {
-                                   controller.postFixedFare();
-
+                                onTap: () {
+                                  controller.postFixedFare();
                                 },
                               ),
                               CustomButton(
@@ -623,10 +622,12 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                     DataCell(Center(
                                         child:
                                             Text(item.vehicleTypeName ?? ""))),
-                                    DataCell(
-                                        Center(child: Text(item.area1.toString() ?? ""))),
-                                    DataCell(
-                                        Center(child: Text(item.area2.toString() ?? ""))),
+                                    DataCell(Center(
+                                        child:
+                                            Text(item.area1.toString() ?? ""))),
+                                    DataCell(Center(
+                                        child:
+                                            Text(item.area2.toString() ?? ""))),
                                     DataCell(
                                         Center(child: Text(item.fares ?? ""))),
                                     DataCell(
@@ -643,8 +644,9 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     color: Colors.transparent),
                                               ),
                                               onPressed: () {
-                                                controller.fixedFareBinding(item);
-                                                // 🟢 Edit action
+                                                controller
+                                                    .fixedFareBinding(item);
+
                                               },
                                               child: Icon(Icons.edit_calendar,
                                                   size: 20,
@@ -659,8 +661,10 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     color: Colors.transparent),
                                               ),
                                               onPressed: () {
-                                                // 🔴 Delete action
-                                                controller.deleteFixedFareSetting(item.id);
+
+                                                controller
+                                                    .deleteFixedFareSetting(
+                                                        item.id);
                                               },
                                               child: Icon(Icons.delete_forever,
                                                   size: 20,
@@ -720,13 +724,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             ),
                           ),
                         ),
-
                         PaginationWidget(
                           currentPage: controller.currentPageFixedFare.value,
                           totalPages: controller.totalPagesFixedFare.value,
                           onPageChange: controller.onPageFixedFare,
                         )
-
                       ],
                     ),
                     Obx(() {
