@@ -16,6 +16,7 @@ import '../component/text_widget.dart';
 import 'dashboard_view/Controller/dashboard_controller.dart';
 import 'dashboard_view/booking_table.dart';
 import 'dashboard_view/models/dashboard_model.dart';
+import 'dashboard_view/models/dashboard_table_model.dart';
 import 'dashboard_view/widgets/user_info_widget.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
     print(widget.extensionNumber);
 
     /// ✅ CLI screen open hote hi socket connect
-    socketController.connectSocket(widget.extensionNumber);
+    // socketController.connectSocket(widget.extensionNumber);
     socketController.findCustomerApi(widget.extensionNumber);
   }
 
@@ -926,7 +927,7 @@ class _CenterAreaState extends State<_CenterArea> {
   final RxInt selectedIndex = (-1).obs;
 
   /// ✅ Selected booking
-  Map<String, dynamic>? selectedBooking;
+  BookingObjectData? selectedBooking;
 
   /// ✅ Selected IDs
   int? selectedDriverId;
@@ -1038,20 +1039,40 @@ class _CenterAreaState extends State<_CenterArea> {
                           ],
                           totalRow: controller.bookings.length,
                           rows: List.generate(controller.bookings.length, (index) {
-                            var booking = controller.bookings[index];
+                            // var booking = controller.bookings[index];
+                            BookingObjectData cliBookingData = BookingObjectData.fromJson(controller.bookings[index]);
 
                             return DataRow(
                               cells: [
-                                DataCell(Text(isSwapped
-                                    ? booking["dropoff"] ?? ""
-                                    : booking["pickup"] ?? "")),
+                                DataCell(SizedBox(
+                                  width: Get.width/6,
+                                  child:
+                                  rightClickTextCell(
+                                    item: cliBookingData,
+                                    onRightClick: () {
+                                      print("RIGHT CLICK JOURNEY TYPE");
+                                    },
+                                    child: Text(isSwapped
+                                        ? cliBookingData.dropoff ?? ""
+                                        : cliBookingData.pickup ?? ""),
+                                  ),
+                                )),
 
-                                DataCell(Text(isSwapped
-                                    ? booking["pickup"] ?? ""
-                                    : booking["dropoff"] ?? "")),
+                                DataCell(SizedBox(
+                                  width: Get.width/6,
+                                  child: rightClickTextCell(
+                                    item: cliBookingData,
+                                    onRightClick: () {
+                                      print("RIGHT CLICK JOURNEY TYPE");
+                                    },
+                                    child: Text(isSwapped
+                                        ? cliBookingData.pickup ?? ""
+                                        : cliBookingData.dropoff ?? ""),
+                                  ),
+                                )),
 
-                                DataCell(Text(booking["pickup_date"] ?? "")),
-                                DataCell(Text("£${booking["fares"] ?? 0}")),
+                                DataCell(Text("${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                                DataCell(Text("£${cliBookingData.fares ?? 0}")),
 
                                 /// ACTION
                                 DataCell(
@@ -1066,12 +1087,12 @@ class _CenterAreaState extends State<_CenterArea> {
                                         dropoffController.clear();
                                       } else {
                                         selectedIndex.value = index;
-                                        selectedBooking = booking;
+                                        selectedBooking = cliBookingData;
 
                                         pickupController.text =
-                                            booking["pickup"] ?? "";
+                                            cliBookingData.pickup ?? "";
                                         dropoffController.text =
-                                            booking["dropoff"] ?? "";
+                                            cliBookingData.dropoff ?? "";
 
                                         print("Selected booking: $selectedBooking");
                                       }
@@ -1141,35 +1162,39 @@ class _CenterAreaState extends State<_CenterArea> {
                 /// SUBMIT
                 ElevatedButton(
                   onPressed: () {
-                    if (selectedBooking == null) {
-                      Get.snackbar("Error", "Select booking first");
-                      return;
-                    }
 
-                    if (selectedDriverId == null || selectedVehicleId == null) {
-                      Get.snackbar("Error", "Select driver & vehicle");
-                      return;
-                    }
+                    DashboardController _controller = Get.find();
+                    _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
 
-                    final bookingId = selectedBooking!["id"];
-                    final bookingDate = selectedBooking!["pickup_date"];
-                    final bookingTime = selectedBooking!["pickup_time"];
+                    // if (selectedBooking == null) {
+                    //   Get.snackbar("Error", "Select booking first");
+                    //   return;
+                    // }
+                    //
+                    // if (selectedDriverId == null || selectedVehicleId == null) {
+                    //   Get.snackbar("Error", "Select driver & vehicle");
+                    //   return;
+                    // }
+                    //
+                    // final bookingId = selectedBooking!.id;
+                    // final bookingDate = selectedBooking!.pickupDate;
+                    // final bookingTime = selectedBooking!.pickupTime;
 
-                    print("========== SUBMIT ==========");
-                    print("Booking ID: $bookingId");
-                    print("Date: $bookingDate");
-                    print("Time: $bookingTime");
-                    print("Driver ID: $selectedDriverId");
-                    print("Vehicle ID: $selectedVehicleId");
-                    print("============================");
-
-                    controller.postCLIJob(
-                      bookingId,
-                      bookingDate,
-                      bookingTime,
-                      selectedDriverId,
-                      selectedVehicleId,
-                    );
+                    // print("========== SUBMIT ==========");
+                    // print("Booking ID: $bookingId");
+                    // print("Date: $bookingDate");
+                    // print("Time: $bookingTime");
+                    // print("Driver ID: $selectedDriverId");
+                    // print("Vehicle ID: $selectedVehicleId");
+                    // print("============================");
+                    //
+                    // controller.postCLIJob(
+                    //   bookingId,
+                    //   bookingDate,
+                    //   bookingTime,
+                    //   selectedDriverId,
+                    //   selectedVehicleId,
+                    // );
                   },
                   child: const Text("SUBMIT"),
                 ),
@@ -1181,18 +1206,22 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  onPressed: () {
-                    selectedIndex.value = -1;
-                    selectedBooking = null;
-                    selectedDriverId = null;
-                    selectedVehicleId = null;
+                  onPressed: () async{
+                    DashboardController _controller = Get.find();
+                   await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                   Get.back();
 
-                    pickupController.clear();
-                    dropoffController.clear();
-
-                    homeController.selectDriverValue = null;
-                    homeController.selectVehicleValue = null;
-                    homeController.update();
+                   // selectedIndex.value = -1;
+                    // selectedBooking = null;
+                    // selectedDriverId = null;
+                    // selectedVehicleId = null;
+                    //
+                    // pickupController.clear();
+                    // dropoffController.clear();
+                    //
+                    // homeController.selectDriverValue = null;
+                    // homeController.selectVehicleValue = null;
+                    // homeController.update();
                   },
                   child: const Text("New Booking"),
                 ),
@@ -1203,6 +1232,65 @@ class _CenterAreaState extends State<_CenterArea> {
       },
     );
   }
+
+  Widget rightClickTextCell({
+    required Widget child,
+    required VoidCallback onRightClick,
+    required dynamic item,
+  }) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.mouse &&
+            event.buttons == kSecondaryMouseButton) {
+          final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              event.position,
+              event.position,
+            ),
+            Offset.zero & overlay.size,
+          );
+          // onRightClick();
+          showRowContextMenu(
+            context: context,
+            position: position,
+            item: item,
+          );
+        }
+      },
+      child: child,
+    );
+  }
+
+  void showRowContextMenu({
+    required BuildContext context,
+    required RelativeRect position,
+    required dynamic item,
+  }) {
+    showMenu(
+      context: context,
+      position: position,
+      items: const [
+        PopupMenuItem(value: 'pickup', child: Text('pickup')),
+        PopupMenuItem(value: 'dropoff', child: Text('dropoff')),
+      ],
+
+    ).then((value) {
+      if (value == null) return;
+      switch (value) {
+        case 'pickup':
+          print("ACCEPT ${item}");
+          break;
+        case 'dropoff':
+          print("DECLINE ${item}");
+          break;
+      }
+    });
+  }
+
 }
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {

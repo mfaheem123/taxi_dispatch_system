@@ -22,7 +22,7 @@ void main() async{
   // final String initialRoute =
   // token == null ? Routes.loginScreen : Routes.myHomePage;
 
-  // disableInspect();
+  disableInspect();
   //
   // html.document.documentElement?.requestFullscreen();
  Get.put(ZoneController(), permanent: true);

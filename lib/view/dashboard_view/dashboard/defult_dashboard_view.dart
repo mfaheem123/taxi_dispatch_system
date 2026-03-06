@@ -17,6 +17,7 @@ import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../../component/time_duration_method.dart';
+import '../../cli_Screen.dart';
 import '../../locations_view/Model/location_types_zoneModel.dart';
 import '../../locations_view/controller/locations_controller.dart';
 import '../Controller/dashboard_controller.dart';
@@ -190,10 +191,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                 fontSize: 11,
                                                 color: DynamicColors.whiteClr),
                                             onTap: () {
-                                              controller.hideDashBoard.value =
-                                                  !controller
-                                                      .hideDashBoard.value;
-                                              controller.update();
+                                              Get.to(ResponsivePassengerScreen(extensionNumber: '1546965422.09833',));
+                                              // controller.hideDashBoard.value =
+                                              //     !controller
+                                              //         .hideDashBoard.value;
+                                              // controller.update();
                                             },
                                             btnText:
                                                 controller.hideDashBoard.value
