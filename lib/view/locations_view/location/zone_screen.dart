@@ -1089,8 +1089,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             color: DynamicColors.whiteClr,
                             border: Border(
                                 top: BorderSide(color: DynamicColors.gryClr),
-                                bottom:
-                                BorderSide(color: DynamicColors.gryClr))),
+                                bottom: BorderSide(color: DynamicColors.gryClr))),
                         height: 45,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
