@@ -536,7 +536,6 @@ class FareController extends GetxController {
 
   void moveHighlightUp({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
-
     highlightedIndex.value = (highlightedIndex.value - 1 + allAddressesData.length) % allAddressesData.length;
     highlightedIndex.refresh();
     _scrollToHighlighted(

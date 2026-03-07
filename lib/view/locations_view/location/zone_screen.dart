@@ -14,7 +14,7 @@ enum DrawMode { navigate, freehand, rectangle, points, edit }
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
 
 enum _RectDragSource { liveDraft, savedRect, none }
-
+const double _toolbarHeight = 45;
 class _RectBounds {
   double minLat, maxLat, minLng, maxLng;
   _RectBounds(this.minLat, this.maxLat, this.minLng, this.maxLng);
@@ -1044,9 +1044,15 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           zoomControlsEnabled: false,
                           compassEnabled: false,
                           onTap: (latLng) async {
+
+                            final ctrl = await controller.ctrl.future;
+                            final screen = await ctrl.getScreenCoordinate(latLng);
+
+                            // Agar tap toolbar ke area me hua hai to ignore karo
+                            if (screen.y <= _toolbarHeight) return;
+
                             if (mode == DrawMode.points) {
-                              setState(
-                                      () => controller.pointsDraft.add(latLng));
+                              setState(() => controller.pointsDraft.add(latLng));
                             } else if (mode == DrawMode.edit) {
                               setState(() => _selectedPolyId = null);
                             }
@@ -1054,14 +1060,28 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         )),
 
                     // Gesture layer for drag modes
+                    // if (mode == DrawMode.freehand || mode == DrawMode.rectangle)
+                    //   Positioned.fill(
+                    //       child: Listener(
+                    //           behavior: HitTestBehavior.opaque,
+                    //           onPointerDown: (e) => _onPanStart(e.position),
+                    //           onPointerMove: (e) => _onPanUpdate(e.position),
+                    //           onPointerUp: (_) => _onPanEnd(),
+                    //           onPointerCancel: (_) => _onPanEnd())),
                     if (mode == DrawMode.freehand || mode == DrawMode.rectangle)
-                      Positioned.fill(
-                          child: Listener(
-                              behavior: HitTestBehavior.opaque,
-                              onPointerDown: (e) => _onPanStart(e.position),
-                              onPointerMove: (e) => _onPanUpdate(e.position),
-                              onPointerUp: (_) => _onPanEnd(),
-                              onPointerCancel: (_) => _onPanEnd())),
+                      Positioned(
+                        top: 45, // toolbar height
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: Listener(
+                          behavior: HitTestBehavior.opaque,
+                          onPointerDown: (e) => _onPanStart(e.position),
+                          onPointerMove: (e) => _onPanUpdate(e.position),
+                          onPointerUp: (_) => _onPanEnd(),
+                          onPointerCancel: (_) => _onPanEnd(),
+                        ),
+                      ),
 
                     if ((mode == DrawMode.freehand &&
                         controller.draft.isNotEmpty) ||
