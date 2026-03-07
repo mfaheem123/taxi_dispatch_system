@@ -441,6 +441,9 @@ class FareController extends GetxController {
     // 👇 Yahan API call ya search function call karna hai
     getAddresses(fieldsName: fieldName, searchingText: searchingText);
   }
+  RxList allFromAddresses = [].obs;
+  RxList allToAddresses = [].obs;
+
 
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
@@ -533,7 +536,6 @@ class FareController extends GetxController {
 
   void moveHighlightUp({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
-
     highlightedIndex.value = (highlightedIndex.value - 1 + allAddressesData.length) % allAddressesData.length;
     highlightedIndex.refresh();
     _scrollToHighlighted(
