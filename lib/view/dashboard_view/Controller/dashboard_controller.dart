@@ -1863,7 +1863,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
   BookingObjectData? jobDetails;
-  dashBoardDataBinding({BookingObjectData? jobData, id}) async{
+  dashBoardDataBinding({BookingObjectData? jobData, id, bool hitAddBooking = false}) async{
 
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
@@ -2061,8 +2061,12 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
         _controller.updateLocationValue.value == false;
       }
+      if(hitAddBooking == true){
+        dashBoardApiValidation();
+      }else{
+        update();
+      }
 
-      update();
     }
   }
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update

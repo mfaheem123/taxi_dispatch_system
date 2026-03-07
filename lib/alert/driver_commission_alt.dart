@@ -52,112 +52,139 @@ class DriverCommissionAlt {
                   ],
                 ),
                 const Divider(height: 30),
-                SingleChildScrollView(
-                  // scrollDirection: Axis.horizontal,
-                  scrollDirection: Axis.vertical,
-                  child: SizedBox(
-                    width: Get.width,
-                    child: DatatableWidget(
-                      columns: [
-                        DataColumn(
-                            label: Text("    TRANSACTION #",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    TRANSACTION DATE",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    DRIVER",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    JOB TOTAL",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    COMMISSION TOTAL",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    PREVIOUS BALANCE",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    CURRENT BALANCE",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                        DataColumn(
-                            label: Text("    ACTIONS",
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18))),
-                      ],
-                      totalRow: controller
-                          .driverCommissionAlert!.driverCommissions?.length,
-                      rows: controller.driverCommissionAlert!.driverCommissions
-                          ?.map((item) {
-                        return DataRow(
-                          cells: [
-                            DataCell(Center( child:Text(item.transactionNumber ?? "-"))),
-                            DataCell(Center( child:Text(item.transactionDate
-                                    ?.toIso8601String()
-                                    .split('T')[0] ??
-                                "-"))),
-                            DataCell(Center(
-                                child: Text(item.driver?.username ?? "-"))),
-                            DataCell(
-                                Center(child: Text("£${item.jobsTotal ?? "0"}"))),
-                            DataCell(Center(
-                                child: Text("£${item.commissionTotal ?? "0"}"))),
-                            DataCell(
-                                Center(child: Text("£${item.oldBalance ?? "0"}"))),
-                            DataCell(Center(
-                                child: Text("£${item.currentBalance ?? "0"}"))),
-                            DataCell(Center(
-                                child: Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
-                                  onPressed: () {
-                                    Get.back();
-                                    controller.getDriverCommissionData(selectedId:  item.id);
-                                    int index = _controller.selectedMenuItems.indexWhere(
-                                            (element) => element.title == "DRIVER COMMISSION UPDATE");
-                                    if (index != -1) {
-                                      _controller.selectedMenuItems[index].selectedItem = true;
-                                      _controller.currentPage.value = UpdateDriverCommissionScreen();
-                                    }else{
-                                      _controller.currentPage.value = UpdateDriverCommissionScreen();
-                                      _controller.menuBarRefresh(
-                                          title: "DRIVER COMMISSION UPDATE", pageName: UpdateDriverCommissionScreen());
-                                    }
-                                    controller.update();
-                                  },
-                                ),
-                                SizedBox(width: 8),
-                                Icon(Icons.delete, size: 18, color: Colors.red),
-                                SizedBox(width: 8),
-                                Icon(Icons.picture_as_pdf,
-                                    size: 18, color: Colors.blue),
-                                SizedBox(width: 8),
-                                Icon(Icons.mail,
-                                    size: 18, color: Colors.black87),
+                controller.isLoadingDriverCommission
+                    ? const Center(child: CircularProgressIndicator())
+                    : Flexible(
+                        child: SingleChildScrollView(
+                          // scrollDirection: Axis.horizontal,
+                          scrollDirection: Axis.vertical,
+                          child: SizedBox(
+                            width: Get.width,
+                            child: DatatableWidget(
+                              columns: [
+                                DataColumn(
+                                    label: Text("    TRANSACTION #",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    TRANSACTION DATE",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    DRIVER",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    JOB TOTAL",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    COMMISSION TOTAL",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    PREVIOUS BALANCE",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    CURRENT BALANCE",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
+                                DataColumn(
+                                    label: Text("    ACTIONS",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18))),
                               ],
-                            ))),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
+                              totalRow: controller.driverCommissionAlert!
+                                  .driverCommissions?.length,
+                              rows: controller
+                                  .driverCommissionAlert!.driverCommissions
+                                  ?.map((item) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.transactionNumber ?? "-"))),
+                                    DataCell(Center(
+                                        child: Text(item.transactionDate
+                                                ?.toIso8601String()
+                                                .split('T')[0] ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            item.driver?.username ?? "-"))),
+                                    DataCell(Center(
+                                        child:
+                                            Text("£${item.jobsTotal ?? "0"}"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "£${item.commissionTotal ?? "0"}"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "£${item.oldBalance ?? "0"}"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "£${item.currentBalance ?? "0"}"))),
+                                    DataCell(Center(
+                                        child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit,
+                                              size: 18,
+                                              color: Color(0xFF43489A)),
+                                          onPressed: () {
+                                            Get.back();
+                                            controller.getDriverCommissionData(
+                                                selectedId: item.id);
+                                            int index = _controller
+                                                .selectedMenuItems
+                                                .indexWhere((element) =>
+                                                    element.title ==
+                                                    "DRIVER COMMISSION UPDATE");
+                                            if (index != -1) {
+                                              _controller
+                                                  .selectedMenuItems[index]
+                                                  .selectedItem = true;
+                                              _controller.currentPage.value =
+                                                  UpdateDriverCommissionScreen();
+                                            } else {
+                                              _controller.currentPage.value =
+                                                  UpdateDriverCommissionScreen();
+                                              _controller.menuBarRefresh(
+                                                  title:
+                                                      "DRIVER COMMISSION UPDATE",
+                                                  pageName:
+                                                      UpdateDriverCommissionScreen());
+                                            }
+                                            controller.update();
+                                          },
+                                        ),
+                                        SizedBox(width: 8),
+                                        Icon(Icons.delete,
+                                            size: 18, color: Colors.red),
+                                        SizedBox(width: 8),
+                                        Icon(Icons.picture_as_pdf,
+                                            size: 18, color: Colors.blue),
+                                        SizedBox(width: 8),
+                                        Icon(Icons.mail,
+                                            size: 18, color: Colors.black87),
+                                      ],
+                                    ))),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      )
               ],
             ),
           ),

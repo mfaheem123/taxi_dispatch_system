@@ -208,6 +208,7 @@ class DriverController extends GetxController {
   CompanyVehicleObject? vehicleType;
 
   RxBool getCombineVehicleLoading = false.obs;
+
   getCombineVehicle({id}) async {
     getCombineVehicleLoading(true);
     var response = await Api().get("driver-combine/get");
@@ -412,6 +413,7 @@ class DriverController extends GetxController {
 
   singleDriver.SingleDriverModel? singleDriverData;
   RxBool driverDataBindingLoading = false.obs;
+
   driverDataBinding(id) async {
     driverDataBindingLoading(true);
     var response = await Api().get("drivers/getbyid/$id");
@@ -815,15 +817,16 @@ class DriverController extends GetxController {
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
 
       oldBalanceVar = 0.0;
-      driverSelectionController.clear();
-      commissionController.clear();
-      pdaRentController.clear();
+      // driverSelectionController.clear();
+      // commissionController.clear();
+      // pdaRentController.clear();
     }
     isCreateDriverCommission = false;
     update();
   }
 
   double oldBalanceVar = 0.0;
+
   void autoFillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
     final driver = listDriverCommission?.drivers?.firstWhere(
@@ -898,15 +901,17 @@ class DriverController extends GetxController {
     if (booking.commission == false) {
       return "0.00";
     }
+
     double wComm = double.tryParse(calculateWithoutCommission(booking)) ?? 0.0;
-    double drValue =
-        double.tryParse(booking.driver?.driverCommission?.toString() ?? "0") ??
-            0.0;
-    double result = (drValue / 100) * wComm;
+    var drPct = booking is CommissionBooking
+        ? (updateDriverCommissionByIdModel
+                ?.driverCommission?.driver?.driverCommission ??
+            0)
+        : (booking.driver?.driverCommission ?? 0);
 
-    return result.toStringAsFixed(2);
+    double drValue = double.tryParse(drPct.toString()) ?? 0.0;
+    return ((drValue / 100) * wComm).toStringAsFixed(2);
   }
-
 
   void recalculateDriverCommissionRow(dynamic booking) {
     double parse(dynamic value) =>
@@ -951,6 +956,8 @@ class DriverController extends GetxController {
     var response = await Api()
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
+      calculateUpdateTotals();
+      update();
       BotToast.showText(text: "charges Updated Successfully");
     }
   }
@@ -958,27 +965,41 @@ class DriverController extends GetxController {
   double parseDouble(dynamic value) =>
       double.tryParse(value?.toString() ?? "0") ?? 0.0;
 
-  double getColumnTotal(String field) {
-    if (filterData?.bookings == null || selectedIds.isEmpty) return 0.0;
+  double getCreateColumnTotal(String field) {
+    if (selectedIds.isEmpty) return 0.0;
 
-    final selectedBookings = filterData!.bookings!
-        .where((b) => selectedIds.contains(b.id.toString()));
+    final list = filterData?.bookings
+            ?.where((b) => selectedIds.contains(b.id.toString()))
+            .toList() ??
+        [];
 
-    if (selectedBookings.isEmpty) return 0.0;
+    return _calculateListTotal(list, field);
+  }
 
-    return selectedBookings.fold(0.0, (sum, item) {
-      final Map<String, double> values = {
-        'fare': parseDouble(item.fares),
-        'pc': parseDouble(item.parkingCharges),
-        'wc': parseDouble(item.waitingCharges),
-        'edc': parseDouble(item.extraDropCharges),
-        'cc': parseDouble(item.congestionCharges),
-        'total': parseDouble(item.totalCharges),
-        'wcomm': parseDouble(calculateWithoutCommission(item)),
-        'finalcomm': parseDouble(calculateFinalDriverComm(item)),
-      };
+  double getUpdateColumnTotal(String field) {
+    final updateItems = updateDriverCommissionByIdModel
+        ?.driverCommission?.driverCommissionLineitems;
 
-      return sum + (values[field] ?? 0.0);
+    if (updateItems == null || updateItems.isEmpty) return 0.0;
+    final list =
+        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+
+    return _calculateListTotal(list, field);
+  }
+
+  double _calculateListTotal(List<dynamic> list, String field) {
+    return list.fold(0.0, (sum, item) {
+      return sum +
+          parseDouble({
+            'fare': item.fares,
+            'pc': item.parkingCharges,
+            'wc': item.waitingCharges,
+            'edc': item.extraDropCharges,
+            'cc': item.congestionCharges,
+            'total': item.totalCharges,
+            'wcomm': calculateWithoutCommission(item),
+            'finalcomm': calculateFinalDriverComm(item),
+          }[field]);
     });
   }
 
@@ -1044,15 +1065,109 @@ class DriverController extends GetxController {
         double rowWComm = double.tryParse(calculateWithoutCommission(b)) ?? 0.0;
         return sum + rowWComm;
       });
-      owedVar = 0.0;
+      owedVar = totalCommissionVar - accountFareTotalVar - parkingCongestionVar;
 
       newBalanceVar = oldBalanceVar + owedVar;
     }
     update();
   }
 
+  void calculateUpdateTotals() {
+    final updateItems = updateDriverCommissionByIdModel
+        ?.driverCommission?.driverCommissionLineitems;
+
+    if (updateItems == null || updateItems.isEmpty) {
+      _resetTotals();
+      return;
+    }
+
+    final List<dynamic> activeBookings =
+        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+
+    // 1. Cash Total
+    cashTotalValue = activeBookings.fold(0.0, (sum, b) {
+      bool isCash = b?.paymentType?.name?.toString().toLowerCase() == "cash";
+      if (isCash && b?.commission == true) {
+        return sum + parseDouble(calculateWithoutCommission(b));
+      }
+      return sum;
+    });
+
+    // 2. Account Fare Total
+    accountFareTotalVar = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount =
+          b?.paymentType?.name?.toString().toLowerCase() == "account";
+      if (isAccount && b?.commission == true) {
+        return sum + parseDouble(b?.fares);
+      }
+      return sum;
+    });
+
+    // 3. Parking/Congestion
+    parkingCongestionVar = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount =
+          b?.paymentType?.name?.toString().toLowerCase() == "account";
+      if (isAccount) {
+        return sum +
+            parseDouble(b?.parkingCharges) +
+            parseDouble(b?.congestionCharges);
+      }
+      return sum;
+    });
+
+    // 4. Total Commission
+    totalCommissionVar = activeBookings.fold(0.0, (sum, b) {
+      return sum + parseDouble(calculateFinalDriverComm(b));
+    });
+
+    // 5. Account Wo-Comm
+    accountWOCmmVar = activeBookings.fold(0.0, (sum, b) {
+      bool isAccount =
+          b?.paymentType?.name?.toString().toLowerCase() == "account";
+      if (isAccount && b?.commission == false) {
+        return sum + parseDouble(calculateWithoutCommission(b));
+      }
+      return sum;
+    });
+
+    // 6. Grand Totals Logic
+    grandTotalVar = cashTotalValue + accountFareTotalVar;
+    owedVar = totalCommissionVar - accountFareTotalVar - parkingCongestionVar;
+    update();
+  }
+
+  void _resetTotals() {
+    cashTotalValue = 0.0;
+    accountFareTotalVar = 0.0;
+    grandTotalVar = 0.0;
+    parkingCongestionVar = 0.0;
+    totalCommissionVar = 0.0;
+    owedVar = 0.0;
+    accountWOCmmVar = 0.0;
+    update();
+  }
+
+  void updateCommissionOnToggle() {
+    final updateItems = updateDriverCommissionByIdModel
+        ?.driverCommission?.driverCommissionLineitems;
+
+    if (updateItems == null) return;
+
+    final List<dynamic> activeBookings =
+        updateItems.map((e) => e.booking).where((b) => b != null).toList();
+
+    totalCommissionVar = activeBookings.fold(0.0, (sum, b) {
+      return sum + double.parse(calculateFinalDriverComm(b));
+    });
+
+    owedVar = totalCommissionVar - accountFareTotalVar - parkingCongestionVar;
+
+    update();
+  }
+
   // Save
   bool saveDriverCommissionLoad = false;
+
   saveDriverCommission() async {
     saveDriverCommissionLoad = true;
     update();
@@ -1085,7 +1200,7 @@ class DriverController extends GetxController {
         await Api().post(formData, "driver_commission/add", auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "Commission Saved Successfully!");
-      selectedIds.clear();
+      // selectedIds.clear();
     }
 
     saveDriverCommissionLoad = false;
@@ -1148,28 +1263,83 @@ class DriverController extends GetxController {
     update();
 
     var response = await Api().get("driver_commission/getbyid/$selectedId");
+
     if (response.statusCode == 200) {
       updateDriverCommissionByIdModel =
           UpdateDriverCommissionByIdModel.fromJson(response.data);
-
-      var items = updateDriverCommissionByIdModel
-              ?.driverCommission?.driverCommissionLineitems ??
-          [];
-
-      for (var lineItem in items) {
-        if (lineItem.booking != null) {
-          recalculateDriverCommissionRow(lineItem.booking);
-        }
-      }
-
-      // calculateAllTotals();
-
-      print("Data Fetched for ID: $selectedId");
-    } else {
-      print("Error fetching data");
-      print(response.data);
+      _assignApiResponseToVariables(
+          updateDriverCommissionByIdModel?.driverCommission);
     }
     isLoadingUpdate = false;
+    update();
+  }
+
+// Helper Function
+  void _assignApiResponseToVariables(dynamic data) {
+    if (data == null) return;
+
+    double parse(String? val) => double.tryParse(val ?? "0") ?? 0.0;
+
+    cashTotalValue = parse(data.cashJobsTotal);
+    grandTotalVar = parse(data.jobsTotal);
+    owedVar = parse(data.owed);
+    oldBalanceVar = parse(data.oldBalance);
+    newBalanceVar = parse(data.currentBalance);
+    accountFareTotalVar = parse(data.accountJobsTotal);
+    totalCommissionVar = parse(data.commissionTotal);
+
+    driverSelectionController.text =
+        "${data.driver?.id ?? ''} ${data.driver?.name ?? ''}";
+
+    String formatDate(dynamic date) =>
+        date?.toString().split(' ')[0] ?? "2000-01-01";
+
+    updateFilterFromDate = formatDate(data.fromDate);
+    updateFilterToDate = formatDate(data.toDate);
+    updateTransactionDateController = formatDate(data.transactionDate);
+
+    calculateUpdateTotals();
+  }
+
+  // UpdateScreenSave
+  bool saveUpdatedCommissionLoad = false;
+
+  saveUpdatedCommission(int selectedId) async {
+    saveUpdatedCommissionLoad = true;
+    update();
+
+    String dId = driverSelectionController.text.split(" ").first;
+
+    final updateItems = updateDriverCommissionByIdModel
+        ?.driverCommission?.driverCommissionLineitems;
+
+    var formData = {
+      "transaction_date": updateTransactionDateController,
+      "driver_id": dId,
+      "jobs_total": grandTotalVar.toStringAsFixed(2),
+      "commission_total": totalCommissionVar.toStringAsFixed(2),
+      "cash_jobs_total": cashTotalValue.toStringAsFixed(2),
+      "account_jobs_total": accountFareTotalVar.toStringAsFixed(2),
+      "owed": owedVar.toStringAsFixed(2),
+      "old_balance": oldBalanceVar.toStringAsFixed(2),
+      "current_balance": newBalanceVar.toStringAsFixed(2),
+      "from_date": updateFilterFromDate,
+      "to_date": updateFilterToDate,
+      "last_modified": updateFilterToDate,
+      "driver_commission_lineitems":
+          updateItems?.map((e) => {"booking_id": e.bookingId}).toList() ?? [],
+    };
+
+    var response = await Api()
+        .post(formData, "/driver_commission/update/$selectedId", auth: true);
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "Commission Updated Successfully");
+      getDriverCommission();
+    }
+    print("Error during update: $e");
+    BotToast.showText(text: "Update Failed!");
+    saveUpdatedCommissionLoad = false;
     update();
   }
 
