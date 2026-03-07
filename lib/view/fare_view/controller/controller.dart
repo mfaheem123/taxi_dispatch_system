@@ -441,6 +441,9 @@ class FareController extends GetxController {
     // 👇 Yahan API call ya search function call karna hai
     getAddresses(fieldsName: fieldName, searchingText: searchingText);
   }
+  RxList allFromAddresses = [].obs;
+  RxList allToAddresses = [].obs;
+
 
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
