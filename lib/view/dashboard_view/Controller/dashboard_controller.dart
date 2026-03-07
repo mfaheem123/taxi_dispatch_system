@@ -75,31 +75,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     }
   }
 
-  void _showIncomingCallDialog(BuildContext context, String callId, String caller, String ext) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // User must click "Close"
-      builder: (context) => AlertDialog(
-        title: const Text("📞 Incoming Call"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Call ID: $callId"),
-            Text("Caller: $caller"),
-            Text("Extension: $ext"),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
-    );
-  }
-
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
@@ -1863,7 +1838,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
   BookingObjectData? jobDetails;
-  dashBoardDataBinding({BookingObjectData? jobData, id}) async{
+  dashBoardDataBinding({BookingObjectData? jobData, id, bool hitAddBooking = false}) async{
 
     var response = await Api().get("bookings/getbyid/$id");
     // var response = await Api().get("bookings/getbyid/$id");
@@ -2061,12 +2036,55 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
         _controller.updateLocationValue.value == false;
       }
+      if(hitAddBooking == true){
+        dashBoardApiValidation();
+      }else{
+        update();
+      }
 
-      update();
     }
   }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 
+
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo cli data binding without api hit
+   cliDataBinding({String? pickup, String? dropoff, String? pickupLatitude, String? pickupLongitude, String? dropoffLatitude, String? dropoffLongitude,
+     email,name,mobile,phoneNumber,}) async{
+     polyLineMarkerInfo.clear();
+     viaPoints.clear();
+     polylinePoints.clear();
+     pickupController.text = pickup.toString();
+     dropOffController.text = dropoff.toString();
+
+     polylinePoints.add(
+       LatLng(double.parse(pickupLatitude!), double.parse(pickupLongitude!)),
+     );
+     polylinePoints.add(
+       LatLng(double.parse(dropoffLatitude!), double.parse(dropoffLongitude!)),
+     );
+     polyLineMarkerInfo.add(ViaPoint(
+       lat: double.parse(pickupLatitude),
+       lng: double.parse(pickupLongitude),
+       markerType: "PICKUP LOCATION",
+       address: '',
+     ));
+     polyLineMarkerInfo.add(ViaPoint(
+       lat: double.parse(dropoffLatitude),
+       lng: double.parse(dropoffLongitude),
+       markerType: "DROP LOCATION",
+       address: '',
+     ));
+
+     nameController.text = name;
+     emailController.text = email;
+     mobileController.text = mobile;
+     telController.text = phoneNumber ?? "";
+
+     Get.back();
+     fetchRouteFromOSRM();
+   }
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo cli data binding without api hit
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
 

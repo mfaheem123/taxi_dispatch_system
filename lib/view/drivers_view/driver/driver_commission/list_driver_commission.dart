@@ -156,11 +156,13 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                               child: KeyboardDatePicker(
                                 initialDate: DateTime.now(),
                                 onChanged: (date) {
-                                  controller.transactionDate = date.toIso8601String().split("T").first;
+                                  controller.transactionDate =
+                                      date.toIso8601String().split("T").first;
                                   controller.update();
                                 },
                                 onSubmitted: (date) {
-                                  controller.transactionDate = date.toIso8601String().split("T").first;
+                                  controller.transactionDate =
+                                      date.toIso8601String().split("T").first;
                                   controller.update();
                                 },
                               ),
@@ -212,11 +214,13 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: KeyboardDatePicker(
                     initialDate: DateTime.now(),
                     onChanged: (date) {
-                      controller.filterFromDate = date.toIso8601String().split("T").first;
+                      controller.filterFromDate =
+                          date.toIso8601String().split("T").first;
                       controller.update();
                     },
                     onSubmitted: (date) {
-                      controller.filterFromDate = date.toIso8601String().split("T").first;
+                      controller.filterFromDate =
+                          date.toIso8601String().split("T").first;
                       controller.update();
                     },
                   ),
@@ -236,11 +240,13 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                   child: KeyboardDatePicker(
                     initialDate: DateTime.now(),
                     onChanged: (date) {
-                      controller.filterToDate = date.toIso8601String().split("T").first;
+                      controller.filterToDate =
+                          date.toIso8601String().split("T").first;
                       controller.update();
                     },
                     onSubmitted: (date) {
-                      controller.filterToDate = date.toIso8601String().split("T").first;
+                      controller.filterToDate =
+                          date.toIso8601String().split("T").first;
                       controller.update();
                     },
                   ),
@@ -254,68 +260,6 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           fontWeight: FontWeight.bold,
                           color: DynamicColors.primaryClr)),
                 ),
-                // Checkbox(
-                //     value: controller.ptValue.value,
-                //     onChanged: (v) {
-                //       controller.ptValue.value = v!;
-                //       controller.update();
-                //     }),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //   child: Text(AppText.cash,
-                //       style: mozillaTextSemiBoldText(
-                //           context: context,
-                //           fontSize: 15,
-                //           fontWeight: FontWeight.bold,
-                //           color: DynamicColors.primaryClr)),
-                // ),
-                // Checkbox(
-                //     value: controller.cashValue.value,
-                //     onChanged: (v) {
-                //       controller.cashValue.value = v!;
-                //       controller.update();
-                //     }),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //   child: Text(AppText.creditCard,
-                //       style: mozillaTextSemiBoldText(
-                //           context: context,
-                //           fontSize: 15,
-                //           fontWeight: FontWeight.bold,
-                //           color: DynamicColors.primaryClr)),
-                // ),
-                // Checkbox(
-                //     value: controller.creditCardValue.value,
-                //     onChanged: (v) {
-                //       controller.creditCardValue.value = v!;
-                //       controller.update();
-                //     }),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //   child: Text(AppText.account,
-                //       style: mozillaTextSemiBoldText(
-                //           context: context,
-                //           fontSize: 15,
-                //           fontWeight: FontWeight.bold,
-                //           color: DynamicColors.primaryClr)),
-                // ),
-                // Checkbox(
-                //     value: controller.accountValue.value,
-                //     onChanged: (v) {
-                //       controller.accountValue.value = v!;
-                //       controller.update();
-                //     }),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                //   child: Text(AppText.creditCardPaid,
-                //       style: mozillaTextSemiBoldText(
-                //           context: context,
-                //           fontSize: 15,
-                //           fontWeight: FontWeight.bold,
-                //           color: DynamicColors.primaryClr)),
-                // ),
-                // --- Purana Hardcoded Code Hata Kar Ye Likhein ---
-
                 if (controller.isLoadingPayments)
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
@@ -518,6 +462,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                                 DynamicColors.primaryClr,
                                             onChanged: (bool? newValue) {
                                               booking.commission = newValue;
+                                              controller.recalculateDriverCommissionRow(booking);
                                               controller.calculateAllTotals();
                                               controller.update();
                                             },
@@ -605,11 +550,14 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                                   fontSize: 10,
                                                   color:
                                                       DynamicColors.whiteClr),
-                                              onTap: () {
+                                              onTap: () async {
                                                 if (booking != null) {
-                                                  controller
+                                                  await controller
                                                       .updateBookingCharges(
                                                           booking);
+                                                  controller
+                                                      .calculateAllTotals();
+                                                  controller.update();
                                                   print(
                                                       "Updating Booking ID: ${booking.id}");
                                                 }
@@ -637,7 +585,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                       'total'
                                     ].map((field) => DataCell(Center(
                                         child: Text(
-                                            "£ ${controller.getColumnTotal(field).toStringAsFixed(2)}",
+                                            "£ ${controller.getCreateColumnTotal(field).toStringAsFixed(2)}",
                                             style: const TextStyle(
                                                 fontWeight:
                                                     FontWeight.bold))))),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/controller/cli_controller.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
@@ -16,6 +18,7 @@ import '../component/text_widget.dart';
 import 'dashboard_view/Controller/dashboard_controller.dart';
 import 'dashboard_view/booking_table.dart';
 import 'dashboard_view/models/dashboard_model.dart';
+import 'dashboard_view/models/dashboard_table_model.dart';
 import 'dashboard_view/widgets/user_info_widget.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
@@ -39,7 +42,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
     print(widget.extensionNumber);
 
     /// ✅ CLI screen open hote hi socket connect
-    socketController.connectSocket(widget.extensionNumber);
+    // socketController.connectSocket(widget.extensionNumber);
     socketController.findCustomerApi(widget.extensionNumber);
   }
 
@@ -926,7 +929,7 @@ class _CenterAreaState extends State<_CenterArea> {
   final RxInt selectedIndex = (-1).obs;
 
   /// ✅ Selected booking
-  Map<String, dynamic>? selectedBooking;
+  BookingObjectData? selectedBooking;
 
   /// ✅ Selected IDs
   int? selectedDriverId;
@@ -936,7 +939,17 @@ class _CenterAreaState extends State<_CenterArea> {
 
   /// ✅ NEW TextEditingControllers
   final TextEditingController pickupController = TextEditingController();
+  LatLng? pickupPoints;
+  String? name;
+  String? email;
+  String? mobileNumber;
+  String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
+  LatLng? dropoffPoints;
+
+  bool actionValue = false;
+  bool submitBtnValue = false;
+
 
   @override
   void initState() {
@@ -988,9 +1001,23 @@ class _CenterAreaState extends State<_CenterArea> {
                           Expanded(
                             child: TextField(
                               controller: pickupController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: "Pick Up",
                                 border: OutlineInputBorder(),
+                              suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
+                                onTap: (){
+                                  pickupController.clear();
+                                  dropoffController.clear();
+                                  pickupPoints = null;
+                                  dropoffPoints = null;
+                                 setState(() {
+
+                                 });
+                                },
+                                child: Icon(Icons.close,
+                                color: Colors.red,
+                                ),
+                              )
                               ),
                             ),
                           ),
@@ -998,9 +1025,22 @@ class _CenterAreaState extends State<_CenterArea> {
                           Expanded(
                             child: TextField(
                               controller: dropoffController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: "Drop Off",
                                 border: OutlineInputBorder(),
+                                  suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
+                                    onTap: (){
+                                      pickupController.clear();
+                                      dropoffController.clear();
+                                      pickupPoints = null;
+                                      dropoffPoints = null;
+                                      setState(() {
+                                      });
+                                    },
+                                    child: Icon(Icons.close,
+                                      color: Colors.red,
+                                    ),
+                                  )
                               ),
                             ),
                           ),
@@ -1019,6 +1059,7 @@ class _CenterAreaState extends State<_CenterArea> {
                             final temp = pickupController.text;
                             pickupController.text = dropoffController.text;
                             dropoffController.text = temp;
+                            submitBtnValue = true;
                           });
                         },
                         child: const Text("Swap Pickup/Drop"),
@@ -1038,20 +1079,38 @@ class _CenterAreaState extends State<_CenterArea> {
                           ],
                           totalRow: controller.bookings.length,
                           rows: List.generate(controller.bookings.length, (index) {
-                            var booking = controller.bookings[index];
+                            // var booking = controller.bookings[index];
+                            BookingObjectData cliBookingData = BookingObjectData.fromJson(controller.bookings[index]);
 
                             return DataRow(
                               cells: [
-                                DataCell(Text(isSwapped
-                                    ? booking["dropoff"] ?? ""
-                                    : booking["pickup"] ?? "")),
+                                DataCell(SizedBox(
+                                  width: Get.width/6,
+                                  child:
+                                  rightClickTextCell(
+                                    item: cliBookingData,
+                                    clickValue: 'pickUpClick',
+                                    onRightClick: () {
+                                      print("RIGHT CLICK JOURNEY TYPE");
+                                    },
+                                    child: Text(cliBookingData.pickup!),
+                                  ),
+                                )),
 
-                                DataCell(Text(isSwapped
-                                    ? booking["pickup"] ?? ""
-                                    : booking["dropoff"] ?? "")),
+                                DataCell(SizedBox(
+                                  width: Get.width/6,
+                                  child: rightClickTextCell(
+                                    item: cliBookingData,
+                                    clickValue: 'dropoffClick',
+                                    onRightClick: () {
+                                      print("RIGHT CLICK JOURNEY TYPE");
+                                    },
+                                    child: Text(cliBookingData.dropoff ?? ""),
+                                  ),
+                                )),
 
-                                DataCell(Text(booking["pickup_date"] ?? "")),
-                                DataCell(Text("£${booking["fares"] ?? 0}")),
+                                DataCell(Text("${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                                DataCell(Text("£${cliBookingData.fares ?? 0}")),
 
                                 /// ACTION
                                 DataCell(
@@ -1061,20 +1120,23 @@ class _CenterAreaState extends State<_CenterArea> {
                                       if (selectedIndex.value == index) {
                                         selectedIndex.value = -1;
                                         selectedBooking = null;
-
+                                        submitBtnValue = false;
                                         pickupController.clear();
                                         dropoffController.clear();
+                                        actionValue = false;
                                       } else {
+                                        submitBtnValue = true;
                                         selectedIndex.value = index;
-                                        selectedBooking = booking;
-
+                                        selectedBooking = cliBookingData;
+                                        actionValue = true;
                                         pickupController.text =
-                                            booking["pickup"] ?? "";
+                                            cliBookingData.pickup ?? "";
                                         dropoffController.text =
-                                            booking["dropoff"] ?? "";
-
+                                            cliBookingData.dropoff ?? "";
                                         print("Selected booking: $selectedBooking");
                                       }
+                                      setState(() {
+                                      });
                                     },
                                   )),
                                 ),
@@ -1139,8 +1201,11 @@ class _CenterAreaState extends State<_CenterArea> {
                 const SizedBox(height: 30),
 
                 /// SUBMIT
-                ElevatedButton(
+               if(actionValue == true && isSwapped == false) ElevatedButton(
                   onPressed: () {
+                    // DashboardController _controller = Get.find();
+                    // _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+
                     if (selectedBooking == null) {
                       Get.snackbar("Error", "Select booking first");
                       return;
@@ -1151,9 +1216,9 @@ class _CenterAreaState extends State<_CenterArea> {
                       return;
                     }
 
-                    final bookingId = selectedBooking!["id"];
-                    final bookingDate = selectedBooking!["pickup_date"];
-                    final bookingTime = selectedBooking!["pickup_time"];
+                    final bookingId = selectedBooking!.id;
+                    final bookingDate = selectedBooking!.pickupDate;
+                    final bookingTime = selectedBooking!.pickupTime;
 
                     print("========== SUBMIT ==========");
                     print("Booking ID: $bookingId");
@@ -1164,9 +1229,9 @@ class _CenterAreaState extends State<_CenterArea> {
                     print("============================");
 
                     controller.postCLIJob(
-                      bookingId,
-                      bookingDate,
-                      bookingTime,
+                      selectedBooking!.id,
+                      selectedBooking!.pickupDate,
+                      selectedBooking!.pickupTime,
                       selectedDriverId,
                       selectedVehicleId,
                     );
@@ -1181,18 +1246,31 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  onPressed: () {
-                    selectedIndex.value = -1;
-                    selectedBooking = null;
-                    selectedDriverId = null;
-                    selectedVehicleId = null;
+                  onPressed: () async {
+                    DashboardController _controller = Get.find();
 
-                    pickupController.clear();
-                    dropoffController.clear();
+                    if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
+                      if(pickupController.text == dropoffController.text){
+                        BotToast.showText(text: "Please write different address");
+                        return;
+                      }
 
-                    homeController.selectDriverValue = null;
-                    homeController.selectVehicleValue = null;
-                    homeController.update();
+                      await _controller.cliDataBinding(
+                         pickup: pickupController.text,
+                         dropoff: dropoffController.text,
+                         pickupLatitude: pickupPoints!.latitude.toString(),
+                         pickupLongitude: pickupPoints!.longitude.toString(),
+                         dropoffLatitude: dropoffPoints!.latitude.toString(),
+                         dropoffLongitude: dropoffPoints!.longitude.toString(),
+                         name: name,
+                         mobile: mobileNumber,
+                         email: email,
+                         phoneNumber: telNumber,
+                      );
+                    } else {
+                      await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                      Get.back();
+                    }
                   },
                   child: const Text("New Booking"),
                 ),
@@ -1203,6 +1281,88 @@ class _CenterAreaState extends State<_CenterArea> {
       },
     );
   }
+
+  Widget rightClickTextCell({
+    required Widget child,
+    required VoidCallback onRightClick,
+    required dynamic item,
+    clickValue
+  }) {
+    return Listener(
+      behavior: HitTestBehavior.opaque,
+      onPointerDown: (event) {
+        if (event.kind == PointerDeviceKind.mouse &&
+            event.buttons == kSecondaryMouseButton) {
+          final RenderBox overlay =
+          Overlay.of(context).context.findRenderObject() as RenderBox;
+
+          final RelativeRect position = RelativeRect.fromRect(
+            Rect.fromPoints(
+              event.position,
+              event.position,
+            ),
+            Offset.zero & overlay.size,
+          );
+          // onRightClick();
+          showRowContextMenu(
+            context: context,
+            position: position,
+            item: item,
+            clickValue: clickValue
+          );
+        }
+      },
+      child: child,
+    );
+  }
+
+  void showRowContextMenu({
+    required BuildContext context,
+    required RelativeRect position,
+    required dynamic item,
+    clickValue
+  }) {
+    showMenu(
+      context: context,
+      position: position,
+      items: const [
+        PopupMenuItem(value: 'pickup', child: Text('pickup')),
+        PopupMenuItem(value: 'dropoff', child: Text('dropoff')),
+      ],
+
+    ).then((value) {
+      if (value == null) return;
+      switch (value) {
+        case 'pickup':
+          if(clickValue == "dropoffClick"){
+            pickupController.text = item.dropoff;
+            pickupPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
+          }else{
+            pickupController.text = item.pickup;
+            pickupPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+          }
+          name = item.name;
+          email = item.email;
+          mobileNumber = item.mobile;
+          telNumber = item.telephone;
+          break;
+        case 'dropoff':
+          if(clickValue == "dropoffClick"){
+            dropoffController.text = item.dropoff;
+            dropoffPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
+          }else{
+            dropoffController.text = item.pickup;
+            dropoffPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+          }
+          name = item.name;
+          email = item.email;
+          mobileNumber = item.mobile;
+          telNumber = item.telephone;
+          break;
+      }
+    });
+  }
+
 }
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
