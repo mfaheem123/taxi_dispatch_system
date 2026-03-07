@@ -9,6 +9,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
+import '../../../../alert/pay_driver_commission.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/text_field.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
@@ -117,9 +118,12 @@ class _UpdateDriverCommissionScreenState
                                       ),
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        controller
-                                            .driverSelectionController.text
-                                            .toUpperCase(),
+                                        controller.updateDriverSelectionController.text.isEmpty
+                                            ? "NO DRIVER"
+                                            : controller.updateDriverSelectionController.text.toUpperCase(),
+                                        // controller
+                                        //     .updateDriverSelectionController.text
+                                        //     .toUpperCase(),
                                         style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.black54),
@@ -159,14 +163,14 @@ class _UpdateDriverCommissionScreenState
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.commissionController,
+                                controller: controller.UpdateCommissionController,
                                 width: fieldWidth,
                                 hintText: AppText.commission,
                                 columnText: true,
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.pdaRentController,
+                                controller: controller.UpdatePdaRentController,
                                 width: fieldWidth,
                                 hintText: AppText.pdaRent,
                                 columnText: true,
@@ -190,29 +194,6 @@ class _UpdateDriverCommissionScreenState
                                                 context: context,
                                                 fontSize: 13,
                                                 color: DynamicColors.gryClr)),
-                                        // SizedBox(
-                                        //   width: fieldWidth / 1.2,
-                                        //   height: 30,
-                                        //   child: KeyboardDatePicker(
-                                        //     initialDate: DateTime.now(),
-                                        //     onChanged: (date) {
-                                        //       controller.filterFromDate =
-                                        //           date
-                                        //               .toIso8601String()
-                                        //               .split("T")
-                                        //               .first;
-                                        //       controller.update();
-                                        //     },
-                                        //     onSubmitted: (date) {
-                                        //       controller.filterFromDate =
-                                        //           date
-                                        //               .toIso8601String()
-                                        //               .split("T")
-                                        //               .first;
-                                        //       controller.update();
-                                        //     },
-                                        //   ),
-                                        // ),
                                         Container(
                                           width: fieldWidth / 1.2,
                                           height: 30,
@@ -250,27 +231,6 @@ class _UpdateDriverCommissionScreenState
                                             controller.updateFilterToDate,
                                             style: TextStyle(fontSize: 13)),
                                       ),
-                                      // SizedBox(
-                                      //   width: fieldWidth / 1.2,
-                                      //   height: 30,
-                                      //   child: KeyboardDatePicker(
-                                      //     initialDate: DateTime.now(),
-                                      //     onChanged: (date) {
-                                      //       controller.filterToDate = date
-                                      //           .toIso8601String()
-                                      //           .split("T")
-                                      //           .first;
-                                      //       controller.update();
-                                      //     },
-                                      //     onSubmitted: (date) {
-                                      //       controller.filterToDate = date
-                                      //           .toIso8601String()
-                                      //           .split("T")
-                                      //           .first;
-                                      //       controller.update();
-                                      //     },
-                                      //   ),
-                                      // ),
                                     ],
                                   ),
                                   Spacer(),
@@ -287,6 +247,9 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
+                                        onTap: () {
+                                          PayDriverCommission.show();
+                                        },
                                       ),
                                       SizedBox(width: 5),
                                       CustomButton(
@@ -336,13 +299,8 @@ class _UpdateDriverCommissionScreenState
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
                                         onTap: (){
-                                          final commissionId = controller.updateDriverCommissionByIdModel?.driverCommission?.id;
-
-                                          if (commissionId != null) {
-                                            controller.saveUpdatedCommission(commissionId);
-                                          } else {
-                                            BotToast.showText(text: "Invalid Commission ID");
-                                          }
+                                            final cId = controller.updateDriverCommissionByIdModel?.driverCommission?.id ?? 0;
+                                            controller.saveUpdatedCommission(cId);
                                         },
                                       ),
                                     ],
@@ -585,21 +543,21 @@ class _UpdateDriverCommissionScreenState
                                 customWidget(
                                   title: AppText.cashTotal,
                                   value:
-                                      "£ ${controller.cashTotalValue.toStringAsFixed(2)}",
+                                      "£ ${controller.updateCashTotalValue.toStringAsFixed(2)}",
                                 ),
                                 customWidget(
                                     title: AppText.totalCommission,
                                     value:
-                                    "£ ${controller.totalCommissionVar.toStringAsFixed(2)}"),
+                                    "£ ${controller.updateTotalCommissionVar.toStringAsFixed(2)}"),
 
                                 customWidget(
                                     title: AppText.owed,
                                     value:
-                                        "£ ${controller.owedVar.toStringAsFixed(2)}"),
+                                        "£ ${controller.updateOwedVar.toStringAsFixed(2)}"),
                                 customWidget(
                                   title: AppText.total + ":",
                                   value:
-                                  "£ ${controller.grandTotalVar.toStringAsFixed(2)}",
+                                  "£ ${controller.updateGrandTotalVar.toStringAsFixed(2)}",
                                 ),
                               ],
                             ),
@@ -612,16 +570,16 @@ class _UpdateDriverCommissionScreenState
                                 customWidget(
                                   title: AppText.accountWCmm,
                                   value:
-                                      "£ ${controller.accountFareTotalVar.toStringAsFixed(2)}",
+                                      "£ ${controller.updateAccountFareTotalVar.toStringAsFixed(2)}",
                                 ),
                                 customWidget(
                                     title: AppText.accountWOCmm,
                                     value:
-                                        "£ ${controller.accountWOCmmVar.toStringAsFixed(2)}"),
+                                        "£ ${controller.updateAccountWOCmmVar.toStringAsFixed(2)}"),
                                 customWidget(
                                     title: AppText.parkingCongestion,
                                     value:
-                                        "£ ${controller.parkingCongestionVar.toStringAsFixed(2)}"),
+                                        "£ ${controller.updateParkingCongestionVar.toStringAsFixed(2)}"),
                               ],
                             ),
                           ],
