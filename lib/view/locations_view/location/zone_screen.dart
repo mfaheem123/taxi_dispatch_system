@@ -765,6 +765,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           },
         ));
       }
+
       // Center move handle
       final center = _boundsCenter(b);
       markers.add(Marker(
@@ -981,8 +982,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.red[700],
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
@@ -991,8 +991,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         ElevatedButton(
                           onPressed: () async {
                             await controller.postZone(context);
-                            Get.snackbar(
-                                'Saved', 'Zone data submitted successfully');
+                            Get.snackbar('Saved', 'Zone data submitted successfully');
                           },
                           child: Text(
                               controller.updateZone.value ? "EDIT" : "SAVE"),
