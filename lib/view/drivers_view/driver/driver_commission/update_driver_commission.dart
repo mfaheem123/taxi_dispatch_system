@@ -10,6 +10,7 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../../alert/pay_driver_commission.dart';
+import '../../../../alert/update_driver_commission_email.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/text_field.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
@@ -262,19 +263,70 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
+                                        onTap: (){
+                                          EmailDriverCommissionAlt.show();
+                                        },
                                       ),
                                       SizedBox(width: 5),
-                                      CustomButton(
-                                        height: 30,
-                                        borderRadius: 6,
-                                        width: 60,
-                                        verticalPadding: 0.0,
-                                        btnText: "EXPORT",
-                                        btnColor: DynamicColors.primaryClr,
-                                        style: mozillaTextSemiBoldText(
-                                            fontSize: 13,
-                                            color: DynamicColors.whiteClr),
+                                      PopupMenuButton<String>(
+                                        tooltip: "Export Options",
+                                        offset: const Offset(0, 40),
+                                        onSelected: (value) {
+                                          if (value == 'pdf') {
+                                            controller.exportToPdf();
+                                          } else if (value == 'excel') {
+                                            controller.exportToExcel();
+                                          }
+                                        },
+                                        itemBuilder: (BuildContext context) => [
+                                          // --- PDF Option ---
+                                          PopupMenuItem<String>(
+                                            value: 'pdf',
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.picture_as_pdf, color: Colors.red, size: 20),
+                                                const SizedBox(width: 10),
+                                                Text("Download PDF", style: mozillaTextRegularText(fontSize: 12)),
+                                              ],
+                                            ),
+                                          ),
+                                          // --- Excel Option ---
+                                          PopupMenuItem<String>(
+                                            value: 'excel',
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.table_view, color: Colors.green, size: 20),
+                                                const SizedBox(width: 10),
+                                                Text("Download Excel", style: mozillaTextRegularText(fontSize: 12)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                        child: Container(
+                                          width: 60,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: DynamicColors.primaryClr,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "EXPORT",
+                                            style: mozillaTextRegularText(fontSize: 10, color: DynamicColors.whiteClr),
+                                          ),
+                                        ),
                                       ),
+                                      // CustomButton(
+                                      //   height: 30,
+                                      //   borderRadius: 6,
+                                      //   width: 60,
+                                      //   verticalPadding: 0.0,
+                                      //   btnText: "EXPORT",
+                                      //   btnColor: DynamicColors.primaryClr,
+                                      //   style: mozillaTextSemiBoldText(
+                                      //       fontSize: 13,
+                                      //       color: DynamicColors.whiteClr),
+                                      //   ),
                                       SizedBox(width: 5),
                                       CustomButton(
                                         height: 30,
@@ -415,7 +467,7 @@ class _UpdateDriverCommissionScreenState
                                           DataCell(Center(
                                               child: Text(
                                                   booking.account?.name ??
-                                                      "Cash"))),
+                                                      ""))),
                                           DataCell(Center(
                                               child: Text(booking.journeyType
                                                       ?.journeyType ??

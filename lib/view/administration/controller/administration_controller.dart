@@ -4,11 +4,9 @@ import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/administration/model/user_model.dart' hide Role;
 import 'package:dio/dio.dart' as dio;
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
@@ -114,6 +112,7 @@ class AdministrationController extends GetxController {
     if (response.statusCode == 200) {
       listSubsDiary();
       print("Subsidiaries deleted successfully!");
+      BotToast.showText(text: "Subsidiaries Deleted Successfully!");
     }
   }
 
@@ -201,7 +200,6 @@ class AdministrationController extends GetxController {
         orElse: () => getRole!.roles!.first,
       );
     }
-
     userNameController.text = userUpdate.username ?? "";
     passwordController.text = userUpdate.password ?? "";
     confirmController.text = userUpdate.confirmpassword ?? "";

@@ -304,7 +304,6 @@ class InvoiceController extends GetxController {
   List<int> selectedBookingIds = [];
   bool isAllUpdateSelected = false;
 
-
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
@@ -324,11 +323,9 @@ class InvoiceController extends GetxController {
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);
-
       if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null) {
         var data = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
         orderNumber.text = data.orderNumber ?? "";
-
         print("Invoice Number: ${data.invoiceNumber}");
         print("Total Line Items: ${data.accountInvoiceLineitems?.length}");
       }

@@ -483,7 +483,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                                                     ""))),
                                         DataCell(Center(
                                             child: Text(booking.account?.name ??
-                                                "Cash"))),
+                                                ""))),
                                         DataCell(Center(
                                             child: Text(booking
                                                     .journeyType?.journeyType ??

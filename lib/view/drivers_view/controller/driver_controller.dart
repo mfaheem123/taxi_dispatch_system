@@ -1,20 +1,32 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
+// import 'package:flutter/material.dart' hide Column, Row, Text, EdgeInsets, Alignment, Center, SizedBox, Table, Context;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/drivers_view/model/driver_commission_filter_model.dart';
 import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
+import 'package:excel/excel.dart';
+import 'dart:html' as html;
+import 'package:path_provider/path_provider.dart';
+
 
 import '../../../Model/driver_models/driver_model.dart' hide Driver;
 import 'package:file_picker/file_picker.dart';
 
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
+import '../../../component/color.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
 import '../model/driver_commission_alert_model.dart';
@@ -811,7 +823,6 @@ class DriverController extends GetxController {
   CreateDriverCommission? createDriverCommission;
   bool isCreateDriverCommission = false;
 
-
   void resetCreateFields() {
     cashTotalValue = 0.0;
     accountFareTotalVar = 0.0;
@@ -1176,10 +1187,13 @@ class DriverController extends GetxController {
 
     // 6. Grand Totals Logic
     updateGrandTotalVar = updateCashTotalValue + updateAccountFareTotalVar;
-    updateOwedVar = updateTotalCommissionVar - updateAccountFareTotalVar - updateParkingCongestionVar;
+    updateOwedVar = updateTotalCommissionVar -
+        updateAccountFareTotalVar -
+        updateParkingCongestionVar;
     updateNewBalanceVar = oldBalanceVar + updateOwedVar;
     update();
   }
+
   void _resetTotals() {
     updateCashTotalValue = 0.0;
     updateAccountFareTotalVar = 0.0;
@@ -1204,7 +1218,9 @@ class DriverController extends GetxController {
       return sum + double.parse(calculateFinalDriverComm(b));
     });
 
-    updateOwedVar = updateTotalCommissionVar - updateAccountFareTotalVar - updateParkingCongestionVar;
+    updateOwedVar = updateTotalCommissionVar -
+        updateAccountFareTotalVar -
+        updateParkingCongestionVar;
     updateNewBalanceVar = oldBalanceVar + updateOwedVar;
 
     update();
@@ -1280,11 +1296,19 @@ class DriverController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      print(response.data);
+      // print(response.data);
       driverCommissionAlert =
           DriverCommissionAlertModel.fromJson(response.data);
       isLoadingDriverCommission = false;
       update();
+    }
+  }
+
+  // Delete
+  driverCommissionDelete(int? id) async {
+    var response = await Api().delete("driver_commission/delete/$id");
+    if (response.statusCode == 200) {
+      print("DriverCommission deleted successfully!");
     }
   }
 
@@ -1389,6 +1413,263 @@ class DriverController extends GetxController {
     }
     saveUpdatedCommissionLoad = false;
     update();
+  }
+
+  /// Download pdf
+  Future<void> exportToPdf() async {
+    if (listDriverCommission == null) {
+      await getCreateDriverCommission();
+    }
+    final pdf = pw.Document();
+    final items = updateDriverCommissionByIdModel
+            ?.driverCommission?.driverCommissionLineitems ??
+        [];
+
+    final currentDriverId =
+        updateDriverCommissionByIdModel?.driverCommission?.driver?.id;
+    final selectedDriverData = listDriverCommission?.drivers?.firstWhere(
+      (d) => d.id == currentDriverId,
+      orElse: () {
+        return CreateDriverCommission();
+      },
+    );
+
+    final primaryColor = PdfColor.fromInt(DynamicColors.primaryClr.value);
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape.copyWith(
+            marginLeft: 20, marginRight: 20, marginTop: 20, marginBottom: 20),
+        build: (pw.Context context) {
+          return [
+            pw.Center(
+              child: pw.Column(children: [
+                pw.SizedBox(height: 50),
+                pw.Text("DRIVER COMMISSION",
+                    style: pw.TextStyle(
+                        fontSize: 22, fontWeight: pw.FontWeight.bold)),
+              ]),
+            ),
+            pw.SizedBox(height: 20),
+
+            // 2. Info Row (From/To)
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                _buildInfoColumn(
+                    "FROM",
+                    [
+                      "EMAIL: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? ""}",
+                      "MOBILE: ${selectedDriverData?.mobile ?? ""}",
+                      "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                      "",
+                      "PERIOD: ($updateFilterFromDate - $updateFilterToDate)",
+                    ],
+                    primaryColor),
+                _buildInfoColumn(
+                    "TO",
+                    [
+                      "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.id ?? ""})",
+                      "${updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? ""}",
+                      "DATE: ${DateFormat('dd-MM-yy').format(DateTime.now())}",
+                      "COMMISSION: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.driverCommission ?? ""}%",
+                    ],
+                    primaryColor,
+                    alignEnd: true),
+              ],
+            ),
+            pw.SizedBox(height: 10),
+
+            // 3. Table
+            pw.TableHelper.fromTextArray(
+              headerStyle: pw.TextStyle(
+                  color: PdfColors.white,
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: 7),
+              headerDecoration: pw.BoxDecoration(
+                  color: PdfColor.fromInt(DynamicColors.primaryClr.value)),
+              cellStyle: const pw.TextStyle(fontSize: 7),
+              cellPadding:
+                  const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              cellAlignment: pw.Alignment.center,
+              headerAlignment: pw.Alignment.center,
+              columnWidths: {
+                0: const pw.FixedColumnWidth(45), // REF
+                1: const pw.FixedColumnWidth(40), // D/T
+                2: const pw.FixedColumnWidth(110), // PICKUP
+                3: const pw.FixedColumnWidth(110), // DROPOFF
+                14: const pw.FixedColumnWidth(30), // COMM
+                15: const pw.FixedColumnWidth(40), // TOTAL
+              },
+              border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+              headers: [
+                'REF#',
+                'D/T',
+                'PICKUP',
+                'DROPOFF',
+                'VEH',
+                'ACC',
+                'J/T',
+                'P/T',
+                'FARE',
+                'PC',
+                'WC',
+                'EDC',
+                'CC',
+                'W/COMM',
+                'COMM',
+                'TOTAL'
+              ],
+              data: items.map((item) {
+                final b = item.booking;
+                return [
+                  b?.referenceNumber ?? "",
+                  "${b?.pickupDate}\n${b?.pickupTime}",
+                  b?.pickup ?? "",
+                  b?.dropoff ?? "",
+                  b?.vehicleType?.name ?? "",
+                  b?.account?.name ?? "",
+                  b?.journeyType?.journeyType ?? "",
+                  b?.paymentType?.name ?? "",
+                  "£${b?.fares ?? '0'}",
+                  "£${b?.parkingCharges ?? '0'}",
+                  "£${b?.waitingCharges ?? '0'}",
+                  "£${b?.extraDropCharges ?? '0'}",
+                  "£${b?.congestionCharges ?? '0'}",
+                  "£${calculateWithoutCommission(b)}",
+                  "£${calculateFinalDriverComm(b)}",
+                  "£${b?.totalCharges ?? '0'}",
+                ];
+              }).toList(),
+            ),
+            pw.Table(
+              border: pw.TableBorder(
+                left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                verticalInside:
+                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                horizontalInside:
+                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+              ),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(1),
+                1: const pw.FixedColumnWidth(52),
+              },
+              children: [
+                _buildFooterRow("CASH TOTAL", updateCashTotalValue),
+                _buildFooterRow("TOTAL", updateGrandTotalVar),
+                _buildFooterRow(
+                    "ACCOUNT W/COMM TOTAL", updateAccountFareTotalVar),
+                _buildFooterRow("ACCOUNT WO/COMM TOTAL", updateAccountWOCmmVar),
+                _buildFooterRow(
+                    "PARKING/CONGESTION TOTAL", updateParkingCongestionVar),
+                _buildFooterRow("COMMISSION TOTAL", updateTotalCommissionVar),
+                _buildFooterRow("OWED", updateOwedVar),
+              ],
+            ),
+          ];
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    await Printing.sharePdf(bytes: bytes, filename: 'Driver_Commission.pdf');
+  }
+
+  pw.Widget _buildInfoColumn(String label, List<String> lines, PdfColor accent,
+      {bool alignEnd = false}) {
+    return pw.Column(
+      crossAxisAlignment:
+          alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(label,
+            style: pw.TextStyle(
+                fontWeight: pw.FontWeight.bold, fontSize: 10, color: accent)),
+        ...lines.map((line) {
+          return line.isEmpty
+              ? pw.SizedBox(height: 10)
+              : pw.Text(line, style: const pw.TextStyle(fontSize: 8));
+        }),
+      ],
+    );
+  }
+
+  pw.TableRow _buildFooterRow(String label, double value,
+      {bool isBold = false}) {
+    return pw.TableRow(
+      children: [
+        pw.Container(
+          alignment: pw.Alignment.centerRight,
+          padding: const pw.EdgeInsets.only(right: 5, top: 2, bottom: 2),
+          child: pw.Text(label,
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+        pw.Container(
+          alignment: pw.Alignment.center,
+          padding: const pw.EdgeInsets.symmetric(vertical: 2),
+          child: pw.Text("£${value.toStringAsFixed(2)}",
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+      ],
+    );
+  }
+
+  ///Download Excel
+  Future<void> exportToExcel() async {
+    var excel = Excel.createExcel();
+    String sheetName = "Driver Commission";
+    Sheet sheetObject = excel[sheetName];
+    excel.delete('Sheet1');
+
+    //  Headers
+    List<String> headers = [
+      'REF #', 'DATETIME', 'PICKUP', 'DROPOFF', 'VEH', 'ACC', 'J/T', 'P/T',
+      'FARE', 'PC', 'WC', 'EDC', 'CC', 'W/COMM', 'COMM', 'TOTAL'
+    ];
+    sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
+
+    // 3. Data Rows
+    final items = updateDriverCommissionByIdModel?.driverCommission?.driverCommissionLineitems ?? [];
+    for (var item in items) {
+      final b = item.booking;
+      if (b == null) continue;
+
+      sheetObject.appendRow([
+        TextCellValue(b.referenceNumber ?? ""),
+        TextCellValue("${b.pickupDate ?? ""} ${b.pickupTime ?? ""}"),
+        TextCellValue(b.pickup ?? ""),
+        TextCellValue(b.dropoff ?? ""),
+        TextCellValue(b.vehicleType?.name?.toLowerCase() ?? ""),
+        TextCellValue(b.account?.name ?? ""),
+        TextCellValue(b.journeyType?.journeyType ?? ""),
+        TextCellValue(b.paymentType?.name ?? ""),
+        DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateWithoutCommission(b).toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(calculateFinalDriverComm(b).toString()) ?? 0.0),
+        DoubleCellValue(double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+      ]);
+    }
+
+    try {
+      var fileBytes = excel.save();
+      if (fileBytes != null) {
+        final content = base64Encode(fileBytes);
+        final anchor = html.AnchorElement(
+            href: "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute("download", "Driver_Commission_Report.xlsx")
+          ..click();
+      }
+    } catch (e) {
+      print("Excel Error: $e");
+    }
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality

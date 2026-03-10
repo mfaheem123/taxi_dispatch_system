@@ -41,12 +41,11 @@ class CreateUserScreen extends StatelessWidget {
                 : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image box fix with Flexible
                       Flexible(
                           flex: 1,
                           child: _buildImageBox(isMobile, controller: controller)),
                       SizedBox(width: 20),
-                      // Form box fix with Flexible
+
                       Flexible(
                           flex: 3,
                           child: _buildFormBox(screenHeight, screenWidth)),
@@ -71,7 +70,7 @@ class CreateUserScreen extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.grey),
-          image: controller.userProfileImg != null // ✅ Updated
+          image: controller.userProfileImg != null
               ? DecorationImage(
             image: MemoryImage(controller.userProfileImg!.bytes),
             fit: BoxFit.fill,
@@ -83,12 +82,12 @@ class CreateUserScreen extends StatelessWidget {
           )
               : null),
         ),
-        child: (controller.userProfileImg != null || controller.employee?.image != null) // ✅ Updated
+        child: (controller.userProfileImg != null || controller.employee?.image != null)
             ? Align(
           alignment: Alignment.topRight,
           child: GestureDetector(
             onTap: () {
-              controller.userProfileImg = null; // ✅ Updated
+              controller.userProfileImg = null;
               if (controller.employee != null) {
                 controller.employee!.image = null;
               }
