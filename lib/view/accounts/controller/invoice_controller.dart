@@ -678,9 +678,7 @@ CC: CONGESTION CHARGES
       var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
       if (response.statusCode == 200) {
         BotToast.showText(text: "Success" "Charges updated!");
-
       }
-
   }
 
 

@@ -232,15 +232,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             side: BorderSide.none,
                                           ),
                                           onPressed: () {
-                                            showDialog(
-                                              context: context,
-                                              builder: (_) =>
-                                                  DeletePermissionAlert(
-                                                deleteFunctionName: () =>
-                                                     controller.deleteVehicleType(item.id!),
-                                              ),
-                                            );
-                                         
+                                            controller.deleteVehicleType(item.id!);
                                           },
                                           child: Icon(
                                             Icons.delete_forever,
