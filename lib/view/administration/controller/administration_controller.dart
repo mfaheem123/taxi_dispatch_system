@@ -3,11 +3,10 @@ import 'package:dashboard_new1/Model/image_model.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/administration/model/user_model.dart' hide Role;
-import 'package:dio/dio.dart' as dio show MultipartFile;
+import 'package:dio/dio.dart' as dio;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
@@ -16,8 +15,6 @@ class AdministrationController extends GetxController {
   RxBool inActive = false.obs;
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
-
-
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Get  List subsDiary api
   RxSet<int> selectedSubsDiaryIds = <int>{}.obs;
@@ -28,14 +25,11 @@ class AdministrationController extends GetxController {
   final int subsiiLimit = 20;
   RxList<Subsidiaries> subsiDiaryAll = <Subsidiaries>[].obs;
   RxList<Subsidiaries> filteredSubsiDiary = <Subsidiaries>[].obs;
-  // search fields
   RxString searchSubsiDiaryName = ''.obs;
   RxString searchSubsiDiaryEmail = ''.obs;
   RxString searchSubsiDiaryTelephone = ''.obs;
   RxString searchSubsiDiaryAddress = ''.obs;
   RxString searchSibsiDiaryFax = ''.obs;
-
-
   Subsidiaries? selectedSubsidiary;
 
  listSubsDiary() async {
@@ -60,30 +54,24 @@ class AdministrationController extends GetxController {
         update();
       }
   }
-
-// -----------Search changes function
+  // -----------Search changes function
   void subsiDiarySearchChanged() {
     subsiCurrentPage.value = 1;
     listSubsDiary();
   }
-
-  /// ------- pagination function
+  // ------- pagination function
   void onPageChange(int page) {
     subsiCurrentPage.value = page;
     listSubsDiary();
   }
 
-
-
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Edit SubsDiary
 
   RxBool isSubsiDiaryUpdating = false.obs;
-
   Subsidiaries? subsidiaryToUpdate;
 
   subsidiaryUpdate({Subsidiaries? data}) async {
     if (data == null) return;
-
     isSubsiDiaryUpdating.value = true;
     subsidiaryToUpdate = data;
     nameController.text = data.name ?? "";
@@ -96,20 +84,17 @@ class AdministrationController extends GetxController {
     currencyController.text = data.currency ?? "";
     addressController.text = data.address ?? "";
     balanceController.text = data.balance?.toString() ?? "";
-
     // --- 2. Color Binding (Hex to Color) ---
     if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
       // Remove '#' and parse
       String bgHex = data.backgroundColor!.replaceAll('#', '');
       subsiDiarypickerColor = Color(int.parse("0xFF$bgHex"));
     }
-
     if (data.foregroundColor != null && data.foregroundColor!.isNotEmpty) {
       // Remove '#' and parse
       String fgHex = data.foregroundColor!.replaceAll('#', '');
       subsiDiaryforegroundColor = Color(int.parse("0xFF$fgHex"));
     }
-
     if (subsiDiaryAll.isNotEmpty) {
       selectedSubsidiary = subsiDiaryAll.firstWhere(
             (sub) => sub.id == data.id,
@@ -120,19 +105,14 @@ class AdministrationController extends GetxController {
     update();
   }
 
-
-
-
 /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Delete SubsDiary
-
-
 
   subsidiariesDelete(int? id) async {
     var response = await Api().delete("subsidiaries/delete/$id");
     if (response.statusCode == 200) {
       listSubsDiary();
       print("Subsidiaries deleted successfully!");
-
+      BotToast.showText(text: "Subsidiaries Deleted Successfully!");
     }
   }
 
@@ -150,7 +130,6 @@ class AdministrationController extends GetxController {
   RxString searchUserName = ''.obs;
   RxString searchUserEmail = ''.obs;
   RxString searchUserPhone = ''.obs;
-
   RxString searchUserFax = ''.obs;
   RxString searchUserRole = ''.obs;
   RxString searchUserSubsiDiary = ''.obs;
@@ -202,7 +181,6 @@ class AdministrationController extends GetxController {
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  Update
 
-
   RxBool isUpdating = false.obs;
   userUpdate({Employee? userUpdate}) async {
     if (userUpdate == null) return;
@@ -222,7 +200,6 @@ class AdministrationController extends GetxController {
         orElse: () => getRole!.roles!.first,
       );
     }
-
     userNameController.text = userUpdate.username ?? "";
     passwordController.text = userUpdate.password ?? "";
     confirmController.text = userUpdate.confirmpassword ?? "";
@@ -238,36 +215,25 @@ class AdministrationController extends GetxController {
     update();
   }
 
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create SubsiDiary
 
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
-
-  ImageModel? profileImg;
-
+  ImageModel? subsidiaryImg;
   Future<void> pickImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
-
     if (result != null && result.files.single.bytes != null) {
-      profileImg = ImageModel(
+      subsidiaryImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
           path: result.files.single.path);
     }
     update();
   }
-
-
-
   List bankDetailList = <BankDetailsAlertClass>[].obs;
-
   final nameController = TextEditingController();
-  //name
   final emailController = TextEditingController();
   final faxController = TextEditingController();
   final websiteController = TextEditingController();
@@ -279,22 +245,19 @@ class AdministrationController extends GetxController {
   final currencyController = TextEditingController();
   final addressController = TextEditingController();
   final balanceController = TextEditingController();
-
   Color subsiDiarypickerColor = Colors.blue;
   Color subsiDiaryforegroundColor = Colors.blue;
-
   RxBool isLoadVehicleType = false.obs;
   createSubsiDiary() async {
     isLoadVehicleType.value = false;
     var multipartFile;
-    if (profileImg != null) {
+    if (subsidiaryImg != null) {
       multipartFile = dio.MultipartFile.fromBytes(
-        profileImg!.bytes,
-        filename: profileImg!.name,
+        subsidiaryImg!.bytes,
+        filename: subsidiaryImg!.name,
       );
     }
-
-    var formData = {
+    final formData = dio.FormData.fromMap({
       'name': nameController.text,
       'background_color': subsiDiarypickerColor.value.toRadixString(16).substring(2),
       'foreground_color': subsiDiaryforegroundColor.value.toRadixString(16).substring(2),
@@ -319,14 +282,18 @@ class AdministrationController extends GetxController {
       'active_drivers': '10',
       'address_latitude': '51.5074',
       'address_longitude': '-0.1278',
-      if (multipartFile != null) "image": multipartFile!
-    };
-
-    var response = await Api().post(formData,
-        isSubsiDiaryUpdating.value ?
-        "subsidiaries/edit/${subsidiaryToUpdate!.id}":   'subsidiaries/add' , auth: true);
+      if (multipartFile != null) "logo": multipartFile
+    });
+    var response = await Api().post(
+        formData,
+        isSubsiDiaryUpdating.value
+            ? "subsidiaries/edit/${subsidiaryToUpdate!.id}"
+            : 'subsidiaries/add',
+        auth: true,
+        multiPart: multipartFile != null ? true : false
+    );
     if (response.statusCode == 200) {
-      profileImg = null;
+      subsidiaryImg = null;
       nameController.clear();
       emailController.clear();
       faxController.clear();
@@ -339,14 +306,16 @@ class AdministrationController extends GetxController {
       currencyController.clear();
       addressController.clear();
       balanceController.clear();
-      profileImg = null;
       isSubsiDiaryUpdating.value = false;
-      // BotToast.showText(text: isSubsiDiaryUpdating.value? "Subsidiary Add Sucessfully":"Subsidiary Update Sucessfully");
+      BotToast.showText(
+          text: isSubsiDiaryUpdating.value
+              ? "Subsidiary Update Successfully"
+              : "Subsidiary Add Successfully"
+      );
       update();
       print(response.data);
     }
   }
-
 
 //// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create User
 
@@ -362,7 +331,6 @@ class AdministrationController extends GetxController {
   final FocusNode receviverNode = FocusNode();
   RxBool transferValue = false.obs;
   final FocusNode transferNode = FocusNode();
-
   RxBool userRoleLoading = false.obs;
   GetRole? getRole;
   Role? selectedRole;
@@ -383,7 +351,6 @@ class AdministrationController extends GetxController {
     userRoleLoading.value = false;
     update();
   }
-
   String? selectRoleUser = "SELECT ROLE";
   final userNameController = TextEditingController();
   final userEmailController = TextEditingController();
@@ -391,38 +358,31 @@ class AdministrationController extends GetxController {
   final confirmController = TextEditingController();
   final phoneController = TextEditingController();
   final faxUserController = TextEditingController();
-
-
-  ImageModel? profileImage;
+  ImageModel? userProfileImg;
 
   Future<void> pickImageCreate() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.image,
     );
-
     if (result != null && result.files.single.bytes != null) {
-      profileImg = ImageModel(
+      userProfileImg = ImageModel(
           name: result.files.single.name,
           bytes: result.files.single.bytes!,
           path: result.files.single.path);
     }
     update();
   }
-
-
   RxBool isLoadUser = false.obs;
   createUser() async {
     isLoadUser(true);
-
     var multipartFile;
-    if (profileImg != null) {
+    if (userProfileImg != null) {
       multipartFile = dio.MultipartFile.fromBytes(
-        profileImg!.bytes,
-        filename: profileImg!.name,
+        userProfileImg!.bytes,
+        filename: userProfileImg!.name,
       );
     }
-
-    var formData = {
+    final formData = dio.FormData.fromMap({
       'subsidiary_id': selectedSubsidiary!.id,
       'role_id': selectedRole!.id,
       'username': userNameController.text,
@@ -438,15 +398,16 @@ class AdministrationController extends GetxController {
       'allaccounts': accuntValue.value,
       'callreceiver': receviverValue.value,
       'allowtransferbookings': transferValue.value,
-      if (multipartFile != null) "image": multipartFile!,
-    };
-
-    var response = await Api().post(formData,
-        employee != null
-        ? "employees/update/${employee!.id}"
-            : "employees/add",
-         auth : true);
+      if (multipartFile != null) "image": multipartFile,
+    });
+    var response = await Api().post(
+      formData,
+      employee != null ? "employees/update/${employee!.id}" : "employees/add",
+      auth: true,
+      multiPart: multipartFile != null ? true : false,
+    );
     if (response.statusCode == 200) {
+      print(response);
       userNameController.clear();
       passwordController.clear();
       confirmController.clear();
@@ -459,17 +420,12 @@ class AdministrationController extends GetxController {
       accuntValue.value = false;
       receviverValue.value = false;
       transferValue.value = false;
-      profileImage = null;
-      print("response of body ----${response.data}");
-      isLoadUser(false);
+      userProfileImg = null;
       employee = null;
-      BotToast.showText(text: "Sucessfully Done"  );
-
+      isLoadUser(false);
+      BotToast.showText(text: "Successfully Done");
       update();
+      isLoadUser(false);
     }
-
-
   }
-
-
 }

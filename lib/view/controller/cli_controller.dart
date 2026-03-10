@@ -25,7 +25,7 @@ class CliController extends GetxController {
     CLIJOBLoader(false);
     var formData = {
       'booking_id': bid,
-      'vehicle_type_id':vid ,
+      'vehicle_type_id':vid,
       'pickup_date': date,
       'pickup_time': time,
       'driver_id': did,

@@ -67,7 +67,8 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    if (controller.profileImg == null) {
+                    // Agar koi image nahi hai (na local na network), tabhi picker khule
+                    if (controller.subsidiaryImg == null && controller.subsidiaryToUpdate?.logo == null) {
                       controller.pickImage();
                     }
                   },
@@ -78,38 +79,55 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(color: Colors.grey),
-                      image: controller.profileImg == null
-                          ? null
-                          : DecorationImage(
-                              image: MemoryImage(controller
-                                  .profileImg!.bytes),
-                              fit: BoxFit.fill,
-                            ),
+                      image: controller.subsidiaryImg != null
+                          ? DecorationImage(
+                        image: MemoryImage(controller.subsidiaryImg!.bytes),
+                        fit: BoxFit.fill,
+                      )
+                          : (controller.subsidiaryToUpdate?.logo != null
+                          ? DecorationImage(
+                        // Agar image URL full nahi hai to yahan baseUrl add kar lena
+                        image: NetworkImage(controller.subsidiaryToUpdate!.logo!),
+                        fit: BoxFit.fill,
+                      )
+                          : null),
                     ),
-                    child: controller.profileImg != null
+                    // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
+                    child: (controller.subsidiaryImg != null || controller.subsidiaryToUpdate?.logo != null)
                         ? Align(
-                            alignment: Alignment.topRight,
-                            child: GestureDetector(
-                              onTap: () {
-                                controller.profileImg = null;
-                                controller.update();
-                              },
-                              child: Icon(
-                                Icons.close_rounded,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                          )
-                        : Center(
-                            child: Text(
-                              "UPLOAD IMAGE",
-                              style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
+                      alignment: Alignment.topRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          controller.subsidiaryImg = null;
+                          if (controller.subsidiaryToUpdate != null) {
+                            controller.subsidiaryToUpdate!.logo = null; // UI se purani image hatane ke liye
+                          }
+                          controller.update();
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          margin: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            shape: BoxShape.circle,
                           ),
+                          child: Icon(
+                            Icons.close_rounded,
+                            color: DynamicColors.redClr,
+                          ),
+                        ),
+                      ),
+                    )
+                        : Center(
+                      child: Text(
+                        "UPLOAD IMAGE",
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
