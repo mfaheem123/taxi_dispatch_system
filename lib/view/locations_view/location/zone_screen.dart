@@ -790,6 +790,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (mode == DrawMode.rectangle && _selectedPolyId != null) {
       final pts = _polyPoints[_selectedPolyId!];
       if (pts != null && _isAxisAlignedRect(pts)) {
+
         final b = _boundsFromPts(pts);
         final hp = _handlePositions(b);
 

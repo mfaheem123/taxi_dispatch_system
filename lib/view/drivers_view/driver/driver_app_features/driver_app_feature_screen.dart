@@ -94,6 +94,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
               SizedBox(
                 height: 10,
               ),
+
               width < 1920 ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -104,7 +105,9 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                   AppVersionWidget(),
                   PdaDetailsWidget(),
                 ],
-              ):
+              )
+                  :
+
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

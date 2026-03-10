@@ -271,8 +271,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                                 ), // border color & thickness
                                               ),
                                               onPressed: () {
-
-                                                controller.listOfAccountDelete(item.id);
+                                               controller.listOfAccountDelete(item.id);
                                               },
                                               child: Icon(
                                                 Icons.delete_forever,
