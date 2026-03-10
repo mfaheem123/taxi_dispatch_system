@@ -33,8 +33,8 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
     shortCutKeyValue.value = "driverCommission";
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   @override
   Widget build(BuildContext context) {

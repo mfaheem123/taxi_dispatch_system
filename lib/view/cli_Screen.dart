@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/oldDropDown.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/controller/cli_controller.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../alert/delete_permission_alert.dart';
 import '../component/color.dart';
 import '../component/datatable_widget.dart';
@@ -937,7 +939,17 @@ class _CenterAreaState extends State<_CenterArea> {
 
   /// ✅ NEW TextEditingControllers
   final TextEditingController pickupController = TextEditingController();
+  LatLng? pickupPoints;
+  String? name;
+  String? email;
+  String? mobileNumber;
+  String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
+  LatLng? dropoffPoints;
+
+  bool actionValue = false;
+  bool submitBtnValue = false;
+
 
   @override
   void initState() {
@@ -989,9 +1001,23 @@ class _CenterAreaState extends State<_CenterArea> {
                           Expanded(
                             child: TextField(
                               controller: pickupController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: "Pick Up",
                                 border: OutlineInputBorder(),
+                              suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
+                                onTap: (){
+                                  pickupController.clear();
+                                  dropoffController.clear();
+                                  pickupPoints = null;
+                                  dropoffPoints = null;
+                                 setState(() {
+
+                                 });
+                                },
+                                child: Icon(Icons.close,
+                                color: Colors.red,
+                                ),
+                              )
                               ),
                             ),
                           ),
@@ -999,9 +1025,22 @@ class _CenterAreaState extends State<_CenterArea> {
                           Expanded(
                             child: TextField(
                               controller: dropoffController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: "Drop Off",
                                 border: OutlineInputBorder(),
+                                  suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
+                                    onTap: (){
+                                      pickupController.clear();
+                                      dropoffController.clear();
+                                      pickupPoints = null;
+                                      dropoffPoints = null;
+                                      setState(() {
+                                      });
+                                    },
+                                    child: Icon(Icons.close,
+                                      color: Colors.red,
+                                    ),
+                                  )
                               ),
                             ),
                           ),
@@ -1020,6 +1059,7 @@ class _CenterAreaState extends State<_CenterArea> {
                             final temp = pickupController.text;
                             pickupController.text = dropoffController.text;
                             dropoffController.text = temp;
+                            submitBtnValue = true;
                           });
                         },
                         child: const Text("Swap Pickup/Drop"),
@@ -1049,12 +1089,11 @@ class _CenterAreaState extends State<_CenterArea> {
                                   child:
                                   rightClickTextCell(
                                     item: cliBookingData,
+                                    clickValue: 'pickUpClick',
                                     onRightClick: () {
                                       print("RIGHT CLICK JOURNEY TYPE");
                                     },
-                                    child: Text(isSwapped
-                                        ? cliBookingData.dropoff ?? ""
-                                        : cliBookingData.pickup ?? ""),
+                                    child: Text(cliBookingData.pickup!),
                                   ),
                                 )),
 
@@ -1062,12 +1101,11 @@ class _CenterAreaState extends State<_CenterArea> {
                                   width: Get.width/6,
                                   child: rightClickTextCell(
                                     item: cliBookingData,
+                                    clickValue: 'dropoffClick',
                                     onRightClick: () {
                                       print("RIGHT CLICK JOURNEY TYPE");
                                     },
-                                    child: Text(isSwapped
-                                        ? cliBookingData.pickup ?? ""
-                                        : cliBookingData.dropoff ?? ""),
+                                    child: Text(cliBookingData.dropoff ?? ""),
                                   ),
                                 )),
 
@@ -1082,20 +1120,23 @@ class _CenterAreaState extends State<_CenterArea> {
                                       if (selectedIndex.value == index) {
                                         selectedIndex.value = -1;
                                         selectedBooking = null;
-
+                                        submitBtnValue = false;
                                         pickupController.clear();
                                         dropoffController.clear();
+                                        actionValue = false;
                                       } else {
+                                        submitBtnValue = true;
                                         selectedIndex.value = index;
                                         selectedBooking = cliBookingData;
-
+                                        actionValue = true;
                                         pickupController.text =
                                             cliBookingData.pickup ?? "";
                                         dropoffController.text =
                                             cliBookingData.dropoff ?? "";
-
                                         print("Selected booking: $selectedBooking");
                                       }
+                                      setState(() {
+                                      });
                                     },
                                   )),
                                 ),
@@ -1160,41 +1201,40 @@ class _CenterAreaState extends State<_CenterArea> {
                 const SizedBox(height: 30),
 
                 /// SUBMIT
-                ElevatedButton(
+               if(actionValue == true && isSwapped == false) ElevatedButton(
                   onPressed: () {
+                    // DashboardController _controller = Get.find();
+                    // _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
 
-                    DashboardController _controller = Get.find();
-                    _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                    if (selectedBooking == null) {
+                      Get.snackbar("Error", "Select booking first");
+                      return;
+                    }
 
-                    // if (selectedBooking == null) {
-                    //   Get.snackbar("Error", "Select booking first");
-                    //   return;
-                    // }
-                    //
-                    // if (selectedDriverId == null || selectedVehicleId == null) {
-                    //   Get.snackbar("Error", "Select driver & vehicle");
-                    //   return;
-                    // }
-                    //
-                    // final bookingId = selectedBooking!.id;
-                    // final bookingDate = selectedBooking!.pickupDate;
-                    // final bookingTime = selectedBooking!.pickupTime;
+                    if (selectedDriverId == null || selectedVehicleId == null) {
+                      Get.snackbar("Error", "Select driver & vehicle");
+                      return;
+                    }
 
-                    // print("========== SUBMIT ==========");
-                    // print("Booking ID: $bookingId");
-                    // print("Date: $bookingDate");
-                    // print("Time: $bookingTime");
-                    // print("Driver ID: $selectedDriverId");
-                    // print("Vehicle ID: $selectedVehicleId");
-                    // print("============================");
-                    //
-                    // controller.postCLIJob(
-                    //   bookingId,
-                    //   bookingDate,
-                    //   bookingTime,
-                    //   selectedDriverId,
-                    //   selectedVehicleId,
-                    // );
+                    final bookingId = selectedBooking!.id;
+                    final bookingDate = selectedBooking!.pickupDate;
+                    final bookingTime = selectedBooking!.pickupTime;
+
+                    print("========== SUBMIT ==========");
+                    print("Booking ID: $bookingId");
+                    print("Date: $bookingDate");
+                    print("Time: $bookingTime");
+                    print("Driver ID: $selectedDriverId");
+                    print("Vehicle ID: $selectedVehicleId");
+                    print("============================");
+
+                    controller.postCLIJob(
+                      selectedBooking!.id,
+                      selectedBooking!.pickupDate,
+                      selectedBooking!.pickupTime,
+                      selectedDriverId,
+                      selectedVehicleId,
+                    );
                   },
                   child: const Text("SUBMIT"),
                 ),
@@ -1206,22 +1246,31 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  onPressed: () async{
+                  onPressed: () async {
                     DashboardController _controller = Get.find();
-                   await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-                   Get.back();
 
-                   // selectedIndex.value = -1;
-                    // selectedBooking = null;
-                    // selectedDriverId = null;
-                    // selectedVehicleId = null;
-                    //
-                    // pickupController.clear();
-                    // dropoffController.clear();
-                    //
-                    // homeController.selectDriverValue = null;
-                    // homeController.selectVehicleValue = null;
-                    // homeController.update();
+                    if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
+                      if(pickupController.text == dropoffController.text){
+                        BotToast.showText(text: "Please write different address");
+                        return;
+                      }
+
+                      await _controller.cliDataBinding(
+                         pickup: pickupController.text,
+                         dropoff: dropoffController.text,
+                         pickupLatitude: pickupPoints!.latitude.toString(),
+                         pickupLongitude: pickupPoints!.longitude.toString(),
+                         dropoffLatitude: dropoffPoints!.latitude.toString(),
+                         dropoffLongitude: dropoffPoints!.longitude.toString(),
+                         name: name,
+                         mobile: mobileNumber,
+                         email: email,
+                         phoneNumber: telNumber,
+                      );
+                    } else {
+                      await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                      Get.back();
+                    }
                   },
                   child: const Text("New Booking"),
                 ),
@@ -1237,6 +1286,7 @@ class _CenterAreaState extends State<_CenterArea> {
     required Widget child,
     required VoidCallback onRightClick,
     required dynamic item,
+    clickValue
   }) {
     return Listener(
       behavior: HitTestBehavior.opaque,
@@ -1258,6 +1308,7 @@ class _CenterAreaState extends State<_CenterArea> {
             context: context,
             position: position,
             item: item,
+            clickValue: clickValue
           );
         }
       },
@@ -1269,6 +1320,7 @@ class _CenterAreaState extends State<_CenterArea> {
     required BuildContext context,
     required RelativeRect position,
     required dynamic item,
+    clickValue
   }) {
     showMenu(
       context: context,
@@ -1282,10 +1334,30 @@ class _CenterAreaState extends State<_CenterArea> {
       if (value == null) return;
       switch (value) {
         case 'pickup':
-          print("ACCEPT ${item}");
+          if(clickValue == "dropoffClick"){
+            pickupController.text = item.dropoff;
+            pickupPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
+          }else{
+            pickupController.text = item.pickup;
+            pickupPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+          }
+          name = item.name;
+          email = item.email;
+          mobileNumber = item.mobile;
+          telNumber = item.telephone;
           break;
         case 'dropoff':
-          print("DECLINE ${item}");
+          if(clickValue == "dropoffClick"){
+            dropoffController.text = item.dropoff;
+            dropoffPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
+          }else{
+            dropoffController.text = item.pickup;
+            dropoffPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+          }
+          name = item.name;
+          email = item.email;
+          mobileNumber = item.mobile;
+          telNumber = item.telephone;
           break;
       }
     });

@@ -34,8 +34,9 @@ class CliController extends GetxController {
 
     var response = await Api().post(formData, 'bookings/cli', auth: true);
     if (response.statusCode == 200) {
-      CLIJOBLoader(true);
-      update();
+      Get.back();
+      // CLIJOBLoader(true);
+      // update();
     }
   }
 

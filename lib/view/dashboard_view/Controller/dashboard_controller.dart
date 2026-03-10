@@ -58,6 +58,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print( data['data']['callerId']);
+            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
+            //   // Handle the returned value here
+            //   connectToCli("200");
+            // });
+
             Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
             // _showIncomingCallDialog(
             //   context,
@@ -73,31 +78,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     } catch (e) {
       print("Error: $e");
     }
-  }
-
-  void _showIncomingCallDialog(BuildContext context, String callId, String caller, String ext) {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // User must click "Close"
-      builder: (context) => AlertDialog(
-        title: const Text("📞 Incoming Call"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Call ID: $callId"),
-            Text("Caller: $caller"),
-            Text("Extension: $ext"),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("Close"),
-          ),
-        ],
-      ),
-    );
   }
 
   ///===========================================================>See Zone On Map
@@ -231,7 +211,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    // connectToCli("200");
+    connectToCli("200");
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
@@ -2069,8 +2049,47 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
     }
   }
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 
+
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo cli data binding without api hit
+   cliDataBinding({String? pickup, String? dropoff, String? pickupLatitude, String? pickupLongitude, String? dropoffLatitude, String? dropoffLongitude,
+     email,name,mobile,phoneNumber,}) async{
+     polyLineMarkerInfo.clear();
+     viaPoints.clear();
+     polylinePoints.clear();
+     pickupController.text = pickup.toString();
+     dropOffController.text = dropoff.toString();
+
+     polylinePoints.add(
+       LatLng(double.parse(pickupLatitude!), double.parse(pickupLongitude!)),
+     );
+     polylinePoints.add(
+       LatLng(double.parse(dropoffLatitude!), double.parse(dropoffLongitude!)),
+     );
+     polyLineMarkerInfo.add(ViaPoint(
+       lat: double.parse(pickupLatitude),
+       lng: double.parse(pickupLongitude),
+       markerType: "PICKUP LOCATION",
+       address: '',
+     ));
+     polyLineMarkerInfo.add(ViaPoint(
+       lat: double.parse(dropoffLatitude),
+       lng: double.parse(dropoffLongitude),
+       markerType: "DROP LOCATION",
+       address: '',
+     ));
+
+     nameController.text = name;
+     emailController.text = email;
+     mobileController.text = mobile;
+     telController.text = phoneNumber ?? "";
+
+     Get.back();
+     fetchRouteFromOSRM();
+   }
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo cli data binding without api hit
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo post dashboard api
 
