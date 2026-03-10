@@ -58,10 +58,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print( data['data']['callerId']);
-            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
-            //   // Handle the returned value here
-            //   connectToCli("200");
-            // });
+            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
+              // Handle the returned value here
+              connectToCli("200");
+            });
 
             Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
             // _showIncomingCallDialog(

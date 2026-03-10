@@ -341,7 +341,7 @@ class AdministrationController extends GetxController {
       balanceController.clear();
       profileImg = null;
       isSubsiDiaryUpdating.value = false;
-      // BotToast.showText(text: isSubsiDiaryUpdating.value? "Subsidiary Add Sucessfully":"Subsidiary Update Sucessfully");
+      BotToast.showText(text: isSubsiDiaryUpdating.value? "Subsidiary Add Sucessfully":"Subsidiary Update Sucessfully");
       update();
       print(response.data);
     }
