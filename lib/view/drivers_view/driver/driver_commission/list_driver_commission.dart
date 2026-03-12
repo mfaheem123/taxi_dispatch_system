@@ -12,7 +12,7 @@ import '../../../../component/text_field.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
-import '../../model/list_driver_commission_model.dart';
+import '../../model/creat_driver_commission_model.dart';
 
 class ListDriverCommission extends StatefulWidget {
   const ListDriverCommission({super.key});
@@ -93,7 +93,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(AppText.drivers,
+                              Text(AppText.driver,
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
                               const SizedBox(height: 5),
