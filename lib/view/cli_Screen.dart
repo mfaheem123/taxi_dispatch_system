@@ -1072,7 +1072,7 @@ class _CenterAreaState extends State<_CenterArea> {
                             width: 20,
                           ),
                           Visibility(
-                             visible: selectedBooking == null && selectedBooking!.viapoints!.isNotEmpty && actionValue == true && isSwapped == false?true:false,
+                             visible: selectedBooking != null && selectedBooking!.viapoints!.isNotEmpty && actionValue == true && isSwapped == false?true:false,
                              child: ElevatedButton(
                                onPressed: () {
                                  // Use a slight delay to ensure the click event is fully processed

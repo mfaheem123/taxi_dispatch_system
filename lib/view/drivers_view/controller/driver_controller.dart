@@ -29,6 +29,7 @@ import '../../../Model/image_model.dart';
 import '../../../component/color.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
+import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
 import '../model/driver_commission_model.dart';
@@ -36,6 +37,7 @@ import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
 
+import '../model/driver_rent_filter_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
 
@@ -809,6 +811,9 @@ class DriverController extends GetxController {
     driverSelectionController.addListener(() {
       autoFillDriverDetails(driverSelectionController.text);
     });
+    rentDriverSelectionController.addListener(() {
+      fillDriverDetails(rentDriverSelectionController.text);
+    });
   }
 
   /// RxBool variable
@@ -1312,7 +1317,8 @@ class DriverController extends GetxController {
     }
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
 
   String updateTransactionDateController = "2000-01-01";
   String updateFilterFromDate = "";
@@ -1671,6 +1677,86 @@ class DriverController extends GetxController {
       print("Excel Error: $e");
     }
   }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
+
+  final rentWeekController = TextEditingController();
+  final pdaRentWeekController = TextEditingController();
+  final TextEditingController rentFromDateController = TextEditingController();
+  final TextEditingController rentToDateController = TextEditingController();
+  TextEditingController rentDriverSelectionController = TextEditingController();
+  String rentTransactionDate = "";
+
+  ///drop down API
+  DriverRentModel? driverRentModel;
+  bool isCreateDriverRent = false;
+
+  getDriver() async {
+    // resetCreateFields();
+    isCreateDriverRent = true;
+    update();
+    var response = await Api()
+        .get("drivers/commission?active=true&driver_type=Rent/Week");
+    if (response.statusCode == 200) {
+      print("API Response: ${response.data}");
+      driverRentModel = DriverRentModel.fromJson(response.data);
+
+      // oldBalanceVar = 0.0;
+    }
+    isCreateDriverRent = false;
+    update();
+  }
+
+  // double oldBalanceVar = 0.0;
+
+  void fillDriverDetails(String selectedText) {
+    if (selectedText.isEmpty) return;
+    final driver = driverRentModel?.drivers.firstWhere(
+          (d) => "${d.id} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      // orElse: () => null,
+    );
+
+    if (driver != null) {
+      rentWeekController.text = driver.driverCommission ?? "0";
+      pdaRentWeekController.text = driver.pdaRent ?? "0";
+      // oldBalanceVar = double.tryParse(driver.balance?.toString() ?? "0") ?? 0.0;
+      update();
+    }
+  }
+
+  // Filter Button
+  DriverRentFilterModel? driverRentFilterModel;
+  RentBooking? rentBooking;
+  String rentFilterFromDate = "";
+  String rentFilterToDate = "";
+  bool isRentFilterLoading = false;
+
+  getDriverRentByFilter() async {
+    isRentFilterLoading = true;
+    update();
+
+    String drId = rentDriverSelectionController.text.split(" ").first;
+    String pIds = selectedPaymentTypeIds.isNotEmpty
+        ? "[${selectedPaymentTypeIds.join(",")}]"
+        : "";
+
+    var response = await Api().get(
+      "bookings/driver-rent",
+      queryParameters: {
+        'driver_id': drId,
+        'payment_type_id': pIds,
+        'from_date': rentFilterFromDate,
+        'to_date': rentFilterToDate,
+      },
+    );
+    print("API Response: ${response.data}");
+    if (response.statusCode == 200) {
+      driverRentFilterModel = DriverRentFilterModel.fromJson(response.data);
+    }
+    isRentFilterLoading = false;
+    update();
+  }
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
   /// TextEditingControllers
