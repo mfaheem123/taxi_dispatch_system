@@ -175,7 +175,19 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        if (controller.Zoneevalue != null) {
+                                          String newValue = controller.Zoneevalue!.name!;
+                                          String currentText = controller.ploteFareDescriptionController.text;
 
+                                          // Agar pehle se text hai to comma ke sath add karein, warna direct
+                                          controller.ploteFareDescriptionController.text = currentText.isEmpty
+                                              ? newValue
+                                              : "$currentText, $newValue";
+
+                                          // Dropdown khali karein aur UI update karein
+                                          controller.Zoneevalue = null;
+                                          controller.update();
+                                        }
                                       }, child: Icon(Icons.add)
                                   ),
                                   OutlinedButton(
@@ -188,6 +200,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.Zoneevalue = null;
+                                        controller.update();
                                       }, child: Icon(Icons.delete_forever,
                                     color: DynamicColors.redClr,
                                     size: 20,
@@ -237,8 +251,18 @@ class _PlotFareState extends State<PlotFare> {
                                         ),
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
-                                      onPressed: (){
+                                      onPressed: () {
+                                        if (controller.Zonee1value != null) {
+                                          String newValue = controller.Zonee1value!.name!;
+                                          String currentText = controller.ploteFareDescription2ndController.text;
 
+                                          controller.ploteFareDescription2ndController.text = currentText.isEmpty
+                                              ? newValue
+                                              : "$currentText, $newValue";
+
+                                          controller.Zonee1value = null;
+                                          controller.update();
+                                        }
                                       }, child: Icon(Icons.add)
                                   ),
 
@@ -252,7 +276,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
-
+                                        controller.Zonee1value = null;
+                                        controller.update();
                                       }, child: Icon(Icons.delete_forever,
                                     color: DynamicColors.redClr,
                                     size: 20,
