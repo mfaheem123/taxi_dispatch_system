@@ -29,6 +29,7 @@ import '../../../Model/image_model.dart';
 import '../../../component/color.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
+import '../driver/login_drivers/driver_login_logout_model.dart';
 import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
@@ -1704,6 +1705,21 @@ class DriverController extends GetxController {
       // oldBalanceVar = 0.0;
     }
     isCreateDriverRent = false;
+    update();
+  }
+
+
+  DriverLoginLogoutModel? driverLoginLogoutModel;
+bool isLoadingDriverlogin = false;
+  getDriverLoginLogout() async {
+    isLoadingDriverlogin = true;
+    update();
+    var response = await Api().get("drivers/session?session_status=logged_out");
+    if (response.statusCode == 200) {
+      print("API Response: ${response.data}");
+      driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
+    }
+    isLoadingDriverlogin = false;
     update();
   }
 
