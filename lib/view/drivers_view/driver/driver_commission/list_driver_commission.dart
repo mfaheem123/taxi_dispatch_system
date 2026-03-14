@@ -93,7 +93,7 @@ class _ListDriverCommissionState extends State<ListDriverCommission> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(AppText.drivers,
+                              Text(AppText.driver,
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
                               const SizedBox(height: 5),
