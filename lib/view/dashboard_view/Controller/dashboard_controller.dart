@@ -80,6 +80,47 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     }
   }
 
+  List onlineDriversList = [];
+
+
+  // We pass the context here so we can show the Dialog
+  void connectToDriverLogin() {
+    final url = Uri.parse("$socketUrl/driver-login");
+
+    try {
+
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          if (data['event'] == "DRIVER_LOGIN") {
+            print(data['data']);
+            print( data['data']['callerId']);
+
+            // _showIncomingCallDialog(
+            //   context,
+            //   data['data']['callId'].toString(),
+            //   data['data']['callerId'].toString(),
+            //   data['data']['extension'].toString(),
+            // );
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+
   ///===========================================================>See Zone On Map
 
   SeeZoneOnMapModel? seeZoneOnMapModel;
@@ -212,6 +253,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
     connectToCli("200");
+    connectToDriverLogin();
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
