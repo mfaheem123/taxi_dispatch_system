@@ -92,7 +92,7 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                     children: [
                       Row(
                         children: [
-                          Text(AppText.loggedInDrivers+" (3)",
+                          Text(AppText.loggedInDrivers+" (${controller.driverLoginLogoutModel!.count.toString() ?? 0})",
                             style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 17
@@ -101,12 +101,13 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                           SizedBox(
                             width: 20,
                           ),
-                          Checkbox(
-                              value: controller.activeLogout.value,
-                              onChanged: (v){
-                                controller.activeLogout.value = v!;
-                                controller.update();
-                              }),
+                          Obx(() => Checkbox(
+                            value: controller.activeLogout.value,
+                            onChanged: (v) {
+                              controller.activeLogout.value = v!;
+                              controller.driverloginSearch(); // Refresh data on toggle
+                            },
+                          )),
                           Text(AppText.loggedOut,
                             style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w700,

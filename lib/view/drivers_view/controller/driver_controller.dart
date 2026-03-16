@@ -1699,13 +1699,15 @@ class DriverController extends GetxController {
     update();
   }
 
-
   DriverLoginLogoutModel? driverLoginLogoutModel;
   var driverLoginCurrentPage = 1.obs;
   var driverLoginTotalPage = 1.obs;
   final int driverLoginLimit = 15;
+
   RxList<Driver> driverLoginAll = <Driver>[].obs;
   RxList<Driver> driverLoginFilter = <Driver>[].obs;
+
+  // Search Observables
   RxString searchUsername = ''.obs;
   RxString searchName = ''.obs;
   RxString searchLoginVehicleName = ''.obs;
@@ -1717,39 +1719,49 @@ class DriverController extends GetxController {
   RxString searchLicenseLoginExpiry = ''.obs;
   RxString searchMobileLogin = ''.obs;
   RxString searchSubsiDiaryLogin = ''.obs;
-  RxBool activeLogout = false.obs;
 
-bool isLoadingDriverlogin = false;
-  getDriverLoginLogout() async {
+  RxBool activeLogout = false.obs;
+  bool isLoadingDriverlogin = false;
+
+
+
+  Future<void> getDriverLoginLogout() async {
     isLoadingDriverlogin = true;
     update();
-    var response = await Api().get("drivers/session?session_status=logged_out", queryParameters: {
-      'session_status': activeLogout.value == true? false : true,
-      'limit': driverLoginLimit,
-      "name": searchName.value.toLowerCase(),
-      "username": searchUsername.value.toLowerCase(),
-      "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
-      "end_date": searchDriverloginExpiry.value.toLowerCase(),
-      "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
-      "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
-      "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
-      "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
-      "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
-      "mobile": searchMobileLogin.value.toLowerCase(),
-      "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
-    });
-    if (response.statusCode == 200) {
-      print("API Response: ${response.data}");
-      driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
-      driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
-      driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
-      driverLoginFilter.value = driverLoginAll;
-      print('Driver Data Loaded Successfully');
-      print('API  ${response.statusCode}');
-    }
-    isLoadingDriverlogin = false;
-    update();
+
+      // API expects string usually, or toggle based on checkbox
+      String status = activeLogout.value ? "logged_out" : "logged_in";
+
+      var response = await Api().get("drivers/session", queryParameters: {
+        'session_status': status,
+        'page': driverLoginCurrentPage.value, // Pagination fix
+        'limit': driverLoginLimit,
+        "name": searchName.value.toLowerCase(),
+        "username": searchUsername.value.toLowerCase(),
+        "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
+        "end_date": searchDriverloginExpiry.value.toLowerCase(),
+        "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
+        "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
+        "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
+        "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
+        "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
+        "mobile": searchMobileLogin.value.toLowerCase(),
+        "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
+      });
+
+      if (response.statusCode == 200) {
+        driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
+        driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
+        driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
+        driverLoginFilter.value = driverLoginAll;
+        print('Drivers Loaded: ${driverLoginAll.length}');
+      isLoadingDriverlogin = false;
+      update();
+      print("Error fetching drivers: $e");
+      }
+
   }
+
   void driverloginSearch() {
     driverLoginCurrentPage.value = 1;
     getDriverLoginLogout();
