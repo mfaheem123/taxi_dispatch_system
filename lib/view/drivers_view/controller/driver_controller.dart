@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-// import 'package:flutter/material.dart' hide Column, Row, Text, EdgeInsets, Alignment, Center, SizedBox, Table, Context;
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/drivers_view/driver/login_drivers/driver_login_logout_model.dart';
 import 'package:dashboard_new1/view/drivers_view/model/driver_commission_filter_model.dart';
-import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart' hide Driver;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -18,18 +16,12 @@ import 'package:printing/printing.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:excel/excel.dart';
 import 'dart:html' as html;
-import 'package:path_provider/path_provider.dart';
-
-
-import '../../../Model/driver_models/driver_model.dart' hide Driver;
 import 'package:file_picker/file_picker.dart';
-
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
 import '../../../component/color.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
-import '../driver/login_drivers/driver_login_logout_model.dart';
 import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
@@ -37,7 +29,6 @@ import '../model/driver_commission_model.dart';
 import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
-
 import '../model/driver_rent_filter_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
@@ -707,7 +698,7 @@ class DriverController extends GetxController {
       if (response.statusCode == 200) {
         listDriverModel = GetDriverModel.fromJson(response.data);
         driverTotalPage.value = listDriverModel?.totalPages ?? 1;
-        driverAll.value = listDriverModel?.drivers ?? [];
+        // driverAll.value = listDriverModel?.drivers ?? [];
         driverFilter.value = driverAll;
         print('Driver Data Loaded Successfully');
         print('API  ${response.statusCode}');
@@ -1710,19 +1701,64 @@ class DriverController extends GetxController {
 
 
   DriverLoginLogoutModel? driverLoginLogoutModel;
+  var driverLoginCurrentPage = 1.obs;
+  var driverLoginTotalPage = 1.obs;
+  final int driverLoginLimit = 15;
+  RxList<Driver> driverLoginAll = <Driver>[].obs;
+  RxList<Driver> driverLoginFilter = <Driver>[].obs;
+  RxString searchUsername = ''.obs;
+  RxString searchName = ''.obs;
+  RxString searchLoginVehicleName = ''.obs;
+  RxString searchVehicleloginExpiry = ''.obs;
+  RxString searchDriverloginExpiry = ''.obs;
+  RxString searchMOTLoginExpiry = ''.obs;
+  RxString searchMOT2LoginExpiry = ''.obs;
+  RxString searchInsuranceLoginExpiry = ''.obs;
+  RxString searchLicenseLoginExpiry = ''.obs;
+  RxString searchMobileLogin = ''.obs;
+  RxString searchSubsiDiaryLogin = ''.obs;
+  RxBool activeLogout = false.obs;
+
 bool isLoadingDriverlogin = false;
   getDriverLoginLogout() async {
     isLoadingDriverlogin = true;
     update();
-    var response = await Api().get("drivers/session?session_status=logged_out");
+    var response = await Api().get("drivers/session?session_status=logged_out", queryParameters: {
+      'session_status': activeLogout.value == true? false : true,
+      'limit': driverLoginLimit,
+      "name": searchName.value.toLowerCase(),
+      "username": searchUsername.value.toLowerCase(),
+      "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
+      "end_date": searchDriverloginExpiry.value.toLowerCase(),
+      "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
+      "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
+      "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
+      "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
+      "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
+      "mobile": searchMobileLogin.value.toLowerCase(),
+      "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
+    });
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
+      driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
+      driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
+      driverLoginFilter.value = driverLoginAll;
+      print('Driver Data Loaded Successfully');
+      print('API  ${response.statusCode}');
     }
     isLoadingDriverlogin = false;
     update();
   }
+  void driverloginSearch() {
+    driverLoginCurrentPage.value = 1;
+    getDriverLoginLogout();
+  }
 
+  void driverloginPage(int page) {
+    driverLoginCurrentPage.value = page;
+    getDriverLoginLogout();
+  }
   // double oldBalanceVar = 0.0;
 
   void fillDriverDetails(String selectedText) {

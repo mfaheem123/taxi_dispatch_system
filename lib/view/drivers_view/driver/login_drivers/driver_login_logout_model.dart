@@ -70,23 +70,23 @@ class Driver {
   String? startDate;
   String? endDate;
   dynamic licenceNumber;
-  DateTime? licenceExpiry;
+  String? licenceExpiry;
   dynamic phcDriverNumber;
-  DateTime? phcDriverExpiry;
+  String? phcDriverExpiry;
   dynamic insuranceNumber;
-  DateTime? insuranceExpiry;
+  String? insuranceExpiry;
   dynamic rentalAgreementNumber;
-  DateTime? rentalAgreementExpiry;
+  String? rentalAgreementExpiry;
   dynamic roadTaxNumber;
-  DateTime? roadTaxExpiry;
+  String? roadTaxExpiry;
   dynamic v5RegistrationNumber;
-  DateTime? v5RegistrationExpiry;
+  String? v5RegistrationExpiry;
   dynamic motNumber;
-  DateTime? motExpiry;
+  String? motExpiry;
   dynamic mot2Number;
-  DateTime? mot2Expiry;
+  String? mot2Expiry;
   dynamic phcVehicleNumber;
-  DateTime? phcVehicleExpiry;
+  String? phcVehicleExpiry;
   String? ni;
   String? image;
   String? createdAt;
@@ -126,6 +126,7 @@ class Driver {
   String? fcmUpdatedAt;
   String? subsidiaryName;
   Vehicle? vehicle;
+  Subsidiary? subsidiary;
 
   Driver({
     this.id,
@@ -205,6 +206,7 @@ class Driver {
     this.fcmUpdatedAt,
     this.subsidiaryName,
     this.vehicle,
+    this.subsidiary,
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) => Driver(
@@ -229,23 +231,23 @@ class Driver {
     startDate: json["start_date"],
     endDate: json["end_date"],
     licenceNumber: json["licence_number"],
-    licenceExpiry: json["licence_expiry"] == null ? null : DateTime.parse(json["licence_expiry"]),
+    licenceExpiry: json["licence_expiry"],
     phcDriverNumber: json["phc_driver_number"],
-    phcDriverExpiry: json["phc_driver_expiry"] == null ? null : DateTime.parse(json["phc_driver_expiry"]),
+    phcDriverExpiry: json["phc_driver_expiry"],
     insuranceNumber: json["insurance_number"],
-    insuranceExpiry: json["insurance_expiry"] == null ? null : DateTime.parse(json["insurance_expiry"]),
+    insuranceExpiry: json["insurance_expiry"],
     rentalAgreementNumber: json["rental_agreement_number"],
-    rentalAgreementExpiry: json["rental_agreement_expiry"] == null ? null : DateTime.parse(json["rental_agreement_expiry"]),
+    rentalAgreementExpiry: json["rental_agreement_expiry"],
     roadTaxNumber: json["road_tax_number"],
-    roadTaxExpiry: json["road_tax_expiry"] == null ? null : DateTime.parse(json["road_tax_expiry"]),
+    roadTaxExpiry: json["road_tax_expiry"],
     v5RegistrationNumber: json["v5_registration_number"],
-    v5RegistrationExpiry: json["v5_registration_expiry"] == null ? null : DateTime.parse(json["v5_registration_expiry"]),
+    v5RegistrationExpiry: json["v5_registration_expiry"],
     motNumber: json["mot_number"],
-    motExpiry: json["mot_expiry"] == null ? null : DateTime.parse(json["mot_expiry"]),
+    motExpiry: json["mot_expiry"],
     mot2Number: json["mot2_number"],
-    mot2Expiry: json["mot2_expiry"] == null ? null : DateTime.parse(json["mot2_expiry"]),
+    mot2Expiry: json["mot2_expiry"],
     phcVehicleNumber: json["phc_vehicle_number"],
-    phcVehicleExpiry: json["phc_vehicle_expiry"] == null ? null : DateTime.parse(json["phc_vehicle_expiry"]),
+    phcVehicleExpiry: json["phc_vehicle_expiry"],
     ni: json["ni"],
     image: json["image"],
     createdAt: json["created_at"],
@@ -285,6 +287,7 @@ class Driver {
     fcmUpdatedAt: json["fcm_updated_at"],
     subsidiaryName: json["subsidiary_name"],
     vehicle: json["vehicle"] == null ? null : Vehicle.fromJson(json["vehicle"]),
+    subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -309,23 +312,23 @@ class Driver {
     "start_date": startDate,
     "end_date": endDate,
     "licence_number": licenceNumber,
-    "licence_expiry": "${licenceExpiry!.year.toString().padLeft(4, '0')}-${licenceExpiry!.month.toString().padLeft(2, '0')}-${licenceExpiry!.day.toString().padLeft(2, '0')}",
+    "licence_expiry": licenceExpiry,
     "phc_driver_number": phcDriverNumber,
-    "phc_driver_expiry": "${phcDriverExpiry!.year.toString().padLeft(4, '0')}-${phcDriverExpiry!.month.toString().padLeft(2, '0')}-${phcDriverExpiry!.day.toString().padLeft(2, '0')}",
+    "phc_driver_expiry": phcDriverExpiry,
     "insurance_number": insuranceNumber,
-    "insurance_expiry": "${insuranceExpiry!.year.toString().padLeft(4, '0')}-${insuranceExpiry!.month.toString().padLeft(2, '0')}-${insuranceExpiry!.day.toString().padLeft(2, '0')}",
+    "insurance_expiry": insuranceExpiry,
     "rental_agreement_number": rentalAgreementNumber,
-    "rental_agreement_expiry": "${rentalAgreementExpiry!.year.toString().padLeft(4, '0')}-${rentalAgreementExpiry!.month.toString().padLeft(2, '0')}-${rentalAgreementExpiry!.day.toString().padLeft(2, '0')}",
+    "rental_agreement_expiry": rentalAgreementExpiry,
     "road_tax_number": roadTaxNumber,
-    "road_tax_expiry": "${roadTaxExpiry!.year.toString().padLeft(4, '0')}-${roadTaxExpiry!.month.toString().padLeft(2, '0')}-${roadTaxExpiry!.day.toString().padLeft(2, '0')}",
+    "road_tax_expiry": roadTaxExpiry,
     "v5_registration_number": v5RegistrationNumber,
-    "v5_registration_expiry": "${v5RegistrationExpiry!.year.toString().padLeft(4, '0')}-${v5RegistrationExpiry!.month.toString().padLeft(2, '0')}-${v5RegistrationExpiry!.day.toString().padLeft(2, '0')}",
+    "v5_registration_expiry": v5RegistrationExpiry,
     "mot_number": motNumber,
-    "mot_expiry": "${motExpiry!.year.toString().padLeft(4, '0')}-${motExpiry!.month.toString().padLeft(2, '0')}-${motExpiry!.day.toString().padLeft(2, '0')}",
+    "mot_expiry": motExpiry,
     "mot2_number": mot2Number,
-    "mot2_expiry": "${mot2Expiry!.year.toString().padLeft(4, '0')}-${mot2Expiry!.month.toString().padLeft(2, '0')}-${mot2Expiry!.day.toString().padLeft(2, '0')}",
+    "mot2_expiry": mot2Expiry,
     "phc_vehicle_number": phcVehicleNumber,
-    "phc_vehicle_expiry": "${phcVehicleExpiry!.year.toString().padLeft(4, '0')}-${phcVehicleExpiry!.month.toString().padLeft(2, '0')}-${phcVehicleExpiry!.day.toString().padLeft(2, '0')}",
+    "phc_vehicle_expiry": phcVehicleExpiry,
     "ni": ni,
     "image": image,
     "created_at": createdAt,
@@ -365,6 +368,23 @@ class Driver {
     "fcm_updated_at": fcmUpdatedAt,
     "subsidiary_name": subsidiaryName,
     "vehicle": vehicle?.toJson(),
+    "subsidiary": subsidiary?.toJson(),
+  };
+}
+
+class Subsidiary {
+  String? name;
+
+  Subsidiary({
+    this.name,
+  });
+
+  factory Subsidiary.fromJson(Map<String, dynamic> json) => Subsidiary(
+    name: json["name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
   };
 }
 
@@ -374,6 +394,7 @@ class Vehicle {
   String? model;
   String? color;
   String? endDate;
+  VehicleType? vehicleType;
 
   Vehicle({
     this.vehicleNumber,
@@ -381,6 +402,7 @@ class Vehicle {
     this.model,
     this.color,
     this.endDate,
+    this.vehicleType,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
@@ -389,6 +411,7 @@ class Vehicle {
     model: json["model"],
     color: json["color"],
     endDate: json["end_date"],
+    vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -397,5 +420,38 @@ class Vehicle {
     "model": model,
     "color": color,
     "end_date": endDate,
+    "vehicle_type": vehicleType?.toJson(),
+  };
+}
+
+class VehicleType {
+  int? id;
+  String? name;
+  int? passengers;
+  int? luggages;
+  int? driverWaitingCharges;
+
+  VehicleType({
+    this.id,
+    this.name,
+    this.passengers,
+    this.luggages,
+    this.driverWaitingCharges,
+  });
+
+  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+    id: json["id"],
+    name: json["name"],
+    passengers: json["passengers"],
+    luggages: json["luggages"],
+    driverWaitingCharges: json["driver_waiting_charges"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "passengers": passengers,
+    "luggages": luggages,
+    "driver_waiting_charges": driverWaitingCharges,
   };
 }
