@@ -1703,11 +1703,8 @@ class DriverController extends GetxController {
   var driverLoginCurrentPage = 1.obs;
   var driverLoginTotalPage = 1.obs;
   final int driverLoginLimit = 15;
-
   RxList<Driver> driverLoginAll = <Driver>[].obs;
   RxList<Driver> driverLoginFilter = <Driver>[].obs;
-
-  // Search Observables
   RxString searchUsername = ''.obs;
   RxString searchName = ''.obs;
   RxString searchLoginVehicleName = ''.obs;
@@ -1723,15 +1720,10 @@ class DriverController extends GetxController {
   RxBool activeLogout = false.obs;
   bool isLoadingDriverlogin = false;
 
-
-
   Future<void> getDriverLoginLogout() async {
     isLoadingDriverlogin = true;
     update();
-
-      // API expects string usually, or toggle based on checkbox
       String status = activeLogout.value ? "logged_out" : "logged_in";
-
       var response = await Api().get("drivers/session", queryParameters: {
         'session_status': status,
         'page': driverLoginCurrentPage.value, // Pagination fix
