@@ -101,8 +101,8 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                   SizedBox(
                     height: 10,
                   ),
-                  AppVersionWidget(),
-                  PdaDetailsWidget(),
+                  // AppVersionWidget(),
+                  // PdaDetailsWidget(),
                 ],
               ):
               Row(

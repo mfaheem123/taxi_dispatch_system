@@ -1698,7 +1698,7 @@ class DriverController extends GetxController {
     isCreateDriverRent = false;
     update();
   }
-
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Driver Login/Logout
   DriverLoginLogoutModel? driverLoginLogoutModel;
   var driverLoginCurrentPage = 1.obs;
   var driverLoginTotalPage = 1.obs;
@@ -1763,6 +1763,20 @@ class DriverController extends GetxController {
     driverLoginCurrentPage.value = page;
     getDriverLoginLogout();
   }
+
+
+
+  // // Delete
+  // driverCommissionDelete(int? id) async {
+  //   var response = await Api().delete("driver_commission/delete/$id");
+  //   if (response.statusCode == 200) {
+  //     print("DriverCommission deleted successfully!");
+  //   }
+  // }
+
+
+
+
   // double oldBalanceVar = 0.0;
 
   void fillDriverDetails(String selectedText) {
