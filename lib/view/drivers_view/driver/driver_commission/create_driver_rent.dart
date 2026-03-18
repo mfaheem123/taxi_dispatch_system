@@ -123,7 +123,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       isExpanded: true,
                                       icon: const Icon(Icons.arrow_drop_down),
                                       items: controller.driverRentModel?.drivers
-                                              .map((driver) {
+                                              ?.map((driver) {
                                             final val =
                                                 "${driver.id} ${driver.name}";
                                             return DropdownMenuItem(
@@ -148,28 +148,6 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                               ],
                             ),
                           ),
-                          // SizedBox(
-                          //   width: fieldWidth,
-                          //   // height: 30,
-                          //   child: Column(
-                          //     crossAxisAlignment: CrossAxisAlignment.start,
-                          //     children: [
-                          //       Text(AppText.drivers,
-                          //           style: mozillaTextSemiBoldText(
-                          //               context: context, fontSize: 13)),
-                          //       RestrictedDrivers(
-                          //         width: fieldWidth,
-                          //         titleText: "SELECT DRIVER",
-                          //         driversList: [
-                          //           "25 GEORGE HAMPTON",
-                          //           "26 PAUL DOUBLEDAY",
-                          //           "27 RICHARD HARDWICK",
-                          //           "28 LANRE OKERJO",
-                          //         ],
-                          //       ),
-                          //     ],
-                          //   ),
-                          // ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -373,6 +351,9 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     btnColor: DynamicColors.primaryClr,
                     style: mozillaTextSemiBoldText(
                         fontSize: 13, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.saveDriverRent();
+                    },
                   ),
                 ],
               ),
@@ -389,9 +370,20 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                           columns: [
                             buildHeaderWithSearch(
                                 widget: Checkbox(
-                                    value: controller.selectAllDrivers.value,
-                                    onChanged: (v) {
-                                      controller.selectAllDrivers.value = v!;
+                                    value: controller.selectedIds.length ==
+                                        controller.driverRentFilterModel
+                                            ?.bookings?.length,
+                                    onChanged: (bool? val) {
+                                      if (val == true) {
+                                        controller.selectedIds = controller
+                                            .driverRentFilterModel!.bookings
+                                            !.map((booking) =>
+                                                booking.id.toString())
+                                            .toSet();
+                                      } else {
+                                        controller.selectedIds.clear();
+                                      }
+                                      controller.calculateTotals();
                                       controller.update();
                                     })),
                             buildHeaderWithSearch(title: "REF#"),
@@ -417,6 +409,8 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                               .bookings ??
                                           [])
                                       .map((booking) {
+                                    final isRowSelected = controller.selectedIds
+                                        .contains(booking.id.toString());
                                     DataCell editableCell(dynamic initialValue,
                                         Function(String) onChanged) {
                                       return DataCell(
@@ -448,14 +442,20 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                     }
 
                                     return DataRow(cells: [
-                                      DataCell(Checkbox(
-                                          value:
-                                              controller.selectAllDrivers.value,
-                                          onChanged: (v) {
-                                            controller.selectAllDrivers.value =
-                                                v!;
-                                            controller.update();
-                                          })),
+                                      DataCell(Center(
+                                          child: Checkbox(
+                                              value: isRowSelected,
+                                              onChanged: (bool? val) {
+                                                if (val == true) {
+                                                  controller.selectedIds.add(
+                                                      booking.id.toString());
+                                                } else {
+                                                  controller.selectedIds.remove(
+                                                      booking.id.toString());
+                                                }
+                                                controller.calculateTotals();
+                                                controller.update();
+                                              }))),
                                       DataCell(Center(
                                           child: Text(
                                               booking.referenceNumber ?? ""))),
@@ -466,19 +466,22 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       DataCell(Text(booking.dropoff ?? "")),
                                       DataCell(Center(
                                           child: Text(
-                                              booking.vehicleType.name ?? ""))),
+                                              booking.vehicleType?.name ?? ""))),
                                       DataCell(Center(
                                           child: Text(
-                                              booking.account.name ?? ""))),
+                                              booking.account?.name ?? ""))),
                                       DataCell(Center(
                                           child: Text(
-                                              booking.journeyType.journeyType ??
+                                              booking.journeyType?.journeyType ??
                                                   ""))),
                                       DataCell(Center(
                                           child: Text(
-                                              booking.paymentType.name ?? ""))),
+                                              booking.paymentType?.name ?? ""))),
                                       editableCell(booking.fares, (val) {
                                         booking.fares = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
                                       }),
                                       editableCell(booking.parkingCharges,
                                           (val) {
@@ -490,14 +493,23 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       editableCell(booking.waitingCharges,
                                           (val) {
                                         booking.waitingCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
                                       }),
                                       editableCell(booking.extraDropCharges,
                                           (val) {
                                         booking.extraDropCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
                                       }),
                                       editableCell(booking.congestionCharges,
                                           (val) {
                                         booking.congestionCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
                                       }),
                                       DataCell(Center(
                                           child: Text(
@@ -519,7 +531,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                                 await controller
                                                     .updateBookingCharges(
                                                         booking);
-                                                controller.calculateAllTotals();
+                                                controller.calculateTotals();
                                                 controller.update();
                                                 print(
                                                     "Updating Booking ID: ${booking.id}");
@@ -530,26 +542,35 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       ),
                                     ]);
                                   }).toList(),
+                                  DataRow(
+                                    cells: [
+                                      for (var i = 0; i < 8; i++)
+                                        DataCell.empty,
+                                      DataCell(Center(
+                                          child: Text("TOTAL",
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold)))),
+                                      ...[
+                                        'fare',
+                                        'pc',
+                                        'wc',
+                                        'edc',
+                                        'cc',
+                                        'total'
+                                      ].map((field) => DataCell(Center(
+                                          child: Text(
+                                              "£ ${controller.getCreateRentColumnTotal(field).toStringAsFixed(2)}",
+                                              style: const TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))))),
+                                      DataCell.empty,
+                                    ],
+                                  ),
                                 ],
                         ),
                       ),
                     ),
-              // SizedBox(
-              //   height: 30,
-              // ),
-              // Align(
-              //   alignment: Alignment.centerLeft,
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(left: 20.0),
-              //     child: Text(
-              //       AppText.total,
-              //       style: mozillaTextSemiBoldText(
-              //           fontSize: 25,
-              //           color: DynamicColors.textClr.withOpacity(0.8),
-              //           fontWeight: FontWeight.w800),
-              //     ),
-              //   ),
-              // ),
               SizedBox(
                 height: 30,
               ),
@@ -561,11 +582,25 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          customWidget(title: AppText.cashTotal, value: "0"),
-                          customWidget(title: AppText.total + ":", value: "0"),
-                          customWidget(title: AppText.owed, value: "0"),
-                          customWidget(title: AppText.oldBalance, value: "0"),
-                          customWidget(title: AppText.newBalance, value: "0"),
+                          customWidget(
+                              title: AppText.cashTotal,
+                              value:
+                                  "£ ${controller.cashTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.total + ":",
+                              value:
+                                  "£ ${controller.grandTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.owed,
+                              value: "£ ${controller.owed.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.oldBalance,
+                              value:
+                                  "£ ${controller.oldBalance.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.newBalance,
+                              value:
+                                  "£ ${controller.newBalance.toStringAsFixed(2)}"),
                         ],
                       ),
                       SizedBox(
@@ -574,10 +609,18 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          customWidget(title: "ACCOUNT TOTAL:", value: "0"),
                           customWidget(
-                              title: AppText.parkingCongestion, value: "0"),
-                          customWidget(title: "RENT TOTAL:", value: "0"),
+                              title: "ACCOUNT TOTAL:",
+                              value:
+                                  "£ ${controller.accountTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.parkingCongestion,
+                              value:
+                                  "£ ${controller.parkingCongestion.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: "RENT TOTAL:",
+                              value:
+                                  "£ ${controller.rentTotal.toStringAsFixed(2)}"),
                         ],
                       ),
                     ],

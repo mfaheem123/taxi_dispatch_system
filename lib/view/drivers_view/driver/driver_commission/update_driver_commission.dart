@@ -102,7 +102,7 @@ class _UpdateDriverCommissionScreenState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppText.drivers,
+                                      AppText.driver,
                                       style: mozillaTextSemiBoldText(
                                           context: context, fontSize: 13),
                                     ),
@@ -316,17 +316,6 @@ class _UpdateDriverCommissionScreenState
                                           ),
                                         ),
                                       ),
-                                      // CustomButton(
-                                      //   height: 30,
-                                      //   borderRadius: 6,
-                                      //   width: 60,
-                                      //   verticalPadding: 0.0,
-                                      //   btnText: "EXPORT",
-                                      //   btnColor: DynamicColors.primaryClr,
-                                      //   style: mozillaTextSemiBoldText(
-                                      //       fontSize: 13,
-                                      //       color: DynamicColors.whiteClr),
-                                      //   ),
                                       SizedBox(width: 5),
                                       CustomButton(
                                         height: 30,

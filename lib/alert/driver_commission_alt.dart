@@ -129,7 +129,7 @@ class DriverCommissionAlt {
                                             "-"))),
                                     DataCell(Center(
                                         child: Text(
-                                            item.driver?.username ?? "-"))),
+                                            item.driverId.toString() ?? "-"))),
                                     DataCell(Center(
                                         child:
                                         Text("£${item.jobsTotal ?? "0"}"))),

@@ -113,7 +113,6 @@ class _DriverCommissionState extends State<DriverCommission> {
                         size: 25,
                       ),
                     ),
-                    onTap: () => controller.getDriverCommission(),
                   ),
                 ],
               ),
