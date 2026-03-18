@@ -16,6 +16,7 @@ import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.d
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get_navigation/src/root/parse_route.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
@@ -56,13 +57,33 @@ class FareController extends GetxController {
     }
   }
 
+
+  List<int> selectedPickupIds = [];
+  List<int> selectedDropoffIds = [];
+
+// Jab '+' button dabayein tw list mein add karein
+  void addPickupPlot(int id) {
+    if (!selectedPickupIds.contains(id)) {
+      selectedPickupIds.add(id);
+      update();
+    }
+  }
+
+  void addDropoffPlot(int id) {
+    if (!selectedDropoffIds.contains(id)) {
+      selectedDropoffIds.add(id);
+      update();
+    }
+  }
+
+
+
   postPlotFare() async{
     var formData = {
       "vehicle_type_id": plotVehicleTypevalue!.id,
-      "pickup_plot_id": Zoneevalue!.id,
-      "dropoff_plot_id": Zonee1value!.id,
+      "pickup_plot_id": selectedPickupIds, // Ab ye array jayega [27, 28, 30]
+      "dropoff_plot_id": selectedDropoffIds, // Ab ye array jayega [35, 34]
       "fares": fareController.text,
-
     };
     print(formData);
     var response = await Api().post(formData,
@@ -82,16 +103,17 @@ class FareController extends GetxController {
     }
   }
 
+// Controller mein clearFormData ko is tarah update lazmi rakhein:
   clearFormData() {
     fareController.clear();
-    vehicleTypeController.clear();
-    fareDescriptionController.clear();
-    fareDescription2ndController.clear();
+    ploteFareDescriptionController.clear();
+    ploteFareDescription2ndController.clear();
+    selectedPickupIds.clear(); // Backend array reset
+    selectedDropoffIds.clear(); // Backend array reset
     plotVehicleTypevalue = null;
     Zoneevalue = null;
     Zonee1value = null;
     isUpdatePlot(false);
-    plotUpdateId(0);
     update();
   }
 
@@ -126,22 +148,30 @@ class FareController extends GetxController {
 
   bindPlotFare(PlotFare fare) {
     fareController.text = fare.fares?.toString() ?? "";
-    if (plotVehicleTypeModel?.vehicleTypes != null) {
-      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
-          .firstWhere((v) => v.id == fare.vehicleTypeId);
-    }
-    if (plotVehicleTypeModel?.zones != null && fare.pickupPlot != null) {
-      Zoneevalue = plotVehicleTypeModel!.zones!
-          .firstWhere((z) => z.id == fare.pickupPlot!.id);
-    }
-    if (plotVehicleTypeModel?.zones != null && fare.dropoffPlot != null) {
-      Zonee1value = plotVehicleTypeModel!.zones!
-          .firstWhere((z) => z.id == fare.dropoffPlot!.id);
-    }
     isUpdatePlot(true);
     plotUpdateId(fare.id!);
 
-    update(); // UI ko refresh karne ke liye
+    selectedPickupIds.clear();
+    selectedDropoffIds.clear();
+
+    // Description fields fill karein
+    ploteFareDescriptionController.text = fare.pickupPlot?.name ?? "";
+    ploteFareDescription2ndController.text = fare.dropoffPlot?.name ?? "";
+
+    if (fare.pickupPlot != null) {
+      selectedPickupIds.add(fare.pickupPlot!.id!);
+    }
+    if (fare.dropoffPlot != null) {
+      selectedDropoffIds.add(fare.dropoffPlot!.id!);
+    }
+
+    // Dropdown value select karne ke liye
+    if (plotVehicleTypeModel?.vehicleTypes != null) {
+      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
+          .firstWhereOrNull((v) => v.id == fare.vehicleTypeId);
+    }
+
+    update();
   }
 
 

@@ -215,7 +215,7 @@ class _DriversViewState extends State<DriversView> {
                                       DynamicColors.greenClr),
                                   const SizedBox(width: 6),
                                   Text(
-                                    "(3)",
+                                    "${controller.onlineDriversList.length}",
                                     style: mozillaTextRegularText(
                                       fontSize: 13,
                                       color: controller.driverSelectionTab
@@ -273,11 +273,10 @@ class _DriversViewState extends State<DriversView> {
                   // ----- Driver List -----
                   Expanded(
                     child: ListView.builder(
-                      itemCount: 4,
+                      itemCount: controller.onlineDriversList.length,
                       padding: const EdgeInsets.symmetric(
                           vertical: 8),
                       itemBuilder: (context, index) {
-
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           shape: RoundedRectangleBorder(
@@ -287,81 +286,100 @@ class _DriversViewState extends State<DriversView> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 10),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  width: 50,
-                                  child: Container(
-                                    height: 32,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(4),
-                                      color: DynamicColors.primaryClr
-                                    ),
-                                    child: Center(
-                                      child: Text("X1",
-                                        style: mozillaTextRegularText(
-                                          fontSize: 14,
-                                          color: DynamicColors.whiteClr,
-                                        ),
-
-                                      ),
-                                    ),
-                                  ),
-
-
-                                  // CustomButton(
-                                  //   height: 28,
-                                  //   borderRadius: 4,
-                                  //   verticalPadding: 0,
-                                  //   btnText: "X1",
-                                  //   style: mozillaTextRegularText(
-                                  //     fontSize: 14,
-                                  //     color: DynamicColors.whiteClr,
-                                  //   ),
-                                  // ),
+                                Text(
+                                  controller.onlineDriversList[index].name!,
+                                  style:
+                                  mozillaTextRegularText(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    "SALOON",
-                                    style:
-                                    mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                Text(
+                                  controller.onlineDriversList[index].vehicleType!,
+                                  style:
+                                  mozillaTextRegularText(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 10),
-                                const Icon(Icons.phone_android_rounded,
-                                    size: 18),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    "1133Hr 01Min -",
-                                    style:
-                                    mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
+                                Text(
+                                  controller.onlineDriversList[index].username!,
+                                  style:
+                                  mozillaTextRegularText(fontSize: 13),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                                const SizedBox(width: 10),
-                            SizedBox(
-                              width: 48,
-                              child: Container(
-                                height: 32,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(4),
-                                    color: DynamicColors.secondaryClr
-                                ),
-                                child: Center(
-                                  child: Text("-",
-                                    style: mozillaTextRegularText(
-                                      fontSize: 14,
-                                      color: DynamicColors.whiteClr,
-                                    ),
-
-                                  ),
-                                ),
-                              ),
-
-                                ),
+                            //     SizedBox(
+                            //       width: 50,
+                            //       child: Container(
+                            //         height: 32,
+                            //         decoration: BoxDecoration(
+                            //           borderRadius: BorderRadius.circular(4),
+                            //           color: DynamicColors.primaryClr
+                            //         ),
+                            //         child: Center(
+                            //           child: Text("X1",
+                            //             style: mozillaTextRegularText(
+                            //               fontSize: 14,
+                            //               color: DynamicColors.whiteClr,
+                            //             ),
+                            //
+                            //           ),
+                            //         ),
+                            //       ),
+                            //
+                            //
+                            //       // CustomButton(
+                            //       //   height: 28,
+                            //       //   borderRadius: 4,
+                            //       //   verticalPadding: 0,
+                            //       //   btnText: "X1",
+                            //       //   style: mozillaTextRegularText(
+                            //       //     fontSize: 14,
+                            //       //     color: DynamicColors.whiteClr,
+                            //       //   ),
+                            //       // ),
+                            //     ),
+                            //     const SizedBox(width: 10),
+                            //     Expanded(
+                            //       child: Text(
+                            //         "SALOON",
+                            //         style:
+                            //         mozillaTextRegularText(fontSize: 13),
+                            //         overflow: TextOverflow.ellipsis,
+                            //       ),
+                            //     ),
+                            //     const SizedBox(width: 10),
+                            //     const Icon(Icons.phone_android_rounded,
+                            //         size: 18),
+                            //     const SizedBox(width: 10),
+                            //     Expanded(
+                            //       child: Text(
+                            //         "1133Hr 01Min -",
+                            //         style:
+                            //         mozillaTextRegularText(fontSize: 13),
+                            //         overflow: TextOverflow.ellipsis,
+                            //         maxLines: 1,
+                            //       ),
+                            //     ),
+                            //     const SizedBox(width: 10),
+                            // SizedBox(
+                            //   width: 48,
+                            //   child: Container(
+                            //     height: 32,
+                            //     decoration: BoxDecoration(
+                            //         borderRadius: BorderRadius.circular(4),
+                            //         color: DynamicColors.secondaryClr
+                            //     ),
+                            //     child: Center(
+                            //       child: Text("-",
+                            //         style: mozillaTextRegularText(
+                            //           fontSize: 14,
+                            //           color: DynamicColors.whiteClr,
+                            //         ),
+                            //
+                            //       ),
+                            //     ),
+                            //   ),
+                            //
+                            //     ),
                               ],
                             ),
                           ),

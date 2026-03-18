@@ -158,25 +158,57 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: DynamicColors.whiteClr,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(kToolbarHeight * 2.3),
-        child: NestedMenuBar(
-          menuBarPadding: 0.0,
-          menus: hoverMenu,
-          popUpMenuItemBorderRadius: 8,
-          menuBarDecoration: BoxDecoration(
-            color: DynamicColors.primaryClr,
-          ),
-          menuBarItemHoverColor: Colors.white,
-          menuBarItemColor: Colors.white,
-          popUpDecoration: BoxDecoration(
-            color: Colors.white,
-            // border: Border.all(color: DynamicColors.gryClr,width: 2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          popUpPadding: 3,
-          popUpMenuItemHoverForegroundColor: Colors.white,
-          popUpMenuItemForegroundColor: Colors.black,
-          popUpMenuItemBackgroundColor: Colors.white,
-          popUpMenuItemHoverBackgroundColor: Colors.black,
+        child: Stack(
+          alignment: Alignment.centerRight,
+          children: [
+            NestedMenuBar(
+              menuBarPadding: 0.0,
+              menus: hoverMenu,
+              popUpMenuItemBorderRadius: 8,
+              menuBarDecoration: BoxDecoration(
+                color: DynamicColors.primaryClr,
+              ),
+              menuBarItemHoverColor: Colors.white,
+              menuBarItemColor: Colors.white,
+              popUpDecoration: BoxDecoration(
+                color: Colors.white,
+                // border: Border.all(color: DynamicColors.gryClr,width: 2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              popUpPadding: 3,
+              popUpMenuItemHoverForegroundColor: Colors.white,
+              popUpMenuItemForegroundColor: Colors.black,
+              popUpMenuItemBackgroundColor: Colors.white,
+              popUpMenuItemHoverBackgroundColor: Colors.black,
+            ),
+            // Spacer(),
+         Row(
+           mainAxisSize: MainAxisSize.min,
+           children: [
+             Icon(Icons.email,
+               size: 24,
+               color: DynamicColors.whiteClr,
+             ),
+             SizedBox(
+               width: 9,
+             ),
+             Icon(Icons.notifications,
+               size: 24,
+               color: DynamicColors.whiteClr,
+             ),
+             SizedBox(
+               width: 9,
+             ),
+             Icon(Icons.power_settings_new,
+               size: 24,
+               color: DynamicColors.whiteClr,
+             ),
+             SizedBox(
+               width: 9,
+             ),
+           ],
+         )
+          ],
         ),
       ),
       body: GetBuilder<DashboardController>(builder: (controller) {
@@ -1319,14 +1351,14 @@ class _MyHomePageState extends State<MyHomePage> {
         //   onTap: () => message(context, "DevOps"),
         // ),
       ]),
-      NestedMenuItem(title: "SETTINGS", children: [
-        NestedMenuItem(title: "", icon: Icons.menu, onTap: () {}, children: [
-          NestedMenuItem(icon: Icons.email, title: "", onTap: () {}),
-          NestedMenuItem(icon: Icons.notifications, title: "", onTap: () {}),
-          NestedMenuItem(
-              icon: Icons.power_settings_new, title: "", onTap: () {}),
-        ]),
-      ]),
+      // NestedMenuItem(title: "SETTINGS", children: [
+      //   NestedMenuItem(title: "", icon: Icons.menu, onTap: () {}, children: [
+      //     NestedMenuItem(icon: Icons.email, title: "", onTap: () {}),
+      //     NestedMenuItem(icon: Icons.notifications, title: "", onTap: () {}),
+      //     NestedMenuItem(
+      //         icon: Icons.power_settings_new, title: "", onTap: () {}),
+      //   ]),
+      // ]),
     ];
   }
 }

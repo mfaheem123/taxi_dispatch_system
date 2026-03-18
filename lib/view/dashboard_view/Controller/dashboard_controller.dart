@@ -36,6 +36,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'driver_activity_model.dart';
+
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
  class DashboardController extends GetxController {
@@ -79,6 +81,98 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print("Error: $e");
     }
   }
+
+  List<DriverActivityModel> onlineDriversList = [];
+
+
+  // We pass the context here so we can show the Dialog
+  void connectToDriverLogin() {
+    final url = Uri.parse("$socketUrl/driver-login");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          if (data['event'] == "DRIVER_LOGIN") {
+
+            final driver = DriverActivityModel.fromJson(
+              Map<String, dynamic>.from(data['data']),
+            );
+            onlineDriversList.add(driver);
+            update();
+          }else{
+            int index = onlineDriversList.indexWhere(
+                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            );
+
+            if (index >= 0) {
+              onlineDriversList.removeAt(index);
+            }
+            update();
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          connectToDriverLogin();
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+
+  List<DriverActivityModel> busyDriversList = [];
+
+
+  // We pass the context here so we can show the Dialog
+  void connectToBusyDriver() {
+    final url = Uri.parse("$socketUrl/driver-busy");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          if (data['event'] == "DRIVER_LOGIN") {
+
+            final driver = DriverActivityModel.fromJson(
+              Map<String, dynamic>.from(data['data']),
+            );
+            onlineDriversList.add(driver);
+            update();
+          }else{
+            int index = onlineDriversList.indexWhere(
+                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            );
+
+            if (index >= 0) {
+              onlineDriversList.removeAt(index);
+            }
+            update();
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          connectToBusyDriver();
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
 
   ///===========================================================>See Zone On Map
 
@@ -212,6 +306,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
     connectToCli("200");
+    connectToDriverLogin();
+    connectToBusyDriver();
     getAllDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
