@@ -305,7 +305,7 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                                               ), // border color & thickness
                                             ),
                                             onPressed: () {
-
+                                              controller.driverLoginLogoutDelete(item.id);
                                             },
                                             child: Icon(
                                               Icons.delete_forever,

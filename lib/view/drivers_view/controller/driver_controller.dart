@@ -1767,12 +1767,13 @@ class DriverController extends GetxController {
 
 
   // // Delete
-  // driverCommissionDelete(int? id) async {
-  //   var response = await Api().delete("driver_commission/delete/$id");
-  //   if (response.statusCode == 200) {
-  //     print("DriverCommission deleted successfully!");
-  //   }
-  // }
+  driverLoginLogoutDelete(int? id) async {
+    var response = await Api().delete("drivers/delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text:"Driver Login logout deleted successfully!");
+      print("Driver Login logout deleted successfully!");
+    }
+  }
 
 
 
