@@ -17,6 +17,7 @@ import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import 'driver_commission_preview_screen.dart';
 
 class UpdateDriverCommissionScreen extends StatefulWidget {
   const UpdateDriverCommissionScreen({super.key});
@@ -327,6 +328,13 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
+                                        onTap: () {
+                                          Get.dialog(
+                                            DriverComissionWindowWrapper(),
+                                            barrierDismissible: true,
+                                          );
+                                          // Get.to(() => DriverRentViewScreen());
+                                        },
                                       ),
                                       SizedBox(width: 5),
                                       CustomButton(

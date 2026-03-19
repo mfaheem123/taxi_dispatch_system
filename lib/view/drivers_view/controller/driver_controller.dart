@@ -1831,44 +1831,6 @@ class DriverController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
-
-  final rentWeekController = TextEditingController();
-  final updateRentWeekController = TextEditingController();
-  final pdaRentWeekController = TextEditingController();
-  final updatePdaRentWeekController = TextEditingController();
-  final TextEditingController rentFromDateController = TextEditingController();
-  final TextEditingController rentToDateController = TextEditingController();
-  TextEditingController rentDriverSelectionController = TextEditingController();
-  TextEditingController updateRentDriverSelectionController = TextEditingController();
-  String rentTransactionDate = "";
-  // Set<String> selectedBookings = {};
-
-  ///drop down API
-  DriverRentModel? driverRentModel;
-  bool isCreateDriverRent = false;
-
-  getDriver() async {
-    // resetCreateFields();
-    isCreateDriverRent = true;
-    update();
-    var response =
-        await Api().get("drivers/commission?active=true&driver_type=Rent/Week");
-    if (response.statusCode == 200) {
-      print("API Response: ${response.data}");
-      driverRentModel = DriverRentModel.fromJson(response.data);
-
-      oldBalance = 0.0;
-      rentTotal = 0.0;
-    }
-    isCreateDriverRent = false;
-    update();
-  }
-
-
-
-  double oldBalance = 0.0;
-  double rentTotal = 0.0;
 
 ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Driver Login/Logout
 
@@ -1950,10 +1912,42 @@ class DriverController extends GetxController {
   }
 
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
 
+  final rentWeekController = TextEditingController();
+  final updateRentWeekController = TextEditingController();
+  final pdaRentWeekController = TextEditingController();
+  final updatePdaRentWeekController = TextEditingController();
+  final TextEditingController rentFromDateController = TextEditingController();
+  final TextEditingController rentToDateController = TextEditingController();
+  TextEditingController rentDriverSelectionController = TextEditingController();
+  TextEditingController updateRentDriverSelectionController = TextEditingController();
+  String rentTransactionDate = "";
+  // Set<String> selectedBookings = {};
 
-  // double oldBalanceVar = 0.0;
+  ///drop down API
+  DriverRentModel? driverRentModel;
+  bool isCreateDriverRent = false;
 
+  getDriver() async {
+    // resetCreateFields();
+    isCreateDriverRent = true;
+    update();
+    var response =
+    await Api().get("drivers/commission?active=true&driver_type=Rent/Week");
+    if (response.statusCode == 200) {
+      print("API Response: ${response.data}");
+      driverRentModel = DriverRentModel.fromJson(response.data);
+
+      oldBalance = 0.0;
+      rentTotal = 0.0;
+    }
+    isCreateDriverRent = false;
+    update();
+  }
+
+  double oldBalance = 0.0;
+  double rentTotal = 0.0;
 
   void fillDriverDetails(String selectedText) {
     if (selectedText.isEmpty) return;
@@ -2079,7 +2073,7 @@ class DriverController extends GetxController {
     final selectedBookings = driverRentFilterModel!.bookings
         ?.where((b) => selectedIds.contains(b.id.toString()));
 
-    // Cash Total = Sum of (Fare + Waiting + ExtraDrop) for Cash bookings only
+    // Cash Total
     cashTotal =
         selectedBookings!.where((b) => b.paymentTypeId == 1).fold(0.0, (sum, b) {
       return sum +
@@ -2088,7 +2082,7 @@ class DriverController extends GetxController {
           parseD(b.extraDropCharges);
     });
 
-    // 2. ACCOUNT FARE TOTAL (Payment Type 3)
+    // 2. ACCOUNT TOTAL
     accountTotal =
         selectedBookings.where((b) => b.paymentTypeId == 3).fold(0.0, (sum, b) {
       return sum +
@@ -2254,11 +2248,18 @@ class DriverController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      // print(response.data);
       driverRentAlert =
           DriverRentAltModel.fromJson(response.data);
       isLoadingDriverRent = false;
       update();
+    }
+  }
+
+  // Delete
+  driverRentDelete(int? id) async {
+    var response = await Api().delete("driver_rent/delete/$id");
+    if (response.statusCode == 200) {
+      print("DriverRent deleted successfully!");
     }
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality

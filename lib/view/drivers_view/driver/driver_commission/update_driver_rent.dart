@@ -16,6 +16,7 @@ import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import 'driver_rent_preview_screen.dart';
 
 class UpdateDriverRentScreen extends StatefulWidget {
   const UpdateDriverRentScreen({super.key});
@@ -309,6 +310,13 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                             style: mozillaTextSemiBoldText(
                                                 fontSize: 13,
                                                 color: DynamicColors.whiteClr),
+                                            onTap: () {
+                                              Get.dialog(
+                                                DriverRentWindowWrapper(),
+                                                barrierDismissible: true,
+                                              );
+                                              // Get.to(() => DriverRentViewScreen());
+                                            },
                                           ),
                                           SizedBox(width: 5),
                                           CustomButton(

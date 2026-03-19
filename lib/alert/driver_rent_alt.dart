@@ -186,9 +186,9 @@ class DriverRentAlt {
                                                     color: Colors.red),
                                                 onPressed: () {
                                                   Get.back();
-                                                  // controller
-                                                  //     .driverCommissionDelete(
-                                                  //         item.id);
+                                                  controller
+                                                      .driverRentDelete(
+                                                          item.id);
                                                 }),
                                             Text("|"),
                                             IconButton(
