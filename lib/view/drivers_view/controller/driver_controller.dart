@@ -790,33 +790,30 @@ class DriverController extends GetxController {
   final commentsController = TextEditingController();
   final breakController = TextEditingController();
 
-
-
-
+  // get All Driver dropDown
   RestricDriverModel? allDriverData;
   DriverObject? selectDriverObject;
+  bool isDriversLoading = false;
   getAllDrivers() async {
+    isDriversLoading = true;
+    update();
     var response = await Api().get("drivers/get");
     if (response.statusCode == 200) {
       allDriverData = RestricDriverModel.fromJson(response.data);
-      update();
     }
+    isDriversLoading = false;
+    update();
   }
 
   DriverAppFutureModel? driverAppFutureModel;
   getDriversAppFuture(int driverId) async {
     var response = await Api().get("drivers-app/app_features?driver_id=$driverId");
-
     if (response.statusCode == 200) {
-      // 1. Model update karein
-      driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);
 
-      // 2. Agar features list empty nahi hai, to values assign karein
+      driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);
       if (driverAppFutureModel?.appFeatures?.isNotEmpty ?? false) {
         var feat = driverAppFutureModel!.appFeatures!.first.features;
-
         if (feat != null) {
-          // Checkboxes update karein (.value = boolean)
           showCustomerValue.value = feat.showCustomerNumber ?? false;
           enableCustomerValue.value = feat.enableCustomerCall ?? false;
           enableFlagDownValue.value = feat.enableFlagdown ?? false;
@@ -838,8 +835,7 @@ class DriverController extends GetxController {
           hasCompanyCarValue.value = feat.hasCompanyCar ?? false;
           hidePaymentTypeValue.value = feat.hidePaymentType ?? false;
           enableTollChargesValue.value = feat.enableTollCharges ?? false;
-
-          // TextFields update karein (.text = string)
+          // TextFields
           bookingTimerController.text = feat.bookingTimer?.toString() ?? "";
           breakController.text = feat.breakTimer?.toString() ?? "";
           imeController.text = feat.mobileImeiNumber?.toString() ?? "";
@@ -856,16 +852,12 @@ class DriverController extends GetxController {
       update();
     }
   }
-// DriverController ke andar:
 
-// Checkbox update karne ka generic function (optional, aap directly bhi kar sakte hain)
   void toggleFeature(RxBool feature) {
     feature.value = !feature.value;
     update(); // Taake GetBuilder refresh ho jaye
   }
-
   RxBool saveFeaturesLoad = false.obs;
-
   saveDriverFeatures() async {
     if (selectDriverObject == null) {
       BotToast.showText(text: 'Please select a driver first');
@@ -907,24 +899,19 @@ class DriverController extends GetxController {
       "pda_deposit": pdaDepositController.text,
       "pda_comments": commentsController.text,
     };
-
     print("Sending Data: $formData");
-    // Aapke Api().post format ke mutabiq call
     var response = await Api().post(
       formData,
       "drivers-app/app_features", // Yahan apna sahi update URL dalein
       auth: true,
     );
-
     if (response.statusCode == 200) {
       BotToast.showText(text: 'Driver Features Updated Successfully');
       print("Features Updated Successfully");
       saveFeaturesLoad(false);
-      update();
-    } else {
-      saveFeaturesLoad(false);
       print("Error Updating Features");
       print(response);
+      update();
     }
   }
 

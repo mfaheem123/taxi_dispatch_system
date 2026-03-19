@@ -40,6 +40,11 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
         controller.getAllDrivers();
       },
       builder: (controller) {
+        if (controller.isDriversLoading || controller.allDriverData == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         return Container(
 
           padding: EdgeInsets.symmetric(horizontal: 12),
