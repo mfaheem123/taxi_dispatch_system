@@ -24,8 +24,10 @@ import 'package:file_picker/file_picker.dart';
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
 import '../../../component/color.dart';
+import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
+import '../driver/driver_app_features/driver_app_future_model.dart';
 import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
@@ -787,6 +789,146 @@ class DriverController extends GetxController {
   final pdaDepositController = TextEditingController();
   final commentsController = TextEditingController();
   final breakController = TextEditingController();
+
+
+
+
+  RestricDriverModel? allDriverData;
+  DriverObject? selectDriverObject;
+  getAllDrivers() async {
+    var response = await Api().get("drivers/get");
+    if (response.statusCode == 200) {
+      allDriverData = RestricDriverModel.fromJson(response.data);
+      update();
+    }
+  }
+
+  DriverAppFutureModel? driverAppFutureModel;
+  getDriversAppFuture(int driverId) async {
+    var response = await Api().get("drivers-app/app_features?driver_id=$driverId");
+
+    if (response.statusCode == 200) {
+      // 1. Model update karein
+      driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);
+
+      // 2. Agar features list empty nahi hai, to values assign karein
+      if (driverAppFutureModel?.appFeatures?.isNotEmpty ?? false) {
+        var feat = driverAppFutureModel!.appFeatures!.first.features;
+
+        if (feat != null) {
+          // Checkboxes update karein (.value = boolean)
+          showCustomerValue.value = feat.showCustomerNumber ?? false;
+          enableCustomerValue.value = feat.enableCustomerCall ?? false;
+          enableFlagDownValue.value = feat.enableFlagdown ?? false;
+          showAccountFareValue.value = feat.showAccountFare ?? false;
+          hideBreakValue.value = feat.hideBreak ?? false;
+          hideDeclineValue.value = feat.hideDecline ?? false;
+          hideRecoverValue.value = feat.hideRecover ?? false;
+          hideNoPickUpValue.value = feat.hideNoPickup ?? false;
+          hidePickUpValue.value = feat.hidePickup ?? false;
+          hideDropOffValue.value = feat.hideDropoff ?? false;
+          fareMeterValue.value = feat.fareMeter ?? false;
+          diableFareMeterValue.value = feat.disableFareMeterAccountJob ?? false;
+          fareMeterWaitingValue.value = feat.fareMeterWaitingCharges ?? false;
+          payByCardValue.value = feat.payByCard ?? false;
+          waitingAfterArrivalValue.value = feat.waitingAfterArrival ?? false;
+          disablePanicButtonValue.value = feat.disablePanicButon ?? false;
+          showNavigationValue.value = feat.showNavigation ?? false;
+          shawFareValue.value = feat.showFare ?? false;
+          hasCompanyCarValue.value = feat.hasCompanyCar ?? false;
+          hidePaymentTypeValue.value = feat.hidePaymentType ?? false;
+          enableTollChargesValue.value = feat.enableTollCharges ?? false;
+
+          // TextFields update karein (.text = string)
+          bookingTimerController.text = feat.bookingTimer?.toString() ?? "";
+          breakController.text = feat.breakTimer?.toString() ?? "";
+          imeController.text = feat.mobileImeiNumber?.toString() ?? "";
+          makeController.text = feat.mobileMake?.toString() ?? "";
+          modelController.text = feat.mobileModel?.toString() ?? "";
+          simNetworkController.text = feat.mobileSimNetwork?.toString() ?? "";
+          simNumberController.text = feat.mobileSimNumber?.toString() ?? "";
+          networkProviderController.text = feat.mobileNetworkProvider?.toString() ?? "";
+          dataAllowanceController.text = feat.mobileDataAllowance?.toString() ?? "";
+          pdaDepositController.text = feat.pdaDeposit?.toString() ?? "";
+          commentsController.text = feat.pdaComments?.toString() ?? "";
+        }
+      }
+      update();
+    }
+  }
+// DriverController ke andar:
+
+// Checkbox update karne ka generic function (optional, aap directly bhi kar sakte hain)
+  void toggleFeature(RxBool feature) {
+    feature.value = !feature.value;
+    update(); // Taake GetBuilder refresh ho jaye
+  }
+
+  RxBool saveFeaturesLoad = false.obs;
+
+  saveDriverFeatures() async {
+    if (selectDriverObject == null) {
+      BotToast.showText(text: 'Please select a driver first');
+      return;
+    }
+    saveFeaturesLoad(true);
+    var formData = {
+      "driver_id": selectDriverObject!.id,
+      "show_customer_number": showCustomerValue.value,
+      "enable_customer_call": enableCustomerValue.value,
+      "enable_flagdown": enableFlagDownValue.value,
+      "show_account_fare": showAccountFareValue.value,
+      "hide_break": hideBreakValue.value,
+      "hide_decline": hideDeclineValue.value,
+      "hide_recover": hideRecoverValue.value,
+      "hide_no_pickup": hideNoPickUpValue.value,
+      "hide_pickup": hidePickUpValue.value,
+      "hide_dropoff": hideDropOffValue.value,
+      "fare_meter": fareMeterValue.value,
+      "disable_fare_meter_account_job": diableFareMeterValue.value,
+      "fare_meter_waiting_charges": fareMeterWaitingValue.value,
+      "pay_by_card": payByCardValue.value,
+      "waiting_after_arrival": waitingAfterArrivalValue.value,
+      "disable_panic_buton": disablePanicButtonValue.value,
+      "show_navigation": showNavigationValue.value,
+      "show_fare": shawFareValue.value,
+      "has_company_car": hasCompanyCarValue.value,
+      "hide_payment_type": hidePaymentTypeValue.value,
+      "enable_toll_charges": enableTollChargesValue.value,
+      "booking_timer": bookingTimerController.text,
+      "break_timer": breakController.text,
+      "mobile_imei_number": imeController.text,
+      "mobile_make": makeController.text,
+      "mobile_model": modelController.text,
+      "mobile_sim_network": simNetworkController.text,
+      "mobile_sim_number": simNumberController.text,
+      "mobile_network_provider": networkProviderController.text,
+      "mobile_data_allowance": dataAllowanceController.text,
+      "pda_deposit": pdaDepositController.text,
+      "pda_comments": commentsController.text,
+    };
+
+    print("Sending Data: $formData");
+    // Aapke Api().post format ke mutabiq call
+    var response = await Api().post(
+      formData,
+      "drivers-app/app_features", // Yahan apna sahi update URL dalein
+      auth: true,
+    );
+
+    if (response.statusCode == 200) {
+      BotToast.showText(text: 'Driver Features Updated Successfully');
+      print("Features Updated Successfully");
+      saveFeaturesLoad(false);
+      update();
+    } else {
+      saveFeaturesLoad(false);
+      print("Error Updating Features");
+      print(response);
+    }
+  }
+
+
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 
@@ -2528,6 +2670,19 @@ class DriverController extends GetxController {
   final ignoreJobController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // class DriverBindings implements Bindings {
