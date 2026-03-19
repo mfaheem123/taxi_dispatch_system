@@ -1893,7 +1893,7 @@ class DriverController extends GetxController {
   RxBool activeLogout = false.obs;
   bool isLoadingDriverlogin = false;
 
-  Future<void> getDriverLoginLogout() async {
+  getDriverLoginLogout() async {
     isLoadingDriverlogin = true;
     update();
       String status = activeLogout.value ? "logged_out" : "logged_in";
@@ -1943,6 +1943,7 @@ class DriverController extends GetxController {
   driverLoginLogoutDelete(int? id) async {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
+      getDriverLoginLogout();
       BotToast.showText(text:"Driver Login logout deleted successfully!");
       print("Driver Login logout deleted successfully!");
     }
