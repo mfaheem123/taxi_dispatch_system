@@ -142,6 +142,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                           padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
                           child: Row(
                             children: [
+
                               Text(
                                 AppText.subsidiary,
                                 style: TextStyle(
