@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
          Row(
            mainAxisSize: MainAxisSize.min,
            children: [
-             Icon(Icons.email,
+             Icon(Icons.headset_mic_outlined,
                size: 24,
                color: DynamicColors.whiteClr,
              ),

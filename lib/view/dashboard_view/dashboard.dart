@@ -321,7 +321,7 @@ class _DashBoarScreenState extends State<DashBoarScreen> {
                                 child: CircleAvatar(
                                   radius: 18,
                                   backgroundColor: controller.selectionMenuBtn.value==0? Colors.cyanAccent.shade400:Colors.transparent,
-                                  child: Icon(Icons.email,
+                                  child: Icon(Icons.headset_mic_outlined,
                                       size: 20,
                                       color: controller.selectionMenuBtn.value==0? DynamicColors.whiteClr:Colors.cyanAccent.shade400),
                                 ),
