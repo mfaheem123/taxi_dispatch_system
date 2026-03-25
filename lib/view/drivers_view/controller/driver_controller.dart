@@ -1441,6 +1441,7 @@ class DriverController extends GetxController {
   driverCommissionDelete(int? id) async {
     var response = await Api().delete("driver_commission/delete/$id");
     if (response.statusCode == 200) {
+      BotToast.showText(text:"Driver Commission deleted successfully!");
       print("DriverCommission deleted successfully!");
     }
   }
@@ -1929,8 +1930,35 @@ class DriverController extends GetxController {
   DriverRentModel? driverRentModel;
   bool isCreateDriverRent = false;
 
+  void resetCreateRentFields() {
+    cashTotal = 0.0;
+    accountTotal = 0.0;
+    grandTotal = 0.0;
+    parkingCongestion = 0.0;
+    rentTotal = 0.0;
+    owed = 0.0;
+    newBalance = 0.0;
+    oldBalance = 0.0;
+
+    rentDriverSelectionController.clear();
+    rentWeekController.clear();
+    pdaRentWeekController.clear();
+    rentFromDateController.clear();
+    rentToDateController.clear();
+
+    selectedIds.clear();
+    selectedPaymentTypeIds.clear();
+    driverRentFilterModel = null;
+
+    rentTransactionDate = "";
+    rentFilterFromDate = "";
+    rentFilterToDate = "";
+
+    update();
+  }
+
   getDriver() async {
-    // resetCreateFields();
+    resetCreateRentFields();
     isCreateDriverRent = true;
     update();
     var response =
@@ -2259,6 +2287,7 @@ class DriverController extends GetxController {
   driverRentDelete(int? id) async {
     var response = await Api().delete("driver_rent/delete/$id");
     if (response.statusCode == 200) {
+      BotToast.showText(text:"Driver Rent deleted successfully!");
       print("DriverRent deleted successfully!");
     }
   }

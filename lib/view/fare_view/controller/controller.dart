@@ -763,7 +763,7 @@ class FareController extends GetxController {
     if(response.statusCode == 200){
       // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       // print(response.data);
-      // BotToast.showText(text: "Fare configuration is successfully added");
+      BotToast.showText(text: "Fare configuration deleted successfully");
       getAllFareConfiguration();
       refreshCreateFareFields();
       update();

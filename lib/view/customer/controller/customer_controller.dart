@@ -170,7 +170,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
       getCustomer();
-      print("Customer deleted successfully!");
+      BotToast.showText(text:"Customer deleted successfully!");
       print(json.encode(response.data));
     }
   }

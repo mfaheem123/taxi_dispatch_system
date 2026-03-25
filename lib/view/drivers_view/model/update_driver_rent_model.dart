@@ -197,9 +197,9 @@ class BookingRent {
   String? totalCharges;
   bool? commission;
   JourneyType? journeyType;
-  Type? paymentType;
-  Type? vehicleType;
-  dynamic account;
+  Account? paymentType;
+  Account? vehicleType;
+  Account? account;
 
   BookingRent({
     this.id,
@@ -240,9 +240,9 @@ class BookingRent {
     totalCharges: json["total_charges"],
     commission: json["commission"],
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
-    paymentType: json["payment_type"] == null ? null : Type.fromJson(json["payment_type"]),
-    vehicleType: json["vehicle_type"] == null ? null : Type.fromJson(json["vehicle_type"]),
-    account: json["account"],
+    paymentType: json["payment_type"] == null ? null : Account.fromJson(json["payment_type"]),
+    vehicleType: json["vehicle_type"] == null ? null : Account.fromJson(json["vehicle_type"]),
+    account: json["account"] == null ? null : Account.fromJson(json["account"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -264,7 +264,23 @@ class BookingRent {
     "journey_type": journeyType?.toJson(),
     "payment_type": paymentType?.toJson(),
     "vehicle_type": vehicleType?.toJson(),
-    "account": account,
+    "account": account?.toJson(),
+  };
+}
+
+class Account {
+  String? name;
+
+  Account({
+    this.name,
+  });
+
+  factory Account.fromJson(Map<String, dynamic> json) => Account(
+    name: json["name"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "name": name,
   };
 }
 
@@ -281,21 +297,5 @@ class JourneyType {
 
   Map<String, dynamic> toJson() => {
     "journey_type": journeyType,
-  };
-}
-
-class Type {
-  String? name;
-
-  Type({
-    this.name,
-  });
-
-  factory Type.fromJson(Map<String, dynamic> json) => Type(
-    name: json["name"],
-  );
-
-  Map<String, dynamic> toJson() => {
-    "name": name,
   };
 }

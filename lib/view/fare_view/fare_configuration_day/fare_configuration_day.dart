@@ -472,7 +472,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             .getAllFareConfigurationData!.fareConfigurations!
                             .map((fare) => DataRow(
                                   cells: [
-                                    DataCell(Center(child: Text(fare.vehicleType!.name ?? ""))),
+                                    DataCell(Center(child: Text(fare.vehicleType?.name ?? ""))),
                                     DataCell(Center(child: Text(fare.account == null ? "": fare.account!.name ?? ""))),
                                     DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??""))),
                                     DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? ""))),

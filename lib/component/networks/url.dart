@@ -10,8 +10,8 @@ abstract class BaseConfig {
 
 class DevConfig implements BaseConfig {
   @override
-  // String get baseUrl => "http://192.168.110.5:5000/api/";
-  String get baseUrl => "https://www.nexustechnologys.com/api/";
+  String get baseUrl => "http://192.168.110.6:5000/api/";
+  // String get baseUrl => "https://www.nexustechnologys.com/api/";
 
   @override
   String get imageUrl => "https://bloodlines.gologonow.app";
@@ -20,18 +20,18 @@ class DevConfig implements BaseConfig {
   String get slashImageUrl => "https://bloodlines.gologonow.app/";
 
   @override
-  // String get apiUrl => "http://192.168.110.5:5000/api/";
-  String get apiUrl => "https://www.nexustechnologys.com/api/";
+  String get apiUrl => "http://192.168.110.6:5000/api/";
+  // String get apiUrl => "https://www.nexustechnologys.com/api/";
 
   @override
-  String get socketUrl => "ws://192.168.5.251:8086/cam";
+  String get socketUrl => "ws://192.168.6.251:8086/cam";
 
 }
 
 class ProductionConfig implements BaseConfig {
   @override
-  // String get baseUrl => "http://192.168.110.5:5000/api/";
-  String get baseUrl => "https://www.nexustechnologys.com/api/";
+  String get baseUrl => "http://192.168.110.6:5000/api/";
+  // String get baseUrl => "https://www.nexustechnologys.com/api/";
 
   @override
   String get imageUrl => "http://apis.bloodlines.info/public";
@@ -40,8 +40,8 @@ class ProductionConfig implements BaseConfig {
   String get slashImageUrl => "http://apis.bloodlines.info/public";
 
   @override
-  // String get apiUrl => "http://192.168.110.5:5000/api/";
-  String get apiUrl => "https://www.nexustechnologys.com/api/";
+  String get apiUrl => "http://192.168.110.6:5000/api/";
+  // String get apiUrl => "https://www.nexustechnologys.com/api/";
 
   @override
   // String get socketUrl => "ws://192.168.110.5:5000/websocket";

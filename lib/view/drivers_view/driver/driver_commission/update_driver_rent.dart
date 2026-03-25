@@ -428,8 +428,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                                     ""))),
                                         DataCell(Center(
                                             child: Text(
-                                                booking.account?.name ??
-                                                    ""))),
+                                                booking.account?.name ?? ""))),
                                         DataCell(Center(
                                             child: Text(booking.journeyType
                                                 ?.journeyType ??
