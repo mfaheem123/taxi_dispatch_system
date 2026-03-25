@@ -172,6 +172,27 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print("Error: $e");
     }
   }
+  
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
+  getAllOnlineDrivers() async{
+    var response = await Api().get("drivers/session?session_status=logged_in");
+    if(response.statusCode == 200){
+      print(response.data);
+      if(response.data['drivers'].isNotEmpty){
+        response.data['drivers'].forEach((element) {
+          onlineDriversList.add(DriverActivityModel(
+            id: element['id'],
+            name: element['name'],
+            username: element['username'],
+            vehicleType: element['driver_type'],
+            zone: element['zone'],
+          ));
+        });
+
+      }
+      update();
+    }
+  }
 
 
   ///===========================================================>See Zone On Map
@@ -309,6 +330,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     connectToDriverLogin();
     connectToBusyDriver();
     getAllDrivers();
+    getAllOnlineDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     pickupController.addListener(() {
