@@ -273,7 +273,9 @@ class _DriversViewState extends State<DriversView> {
                   // ----- Driver List -----
                   Expanded(
                     child: ListView.builder(
-                      itemCount: controller.onlineDriversList.length,
+                      itemCount: controller.driverSelectionTab
+                          .value !=
+                          "activeDriver"?controller.busyDriversList.length: controller.onlineDriversList.length,
                       padding: const EdgeInsets.symmetric(
                           vertical: 8),
                       itemBuilder: (context, index) {
@@ -289,19 +291,19 @@ class _DriversViewState extends State<DriversView> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  controller.onlineDriversList[index].name!,
+                                  controller.onlineDriversList[index].name??"",
                                   style:
                                   mozillaTextRegularText(fontSize: 13),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  controller.onlineDriversList[index].vehicleType!,
+                                  controller.onlineDriversList[index].vehicleType??"",
                                   style:
                                   mozillaTextRegularText(fontSize: 13),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  controller.onlineDriversList[index].username!,
+                                  controller.onlineDriversList[index].username ??"",
                                   style:
                                   mozillaTextRegularText(fontSize: 13),
                                   overflow: TextOverflow.ellipsis,

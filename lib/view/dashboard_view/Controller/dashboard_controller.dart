@@ -103,7 +103,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             );
             onlineDriversList.add(driver);
             update();
-          }else{
+          }else if (data['event'] != "DRIVER_LIST"){
             int index = onlineDriversList.indexWhere(
                   (test) => test.id.toString() == data['data']['driverId'].toString(),
             );
@@ -142,20 +142,20 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           final data = jsonDecode(message);
 
           print(data['event']);
-          if (data['event'] == "DRIVER_LOGIN") {
+          if (data['event'] == "BUSY_DRIVER_UPDATE") {
 
             final driver = DriverActivityModel.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
-            onlineDriversList.add(driver);
+            busyDriversList.add(driver);
             update();
           }else{
-            int index = onlineDriversList.indexWhere(
-                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            int index = busyDriversList.indexWhere(
+                  (test) => test.id.toString() == data['data']['id'].toString(),
             );
 
             if (index >= 0) {
-              onlineDriversList.removeAt(index);
+              busyDriversList.removeAt(index);
             }
             update();
           }
@@ -175,16 +175,28 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
   getAllOnlineDrivers() async{
-    var response = await Api().get("drivers/session?session_status=logged_in");
+    var response = await Api().get("drivers/login-busy");
     if(response.statusCode == 200){
       print(response.data);
-      if(response.data['drivers'].isNotEmpty){
-        response.data['drivers'].forEach((element) {
-          onlineDriversList.add(DriverActivityModel(
+      if(response.data['login_drivers'].isNotEmpty){
+        response.data['login_drivers'].forEach((element) {
+          onlineDriversList.insert(0, DriverActivityModel(
             id: element['id'],
             name: element['name'],
             username: element['username'],
-            vehicleType: element['driver_type'],
+            vehicleType: element['vehicle_type'],
+            zone: element['zone'],
+          ));
+        });
+      }
+
+      if(response.data['busy_drivers'].isNotEmpty){
+        response.data['busy_drivers'].forEach((element) {
+          busyDriversList.insert(0, DriverActivityModel(
+            id: element['id'],
+            name: element['name'],
+            username: element['username'],
+            vehicleType: element['vehicle_type'],
             zone: element['zone'],
           ));
         });
@@ -328,7 +340,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     mapController = MapController(); // ✅ Initialize here
     connectToCli("200");
     connectToDriverLogin();
-    connectToBusyDriver();
+    // connectToBusyDriver();
     getAllDrivers();
     getAllOnlineDrivers();
 
