@@ -111,19 +111,30 @@ class _AirportChargesState extends State<AirportCharges> {
                               ),
                               DataCell(
                                 CustomTextField(
-                                  columnText: true,
+                                  columnText: false,
                                   controller: controller.pickUpChargesController,
                                   width: fieldWidth/2,
-                                  hintText: "Pickup",
+                                  hintText: "FROM",
+                                  prefixIcon: Icon(Icons.search),
+                                ),
+                              ),
+                              DataCell(
+                                CustomTextField(
+                                  columnText: false,
+                                  controller: controller.pickUpChargesController,
+                                  width: fieldWidth/2,
+                                  hintText: "TO",
+                                  prefixIcon: Icon(Icons.search),
                                 ),
                               ),
 
                               DataCell(
                                 CustomTextField(
-                                  columnText: true,
+                                  columnText: false,
                                   controller: controller.dropOffChargesController,
                                   width: fieldWidth/2,
-                                  hintText: "DropOff",
+                                  hintText: "FARES",
+                                  prefixIcon: Icon(Icons.search),
                                 ),
                               ),
 
