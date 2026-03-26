@@ -69,6 +69,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                         style: mozillaTextSemiBoldText(
                             fontSize: 16,
                             fontWeight: FontWeight.w800
+
                         ),
                       ),
                     ],
@@ -85,6 +86,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                     height: 35,
                     verticalPadding: 0.0,
                     borderRadius: 4,
+
                     width: 170,
                     btnText: AppText.save,
                   )
@@ -99,6 +101,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   DriversListFeature(),
+
                   SizedBox(
                     height: 10,
                   ),
