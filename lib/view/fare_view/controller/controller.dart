@@ -1012,6 +1012,9 @@ class FareController extends GetxController {
             ? "surcharges/edit/${sureChargeObject!.id}"
             : "surcharges/add");
     if (response.statusCode == 200) {
+      String message = sureChargeObject != null
+          ? "Surcharges Updated"
+          : "Surcharge Added successfully";
       if (sureChargeObject == null) {
         getSurchargesModel!.surcharges!
             .insert(0, SurchargeObject.fromJson(response.data['surcharges']));
@@ -1023,10 +1026,7 @@ class FareController extends GetxController {
       }
       sureChargeObject = null;
       clearSurchargesData();
-      BotToast.showText(
-          text: sureChargeObject != null
-              ? "Surcharges Updated"
-              : " Surecharge Add sucessfully");
+      BotToast.showText(text: message);
     }
   }
 
@@ -1102,6 +1102,7 @@ class FareController extends GetxController {
           getSurchargesModel!.surcharges!.indexWhere((test) => test.id == id);
       getSurchargesModel!.surcharges!
           .remove(getSurchargesModel!.surcharges![index]);
+      BotToast.showText(text: "Surcharges deleted successfully");
       update();
     }
   }
@@ -1124,6 +1125,7 @@ class FareController extends GetxController {
 
   TextEditingController pickUpChargesController = TextEditingController();
   TextEditingController dropOffChargesController = TextEditingController();
+  TextEditingController airportChargesController = TextEditingController();
   int? airPortSelectedItemId;
 
   editAirPortCharge() async {

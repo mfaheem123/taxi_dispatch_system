@@ -106,13 +106,13 @@ class _AirportChargesState extends State<AirportCharges> {
                           DataRow(
                             color: MaterialStateProperty.all(Colors.grey[100]),
                             cells: [
-                              DataCell(
-                                Text(""),
-                              ),
+                              // DataCell(
+                              //   Text(""),
+                              // ),
                               DataCell(
                                 CustomTextField(
                                   columnText: false,
-                                  controller: controller.pickUpChargesController,
+                                  controller: controller.airportChargesController,
                                   width: fieldWidth/2,
                                   hintText: "FROM",
                                   prefixIcon: Icon(Icons.search),
