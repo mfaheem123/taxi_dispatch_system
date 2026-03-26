@@ -22,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../../alert/cli_extention_alert.dart';
 import '../../component/color.dart';
 import '../../tabbarview.dart';
 import '../accounts/Invoice/list_customer_invoices.dart';
@@ -185,9 +186,14 @@ class _MyHomePageState extends State<MyHomePage> {
          Row(
            mainAxisSize: MainAxisSize.min,
            children: [
-             Icon(Icons.headset_mic_outlined,
-               size: 24,
-               color: DynamicColors.whiteClr,
+             GestureDetector(
+               onTap: () {
+                 ExtensionAlert.show();
+               },
+               child: Icon(Icons.headset_mic_outlined,
+                 size: 24,
+                 color: DynamicColors.whiteClr,
+               ),
              ),
              SizedBox(
                width: 9,
