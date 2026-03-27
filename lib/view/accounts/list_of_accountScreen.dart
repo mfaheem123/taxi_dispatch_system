@@ -213,25 +213,25 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                 return DataRow(
                                   cells: [
                                     DataCell(Center(
-                                        child: Text(item.name!.toString()))),
+                                        child: Text(item.name ?? "-"))),
                                     DataCell(Center(
                                         child: Text(
-                                            item.accountType!.toString()))),
+                                            item.accountType ?? "-"))),
                                     DataCell(Center(
-                                        child: Text(item.address!.toString()))),
+                                        child: Text(item.address ?? "-"))),
                                     DataCell(Center(
-                                        child: Text(item.email!.toString()))),
+                                        child: Text(item.email ?? "-"))),
                                     DataCell(Center(
-                                        child: Text(item.mobile!.toString()))),
+                                        child: Text(item.mobile ?? "-"))),
                                     DataCell(Center(
                                         child:
-                                            Text(item.telephone!.toString()))),
+                                            Text(item.telephone ?? "-"))),
                                     DataCell(Center(
                                         child: Text(
-                                            item.contactName!.toString()))),
+                                            item.contactName ?? "-"))),
                                     DataCell(Center(
                                         child: Text(
-                                            item.subsidiary!.name.toString()))),
+                                            item.subsidiary?.name ?? "-"))),
                                     DataCell(
                                       Center(
                                         child: Row(
@@ -276,6 +276,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                               child: Icon(
                                                 Icons.delete_forever,
                                                 size: 28,
+                                                color: Colors.red,
                                               ),
                                             ),
                                           ],

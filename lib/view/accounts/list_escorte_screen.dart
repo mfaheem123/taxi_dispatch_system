@@ -107,21 +107,21 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                   : Get.width,
                       child: DatatableWidget(
                         columns: [
-                          DataColumn(
-                            label: Checkbox(
-                              value: isAllSelected,
-                              tristate: false,
-                              onChanged: (bool? val) {
-                                setState(() {
-                                  if (val == true) {
-                                    controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
-                                  } else {
-                                    controller.selectedIds.clear();
-                                  }
-                                });
-                              },
-                            ),
-                          ),
+                          // DataColumn(
+                          //   label: Checkbox(
+                          //     value: isAllSelected,
+                          //     tristate: false,
+                          //     onChanged: (bool? val) {
+                          //       setState(() {
+                          //         if (val == true) {
+                          //           controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
+                          //         } else {
+                          //           controller.selectedIds.clear();
+                          //         }
+                          //       });
+                          //     },
+                          //   ),
+                          // ),
                           buildHeaderWithSearch(
                             title: "NAME",
                             onChanged: (v) {
@@ -163,26 +163,26 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                           bool isRowSelected = controller.selectedIds.contains(item.id.toString());
                           return DataRow(
                             cells: [
-                              DataCell(
-                                Checkbox(
-                                  value: isRowSelected,
-                                  onChanged: (bool? val) {
-                                    setState(() {
-                                      if (val == true) {
-                                        controller.selectedIds.add(item.id.toString());
-                                      } else {
-                                        controller.selectedIds.remove(item.id.toString());
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
+                              // DataCell(
+                              //   Checkbox(
+                              //     value: isRowSelected,
+                              //     onChanged: (bool? val) {
+                              //       setState(() {
+                              //         if (val == true) {
+                              //           controller.selectedIds.add(item.id.toString());
+                              //         } else {
+                              //           controller.selectedIds.remove(item.id.toString());
+                              //         }
+                              //       });
+                              //     },
+                              //   ),
+                              // ),
 
-                              DataCell(Center(child: Text(item.name!))),
-                              DataCell(Center(child: Text(item.safeguardingExpiry!))),
-                              DataCell(Center(child: Text(item.patExpiry!))),
-                              DataCell(Center(child: Text(item.firstaidExpiry!))),
-                              DataCell(Center(child: Text(item.dbsExpiry!))),
+                              DataCell(Center(child: Text(item.name))),
+                              DataCell(Center(child: Text(item.safeguardingExpiry))),
+                              DataCell(Center(child: Text(item.patExpiry))),
+                              DataCell(Center(child: Text(item.firstaidExpiry))),
+                              DataCell(Center(child: Text(item.dbsExpiry))),
                               DataCell(
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,7 +221,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
 
                                       },
                                       child: Icon(
-                                        Icons.edit,
+                                        Icons.edit_calendar,
                                         size: 28,
                                         color: DynamicColors.primaryClr,
                                       ),
@@ -237,7 +237,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                         controller.escortDelete(item.id);
                                       },
                                       child: Icon(
-                                        Icons.delete,
+                                        Icons.delete_forever,
                                         size: 28,
                                         color: DynamicColors.redClr,
                                       ),

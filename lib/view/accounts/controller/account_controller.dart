@@ -199,7 +199,11 @@ class AccountController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      print("✅ Account Created Successfully");
+      String message = accountObjectData != null
+          ? "Account Updated Successfully"
+          : "Account Created Successfully";
+      BotToast.showText(text: message);
+      print("$message");
       accountObjectData = null;
       escoptCheckBox.value = false;
       arrivalSmsCheckBox.value = false;
@@ -647,6 +651,9 @@ class AccountController extends GetxController {
             : 'escorts/add',
         auth: true, multiPart: true);
     if (response.statusCode == 200) {
+      String message = selectedEscort != null
+          ? "Escort Updated Successfully"
+          : "Escort Created Successfully";
       escortName.clear();
       escortEmail.clear();
       escortMobile.clear();
@@ -662,9 +669,7 @@ class AccountController extends GetxController {
       dbsDocPic = null;
       selectedEscort = null;
       listEscort();
-      BotToast.showText(
-          text: selectedEscort != null ? "Escort Updated Successfully" : "Escort Created Successfully"
-      );
+      BotToast.showText(text: message);
       isEscortUpdating.value = false;
       isEscortUpdating.value = false;
       update();
@@ -675,8 +680,7 @@ class AccountController extends GetxController {
     var response = await Api().delete("escorts/delete/$id");
     if (response.statusCode == 200) {
       listEscort();
-      BotToast.showText(text: "Success, Escort Deleted Successfully");
-      print("Escort deleted successfully!");
+      BotToast.showText(text: "Escort deleted Successfully");
     }
   }
 

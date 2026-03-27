@@ -1013,7 +1013,7 @@ class FareController extends GetxController {
             : "surcharges/add");
     if (response.statusCode == 200) {
       String message = sureChargeObject != null
-          ? "Surcharges Updated"
+          ? "Surcharges Updated Successfully"
           : "Surcharge Added successfully";
       if (sureChargeObject == null) {
         getSurchargesModel!.surcharges!
@@ -1155,6 +1155,7 @@ class FareController extends GetxController {
           airportChargesData!.locations!.indexWhere((test) => test.id == id);
       airportChargesData!.locations![index].pickupCharges = "0.0";
       airportChargesData!.locations![index].dropoffCharges = "0.0";
+      BotToast.showText(text: "Success! Saved");
       update();
     }
   }

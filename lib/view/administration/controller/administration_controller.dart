@@ -173,10 +173,9 @@ class AdministrationController extends GetxController {
   userDelete(int? id) async {
     var response = await Api().delete("employees/delete/$id");
     if (response.statusCode == 200) {
+      BotToast.showText(text: "User deleted successfully!");
       userData();
-      print("Customer deleted successfully!");
-
-    }
+       }
   }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  User  Update
@@ -407,6 +406,9 @@ class AdministrationController extends GetxController {
       multiPart: multipartFile != null ? true : false,
     );
     if (response.statusCode == 200) {
+      String message = employee != null
+          ? "User Update Successfully"
+          : "User Added Successfully";
       print(response);
       userNameController.clear();
       passwordController.clear();
@@ -423,7 +425,7 @@ class AdministrationController extends GetxController {
       userProfileImg = null;
       employee = null;
       isLoadUser(false);
-      BotToast.showText(text: "Successfully Done");
+      BotToast.showText(text: message);
       update();
       isLoadUser(false);
     }
