@@ -803,6 +803,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           pickup: pickupController.text,
           dropOff: dropOffController.text,
           miles: totalDistance.value,
+          pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
           dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
           pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
           pickupTime: pickUpTimeController.text,
@@ -1401,8 +1402,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       dropOff: pickupController.text,
       pickup: dropOffController.text,
       miles: totalDistance.value,
-      dropoffPlotId:
-      dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+      
+      dropoffPlotId:    dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
+      pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
       pickupDate:
       "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,
