@@ -141,7 +141,7 @@ Future<String> getFares({
     if(withReturnPickUp != null && withReturnDropOff != null && returnCreditCardCharges != null) "return_credit_card_charges": returnCreditCardCharges,
     if(withReturnPickUp != null && withReturnDropOff != null && returnCompanyPrice != null) "return_company_price": returnCompanyPrice,
   };
-
+print(pickUpPlotId);
   print(formData);
 
   try {
