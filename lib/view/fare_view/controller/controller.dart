@@ -353,7 +353,6 @@ class FareController extends GetxController {
     }
   }
 
-
   void clearForm() {
     addressController.clear();
     addressController1.clear();
@@ -1123,6 +1122,28 @@ class FareController extends GetxController {
     }
   }
 
+  List<Location>? filteredLocations = [];
+  bool isEditing = false;
+
+  void filterAirports(String query) {
+    if (isEditing) return;
+
+    filteredLocations = (airportChargesController.text.isEmpty &&
+            pickUpChargesController.text.isEmpty &&
+            dropOffChargesController.text.isEmpty)
+        ? (airportChargesData?.locations ?? [])
+        : airportChargesData?.locations
+            ?.where((loc) =>
+                loc.name!
+                    .toLowerCase()
+                    .contains(airportChargesController.text.toLowerCase()) &&
+                loc.pickupCharges!.contains(pickUpChargesController.text) &&
+                loc.dropoffCharges!.contains(dropOffChargesController.text))
+            .toList();
+
+    update();
+  }
+
   TextEditingController pickUpChargesController = TextEditingController();
   TextEditingController dropOffChargesController = TextEditingController();
   TextEditingController airportChargesController = TextEditingController();
@@ -1141,9 +1162,11 @@ class FareController extends GetxController {
           .indexWhere((test) => test.id == airPortSelectedItemId);
       airportChargesData!.locations![index] =
           Location.fromJson(response.data['location']);
+      airportChargesController.clear();
       pickUpChargesController.clear();
       dropOffChargesController.clear();
       BotToast.showText(text: "Airport Charges Updated");
+      filterAirports("");
       update();
     }
   }
