@@ -31,6 +31,7 @@ import '../accounts/account/create_escopt.dart';
 import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
+import '../administration/model/user_model.dart';
 import '../booking_view/app_booking.dart';
 import '../booking_view/complete_bookingview.dart';
 import '../booking_view/multi_booking.dart';
@@ -102,6 +103,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final List<NestedMenuItem> hoverMenu;
+
   @override
   void initState() {
     super.initState();
@@ -183,37 +185,40 @@ class _MyHomePageState extends State<MyHomePage> {
               popUpMenuItemHoverBackgroundColor: Colors.black,
             ),
             // Spacer(),
-         Row(
-           mainAxisSize: MainAxisSize.min,
-           children: [
-             GestureDetector(
-               onTap: () {
-                 ExtensionAlert.show();
-               },
-               child: Icon(Icons.headset_mic_outlined,
-                 size: 24,
-                 color: DynamicColors.whiteClr,
-               ),
-             ),
-             SizedBox(
-               width: 9,
-             ),
-             Icon(Icons.notifications,
-               size: 24,
-               color: DynamicColors.whiteClr,
-             ),
-             SizedBox(
-               width: 9,
-             ),
-             Icon(Icons.power_settings_new,
-               size: 24,
-               color: DynamicColors.whiteClr,
-             ),
-             SizedBox(
-               width: 9,
-             ),
-           ],
-         )
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    ExtensionAlert.show();
+                  },
+                  child: Icon(
+                    Icons.headset_mic_outlined,
+                    size: 24,
+                    color: DynamicColors.whiteClr,
+                  ),
+                ),
+                SizedBox(
+                  width: 9,
+                ),
+                Icon(
+                  Icons.notifications,
+                  size: 24,
+                  color: DynamicColors.whiteClr,
+                ),
+                SizedBox(
+                  width: 9,
+                ),
+                Icon(
+                  Icons.power_settings_new,
+                  size: 24,
+                  color: DynamicColors.whiteClr,
+                ),
+                SizedBox(
+                  width: 9,
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -288,11 +293,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             onDeleted: () {
                               if (item.selectedItem == true &&
                                   controller.selectedMenuItems.length > 1) {
-                                int index = controller.selectedMenuItems.indexWhere(
-                                    (item) => item.selectedItem == true);
+                                int index = controller.selectedMenuItems
+                                    .indexWhere(
+                                        (item) => item.selectedItem == true);
                                 if (index != -1) {
-                                  controller.selectedMenuItems[index].selectedItem =
-                                      false;
+                                  controller.selectedMenuItems[index]
+                                      .selectedItem = false;
                                 }
                                 controller.selectedMenuItems.remove(item);
                                 controller.selectedMenuItems.last.selectedItem =
@@ -301,7 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     controller.selectedMenuItems.last.category;
                               } else {
                                 controller.selectedMenuItems.remove(item);
-                                controller.currentPage.value = ByDefaultDashboard();
+                                controller.currentPage.value =
+                                    ByDefaultDashboard();
                               }
 
                               controller.update(); // if using GetX
@@ -315,143 +322,167 @@ class _MyHomePageState extends State<MyHomePage> {
                     ]),
                   ),
                   // controller.currentPage.value ?? CreateEscortScreen(),
-                 Obx(()=> controller.currentPage.value ?? ByDefaultDashboard()
-                 )
+                  Obx(() =>
+                      controller.currentPage.value ?? ByDefaultDashboard())
                 ],
               ),
             ),
           ],
         );
       }),
-      bottomNavigationBar:
-      (controller.currentPage.value == null ||
-          controller.currentPage.value.runtimeType == ByDefaultDashboard) ?Container(
-      width: Get.width,
-      color: DynamicColors.whiteClr,
-      height: kToolbarHeight,
-      child: Row(
-        children: [
-          Container(
-            height: kToolbarHeight,
-            width: 120,
-            color: DynamicColors.textClr,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircleAvatar(
 
-                  radius: 10,
-                  backgroundColor: DynamicColors.greenClr,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
-                  child: Text("Nadeem",
-                    style: mozillaTextRegularText(
-                        color: DynamicColors.whiteClr,
-                        fontSize: 13
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3.0),
-            child: SizedBox(
-              height: kToolbarHeight,
-              width: 165,
+
+      bottomNavigationBar: (controller.currentPage.value == null ||
+              controller.currentPage.value.runtimeType == ByDefaultDashboard)
+          ? Container(
+              width: Get.width,
+              height: 60,
+              color: DynamicColors.whiteClr,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                  Text(
-                    "PRESS",
-                    style: mozillaTextRegularText(
-                        color: DynamicColors.textClr,
-                        fontSize: 14
+                  // 1. Username Container
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F2EF),
+                      // Light green/aqua background image jesa
+                      borderRadius: BorderRadius.circular(10),
+
+                      border: Border.all(
+                          color: const Color(0xFFC4D9D4),
+                          width: 1), // Light border
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 9,vertical: 4),
-                      decoration: BoxDecoration(
-                          color: DynamicColors.textClr,
-                          borderRadius: BorderRadius.circular(4)
-                      ),
-                      child: Text(
-                        "/",
-                        style: mozillaTextRegularText(
-                            color: DynamicColors.whiteClr,
-                            fontSize: 14
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 5,
+                          backgroundColor:
+                              Color(0xff424899), // Bright green dot
                         ),
+                        const SizedBox(width: 10),
+                        Text(
+                          // Nadeem ki jagah dynamic username
+                          Employee.selectedEmployee?.username?.toUpperCase() ??
+                              "GUEST",
+                          style: mozillaTextRegularText(
+                              color: const Color(0xFF4A4A4A), // Dark grey text
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                    child: SizedBox(
+                      height: kToolbarHeight,
+                      width: 165,
+                      child: Row(
+                        children: [
+                          Text(
+                            "PRESS",
+                            style: mozillaTextRegularText(
+                                color: DynamicColors.textClr, fontSize: 14),
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                  color: DynamicColors.textClr,
+                                  borderRadius: BorderRadius.circular(4)),
+                              child: Text(
+                                "/",
+                                style: mozillaTextRegularText(
+                                    color: DynamicColors.whiteClr,
+                                    fontSize: 14),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            "SHORTCUTS",
+                            style: mozillaTextRegularText(
+                                color: DynamicColors.textClr, fontSize: 14),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                  // 4. Copyright Text
                   Text(
-                    "SHORTCUTS",
+                    "NEXUS © 2026",
                     style: mozillaTextRegularText(
-                        color: DynamicColors.textClr,
-                        fontSize: 14
+                        color: Colors.grey, fontSize: 12),
+                  ),
+                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+
+                  // 3. Date & Time
+                  Text(
+                    // Uppercase format image jesa (FRI, MAR 27TH 2026)
+                    DateFormat("EEE, MMM dd''t'h' yyyy")
+                        .format(DateTime.now())
+                        .toUpperCase(),
+                    style: mozillaTextRegularText(
+                        color: const Color(0xFF4A4A4A),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text("|",
+                      style: TextStyle(color: Colors.grey, fontSize: 16)),
+                  // Separator
+                  const SizedBox(width: 12),
+                  Text(
+                    // Time Format (04:34:29 PM)
+                    DateFormat("hh:mm:ss a").format(DateTime.now()),
+                    style: mozillaTextRegularText(
+                        color: const Color(0xFF4A4A4A),
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold),
+                  ),
+
+                  // 6. Extension Number Button (#310 jahan tha)
+                  GestureDetector(
+                    // onTap: () {
+                    //   ExtensionAlert.show();
+                    // },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            "# ",
+                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                          ),
+                          Text(
+                            // Dynamic extension number
+                            Employee.selectedEmployee?.extensionNumber ?? "---",
+                            style: mozillaTextRegularText(
+                                color: const Color(0xff424899),
+                                // Green color image jesa
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-          Spacer(),
-          Container(
-            height: kToolbarHeight,
-            width: 120,
-            color: DynamicColors.textClr,
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Text(DateFormat("EEE dd MMM").format(DateTime.now()),
-                  style: mozillaTextRegularText(
-                      color: DynamicColors.whiteClr,
-                      fontSize: 13
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Container(
-              height: kToolbarHeight,
-              width: 80,
-              color: DynamicColors.textClr,
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 5.0),
-                  child: Text("#310",
-                    style: mozillaTextRegularText(
-                        color: DynamicColors.whiteClr,
-                        fontSize: 13
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: kToolbarHeight,
-            width: 120,
-            color: DynamicColors.primaryClr,
-            child: Center(
-              child: Padding(
-                padding: EdgeInsets.only(left: 5.0),
-                child: Text("1560 DAYS",
-                  style: mozillaTextRegularText(
-                      color: DynamicColors.whiteClr,
-                      fontSize: 13
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ):SizedBox.shrink(),
+            )
+          : const SizedBox.shrink(),
     );
   }
 
@@ -467,7 +498,6 @@ class _MyHomePageState extends State<MyHomePage> {
             final newTabUrl = Uri.base.origin + Routes.createBooking;
             html.window.open(newTabUrl, '_blank');
             // Get.toNamed(Routes.createBooking);
-
           },
         ),
         NestedMenuItem(

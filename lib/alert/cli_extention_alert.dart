@@ -6,7 +6,9 @@ import '../view/administration/model/user_model.dart';
 
 class ExtensionAlert {
   static void show() {
-    final TextEditingController extensionCtrl = TextEditingController();
+    final TextEditingController extensionCtrl = TextEditingController(
+        text: Employee.selectedEmployee?.extensionNumber ?? ""
+    );
     bool isPermanentSave = true;
     RxBool postExtensionLoad = false.obs;
     postExtension(String extensionNumber, bool isPermanent) async {
