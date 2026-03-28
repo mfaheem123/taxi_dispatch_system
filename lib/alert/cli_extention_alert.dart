@@ -1,7 +1,6 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
 
@@ -10,30 +9,31 @@ class ExtensionAlert {
     final TextEditingController extensionCtrl = TextEditingController();
     bool isPermanentSave = true;
     RxBool postExtensionLoad = false.obs;
-    Employee? employee;
     postExtension(String extensionNumber, bool isPermanent) async {
+      if (Employee.selectedEmployee == null) {
+        BotToast.showText(text: "User not found. Please re-login.");
+        return;
+      }
       postExtensionLoad(true);
       var formData = {
         "extension_number": extensionNumber,
-        "permanent_flag": isPermanent ? 1 : 0,
-        "employee_id" : employee!.id,
+        "permanent_flag": isPermanent,
+        "employee_id": Employee.selectedEmployee!.id,
       };
-        print("Sending Data: $formData");
-        var response = await Api().post(
-          formData,
-          'employeeextension/add',
-          auth: true,
-        );
-        if (response.statusCode == 200) {
-          BotToast.showText(text: 'Extension Added Successfully');
-          print("Extension Added Successfully");
-          Get.back(); // Alert close karne ke liye
-           postExtensionLoad(false);
-        }
+
+      var response = await Api().post(
+        formData,
+        'employeeextension/add',
+        auth: true,
+      );
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: 'Extension Added Successfully');
+        print("ID------------ ${Employee.selectedEmployee!.id}");
+        Get.back();
+      }
+      postExtensionLoad(false);
     }
-
-
-
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -140,12 +140,13 @@ class ExtensionAlert {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                         ),
-                        // --- Footer Save Button ---
                         onPressed: () {
-                          // Check karein ke field khali na ho
                           if (extensionCtrl.text.isNotEmpty) {
-                            // Agar simple function hai to direct call karein:
-                            postExtension(extensionCtrl.text, isPermanentSave);
+                            if (Employee.selectedEmployee != null) {
+                              postExtension(extensionCtrl.text, isPermanentSave);
+                            } else {
+                              BotToast.showText(text: "Session expired! Please login again.");
+                            }
                           } else {
                             BotToast.showText(text: "Please enter extension number");
                           }

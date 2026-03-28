@@ -49,6 +49,7 @@ class UserModel {
 }
 
 class Employee {
+  static Employee? selectedEmployee;
   int? id;
   int? subsidiaryId;
   int? roleId;
