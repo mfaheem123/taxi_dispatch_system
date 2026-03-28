@@ -310,7 +310,12 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                             style: mozillaTextSemiBoldText(
                                                 fontSize: 13,
                                                 color: DynamicColors.whiteClr),
-                                            onTap: () {
+                                            onTap: () async {
+                                              if (controller.driverRentModel ==
+                                                  null) {
+                                                await controller
+                                                    .getDriver();
+                                              }
                                               Get.dialog(
                                                 DriverRentWindowWrapper(),
                                                 barrierDismissible: true,

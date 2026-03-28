@@ -81,7 +81,10 @@ class VehicleInformation extends StatelessWidget {
                       label: "SELECT COMPANY VEHICLE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.vehicleInformation.value ==false?[]: controller.getCombineVehicleData!.companyVehicles!,
+                      // items: controller.vehicleInformation.value ==false?[]: controller.getCombineVehicleData!.companyVehicles!,
+                      items: (controller.vehicleInformation.value == false || controller.getCombineVehicleData == null)
+                          ? []
+                          : controller.getCombineVehicleData?.companyVehicles ?? [],
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.vehicleType,
@@ -212,7 +215,10 @@ class VehicleInformation extends StatelessWidget {
                       label: "VEHICLE TYPE",
                       width: fieldWidth/2,
                       height: 35,
-                      items: controller.vehicleInformation.value?[]: controller.getCombineVehicleData!.vehicleTypes!,
+                      // items: controller.vehicleInformation.value?[]: controller.getCombineVehicleData!.vehicleTypes!,
+                      items: (controller.vehicleInformation.value == true || controller.getCombineVehicleData == null)
+                          ? []
+                          : controller.getCombineVehicleData?.vehicleTypes ?? [],
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
                       value: controller.selectCompanyVehicle,
@@ -241,7 +247,7 @@ class VehicleInformation extends StatelessWidget {
                               width: 500,
                               height: 150,
                               fit: BoxFit.fill,
-                            ):Image(image: NetworkImage(controller.singleDriverData!.driver!.vehicle!.logBook!.logBookDocument!)),
+                            ):Image(image: NetworkImage(controller.singleDriverData?.driver?.vehicle?.logBook?.logBookDocument ?? "")),
                           ),
                           controller.imageList.isEmpty?SizedBox.shrink():
                           GestureDetector(

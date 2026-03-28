@@ -236,8 +236,8 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                                   controller.driverloginSearch();
                                 },
                               ),
-                              buildHeaderWithSearch(
-                                  title: "ACTIONS", removeSearching: true),
+                              // buildHeaderWithSearch(
+                              //     title: "ACTIONS", removeSearching: true),
                             ],
                             totalRow: listToShow.length ?? 0,
                             rows: listToShow.map((item) {
@@ -276,47 +276,47 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                                   DataCell(Center(
                                       child: Text(item.driverAccessToken ??
                                           "-"))),
-                                  DataCell(
-                                    Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ), // border color & thickness
-                                            ),
-                                            onPressed: () {
-                                              controller.getCombineVehicle(
-                                                  id: item.id);
-                                            },
-                                            child: Icon(
-                                              Icons.edit_calendar,
-                                              size: 28,
-                                            ),
-                                          ),
-                                          Text("|"),
-                                          OutlinedButton(
-                                            style: OutlinedButton.styleFrom(
-                                              side: BorderSide(
-                                                color: Colors.transparent,
-                                              ), // border color & thickness
-                                            ),
-                                            onPressed: () {
-                                              controller.driverLoginLogoutDelete(item.id);
-                                            },
-                                            child: Icon(
-                                              Icons.delete_forever,
-                                              size: 28,
-                                              color: DynamicColors.redClr,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                                  // DataCell(
+                                  //   Center(
+                                  //     child: Row(
+                                  //       mainAxisAlignment:
+                                  //       MainAxisAlignment.center,
+                                  //       children: [
+                                  //         OutlinedButton(
+                                  //           style: OutlinedButton.styleFrom(
+                                  //             side: BorderSide(
+                                  //               color: Colors.transparent,
+                                  //             ), // border color & thickness
+                                  //           ),
+                                  //           onPressed: () {
+                                  //             controller.getCombineVehicle(
+                                  //                 id: item.id);
+                                  //           },
+                                  //           child: Icon(
+                                  //             Icons.edit_calendar,
+                                  //             size: 28,
+                                  //           ),
+                                  //         ),
+                                  //         Text("|"),
+                                  //         OutlinedButton(
+                                  //           style: OutlinedButton.styleFrom(
+                                  //             side: BorderSide(
+                                  //               color: Colors.transparent,
+                                  //             ), // border color & thickness
+                                  //           ),
+                                  //           onPressed: () {
+                                  //             controller.driverLoginLogoutDelete(item.id);
+                                  //           },
+                                  //           child: Icon(
+                                  //             Icons.delete_forever,
+                                  //             size: 28,
+                                  //             color: DynamicColors.redClr,
+                                  //           ),
+                                  //         ),
+                                  //       ],
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               );
                             }).toList(),

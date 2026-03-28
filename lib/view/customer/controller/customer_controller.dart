@@ -71,7 +71,7 @@ class CustomerController extends GetxController {
     );
     if (response.statusCode == 200) {
       BotToast.showText(text:
-      updateCustomerValue.value ? "'Account Updated Successfully'" : 'Account Created Successfully');
+      updateCustomerValue.value ? "'Customer Updated Successfully'" : 'Customer Added Successfully');
 
       print("✅ Account Created Successfully");
       enableSms.value = false;

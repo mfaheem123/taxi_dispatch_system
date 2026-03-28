@@ -15,7 +15,7 @@ class GetDriverModel {
   int? total;
   int? totalPages;
   int? count;
-  List<Driver>? drivers;
+  List<GetDriverList>? drivers;
 
   GetDriverModel({
     this.status,
@@ -34,7 +34,7 @@ class GetDriverModel {
     total: json["total"],
     totalPages: json["total_pages"],
     count: json["count"],
-    drivers: json["drivers"] == null ? [] : List<Driver>.from(json["drivers"]!.map((x) => Driver.fromJson(x))),
+    drivers: json["drivers"] == null ? [] : List<GetDriverList>.from(json["drivers"]!.map((x) => GetDriverList.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -48,7 +48,7 @@ class GetDriverModel {
   };
 }
 
-class Driver {
+class GetDriverList {
   int? id;
   int? subsidiaryId;
   String? username;
@@ -128,7 +128,7 @@ class Driver {
   Vehicle? vehicle;
   Subsidiary? subsidiary;
 
-  Driver({
+  GetDriverList({
     this.id,
     this.subsidiaryId,
     this.username,
@@ -209,7 +209,7 @@ class Driver {
     this.subsidiary,
   });
 
-  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
+  factory GetDriverList.fromJson(Map<String, dynamic> json) => GetDriverList(
     id: json["id"],
     subsidiaryId: json["subsidiary_id"],
     username: json["username"],

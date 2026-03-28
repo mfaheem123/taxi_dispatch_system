@@ -4,7 +4,7 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/drivers_view/driver/login_drivers/driver_login_logout_model.dart';
 import 'package:dashboard_new1/view/drivers_view/model/driver_commission_filter_model.dart';
-import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart' hide Driver;
+import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
@@ -673,8 +673,8 @@ class DriverController extends GetxController {
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
   final int driverLimit = 15;
-  RxList<Driver> driverAll = <Driver>[].obs;
-  RxList<Driver> driverFilter = <Driver>[].obs;
+  RxList<GetDriverList> driverAll = <GetDriverList>[].obs;
+  RxList<GetDriverList> driverFilter = <GetDriverList>[].obs;
   RxString searchDriverName = ''.obs;
   RxString searchDriverUserName = ''.obs;
   RxString searchVehicleName = ''.obs;
@@ -693,6 +693,7 @@ class DriverController extends GetxController {
       final response =
           await Api().get(auth: true, 'drivers/get?', queryParameters: {
         'active': activeDrivers.value == true ? false : true,
+        'page': driverCurrentPage.value,
         'limit': driverLimit,
         "name": searchDriverName.value.toLowerCase(),
         "username": searchDriverUserName.value.toLowerCase(),
@@ -709,7 +710,7 @@ class DriverController extends GetxController {
       if (response.statusCode == 200) {
         listDriverModel = GetDriverModel.fromJson(response.data);
         driverTotalPage.value = listDriverModel?.totalPages ?? 1;
-        // driverAll.value = listDriverModel?.drivers ?? [];
+        driverAll.value = listDriverModel?.drivers ?? [];
         driverFilter.value = driverAll;
         print('Driver Data Loaded Successfully');
         print('API  ${response.statusCode}');
@@ -738,7 +739,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverList();
-      print("Driver deleted successfully!");
+      BotToast.showText(text:"Driver deleted successfully!");
       print(json.encode(response.data));
     }
   }
