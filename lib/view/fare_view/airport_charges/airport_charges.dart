@@ -106,24 +106,35 @@ class _AirportChargesState extends State<AirportCharges> {
                           DataRow(
                             color: MaterialStateProperty.all(Colors.grey[100]),
                             cells: [
+                              // DataCell(
+                              //   Text(""),
+                              // ),
                               DataCell(
-                                Text(""),
+                                CustomTextField(
+                                  columnText: false,
+                                  controller: controller.airportChargesController,
+                                  width: fieldWidth/2,
+                                  hintText: "FROM",
+                                  prefixIcon: Icon(Icons.search),
+                                ),
                               ),
                               DataCell(
                                 CustomTextField(
-                                  columnText: true,
+                                  columnText: false,
                                   controller: controller.pickUpChargesController,
                                   width: fieldWidth/2,
-                                  hintText: "Pickup",
+                                  hintText: "TO",
+                                  prefixIcon: Icon(Icons.search),
                                 ),
                               ),
 
                               DataCell(
                                 CustomTextField(
-                                  columnText: true,
+                                  columnText: false,
                                   controller: controller.dropOffChargesController,
                                   width: fieldWidth/2,
-                                  hintText: "DropOff",
+                                  hintText: "FARES",
+                                  prefixIcon: Icon(Icons.search),
                                 ),
                               ),
 

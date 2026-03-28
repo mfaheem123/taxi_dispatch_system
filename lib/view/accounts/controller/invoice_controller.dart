@@ -286,7 +286,7 @@ class InvoiceController extends GetxController {
     var response = await Api().delete("account_invoice/delete/$id");
     if (response.statusCode == 200) {
       listAccountInvoice(isFirstTime: true);
-      print("AccountInvoice deleted successfully!");
+      BotToast.showText(text: "AccountInvoice deleted successfully!");
     }
   }
   ///================================================ list of Account Invoice END

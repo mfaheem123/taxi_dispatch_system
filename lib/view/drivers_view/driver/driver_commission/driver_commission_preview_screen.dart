@@ -208,10 +208,10 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      _buildFooterRowPlain("CASH TOTAL", controller.updateCashTotal),
+                      _buildFooterRowPlain("CASH TOTAL", controller.updateCashTotalValue),
                       _buildFooterRowPlain("COMMISSION TOTAL", controller.updateTotalCommissionVar),
-                      _buildFooterRowPlain("OWED", controller.updateOwed),
-                      _buildFooterRowPlain("TOTAL", controller.updateGrandTotal, isBold: true),
+                      _buildFooterRowPlain("OWED", controller.updateOwedVar),
+                      _buildFooterRowPlain("TOTAL", controller.updateGrandTotalVar, isBold: true),
                     ],
                   ),
                 ),
@@ -223,7 +223,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                     children: [
                       _buildFooterRowPlain("ACCOUNT W/COMM TOTAL", controller.updateAccountFareTotalVar),
                       _buildFooterRowPlain("ACCOUNT WO/COMM TOTAL", controller.updateAccountWOCmmVar),
-                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", controller.updateParkingCongestion),
+                      _buildFooterRowPlain("PARKING & CONGESTION CHARGES", controller.updateParkingCongestionVar),
                     ],
                   ),
                 ),

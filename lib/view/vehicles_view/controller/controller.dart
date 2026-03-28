@@ -139,9 +139,12 @@ class VehicleController extends GetxController {
           multiPart: true,
       );
       if (response.statusCode == 200) {
+        String message = singleVehicleData != null
+            ? "Company Vehicle Update Successfully"
+            : "Company Vehicle Added Successfully";
         _clearAllFields();
         singleVehicleData = null;
-        BotToast.showText(text: singleVehicleData !=null ? "Company Vehicle Added Successfully" :"Company Vehicle Update Successfully" );
+        BotToast.showText(text: message);
       }
       companyVehicleLoader(false);
       update();
@@ -317,7 +320,7 @@ class VehicleController extends GetxController {
     var response = await Api().delete('company-vehicles/delete/$id');
     if (response.statusCode == 200) {
       companyVehicle();
-      print("Company Vehicle deleted successfully!");
+      BotToast.showText(text: "Company Vehicle deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -376,6 +379,9 @@ class VehicleController extends GetxController {
         auth: true,
         multiPart: multipartFile != null ? true : false);
     if (response.statusCode == 200) {
+      String message = singleVehicle != null
+          ? "Vehicle Updated Successfully"
+          : "Vehicle Created Successfully";
       vehicleTypeController.clear();
       passengersController.clear();
       luggagesController.clear();
@@ -390,6 +396,7 @@ class VehicleController extends GetxController {
       minimumFaresValue.value = false;
       profileImg = null;
       singleVehicle = null;
+      BotToast.showText(text: message);
       update();
       print("response of body -------------------------${response.data}");
     } else {

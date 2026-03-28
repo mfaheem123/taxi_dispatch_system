@@ -42,9 +42,10 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return GetBuilder<FareController>(initState: (v) {
+      controller.fixedFareVehicleLocationTypeModel = null;
       controller.getFixedFareVehicleLocationType();
       controller.getAllFixedFare();
-      controller.getFixedFareVehicleLocationType();
+      // controller.getFixedFareVehicleLocationType();
     }, builder: (controller) {
       final listToShow = controller.fixedFareFiltered.isNotEmpty
           ? controller.fixedFareFiltered
@@ -548,11 +549,14 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                               CustomButton(
                                 height: 35,
                                 width: fieldWidth,
-                                btnText: controller
-                                            .fixedFareVehicleLocationTypeModel !=
-                                        null
+                                btnText: controller.fixedFareAll.any((e) => e.fares == controller.fareController.text)
                                     ? "UPDATE"
                                     : AppText.save,
+                                // btnText: controller
+                                //             .fixedFareVehicleLocationTypeModel !=
+                                //         null
+                                //     ? "UPDATE"
+                                //     : AppText.save,
                                 verticalPadding: 0.0,
                                 borderRadius: 4,
                                 style: mozillaTextRegularText(

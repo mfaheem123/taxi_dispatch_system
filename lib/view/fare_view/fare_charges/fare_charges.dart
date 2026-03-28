@@ -424,14 +424,14 @@ class _FareChargesState extends State<FareCharges> {
                           .getSurchargesModel!.surcharges!
                           .map((surcharges) => DataRow(
                         cells: [
-                          DataCell(Center(child: Text(surcharges.surchargesType! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.condition! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.postcode! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.fare! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.parkingCharges! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.extraDropCharges! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.congestionCharges! ?? ""))),
-                          DataCell(Center(child: Text(surcharges.duration! ?? ""))),
+                          DataCell(Center(child: Text(surcharges.surchargesType ?? ""))),
+                          DataCell(Center(child: Text(surcharges.condition ?? ""))),
+                          DataCell(Center(child: Text(surcharges.postcode ?? ""))),
+                          DataCell(Center(child: Text(surcharges.fare ?? ""))),
+                          DataCell(Center(child: Text(surcharges.parkingCharges ?? ""))),
+                          DataCell(Center(child: Text(surcharges.extraDropCharges ?? ""))),
+                          DataCell(Center(child: Text(surcharges.congestionCharges ?? ""))),
+                          DataCell(Center(child: Text(surcharges.duration ?? ""))),
                           DataCell(Center(child: Text(surcharges.day ?? "-"))),
                           DataCell(Center(child: Text(
                             surcharges.duration == "DATE WISE"

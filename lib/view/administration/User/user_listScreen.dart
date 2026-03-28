@@ -150,15 +150,15 @@ class _UserListscreenState extends State<UserListscreen> {
                                   : Get.width,
                           child: DatatableWidget(
                             columns: [
-                              DataColumn(
-                                label: Checkbox(
-                                  value: controller.subsDiaryAllSelection.value,
-                                  onChanged: (v) {
-                                    controller.subsDiaryAllSelection.value = v!;
-                                    controller.update();
-                                  },
-                                ),
-                              ),
+                              // DataColumn(
+                              //   label: Checkbox(
+                              //     value: controller.subsDiaryAllSelection.value,
+                              //     onChanged: (v) {
+                              //       controller.subsDiaryAllSelection.value = v!;
+                              //       controller.update();
+                              //     },
+                              //   ),
+                              // ),
                               buildHeaderWithSearch(
                                 title: "USERNAME",
                                 onChanged: (v) {
@@ -207,12 +207,12 @@ class _UserListscreenState extends State<UserListscreen> {
                             totalRow: listToShow.length,
                             rows: listToShow.map((item) {
                               return DataRow(cells: [
-                                DataCell(
-                                  Checkbox(
-                                    value: false,
-                                    onChanged: (v) {},
-                                  ),
-                                ),
+                                // DataCell(
+                                //   Checkbox(
+                                //     value: false,
+                                //     onChanged: (v) {},
+                                //   ),
+                                // ),
                                 DataCell(Center(
                                     child: Text(item.username ?? 'no data'))),
                                 DataCell(Center(
@@ -259,7 +259,7 @@ class _UserListscreenState extends State<UserListscreen> {
                                     IconButton(
                                       icon: Icon(
                                         Icons.delete_forever,
-                                        color: DynamicColors.primaryClr,
+                                        color: DynamicColors.redClr,
                                       ),
                                       onPressed: () {
 
