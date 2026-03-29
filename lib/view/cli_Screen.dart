@@ -989,7 +989,12 @@ class _CenterAreaState extends State<_CenterArea> {
                   }
 
                   if (controller.bookings.isEmpty) {
-                    return const Text("No Bookings");
+                    return Column(
+                      children: [
+                        Obx(() => Text("Unknown")),
+                        Obx(() => Text(controller.customerMobile.value)),
+                      ],
+                    );
                   }
 
                   return Column(
