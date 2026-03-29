@@ -28,7 +28,6 @@ class CreateUserScreen extends StatelessWidget {
       return LayoutBuilder(
         builder: (context, constraints) {
           bool isMobile = constraints.maxWidth < 800;
-
           return SingleChildScrollView(
             padding: EdgeInsets.all(16),
             child: isMobile
@@ -42,12 +41,11 @@ class CreateUserScreen extends StatelessWidget {
                 : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Image box fix with Flexible
                       Flexible(
                           flex: 1,
                           child: _buildImageBox(isMobile, controller: controller)),
                       SizedBox(width: 20),
-                      // Form box fix with Flexible
+
                       Flexible(
                           flex: 3,
                           child: _buildFormBox(screenHeight, screenWidth)),
@@ -59,39 +57,54 @@ class CreateUserScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildImageBox(bool isMobile, {controller}) {
+  Widget _buildImageBox(bool isMobile, {required dynamic controller}) {
     return GestureDetector(
       onTap: () {
-        if (controller.profileImg == null) {
+        if (controller.userProfileImg == null && controller.employee?.image == null) {
           controller.pickImageCreate();
         }
       },
       child: Container(
         height: isMobile ? 200 : 400,
-        // width: fieldWidth,
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border.all(color: Colors.grey),
-          image: controller.profileImg == null
-              ? null
-              : DecorationImage(
-            image: MemoryImage(controller
-                .profileImg!.bytes), // ✅ correct provider
+          image: controller.userProfileImg != null
+              ? DecorationImage(
+            image: MemoryImage(controller.userProfileImg!.bytes),
             fit: BoxFit.fill,
-          ),
+          )
+              : (controller.employee?.image != null
+              ? DecorationImage(
+            image: NetworkImage(controller.employee!.image!),
+            fit: BoxFit.fill,
+          )
+              : null),
         ),
-        child: controller.profileImg != null
+        child: (controller.userProfileImg != null || controller.employee?.image != null)
             ? Align(
           alignment: Alignment.topRight,
           child: GestureDetector(
             onTap: () {
-              controller.profileImg = null;
+              controller.userProfileImg = null;
+              if (controller.employee != null) {
+                controller.employee!.image = null;
+              }
               controller.update();
             },
-            child: Icon(
-              Icons.close_rounded,
-              color: DynamicColors.redClr,
+            child: Container(
+              padding: EdgeInsets.all(4),
+              margin: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.8),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.close_rounded,
+                color: DynamicColors.redClr,
+                size: 20,
+              ),
             ),
           ),
         )
@@ -147,7 +160,6 @@ class CreateUserScreen extends StatelessWidget {
                 _buildPasswordField("CONFIRM PASSWORD", controller.confirmController),
                 _buildTextField("PHONE", controller.phoneController),
                 _buildTextField("FAX", controller.faxUserController),
-
                 CustomDropdownField<Role>(
                   text: "SELECT ROLE",
                   label: "SELECT ROLE",
@@ -172,12 +184,6 @@ class CreateUserScreen extends StatelessWidget {
                     controller.update();
                   },
                 ),
-
-
-                // _buildTextField("DIDIC COMPANY", controller.didic_Controller),
-
-                // _buildCheckBox("CALL RECEIVER"),
-                // _buildCheckBox("ALLOW TRANSFER BOOKINGS"),
               ],
             ),
           ),
@@ -193,7 +199,6 @@ class CreateUserScreen extends StatelessWidget {
                       controller.update();
                     },
                     value: controller.activeValue.value,
-
                     focusNode: controller.activeNode,
                     width: 120,
                     label: "ACTIVE",
@@ -205,7 +210,6 @@ class CreateUserScreen extends StatelessWidget {
                     controller.alldriversValue.value = v;
                     controller.update();
                   },
-
                   value: controller.alldriversValue.value,
                   focusNode: controller.alldriversNode,
                   width: 120,
@@ -254,18 +258,12 @@ class CreateUserScreen extends StatelessWidget {
 
               ],
             ),
-
-
-
-
           SizedBox(height: 20),
-
           Container(
             width: double.infinity,
             color: DynamicColors.gryClr,
             padding: EdgeInsets.symmetric(horizontal: 120, vertical: 14),
             child: Center(
-
               child:
                   CustomButton(
                 onTap: () {
@@ -282,7 +280,6 @@ class CreateUserScreen extends StatelessWidget {
 
             ),
           ),
-
         ],
       ),
     );

@@ -1,23 +1,23 @@
 // To parse this JSON data, do
 //
-//     final getDriverModel = getDriverModelFromJson(jsonString);
+//     final driverLoginLogoutModel = driverLoginLogoutModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetDriverModel getDriverModelFromJson(String str) => GetDriverModel.fromJson(json.decode(str));
+DriverLoginLogoutModel driverLoginLogoutModelFromJson(String str) => DriverLoginLogoutModel.fromJson(json.decode(str));
 
-String getDriverModelToJson(GetDriverModel data) => json.encode(data.toJson());
+String driverLoginLogoutModelToJson(DriverLoginLogoutModel data) => json.encode(data.toJson());
 
-class GetDriverModel {
+class DriverLoginLogoutModel {
   bool? status;
   int? page;
   int? limit;
   int? total;
   int? totalPages;
   int? count;
-  List<GetDriverList>? drivers;
+  List<Driver>? drivers;
 
-  GetDriverModel({
+  DriverLoginLogoutModel({
     this.status,
     this.page,
     this.limit,
@@ -27,14 +27,14 @@ class GetDriverModel {
     this.drivers,
   });
 
-  factory GetDriverModel.fromJson(Map<String, dynamic> json) => GetDriverModel(
+  factory DriverLoginLogoutModel.fromJson(Map<String, dynamic> json) => DriverLoginLogoutModel(
     status: json["status"],
     page: json["page"],
     limit: json["limit"],
     total: json["total"],
     totalPages: json["total_pages"],
     count: json["count"],
-    drivers: json["drivers"] == null ? [] : List<GetDriverList>.from(json["drivers"]!.map((x) => GetDriverList.fromJson(x))),
+    drivers: json["drivers"] == null ? [] : List<Driver>.from(json["drivers"]!.map((x) => Driver.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
@@ -48,7 +48,7 @@ class GetDriverModel {
   };
 }
 
-class GetDriverList {
+class Driver {
   int? id;
   int? subsidiaryId;
   String? username;
@@ -109,7 +109,7 @@ class GetDriverList {
   dynamic version;
   String? sinBinTimer;
   dynamic position;
-  String? pdaRent;
+  dynamic pdaRent;
   dynamic companyVehicleId;
   String? licenceExpiryTime;
   String? phcDriverExpiryTime;
@@ -122,13 +122,13 @@ class GetDriverList {
   String? rentalAgreementExpiryTime;
   String? driverAccessToken;
   int? companyId;
-  String? fcmToken;
+  dynamic fcmToken;
   String? fcmUpdatedAt;
   String? subsidiaryName;
   Vehicle? vehicle;
   Subsidiary? subsidiary;
 
-  GetDriverList({
+  Driver({
     this.id,
     this.subsidiaryId,
     this.username,
@@ -209,7 +209,7 @@ class GetDriverList {
     this.subsidiary,
   });
 
-  factory GetDriverList.fromJson(Map<String, dynamic> json) => GetDriverList(
+  factory Driver.fromJson(Map<String, dynamic> json) => Driver(
     id: json["id"],
     subsidiaryId: json["subsidiary_id"],
     username: json["username"],
@@ -393,7 +393,7 @@ class Vehicle {
   String? make;
   String? model;
   String? color;
-  dynamic endDate;
+  String? endDate;
   VehicleType? vehicleType;
 
   Vehicle({

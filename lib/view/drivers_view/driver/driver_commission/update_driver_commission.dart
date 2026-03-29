@@ -10,12 +10,14 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../../../alert/pay_driver_commission.dart';
+import '../../../../alert/update_driver_commission_email.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/text_field.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../controller/driver_controller.dart';
+import 'driver_commission_preview_screen.dart';
 
 class UpdateDriverCommissionScreen extends StatefulWidget {
   const UpdateDriverCommissionScreen({super.key});
@@ -101,7 +103,7 @@ class _UpdateDriverCommissionScreenState
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppText.drivers,
+                                      AppText.driver,
                                       style: mozillaTextSemiBoldText(
                                           context: context, fontSize: 13),
                                     ),
@@ -118,9 +120,15 @@ class _UpdateDriverCommissionScreenState
                                       ),
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        controller.updateDriverSelectionController.text.isEmpty
+                                        controller
+                                                .updateDriverSelectionController
+                                                .text
+                                                .isEmpty
                                             ? "NO DRIVER"
-                                            : controller.updateDriverSelectionController.text.toUpperCase(),
+                                            : controller
+                                                .updateDriverSelectionController
+                                                .text
+                                                .toUpperCase(),
                                         // controller
                                         //     .updateDriverSelectionController.text
                                         //     .toUpperCase(),
@@ -144,17 +152,21 @@ class _UpdateDriverCommissionScreenState
                                     child: KeyboardDatePicker(
                                       initialDate: DateTime.now(),
                                       onChanged: (date) {
-                                        controller.updateTransactionDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
+                                        controller
+                                                .updateTransactionDateController =
+                                            date
+                                                .toIso8601String()
+                                                .split("T")
+                                                .first;
                                         controller.update();
                                       },
                                       onSubmitted: (date) {
-                                        controller.updateTransactionDateController = date
-                                            .toIso8601String()
-                                            .split("T")
-                                            .first;
+                                        controller
+                                                .updateTransactionDateController =
+                                            date
+                                                .toIso8601String()
+                                                .split("T")
+                                                .first;
                                         controller.update();
                                       },
                                     ),
@@ -163,7 +175,8 @@ class _UpdateDriverCommissionScreenState
                               ),
                               CustomTextField(
                                 borderRadius: 4,
-                                controller: controller.UpdateCommissionController,
+                                controller:
+                                    controller.UpdateCommissionController,
                                 width: fieldWidth,
                                 hintText: AppText.commission,
                                 columnText: true,
@@ -262,18 +275,71 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
+                                        onTap: () {
+                                          EmailDriverCommissionAlt.show();
+                                        },
                                       ),
                                       SizedBox(width: 5),
-                                      CustomButton(
-                                        height: 30,
-                                        borderRadius: 6,
-                                        width: 60,
-                                        verticalPadding: 0.0,
-                                        btnText: "EXPORT",
-                                        btnColor: DynamicColors.primaryClr,
-                                        style: mozillaTextSemiBoldText(
-                                            fontSize: 13,
-                                            color: DynamicColors.whiteClr),
+                                      PopupMenuButton<String>(
+                                        tooltip: "Export Options",
+                                        offset: const Offset(0, 40),
+                                        onSelected: (value) {
+                                          if (value == 'pdf') {
+                                            controller.exportToPdf();
+                                          } else if (value == 'excel') {
+                                            controller.exportToExcel();
+                                          }
+                                        },
+                                        itemBuilder: (BuildContext context) => [
+                                          // --- PDF Option ---
+                                          PopupMenuItem<String>(
+                                            value: 'pdf',
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.picture_as_pdf,
+                                                    color: Colors.red,
+                                                    size: 20),
+                                                const SizedBox(width: 10),
+                                                Text("Download PDF",
+                                                    style:
+                                                        mozillaTextRegularText(
+                                                            fontSize: 12)),
+                                              ],
+                                            ),
+                                          ),
+                                          // --- Excel Option ---
+                                          PopupMenuItem<String>(
+                                            value: 'excel',
+                                            child: Row(
+                                              children: [
+                                                const Icon(Icons.table_view,
+                                                    color: Colors.green,
+                                                    size: 20),
+                                                const SizedBox(width: 10),
+                                                Text("Download Excel",
+                                                    style:
+                                                        mozillaTextRegularText(
+                                                            fontSize: 12)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                        child: Container(
+                                          width: 60,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            color: DynamicColors.primaryClr,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "EXPORT",
+                                            style: mozillaTextRegularText(
+                                                fontSize: 10,
+                                                color: DynamicColors.whiteClr),
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(width: 5),
                                       CustomButton(
@@ -286,6 +352,17 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
+                                        onTap: () async {
+                                          if (controller.listDriverCommission ==
+                                              null) {
+                                            await controller
+                                                .getCreateDriverCommission();
+                                          }
+                                          Get.dialog(
+                                            DriverComissionWindowWrapper(),
+                                            barrierDismissible: true,
+                                          );
+                                        },
                                       ),
                                       SizedBox(width: 5),
                                       CustomButton(
@@ -298,9 +375,13 @@ class _UpdateDriverCommissionScreenState
                                         style: mozillaTextSemiBoldText(
                                             fontSize: 13,
                                             color: DynamicColors.whiteClr),
-                                        onTap: (){
-                                            final cId = controller.updateDriverCommissionByIdModel?.driverCommission?.id ?? 0;
-                                            controller.saveUpdatedCommission(cId);
+                                        onTap: () {
+                                          final cId = controller
+                                                  .updateDriverCommissionByIdModel
+                                                  ?.driverCommission
+                                                  ?.id ??
+                                              0;
+                                          controller.saveUpdatedCommission(cId);
                                         },
                                       ),
                                     ],
@@ -415,7 +496,7 @@ class _UpdateDriverCommissionScreenState
                                           DataCell(Center(
                                               child: Text(
                                                   booking.account?.name ??
-                                                      "Cash"))),
+                                                      ""))),
                                           DataCell(Center(
                                               child: Text(booking.journeyType
                                                       ?.journeyType ??
@@ -548,8 +629,7 @@ class _UpdateDriverCommissionScreenState
                                 customWidget(
                                     title: AppText.totalCommission,
                                     value:
-                                    "£ ${controller.updateTotalCommissionVar.toStringAsFixed(2)}"),
-
+                                        "£ ${controller.updateTotalCommissionVar.toStringAsFixed(2)}"),
                                 customWidget(
                                     title: AppText.owed,
                                     value:
@@ -557,7 +637,7 @@ class _UpdateDriverCommissionScreenState
                                 customWidget(
                                   title: AppText.total + ":",
                                   value:
-                                  "£ ${controller.updateGrandTotalVar.toStringAsFixed(2)}",
+                                      "£ ${controller.updateGrandTotalVar.toStringAsFixed(2)}",
                                 ),
                               ],
                             ),

@@ -31,7 +31,6 @@ class ColorPickerWidget extends StatelessWidget {
           builder: (BuildContext context) {
             // Use the Color object directly
             Color tempColor = pickerColor;
-
             return StatefulBuilder(
               builder: (context, setDialogState) {
                 return AlertDialog(
@@ -54,7 +53,6 @@ class ColorPickerWidget extends StatelessWidget {
                       onPressed: () {
                         // Pass the Color object back
                         onColorChanged(tempColor);
-
                         if (onColorSelected != null) {
                           onColorSelected!(tempColor);
                         }

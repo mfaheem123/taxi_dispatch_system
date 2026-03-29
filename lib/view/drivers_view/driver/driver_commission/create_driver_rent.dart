@@ -32,8 +32,8 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
     shortCutKeyValue.value = "createDriverRent";
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,10 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<DriverController>(builder: (controller) {
+    return GetBuilder<DriverController>(initState: (state) {
+      controller.getDriver();
+      controller.getPaymentTypes();
+    }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
 
@@ -81,27 +84,66 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     Divider(),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Wrap(
+                        runSpacing: 20,
+                        spacing: 50,
                         children: [
                           SizedBox(
                             width: fieldWidth,
-                            // height: 30,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(AppText.drivers,
+                                Text(AppText.driver,
                                     style: mozillaTextSemiBoldText(
                                         context: context, fontSize: 13)),
-                                RestrictedDrivers(
-                                  width: fieldWidth,
-                                  titleText: "SELECT DRIVER",
-                                  driversList: [
-                                    "25 GEORGE HAMPTON",
-                                    "26 PAUL DOUBLEDAY",
-                                    "27 RICHARD HARDWICK",
-                                    "28 LANRE OKERJO",
-                                  ],
+                                const SizedBox(height: 5),
+                                Container(
+                                  height: 35,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      border: Border.all(
+                                          color: DynamicColors.gryClr),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
+                                      hint: const Text("SELECT DRIVER",
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey)),
+                                      value: controller
+                                              .rentDriverSelectionController
+                                              .text
+                                              .isEmpty
+                                          ? null
+                                          : controller
+                                              .rentDriverSelectionController
+                                              .text,
+                                      isExpanded: true,
+                                      icon: const Icon(Icons.arrow_drop_down),
+                                      items: controller.driverRentModel?.drivers
+                                              ?.map((driver) {
+                                            final val =
+                                                "${driver.id} ${driver.name}";
+                                            return DropdownMenuItem(
+                                              value: val,
+                                              child: Text(val.toUpperCase(),
+                                                  style: const TextStyle(
+                                                      fontSize: 12)),
+                                            );
+                                          }).toList() ??
+                                          [],
+                                      onChanged: (val) {
+                                        if (val != null) {
+                                          controller
+                                              .rentDriverSelectionController
+                                              .text = val;
+                                          controller.update();
+                                        }
+                                      },
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -115,20 +157,32 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                               SizedBox(
                                 width: fieldWidth,
                                 height: 30,
-                                child: KeyboardDatePicker(),
+                                child: KeyboardDatePicker(
+                                  initialDate: DateTime.now(),
+                                  onChanged: (date) {
+                                    controller.rentTransactionDate =
+                                        date.toIso8601String().split("T").first;
+                                    controller.update();
+                                  },
+                                  onSubmitted: (date) {
+                                    controller.rentTransactionDate =
+                                        date.toIso8601String().split("T").first;
+                                    controller.update();
+                                  },
+                                ),
                               ),
                             ],
                           ),
                           CustomTextField(
                             borderRadius: 4,
-                            controller: controller.commissionController,
+                            controller: controller.rentWeekController,
                             width: fieldWidth,
                             hintText: AppText.rentWeek,
                             columnText: true,
                           ),
                           CustomTextField(
                             borderRadius: 4,
-                            controller: controller.pdaRentController,
+                            controller: controller.pdaRentWeekController,
                             width: fieldWidth,
                             hintText: AppText.pdaRent,
                             columnText: true,
@@ -161,7 +215,19 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                   SizedBox(
                     width: fieldWidth / 1.2,
                     height: 30,
-                    child: KeyboardDatePicker(),
+                    child: KeyboardDatePicker(
+                      initialDate: DateTime.now(),
+                      onChanged: (date) {
+                        controller.rentFilterFromDate =
+                            date.toIso8601String().split("T").first;
+                        controller.update();
+                      },
+                      onSubmitted: (date) {
+                        controller.rentFilterFromDate =
+                            date.toIso8601String().split("T").first;
+                        controller.update();
+                      },
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -174,72 +240,88 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                   SizedBox(
                     width: fieldWidth / 1.2,
                     height: 30,
-                    child: KeyboardDatePicker(),
+                    child: KeyboardDatePicker(
+                      initialDate: DateTime.now(),
+                      onChanged: (date) {
+                        controller.rentFilterToDate =
+                            date.toIso8601String().split("T").first;
+                        controller.update();
+                      },
+                      onSubmitted: (date) {
+                        controller.rentFilterToDate =
+                            date.toIso8601String().split("T").first;
+                        controller.update();
+                      },
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Text(AppText.pt,
                         style: mozillaTextSemiBoldText(
                             context: context,
-                            fontSize: 13,
-                            color: DynamicColors.textClr)),
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: DynamicColors.primaryClr)),
                   ),
-                  Checkbox(
-                      value: controller.ptValue.value,
-                      onChanged: (v) {
-                        controller.ptValue.value = v!;
-                        controller.update();
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(AppText.cash,
-                        style: mozillaTextSemiBoldText(
-                            context: context,
-                            fontSize: 13,
-                            color: DynamicColors.textClr)),
-                  ),
-                  Checkbox(
-                      value: controller.cashValue.value,
-                      onChanged: (v) {
-                        controller.cashValue.value = v!;
-                        controller.update();
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(AppText.creditCard,
-                        style: mozillaTextSemiBoldText(
-                            context: context,
-                            fontSize: 13,
-                            color: DynamicColors.textClr)),
-                  ),
-                  Checkbox(
-                      value: controller.creditCardValue.value,
-                      onChanged: (v) {
-                        controller.creditCardValue.value = v!;
-                        controller.update();
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(AppText.account,
-                        style: mozillaTextSemiBoldText(
-                            context: context,
-                            fontSize: 13,
-                            color: DynamicColors.textClr)),
-                  ),
-                  Checkbox(
-                      value: controller.accountValue.value,
-                      onChanged: (v) {
-                        controller.accountValue.value = v!;
-                        controller.update();
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(AppText.creditCardPaid,
-                        style: mozillaTextSemiBoldText(
-                            context: context,
-                            fontSize: 13,
-                            color: DynamicColors.textClr)),
-                  ),
+                  if (controller.isLoadingPayments)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                    )
+                  else
+                    ...?controller.paymentTypesModel?.paymentTypes
+                        ?.map((payment) {
+                      return InkWell(
+                        onTap: () {
+                          if (controller.selectedPaymentTypeIds
+                              .contains(payment.id)) {
+                            controller.selectedPaymentTypeIds
+                                .remove(payment.id);
+                          } else {
+                            controller.selectedPaymentTypeIds.add(payment.id!);
+                          }
+                          controller.update();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Checkbox(
+                                visualDensity: VisualDensity.compact,
+                                value: controller.selectedPaymentTypeIds
+                                    .contains(payment.id),
+                                onChanged: (v) {
+                                  if (v == true) {
+                                    controller.selectedPaymentTypeIds
+                                        .add(payment.id!);
+                                  } else {
+                                    controller.selectedPaymentTypeIds
+                                        .remove(payment.id);
+                                  }
+                                  controller.update();
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: Text(
+                                  payment.name?.toUpperCase() ?? "",
+                                  style: mozillaTextSemiBoldText(
+                                    context: context,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: DynamicColors.primaryClr,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   SizedBox(
                     width: 50,
                   ),
@@ -254,8 +336,12 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                       btnColor: DynamicColors.primaryClr,
                       style: mozillaTextSemiBoldText(
                           fontSize: 13, color: DynamicColors.whiteClr),
+                      onTap: () {
+                        controller.getDriverRentByFilter();
+                      },
                     ),
                   ),
+                  SizedBox(width: 20),
                   CustomButton(
                     height: 30,
                     borderRadius: 6,
@@ -265,122 +351,280 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                     btnColor: DynamicColors.primaryClr,
                     style: mozillaTextSemiBoldText(
                         fontSize: 13, color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.saveDriverRent();
+                    },
                   ),
                 ],
               ),
               SizedBox(
                 height: 10,
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: Get.width,
-                  child: DatatableWidget(
-                    columns: [
-                      buildHeaderWithSearch(
-                          widget: Checkbox(
-                              value: controller.selectAllDrivers.value,
-                              onChanged: (v) {
-                                controller.selectAllDrivers.value = v!;
-                                controller.update();
-                              })),
-                      buildHeaderWithSearch(title: "COMM"),
-                      buildHeaderWithSearch(title: "REF#"),
-                      buildHeaderWithSearch(title: "DATETIME"),
-                      buildHeaderWithSearch(title: "PICKUP"),
-                      buildHeaderWithSearch(title: "DROPOFF"),
-                      buildHeaderWithSearch(title: "VEH"),
-                      buildHeaderWithSearch(title: "ACC"),
-                      buildHeaderWithSearch(title: "J/T"),
-                      buildHeaderWithSearch(title: "P/T"),
-                      buildHeaderWithSearch(title: "FARE"),
-                      buildHeaderWithSearch(title: "PC"),
-                      buildHeaderWithSearch(title: "WC"),
-                      buildHeaderWithSearch(title: "EDC"),
-                      buildHeaderWithSearch(title: "CC"),
-                      buildHeaderWithSearch(title: "W/COMM"),
-                      buildHeaderWithSearch(title: "COMM"),
-                      buildHeaderWithSearch(title: "TOTAL"),
-                      buildHeaderWithSearch(title: "ACTIONS"),
-                    ],
-                    totalRow: totalRows,
-                    cells: [
-                      DataCell(Checkbox(
-                          value: controller.selectAllDrivers.value,
-                          onChanged: (v) {
-                            controller.selectAllDrivers.value = v!;
-                            controller.update();
-                          })),
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                    ],
-                  ),
-                ),
-              ),
+              controller.isRentFilterLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: Get.width,
+                        child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(
+                                widget: Checkbox(
+                                    value: controller.selectedIds.length ==
+                                        controller.driverRentFilterModel
+                                            ?.bookings?.length,
+                                    onChanged: (bool? val) {
+                                      if (val == true) {
+                                        controller.selectedIds = controller
+                                            .driverRentFilterModel!.bookings
+                                            !.map((booking) =>
+                                                booking.id.toString())
+                                            .toSet();
+                                      } else {
+                                        controller.selectedIds.clear();
+                                      }
+                                      controller.calculateTotals();
+                                      controller.update();
+                                    })),
+                            buildHeaderWithSearch(title: "REF#"),
+                            buildHeaderWithSearch(title: "DATETIME"),
+                            buildHeaderWithSearch(title: "PICKUP"),
+                            buildHeaderWithSearch(title: "DROPOFF"),
+                            buildHeaderWithSearch(title: "VEH"),
+                            buildHeaderWithSearch(title: "ACC"),
+                            buildHeaderWithSearch(title: "J/T"),
+                            buildHeaderWithSearch(title: "P/T"),
+                            buildHeaderWithSearch(title: "FARE"),
+                            buildHeaderWithSearch(title: "PC"),
+                            buildHeaderWithSearch(title: "WC"),
+                            buildHeaderWithSearch(title: "EDC"),
+                            buildHeaderWithSearch(title: "CC"),
+                            buildHeaderWithSearch(title: "TOTAL"),
+                            buildHeaderWithSearch(title: "ACTIONS"),
+                          ],
+                          rows: controller.driverRentFilterModel == null
+                              ? []
+                              : [
+                                  ...(controller.driverRentFilterModel!
+                                              .bookings ??
+                                          [])
+                                      .map((booking) {
+                                    final isRowSelected = controller.selectedIds
+                                        .contains(booking.id.toString());
+                                    DataCell editableCell(dynamic initialValue,
+                                        Function(String) onChanged) {
+                                      return DataCell(
+                                        Center(
+                                          child: SizedBox(
+                                            width: 70,
+                                            child: TextFormField(
+                                              initialValue:
+                                                  initialValue?.toString() ??
+                                                      "0",
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              textAlign: TextAlign.center,
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                              decoration: const InputDecoration(
+                                                isDense: true,
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 8,
+                                                        horizontal: 4),
+                                                border: OutlineInputBorder(),
+                                              ),
+                                              onChanged: onChanged,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    return DataRow(cells: [
+                                      DataCell(Center(
+                                          child: Checkbox(
+                                              value: isRowSelected,
+                                              onChanged: (bool? val) {
+                                                if (val == true) {
+                                                  controller.selectedIds.add(
+                                                      booking.id.toString());
+                                                } else {
+                                                  controller.selectedIds.remove(
+                                                      booking.id.toString());
+                                                }
+                                                controller.calculateTotals();
+                                                controller.update();
+                                              }))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              booking.referenceNumber ?? ""))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
+                                      DataCell(Text(booking.pickup ?? "")),
+                                      DataCell(Text(booking.dropoff ?? "")),
+                                      DataCell(Center(
+                                          child: Text(
+                                              booking.vehicleType?.name ?? ""))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              booking.account?.name ?? ""))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              booking.journeyType?.journeyType ??
+                                                  ""))),
+                                      DataCell(Center(
+                                          child: Text(
+                                              booking.paymentType?.name ?? ""))),
+                                      editableCell(booking.fares, (val) {
+                                        booking.fares = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
+                                      }),
+                                      editableCell(booking.parkingCharges,
+                                          (val) {
+                                        booking.parkingCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
+                                      }),
+                                      editableCell(booking.waitingCharges,
+                                          (val) {
+                                        booking.waitingCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
+                                      }),
+                                      editableCell(booking.extraDropCharges,
+                                          (val) {
+                                        booking.extraDropCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
+                                      }),
+                                      editableCell(booking.congestionCharges,
+                                          (val) {
+                                        booking.congestionCharges = val;
+                                        controller
+                                            .recalculateDriverCommissionRow(
+                                                booking);
+                                      }),
+                                      DataCell(Center(
+                                          child: Text(
+                                              "£ ${booking.totalCharges ?? "0"}"))),
+                                      DataCell(
+                                        Center(
+                                          child: CustomButton(
+                                            verticalPadding: 0.0,
+                                            width: 60,
+                                            height: 30,
+                                            borderRadius: 4,
+                                            btnText: "SAVE",
+                                            btnColor: DynamicColors.primaryClr,
+                                            style: mozillaTextRegularText(
+                                                fontSize: 10,
+                                                color: DynamicColors.whiteClr),
+                                            onTap: () async {
+                                              if (booking != null) {
+                                                await controller
+                                                    .updateBookingCharges(
+                                                        booking);
+                                                controller.calculateTotals();
+                                                controller.update();
+                                                print(
+                                                    "Updating Booking ID: ${booking.id}");
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ]);
+                                  }).toList(),
+                                  DataRow(
+                                    cells: [
+                                      for (var i = 0; i < 8; i++)
+                                        DataCell.empty,
+                                      DataCell(Center(
+                                          child: Text("TOTAL",
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold)))),
+                                      ...[
+                                        'fare',
+                                        'pc',
+                                        'wc',
+                                        'edc',
+                                        'cc',
+                                        'total'
+                                      ].map((field) => DataCell(Center(
+                                          child: Text(
+                                              "£ ${controller.getCreateRentColumnTotal(field).toStringAsFixed(2)}",
+                                              style: const TextStyle(
+                                                  fontWeight:
+                                                      FontWeight.bold))))),
+                                      DataCell.empty,
+                                    ],
+                                  ),
+                                ],
+                        ),
+                      ),
+                    ),
               SizedBox(
                 height: 30,
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: Text(
-                    AppText.total,
-                    style: mozillaTextSemiBoldText(
-                        fontSize: 25,
-                        color: DynamicColors.textClr.withOpacity(0.8),
-                        fontWeight: FontWeight.w800),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              Padding(
+                  padding: const EdgeInsets.only(right: 400.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      customWidget(),
-                      customWidget(title: AppText.total + ":", value: "0"),
-                      customWidget(title: AppText.owed, value: "0"),
-                      customWidget(title: AppText.owed, value: "0"),
-                      customWidget(title: AppText.oldBalance, value: "0"),
-                      customWidget(title: AppText.newBalance, value: "0"),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          customWidget(
+                              title: AppText.cashTotal,
+                              value:
+                                  "£ ${controller.cashTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.total + ":",
+                              value:
+                                  "£ ${controller.grandTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.owed,
+                              value: "£ ${controller.owed.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.oldBalance,
+                              value:
+                                  "£ ${controller.oldBalance.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.newBalance,
+                              value:
+                                  "£ ${controller.newBalance.toStringAsFixed(2)}"),
+                        ],
+                      ),
+                      SizedBox(
+                        width: 80,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          customWidget(
+                              title: "ACCOUNT TOTAL:",
+                              value:
+                                  "£ ${controller.accountTotal.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: AppText.parkingCongestion,
+                              value:
+                                  "£ ${controller.parkingCongestion.toStringAsFixed(2)}"),
+                          customWidget(
+                              title: "RENT TOTAL:",
+                              value:
+                                  "£ ${controller.rentTotal.toStringAsFixed(2)}"),
+                        ],
+                      ),
                     ],
-                  ),
-                  SizedBox(
-                    width: 80,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      customWidget(),
-                      customWidget(title: AppText.accountWCmm, value: "0"),
-                      customWidget(title: AppText.accountWOCmm, value: "0"),
-                      customWidget(
-                          title: AppText.parkingCongestion, value: "0"),
-                      customWidget(title: AppText.totalCommission, value: "0"),
-                    ],
-                  ),
-                ],
-              )
+                  )),
             ],
           ),
         );
@@ -394,7 +638,8 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
         Padding(
           padding: EdgeInsets.only(left: 20.0),
           child: Text(
-            title ?? AppText.cashTotal,
+            // title ?? AppText.cashTotal,
+            title ?? "",
             style: mozillaTextSemiBoldText(
                 fontSize: 20,
                 color: DynamicColors.textClr.withOpacity(0.8),

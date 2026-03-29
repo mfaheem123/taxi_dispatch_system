@@ -286,7 +286,7 @@ class InvoiceController extends GetxController {
     var response = await Api().delete("account_invoice/delete/$id");
     if (response.statusCode == 200) {
       listAccountInvoice(isFirstTime: true);
-      print("AccountInvoice deleted successfully!");
+      BotToast.showText(text: "AccountInvoice deleted successfully!");
     }
   }
   ///================================================ list of Account Invoice END
@@ -303,7 +303,6 @@ class InvoiceController extends GetxController {
   bool isFilterUpdateApplied = false;
   List<int> selectedBookingIds = [];
   bool isAllUpdateSelected = false;
-
 
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";
@@ -324,11 +323,9 @@ class InvoiceController extends GetxController {
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);
-
       if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null) {
         var data = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
         orderNumber.text = data.orderNumber ?? "";
-
         print("Invoice Number: ${data.invoiceNumber}");
         print("Total Line Items: ${data.accountInvoiceLineitems?.length}");
       }
@@ -678,9 +675,7 @@ CC: CONGESTION CHARGES
       var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
       if (response.statusCode == 200) {
         BotToast.showText(text: "Success" "Charges updated!");
-
       }
-
   }
 
 

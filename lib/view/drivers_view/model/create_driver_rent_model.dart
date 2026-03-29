@@ -1,54 +1,42 @@
 // To parse this JSON data, do
 //
-//     final getDriverModel = getDriverModelFromJson(jsonString);
+//     final driverRentModel = driverRentModelFromJson(jsonString);
 
 import 'dart:convert';
 
-GetDriverModel getDriverModelFromJson(String str) => GetDriverModel.fromJson(json.decode(str));
+DriverRentModel driverRentModelFromJson(String str) => DriverRentModel.fromJson(json.decode(str));
 
-String getDriverModelToJson(GetDriverModel data) => json.encode(data.toJson());
+String driverRentModelToJson(DriverRentModel data) => json.encode(data.toJson());
 
-class GetDriverModel {
+class DriverRentModel {
   bool? status;
-  int? page;
-  int? limit;
+  String? message;
   int? total;
-  int? totalPages;
-  int? count;
-  List<GetDriverList>? drivers;
+  List<CreateDriverRent>? drivers;
 
-  GetDriverModel({
+  DriverRentModel({
     this.status,
-    this.page,
-    this.limit,
+    this.message,
     this.total,
-    this.totalPages,
-    this.count,
     this.drivers,
   });
 
-  factory GetDriverModel.fromJson(Map<String, dynamic> json) => GetDriverModel(
+  factory DriverRentModel.fromJson(Map<String, dynamic> json) => DriverRentModel(
     status: json["status"],
-    page: json["page"],
-    limit: json["limit"],
+    message: json["message"],
     total: json["total"],
-    totalPages: json["total_pages"],
-    count: json["count"],
-    drivers: json["drivers"] == null ? [] : List<GetDriverList>.from(json["drivers"]!.map((x) => GetDriverList.fromJson(x))),
+    drivers: json["drivers"] == null ? [] : List<CreateDriverRent>.from(json["drivers"]!.map((x) => CreateDriverRent.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
-    "page": page,
-    "limit": limit,
+    "message": message,
     "total": total,
-    "total_pages": totalPages,
-    "count": count,
     "drivers": drivers == null ? [] : List<dynamic>.from(drivers!.map((x) => x.toJson())),
   };
 }
 
-class GetDriverList {
+class CreateDriverRent {
   int? id;
   int? subsidiaryId;
   String? username;
@@ -69,31 +57,31 @@ class GetDriverList {
   bool? active;
   String? startDate;
   String? endDate;
-  dynamic licenceNumber;
+  String? licenceNumber;
   String? licenceExpiry;
-  dynamic phcDriverNumber;
+  String? phcDriverNumber;
   String? phcDriverExpiry;
-  dynamic insuranceNumber;
+  String? insuranceNumber;
   String? insuranceExpiry;
-  dynamic rentalAgreementNumber;
+  String? rentalAgreementNumber;
   String? rentalAgreementExpiry;
-  dynamic roadTaxNumber;
+  String? roadTaxNumber;
   String? roadTaxExpiry;
-  dynamic v5RegistrationNumber;
+  String? v5RegistrationNumber;
   String? v5RegistrationExpiry;
-  dynamic motNumber;
+  String? motNumber;
   String? motExpiry;
-  dynamic mot2Number;
+  String? mot2Number;
   String? mot2Expiry;
-  dynamic phcVehicleNumber;
+  String? phcVehicleNumber;
   String? phcVehicleExpiry;
   String? ni;
   String? image;
   String? createdAt;
   int? vehicleId;
-  String? driverStatus;
-  String? sessionStatus;
-  String? bookingStatus;
+  dynamic driverStatus;
+  dynamic sessionStatus;
+  dynamic bookingStatus;
   dynamic latitude;
   dynamic longitude;
   dynamic webDeviceId;
@@ -122,13 +110,13 @@ class GetDriverList {
   String? rentalAgreementExpiryTime;
   String? driverAccessToken;
   int? companyId;
-  String? fcmToken;
-  String? fcmUpdatedAt;
+  dynamic fcmToken;
+  dynamic fcmUpdatedAt;
   String? subsidiaryName;
   Vehicle? vehicle;
   Subsidiary? subsidiary;
 
-  GetDriverList({
+  CreateDriverRent({
     this.id,
     this.subsidiaryId,
     this.username,
@@ -209,7 +197,7 @@ class GetDriverList {
     this.subsidiary,
   });
 
-  factory GetDriverList.fromJson(Map<String, dynamic> json) => GetDriverList(
+  factory CreateDriverRent.fromJson(Map<String, dynamic> json) => CreateDriverRent(
     id: json["id"],
     subsidiaryId: json["subsidiary_id"],
     username: json["username"],
@@ -393,7 +381,7 @@ class Vehicle {
   String? make;
   String? model;
   String? color;
-  dynamic endDate;
+  String? endDate;
   VehicleType? vehicleType;
 
   Vehicle({

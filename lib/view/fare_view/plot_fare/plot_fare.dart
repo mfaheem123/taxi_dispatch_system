@@ -174,8 +174,21 @@ class _PlotFareState extends State<PlotFare> {
                                         ),
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
-                                      onPressed: (){
+                                      onPressed: () {
+                                        if (controller.Zoneevalue != null) {
+                                          // 1. ID list mein add karein backend ke liye
+                                          controller.addPickupPlot(controller.Zoneevalue!.id!);
 
+                                          // 2. UI Description (Jo aapne pehle likha tha)
+                                          String newValue = controller.Zoneevalue!.name!;
+                                          String currentText = controller.ploteFareDescriptionController.text;
+                                          controller.ploteFareDescriptionController.text = currentText.isEmpty
+                                              ? newValue
+                                              : "$currentText, $newValue";
+
+                                          controller.Zoneevalue = null;
+                                          controller.update();
+                                        }
                                       }, child: Icon(Icons.add)
                                   ),
                                   OutlinedButton(
@@ -188,6 +201,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
+                                        controller.Zoneevalue = null;
+                                        controller.update();
                                       }, child: Icon(Icons.delete_forever,
                                     color: DynamicColors.redClr,
                                     size: 20,
@@ -237,8 +252,23 @@ class _PlotFareState extends State<PlotFare> {
                                         ),
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
-                                      onPressed: (){
+                                      onPressed: () {
+                                        if (controller.Zonee1value != null) {
+                                          // 1. Backend ID list (Dropoff) mein add karein
+                                          controller.addDropoffPlot(controller.Zonee1value!.id!);
 
+                                          // 2. UI Description (2nd Controller) update karein
+                                          String newValue = controller.Zonee1value!.name!;
+                                          String currentText = controller.ploteFareDescription2ndController.text;
+
+                                          controller.ploteFareDescription2ndController.text = currentText.isEmpty
+                                              ? newValue
+                                              : "$currentText, $newValue";
+
+                                          // 3. Dropdown reset aur UI refresh
+                                          controller.Zonee1value = null;
+                                          controller.update();
+                                        }
                                       }, child: Icon(Icons.add)
                                   ),
 
@@ -252,7 +282,8 @@ class _PlotFareState extends State<PlotFare> {
                                         side: BorderSide(color: DynamicColors.gryClr), // optional border color
                                       ),
                                       onPressed: (){
-
+                                        controller.Zonee1value = null;
+                                        controller.update();
                                       }, child: Icon(Icons.delete_forever,
                                     color: DynamicColors.redClr,
                                     size: 20,

@@ -71,7 +71,7 @@ class CustomerController extends GetxController {
     );
     if (response.statusCode == 200) {
       BotToast.showText(text:
-      updateCustomerValue.value ? "'Account Updated Successfully'" : 'Account Created Successfully');
+      updateCustomerValue.value ? "'Customer Updated Successfully'" : 'Customer Added Successfully');
 
       print("✅ Account Created Successfully");
       enableSms.value = false;
@@ -170,7 +170,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
       getCustomer();
-      print("Customer deleted successfully!");
+      BotToast.showText(text:"Customer deleted successfully!");
       print(json.encode(response.data));
     }
   }

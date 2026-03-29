@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -8,7 +6,8 @@ import 'package:dashboard_new1/view/fare_view/model/GetAllFareMeterRateModel.dar
 import 'package:dashboard_new1/view/fare_view/model/allPlotFareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/fixedFareVehicleLocationTypeModel.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
-import 'package:dashboard_new1/view/fare_view/model/getAirPortChargesModel.dart' hide LocationType;
+import 'package:dashboard_new1/view/fare_view/model/getAirPortChargesModel.dart'
+    hide LocationType;
 import 'package:dashboard_new1/view/fare_view/model/getAllFixedfareModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getFareIncrementModel.dart';
 import 'package:dashboard_new1/view/fare_view/model/getSurchargesModel.dart';
@@ -16,6 +15,7 @@ import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.d
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get_navigation/src/root/parse_route.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:get_storage/get_storage.dart';
@@ -28,7 +28,6 @@ import '../fare_by_vehicle/model/fare_by_vehicle_model.dart';
 import '../fare_charges/fare_charges.dart';
 
 class FareController extends GetxController {
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
@@ -40,13 +39,12 @@ class FareController extends GetxController {
   final ploteFareDescriptionController = TextEditingController();
   final ploteFareDescription2ndController = TextEditingController();
 
-
   VehicleTypee? plotVehicleTypevalue;
   Zonee? Zoneevalue;
   Zonee? Zonee1value;
   PlotVehicleTypeModel? plotVehicleTypeModel;
   RxBool getPlotVehicleTypeLoader = false.obs;
-  getPlotVehicleType()async{
+  getPlotVehicleType() async {
     getPlotVehicleTypeLoader(true);
     var response = await Api().get("combined/zone-vehicle-types");
     if (response.statusCode == 200) {
@@ -56,48 +54,76 @@ class FareController extends GetxController {
     }
   }
 
-  postPlotFare() async{
+  List<int> selectedPickupIds = [];
+  List<int> selectedDropoffIds = [];
+
+// Jab '+' button dabayein tw list mein add karein
+  void addPickupPlot(int id) {
+    if (!selectedPickupIds.contains(id)) {
+      selectedPickupIds.add(id);
+      update();
+    }
+  }
+
+  void addDropoffPlot(int id) {
+    if (!selectedDropoffIds.contains(id)) {
+      selectedDropoffIds.add(id);
+      update();
+    }
+  }
+
+  postPlotFare() async {
     var formData = {
       "vehicle_type_id": plotVehicleTypevalue!.id,
-      "pickup_plot_id": Zoneevalue!.id,
-      "dropoff_plot_id": Zonee1value!.id,
+      "pickup_plot_id": selectedPickupIds, // Ab ye array jayega [27, 28, 30]
+      "dropoff_plot_id": selectedDropoffIds, // Ab ye array jayega [35, 34]
       "fares": fareController.text,
-
     };
     print(formData);
-    var response = await Api().post(formData,
-
+    var response = await Api().post(
+        formData,
         isUpdatePlot.value
-            ? "plotfares/update/${plotUpdateId.value}":
-        "plotfares/add"
-
-    );
-    if(response.statusCode == 200){
+            ? "plotfares/update/${plotUpdateId.value}"
+            : "plotfares/add");
+    if (response.statusCode == 200) {
       clearFormData();
       print(response.data);
       BotToast.showText(text: "Plot Fare successfully added");
       getAllPlotFare();
-      BotToast.showText(text: isUpdatePlot.value ? "Plot Fare Updated" : "Plot Fare successfully added");
+      BotToast.showText(
+          text: isUpdatePlot.value
+              ? "Plot Fare Updated"
+              : "Plot Fare successfully added");
       isUpdatePlot(false);
     }
   }
 
+// Controller mein clearFormData ko is tarah update lazmi rakhein:
   clearFormData() {
     fareController.clear();
-    vehicleTypeController.clear();
+    addressController.clear();
+    addressController1.clear();
+    fromAddressList.clear();
+    toAddressList.clear();
     fareDescriptionController.clear();
     fareDescription2ndController.clear();
+    ploteFareDescriptionController.clear();
+    ploteFareDescription2ndController.clear();
+    selectedPickupIds.clear(); // Backend array reset
+    selectedDropoffIds.clear();
+    vehicleTypesFixedvalue = null;
+    fromLocationTypeValue = null;
+    toLocationTypeValue = null;
     plotVehicleTypevalue = null;
     Zoneevalue = null;
     Zonee1value = null;
     isUpdatePlot(false);
-    plotUpdateId(0);
     update();
   }
 
   AllPlotFareModel? allPlotFareModel;
   RxBool getAllPlotFareLoader = false.obs;
-  getAllPlotFare()async{
+  getAllPlotFare() async {
     getAllPlotFareLoader(true);
     var response = await Api().get("plotfares/get");
     if (response.statusCode == 200) {
@@ -107,55 +133,51 @@ class FareController extends GetxController {
     }
   }
 
-
-
   plotfareDelete(int? id) async {
     var response = await Api().delete("plotfares/delete/$id");
     if (response.statusCode == 200) {
       getAllPlotFare();
       BotToast.showText(text: "Success, PlotFare Deleted Successfully");
       print("PloteFare deleted successfully!");
-
     }
   }
-
-
 
   RxBool isUpdatePlot = false.obs;
   RxInt plotUpdateId = 0.obs;
 
   bindPlotFare(PlotFare fare) {
     fareController.text = fare.fares?.toString() ?? "";
-    if (plotVehicleTypeModel?.vehicleTypes != null) {
-      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
-          .firstWhere((v) => v.id == fare.vehicleTypeId);
-    }
-    if (plotVehicleTypeModel?.zones != null && fare.pickupPlot != null) {
-      Zoneevalue = plotVehicleTypeModel!.zones!
-          .firstWhere((z) => z.id == fare.pickupPlot!.id);
-    }
-    if (plotVehicleTypeModel?.zones != null && fare.dropoffPlot != null) {
-      Zonee1value = plotVehicleTypeModel!.zones!
-          .firstWhere((z) => z.id == fare.dropoffPlot!.id);
-    }
     isUpdatePlot(true);
     plotUpdateId(fare.id!);
 
-    update(); // UI ko refresh karne ke liye
+    selectedPickupIds.clear();
+    selectedDropoffIds.clear();
+
+    // Description fields fill karein
+    ploteFareDescriptionController.text = fare.pickupPlot?.name ?? "";
+    ploteFareDescription2ndController.text = fare.dropoffPlot?.name ?? "";
+
+    if (fare.pickupPlot != null) {
+      selectedPickupIds.add(fare.pickupPlot!.id!);
+    }
+    if (fare.dropoffPlot != null) {
+      selectedDropoffIds.add(fare.dropoffPlot!.id!);
+    }
+
+    // Dropdown value select karne ke liye
+    if (plotVehicleTypeModel?.vehicleTypes != null) {
+      plotVehicleTypevalue = plotVehicleTypeModel!.vehicleTypes!
+          .firstWhereOrNull((v) => v.id == fare.vehicleTypeId);
+    }
+
+    update();
   }
 
-
-
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Plot Fare functionality
 
@@ -169,7 +191,6 @@ class FareController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
 
   /// TextEditingControllers
-
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
 
@@ -186,7 +207,6 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SURCHARGES functionality
 
-
   /// TextEditingControllers
   final activeWaitingController = TextEditingController();
 
@@ -195,6 +215,7 @@ class FareController extends GetxController {
 
   GetAllFixedFareModel? getAllFixedFareModels;
   RxBool fixedFareLoader = false.obs;
+
   ///--------------------- Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
@@ -213,17 +234,14 @@ class FareController extends GetxController {
   var totalPagesFixedFare = 1.obs;
   final int limitFixedFare = 10;
 
-
-  getAllFixedFare () async {
+  getAllFixedFare() async {
     fixedFareLoader(true);
-    var response = await Api().get("fixedfares/get",
-        queryParameters: {
-          "vehicle_type_name": searchVehicle.value.toLowerCase(),
-          "area1": searchFromLocation.value.toLowerCase(),
-          "area2": searchToLocation.value.toLowerCase(),
-          "fares": searchFares.value.toLowerCase(),
-        }
-    );
+    var response = await Api().get("fixedfares/get", queryParameters: {
+      "vehicle_type_name": searchVehicle.value.toLowerCase(),
+      "area1": searchFromLocation.value.toLowerCase(),
+      "area2": searchToLocation.value.toLowerCase(),
+      "fares": searchFares.value.toLowerCase(),
+    });
     if (response.statusCode == 200) {
       getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
       totalPagesFixedFare.value = getAllFixedFareModels?.totalPages ?? 1;
@@ -247,18 +265,14 @@ class FareController extends GetxController {
   }
 
   /// ----------------------------------------- Delete fixed fare
-  deleteFixedFareSetting(int? id) async{
-    var response = await Api().delete( "fixedfares/delete/${id}");
-    if(response.statusCode == 200){
+  deleteFixedFareSetting(int? id) async {
+    var response = await Api().delete("fixedfares/delete/${id}");
+    if (response.statusCode == 200) {
       getAllFixedFare();
       BotToast.showText(text: "Fixed Fare Setting Deleted successfully ");
       update();
     }
   }
-
-
-
-
 
   VehicleTypeFixed? vehicleTypesFixedvalue;
   // LocationType?locationTypevalue;
@@ -267,15 +281,17 @@ class FareController extends GetxController {
 
   FixedFareVehicleLocationTypeModel? fixedFareVehicleLocationTypeModel;
   RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
-  getFixedFareVehicleLocationType()async{
+  getFixedFareVehicleLocationType() async {
     getFixedFareVehicleLocationTypeLoader(true);
     var response = await Api().get("combined/vehicle-location-types");
     if (response.statusCode == 200) {
-      fixedFareVehicleLocationTypeModel = FixedFareVehicleLocationTypeModel.fromJson(response.data);
+      fixedFareVehicleLocationTypeModel =
+          FixedFareVehicleLocationTypeModel.fromJson(response.data);
       getFixedFareVehicleLocationTypeLoader(false);
       update();
     }
   }
+
 // Controller ke andar
   var fromAddressList = <String>[].obs;
   var toAddressList = <String>[].obs;
@@ -307,30 +323,34 @@ class FareController extends GetxController {
   postFixedFare() async {
     postFixedFareLoader(true); // loader start
 
-      var formData = {
-        "vehicle_type_id": vehicleTypesFixedvalue!.id,
-        "area1": isUpdateFixedFare.value
-            ? addressController.text
-            : fromAddressList.toList(),
+    var formData = {
+      "vehicle_type_id": vehicleTypesFixedvalue!.id,
+      "area1": isUpdateFixedFare.value
+          ? addressController.text
+          : fromAddressList.toList(),
+      "area2": isUpdateFixedFare.value
+          ? addressController1.text
+          : toAddressList.toList(),
+      "fares": fareController.text,
+      "from_location_id": fromLocationTypeValue!.id,
+      "to_location_id": toLocationTypeValue!.id,
+    };
 
-        "area2": isUpdateFixedFare.value
-            ? addressController1.text
-            : toAddressList.toList(),
-        "fares": fareController.text,
-        "from_location_id": fromLocationTypeValue!.id,
-        "to_location_id": toLocationTypeValue!.id,
-      };
-
-      var response = await Api().post(formData,
-          isUpdateFixedFare.value?
-          "fixedfares/edit/${fixedFareUpdateId.value}":
-          'fixedfares/add',
-          auth: true);
-      if (response.statusCode ==  200) {
-        clearForm();
-        print("POST success: ${response.data}");
-        getAllFixedFare(); // updated data fetch
-      }
+    var response = await Api().post(
+        formData,
+        isUpdateFixedFare.value
+            ? "fixedfares/edit/${fixedFareUpdateId.value}"
+            : 'fixedfares/add',
+        auth: true);
+    if (response.statusCode == 200) {
+      BotToast.showText(
+          text: isUpdateFixedFare.value
+              ? "Fixed Fare is Updated successfully!"
+              : "Fixed Fare is Added successfully!");
+      clearForm();
+      getAllFixedFare();
+      print("POST success: ${response.data}");
+    }
   }
 
   void clearForm() {
@@ -341,6 +361,10 @@ class FareController extends GetxController {
     fareDescription2ndController.clear();
     fromAddressList.clear();
     toAddressList.clear();
+
+    vehicleTypesFixedvalue = null;
+    fromLocationTypeValue = null;
+    toLocationTypeValue = null;
     isUpdateFixedFare.value = false;
     fixedFareUpdateId.value = 0;
     update();
@@ -354,18 +378,21 @@ class FareController extends GetxController {
     fareController.text = editModel.fares?.toString() ?? "";
 
     if (fixedFareVehicleLocationTypeModel != null) {
-      vehicleTypesFixedvalue = fixedFareVehicleLocationTypeModel!.vehicleTypesFixed?.firstWhere(
-            (item) => item.id == editModel.vehicleTypeId,
+      vehicleTypesFixedvalue =
+          fixedFareVehicleLocationTypeModel!.vehicleTypesFixed?.firstWhere(
+        (item) => item.id == editModel.vehicleTypeId,
         orElse: () => vehicleTypesFixedvalue!,
       );
 
-      fromLocationTypeValue = fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
-            (item) => item.id == editModel.fromLocationId,
+      fromLocationTypeValue =
+          fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
+        (item) => item.id == editModel.fromLocationId,
         orElse: () => fromLocationTypeValue!,
       );
 
-      toLocationTypeValue = fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
-            (item) => item.id == editModel.toLocationId,
+      toLocationTypeValue =
+          fixedFareVehicleLocationTypeModel!.locationTypes?.firstWhere(
+        (item) => item.id == editModel.toLocationId,
         orElse: () => toLocationTypeValue!,
       );
     }
@@ -373,8 +400,6 @@ class FareController extends GetxController {
     fixedFareUpdateId(editModel.id);
     update();
   }
-
-
 
   /// todo testing location ???????????????????????????????????????????????????????????????????????
   final FocusNode searchingAddressViaFocusNode = FocusNode();
@@ -400,11 +425,10 @@ class FareController extends GetxController {
   RxInt suggestionSelectedIndex = 0.obs;
   RxString activeField = "from".obs;
 
-
-
   void selectSuggestion(String? value) {
     viaLocation2Controller.text = value!;
-    viaLocation2Controller.selection = TextSelection.collapsed(offset: value.length);
+    viaLocation2Controller.selection =
+        TextSelection.collapsed(offset: value.length);
     inputText.value = value;
     suggestions.clear();
   }
@@ -424,6 +448,7 @@ class FareController extends GetxController {
       _stopTyping(fieldName: fieldName, searchingText: searchingText);
     });
   }
+
   Future<void> onChangeHandler1(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
@@ -441,9 +466,9 @@ class FareController extends GetxController {
     // 👇 Yahan API call ya search function call karna hai
     getAddresses(fieldsName: fieldName, searchingText: searchingText);
   }
+
   RxList allFromAddresses = [].obs;
   RxList allToAddresses = [].obs;
-
 
   List<AllAddressesModel> allAddressesData = <AllAddressesModel>[].obs;
   getAddresses({fieldsName, searchingText}) async {
@@ -463,7 +488,7 @@ class FareController extends GetxController {
         } else {
           suggestions = allAddressesData
               .where((loc) =>
-              loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
+                  loc.name!.toUpperCase().contains(searchingText.toLowerCase()))
               .toList();
           highlightedIndex.value = 0;
         }
@@ -491,7 +516,6 @@ class FareController extends GetxController {
   }
 
   pickLocationAddress(lat, lng) async {
-
     var dio = Dio();
     var response = await dio.request(
       'https://nominatim.openstreetmap.org/reverse?lat=$lat&lon=$lng&format=json&addressdetails=1',
@@ -505,7 +529,7 @@ class FareController extends GetxController {
         {
           "name": response.data['display_name'], // e.g. Brondesbury Park, Brent
           "postcode": response.data['address']
-          ['postcode'], // e.g. Brondesbury Park, Brent
+              ['postcode'], // e.g. Brondesbury Park, Brent
           "lat": double.parse(response.data['lat']), // 51.542059
           "lon": double.parse(response.data['lon']), // -0.212545
         }
@@ -523,25 +547,29 @@ class FareController extends GetxController {
   List<GlobalKey> suggestionItemKeys = [];
 
   void updateKeys() {
-    suggestionItemKeys = List.generate(allAddressesData.length, (_) => GlobalKey());
+    suggestionItemKeys =
+        List.generate(allAddressesData.length, (_) => GlobalKey());
     update();
   }
 
   // change move functions to scroll after change:
   void moveHighlightDown({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
-    highlightedIndex.value = (highlightedIndex.value + 1) % allAddressesData.length;
-    highlightedIndex.refresh();_scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
+    highlightedIndex.value =
+        (highlightedIndex.value + 1) % allAddressesData.length;
+    highlightedIndex.refresh();
+    _scrollToHighlighted(scrollDown: true); // 👈 scroll to bottom when down
   }
 
   void moveHighlightUp({bool viaConditionValue = false}) {
     if (allAddressesData.isEmpty) return;
-    highlightedIndex.value = (highlightedIndex.value - 1 + allAddressesData.length) % allAddressesData.length;
+    highlightedIndex.value =
+        (highlightedIndex.value - 1 + allAddressesData.length) %
+            allAddressesData.length;
     highlightedIndex.refresh();
     _scrollToHighlighted(
         scrollDown: false,
-        viaCondition: viaConditionValue
-    ); // 👈 scroll to top when up
+        viaCondition: viaConditionValue); // 👈 scroll to top when up
   }
 
   void _scrollToHighlighted(
@@ -554,13 +582,14 @@ class FareController extends GetxController {
 
       final listCtx = suggestionListKey.currentContext;
 
-      if (itemCtx != null && listCtx != null &&
+      if (itemCtx != null &&
+          listCtx != null &&
           suggestionScrollController.hasClients) {
         final RenderBox itemBox = itemCtx.findRenderObject() as RenderBox;
         final RenderBox listBox = listCtx.findRenderObject() as RenderBox;
 
         final Offset itemOffset =
-        itemBox.localToGlobal(Offset.zero, ancestor: listBox);
+            itemBox.localToGlobal(Offset.zero, ancestor: listBox);
         final double itemTopLocal = itemOffset.dy;
         final double itemBottomLocal = itemTopLocal + itemBox.size.height;
 
@@ -652,16 +681,15 @@ class FareController extends GetxController {
 
   ///  todo testing location ???????????????????????????????????????????????????????????????????????
 
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Fixed Fare functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
 
-
   String? fromDayValue;
   String? toDayValue;
-  String? startDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? endDate = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? startDate =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? endDate =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? fareConfiguration = "NORMAL";
 
   /// TextEditingControllers
@@ -685,12 +713,12 @@ class FareController extends GetxController {
   VehicleTypeConfiguration? vehicleValue;
   FareGetVehicleTypeAccount? fareGetVehicleTypeAccount;
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
-  getFareGetVehicleTypeAccount()
-  async{
+  getFareGetVehicleTypeAccount() async {
     getFareGetVehicleTypeAccountLoader(true);
     var response = await Api().get("combined/vehicle-type-accounts");
     if (response.statusCode == 200) {
-      fareGetVehicleTypeAccount = FareGetVehicleTypeAccount.fromJson(response.data);
+      fareGetVehicleTypeAccount =
+          FareGetVehicleTypeAccount.fromJson(response.data);
       await getAllFareConfiguration();
       getFareGetVehicleTypeAccountLoader(false);
       update();
@@ -699,7 +727,7 @@ class FareController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> create fare setting
 
-  createFareSetting() async{
+  createFareSetting() async {
     var formData = {
       "vehicle_type_id": vehicleValue!.id,
       "account_id": accountValue!.id,
@@ -709,38 +737,61 @@ class FareController extends GetxController {
       "to_time": toDayController.text,
       "minimum_fares": startingFareController.text,
       "minimum_miles": startingMilesController.text,
-      if(titleController.text.isNotEmpty && fareConfiguration != "NORMAL") "title": titleController.text,
-      if(fareConfiguration != "NORMAL") "from_date": startDate,
-      if(fareConfiguration != "NORMAL") "to_date": endDate,
+      if (titleController.text.isNotEmpty && fareConfiguration != "NORMAL")
+        "title": titleController.text,
+      if (fareConfiguration != "NORMAL") "from_date": startDate,
+      if (fareConfiguration != "NORMAL") "to_date": endDate,
     };
 
     print(formData);
-    var response = await Api().post(formData,
-        updateFareValue.value == false ?
-        "faresconfiguration/add" : "faresconfiguration/edit/${fareUpdateId.value}" );
-    if(response.statusCode == 200){
-      getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
+    var response = await Api().post(
+        formData,
+        updateFareValue.value == false
+            ? "faresconfiguration/add"
+            : "faresconfiguration/edit/${fareUpdateId.value}");
+    if (response.statusCode == 200) {
+      // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
+      var newFare =
+          FareConfiguration.fromJson(response.data['fare_configuration']);
+
+      if (updateFareValue.value) {
+        int index = getAllFareConfigurationData!.fareConfigurations!
+            .indexWhere((f) => f.id == fareUpdateId.value);
+
+        if (index != -1) {
+          newFare.vehicleType = getAllFareConfigurationData!
+              .fareConfigurations![index].vehicleType;
+          newFare.account =
+              getAllFareConfigurationData!.fareConfigurations![index].account;
+
+          getAllFareConfigurationData!.fareConfigurations![index] = newFare;
+        }
+      } else {
+        getAllFareConfigurationData!.fareConfigurations!.insert(0, newFare);
+        getAllFareConfiguration();
+      }
       print(response.data);
-      BotToast.showText(text: "Fare configuration is successfully added");
+      BotToast.showText(
+          text: updateFareValue.value
+              ? "Fare configuration is Updated successfully!"
+              : "Fare configuration is Added successfully!");
       refreshCreateFareFields();
     }
   }
 
-
-
-  deletecreateFareSetting(int? id) async{
-    var response = await Api().delete( "faresconfiguration/delete/${id}");
-    if(response.statusCode == 200){
+  deletecreateFareSetting(int? id) async {
+    var response = await Api().delete("faresconfiguration/delete/${id}");
+    if (response.statusCode == 200) {
       // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       // print(response.data);
-      // BotToast.showText(text: "Fare configuration is successfully added");
+      BotToast.showText(text: "Fare configuration deleted successfully");
       getAllFareConfiguration();
       refreshCreateFareFields();
       update();
     }
   }
 
-  refreshCreateFareFields() async{
+  refreshCreateFareFields() async {
     vehicleValue = null;
     accountValue = null;
     fromDayValue = null;
@@ -750,25 +801,23 @@ class FareController extends GetxController {
     startingFareController.clear();
     startingMilesController.clear();
     titleController.clear();
+    updateFareValue.value = false;
+    fareUpdateId.value = 0;
     update();
   }
-
-
-
 
   RxBool updateFareValue = false.obs;
   RxInt fareUpdateId = 0.obs;
   bindFare(FareConfiguration fare) {
-
     /// vehicle dropdown ka same instance select karna
     vehicleValue = fareGetVehicleTypeAccount!.vehicleTypes!
         .firstWhere((v) => v.id == fare.vehicleTypeId);
 
     /// account dropdown ka same instance select karna
-    if(fare.account != null){
+    if (fare.account != null) {
       accountValue = fareGetVehicleTypeAccount!.accounts!
           .firstWhere((a) => a.id == fare.accountId);
-      }
+    }
 
     fromDayValue = fare.fromDay;
     toDayValue = fare.toDay;
@@ -790,27 +839,18 @@ class FareController extends GetxController {
     update();
   }
 
-
-
-
-
-
-
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare view
   RxBool getAllFareViewLoader = false.obs;
   GetAllFareConfigurationModel? getAllFareConfigurationData;
-  getAllFareConfiguration() async{
-
+  getAllFareConfiguration() async {
     getAllFareViewLoader(true);
 
-    var response = await Api().get("faresconfiguration/get?title=$fareConfiguration");
+    var response =
+        await Api().get("faresconfiguration/get?title=$fareConfiguration");
 
-    if(response.statusCode == 200){
-
-      getAllFareConfigurationData = GetAllFareConfigurationModel.fromJson(response.data);
+    if (response.statusCode == 200) {
+      getAllFareConfigurationData =
+          GetAllFareConfigurationModel.fromJson(response.data);
 
       getAllFareViewLoader(false);
 
@@ -818,21 +858,18 @@ class FareController extends GetxController {
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
 
+  String? FareIncrementStart =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE CONFIGURATION functionality
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
-
-
-
-  String? FareIncrementStart = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-
-  String? FareIncrementEnd = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? FareIncrementEnd =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   String? operatorType;
 
-  final  incrementValueVehicleController = TextEditingController();
+  final incrementValueVehicleController = TextEditingController();
 
   String selectedType = "fixFare";
 
@@ -854,12 +891,7 @@ class FareController extends GetxController {
     update();
   }
 
-
-
-
-
-
-  postFareIncrement() async{
+  postFareIncrement() async {
     var formData = {
       "start_date": FareIncrementStart,
       "end_date": FareIncrementEnd,
@@ -867,15 +899,14 @@ class FareController extends GetxController {
       "amount": incrementValueVehicleController.text,
       "fix_fare": isFixedFare,
       "mileage": isMileage,
-
     };
     print(formData);
-    var response = await Api().post(formData,
-        isFareIncrementEditMode?
-            "fareincrement/update/${editingId}":
-        "fareincrement/add"
-    );
-    if(response.statusCode == 200){
+    var response = await Api().post(
+        formData,
+        isFareIncrementEditMode
+            ? "fareincrement/update/${editingId}"
+            : "fareincrement/add");
+    if (response.statusCode == 200) {
       getFareIncrement();
       incrementValueVehicleController.clear();
       isFareIncrementEditMode = false;
@@ -884,28 +915,24 @@ class FareController extends GetxController {
           ? "Fare Increment Updated successfully"
           : "Fare Increment Added successfully";
       BotToast.showText(text: msg);
-
     }
   }
-
 
   GetFareIncrementMoodel? getFareIncrementMoodel;
   RxBool getFareIncrementLoader = false.obs;
 
-  getFareIncrement() async{
+  getFareIncrement() async {
     getFareIncrementLoader(true);
     var response = await Api().get("fareincrement/get");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       getFareIncrementMoodel = GetFareIncrementMoodel.fromJson(response.data);
       getFareIncrementLoader(false);
       update();
     }
   }
 
-
   bool isFareIncrementEditMode = false;
   int? editingId;
-
 
   bindFareIncrementForEdit(FareIncrement model) {
     isFareIncrementEditMode = true;
@@ -927,10 +954,6 @@ class FareController extends GetxController {
     update();
   }
 
-
-
-
-
   deleteFareIncrement(int? id) async {
     var response = await Api().delete("fareincrement/delete/$id");
     if (response.statusCode == 200) {
@@ -939,20 +962,14 @@ class FareController extends GetxController {
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
 
-
-
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE INCREMENT functionality
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
-
-
-String? postCodeWise = "POSTCODE WISE";
-String? selectDateWise = "TIME WISE";
-String? selectOperation = "SELECT OPERATION";
-String? selectPickup = "PICKUP";
-DaysClass? selectedDay;
+  String? postCodeWise = "POSTCODE WISE";
+  String? selectDateWise = "TIME WISE";
+  String? selectOperation = "SELECT OPERATION";
+  String? selectPickup = "PICKUP";
+  DaysClass? selectedDay;
 
   DateTime? startDateSurCharges = DateTime.now();
   DateTime? endDateSurCharges = DateTime.now();
@@ -961,41 +978,58 @@ DaysClass? selectedDay;
   bool activeStatus = true;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>post surcharge data
-  postSurchargeData() async{
+  postSurchargeData() async {
     var formData = {
       "active": activeStatus,
       "condition": selectPickup,
-      if(congestionFareController.text.isNotEmpty) "congestion_charges": congestionFareController.text,
+      if (congestionFareController.text.isNotEmpty)
+        "congestion_charges": congestionFareController.text,
       "duration": selectDateWise,
-     if(extraDropOffFareController.text.isNotEmpty) "extra_drop_charges": extraDropOffFareController.text,
-      if(surChargesFareController.text.isNotEmpty)"fare": surChargesFareController.text,
-      if(selectDateWise =="DATE WISE") "from_date": "${startDateSurCharges!.year}-${startDateSurCharges!.month}-${startDateSurCharges!.day}",
-     if(startTimeSurCharge.text.isNotEmpty) "from_time": startTimeSurCharge.text,
+      if (extraDropOffFareController.text.isNotEmpty)
+        "extra_drop_charges": extraDropOffFareController.text,
+      if (surChargesFareController.text.isNotEmpty)
+        "fare": surChargesFareController.text,
+      if (selectDateWise == "DATE WISE")
+        "from_date":
+            "${startDateSurCharges!.year}-${startDateSurCharges!.month}-${startDateSurCharges!.day}",
+      if (startTimeSurCharge.text.isNotEmpty)
+        "from_time": startTimeSurCharge.text,
       "operator": selectOperation,
-     if(parkingFareController.text.isNotEmpty) "parking_charges": parkingFareController.text,
+      if (parkingFareController.text.isNotEmpty)
+        "parking_charges": parkingFareController.text,
       "postcode": postCodeFareController.text,
       "surcharges_type": postCodeWise,
-      if(selectDateWise =="DATE WISE") "to_date": "${endDateSurCharges!.year}-${endDateSurCharges!.month}-${endDateSurCharges!.day}",
-     if(endTimeSurCharge.text.isNotEmpty) "to_time": endTimeSurCharge.text,
-      if(selectDateWise == "DAY WISE") "day": selectedDay!.dayName,
+      if (selectDateWise == "DATE WISE")
+        "to_date":
+            "${endDateSurCharges!.year}-${endDateSurCharges!.month}-${endDateSurCharges!.day}",
+      if (endTimeSurCharge.text.isNotEmpty) "to_time": endTimeSurCharge.text,
+      if (selectDateWise == "DAY WISE") "day": selectedDay!.dayName,
     };
-    var response = await Api().post(formData,
-        sureChargeObject !=null ? "surcharges/edit/${sureChargeObject!.id}": "surcharges/add");
-    if(response.statusCode == 200){
-      if(sureChargeObject == null){
+    var response = await Api().post(
+        formData,
+        sureChargeObject != null
+            ? "surcharges/edit/${sureChargeObject!.id}"
+            : "surcharges/add");
+    if (response.statusCode == 200) {
+      String message = sureChargeObject != null
+          ? "Surcharges Updated Successfully"
+          : "Surcharge Added successfully";
+      if (sureChargeObject == null) {
         getSurchargesModel!.surcharges!
             .insert(0, SurchargeObject.fromJson(response.data['surcharges']));
-      }else{
-        int index = getSurchargesModel!.surcharges!.indexWhere((test) => test.id == sureChargeObject!.id);
-        getSurchargesModel!.surcharges![index] = SurchargeObject.fromJson(response.data['surcharges']);
+      } else {
+        int index = getSurchargesModel!.surcharges!
+            .indexWhere((test) => test.id == sureChargeObject!.id);
+        getSurchargesModel!.surcharges![index] =
+            SurchargeObject.fromJson(response.data['surcharges']);
       }
       sureChargeObject = null;
       clearSurchargesData();
-      BotToast.showText(text:  sureChargeObject !=null ? "Surcharges Updated": " Surecharge Add sucessfully");
+      BotToast.showText(text: message);
     }
   }
 
-  clearSurchargesData() async{
+  clearSurchargesData() async {
     congestionFareController.clear();
     extraDropOffFareController.clear();
     surChargesFareController.clear();
@@ -1011,13 +1045,12 @@ DaysClass? selectedDay;
     update();
   }
 
-
   GetSurchargesModel? getSurchargesModel;
   RxBool getSurchargesLoader = false.obs;
-  getSurcharges() async{
+  getSurcharges() async {
     getSurchargesLoader(true);
     var response = await Api().get("surcharges/get");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       sureChargeObject = null;
       getSurchargesModel = GetSurchargesModel.fromJson(response.data);
       getSurchargesLoader(false);
@@ -1027,11 +1060,15 @@ DaysClass? selectedDay;
 
   SurchargeObject? sureChargeObject;
 
-  bindSurChargesData({SurchargeObject? sureChargeData, bool changeActiveStatus = false}) async{
+  bindSurChargesData(
+      {SurchargeObject? sureChargeData,
+      bool changeActiveStatus = false}) async {
     sureChargeObject = sureChargeData;
-    congestionFareController.text = sureChargeData!.congestionCharges.toString();
+    congestionFareController.text =
+        sureChargeData!.congestionCharges.toString();
     activeStatus = sureChargeData.active!;
-    extraDropOffFareController.text = sureChargeData.extraDropCharges.toString();
+    extraDropOffFareController.text =
+        sureChargeData.extraDropCharges.toString();
     postCodeFareController.text = sureChargeData.postcode.toString();
     surChargesFareController.text = sureChargeData.fare.toString();
     startTimeSurCharge.text = sureChargeData.fromTime.toString();
@@ -1040,98 +1077,126 @@ DaysClass? selectedDay;
     postCodeWise = sureChargeData.surchargesType.toString();
     selectDateWise = sureChargeData.duration.toString();
     selectPickup = sureChargeData.condition.toString();
-    if(sureChargeData.day != null){
+    if (sureChargeData.day != null) {
       selectedDay =
           DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
-     int index = daysList.indexWhere((test)=> test.dayName == sureChargeData.day);
-      daysList[index] = DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
+      int index =
+          daysList.indexWhere((test) => test.dayName == sureChargeData.day);
+      daysList[index] =
+          DaysClass(selectedDay: true.obs, dayName: sureChargeData.day);
     }
-    if(changeActiveStatus == true){
+    if (changeActiveStatus == true) {
       activeStatus = !(sureChargeObject!.active ?? false);
       postSurchargeData();
     }
     update();
   }
-  
-  
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> delete sure charge api
 
-
-
-  deleteSureCharge({id}) async{
+  deleteSureCharge({id}) async {
     var response = await Api().delete("surcharges/delete/$id");
-    if(response.statusCode == 200){
-      int index = getSurchargesModel!.surcharges!.indexWhere((test) => test.id == id);
-      getSurchargesModel!.surcharges!.remove(getSurchargesModel!.surcharges![index]);
-    update();
+    if (response.statusCode == 200) {
+      int index =
+          getSurchargesModel!.surcharges!.indexWhere((test) => test.id == id);
+      getSurchargesModel!.surcharges!
+          .remove(getSurchargesModel!.surcharges![index]);
+      BotToast.showText(text: "Surcharges deleted successfully");
+      update();
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
 
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo SurCharges functionality
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
 
   AirPortChargesModel? airportChargesData;
   RxBool getAllAirPortChargesLoader = true.obs;
-  getAllAirPortCharges() async{
+  getAllAirPortCharges() async {
     getAllAirPortChargesLoader(false);
     var response = await Api().get("airports/get");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       airportChargesData = AirPortChargesModel.fromJson(response.data);
       getAllAirPortChargesLoader(true);
       update();
     }
   }
 
+  List<Location>? filteredLocations = [];
+  bool isEditing = false;
+
+  void filterAirports(String query) {
+    if (isEditing) return;
+
+    filteredLocations = (airportChargesController.text.isEmpty &&
+            pickUpChargesController.text.isEmpty &&
+            dropOffChargesController.text.isEmpty)
+        ? (airportChargesData?.locations ?? [])
+        : airportChargesData?.locations
+            ?.where((loc) =>
+                loc.name!
+                    .toLowerCase()
+                    .contains(airportChargesController.text.toLowerCase()) &&
+                loc.pickupCharges!.contains(pickUpChargesController.text) &&
+                loc.dropoffCharges!.contains(dropOffChargesController.text))
+            .toList();
+
+    update();
+  }
+
   TextEditingController pickUpChargesController = TextEditingController();
   TextEditingController dropOffChargesController = TextEditingController();
+  TextEditingController airportChargesController = TextEditingController();
   int? airPortSelectedItemId;
 
-  editAirPortCharge() async{
+  editAirPortCharge() async {
     var formData = {
       "pickup_charges": pickUpChargesController.text,
       "dropoff_charges": dropOffChargesController.text,
     };
-    var response = await Api().post(formData, "airports/edit/$airPortSelectedItemId");
-    if(response.statusCode == 200){
+    var response =
+        await Api().post(formData, "airports/edit/$airPortSelectedItemId");
+    if (response.statusCode == 200) {
       print(response.data);
-      int index = airportChargesData!.locations!.indexWhere((test)=> test.id == airPortSelectedItemId);
-      airportChargesData!.locations![index] = Location.fromJson(response.data['location']);
+      int index = airportChargesData!.locations!
+          .indexWhere((test) => test.id == airPortSelectedItemId);
+      airportChargesData!.locations![index] =
+          Location.fromJson(response.data['location']);
+      airportChargesController.clear();
       pickUpChargesController.clear();
       dropOffChargesController.clear();
       BotToast.showText(text: "Airport Charges Updated");
+      filterAirports("");
       update();
     }
   }
 
-  clearAirPortCharges(id) async{
+  clearAirPortCharges(id) async {
     var response = await Api().post({}, "airports/clear/$id");
-    if(response.statusCode == 200){
-      int index = airportChargesData!.locations!.indexWhere((test)=> test.id == id);
+    if (response.statusCode == 200) {
+      int index =
+          airportChargesData!.locations!.indexWhere((test) => test.id == id);
       airportChargesData!.locations![index].pickupCharges = "0.0";
       airportChargesData!.locations![index].dropoffCharges = "0.0";
-    update();
-    }
-  }
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
-
-
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare meter
-
-  GetAllFareMeterRateModel? getAllFareMeterRateModel;
-  getAllFareMeterRate() async{
-    var response = await Api().get("faremeter/get");
-    if(response.statusCode == 200){
-      getAllFareMeterRateModel = GetAllFareMeterRateModel.fromJson(response.data);
+      BotToast.showText(text: "Success! Saved");
       update();
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo Airport charges functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all fare meter
+
+  GetAllFareMeterRateModel? getAllFareMeterRateModel;
+  getAllFareMeterRate() async {
+    var response = await Api().get("faremeter/get");
+    if (response.statusCode == 200) {
+      getAllFareMeterRateModel =
+          GetAllFareMeterRateModel.fromJson(response.data);
+      update();
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> edit fare mater
 
@@ -1140,40 +1205,45 @@ DaysClass? selectedDay;
   String? selectFareMeterDay;
   DateTime? specialDate = DateTime.now();
 
-  editFareMeterRate({FareMeterObject? fareMeterObj}) async{
+  editFareMeterRate({FareMeterObject? fareMeterObj}) async {
     var formData = {
       "has_meter": fareMeterObj!.hasMeter,
       "waiting_intervals": fareMeterObj.waitingIntervalsController.text,
       "autostart_wait": fareMeterObj.autostartWait,
-      "autostart_waiting_speed_limit": fareMeterObj.activeWaitingController.text,
-      "autostart_waiting_time": fareMeterObj.autostartWaitingTimeController.text,
-      "autostop_waiting_speed_limit": fareMeterObj.suspendWaitingSpeedController.text,
+      "autostart_waiting_speed_limit":
+          fareMeterObj.activeWaitingController.text,
+      "autostart_waiting_time":
+          fareMeterObj.autostartWaitingTimeController.text,
+      "autostop_waiting_speed_limit":
+          fareMeterObj.suspendWaitingSpeedController.text,
     };
-    formData["waiting_charges"] = fareMeterObj.waitingCharges!.map((e) => e.toJson()).toList();
-    var response = await Api().post(formData, "faremeter/edit/${fareMeterObj.id}");
-    if(response.statusCode == 200){
-      int index = getAllFareMeterRateModel!.fareMeters!.indexWhere((test) => test.id == fareMeterObj.id);
-      getAllFareMeterRateModel!.fareMeters![index] = FareMeterObject.fromJson(response.data['fareMeter']);
+    formData["waiting_charges"] =
+        fareMeterObj.waitingCharges!.map((e) => e.toJson()).toList();
+    var response =
+        await Api().post(formData, "faremeter/edit/${fareMeterObj.id}");
+    if (response.statusCode == 200) {
+      int index = getAllFareMeterRateModel!.fareMeters!
+          .indexWhere((test) => test.id == fareMeterObj.id);
+      getAllFareMeterRateModel!.fareMeters![index] =
+          FareMeterObject.fromJson(response.data['fareMeter']);
       BotToast.showText(text: "Fare Add Sucessfully");
       update();
     }
   }
 
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
 
-
-///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo FARE METER functionality
-
-/// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create Fare by Vehicle Setting
-
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Create Fare by Vehicle Setting
 
   VehicleTypeFixed? createByVehicleTypes;
   FixedFareVehicleLocationTypeModel? VehicleTypeModel;
   RxBool getFixedFareVehicleLoader = false.obs;
-  getFixedFareVehicleType()async{
+  getFixedFareVehicleType() async {
     getFixedFareVehicleLoader(true);
     var response = await Api().get("combined/vehicle-location-types");
     if (response.statusCode == 200) {
-      VehicleTypeModel = FixedFareVehicleLocationTypeModel.fromJson(response.data);
+      VehicleTypeModel =
+          FixedFareVehicleLocationTypeModel.fromJson(response.data);
       getFixedFareVehicleLoader(false);
       update();
     }
@@ -1184,9 +1254,10 @@ DaysClass? selectedDay;
 
   FareByVehicleSetting? fareByVehicleSetting;
   RxBool farebyVehicleLoader = false.obs;
-  getFareByVehicleSetting()async{
+  getFareByVehicleSetting() async {
     farebyVehicleLoader(true);
-    var response = await Api().get("farebyvehicle/get",
+    var response = await Api().get(
+      "farebyvehicle/get",
     );
     if (response.statusCode == 200) {
       fareByVehicleSetting = FareByVehicleSetting.fromJson(response.data);
@@ -1195,40 +1266,39 @@ DaysClass? selectedDay;
     }
   }
 
-
-
-
-  postFareByVehicleSetting() async{
+  postFareByVehicleSetting() async {
     var formData = {
       'vehicle_type_id': createByVehicleTypes!.id,
       'value': fareValueVehicleController.text,
       'operator': fareByVehicleOperater,
     };
     print(formData);
-    var response = await Api().post(formData,
-        updateFarebyVehicle.value == false ?
-        "farebyvehicle/add": "farebyvehicle/update/${fareByVehicleUpdateId.value}" );
-    if(response.statusCode == 200){
-    getFareByVehicleSetting();
-    fareValueVehicleController.clear();
-    createByVehicleTypes = null ;
-    fareByVehicleOperater = 'AMOUNT';
+    var response = await Api().post(
+        formData,
+        updateFarebyVehicle.value == false
+            ? "farebyvehicle/add"
+            : "farebyvehicle/update/${fareByVehicleUpdateId.value}");
+    if (response.statusCode == 200) {
+      getFareByVehicleSetting();
+      fareValueVehicleController.clear();
+      createByVehicleTypes = null;
+      fareByVehicleOperater = 'AMOUNT';
       print(response.data);
       BotToast.showText(text: "Fare By Vehicle is successfully added");
     }
   }
+
   RxBool updateFarebyVehicle = false.obs;
   RxInt fareByVehicleUpdateId = 0.obs;
 
   bindFareByVechicle(FareByVehicle fareByVehicleEdit) {
     fareByVehicleUpdateId.value = fareByVehicleEdit.id!;
     createByVehicleTypes = VehicleTypeModel!.vehicleTypesFixed?.firstWhere(
-            (element) => element.id == fareByVehicleEdit.vehicleTypeId);
+        (element) => element.id == fareByVehicleEdit.vehicleTypeId);
     fareValueVehicleController.text = fareByVehicleEdit.value.toString();
     fareByVehicleOperater = fareByVehicleEdit.fareByVehicleOperator;
     updateFarebyVehicle(true);
     update();
-
   }
 
   deleteCustomer(int? id) async {
@@ -1246,5 +1316,4 @@ DaysClass? selectedDay;
     updateFarebyVehicle(false);
     update();
   }
-
 }

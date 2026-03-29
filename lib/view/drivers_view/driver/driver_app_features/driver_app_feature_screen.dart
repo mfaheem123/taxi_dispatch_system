@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
+import '../../../../component/dropdown_button.dart';
+import '../../../customer/model/restricDriver.dart';
 import '../../controller/driver_controller.dart';
 import 'app_version_widget.dart';
 import 'drivers_list_feature.dart';
@@ -34,7 +36,15 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
 
 
     return GetBuilder<DriverController>(
+      initState: (state) {
+        controller.getAllDrivers();
+      },
       builder: (controller) {
+        if (controller.isDriversLoading || controller.allDriverData == null) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
         return Container(
 
           padding: EdgeInsets.symmetric(horizontal: 12),
@@ -47,17 +57,23 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                   Row(
                     children: [
                       SizedBox(
-                        width: 200,
+                        // width: 200,
                         // height: 30,
-                        child: RestrictedDrivers(
-                          width: 200,
-                          titleText: "SELECT DRIVER",
-                          driversList: [
-                            "25 GEORGE HAMPTON",
-                            "26 PAUL DOUBLEDAY",
-                            "27 RICHARD HARDWICK",
-                            "28 LANRE OKERJO",
-                          ],
+                        child:    CustomDropdownField<DriverObject>(
+                          label: "SELECT DRIVERS",
+                          width: 320,
+                          height: 35,
+                          items: controller.allDriverData!.drivers!,
+                          value: controller.allDriverData!.drivers!.contains(controller.selectDriverObject)
+                              ? controller.selectDriverObject
+                              : null,
+                          itemLabel: (driver) =>
+                          driver.name!,
+                          onChanged: (val) {
+                            controller.selectDriverObject = val;
+                            controller.getDriversAppFuture(val!.id!);
+                            controller.update();
+                          },
                         ),
                       ),
 
@@ -83,6 +99,9 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                   ),
 
                   CustomButton(
+                    onTap: () {
+                      controller.saveDriverFeatures();
+                    },
                     height: 35,
                     verticalPadding: 0.0,
                     borderRadius: 4,

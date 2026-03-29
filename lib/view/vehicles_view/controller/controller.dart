@@ -77,19 +77,15 @@ class VehicleController extends GetxController {
   final motExpiryExpireTimeController = TextEditingController();
   final mot2ExpiryExpireTimeController = TextEditingController();
   final insuranceExpiryTimeController = TextEditingController();
-
   DashboardDataModel? dashboardAllData;
   DashboardVehicleTypeObject? selectVehicleValue;
-
   postCompanyVehicle() async {
     companyVehicleLoader(true);
     update();
-
     dio.MultipartFile? phcFile;
     dio.MultipartFile? motFile;
     dio.MultipartFile? mot2File;
     dio.MultipartFile? insuranceFile;
-
     if (phcVehicleDocPic != null) {
       phcFile = dio.MultipartFile.fromBytes(phcVehicleDocPic!, filename: "phc.png");
     }
@@ -125,7 +121,6 @@ class VehicleController extends GetxController {
       'mot_number': motNumberController.text,
       'mot2_number': mot2NumberController.text,
       'insurance_number': insuranceNumberController.text,
-      // Images files yahan add karein
       if (phcFile != null) 'phc_vehicle_document': phcFile,
       if (motFile != null) 'mot_document': motFile,
       if (mot2File != null) 'mot2_document': mot2File,
@@ -134,7 +129,6 @@ class VehicleController extends GetxController {
       "mot_expiry_time": motExpiryExpireTimeController.text,
       "mot2_expiry_time": mot2ExpiryExpireTimeController.text,
       "insurance_expiry_time": insuranceExpiryTimeController.text,
-
     });
       var response = await Api().post(
           formData,
@@ -145,14 +139,16 @@ class VehicleController extends GetxController {
           multiPart: true,
       );
       if (response.statusCode == 200) {
+        String message = singleVehicleData != null
+            ? "Company Vehicle Update Successfully"
+            : "Company Vehicle Added Successfully";
         _clearAllFields();
         singleVehicleData = null;
-        BotToast.showText(text: singleVehicleData !=null ? "Company Vehicle Added Successfully" :"Company Vehicle Update Successfully" );
+        BotToast.showText(text: message);
       }
       companyVehicleLoader(false);
       update();
   }
-
 
   _clearAllFields() {
     colorController.clear();
@@ -174,7 +170,6 @@ class VehicleController extends GetxController {
   Vehicles? singleVehicleData;
   companyDataBinding({Vehicles? data}) async {
     if (data == null) return;
-
     if (data.vehicleTypeId != null) {
       selectVehicleValue1 = vehicleTypeList.firstWhereOrNull(
               (element) => element.id == data.vehicleTypeId
@@ -193,7 +188,6 @@ class VehicleController extends GetxController {
     motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
     insuranceExpiryTimeController.text = data.insuranceExpiryTime?.toString() ?? '';
-
     phcVehicleExpireDate = data.phcVehicleExpiry;
     motExpiryExpireDate = data.motExpiry;
     mot2ExpiryExpireDate = data.mot2Expiry;
@@ -215,7 +209,7 @@ class VehicleController extends GetxController {
   RxList<VehicleType> allVehicleTypes = <VehicleType>[].obs;
   RxList<VehicleType> filteredVehicleTypes = <VehicleType>[].obs;
 
-// // ye search fields hain
+//  ye search fields hain
   RxString searchName = ''.obs;
   RxString searchPassengers = ''.obs;
   RxString searchLuggages = ''.obs;
@@ -223,14 +217,12 @@ class VehicleController extends GetxController {
   RxString searchMinFare = ''.obs;
   RxString searchMinMiles = ''.obs;
 
-  /// Pagination
+  // Pagination
   var currentPage = 1.obs;
   var totalPages = 1.obs;
   final int limit = 20;
   getVehicleTypes() async {
-
       isLoading.value = true;
-
       String query = 'page=${currentPage.value}&limit=$limit';
       if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
       if (searchPassengers.value.isNotEmpty)
@@ -243,11 +235,8 @@ class VehicleController extends GetxController {
         query += '&minimum_fares=${searchMinFare.value}';
       if (searchMinMiles.value.isNotEmpty)
         query += '&minimum_miles=${searchMinMiles.value}';
-
       print("API Query: vehicle-type/ge?$query");
-
       final response = await Api().get('vehicle-type/get?$query');
-
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
         totalPages.value = vehicleTypeModel?.totalPages ?? 1;
@@ -257,14 +246,12 @@ class VehicleController extends GetxController {
       update();
       }
   }
-
 // Search changes function
   void onSearchChanged() {
     currentPage.value = 1;
     getVehicleTypes();
   }
-
-  ///  pagination function
+  //  pagination function
   void onPageChange(int page) {
     currentPage.value = page;
     getVehicleTypes();
@@ -274,9 +261,8 @@ class VehicleController extends GetxController {
     var response = await Api().delete('vehicle-type/delete/$id');
     if (response.statusCode == 200) {
       getVehicleTypes();
-
       print(" VehicleType deleted successfully!");
-      print(json.encode(response.data));
+      BotToast.showText(text: "VehicleType deleted successfully!" );
     }
   }
 
@@ -287,7 +273,6 @@ class VehicleController extends GetxController {
   CompanyVehicleModel? companyVehicleModel;
   RxList<Vehicles> companyAllVehicle = <Vehicles>[].obs;
   RxList<Vehicles> filteredCompanyVehicle = <Vehicles>[].obs;
-
   final searchVehicle = TextEditingController();
   final searchVehicleType = TextEditingController();
   final searchOwner = TextEditingController();
@@ -297,7 +282,6 @@ class VehicleController extends GetxController {
   var companycurrentPage = 1.obs;
   var companytotalPages = 1.obs;
   final int companylimit = 20;
-
  companyVehicle() async {
       isCompanyVehicle.value = true;
       final response = await Api().get('company-vehicles/get?',
@@ -321,25 +305,22 @@ class VehicleController extends GetxController {
       isCompanyVehicle.value = false;
       update();
       }
-
   }
 
   void SearchingOnCompany() {
     companycurrentPage.value = 1;
     companyVehicle();
   }
-
   ///  pagination function
   void PageOnCompany(int page) {
     companycurrentPage.value = page;
     companyVehicle();
   }
-
   deleteCompanyVehicle(int? id) async {
     var response = await Api().delete('company-vehicles/delete/$id');
     if (response.statusCode == 200) {
       companyVehicle();
-      print("Company Vehicle deleted successfully!");
+      BotToast.showText(text: "Company Vehicle deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -349,12 +330,10 @@ class VehicleController extends GetxController {
   RxBool defaultVehicleValue = false.obs;
   RxBool minimumMilesValue = false.obs;
   RxBool minimumFaresValue = false.obs;
-
   /// color pick
   Color pickerColor = Colors.blue;
   Color foregroundColor = Colors.blue;
   RxBool isLoadVehicleType = false.obs;
-
   /// text fields editing
   final vehicleTypeController = TextEditingController();
   final passengersController = TextEditingController();
@@ -368,7 +347,6 @@ class VehicleController extends GetxController {
 
   createVehicleType() async {
     isLoadVehicleType.value = false;
-
     var multipartFile;
     if (profileImg != null) {
       multipartFile = dio.MultipartFile.fromBytes(
@@ -393,7 +371,6 @@ class VehicleController extends GetxController {
       'account_waiting_charges': accountWaitingChargesController.text,
       if (multipartFile != null) "image": multipartFile!
     });
-
     var response = await Api().post(
         formData,
         singleVehicle != null
@@ -402,6 +379,9 @@ class VehicleController extends GetxController {
         auth: true,
         multiPart: multipartFile != null ? true : false);
     if (response.statusCode == 200) {
+      String message = singleVehicle != null
+          ? "Vehicle Updated Successfully"
+          : "Vehicle Created Successfully";
       vehicleTypeController.clear();
       passengersController.clear();
       luggagesController.clear();
@@ -416,6 +396,7 @@ class VehicleController extends GetxController {
       minimumFaresValue.value = false;
       profileImg = null;
       singleVehicle = null;
+      BotToast.showText(text: message);
       update();
       print("response of body -------------------------${response.data}");
     } else {
@@ -427,7 +408,6 @@ class VehicleController extends GetxController {
   VehicleType? singleVehicle;
   vehicleDataBinding({item}) async {
     singleVehicle = item;
-
     // Text Fields
     vehicleTypeController.text = singleVehicle!.name ?? '';
     passengersController.text = singleVehicle!.passengers?.toString() ?? '0';
@@ -438,11 +418,9 @@ class VehicleController extends GetxController {
     waitingTimeController.text = singleVehicle!.waitingTime?.toString() ?? '0';
     driverWaitingChargesController.text = singleVehicle!.driverWaitingCharges?.toString() ?? '0';
     accountWaitingChargesController.text = singleVehicle!.accountWaitingCharges?.toString() ?? '0';
-
     // Booleans
     defaultVehicleValue.value = singleVehicle!.defaultVehicle ?? false;
     minimumFaresValue.value = singleVehicle!.vehicleTypeMinimumFares ?? false;
-
     // Colors (Hex String to Color conversion)
     if (singleVehicle!.backgroundColor != null) {
       pickerColor = Color(int.parse("0xFF${singleVehicle!.backgroundColor!}"));
@@ -450,10 +428,8 @@ class VehicleController extends GetxController {
     if (singleVehicle!.foregroundColor != null) {
       foregroundColor = Color(int.parse("0xFF${singleVehicle!.foregroundColor!}"));
     }
-
     // Reset local image bytes to null so UI uses singleVehicle!.image
     profileImg = null;
-
     update();
   }
 }

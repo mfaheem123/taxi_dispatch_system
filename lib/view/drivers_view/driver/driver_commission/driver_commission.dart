@@ -113,7 +113,6 @@ class _DriverCommissionState extends State<DriverCommission> {
                         size: 25,
                       ),
                     ),
-                    onTap: () => controller.getDriverCommission(),
                   ),
                 ],
               ),
@@ -142,7 +141,7 @@ class _DriverCommissionState extends State<DriverCommission> {
 
                         return DataCell(
                           Center(
-                              child: Text(driverItem.driver?.username ?? "-")),
+                              child: Text(driverItem.driverId?.toString() ?? "-")),
                           onTap: () async {
                             await controller.getDriverCommissionDetails(driverItem.driverId);
                             DriverCommissionAlt.show(id: driverItem.driverId ?? 0);

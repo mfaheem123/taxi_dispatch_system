@@ -1,22 +1,34 @@
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
+import 'package:dashboard_new1/view/drivers_view/driver/login_drivers/driver_login_logout_model.dart';
 import 'package:dashboard_new1/view/drivers_view/model/driver_commission_filter_model.dart';
 import 'package:dashboard_new1/view/drivers_view/model/list_drivers_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
+import 'package:excel/excel.dart';
+import 'dart:html' as html;
+
+import 'package:path_provider/path_provider.dart';
 
 import '../../../Model/driver_models/driver_model.dart' hide Driver;
-import 'package:file_picker/file_picker.dart';
 
+import 'package:file_picker/file_picker.dart';
 import '../../../Model/driver_models/single_driver_model.dart' as singleDriver;
 import '../../../Model/image_model.dart';
+import '../../../component/color.dart';
+import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../driver/create_driver_form/driver_form.dart';
+import '../driver/driver_app_features/driver_app_future_model.dart';
+import '../model/create_driver_rent_model.dart';
 import '../model/driver_commission_alert_model.dart';
 import '../model/driver_commission_payment_model.dart';
 import '../model/driver_commission_model.dart';
@@ -24,8 +36,13 @@ import '../model/driver_form_model.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/dio.dart' as dio;
 
+import '../model/driver_rent_alt_model.dart';
+
+import '../model/driver_rent_filter_model.dart';
+import '../model/driver_rent_model.dart';
 import '../model/list_driver_commission_model.dart';
 import '../model/update_driver_commission_model.dart';
+import '../model/update_driver_rent_model.dart';
 
 class DriverController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo create driver form functionality
@@ -656,8 +673,8 @@ class DriverController extends GetxController {
   var driverCurrentPage = 1.obs;
   var driverTotalPage = 1.obs;
   final int driverLimit = 15;
-  RxList<Driver> driverAll = <Driver>[].obs;
-  RxList<Driver> driverFilter = <Driver>[].obs;
+  RxList<GetDriverList> driverAll = <GetDriverList>[].obs;
+  RxList<GetDriverList> driverFilter = <GetDriverList>[].obs;
   RxString searchDriverName = ''.obs;
   RxString searchDriverUserName = ''.obs;
   RxString searchVehicleName = ''.obs;
@@ -676,6 +693,7 @@ class DriverController extends GetxController {
       final response =
           await Api().get(auth: true, 'drivers/get?', queryParameters: {
         'active': activeDrivers.value == true ? false : true,
+        'page': driverCurrentPage.value,
         'limit': driverLimit,
         "name": searchDriverName.value.toLowerCase(),
         "username": searchDriverUserName.value.toLowerCase(),
@@ -721,7 +739,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverList();
-      print("Driver deleted successfully!");
+      BotToast.showText(text:"Driver deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -773,6 +791,133 @@ class DriverController extends GetxController {
   final commentsController = TextEditingController();
   final breakController = TextEditingController();
 
+  // get All Driver dropDown
+  RestricDriverModel? allDriverData;
+  DriverObject? selectDriverObject;
+  bool isDriversLoading = false;
+  getAllDrivers() async {
+    isDriversLoading = true;
+    update();
+    var response = await Api().get("drivers/get");
+    if (response.statusCode == 200) {
+      allDriverData = RestricDriverModel.fromJson(response.data);
+    }
+    isDriversLoading = false;
+    update();
+  }
+
+  DriverAppFutureModel? driverAppFutureModel;
+  getDriversAppFuture(int driverId) async {
+    var response = await Api().get("drivers-app/app_features?driver_id=$driverId");
+    if (response.statusCode == 200) {
+
+      driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);
+      if (driverAppFutureModel?.appFeatures?.isNotEmpty ?? false) {
+        var feat = driverAppFutureModel!.appFeatures!.first.features;
+        if (feat != null) {
+          showCustomerValue.value = feat.showCustomerNumber ?? false;
+          enableCustomerValue.value = feat.enableCustomerCall ?? false;
+          enableFlagDownValue.value = feat.enableFlagdown ?? false;
+          showAccountFareValue.value = feat.showAccountFare ?? false;
+          hideBreakValue.value = feat.hideBreak ?? false;
+          hideDeclineValue.value = feat.hideDecline ?? false;
+          hideRecoverValue.value = feat.hideRecover ?? false;
+          hideNoPickUpValue.value = feat.hideNoPickup ?? false;
+          hidePickUpValue.value = feat.hidePickup ?? false;
+          hideDropOffValue.value = feat.hideDropoff ?? false;
+          fareMeterValue.value = feat.fareMeter ?? false;
+          diableFareMeterValue.value = feat.disableFareMeterAccountJob ?? false;
+          fareMeterWaitingValue.value = feat.fareMeterWaitingCharges ?? false;
+          payByCardValue.value = feat.payByCard ?? false;
+          waitingAfterArrivalValue.value = feat.waitingAfterArrival ?? false;
+          disablePanicButtonValue.value = feat.disablePanicButon ?? false;
+          showNavigationValue.value = feat.showNavigation ?? false;
+          shawFareValue.value = feat.showFare ?? false;
+          hasCompanyCarValue.value = feat.hasCompanyCar ?? false;
+          hidePaymentTypeValue.value = feat.hidePaymentType ?? false;
+          enableTollChargesValue.value = feat.enableTollCharges ?? false;
+          // TextFields
+          bookingTimerController.text = feat.bookingTimer?.toString() ?? "";
+          breakController.text = feat.breakTimer?.toString() ?? "";
+          imeController.text = feat.mobileImeiNumber?.toString() ?? "";
+          makeController.text = feat.mobileMake?.toString() ?? "";
+          modelController.text = feat.mobileModel?.toString() ?? "";
+          simNetworkController.text = feat.mobileSimNetwork?.toString() ?? "";
+          simNumberController.text = feat.mobileSimNumber?.toString() ?? "";
+          networkProviderController.text = feat.mobileNetworkProvider?.toString() ?? "";
+          dataAllowanceController.text = feat.mobileDataAllowance?.toString() ?? "";
+          pdaDepositController.text = feat.pdaDeposit?.toString() ?? "";
+          commentsController.text = feat.pdaComments?.toString() ?? "";
+        }
+      }
+      update();
+    }
+  }
+
+  void toggleFeature(RxBool feature) {
+    feature.value = !feature.value;
+    update(); // Taake GetBuilder refresh ho jaye
+  }
+  RxBool saveFeaturesLoad = false.obs;
+  saveDriverFeatures() async {
+    if (selectDriverObject == null) {
+      BotToast.showText(text: 'Please select a driver first');
+      return;
+    }
+    saveFeaturesLoad(true);
+    var formData = {
+      "driver_id": selectDriverObject!.id,
+      "show_customer_number": showCustomerValue.value,
+      "enable_customer_call": enableCustomerValue.value,
+      "enable_flagdown": enableFlagDownValue.value,
+      "show_account_fare": showAccountFareValue.value,
+      "hide_break": hideBreakValue.value,
+      "hide_decline": hideDeclineValue.value,
+      "hide_recover": hideRecoverValue.value,
+      "hide_no_pickup": hideNoPickUpValue.value,
+      "hide_pickup": hidePickUpValue.value,
+      "hide_dropoff": hideDropOffValue.value,
+      "fare_meter": fareMeterValue.value,
+      "disable_fare_meter_account_job": diableFareMeterValue.value,
+      "fare_meter_waiting_charges": fareMeterWaitingValue.value,
+      "pay_by_card": payByCardValue.value,
+      "waiting_after_arrival": waitingAfterArrivalValue.value,
+      "disable_panic_buton": disablePanicButtonValue.value,
+      "show_navigation": showNavigationValue.value,
+      "show_fare": shawFareValue.value,
+      "has_company_car": hasCompanyCarValue.value,
+      "hide_payment_type": hidePaymentTypeValue.value,
+      "enable_toll_charges": enableTollChargesValue.value,
+      "booking_timer": bookingTimerController.text,
+      "break_timer": breakController.text,
+      "mobile_imei_number": imeController.text,
+      "mobile_make": makeController.text,
+      "mobile_model": modelController.text,
+      "mobile_sim_network": simNetworkController.text,
+      "mobile_sim_number": simNumberController.text,
+      "mobile_network_provider": networkProviderController.text,
+      "mobile_data_allowance": dataAllowanceController.text,
+      "pda_deposit": pdaDepositController.text,
+      "pda_comments": commentsController.text,
+    };
+    print("Sending Data: $formData");
+    var response = await Api().post(
+      formData,
+      "drivers-app/app_features", // Yahan apna sahi update URL dalein
+      auth: true,
+    );
+    if (response.statusCode == 200) {
+      BotToast.showText(text: 'Driver Features Updated Successfully');
+      print("Features Updated Successfully");
+      saveFeaturesLoad(false);
+      print("Error Updating Features");
+      print(response);
+      update();
+    }
+  }
+
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER APP FEATURES screen functionality
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission screen functionality
@@ -797,6 +942,9 @@ class DriverController extends GetxController {
     driverSelectionController.addListener(() {
       autoFillDriverDetails(driverSelectionController.text);
     });
+    rentDriverSelectionController.addListener(() {
+      fillDriverDetails(rentDriverSelectionController.text);
+    });
   }
 
   /// RxBool variable
@@ -810,7 +958,6 @@ class DriverController extends GetxController {
   ListDriverCommissionModel? listDriverCommission;
   CreateDriverCommission? createDriverCommission;
   bool isCreateDriverCommission = false;
-
 
   void resetCreateFields() {
     cashTotalValue = 0.0;
@@ -851,9 +998,6 @@ class DriverController extends GetxController {
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
 
       oldBalanceVar = 0.0;
-      // driverSelectionController.clear();
-      // commissionController.clear();
-      // pdaRentController.clear();
     }
     isCreateDriverCommission = false;
     update();
@@ -1176,10 +1320,13 @@ class DriverController extends GetxController {
 
     // 6. Grand Totals Logic
     updateGrandTotalVar = updateCashTotalValue + updateAccountFareTotalVar;
-    updateOwedVar = updateTotalCommissionVar - updateAccountFareTotalVar - updateParkingCongestionVar;
+    updateOwedVar = updateTotalCommissionVar -
+        updateAccountFareTotalVar -
+        updateParkingCongestionVar;
     updateNewBalanceVar = oldBalanceVar + updateOwedVar;
     update();
   }
+
   void _resetTotals() {
     updateCashTotalValue = 0.0;
     updateAccountFareTotalVar = 0.0;
@@ -1204,7 +1351,9 @@ class DriverController extends GetxController {
       return sum + double.parse(calculateFinalDriverComm(b));
     });
 
-    updateOwedVar = updateTotalCommissionVar - updateAccountFareTotalVar - updateParkingCongestionVar;
+    updateOwedVar = updateTotalCommissionVar -
+        updateAccountFareTotalVar -
+        updateParkingCongestionVar;
     updateNewBalanceVar = oldBalanceVar + updateOwedVar;
 
     update();
@@ -1268,6 +1417,7 @@ class DriverController extends GetxController {
     }
   }
 
+
   // For Alert
   DriverCommissionAlertModel? driverCommissionAlert;
   bool isLoadingDriverCommission = false;
@@ -1280,7 +1430,7 @@ class DriverController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      print(response.data);
+      // print(response.data);
       driverCommissionAlert =
           DriverCommissionAlertModel.fromJson(response.data);
       isLoadingDriverCommission = false;
@@ -1288,7 +1438,17 @@ class DriverController extends GetxController {
     }
   }
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen
+  // Delete
+  driverCommissionDelete(int? id) async {
+    var response = await Api().delete("driver_commission/delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text:"Driver Commission deleted successfully!");
+      print("DriverCommission deleted successfully!");
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER Commission list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
 
   String updateTransactionDateController = "2000-01-01";
   String updateFilterFromDate = "";
@@ -1391,6 +1551,1117 @@ class DriverController extends GetxController {
     update();
   }
 
+  /// Download pdf
+  Future<void> exportToPdf() async {
+    if (listDriverCommission == null) {
+      await getCreateDriverCommission();
+    }
+    final pdf = pw.Document();
+    final items = updateDriverCommissionByIdModel
+            ?.driverCommission?.driverCommissionLineitems ??
+        [];
+
+    final currentDriverId =
+        updateDriverCommissionByIdModel?.driverCommission?.driver?.id;
+    final selectedDriverData = listDriverCommission?.drivers?.firstWhere(
+      (d) => d.id == currentDriverId,
+      orElse: () {
+        return CreateDriverCommission();
+      },
+    );
+
+    final primaryColor = PdfColor.fromInt(DynamicColors.primaryClr.value);
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape.copyWith(
+            marginLeft: 20, marginRight: 20, marginTop: 20, marginBottom: 20),
+        build: (pw.Context context) {
+          return [
+            pw.Center(
+              child: pw.Column(children: [
+                pw.SizedBox(height: 50),
+                pw.Text("DRIVER COMMISSION",
+                    style: pw.TextStyle(
+                        fontSize: 22, fontWeight: pw.FontWeight.bold)),
+              ]),
+            ),
+            pw.SizedBox(height: 20),
+
+            // 2. Info Row (From/To)
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                _buildInfoColumn(
+                    "FROM",
+                    [
+                      "EMAIL: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? ""}",
+                      "MOBILE: ${selectedDriverData?.mobile ?? ""}",
+                      "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                      "",
+                      "PERIOD: ($updateFilterFromDate - $updateFilterToDate)",
+                    ],
+                    primaryColor),
+                _buildInfoColumn(
+                    "TO",
+                    [
+                      "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.id ?? ""})",
+                      "${updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? ""}",
+                      "DATE: $updateTransactionDateController",
+                      "COMMISSION: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.driverCommission ?? ""}%",
+                    ],
+                    primaryColor,
+                    alignEnd: true),
+              ],
+            ),
+            pw.SizedBox(height: 10),
+
+            // 3. Table
+            pw.TableHelper.fromTextArray(
+              headerStyle: pw.TextStyle(
+                  color: PdfColors.white,
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: 7),
+              headerDecoration: pw.BoxDecoration(
+                  color: PdfColor.fromInt(DynamicColors.primaryClr.value)),
+              cellStyle: const pw.TextStyle(fontSize: 7),
+              cellPadding:
+                  const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              cellAlignment: pw.Alignment.center,
+              headerAlignment: pw.Alignment.center,
+              columnWidths: {
+                0: const pw.FixedColumnWidth(45), // REF
+                1: const pw.FixedColumnWidth(40), // D/T
+                2: const pw.FixedColumnWidth(110), // PICKUP
+                3: const pw.FixedColumnWidth(110), // DROPOFF
+                14: const pw.FixedColumnWidth(30), // COMM
+                15: const pw.FixedColumnWidth(40), // TOTAL
+              },
+              border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+              headers: [
+                'REF#',
+                'D/T',
+                'PICKUP',
+                'DROPOFF',
+                'VEH',
+                'ACC',
+                'J/T',
+                'P/T',
+                'FARE',
+                'PC',
+                'WC',
+                'EDC',
+                'CC',
+                'W/COMM',
+                'COMM',
+                'TOTAL'
+              ],
+              data: items.map((item) {
+                final b = item.booking;
+                return [
+                  b?.referenceNumber ?? "",
+                  "${b?.pickupDate}\n${b?.pickupTime}",
+                  b?.pickup ?? "",
+                  b?.dropoff ?? "",
+                  b?.vehicleType?.name ?? "",
+                  b?.account?.name ?? "",
+                  b?.journeyType?.journeyType ?? "",
+                  b?.paymentType?.name ?? "",
+                  "£${b?.fares ?? '0'}",
+                  "£${b?.parkingCharges ?? '0'}",
+                  "£${b?.waitingCharges ?? '0'}",
+                  "£${b?.extraDropCharges ?? '0'}",
+                  "£${b?.congestionCharges ?? '0'}",
+                  "£${calculateWithoutCommission(b)}",
+                  "£${calculateFinalDriverComm(b)}",
+                  "£${b?.totalCharges ?? '0'}",
+                ];
+              }).toList(),
+            ),
+            pw.Table(
+              border: pw.TableBorder(
+                left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                verticalInside:
+                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                horizontalInside:
+                    const pw.BorderSide(color: PdfColors.black, width: 0.5),
+              ),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(1),
+                1: const pw.FixedColumnWidth(52),
+              },
+              children: [
+                _buildFooterRow("CASH TOTAL", updateCashTotalValue),
+                _buildFooterRow("TOTAL", updateGrandTotalVar),
+                _buildFooterRow(
+                    "ACCOUNT W/COMM TOTAL", updateAccountFareTotalVar),
+                _buildFooterRow("ACCOUNT WO/COMM TOTAL", updateAccountWOCmmVar),
+                _buildFooterRow(
+                    "PARKING/CONGESTION TOTAL", updateParkingCongestionVar),
+                _buildFooterRow("COMMISSION TOTAL", updateTotalCommissionVar),
+                _buildFooterRow("OWED", updateOwedVar),
+              ],
+            ),
+          ];
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    await Printing.sharePdf(bytes: bytes, filename: 'Driver_Commission.pdf');
+  }
+
+  pw.Widget _buildInfoColumn(String label, List<String> lines, PdfColor accent,
+      {bool alignEnd = false}) {
+    return pw.Column(
+      crossAxisAlignment:
+          alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(label,
+            style: pw.TextStyle(
+                fontWeight: pw.FontWeight.bold, fontSize: 10, color: accent)),
+        ...lines.map((line) {
+          return line.isEmpty
+              ? pw.SizedBox(height: 10)
+              : pw.Text(line, style: const pw.TextStyle(fontSize: 8));
+        }),
+      ],
+    );
+  }
+
+  pw.TableRow _buildFooterRow(String label, double value,
+      {bool isBold = false}) {
+    return pw.TableRow(
+      children: [
+        pw.Container(
+          alignment: pw.Alignment.centerRight,
+          padding: const pw.EdgeInsets.only(right: 5, top: 2, bottom: 2),
+          child: pw.Text(label,
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+        pw.Container(
+          alignment: pw.Alignment.center,
+          padding: const pw.EdgeInsets.symmetric(vertical: 2),
+          child: pw.Text("£${value.toStringAsFixed(2)}",
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+      ],
+    );
+  }
+
+  ///Download Excel
+  Future<void> exportToExcel() async {
+    var excel = Excel.createExcel();
+    String sheetName = "Driver Commission";
+    Sheet sheetObject = excel[sheetName];
+    excel.delete('Sheet1');
+
+    //  Headers
+    List<String> headers = [
+      'REF #',
+      'DATETIME',
+      'PICKUP',
+      'DROPOFF',
+      'VEH',
+      'ACC',
+      'J/T',
+      'P/T',
+      'FARE',
+      'PC',
+      'WC',
+      'EDC',
+      'CC',
+      'W/COMM',
+      'COMM',
+      'TOTAL'
+    ];
+    sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
+
+    // 3. Data Rows
+    final items = updateDriverCommissionByIdModel
+            ?.driverCommission?.driverCommissionLineitems ??
+        [];
+    for (var item in items) {
+      final b = item.booking;
+      if (b == null) continue;
+
+      sheetObject.appendRow([
+        TextCellValue(b.referenceNumber ?? ""),
+        TextCellValue("${b.pickupDate ?? ""} ${b.pickupTime ?? ""}"),
+        TextCellValue(b.pickup ?? ""),
+        TextCellValue(b.dropoff ?? ""),
+        TextCellValue(b.vehicleType?.name?.toLowerCase() ?? ""),
+        TextCellValue(b.account?.name ?? ""),
+        TextCellValue(b.journeyType?.journeyType ?? ""),
+        TextCellValue(b.paymentType?.name ?? ""),
+        DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(calculateWithoutCommission(b).toString()) ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(calculateFinalDriverComm(b).toString()) ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+      ]);
+    }
+
+    try {
+      var fileBytes = excel.encode();
+      if (fileBytes != null) {
+        final content = base64Encode(fileBytes);
+        final anchor = html.AnchorElement(
+            href:
+                "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute("download", "Driver_Commission_Report.xlsx")
+          ..click();
+      }
+    } catch (e) {
+      print("Excel Error: $e");
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Commission Screen functionality
+
+///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Driver Login/Logout
+
+  DriverLoginLogoutModel? driverLoginLogoutModel;
+  var driverLoginCurrentPage = 1.obs;
+  var driverLoginTotalPage = 1.obs;
+  final int driverLoginLimit = 15;
+  RxList<Driver> driverLoginAll = <Driver>[].obs;
+  RxList<Driver> driverLoginFilter = <Driver>[].obs;
+  RxString searchUsername = ''.obs;
+  RxString searchName = ''.obs;
+  RxString searchLoginVehicleName = ''.obs;
+  RxString searchVehicleloginExpiry = ''.obs;
+  RxString searchDriverloginExpiry = ''.obs;
+  RxString searchMOTLoginExpiry = ''.obs;
+  RxString searchMOT2LoginExpiry = ''.obs;
+  RxString searchInsuranceLoginExpiry = ''.obs;
+  RxString searchLicenseLoginExpiry = ''.obs;
+  RxString searchMobileLogin = ''.obs;
+  RxString searchSubsiDiaryLogin = ''.obs;
+
+  RxBool activeLogout = false.obs;
+  bool isLoadingDriverlogin = false;
+
+  getDriverLoginLogout() async {
+    isLoadingDriverlogin = true;
+    update();
+      String status = activeLogout.value ? "logged_out" : "logged_in";
+      var response = await Api().get("drivers/session", queryParameters: {
+        'session_status': status,
+        'page': driverLoginCurrentPage.value, // Pagination fix
+        'limit': driverLoginLimit,
+        "name": searchName.value.toLowerCase(),
+        "username": searchUsername.value.toLowerCase(),
+        "vehicle_type": searchLoginVehicleName.value.toLowerCase(),
+        "end_date": searchDriverloginExpiry.value.toLowerCase(),
+        "vehicle_end_date": searchVehicleloginExpiry.value.toLowerCase(),
+        "mot_expiry": searchMOTLoginExpiry.value.toLowerCase(),
+        "mot2_expiry": searchMOT2LoginExpiry.value.toLowerCase(),
+        "insurance_expiry": searchInsuranceLoginExpiry.value.toLowerCase(),
+        "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
+        "mobile": searchMobileLogin.value.toLowerCase(),
+        "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
+      });
+
+      if (response.statusCode == 200) {
+        driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);
+        driverLoginTotalPage.value = driverLoginLogoutModel?.totalPages ?? 1;
+        driverLoginAll.value = driverLoginLogoutModel?.drivers ?? [];
+        driverLoginFilter.value = driverLoginAll;
+        print('Drivers Loaded: ${driverLoginAll.length}');
+      isLoadingDriverlogin = false;
+      update();
+      print("Error fetching drivers: $e");
+      }
+
+  }
+
+  void driverloginSearch() {
+    driverLoginCurrentPage.value = 1;
+    getDriverLoginLogout();
+  }
+
+  void driverloginPage(int page) {
+    driverLoginCurrentPage.value = page;
+    getDriverLoginLogout();
+  }
+
+
+
+  // // Delete
+  driverLoginLogoutDelete(int? id) async {
+    var response = await Api().delete("drivers/delete/$id");
+    if (response.statusCode == 200) {
+      getDriverLoginLogout();
+      BotToast.showText(text:"Driver Login logout deleted successfully!");
+      print("Driver Login logout deleted successfully!");
+    }
+  }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
+
+  final rentWeekController = TextEditingController();
+  final updateRentWeekController = TextEditingController();
+  final pdaRentWeekController = TextEditingController();
+  final updatePdaRentWeekController = TextEditingController();
+  final TextEditingController rentFromDateController = TextEditingController();
+  final TextEditingController rentToDateController = TextEditingController();
+  TextEditingController rentDriverSelectionController = TextEditingController();
+  TextEditingController updateRentDriverSelectionController = TextEditingController();
+  String rentTransactionDate = "";
+  // Set<String> selectedBookings = {};
+
+  ///drop down API
+  DriverRentModel? driverRentModel;
+  bool isCreateDriverRent = false;
+
+  void resetCreateRentFields() {
+    cashTotal = 0.0;
+    accountTotal = 0.0;
+    grandTotal = 0.0;
+    parkingCongestion = 0.0;
+    rentTotal = 0.0;
+    owed = 0.0;
+    newBalance = 0.0;
+    oldBalance = 0.0;
+
+    rentDriverSelectionController.clear();
+    rentWeekController.clear();
+    pdaRentWeekController.clear();
+    rentFromDateController.clear();
+    rentToDateController.clear();
+
+    selectedIds.clear();
+    selectedPaymentTypeIds.clear();
+    driverRentFilterModel = null;
+
+    rentTransactionDate = "";
+    rentFilterFromDate = "";
+    rentFilterToDate = "";
+
+    update();
+  }
+
+  getDriver() async {
+    resetCreateRentFields();
+    isCreateDriverRent = true;
+    update();
+    var response =
+    await Api().get("drivers/commission?active=true&driver_type=Rent/Week");
+    if (response.statusCode == 200) {
+      print("API Response: ${response.data}");
+      driverRentModel = DriverRentModel.fromJson(response.data);
+
+      oldBalance = 0.0;
+      rentTotal = 0.0;
+    }
+    isCreateDriverRent = false;
+    update();
+  }
+
+  double oldBalance = 0.0;
+  double rentTotal = 0.0;
+
+  void fillDriverDetails(String selectedText) {
+    if (selectedText.isEmpty) return;
+    final driver = driverRentModel?.drivers?.firstWhere(
+      (d) => "${d.id} ${d.name}".toUpperCase() == selectedText.toUpperCase(),
+      // orElse: () => null,
+    );
+
+    if (driver != null) {
+      rentWeekController.text = driver.driverCommission ?? "0";
+      pdaRentWeekController.text = driver.pdaRent ?? "0";
+      oldBalance = double.tryParse(driver.balance?.toString() ?? "0") ?? 0.0;
+      rentTotal =
+          double.tryParse(driver.driverCommission?.toString() ?? "0") ?? 0.0;
+      update();
+    }
+  }
+
+  // Filter Button
+  DriverRentFilterModel? driverRentFilterModel;
+  RentBooking? rentBooking;
+  String rentFilterFromDate = "";
+  String rentFilterToDate = "";
+  bool isRentFilterLoading = false;
+
+  getDriverRentByFilter() async {
+    isRentFilterLoading = true;
+    update();
+
+    String drId = rentDriverSelectionController.text.split(" ").first;
+    String pIds = selectedPaymentTypeIds.isNotEmpty
+        ? "[${selectedPaymentTypeIds.join(",")}]"
+        : "";
+
+    var response = await Api().get(
+      "bookings/driver-rent",
+      queryParameters: {
+        'driver_id': drId,
+        'payment_type_id': pIds,
+        'from_date': rentFilterFromDate,
+        'to_date': rentFilterToDate,
+      },
+    );
+    print("API Response: ${response.data}");
+    if (response.statusCode == 200) {
+      driverRentFilterModel = DriverRentFilterModel.fromJson(response.data);
+      if (driverRentFilterModel?.bookings != null) {
+        for (var booking in driverRentFilterModel!.bookings!) {
+          recalculateDriverCommissionRow(booking);
+        }
+      }
+    }
+    isRentFilterLoading = false;
+    update();
+  }
+
+  double doubleParse(dynamic value) =>
+      double.tryParse(value?.toString() ?? "0") ?? 0.0;
+
+  double getCreateRentColumnTotal(String field) {
+    if (selectedIds.isEmpty) return 0.0;
+
+    final list = driverRentFilterModel?.bookings
+            ?.where((b) => selectedIds.contains(b.id.toString()))
+            .toList() ??
+        [];
+
+    return _calculateRentListTotal(list, field);
+  }
+  double getUpdateRentColumnTotal(String field) {
+    final list = updateDriverRentByIdModel?.driverRent?.driverRentLineitems ?? [];
+
+    if (list.isEmpty) return 0.0;
+
+    return _calculateRentListTotal(list, field);
+  }
+
+  double _calculateRentListTotal(List<dynamic> list, String field) {
+    return list.fold(0.0, (sum, item) {
+      dynamic data;
+      if (item is DriverRentLineitem) {
+        data = item.booking;
+      } else {
+        data = item;
+      }
+
+      if (data == null) return sum;
+      final Map<String, dynamic> mapping = {
+        'fare': data.fares,
+        'pc': data.parkingCharges,
+        'wc': data.waitingCharges,
+        'edc': data.extraDropCharges,
+        'cc': data.congestionCharges,
+        'total': data.totalCharges,
+      };
+
+      return sum + doubleParse(mapping[field]);
+    });
+  }
+
+  double cashTotal = 0.0;
+  double accountTotal = 0.0;
+  double grandTotal = 0.0;
+  double parkingCongestion = 0.0;
+  double owed = 0.0;
+  double newBalance = 0.0;
+
+  void calculateTotals() {
+    double parseD(dynamic val) =>
+        double.tryParse(val?.toString() ?? "0") ?? 0.0;
+
+    if (driverRentFilterModel?.bookings == null || selectedIds.isEmpty) {
+      cashTotal = 0.0;
+      accountTotal = 0.0;
+      parkingCongestion = 0.0;
+      grandTotal = 0.0;
+      owed = 0.0;
+      newBalance = 0.0;
+      update();
+      return;
+    }
+
+    final selectedBookings = driverRentFilterModel!.bookings
+        ?.where((b) => selectedIds.contains(b.id.toString()));
+
+    // Cash Total
+    cashTotal =
+        selectedBookings!.where((b) => b.paymentTypeId == 1).fold(0.0, (sum, b) {
+      return sum +
+          parseD(b.fares) +
+          parseD(b.waitingCharges) +
+          parseD(b.extraDropCharges);
+    });
+
+    // 2. ACCOUNT TOTAL
+    accountTotal =
+        selectedBookings.where((b) => b.paymentTypeId == 3).fold(0.0, (sum, b) {
+      return sum +
+          parseD(b.fares) +
+          parseD(b.waitingCharges) +
+          parseD(b.extraDropCharges);
+    });
+
+    // 3. PARKING/CONGESTION TOTAL (All Selected Bookings)
+    parkingCongestion = selectedBookings.fold(0.0, (sum, b) {
+      return sum + parseD(b.parkingCharges) + parseD(b.congestionCharges);
+    });
+
+    // 4. GRAND TOTAL (Cash + Account)
+    grandTotal = cashTotal + accountTotal;
+    // 5. Owed (total - rentTotal)
+    owed = grandTotal - rentTotal;
+    // . NewBalance (owed + OldBalance)
+    newBalance = owed + oldBalance;
+
+    update();
+  }
+
+  // update calculation
+
+  double updateCashTotal = 0.0;
+  double updateAccountTotal = 0.0;
+  double updateGrandTotal = 0.0;
+  double updateParkingCongestion = 0.0;
+  double updateOwed = 0.0;
+  double updateNewBalance = 0.0;
+  double oBalance = 0.0;
+  double rTotal = 0.0;
+
+  void updateTotals() {
+    final rentData = updateDriverRentByIdModel?.driverRent;
+    final updateItems = rentData?.driverRentLineitems;
+
+    if (updateItems == null || updateItems.isEmpty) {
+      _resetTotal();
+      return;
+    }
+
+    double parseD(dynamic val) => double.tryParse(val?.toString() ?? "0") ?? 0.0;
+
+    // 1. Reset values
+    updateCashTotal = 0.0;
+    updateAccountTotal = 0.0;
+    updateParkingCongestion = 0.0;
+
+    for (var item in updateItems) {
+      var b = item.booking;
+      if (b == null) continue;
+
+      double rowTotal = parseD(b.totalCharges);
+      double rowPC = parseD(b.parkingCharges);
+      double rowCC = parseD(b.congestionCharges);
+
+      double netAmount = rowTotal - (rowPC + rowCC);
+      String pType = b.paymentType?.name?.toLowerCase() ?? "";
+
+      if (pType == "cash") {
+        updateCashTotal += netAmount;
+      } else if (pType == "account") {
+        updateAccountTotal += netAmount;
+      }
+      updateParkingCongestion += (rowPC + rowCC);
+    }
+
+    // 3. Grand Total
+    updateGrandTotal = updateCashTotal + updateAccountTotal;
+
+    // 4. Owed calculation
+    rTotal = parseD(rentData?.driver?.driverCommission);
+    updateOwed = updateGrandTotal - rTotal;
+
+    // 5. Balance calculation
+    oBalance = parseD(rentData?.oldBalance);
+    updateNewBalance = updateOwed + oBalance;
+
+    update();
+  }
+  void _resetTotal() {
+    updateCashTotal = 0.0;
+    updateAccountTotal = 0.0;
+    updateGrandTotal = 0.0;
+    updateParkingCongestion = 0.0;
+    updateOwed = 0.0;
+    updateNewBalance = 0.0;
+    oBalance = 0.0;
+    rTotal = 0.0;
+    update();
+  }
+
+  // Save
+  bool saveDriverRentLoad = false;
+
+  saveDriverRent() async {
+    saveDriverRentLoad = true;
+    update();
+
+    String finalTDate = rentTransactionDate.isEmpty
+        ? DateTime.now().toIso8601String().split("T").first
+        : rentTransactionDate;
+
+    String drId = rentDriverSelectionController.text.split(" ").first;
+
+    var formData = {
+      "transaction_date": finalTDate,
+      "driver_id": drId,
+      "jobs_total": grandTotal.toStringAsFixed(2),
+      "rent_total": rentTotal.toStringAsFixed(2),
+      "cash_jobs_total": cashTotal.toStringAsFixed(2),
+      "account_jobs_total": accountTotal.toStringAsFixed(2),
+      "owed": owed.toStringAsFixed(2),
+      "old_balance": oldBalance.toStringAsFixed(2),
+      "current_balance": newBalance.toStringAsFixed(2),
+      "from_date": rentFilterFromDate,
+      "to_date": rentFilterToDate,
+      "last_modified": rentFilterToDate,
+      "driver_rent_lineitems": selectedIds
+          .map((id) => {"booking_id": int.tryParse(id) ?? id})
+          .toList(),
+    };
+    print("Submitting Payload: $formData");
+    var response =
+    await Api().post(formData, "driver_rent/add", auth: true);
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "Driver Rent Saved Successfully!");
+    }
+    saveDriverRentLoad = false;
+    update();
+  }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent Screen functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality
+
+  ListDriverRentModel? listDriverRentModel;
+  bool isListLoading = false;
+
+  getDriverRent() async {
+    isListLoading = true;
+    update();
+
+    var response = await Api().get("driver_rent/distinct");
+
+    if (response.statusCode == 200) {
+      listDriverRentModel = ListDriverRentModel.fromJson(response.data);
+      print("Error fetching driver rent: $e");
+      isListLoading = false;
+      update();
+    }
+  }
+
+  // For Alert
+  DriverRentAltModel? driverRentAlert;
+  bool isLoadingDriverRent = false;
+
+  getDriverRentDetails(id) async {
+    isLoadingDriverRent = true;
+    update();
+    var response = await Api().get(
+      "driver_rent/driverid?driver_id=$id",
+    );
+
+    if (response.statusCode == 200) {
+      driverRentAlert =
+          DriverRentAltModel.fromJson(response.data);
+      isLoadingDriverRent = false;
+      update();
+    }
+  }
+
+  // Delete
+  driverRentDelete(int? id) async {
+    var response = await Api().delete("driver_rent/delete/$id");
+    if (response.statusCode == 200) {
+      BotToast.showText(text:"Driver Rent deleted successfully!");
+      print("DriverRent deleted successfully!");
+    }
+  }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Driver Rent List functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo Update Driver Rent List functionality
+
+  String rentTransactionDateController = "2000-01-01";
+  String updateRentFilterFromDate = "";
+  String updateRentFilterToDate = "";
+
+  DriverRentByIdModel? updateDriverRentByIdModel;
+  bool isLoadingRentUpdate = false;
+
+  getDriverRentData({selectedId}) async {
+    isLoadingRentUpdate = true;
+    update();
+
+    var response = await Api().get("driver_rent/getbyid/$selectedId");
+
+    if (response.statusCode == 200) {
+      updateDriverRentByIdModel =
+          DriverRentByIdModel.fromJson(response.data);
+      _ApiVariables(
+          updateDriverRentByIdModel?.driverRent);
+    }
+    isLoadingRentUpdate = false;
+    update();
+  }
+
+// Helper Function
+  void _ApiVariables(dynamic data) {
+    if (data == null) return;
+
+    double parse(String? val) => double.tryParse(val ?? "0") ?? 0.0;
+
+    updateCashTotal  = parse(data.cashJobsTotal);
+    updateGrandTotal  = parse(data.jobsTotal);
+    updateOwed  = parse(data.owed);
+    oBalance = parse(data.oldBalance);
+    updateNewBalance  = parse(data.currentBalance);
+    updateAccountTotal  = parse(data.accountJobsTotal);
+    // rTotal = parse(data.driver?.driverCommission);
+    updateRentDriverSelectionController.text =
+    "${data.driver?.id ?? ''} ${data.driver?.name ?? ''}";
+    updateRentWeekController.text =
+        (data.driver?.driverCommission ?? "0").toString();
+    updatePdaRentWeekController.text = (data.driver?.pdaRent ?? "0").toString();
+    String formatDate(dynamic date) =>
+        date?.toString().split(' ')[0] ?? "2000-01-01";
+    updateRentFilterFromDate = formatDate(data.fromDate);
+    updateRentFilterToDate = formatDate(data.toDate);
+    rentTransactionDateController = formatDate(data.transactionDate);
+    updateTotals();
+  }
+
+  // UpdateScreenSave
+  bool saveUpdatedRentLoad = false;
+
+  saveUpdatedRent(int selectedId) async {
+    try {
+      saveUpdatedRentLoad = true;
+      update();
+
+      String drId = rentDriverSelectionController.text.split(" ").first;
+      String todayDate = DateTime.now().toIso8601String().split("T").first;
+
+      final updateItems = updateDriverRentByIdModel
+          ?.driverRent?.driverRentLineitems
+          ?.where((e) => e.booking?.commission == true)
+          .toList();
+
+      var formData = {
+        "transaction_date": rentTransactionDateController,
+        "driver_id": drId,
+        "jobs_total": updateGrandTotal.toStringAsFixed(2),
+        "rent_total": rTotal.toStringAsFixed(2),
+        "cash_jobs_total": updateCashTotal.toStringAsFixed(2),
+        "account_jobs_total": updateAccountTotal.toStringAsFixed(2),
+        "owed": updateOwed.toStringAsFixed(2),
+        "old_balance": oBalance.toStringAsFixed(2),
+        "current_balance": updateNewBalance.toStringAsFixed(2),
+        "from_date": updateRentFilterFromDate,
+        "to_date": updateRentFilterToDate,
+        "last_modified": todayDate,
+        "driver_rent_lineitems":
+        updateItems?.map((e) => {"booking_id": e.bookingId}).toList() ?? [],
+      };
+      print(formData);
+
+      var response = await Api()
+          .post(formData, "driver_rent/update/$selectedId", auth: true);
+
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "Rent Updated Successfully");
+      }
+    } catch (err) {
+      print("Error: $err");
+      BotToast.showText(text: "Update Failed!");
+    }
+    saveUpdatedRentLoad = false;
+    update();
+  }
+
+  /// Download pdf
+  Future<void> exportPdf() async {
+    if (driverRentModel == null) {
+      await getDriver();
+    }
+    final pdf = pw.Document();
+    final items = updateDriverRentByIdModel
+        ?.driverRent?.driverRentLineitems ??
+        [];
+
+    final currentDriverId =
+        updateDriverRentByIdModel?.driverRent?.driver?.id;
+    final selectedDriverData = driverRentModel?.drivers?.firstWhere(
+          (d) => d.id == currentDriverId,
+      orElse: () {
+        return CreateDriverRent();
+      },
+    );
+
+    final primaryColor = PdfColor.fromInt(DynamicColors.primaryClr.value);
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4.landscape.copyWith(
+            marginLeft: 20, marginRight: 20, marginTop: 20, marginBottom: 20),
+        build: (pw.Context context) {
+          return [
+            pw.Center(
+              child: pw.Column(children: [
+                pw.SizedBox(height: 50),
+                pw.Text("DRIVER RENT",
+                    style: pw.TextStyle(
+                        fontSize: 22, fontWeight: pw.FontWeight.bold)),
+              ]),
+            ),
+            pw.SizedBox(height: 20),
+
+            // 2. Info Row (From/To)
+            pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                _buildInfoRentColumn(
+                    "FROM",
+                    [
+                      "EMAIL: ${updateDriverRentByIdModel?.driverRent?.driver?.email ?? ""}",
+                      "MOBILE: ${selectedDriverData?.mobile ?? ""}",
+                      "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
+                      "",
+                      "PERIOD: ($updateRentFilterFromDate - $updateRentFilterToDate)",
+                    ],
+                    primaryColor),
+                _buildInfoRentColumn(
+                    "TO",
+                    [
+                      "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver?.id ?? ""})",
+                      "${updateDriverRentByIdModel?.driverRent?.driver?.name ?? ""}",
+                      "DATE: $rentTransactionDateController",
+                      "COMMISSION: ${updateDriverRentByIdModel?.driverRent?.driver?.driverCommission ?? ""}%",
+                    ],
+                    primaryColor,
+                    alignEnd: true),
+              ],
+            ),
+            pw.SizedBox(height: 10),
+
+            // 3. Table
+            pw.TableHelper.fromTextArray(
+              headerStyle: pw.TextStyle(
+                  color: PdfColors.white,
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: 7),
+              headerDecoration: pw.BoxDecoration(
+                  color: PdfColor.fromInt(DynamicColors.primaryClr.value)),
+              cellStyle: const pw.TextStyle(fontSize: 7),
+              cellPadding:
+              const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+              cellAlignment: pw.Alignment.center,
+              headerAlignment: pw.Alignment.center,
+              columnWidths: {
+                0: const pw.FixedColumnWidth(45), // REF
+                1: const pw.FixedColumnWidth(40), // D/T
+                2: const pw.FixedColumnWidth(110), // PICKUP
+                3: const pw.FixedColumnWidth(110), // DROPOFF
+                14: const pw.FixedColumnWidth(30),
+                15: const pw.FixedColumnWidth(40), // TOTAL
+              },
+              border: pw.TableBorder.all(color: PdfColors.black, width: 0.5),
+              headers: [
+                'REF#',
+                'D/T',
+                'PICKUP',
+                'DROPOFF',
+                'VEH',
+                'ACC',
+                'J/T',
+                'P/T',
+                'FARE',
+                'PC',
+                'WC',
+                'EDC',
+                'CC',
+                'TOTAL'
+              ],
+              data: items.map((item) {
+                final b = item.booking;
+                return [
+                  b?.referenceNumber ?? "",
+                  "${b?.pickupDate}\n${b?.pickupTime}",
+                  b?.pickup ?? "",
+                  b?.dropoff ?? "",
+                  b?.vehicleType?.name ?? "",
+                  b?.account?.name ?? "",
+                  b?.journeyType?.journeyType ?? "",
+                  b?.paymentType?.name ?? "",
+                  "£${b?.fares ?? '0'}",
+                  "£${b?.parkingCharges ?? '0'}",
+                  "£${b?.waitingCharges ?? '0'}",
+                  "£${b?.extraDropCharges ?? '0'}",
+                  "£${b?.congestionCharges ?? '0'}",
+                  "£${b?.totalCharges ?? '0'}",
+                ];
+              }).toList(),
+            ),
+            pw.Table(
+              border: pw.TableBorder(
+                left: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                right: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                bottom: const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                verticalInside:
+                const pw.BorderSide(color: PdfColors.black, width: 0.5),
+                horizontalInside:
+                const pw.BorderSide(color: PdfColors.black, width: 0.5),
+              ),
+              columnWidths: {
+                0: const pw.FlexColumnWidth(1),
+                1: const pw.FixedColumnWidth(40),
+              },
+              children: [
+                _buildFooterRentRow("CASH TOTAL", updateCashTotal),
+                _buildFooterRentRow("TOTAL", updateGrandTotal),
+                _buildFooterRentRow(
+                    "ACCOUNT TOTAL", updateAccountTotal),
+                _buildFooterRentRow(
+                    "PARKING/CONGESTION TOTAL", updateParkingCongestion),
+                _buildFooterRentRow("RENT TOTAL", rTotal),
+                _buildFooterRentRow("OWED", updateOwed),
+              ],
+            ),
+          ];
+        },
+      ),
+    );
+
+    final bytes = await pdf.save();
+    await Printing.sharePdf(bytes: bytes, filename: 'Driver_Rent.pdf');
+  }
+
+  pw.Widget _buildInfoRentColumn(String label, List<String> lines, PdfColor accent,
+      {bool alignEnd = false}) {
+    return pw.Column(
+      crossAxisAlignment:
+      alignEnd ? pw.CrossAxisAlignment.end : pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text(label,
+            style: pw.TextStyle(
+                fontWeight: pw.FontWeight.bold, fontSize: 10, color: accent)),
+        ...lines.map((line) {
+          return line.isEmpty
+              ? pw.SizedBox(height: 10)
+              : pw.Text(line, style: const pw.TextStyle(fontSize: 8));
+        }),
+      ],
+    );
+  }
+
+  pw.TableRow _buildFooterRentRow(String label, double value,
+      {bool isBold = false}) {
+    return pw.TableRow(
+      children: [
+        pw.Container(
+          alignment: pw.Alignment.centerRight,
+          padding: const pw.EdgeInsets.only(right: 5, top: 2, bottom: 2),
+          child: pw.Text(label,
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+        pw.Container(
+          alignment: pw.Alignment.center,
+          padding: const pw.EdgeInsets.symmetric(vertical: 2),
+          child: pw.Text("£${value.toStringAsFixed(2)}",
+              style: pw.TextStyle(
+                  fontSize: 7, fontWeight: isBold ? pw.FontWeight.bold : null)),
+        ),
+      ],
+    );
+  }
+
+  ///Download Excel
+  Future<void> exportExcel() async {
+    var excel = Excel.createExcel();
+    String sheetName = "Driver Rent";
+    Sheet sheetObject = excel[sheetName];
+    excel.delete('Sheet1');
+
+    //  Headers
+    List<String> headers = [
+      'REF #',
+      'DATETIME',
+      'PICKUP',
+      'DROPOFF',
+      'VEH',
+      'ACC',
+      'J/T',
+      'P/T',
+      'FARE',
+      'PC',
+      'WC',
+      'EDC',
+      'CC',
+      'TOTAL'
+    ];
+    sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
+
+    // 3. Data Rows
+    final items = updateDriverRentByIdModel
+        ?.driverRent?.driverRentLineitems ??
+        [];
+    for (var item in items) {
+      final b = item.booking;
+      if (b == null) continue;
+
+      sheetObject.appendRow([
+        TextCellValue(b.referenceNumber ?? ""),
+        TextCellValue("${b.pickupDate ?? ""} ${b.pickupTime ?? ""}"),
+        TextCellValue(b.pickup ?? ""),
+        TextCellValue(b.dropoff ?? ""),
+        TextCellValue(b.vehicleType?.name?.toLowerCase() ?? ""),
+        TextCellValue(b.account?.name ?? ""),
+        TextCellValue(b.journeyType?.journeyType ?? ""),
+        TextCellValue(b.paymentType?.name ?? ""),
+        DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.waitingCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.extraDropCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.congestionCharges?.toString() ?? '0') ?? 0.0),
+        DoubleCellValue(
+            double.tryParse(b.totalCharges?.toString() ?? '0') ?? 0.0),
+      ]);
+    }
+
+    try {
+      var fileBytes = excel.encode();
+      if (fileBytes != null) {
+        final content = base64Encode(fileBytes);
+        final anchor = html.AnchorElement(
+            href:
+            "data:application/octet-stream;charset=utf-16le;base64,$content")
+          ..setAttribute("download", "Driver_Rent_Report.xlsx")
+          ..click();
+      }
+    } catch (e) {
+      print("Excel Error: $e");
+    }
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo BULK DRIVER COMMISSION functionality
   /// TextEditingControllers
   final emailSubjectController = TextEditingController();
@@ -1418,6 +2689,19 @@ class DriverController extends GetxController {
   final ignoreJobController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo DRIVER SIN BIN SETTINGS functionality
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 // class DriverBindings implements Bindings {

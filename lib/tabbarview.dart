@@ -83,10 +83,15 @@ class _TopNavBarState extends State<TopNavBar> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width/4.3,
                   ),
-                  CircleAvatar(
-                    radius: 18,
-                    backgroundColor: Colors.cyanAccent.shade400,
-                    child: Icon(Icons.email, color: DynamicColors.whiteClr),
+                  GestureDetector(
+                    onTap: () {
+                      print("Icons----------------------------------------------------");
+                    },
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.cyanAccent.shade400,
+                      child: Icon(Icons.headset_mic_outlined, color: DynamicColors.whiteClr),
+                    ),
                   ),
                   SizedBox(width: 15),
                   Icon(Icons.notifications, color: Colors.cyanAccent.shade400),

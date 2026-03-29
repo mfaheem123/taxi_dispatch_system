@@ -36,6 +36,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import 'driver_activity_model.dart';
+
 RxString shortCutKeyValue = 'shortCutKey'.obs;
 
  class DashboardController extends GetxController {
@@ -58,10 +60,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print( data['data']['callerId']);
-            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
-            //   // Handle the returned value here
-            //   connectToCli("200");
-            // });
+            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
+              // Handle the returned value here
+              connectToCli("200");
+            });
 
             Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
             // _showIncomingCallDialog(
@@ -79,6 +81,131 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print("Error: $e");
     }
   }
+
+  List<DriverActivityModel> onlineDriversList = [];
+
+
+  // We pass the context here so we can show the Dialog
+  void connectToDriverLogin() {
+    final url = Uri.parse("$socketUrl/driver-login");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          if (data['event'] == "DRIVER_LOGIN") {
+
+            final driver = DriverActivityModel.fromJson(
+              Map<String, dynamic>.from(data['data']),
+            );
+            onlineDriversList.add(driver);
+            update();
+          }else if (data['event'] != "DRIVER_LIST"){
+            int index = onlineDriversList.indexWhere(
+                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            );
+
+            if (index >= 0) {
+              onlineDriversList.removeAt(index);
+            }
+            update();
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          connectToDriverLogin();
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+
+  List<DriverActivityModel> busyDriversList = [];
+
+
+  // We pass the context here so we can show the Dialog
+  void connectToBusyDriver() {
+    final url = Uri.parse("$socketUrl/driver-busy");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          if (data['event'] == "BUSY_DRIVER_UPDATE") {
+
+            final driver = DriverActivityModel.fromJson(
+              Map<String, dynamic>.from(data['data']),
+            );
+            busyDriversList.add(driver);
+            update();
+          }else{
+            int index = busyDriversList.indexWhere(
+                  (test) => test.id.toString() == data['data']['id'].toString(),
+            );
+
+            if (index >= 0) {
+              busyDriversList.removeAt(index);
+            }
+            update();
+          }
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          connectToBusyDriver();
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+  
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
+  getAllOnlineDrivers() async{
+    var response = await Api().get("drivers/login-busy");
+    if(response.statusCode == 200){
+      print(response.data);
+      if(response.data['login_drivers'].isNotEmpty){
+        response.data['login_drivers'].forEach((element) {
+          onlineDriversList.insert(0, DriverActivityModel(
+            id: element['id'],
+            name: element['name'],
+            username: element['username'],
+            vehicleType: element['vehicle_type'],
+            zone: element['zone'],
+          ));
+        });
+      }
+
+      if(response.data['busy_drivers'].isNotEmpty){
+        response.data['busy_drivers'].forEach((element) {
+          busyDriversList.insert(0, DriverActivityModel(
+            id: element['id'],
+            name: element['name'],
+            username: element['username'],
+            vehicleType: element['vehicle_type'],
+            zone: element['zone'],
+          ));
+        });
+
+      }
+      update();
+    }
+  }
+
 
   ///===========================================================>See Zone On Map
 
@@ -212,7 +339,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
     connectToCli("200");
+    connectToDriverLogin();
+    // connectToBusyDriver();
     getAllDrivers();
+    getAllOnlineDrivers();
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     pickupController.addListener(() {
@@ -670,9 +800,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           // day: ,
           journeyTypeId: selectJourneyTypeValue!.id,
           multiReservationList: multiReservationList,
-          dropOff: pickupController.text,
-          pickup: dropOffController.text,
+          pickup: pickupController.text,
+          dropOff: dropOffController.text,
           miles: totalDistance.value,
+          pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
           dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
           pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
           pickupTime: pickUpTimeController.text,
@@ -1271,8 +1402,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       dropOff: pickupController.text,
       pickup: dropOffController.text,
       miles: totalDistance.value,
-      dropoffPlotId:
-      dashboardZoneValue != null ? dashboardZoneValue!.id : null,
+      
+      dropoffPlotId:    dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
+      pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
       pickupDate:
       "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       pickupTime: pickUpTimeController.text,

@@ -354,7 +354,10 @@ class _AccountViewState extends State<AccountView> {
                                           "Cash",
                                           "Account",
                                         ],
-                                        value: controller.paymentType,
+                                        // value: controller.paymentType,
+                                        value: ["Cash", "Account"].contains(controller.paymentType)
+                                            ? controller.paymentType
+                                            : null,
                                         itemLabel: (templateList) => templateList,
                                         onChanged: (val) {
                                           controller.paymentType = val;

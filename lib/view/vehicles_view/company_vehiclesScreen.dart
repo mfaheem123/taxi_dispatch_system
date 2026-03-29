@@ -223,7 +223,7 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                     controller.update();
                                   },
                                   child: Icon(
-                                    Icons.edit,
+                                    Icons.edit_calendar,
                                     size: 28,
                                   ),
                                 ),

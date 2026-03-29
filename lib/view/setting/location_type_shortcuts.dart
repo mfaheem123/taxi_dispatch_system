@@ -76,7 +76,9 @@ class _LocationTypeShortcutsState extends State<LocationTypeShortcuts> {
                     ],
                   ),
                 ),
-
+                SizedBox(
+                    height: 8
+                ),
             Scrollbar(
               thickness: 15,
               radius: const Radius.circular(10),
