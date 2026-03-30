@@ -166,14 +166,12 @@ AuthController controller = Get.put(AuthController());
                           //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
                           // );
                           controller.postLoginDetails();
-                          Get.offAllNamed(Routes.myHomePage);
+                          // Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.createBooking);
                         },
                       ),
 
                       const SizedBox(height: 20),
-
-                      // Register link
 
                     ],
                   ),
