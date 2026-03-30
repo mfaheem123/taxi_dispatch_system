@@ -68,10 +68,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   Timer? _debounce;
 
-  // ✅ Agar pehle se registered hai toh wohi uthao, warna naya banao
-  DashboardController controller = Get.isRegistered<DashboardController>()
-      ? Get.find<DashboardController>()
-      : Get.put(DashboardController());
+  DashboardController controller =  Get.find();
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
@@ -99,6 +96,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<DashboardController>(initState: (v) {
+
       controller.seeZoneOnMapp();
       // controller.getMobileNumberWithName();
       if (_controller.locationtypezoneModel == null) {

@@ -15,7 +15,6 @@ import '../component/datatable_widget.dart';
 import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
 import '../component/text_widget.dart';
-import '../routes/app_pages.dart';
 import 'dashboard_view/Controller/dashboard_controller.dart';
 import 'dashboard_view/booking_table.dart';
 import 'dashboard_view/models/dashboard_model.dart';
@@ -947,7 +946,7 @@ class _CenterAreaState extends State<_CenterArea> {
   String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
   LatLng? dropoffPoints;
-
+  bool _isLoading = false;
   bool actionValue = false;
   bool submitBtnValue = false;
 
@@ -1362,40 +1361,90 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  onPressed: () async {
-                    // Scenario 1: Agar TextFields mein data hai aur koi row select nahi ki (Fresh Manual Booking)
-                    if (pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false) {
+                  // onPressed: () async {
+                  //   if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
+                  //     if(pickupController.text == dropoffController.text){
+                  //       BotToast.showText(text: "Please write different address");
+                  //       return;
+                  //     }
+                  //     await _controller.cliDataBinding(
+                  //        pickup: pickupController.text,
+                  //        dropoff: dropoffController.text,
+                  //        pickupLatitude: pickupPoints!.latitude.toString(),
+                  //        pickupLongitude: pickupPoints!.longitude.toString(),
+                  //        dropoffLatitude: dropoffPoints!.latitude.toString(),
+                  //        dropoffLongitude: dropoffPoints!.longitude.toString(),
+                  //        name: name,
+                  //        mobile: mobileNumber,
+                  //        email: email,
+                  //        phoneNumber: telNumber,
+                  //     );
+                  //   } else {
+                  //
+                  //     await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                  //     Get.back();
+                  //   }
+                  // },
+        onPressed: () async {
+        if (_isLoading) return;
 
-                      if (pickupController.text == dropoffController.text) {
-                        BotToast.showText(text: "Please write different address");
-                        return;
-                      }
+        try {
+        _isLoading = true;
 
-                      await _controller.cliDataBinding(
-                        pickup: pickupController.text,
-                        dropoff: dropoffController.text,
-                        pickupLatitude: pickupPoints?.latitude.toString() ?? "0.0",
-                        pickupLongitude: pickupPoints?.longitude.toString() ?? "0.0",
-                        dropoffLatitude: dropoffPoints?.latitude.toString() ?? "0.0",
-                        dropoffLongitude: dropoffPoints?.longitude.toString() ?? "0.0",
-                        name: controller.customerName.value,
-                        mobile: controller.customerMobile.value,
-                        email: email,
-                        phoneNumber: telNumber,
-                      );
+        if (pickupController.text.isNotEmpty &&
+        dropoffController.text.isNotEmpty &&
+        actionValue == false) {
 
-                      Get.offAllNamed(Routes.myHomePage); // Apne route ka naam yahan likhein
+        if (pickupController.text == dropoffController.text) {
+        BotToast.showText(text: "Please write different address");
+        return;
+        }
 
-                    }
-                    else if (selectedBooking != null) {
-                      await _controller.dashBoardDataBinding(id: selectedBooking!.id, jobData: selectedBooking);
-                      Get.back();
-                    }
-                    // Scenario 3: Kuch bhi nahi hai, tab bhi khali dashboard par le jao
-                    else {
-                      Get.offAllNamed(Routes.myHomePage);
-                    }
-                  },
+        if (pickupPoints == null || dropoffPoints == null) {
+        BotToast.showText(text: "Location data missing");
+        return;
+        }
+
+        await _controller.cliDataBinding(
+        pickup: pickupController.text,
+        dropoff: dropoffController.text,
+        pickupLatitude: pickupPoints!.latitude.toString(),
+        pickupLongitude: pickupPoints!.longitude.toString(),
+        dropoffLatitude: dropoffPoints!.latitude.toString(),
+        dropoffLongitude: dropoffPoints!.longitude.toString(),
+        name: name,
+        mobile: mobileNumber,
+        email: email,
+        phoneNumber: telNumber,
+        );
+
+        if (!mounted) return;
+
+        } else {
+
+        if (selectedBooking == null) {
+       Get.back();
+        return;
+        }
+
+        await _controller.dashBoardDataBinding(
+        id: selectedBooking!.id,
+        jobData: selectedBooking,
+        );
+
+        if (!mounted) return;
+
+        Get.back();
+        }
+
+        } catch (e) {
+        BotToast.showText(text: "Something went wrong");
+        print(e);
+
+        } finally {
+        _isLoading = false;
+        }
+        },
                   child: const Text("New Booking"),
                 ),
               ],
