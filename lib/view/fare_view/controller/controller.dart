@@ -1117,6 +1117,7 @@ class FareController extends GetxController {
     var response = await Api().get("airports/get");
     if (response.statusCode == 200) {
       airportChargesData = AirPortChargesModel.fromJson(response.data);
+      filteredLocations = airportChargesData?.locations ?? [];
       getAllAirPortChargesLoader(true);
       update();
     }

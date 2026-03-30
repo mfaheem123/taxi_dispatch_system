@@ -53,7 +53,7 @@ class CliController extends GetxController {
 
     channel = WebSocketChannel.connect(
       Uri.parse(
-        'ws://192.168.110.6:5000/websocket/cli?extension=$extension',
+        'ws://192.168.110.4:5000/websocket/cli?extension=$extension',
       ),
     );
 
