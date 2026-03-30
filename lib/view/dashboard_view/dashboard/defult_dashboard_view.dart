@@ -68,7 +68,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   Timer? _debounce;
 
-  DashboardController controller = Get.find();
+  // ✅ Agar pehle se registered hai toh wohi uthao, warna naya banao
+  DashboardController controller = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());

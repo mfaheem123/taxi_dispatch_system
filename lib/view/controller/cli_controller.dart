@@ -112,7 +112,7 @@ class CliController extends GetxController {
 
           customerName.value = jsonData["customer"]?["name"] ?? "";
 
-          customerMobile.value = jsonData["customer"]?["mobile"] ?? "";
+          customerMobile.value = phone?? "";
 
           bookings.value = jsonData["bookings"] ?? [];
 

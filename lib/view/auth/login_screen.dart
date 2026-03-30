@@ -67,10 +67,16 @@ class LoginScreen extends StatelessWidget {
 
 AuthController controller = Get.put(AuthController());
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
     double width = Get.width;
     double height = Get.height;
+
+
 
     return Scaffold(
       body: Stack(
