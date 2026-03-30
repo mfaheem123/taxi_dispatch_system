@@ -990,7 +990,12 @@ class _CenterAreaState extends State<_CenterArea> {
                   }
 
                   if (controller.bookings.isEmpty) {
-                    return const Text("No Bookings");
+                    return Column(
+                      children: [
+                        Obx(() => Text("Unknown")),
+                        Obx(() => Text(controller.customerMobile.value)),
+                      ],
+                    );
                   }
 
                   return Column(
@@ -1355,14 +1360,11 @@ class _CenterAreaState extends State<_CenterArea> {
                     backgroundColor: Colors.grey,
                   ),
                   onPressed: () async {
-
-
                     if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
                       if(pickupController.text == dropoffController.text){
                         BotToast.showText(text: "Please write different address");
                         return;
                       }
-
                       await _controller.cliDataBinding(
                          pickup: pickupController.text,
                          dropoff: dropoffController.text,

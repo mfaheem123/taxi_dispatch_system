@@ -171,11 +171,10 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                           _controller
                                               .selectedMenuItems[index]
                                               .selectedItem = true;
-                                          _controller.currentPage.value =
-                                              ZoneScreen();
+                                          _controller.currentPage.value = ZoneScreen();
                                         } else {
-                                          _controller.currentPage.value =
-                                              ZoneScreen();
+                                          _controller.currentPage.value = ZoneScreen();
+
                                           _controller.menuBarRefresh(
                                               title: "UPDATE ZONE",
                                               pageName: ZoneScreen());
@@ -183,8 +182,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
 
                                         controller.update();
                                       },
-                                      child: Icon(Icons.edit_calendar,
-                                          size: 28),
+                                      child: Icon(Icons.edit_calendar, size: 28),
                                     ),
                                     Text("|"),
                                     OutlinedButton(
@@ -203,8 +201,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                               ),
                                         );
                                       },
-                                      child: Icon(Icons.delete_forever,
-                                          size: 28),
+                                      child: Icon(Icons.delete_forever, size: 28),
                                     ),
                                   ],
                                 ),
