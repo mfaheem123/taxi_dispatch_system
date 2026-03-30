@@ -174,6 +174,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
+  RxInt timerTick = 0.obs;
+  Timer? timer;
+
   getAllOnlineDrivers() async{
     var response = await Api().get("drivers/login-busy");
     if(response.statusCode == 200){
@@ -186,6 +189,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            lastLoginAt: element['last_login_at'] != null
+                ? DateTime.parse(element['last_login_at']).toLocal()
+                : null,
           ));
         });
       }
@@ -198,10 +204,17 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            lastLoginAt:  element['last_login_at'] != null
+                ? DateTime.parse(element['last_login_at']).toLocal()
+                : null,
           ));
         });
 
       }
+      timer = Timer.periodic(Duration(seconds: 5), (_) {
+        timerTick.value++; // trigger UI update
+        update();
+      });
       update();
     }
   }
@@ -2289,7 +2302,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onClose() {
     // suggestionFocusNode.dispose();
     // keyboardFocusNode.dispose();
-
+    timer?.cancel();
     pickupFocusNode.dispose();
     dropoffFocusNode.dispose();
     via1FocusNode.dispose();

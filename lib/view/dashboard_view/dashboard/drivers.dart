@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/send_email_alert.dart';
 import '../../../component/textStyle.dart';
+import '../../../component/time_duration_method.dart';
 import '../Controller/dashboard_controller.dart';
 
 class DriversView extends StatefulWidget {
@@ -272,121 +273,135 @@ class _DriversViewState extends State<DriversView> {
 
                   // ----- Driver List -----
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: controller.driverSelectionTab
-                          .value !=
-                          "activeDriver"?controller.busyDriversList.length: controller.onlineDriversList.length,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8),
-                      itemBuilder: (context, index) {
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          color: Colors.white,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  controller.onlineDriversList[index].name??"",
-                                  style:
-                                  mozillaTextRegularText(fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  controller.onlineDriversList[index].vehicleType??"",
-                                  style:
-                                  mozillaTextRegularText(fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  controller.onlineDriversList[index].username ??"",
-                                  style:
-                                  mozillaTextRegularText(fontSize: 13),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                            //     SizedBox(
-                            //       width: 50,
-                            //       child: Container(
-                            //         height: 32,
-                            //         decoration: BoxDecoration(
-                            //           borderRadius: BorderRadius.circular(4),
-                            //           color: DynamicColors.primaryClr
-                            //         ),
-                            //         child: Center(
-                            //           child: Text("X1",
-                            //             style: mozillaTextRegularText(
-                            //               fontSize: 14,
-                            //               color: DynamicColors.whiteClr,
-                            //             ),
-                            //
-                            //           ),
-                            //         ),
-                            //       ),
-                            //
-                            //
-                            //       // CustomButton(
-                            //       //   height: 28,
-                            //       //   borderRadius: 4,
-                            //       //   verticalPadding: 0,
-                            //       //   btnText: "X1",
-                            //       //   style: mozillaTextRegularText(
-                            //       //     fontSize: 14,
-                            //       //     color: DynamicColors.whiteClr,
-                            //       //   ),
-                            //       // ),
-                            //     ),
-                            //     const SizedBox(width: 10),
-                            //     Expanded(
-                            //       child: Text(
-                            //         "SALOON",
-                            //         style:
-                            //         mozillaTextRegularText(fontSize: 13),
-                            //         overflow: TextOverflow.ellipsis,
-                            //       ),
-                            //     ),
-                            //     const SizedBox(width: 10),
-                            //     const Icon(Icons.phone_android_rounded,
-                            //         size: 18),
-                            //     const SizedBox(width: 10),
-                            //     Expanded(
-                            //       child: Text(
-                            //         "1133Hr 01Min -",
-                            //         style:
-                            //         mozillaTextRegularText(fontSize: 13),
-                            //         overflow: TextOverflow.ellipsis,
-                            //         maxLines: 1,
-                            //       ),
-                            //     ),
-                            //     const SizedBox(width: 10),
-                            // SizedBox(
-                            //   width: 48,
-                            //   child: Container(
-                            //     height: 32,
-                            //     decoration: BoxDecoration(
-                            //         borderRadius: BorderRadius.circular(4),
-                            //         color: DynamicColors.secondaryClr
-                            //     ),
-                            //     child: Center(
-                            //       child: Text("-",
-                            //         style: mozillaTextRegularText(
-                            //           fontSize: 14,
-                            //           color: DynamicColors.whiteClr,
-                            //         ),
-                            //
-                            //       ),
-                            //     ),
-                            //   ),
-                            //
-                            //     ),
-                              ],
+                    child: Obx(
+                          () => ListView.builder(
+                        itemCount: controller.driverSelectionTab
+                            .value !=
+                            "activeDriver"?controller.busyDriversList.length: controller.onlineDriversList.length,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8),
+                        itemBuilder: (context, index) {
+
+                          final driver = controller.onlineDriversList[index];
+
+                          String timeOnline = "";
+
+                          if (driver.lastLoginAt != null) {
+                            timeOnline = formatDurationss(
+                              DateTime.now().difference(driver.lastLoginAt!),
+                            );
+                          }
+
+
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 6),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            color: Colors.white,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    controller.onlineDriversList[index].name??"",
+                                    style:
+                                    mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    controller.onlineDriversList[index].vehicleType??"",
+                                    style:
+                                    mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                  timeOnline??"",
+                                    style:
+                                    mozillaTextRegularText(fontSize: 13),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                              //     SizedBox(
+                              //       width: 50,
+                              //       child: Container(
+                              //         height: 32,
+                              //         decoration: BoxDecoration(
+                              //           borderRadius: BorderRadius.circular(4),
+                              //           color: DynamicColors.primaryClr
+                              //         ),
+                              //         child: Center(
+                              //           child: Text("X1",
+                              //             style: mozillaTextRegularText(
+                              //               fontSize: 14,
+                              //               color: DynamicColors.whiteClr,
+                              //             ),
+                              //
+                              //           ),
+                              //         ),
+                              //       ),
+                              //
+                              //
+                              //       // CustomButton(
+                              //       //   height: 28,
+                              //       //   borderRadius: 4,
+                              //       //   verticalPadding: 0,
+                              //       //   btnText: "X1",
+                              //       //   style: mozillaTextRegularText(
+                              //       //     fontSize: 14,
+                              //       //     color: DynamicColors.whiteClr,
+                              //       //   ),
+                              //       // ),
+                              //     ),
+                              //     const SizedBox(width: 10),
+                              //     Expanded(
+                              //       child: Text(
+                              //         "SALOON",
+                              //         style:
+                              //         mozillaTextRegularText(fontSize: 13),
+                              //         overflow: TextOverflow.ellipsis,
+                              //       ),
+                              //     ),
+                              //     const SizedBox(width: 10),
+                              //     const Icon(Icons.phone_android_rounded,
+                              //         size: 18),
+                              //     const SizedBox(width: 10),
+                              //     Expanded(
+                              //       child: Text(
+                              //         "1133Hr 01Min -",
+                              //         style:
+                              //         mozillaTextRegularText(fontSize: 13),
+                              //         overflow: TextOverflow.ellipsis,
+                              //         maxLines: 1,
+                              //       ),
+                              //     ),
+                              //     const SizedBox(width: 10),
+                              // SizedBox(
+                              //   width: 48,
+                              //   child: Container(
+                              //     height: 32,
+                              //     decoration: BoxDecoration(
+                              //         borderRadius: BorderRadius.circular(4),
+                              //         color: DynamicColors.secondaryClr
+                              //     ),
+                              //     child: Center(
+                              //       child: Text("-",
+                              //         style: mozillaTextRegularText(
+                              //           fontSize: 14,
+                              //           color: DynamicColors.whiteClr,
+                              //         ),
+                              //
+                              //       ),
+                              //     ),
+                              //   ),
+                              //
+                              //     ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
