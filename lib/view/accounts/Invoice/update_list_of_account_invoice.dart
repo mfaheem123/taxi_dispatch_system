@@ -14,7 +14,6 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import '../../../alert/dispatch_booking.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
@@ -183,10 +182,6 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => DispatchBooking(),
-                      );
                     },
                   ),
                   SizedBox(width: 5),
