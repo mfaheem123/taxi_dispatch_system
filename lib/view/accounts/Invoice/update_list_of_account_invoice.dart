@@ -14,6 +14,7 @@ import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
 import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
+import '../../../alert/dispatch_booking.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
@@ -30,8 +31,8 @@ class UpdateAccountInvoiceScreen extends StatefulWidget {
 
 class _UpdateAccountInvoiceScreenState
     extends State<UpdateAccountInvoiceScreen> {
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   InvoiceController controller = Get.isRegistered<InvoiceController>()
       ? Get.find<InvoiceController>()
@@ -182,6 +183,9 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
+                      Get.dialog(
+                          DispatchBooking(),
+                      );
                     },
                   ),
                   SizedBox(width: 5),
@@ -242,7 +246,7 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.8,
               child: SizedBox(height: 30,
                   child: KeyboardDatePicker(
-                initialDate: DateTime.now(),
+                    initialDate: DateTime.now(),
                 onChanged: (date) {
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";

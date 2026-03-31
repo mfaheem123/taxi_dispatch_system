@@ -12,20 +12,20 @@ import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../model/account_invoice_booking_model.dart';
 import '../model/invoice_number_model.dart' hide Subsidiary;
 import '../model/list_of_account_invoice_model.dart';
-import '../model/update_account_invoice_model.dart' hide Account, Subsidiary, Booking;
+import '../model/update_account_invoice_model.dart'
+    hide Account, Subsidiary, Booking;
 
 class InvoiceController extends GetxController {
   /// ==============================================Create Account Invoice ====================================================
 
-  String? invoiceDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-  String? invoiceDueDateController = "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
-
+  String? invoiceDateController =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
+  String? invoiceDueDateController =
+      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
 
   bool isFilterApplied = false;
   List<int> selectedCreateBookingIds = [];
   bool isAllSelected = false;
-
-
 
   final orderNumber = TextEditingController();
   DateTime? fromDate = DateTime.now();
@@ -96,8 +96,7 @@ class InvoiceController extends GetxController {
       accountInvoiceBookingModel =
           AccountInvoiceBookingModel.fromJson(response.data);
       BotToast.showText(text: 'Filter Done');
-      print(
-          ' Filter Data');
+      print(' Filter Data');
     }
     isLoadingInvoice = false;
     update();
@@ -142,8 +141,7 @@ class InvoiceController extends GetxController {
           updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.orderNumber ??
               "";
       BotToast.showText(text: 'Account Invoice Created');
-      print(
-          ' Account Invoice Created');
+      print(' Account Invoice Created');
       update();
     }
     addAccountInvoiceLoad(false);
@@ -170,7 +168,6 @@ class InvoiceController extends GetxController {
 
     if (accountInvoiceBookingModel?.bookings != null &&
         accountInvoiceBookingModel!.bookings!.isNotEmpty) {
-
       double gSum = 0;
 
       for (var b in accountInvoiceBookingModel!.bookings!) {
@@ -193,9 +190,6 @@ class InvoiceController extends GetxController {
 
     update();
   }
-
-
-
 
   ///================================================ list of Account Invoice
   Set<String> selectedIds = {};
@@ -244,7 +238,8 @@ class InvoiceController extends GetxController {
           : null,
       "order_number":
           activeFilter == "order" ? searchOrder.value.toLowerCase() : null,
-      "amount": activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
+      "amount":
+          activeFilter == "amount" ? searchAmount.value.toLowerCase() : null,
       "subsidiary_name": activeFilter == "subsidiary"
           ? searchSubsidiary.value.toLowerCase()
           : null,
@@ -289,6 +284,7 @@ class InvoiceController extends GetxController {
       BotToast.showText(text: "AccountInvoice deleted successfully!");
     }
   }
+
   ///================================================ list of Account Invoice END
 
   ///================================================ Update Invoice Screen
@@ -308,6 +304,7 @@ class InvoiceController extends GetxController {
   String updateInvoiceDueDateController = "2000-01-01";
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
+
   ///  UPDATE SCREEN VARIABLES
   SubsDiaryModel? updateSubsidiaryModel;
   Subsidiaries? selectedUpdateSubsidiary;
@@ -331,11 +328,9 @@ class InvoiceController extends GetxController {
       }
       BotToast.showText(text: 'EDIT INVOICE');
     }
-    isLoadingUpdate = false;
-    update();
+      isLoadingUpdate = false;
+      update();
   }
-
-
 
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
@@ -625,7 +620,6 @@ CC: CONGESTION CHARGES
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
     if (booking != null) {
-
       booking.companyPrice = booking.companyPrice ?? 0;
       booking.parkingCharges = booking.parkingCharges ?? 0;
       booking.waitingCharges = booking.waitingCharges ?? 0;
@@ -641,15 +635,19 @@ CC: CONGESTION CHARGES
           (booking.congestionCharges as double);
 
       double newGrandTotal = 0;
-      var lineItems = updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ?? [];
+      var lineItems = updateInvoiceByIdModel
+              ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
+          [];
 
       for (var item in lineItems) {
         newGrandTotal += (item.booking?.totalCharges ?? 0);
       }
 
       double adminFees = double.tryParse(updateInvoiceByIdModel
-          ?.accountInvoice?.accountInvoice?.account?.adminFees
-          ?.toString() ?? "0") ?? 0.0;
+                  ?.accountInvoice?.accountInvoice?.account?.adminFees
+                  ?.toString() ??
+              "0") ??
+          0.0;
 
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
           (newGrandTotal + adminFees).toStringAsFixed(2);
@@ -658,61 +656,46 @@ CC: CONGESTION CHARGES
     }
   }
 
-
-
-
   updateBookingCharges(dynamic booking) async {
-
-      var formData = {
-        "fares": booking.fares.toString(),
-        "parking_charges": booking.parkingCharges.toString(),
-        "waiting_charges": booking.waitingCharges.toString(),
-        "extra_drop_charges": booking.extraDropCharges.toString(),
-        "meet_and_greet": booking.meetAndGreet.toString(),
-        "congestion_charges": booking.congestionCharges.toString(),
-        "total_charges": booking.totalCharges.toString(),
-      };
-      var response = await Api().post(formData, "bookings/fare-charges/${booking.id}", auth: true);
-      if (response.statusCode == 200) {
-        BotToast.showText(text: "Success" "Charges updated!");
-      }
+    var formData = {
+      "fares": booking.fares.toString(),
+      "parking_charges": booking.parkingCharges.toString(),
+      "waiting_charges": booking.waitingCharges.toString(),
+      "extra_drop_charges": booking.extraDropCharges.toString(),
+      "meet_and_greet": booking.meetAndGreet.toString(),
+      "congestion_charges": booking.congestionCharges.toString(),
+      "total_charges": booking.totalCharges.toString(),
+    };
+    var response = await Api()
+        .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "Success" "Charges updated!");
+    }
   }
-
 
   updateBookingAmount(AccountInvoiceAccountInvoice invoice) async {
-
     var formData = {
-     if(invoice.amount != null) "amount": invoice.amount,
-     if(invoice.accountId !=null) "account_id": invoice.accountId,
-     if(invoice.subsidiaryId != null) "subsidiary_id": invoice.subsidiaryId,
-     if(invoice.departmentId != null) "department_id": invoice.departmentId,
-     if(invoice.fromDate != null) "from_date": "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
-     if(invoice.toDate != null) "to_date": "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
-     if(invoiceDateController != null) "invoice_date": invoiceDateController,
-     if(invoiceDueDateController != null) "invoice_due_date": invoiceDueDateController,
-     if(invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
-     if(invoice.status != null) "status": invoice.status,
+      if (invoice.amount != null) "amount": invoice.amount,
+      if (invoice.accountId != null) "account_id": invoice.accountId,
+      if (invoice.subsidiaryId != null) "subsidiary_id": invoice.subsidiaryId,
+      if (invoice.departmentId != null) "department_id": invoice.departmentId,
+      if (invoice.fromDate != null)
+        "from_date":
+            "${invoice.fromDate!.year}-${invoice.fromDate!.month}-${invoice.fromDate!.day}",
+      if (invoice.toDate != null)
+        "to_date":
+            "${invoice.toDate!.year}-${invoice.toDate!.month}-${invoice.toDate!.day}",
+      if (invoiceDateController != null) "invoice_date": invoiceDateController,
+      if (invoiceDueDateController != null)
+        "invoice_due_date": invoiceDueDateController,
+      if (invoice.invoiceType != null) "invoice_type": invoice.invoiceType,
+      if (invoice.status != null) "status": invoice.status,
     };
-      var response = await Api().post(
-          formData,
-          "account_invoice/update/${invoice.id}",
-          auth: true
-      );
+    var response = await Api()
+        .post(formData, "account_invoice/update/${invoice.id}", auth: true);
 
-      if (response.statusCode == 200) {
-        BotToast.showText(text: "Success: Charges updated!");
-      }
-
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "Success: Charges updated!");
+    }
   }
-
-
-
-
-
-
-
-
-
-
-
 }
