@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
@@ -132,7 +133,7 @@ class _BookingTableState extends State<BookingTable> {
                 width: Get.width,
                 child: DataTable(
                   headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                  columnSpacing: 12, // 👈 default 56 hota hai, isko chhota kardo
+                  columnSpacing: 12,
                   dataRowMinHeight: 40,
                   dataRowMaxHeight: 48,
 
@@ -910,9 +911,12 @@ class _BookingTableState extends State<BookingTable> {
   void _handleSubMenuAction(BuildContext context, String title) {
     if (title == "DISPATCH") {
       // Aapka Dispatch wala Alert
+      // Get.dialog(
+      //   DispatchBooking(),
+      // );
       showDialog(
         context: context,
-        builder: (context) => DispatchBookingAlert(), // Aapki existing class
+        builder: (context) => DispatchBooking(), // Aapki existing class
       );
     } else if (title == "SMS") {
       // SMS wala Alert
