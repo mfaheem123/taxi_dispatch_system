@@ -27,7 +27,7 @@ import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
-import '../models/dashboard_table_model.dart';
+import '../models/dashboard_table_model.dart' hide Employee;
 import '../models/users_phone_numbers_model.dart';
 import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
@@ -35,7 +35,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
+import '../../administration/model/user_model.dart';
 import 'driver_activity_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
@@ -174,6 +174,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
   
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all online drivers
+  RxInt timerTick = 0.obs;
+  Timer? timer;
+
   getAllOnlineDrivers() async{
     var response = await Api().get("drivers/login-busy");
     if(response.statusCode == 200){
@@ -186,6 +189,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            lastLoginAt: element['last_login_at'] != null
+                ? DateTime.parse(element['last_login_at']).toLocal()
+                : null,
           ));
         });
       }
@@ -198,10 +204,17 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            lastLoginAt:  element['last_login_at'] != null
+                ? DateTime.parse(element['last_login_at']).toLocal()
+                : null,
           ));
         });
 
       }
+      timer = Timer.periodic(Duration(seconds: 5), (_) {
+        timerTick.value++; // trigger UI update
+        update();
+      });
       update();
     }
   }
@@ -338,7 +351,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("200");
+    Future.delayed(Duration(seconds: 1), () {
+      String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
+      print("Connecting to CLI with Extension: $myExtension");
+      connectToCli(myExtension);
+    });
     connectToDriverLogin();
     // connectToBusyDriver();
     getAllDrivers();
@@ -2289,7 +2306,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onClose() {
     // suggestionFocusNode.dispose();
     // keyboardFocusNode.dispose();
-
+    timer?.cancel();
     pickupFocusNode.dispose();
     dropoffFocusNode.dispose();
     via1FocusNode.dispose();

@@ -4,6 +4,7 @@ class DriverActivityModel {
   String? username;
   String? zone;
   String? vehicleType;
+  DateTime? lastLoginAt;
 
   DriverActivityModel({
     this.id,
@@ -11,6 +12,7 @@ class DriverActivityModel {
     this.username,
     this.zone,
     this.vehicleType,
+    this.lastLoginAt,
   });
 
   factory DriverActivityModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,9 @@ class DriverActivityModel {
       username: json['username'],
       zone: json['zone'],
       vehicleType: json['vehicle_type'],
+      lastLoginAt: json['last_login_at'] != null
+          ? DateTime.parse(json['last_login_at']).toLocal()
+          : null,
     );
   }
 }

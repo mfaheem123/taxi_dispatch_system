@@ -44,8 +44,8 @@ class ProductionConfig implements BaseConfig {
   // String get apiUrl => "https://www.nexustechnologys.com/api/";
 
   @override
-  // String get socketUrl => "ws://192.168.110.6:5000/websocket";
-  String get socketUrl => "wss://www.nexustechnologys.com/websocket";
+  String get socketUrl => "ws://192.168.110.4:5000/websocket";
+  // String get socketUrl => "wss://www.nexustechnologys.com/websocket";
 
 
 // String get mapKey => "AIzaSyDLtchj3AddQGK3mlMgqA6HKbLQlEkEa38";

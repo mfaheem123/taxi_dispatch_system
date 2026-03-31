@@ -29,6 +29,17 @@ String formatCreatedAt(DateTime dateTime) {
 }
 
 
+String formatDurationss(Duration duration) {
+  int hours = duration.inHours;
+  int minutes = duration.inMinutes % 60;
+  int seconds = duration.inSeconds % 60;
+
+  return "${hours.toString().padLeft(2, '0')}:"
+      "${minutes.toString().padLeft(2, '0')}:"
+      "${seconds.toString().padLeft(2, '0')}";
+}
+
+
 Future<String> getFares({
   dynamic miles,
   dynamic pickupDate,
