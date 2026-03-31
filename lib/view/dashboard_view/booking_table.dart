@@ -807,30 +807,65 @@ class _BookingTableState extends State<BookingTable> {
     required Offset globalPosition, // Added this parameter
     required dynamic item,
   }) async {
-    final String? selectedValue = await showMenu<String>(
+    final String? selectedValue = await showMenu(
       context: context,
       position: position,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
-        PopupMenuItem<String>(
-          value: 'dispatch_main',
-          height: 40,
-          child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+        // DISPATCH with Hover Submenu
+        PopupMenuItem(
+          enabled: false, // Click disable kiya taake sirf hover/submenu chale
+          child: SubmenuButton(
+            menuChildren: [
+              MenuItemButton(
+                onPressed: () => print("Dispatch Selected"),
+                leadingIcon: const Icon(Icons.near_me, size: 18),
+                child: const Text("DISPATCH"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("Follow On Selected"),
+                leadingIcon: const Icon(Icons.sync, size: 18),
+                child: const Text("FOLLOW ON"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("SMS Selected"),
+                leadingIcon: const Icon(Icons.chat_bubble, size: 18),
+                child: const Text("SMS"),
+              ),
+            ],
+            leadingIcon: const Icon(Icons.local_shipping, size: 18),
+            trailingIcon: const Icon(Icons.arrow_right, size: 18),
+            child: const Text("DISPATCH", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          ),
         ),
-        PopupMenuItem<String>(
-          value: 'actions_main', // updated value
-          height: 40,
-          child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
+
+        // ACTIONS with Hover Submenu
+        PopupMenuItem(
+          enabled: false,
+          child: SubmenuButton(
+            menuChildren: [
+              MenuItemButton(
+                onPressed: () => print("Edit Fare"),
+                child: const Text("EDIT FARE"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("Cancel Job"),
+                child: const Text("CANCEL JOB"),
+              ),
+            ],
+            leadingIcon: const Icon(Icons.build_circle_outlined, size: 18),
+            trailingIcon: const Icon(Icons.arrow_right, size: 18),
+            child: const Text("ACTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          ),
         ),
-        PopupMenuItem<String>(
-          value: 'send_main', // updated value
-          height: 40,
-          child: _buildMenuRow(Icons.share, "SEND", true),
+
+        PopupMenuItem(
+          onTap: () => print("SMS Clicked"),
+          child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
         ),
       ],
     );
-
     // FIX: globalPosition ab yahan accessible hai
     if (selectedValue == 'dispatch_main') {
       _openDispatchSubMenu(context, globalPosition, item);
@@ -860,7 +895,6 @@ class _BookingTableState extends State<BookingTable> {
     ).then((value) {
       if (value != null) {
         print("Action selected: $value for ${item.referenceNumber}");
-        // Yahan controller ka logic call karein
       }
     });
   }
