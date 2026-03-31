@@ -318,25 +318,25 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                               item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK PICKUP: ${item.pickup}");
-                                showMenu(
-                                  context: context,
-                                  position: RelativeRect.fromLTRB(
-                                    // event.position.dx,
-                                    // event.position.dy,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                  ),
-                                  items: [
-                                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                    const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                                  ],
-                                );
-
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK PICKUP: ${item.pickup}");
+                              //   showMenu(
+                              //     context: context,
+                              //     position: RelativeRect.fromLTRB(
+                              //       // event.position.dx,
+                              //       // event.position.dy,
+                              //       15,
+                              //       0,
+                              //       0,
+                              //       0,
+                              //     ),
+                              //     items: [
+                              //       const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                              //       const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                              //     ],
+                              //   );
+                              //
+                              // },
                               child: Container(
                                 width: 160,
                                 // width: double.infinity,
@@ -461,9 +461,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK NOTE");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK NOTE");
+                              // },
                               child: SizedBox(
                                 width: 180,
                                 child: Text(
@@ -478,9 +478,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK FARE: ${item.fares}");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK FARE: ${item.fares}");
+                              // },
                               child: Text("£ ${item.fares ?? "0.00"}"),
                             ),
                           ),
@@ -489,9 +489,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK STATUS");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK STATUS");
+                              // },
                               child: Container(
                                 width: double.infinity,
                                 height: double.infinity,
@@ -752,29 +752,30 @@ class _BookingTableState extends State<BookingTable> {
     );
   }
 
+
+
+
+
+
   // 1. Modified rightClickTextCell to pass globalPosition
   Widget rightClickTextCell({
     required Widget child,
-    required VoidCallback onRightClick,
     required dynamic item,
+    VoidCallback? onRightClick,
   }) {
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (event) {
         if (event.kind == PointerDeviceKind.mouse &&
             event.buttons == kSecondaryMouseButton) {
-          final RenderBox overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
 
+          if (onRightClick != null) onRightClick();
+          final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
           final RelativeRect position = RelativeRect.fromRect(
-            Rect.fromPoints(
-              event.position,
-              event.position,
-            ),
+            Rect.fromPoints(event.position, event.position),
             Offset.zero & overlay.size,
           );
-
-          // FIX: yahan event.position pass kar rahe hain as globalPosition
+          // Hamara naya menu function call karein
           showRowContextMenu(
             context: context,
             position: position,
@@ -804,113 +805,139 @@ class _BookingTableState extends State<BookingTable> {
   void showRowContextMenu({
     required BuildContext context,
     required RelativeRect position,
-    required Offset globalPosition, // Added this parameter
+    required Offset globalPosition,
     required dynamic item,
   }) async {
-    final String? selectedValue = await showMenu(
+    await showMenu<String>(
       context: context,
       position: position,
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
-        // DISPATCH with Hover Submenu
-        PopupMenuItem(
-          enabled: false, // Click disable kiya taake sirf hover/submenu chale
-          child: SubmenuButton(
-            menuChildren: [
-              MenuItemButton(
-                onPressed: () => print("Dispatch Selected"),
-                leadingIcon: const Icon(Icons.near_me, size: 18),
-                child: const Text("DISPATCH"),
-              ),
-              MenuItemButton(
-                onPressed: () => print("Follow On Selected"),
-                leadingIcon: const Icon(Icons.sync, size: 18),
-                child: const Text("FOLLOW ON"),
-              ),
-              MenuItemButton(
-                onPressed: () => print("SMS Selected"),
-                leadingIcon: const Icon(Icons.chat_bubble, size: 18),
-                child: const Text("SMS"),
-              ),
-            ],
-            leadingIcon: const Icon(Icons.local_shipping, size: 18),
-            trailingIcon: const Icon(Icons.arrow_right, size: 18),
-            child: const Text("DISPATCH", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+        PopupMenuItem<String>(
+          child: MouseRegion(
+            onEnter: (_) => _showSubMenu(context, globalPosition, [
+              {'title': 'DISPATCH', 'icon': Icons.near_me},
+              {'title': 'FOLLOW ON', 'icon': Icons.sync},
+              {'title': 'SMS', 'icon': Icons.chat_bubble},
+            ]),
+            child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
           ),
         ),
-
-        // ACTIONS with Hover Submenu
-        PopupMenuItem(
-          enabled: false,
-          child: SubmenuButton(
-            menuChildren: [
-              MenuItemButton(
-                onPressed: () => print("Edit Fare"),
-                child: const Text("EDIT FARE"),
-              ),
-              MenuItemButton(
-                onPressed: () => print("Cancel Job"),
-                child: const Text("CANCEL JOB"),
-              ),
-            ],
-            leadingIcon: const Icon(Icons.build_circle_outlined, size: 18),
-            trailingIcon: const Icon(Icons.arrow_right, size: 18),
-            child: const Text("ACTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+        PopupMenuItem<String>(
+          child: MouseRegion(
+            onEnter: (_) => _hideSubMenu(), // Dispatch wala close ho jayega
+            child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
           ),
         ),
-
-        PopupMenuItem(
-          onTap: () => print("SMS Clicked"),
+        PopupMenuItem<String>(
+          child: MouseRegion(
+            onEnter: (_) => _hideSubMenu(),
+            child: _buildMenuRow(Icons.share, "SEND", true),
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem<String>(
+          onTap: () => print("SMS selected"),
           child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
         ),
       ],
     );
-    // FIX: globalPosition ab yahan accessible hai
-    if (selectedValue == 'dispatch_main') {
-      _openDispatchSubMenu(context, globalPosition, item);
+    _hideSubMenu(); // Cleanup
+  }
+
+
+
+  OverlayEntry? _subMenuEntry;
+
+  void _hideSubMenu() {
+    _subMenuEntry?.remove();
+    _subMenuEntry = null;
+  }
+
+  void _showSubMenu(BuildContext context, Offset globalPosition, List<Map<String, dynamic>> subItems) {
+    _hideSubMenu();
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    _subMenuEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: globalPosition.dx ,
+        top: globalPosition.dy - 60,
+        child: MouseRegion(
+          onExit: (_) => _hideSubMenu(),
+          child: Material(
+            elevation: 8,
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            child: Container(
+              width: 160, // Submenu ki fixed width
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: subItems.map((sub) => InkWell(
+                  onTap: () {
+                    _hideSubMenu();
+                    Navigator.pop(context);
+
+                    _handleSubMenuAction(context, sub['title']);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      children: [
+                        Icon(sub['icon'], size: 18, color: Colors.black87),
+                        const SizedBox(width: 12),
+                        Text(sub['title'],
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)
+                        ),
+                      ],
+                    ),
+                  ),
+                )).toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_subMenuEntry!);
+  }
+
+  void _handleSubMenuAction(BuildContext context, String title) {
+    if (title == "DISPATCH") {
+      // Aapka Dispatch wala Alert
+      showDialog(
+        context: context,
+        builder: (context) => DispatchBookingAlert(), // Aapki existing class
+      );
+    } else if (title == "SMS") {
+      // SMS wala Alert
+      showShortcutDialog(
+        context,
+        title: "Send SMS",
+        contentWidget: const Text("Do you want to send a notification?"),
+      );
+    } else if (title == "FOLLOW ON") {
+      // Follow on logic
+      print("Follow on logic here");
     }
   }
 
 
-// Submenu Function
-// 3. Submenu Function (Fixed position and syntax)
-  void _openDispatchSubMenu(BuildContext context, Offset globalPosition, dynamic item) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    showMenu<String>(
-      context: context,
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      // position ko width ke hisaab se adjust kiya (dx + 150)
-      position: RelativeRect.fromRect(
-        Rect.fromLTWH(globalPosition.dx + 150, globalPosition.dy, 0, 0),
-        Offset.zero & overlay.size,
-      ),
-      items: [
-        PopupMenuItem(value: 'd', child: _buildMenuRow(Icons.near_me, "DISPATCH", false)),
-        PopupMenuItem(value: 'f', child: _buildMenuRow(Icons.sync, "FOLLOW ON", false)),
-        PopupMenuItem(value: 's', child: _buildMenuRow(Icons.chat_bubble, "SMS", false)),
-      ],
-    ).then((value) {
-      if (value != null) {
-        print("Action selected: $value for ${item.referenceNumber}");
-      }
-    });
-  }
 
-// UI Helper taake Row clean dikhe
+
   Widget _buildMenuRow(IconData icon, String title, bool hasArrow) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 18, color: Colors.black87),
         const SizedBox(width: 12),
-        Expanded(
-          child: Text(title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-        if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),
+        Expanded(child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+        if (hasArrow) const Icon(Icons.arrow_right, size: 18, color: Colors.black54),
       ],
     );
   }
