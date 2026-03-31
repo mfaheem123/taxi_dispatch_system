@@ -358,12 +358,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE8F2EF),
-                      // Light green/aqua background image jesa
                       borderRadius: BorderRadius.circular(10),
-
                       border: Border.all(
                           color: const Color(0xFFC4D9D4),
-                          width: 1), // Light border
+                          width: 1),
                     ),
                     child: Row(
                       children: [
@@ -374,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          // Nadeem ki jagah dynamic username
+                          // username
                           Employee.selectedEmployee?.username?.toUpperCase() ??
                               "GUEST",
                           style: mozillaTextRegularText(
