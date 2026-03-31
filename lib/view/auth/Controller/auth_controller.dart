@@ -4,15 +4,36 @@ import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../alert/cli_extention_alert.dart';
 import '../../administration/model/user_model.dart';
 
 class AuthController extends GetxController {
+
+  final sp = GetStorage(); // Ensure GetStorage is initialized
+
+  // Refresh par data lane wala function
+  checkUserStatus() async {
+    String? token = sp.read('token');
+
+    if (token != null) {
+      // Yahan hum wahi login wali API ya koi profile API hit kar sakte hain
+      // Agar backend pe alag profile API nahi hai, toh local storage best hai
+      var storedUser = sp.read('userData');
+      if (storedUser != null) {
+        Employee.selectedEmployee = Employee.fromJson(storedUser);
+        update();
+      }
+    }
+  }
+
+
+
+
+
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   RxBool PostAuthLoader = false.obs;
-// AuthController.dart
-  // AuthController.dart
 
   postLoginDetails() async {
     PostAuthLoader(true);
@@ -23,8 +44,20 @@ class AuthController extends GetxController {
     var response = await Api().post(formData, 'employees/login', auth: false);
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
+      var token = response.data['token'];
+
+      // 1. Token aur UserData ko permanent save karein
+      sp.write('token', token);
+      sp.write('userData', employeeData);
+
+      // 2. Global model update karein
       Employee.selectedEmployee = Employee.fromJson(employeeData);
+
+      // Extension logic
       List extensions = employeeData['employee_extensions'] ?? [];
+      if (extensions.isNotEmpty) {
+        Employee.selectedEmployee!.extensionNumber = extensions.last['extension_number'].toString();
+      }
       Get.offAllNamed(Routes.myHomePage);
       if (extensions.isEmpty) {
         Future.delayed(const Duration(milliseconds: 800), () {

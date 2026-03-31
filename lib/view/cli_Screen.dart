@@ -39,7 +39,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.extensionNumber);
+    print("PHONEEEEEEEEEEEEEEEEE${widget.extensionNumber}");
 
     /// ✅ CLI screen open hote hi socket connect
     // socketController.connectSocket(widget.extensionNumber);
@@ -946,7 +946,7 @@ class _CenterAreaState extends State<_CenterArea> {
   String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
   LatLng? dropoffPoints;
-
+  bool _isLoading = false;
   bool actionValue = false;
   bool submitBtnValue = false;
 
@@ -978,8 +978,6 @@ class _CenterAreaState extends State<_CenterArea> {
               children: [
 
                 /// HEADER
-                Obx(() => Text(controller.customerName.value)),
-                Obx(() => Text(controller.customerMobile.value)),
 
                 const SizedBox(height: 20),
 
@@ -992,10 +990,14 @@ class _CenterAreaState extends State<_CenterArea> {
                   if (controller.bookings.isEmpty) {
                     return Column(
                       children: [
-                        Obx(() => Text("Unknown")),
-                        Obx(() => Text(controller.customerMobile.value)),
+                        Text("Unknown"),
+                         Text(controller.customerMobile.value),
                       ],
                     );
+                  }else{
+
+                    Obx(() => Text(controller.customerName.value));
+                    Obx(() => Text(controller.customerMobile.value));
                   }
 
                   return Column(
@@ -1359,29 +1361,90 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
-                  onPressed: () async {
-                    if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
-                      if(pickupController.text == dropoffController.text){
-                        BotToast.showText(text: "Please write different address");
-                        return;
-                      }
-                      await _controller.cliDataBinding(
-                         pickup: pickupController.text,
-                         dropoff: dropoffController.text,
-                         pickupLatitude: pickupPoints!.latitude.toString(),
-                         pickupLongitude: pickupPoints!.longitude.toString(),
-                         dropoffLatitude: dropoffPoints!.latitude.toString(),
-                         dropoffLongitude: dropoffPoints!.longitude.toString(),
-                         name: name,
-                         mobile: mobileNumber,
-                         email: email,
-                         phoneNumber: telNumber,
-                      );
-                    } else {
-                      await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-                      Get.back();
-                    }
-                  },
+                  // onPressed: () async {
+                  //   if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
+                  //     if(pickupController.text == dropoffController.text){
+                  //       BotToast.showText(text: "Please write different address");
+                  //       return;
+                  //     }
+                  //     await _controller.cliDataBinding(
+                  //        pickup: pickupController.text,
+                  //        dropoff: dropoffController.text,
+                  //        pickupLatitude: pickupPoints!.latitude.toString(),
+                  //        pickupLongitude: pickupPoints!.longitude.toString(),
+                  //        dropoffLatitude: dropoffPoints!.latitude.toString(),
+                  //        dropoffLongitude: dropoffPoints!.longitude.toString(),
+                  //        name: name,
+                  //        mobile: mobileNumber,
+                  //        email: email,
+                  //        phoneNumber: telNumber,
+                  //     );
+                  //   } else {
+                  //
+                  //     await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                  //     Get.back();
+                  //   }
+                  // },
+        onPressed: () async {
+        if (_isLoading) return;
+
+        try {
+        _isLoading = true;
+
+        if (pickupController.text.isNotEmpty &&
+        dropoffController.text.isNotEmpty &&
+        actionValue == false) {
+
+        if (pickupController.text == dropoffController.text) {
+        BotToast.showText(text: "Please write different address");
+        return;
+        }
+
+        if (pickupPoints == null || dropoffPoints == null) {
+        BotToast.showText(text: "Location data missing");
+        return;
+        }
+
+        await _controller.cliDataBinding(
+        pickup: pickupController.text,
+        dropoff: dropoffController.text,
+        pickupLatitude: pickupPoints!.latitude.toString(),
+        pickupLongitude: pickupPoints!.longitude.toString(),
+        dropoffLatitude: dropoffPoints!.latitude.toString(),
+        dropoffLongitude: dropoffPoints!.longitude.toString(),
+        name: name,
+        mobile: mobileNumber,
+        email: email,
+        phoneNumber: telNumber,
+        );
+
+        if (!mounted) return;
+
+        } else {
+
+        if (selectedBooking == null) {
+       Get.back();
+        return;
+        }
+
+        await _controller.dashBoardDataBinding(
+        id: selectedBooking!.id,
+        jobData: selectedBooking,
+        );
+
+        if (!mounted) return;
+
+        Get.back();
+        }
+
+        } catch (e) {
+        BotToast.showText(text: "Something went wrong");
+        print(e);
+
+        } finally {
+        _isLoading = false;
+        }
+        },
                   child: const Text("New Booking"),
                 ),
               ],
