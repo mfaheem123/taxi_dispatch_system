@@ -457,9 +457,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   // 6. Extension Number Button (#310 jahan tha)
                   GestureDetector(
-                    // onTap: () {
-                    //   ExtensionAlert.show();
-                    // },
+                    onTap: () {
+                      ExtensionAlert.show();
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
