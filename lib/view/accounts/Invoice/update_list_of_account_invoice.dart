@@ -244,7 +244,7 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.8,
               child: SizedBox(height: 30,
                   child: KeyboardDatePicker(
-                    initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
+                    initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ,
                     onChanged: (date) {
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";

@@ -304,7 +304,6 @@ class InvoiceController extends GetxController {
   String updateInvoiceDueDateController = "2000-01-01";
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
-
   ///  UPDATE SCREEN VARIABLES
   SubsDiaryModel? updateSubsidiaryModel;
   Subsidiaries? selectedUpdateSubsidiary;
