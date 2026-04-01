@@ -69,19 +69,13 @@ class AuthController extends GetxController {
   Future<void> logout() async {
     try {
       var rawId = Employee.selectedEmployee?.id;
-
       if (rawId != null) {
         String empId = rawId.toString();
-
-        // POST request with empty map as formData
-        // Note: Maine 'auth: false' rakha hai kyunke aapke method mein
-        // auth: false hone par hi Authorization header add ho raha hai.
         var response = await Api().post(
             {},
             'employees/logout/$empId',
             auth: false
         );
-
         if (response.statusCode == 200) {
           BotToast.showText(text: "Logged out successfully");
         }
@@ -89,13 +83,10 @@ class AuthController extends GetxController {
     } catch (e) {
       print("Logout API Error: $e");
     } finally {
-      // Local cleanup hamesha hona chahiye
       sp.remove('token');
       sp.remove('userData');
-
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
-
       Get.offAllNamed(Routes.loginScreen);
     }
   }
