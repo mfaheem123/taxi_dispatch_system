@@ -191,7 +191,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                 DataCell(Center(child: Text(item.shortcut ?? '—'))),
                                 DataCell(Center(child: Text(item.address ?? '—'))),
                                 DataCell(Center(child: Text(item.locationType?.name ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.zone?.name ?? 'N/A'))),
+                                DataCell(Center(child: Text(item.zone ?? 'N/A'))),
                                 DataCell(
                                   Center(
                                     child: Row(
