@@ -6,18 +6,12 @@ import '../view/dashboard_view/Controller/booking_dispatch_controller.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 class DispatchBooking extends StatelessWidget {
-
-
-
-
-
-  const DispatchBooking({super.key});
+  final dynamic bookingItem;
+  const DispatchBooking({super.key, this.bookingItem});
 
   @override
   Widget build(BuildContext context) {
 
-
-    // Controller ko inject aur initialize karein
     final controller = Get.put(DispatchController());
     final _controller = Get.find<DashboardController>();
 
@@ -43,7 +37,7 @@ class DispatchBooking extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("DISPATCH BOOKING ${_controller.dashboardTableModelData?.data?.first.referenceNumber ?? "0"}",
+            Text("DISPATCH BOOKING ${bookingItem?.referenceNumber ?? "N/A"}",
                         style: mozillaTextSemiBoldText(
                             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
                     InkWell(
