@@ -23,6 +23,7 @@ import 'dashboard_view/widgets/user_info_widget.dart';
 
 class ResponsivePassengerScreen extends StatefulWidget {
   final String extensionNumber;
+
   const ResponsivePassengerScreen({super.key, required this.extensionNumber});
 
   @override
@@ -31,15 +32,14 @@ class ResponsivePassengerScreen extends StatefulWidget {
 }
 
 class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
-
   /// ✅ Socket Controller
   final CliController socketController =
-  Get.put(CliController(), permanent: true);
+      Get.put(CliController(), permanent: true);
 
   @override
   void initState() {
     super.initState();
-    print(widget.extensionNumber);
+    print("PHONEEEEEEEEEEEEEEEEE${widget.extensionNumber}");
 
     /// ✅ CLI screen open hote hi socket connect
     // socketController.connectSocket(widget.extensionNumber);
@@ -59,7 +59,8 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
       padding: const EdgeInsets.all(16),
       alignment: Alignment.topCenter,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1600), // increased max width
+        constraints: const BoxConstraints(maxWidth: 1600),
+        // increased max width
         child: LayoutBuilder(
           builder: (context, c) {
             final w = c.maxWidth;
@@ -81,14 +82,14 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
               clipBehavior: Clip.antiAlias,
               child: isMobile
                   ? _MobileLayout(
-                leftWidth: leftWidth,
-                rightWidth: rightWidth,
-              )
+                      leftWidth: leftWidth,
+                      rightWidth: rightWidth,
+                    )
                   : _WideLayout(
-                leftWidth: leftWidth,
-                rightWidth: rightWidth,
-                maxWidth: w, // pass full width
-              ),
+                      leftWidth: leftWidth,
+                      rightWidth: rightWidth,
+                      maxWidth: w, // pass full width
+                    ),
             );
           },
         ),
@@ -100,7 +101,9 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
 /// --------- Wide (Web/Tablet landscape) ----------
 class _WideLayout extends StatelessWidget {
   const _WideLayout(
-      {required this.leftWidth, required this.rightWidth, required this.maxWidth});
+      {required this.leftWidth,
+      required this.rightWidth,
+      required this.maxWidth});
 
   final double leftWidth;
   final double rightWidth;
@@ -115,7 +118,8 @@ class _WideLayout extends StatelessWidget {
         SizedBox(width: leftWidth, child: _LeftSidebar()),
 
         // CENTER
-        SizedBox(width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
+        SizedBox(
+            width: centerWidth > 400 ? centerWidth : 400, child: _CenterArea()),
 
         // VERTICAL DIVIDER
         Container(width: 1.5, color: Color(0xFFE1E7F0)),
@@ -166,10 +170,10 @@ class _LeftSidebar extends StatelessWidget {
               Text(
                 "SEA CARZ",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.1,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.1,
+                    ),
               ),
               Spacer(),
               Icon(Icons.close, color: Colors.white70),
@@ -946,7 +950,7 @@ class _CenterAreaState extends State<_CenterArea> {
   String? telNumber;
   final TextEditingController dropoffController = TextEditingController();
   LatLng? dropoffPoints;
-
+  bool _isLoading = false;
   bool actionValue = false;
   bool submitBtnValue = false;
 
@@ -976,10 +980,7 @@ class _CenterAreaState extends State<_CenterArea> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-
                 /// HEADER
-                Obx(() => Text(controller.customerName.value)),
-                Obx(() => Text(controller.customerMobile.value)),
 
                 const SizedBox(height: 20),
 
@@ -992,15 +993,17 @@ class _CenterAreaState extends State<_CenterArea> {
                   if (controller.bookings.isEmpty) {
                     return Column(
                       children: [
-                        Obx(() => Text("Unknown")),
-                        Obx(() => Text(controller.customerMobile.value)),
+                        Text("Unknown"),
+                        Text(controller.customerMobile.value),
                       ],
                     );
+                  } else {
+                    Obx(() => Text(controller.customerName.value));
+                    Obx(() => Text(controller.customerMobile.value));
                   }
 
                   return Column(
                     children: [
-
                       /// ✅ PICKUP & DROPOFF TEXTFIELDS
                       Row(
                         children: [
@@ -1008,23 +1011,24 @@ class _CenterAreaState extends State<_CenterArea> {
                             child: TextField(
                               controller: pickupController,
                               decoration: InputDecoration(
-                                labelText: "Pick Up",
-                                border: OutlineInputBorder(),
-                              suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
-                                onTap: (){
-                                  pickupController.clear();
-                                  dropoffController.clear();
-                                  pickupPoints = null;
-                                  dropoffPoints = null;
-                                 setState(() {
-
-                                 });
-                                },
-                                child: Icon(Icons.close,
-                                color: Colors.red,
-                                ),
-                              )
-                              ),
+                                  labelText: "Pick Up",
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: pickupController.text.isEmpty &&
+                                          dropoffController.text.isEmpty
+                                      ? SizedBox.shrink()
+                                      : GestureDetector(
+                                          onTap: () {
+                                            pickupController.clear();
+                                            dropoffController.clear();
+                                            pickupPoints = null;
+                                            dropoffPoints = null;
+                                            setState(() {});
+                                          },
+                                          child: Icon(
+                                            Icons.close,
+                                            color: Colors.red,
+                                          ),
+                                        )),
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -1032,22 +1036,24 @@ class _CenterAreaState extends State<_CenterArea> {
                             child: TextField(
                               controller: dropoffController,
                               decoration: InputDecoration(
-                                labelText: "Drop Off",
-                                border: OutlineInputBorder(),
-                                  suffixIcon: pickupController.text.isEmpty && dropoffController.text.isEmpty ?SizedBox.shrink() : GestureDetector(
-                                    onTap: (){
-                                      pickupController.clear();
-                                      dropoffController.clear();
-                                      pickupPoints = null;
-                                      dropoffPoints = null;
-                                      setState(() {
-                                      });
-                                    },
-                                    child: Icon(Icons.close,
-                                      color: Colors.red,
-                                    ),
-                                  )
-                              ),
+                                  labelText: "Drop Off",
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: pickupController.text.isEmpty &&
+                                          dropoffController.text.isEmpty
+                                      ? SizedBox.shrink()
+                                      : GestureDetector(
+                                          onTap: () {
+                                            pickupController.clear();
+                                            dropoffController.clear();
+                                            pickupPoints = null;
+                                            dropoffPoints = null;
+                                            setState(() {});
+                                          },
+                                          child: Icon(
+                                            Icons.close,
+                                            color: Colors.red,
+                                          ),
+                                        )),
                             ),
                           ),
                         ],
@@ -1077,104 +1083,160 @@ class _CenterAreaState extends State<_CenterArea> {
                             width: 20,
                           ),
                           Visibility(
-                             visible: selectedBooking != null && selectedBooking!.viapoints!.isNotEmpty && actionValue == true && isSwapped == false?true:false,
-                             child: ElevatedButton(
-                               onPressed: () {
-                                 // Use a slight delay to ensure the click event is fully processed
-                                 // before the Dialog changes the UI tree.
-                                 Future.delayed(const Duration(milliseconds: 50), () {
-                                   if (!context.mounted) return; // Safety check
+                            visible: selectedBooking != null &&
+                                    selectedBooking!.viapoints!.isNotEmpty &&
+                                    actionValue == true &&
+                                    isSwapped == false
+                                ? true
+                                : false,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // Use a slight delay to ensure the click event is fully processed
+                                // before the Dialog changes the UI tree.
+                                Future.delayed(const Duration(milliseconds: 50),
+                                    () {
+                                  if (!context.mounted) return; // Safety check
 
-                                   showDialog(
-                                     context: context,
-                                     builder: (context) {
-                                       return AlertDialog(
-                                         title: const Text("VIA List"),
-                                         content: SizedBox(
-                                           width: MediaQuery.of(context).size.width/2.5,
-                                           // width: double.maxFinite, // Helps with sizing
-                                           child: ListView.builder(
-                                             itemCount: selectedBooking!.viapoints!.length,
-                                             shrinkWrap: true, // Necessary for ListView inside Alert
-                                             physics: const AlwaysScrollableScrollPhysics(), // Scrollable if list is long
-                                             itemBuilder: (BuildContext context, index) {
-                                               return Column(
-                                                 mainAxisSize: MainAxisSize.min,
-                                                 children: [
-                                                   Row(
-                                                     children: [
-                                                       Expanded(
-                                                           child: Container(
-                                                             margin: EdgeInsets.symmetric(horizontal: 6),
-                                                             padding: EdgeInsets.symmetric(horizontal: 12,vertical: 10),
-                                                             decoration: BoxDecoration(
-                                                               border: Border(
-                                                                 bottom: BorderSide(
-                                                                   color: DynamicColors.black,
-                                                                   width: 1.0, // You can adjust the thickness here
-                                                                 ),
-                                                               ),
-                                                             ),
-                                                             child: Text(selectedBooking!.viapoints![index].name ?? ""),
-                                                           )
-                                                       ),
-                                                       Expanded(
-                                                           child: Container(
-                                                             margin: EdgeInsets.symmetric(horizontal: 6),
-                                                             padding: EdgeInsets.symmetric(horizontal: 12,vertical: 10),
-                                                             decoration: BoxDecoration(
-                                                               border: Border(
-                                                                 bottom: BorderSide(
-                                                                   color: DynamicColors.black,
-                                                                   width: 1.0, // You can adjust the thickness here
-                                                                 ),
-                                                               ),
-                                                             ),
-                                                             child: Text(selectedBooking!.viapoints![index].mobile??""),
-                                                           )
-                                                       ),
-                                                     ],
-                                                   ),
-                                                   Container(
-                                                     width: MediaQuery.of(context).size.width/2.5,
-                                                     padding: EdgeInsets.symmetric(horizontal: 12,vertical: 15),
-                                                     decoration: BoxDecoration(
-                                                       border: Border(
-                                                         bottom: BorderSide(
-                                                           color: DynamicColors.black,
-                                                           width: 1.0, // You can adjust the thickness here
-                                                         ),
-                                                       ),
-                                                     ),
-                                                     child: Text(selectedBooking!.viapoints![index].viapoint??""),
-                                                   )
-                                                 ],
-                                               );
-                                             },
-                                           ),
-                                         ),
-                                         actions: [
-                                           TextButton(
-                                             onPressed: () => Navigator.pop(context),
-                                             child: const Text("Cancel"),
-                                           ),
-                                           ElevatedButton(
-                                             onPressed: () async {
-                                               await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-                                               Get.back();
-                                               Get.back();
-                                             },
-                                             child: const Text("Edit Via"),
-                                           ),
-                                         ],
-                                       );
-                                     },
-                                   );
-                                 });
-                               },
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text("VIA List"),
+                                        content: SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              2.5,
+                                          // width: double.maxFinite, // Helps with sizing
+                                          child: ListView.builder(
+                                            itemCount: selectedBooking!
+                                                .viapoints!.length,
+                                            shrinkWrap: true,
+                                            // Necessary for ListView inside Alert
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            // Scrollable if list is long
+                                            itemBuilder:
+                                                (BuildContext context, index) {
+                                              return Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                          child: Container(
+                                                        margin: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 6),
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 12,
+                                                                vertical: 10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border(
+                                                            bottom: BorderSide(
+                                                              color:
+                                                                  DynamicColors
+                                                                      .black,
+                                                              width:
+                                                                  1.0, // You can adjust the thickness here
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                            selectedBooking!
+                                                                    .viapoints![
+                                                                        index]
+                                                                    .name ??
+                                                                ""),
+                                                      )),
+                                                      Expanded(
+                                                          child: Container(
+                                                        margin: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 6),
+                                                        padding: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 12,
+                                                                vertical: 10),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          border: Border(
+                                                            bottom: BorderSide(
+                                                              color:
+                                                                  DynamicColors
+                                                                      .black,
+                                                              width:
+                                                                  1.0, // You can adjust the thickness here
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        child: Text(
+                                                            selectedBooking!
+                                                                    .viapoints![
+                                                                        index]
+                                                                    .mobile ??
+                                                                ""),
+                                                      )),
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            2.5,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 15),
+                                                    decoration: BoxDecoration(
+                                                      border: Border(
+                                                        bottom: BorderSide(
+                                                          color: DynamicColors
+                                                              .black,
+                                                          width:
+                                                              1.0, // You can adjust the thickness here
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    child: Text(selectedBooking!
+                                                            .viapoints![index]
+                                                            .viapoint ??
+                                                        ""),
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text("Cancel"),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              await _controller
+                                                  .dashBoardDataBinding(
+                                                      id: selectedBooking!.id,
+                                                      jobData: selectedBooking);
+                                              Get.back();
+                                              Get.back();
+                                            },
+                                            child: const Text("Edit Via"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                });
+                              },
                               child: const Text("Show Via"),
-                             ),
-                           ),
+                            ),
+                          ),
                         ],
                       ),
 
@@ -1184,23 +1246,30 @@ class _CenterAreaState extends State<_CenterArea> {
                         scrollDirection: Axis.horizontal,
                         child: DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
-                            buildHeaderWithSearch(title: "Drop off", removeSearching: true),
-                            buildHeaderWithSearch(title: "Date", removeSearching: true),
-                            buildHeaderWithSearch(title: "Fare", removeSearching: true),
-                            buildHeaderWithSearch(title: "Action", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Pick-up", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Drop off", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Date", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Fare", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Action", removeSearching: true),
                           ],
                           totalRow: controller.bookings.length,
-                          rows: List.generate(controller.bookings.length, (index) {
+                          rows: List.generate(controller.bookings.length,
+                              (index) {
                             // var booking = controller.bookings[index];
-                            BookingObjectData cliBookingData = BookingObjectData.fromJson(controller.bookings[index]);
+                            BookingObjectData cliBookingData =
+                                BookingObjectData.fromJson(
+                                    controller.bookings[index]);
 
                             return DataRow(
                               cells: [
                                 DataCell(SizedBox(
-                                  width: Get.width/6,
-                                  child:
-                                  rightClickTextCell(
+                                  width: Get.width / 6,
+                                  child: rightClickTextCell(
                                     item: cliBookingData,
                                     clickValue: 'pickUpClick',
                                     onRightClick: () {
@@ -1211,7 +1280,7 @@ class _CenterAreaState extends State<_CenterArea> {
                                 )),
 
                                 DataCell(SizedBox(
-                                  width: Get.width/6,
+                                  width: Get.width / 6,
                                   child: rightClickTextCell(
                                     item: cliBookingData,
                                     clickValue: 'dropoffClick',
@@ -1222,36 +1291,37 @@ class _CenterAreaState extends State<_CenterArea> {
                                   ),
                                 )),
 
-                                DataCell(Text("${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                                DataCell(Text(
+                                    "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
                                 DataCell(Text("£${cliBookingData.fares ?? 0}")),
 
                                 /// ACTION
                                 DataCell(
                                   Obx(() => Checkbox(
-                                    value: selectedIndex.value == index,
-                                    onChanged: (value) {
-                                      if (selectedIndex.value == index) {
-                                        selectedIndex.value = -1;
-                                        selectedBooking = null;
-                                        submitBtnValue = false;
-                                        pickupController.clear();
-                                        dropoffController.clear();
-                                        actionValue = false;
-                                      } else {
-                                        submitBtnValue = true;
-                                        selectedIndex.value = index;
-                                        selectedBooking = cliBookingData;
-                                        actionValue = true;
-                                        pickupController.text =
-                                            cliBookingData.pickup ?? "";
-                                        dropoffController.text =
-                                            cliBookingData.dropoff ?? "";
-                                        print("Selected booking: $selectedBooking");
-                                      }
-                                      setState(() {
-                                      });
-                                    },
-                                  )),
+                                        value: selectedIndex.value == index,
+                                        onChanged: (value) {
+                                          if (selectedIndex.value == index) {
+                                            selectedIndex.value = -1;
+                                            selectedBooking = null;
+                                            submitBtnValue = false;
+                                            pickupController.clear();
+                                            dropoffController.clear();
+                                            actionValue = false;
+                                          } else {
+                                            submitBtnValue = true;
+                                            selectedIndex.value = index;
+                                            selectedBooking = cliBookingData;
+                                            actionValue = true;
+                                            pickupController.text =
+                                                cliBookingData.pickup ?? "";
+                                            dropoffController.text =
+                                                cliBookingData.dropoff ?? "";
+                                            print(
+                                                "Selected booking: $selectedBooking");
+                                          }
+                                          setState(() {});
+                                        },
+                                      )),
                                 ),
                               ],
                             );
@@ -1276,9 +1346,9 @@ class _CenterAreaState extends State<_CenterArea> {
                         value: homeController.selectDriverValue,
                         items: homeController.dashboardAllData!.drivers!
                             .map((d) => DropdownMenuItem(
-                          value: d,
-                          child: Text(d.name ?? ""),
-                        ))
+                                  value: d,
+                                  child: Text(d.name ?? ""),
+                                ))
                             .toList(),
                         onChanged: (v) {
                           homeController.selectDriverValue = v;
@@ -1289,7 +1359,8 @@ class _CenterAreaState extends State<_CenterArea> {
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                      child:
+                          DropdownButtonFormField<DashboardVehicleTypeObject>(
                         decoration: const InputDecoration(
                           labelText: "Select Vehicle",
                           border: OutlineInputBorder(),
@@ -1297,9 +1368,9 @@ class _CenterAreaState extends State<_CenterArea> {
                         value: homeController.selectVehicleValue,
                         items: homeController.dashboardAllData!.vehicleTypes!
                             .map((v) => DropdownMenuItem(
-                          value: v,
-                          child: Text(v.name ?? ""),
-                        ))
+                                  value: v,
+                                  child: Text(v.name ?? ""),
+                                ))
                             .toList(),
                         onChanged: (v) {
                           homeController.selectVehicleValue = v;
@@ -1314,43 +1385,45 @@ class _CenterAreaState extends State<_CenterArea> {
                 const SizedBox(height: 30),
 
                 /// SUBMIT
-               if(actionValue == true && isSwapped == false) ElevatedButton(
-                  onPressed: () {
-                    // DashboardController _controller = Get.find();
-                    // _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                if (actionValue == true && isSwapped == false)
+                  ElevatedButton(
+                    onPressed: () {
+                      // DashboardController _controller = Get.find();
+                      // _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
 
-                    if (selectedBooking == null) {
-                      Get.snackbar("Error", "Select booking first");
-                      return;
-                    }
+                      if (selectedBooking == null) {
+                        Get.snackbar("Error", "Select booking first");
+                        return;
+                      }
 
-                    if (selectedDriverId == null || selectedVehicleId == null) {
-                      Get.snackbar("Error", "Select driver & vehicle");
-                      return;
-                    }
+                      if (selectedDriverId == null ||
+                          selectedVehicleId == null) {
+                        Get.snackbar("Error", "Select driver & vehicle");
+                        return;
+                      }
 
-                    final bookingId = selectedBooking!.id;
-                    final bookingDate = selectedBooking!.pickupDate;
-                    final bookingTime = selectedBooking!.pickupTime;
+                      final bookingId = selectedBooking!.id;
+                      final bookingDate = selectedBooking!.pickupDate;
+                      final bookingTime = selectedBooking!.pickupTime;
 
-                    print("========== SUBMIT ==========");
-                    print("Booking ID: $bookingId");
-                    print("Date: $bookingDate");
-                    print("Time: $bookingTime");
-                    print("Driver ID: $selectedDriverId");
-                    print("Vehicle ID: $selectedVehicleId");
-                    print("============================");
+                      print("========== SUBMIT ==========");
+                      print("Booking ID: $bookingId");
+                      print("Date: $bookingDate");
+                      print("Time: $bookingTime");
+                      print("Driver ID: $selectedDriverId");
+                      print("Vehicle ID: $selectedVehicleId");
+                      print("============================");
 
-                    controller.postCLIJob(
-                      selectedBooking!.id,
-                      selectedBooking!.pickupDate,
-                      selectedBooking!.pickupTime,
-                      selectedDriverId,
-                      selectedVehicleId,
-                    );
-                  },
-                  child: const Text("SUBMIT"),
-                ),
+                      controller.postCLIJob(
+                        selectedBooking!.id,
+                        selectedBooking!.pickupDate,
+                        selectedBooking!.pickupTime,
+                        selectedDriverId,
+                        selectedVehicleId,
+                      );
+                    },
+                    child: const Text("SUBMIT"),
+                  ),
 
                 const SizedBox(height: 15),
 
@@ -1359,27 +1432,76 @@ class _CenterAreaState extends State<_CenterArea> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.grey,
                   ),
+                  // onPressed: () async {
+                  //   if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
+                  //     if(pickupController.text == dropoffController.text){
+                  //       BotToast.showText(text: "Please write different address");
+                  //       return;
+                  //     }
+                  //     await _controller.cliDataBinding(
+                  //        pickup: pickupController.text,
+                  //        dropoff: dropoffController.text,
+                  //        pickupLatitude: pickupPoints!.latitude.toString(),
+                  //        pickupLongitude: pickupPoints!.longitude.toString(),
+                  //        dropoffLatitude: dropoffPoints!.latitude.toString(),
+                  //        dropoffLongitude: dropoffPoints!.longitude.toString(),
+                  //        name: name,
+                  //        mobile: mobileNumber,
+                  //        email: email,
+                  //        phoneNumber: telNumber,
+                  //     );
+                  //   } else {
+                  //
+                  //     await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
+                  //     Get.back();
+                  //   }
+                  // },
                   onPressed: () async {
-                    if(pickupController.text.isNotEmpty && dropoffController.text.isNotEmpty && actionValue == false){
-                      if(pickupController.text == dropoffController.text){
-                        BotToast.showText(text: "Please write different address");
-                        return;
+                    if (_isLoading) return;
+                    try {
+                      _isLoading = true;
+                      if (pickupController.text.isNotEmpty &&
+                          dropoffController.text.isNotEmpty &&
+                          actionValue == false) {
+                        if (pickupController.text == dropoffController.text) {
+                          BotToast.showText(
+                              text: "Please write different address");
+                          return;
+                        }
+                        if (pickupPoints == null || dropoffPoints == null) {
+                          BotToast.showText(text: "Location data missing");
+                          return;
+                        }
+                        await _controller.cliDataBinding(
+                          pickup: pickupController.text,
+                          dropoff: dropoffController.text,
+                          pickupLatitude: pickupPoints!.latitude.toString(),
+                          pickupLongitude: pickupPoints!.longitude.toString(),
+                          dropoffLatitude: dropoffPoints!.latitude.toString(),
+                          dropoffLongitude: dropoffPoints!.longitude.toString(),
+                          name: name,
+                          mobile: mobileNumber,
+                          email: email,
+                          phoneNumber: telNumber,
+                        );
+                        if (!mounted) return;
+                      } else {
+                        if (selectedBooking == null) {
+                          Get.back();
+                          return;
+                        }
+                        await _controller.dashBoardDataBinding(
+                          id: selectedBooking!.id,
+                          jobData: selectedBooking,
+                        );
+                        if (!mounted) return;
+                        Get.back();
                       }
-                      await _controller.cliDataBinding(
-                         pickup: pickupController.text,
-                         dropoff: dropoffController.text,
-                         pickupLatitude: pickupPoints!.latitude.toString(),
-                         pickupLongitude: pickupPoints!.longitude.toString(),
-                         dropoffLatitude: dropoffPoints!.latitude.toString(),
-                         dropoffLongitude: dropoffPoints!.longitude.toString(),
-                         name: name,
-                         mobile: mobileNumber,
-                         email: email,
-                         phoneNumber: telNumber,
-                      );
-                    } else {
-                      await _controller.dashBoardDataBinding(id: selectedBooking!.id,jobData: selectedBooking);
-                      Get.back();
+                    } catch (e) {
+                      BotToast.showText(text: "Something went wrong");
+                      print(e);
+                    } finally {
+                      _isLoading = false;
                     }
                   },
                   child: const Text("New Booking"),
@@ -1392,19 +1514,18 @@ class _CenterAreaState extends State<_CenterArea> {
     );
   }
 
-  Widget rightClickTextCell({
-    required Widget child,
-    required VoidCallback onRightClick,
-    required dynamic item,
-    clickValue
-  }) {
+  Widget rightClickTextCell(
+      {required Widget child,
+      required VoidCallback onRightClick,
+      required dynamic item,
+      clickValue}) {
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (event) {
         if (event.kind == PointerDeviceKind.mouse &&
             event.buttons == kSecondaryMouseButton) {
           final RenderBox overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
+              Overlay.of(context).context.findRenderObject() as RenderBox;
 
           final RelativeRect position = RelativeRect.fromRect(
             Rect.fromPoints(
@@ -1415,23 +1536,21 @@ class _CenterAreaState extends State<_CenterArea> {
           );
           // onRightClick();
           showRowContextMenu(
-            context: context,
-            position: position,
-            item: item,
-            clickValue: clickValue
-          );
+              context: context,
+              position: position,
+              item: item,
+              clickValue: clickValue);
         }
       },
       child: child,
     );
   }
 
-  void showRowContextMenu({
-    required BuildContext context,
-    required RelativeRect position,
-    required dynamic item,
-    clickValue
-  }) {
+  void showRowContextMenu(
+      {required BuildContext context,
+      required RelativeRect position,
+      required dynamic item,
+      clickValue}) {
     showMenu(
       context: context,
       position: position,
@@ -1439,17 +1558,18 @@ class _CenterAreaState extends State<_CenterArea> {
         PopupMenuItem(value: 'pickup', child: Text('pickup')),
         PopupMenuItem(value: 'dropoff', child: Text('dropoff')),
       ],
-
     ).then((value) {
       if (value == null) return;
       switch (value) {
         case 'pickup':
-          if(clickValue == "dropoffClick"){
+          if (clickValue == "dropoffClick") {
             pickupController.text = item.dropoff;
-            pickupPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
-          }else{
+            pickupPoints = LatLng(double.parse(item.dropoffLatitude),
+                double.parse(item.dropoffLongitude));
+          } else {
             pickupController.text = item.pickup;
-            pickupPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+            pickupPoints = LatLng(double.parse(item.pickupLatitude),
+                double.parse(item.pickupLongitude));
           }
           name = item.name;
           email = item.email;
@@ -1457,12 +1577,14 @@ class _CenterAreaState extends State<_CenterArea> {
           telNumber = item.telephone;
           break;
         case 'dropoff':
-          if(clickValue == "dropoffClick"){
+          if (clickValue == "dropoffClick") {
             dropoffController.text = item.dropoff;
-            dropoffPoints = LatLng(double.parse(item.dropoffLatitude), double.parse(item.dropoffLongitude));
-          }else{
+            dropoffPoints = LatLng(double.parse(item.dropoffLatitude),
+                double.parse(item.dropoffLongitude));
+          } else {
             dropoffController.text = item.pickup;
-            dropoffPoints = LatLng(double.parse(item.pickupLatitude), double.parse(item.pickupLongitude));
+            dropoffPoints = LatLng(double.parse(item.pickupLatitude),
+                double.parse(item.pickupLongitude));
           }
           name = item.name;
           email = item.email;
@@ -1472,13 +1594,12 @@ class _CenterAreaState extends State<_CenterArea> {
       }
     });
   }
-
 }
+
 /// --------- RIGHT SIDEBAR ----------
 class _RightSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     final subtle = const Color(0xFF6B7C8F);
 
     return Container(

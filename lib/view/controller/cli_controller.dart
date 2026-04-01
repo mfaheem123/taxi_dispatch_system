@@ -52,8 +52,10 @@ class CliController extends GetxController {
     if (channel != null && isConnected.value) return;
 
     channel = WebSocketChannel.connect(
-      // Uri.parse('ws://192.168.110.4:5000/websocket/cli?extension=$extension',),
-      Uri.parse('wss://www.nexustechnologys.com//websocket/cli?extension=$extension',),
+
+      Uri.parse('ws://192.168.110.5:5000/websocket/cli?extension=$extension',),
+      // Uri.parse('wss://www.nexustechnologys.com//websocket/cli?extension=$extension',),
+
     );
 
     channel!.stream.listen(
@@ -111,7 +113,7 @@ class CliController extends GetxController {
 
           customerName.value = jsonData["customer"]?["name"] ?? "";
 
-          customerMobile.value = jsonData["customer"]?["mobile"] ?? "";
+          customerMobile.value = phone?? "";
 
           bookings.value = jsonData["bookings"] ?? [];
 

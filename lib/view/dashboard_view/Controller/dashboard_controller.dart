@@ -27,7 +27,7 @@ import '../../setting/company_configuration_view/alert_createbooking.dart';
 import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
-import '../models/dashboard_table_model.dart';
+import '../models/dashboard_table_model.dart' hide Employee;
 import '../models/users_phone_numbers_model.dart';
 import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
@@ -35,7 +35,7 @@ import 'package:socket_io_client/socket_io_client.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
+import '../../administration/model/user_model.dart';
 import 'driver_activity_model.dart';
 
 RxString shortCutKeyValue = 'shortCutKey'.obs;
@@ -351,7 +351,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   void onInit() {
     super.onInit();
     mapController = MapController(); // ✅ Initialize here
-    connectToCli("200");
+    Future.delayed(Duration(seconds: 1), () {
+      String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
+      print("Connecting to CLI with Extension: $myExtension");
+      connectToCli(myExtension);
+    });
     connectToDriverLogin();
     // connectToBusyDriver();
     getAllDrivers();

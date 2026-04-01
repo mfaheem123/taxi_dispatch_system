@@ -752,6 +752,7 @@ class _BookingTableState extends State<BookingTable> {
     );
   }
 
+  // 1. Modified rightClickTextCell to pass globalPosition
   Widget rightClickTextCell({
     required Widget child,
     required VoidCallback onRightClick,
@@ -772,10 +773,12 @@ class _BookingTableState extends State<BookingTable> {
             ),
             Offset.zero & overlay.size,
           );
-          // onRightClick();
+
+          // FIX: yahan event.position pass kar rahe hain as globalPosition
           showRowContextMenu(
             context: context,
             position: position,
+            globalPosition: event.position,
             item: item,
           );
         }
@@ -797,54 +800,119 @@ class _BookingTableState extends State<BookingTable> {
     ];
   }
 
+// 2. Updated showRowContextMenu with extra parameter
   void showRowContextMenu({
     required BuildContext context,
     required RelativeRect position,
+    required Offset globalPosition, // Added this parameter
     required dynamic item,
-  }) {
-    showMenu(
+  }) async {
+    final String? selectedValue = await showMenu(
       context: context,
-      position: position
-      /*RelativeRect.fromLTRB(
-        position.dx,
-        position.dy,
-        0,
-        0,
-      )*/,
-      items: const [
-        PopupMenuItem(value: 'accept', child: Text('ACCEPT')),
-        PopupMenuItem(value: 'decline', child: Text('DECLINE')),
-        PopupMenuItem(value: 'copy', child: Text('COPY')),
-        PopupMenuItem(value: 'audit', child: Text('AUDIT REPORT')),
+      position: position,
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      items: [
+        // DISPATCH with Hover Submenu
+        PopupMenuItem(
+          enabled: false, // Click disable kiya taake sirf hover/submenu chale
+          child: SubmenuButton(
+            menuChildren: [
+              MenuItemButton(
+                onPressed: () => print("Dispatch Selected"),
+                leadingIcon: const Icon(Icons.near_me, size: 18),
+                child: const Text("DISPATCH"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("Follow On Selected"),
+                leadingIcon: const Icon(Icons.sync, size: 18),
+                child: const Text("FOLLOW ON"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("SMS Selected"),
+                leadingIcon: const Icon(Icons.chat_bubble, size: 18),
+                child: const Text("SMS"),
+              ),
+            ],
+            leadingIcon: const Icon(Icons.local_shipping, size: 18),
+            trailingIcon: const Icon(Icons.arrow_right, size: 18),
+            child: const Text("DISPATCH", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          ),
+        ),
+
+        // ACTIONS with Hover Submenu
+        PopupMenuItem(
+          enabled: false,
+          child: SubmenuButton(
+            menuChildren: [
+              MenuItemButton(
+                onPressed: () => print("Edit Fare"),
+                child: const Text("EDIT FARE"),
+              ),
+              MenuItemButton(
+                onPressed: () => print("Cancel Job"),
+                child: const Text("CANCEL JOB"),
+              ),
+            ],
+            leadingIcon: const Icon(Icons.build_circle_outlined, size: 18),
+            trailingIcon: const Icon(Icons.arrow_right, size: 18),
+            child: const Text("ACTIONS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          ),
+        ),
+
+        PopupMenuItem(
+          onTap: () => print("SMS Clicked"),
+          child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
+        ),
       ],
+    );
+    // FIX: globalPosition ab yahan accessible hai
+    if (selectedValue == 'dispatch_main') {
+      _openDispatchSubMenu(context, globalPosition, item);
+    }
+  }
 
+
+// Submenu Function
+// 3. Submenu Function (Fixed position and syntax)
+  void _openDispatchSubMenu(BuildContext context, Offset globalPosition, dynamic item) {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    showMenu<String>(
+      context: context,
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      // position ko width ke hisaab se adjust kiya (dx + 150)
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(globalPosition.dx + 150, globalPosition.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem(value: 'd', child: _buildMenuRow(Icons.near_me, "DISPATCH", false)),
+        PopupMenuItem(value: 'f', child: _buildMenuRow(Icons.sync, "FOLLOW ON", false)),
+        PopupMenuItem(value: 's', child: _buildMenuRow(Icons.chat_bubble, "SMS", false)),
+      ],
     ).then((value) {
-      if (value == null) return;
-
-      switch (value) {
-        case 'accept':
-          print("ACCEPT ${item.referenceNumber}");
-          break;
-        case 'decline':
-          print("DECLINE ${item.referenceNumber}");
-          break;
-        case 'copy':
-          print("COPY ${item.referenceNumber}");
-          break;
-        case 'audit':
-          print("AUDIT REPORT ${item.referenceNumber}");
-          break;
-        case 'update':
-          print("UPDATE ${item.referenceNumber}");
-          break;
-        case 'edit_fare':
-          print("EDIT FARE ${item.referenceNumber}");
-          break;
-        case 'call':
-          print("CALL CUSTOMER ${item.name}");
-          break;
+      if (value != null) {
+        print("Action selected: $value for ${item.referenceNumber}");
       }
     });
+  }
+
+// UI Helper taake Row clean dikhe
+  Widget _buildMenuRow(IconData icon, String title, bool hasArrow) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 18, color: Colors.black87),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(title,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        ),
+        if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),
+      ],
+    );
   }
 
 

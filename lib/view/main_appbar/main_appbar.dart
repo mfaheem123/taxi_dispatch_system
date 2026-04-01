@@ -32,6 +32,7 @@ import '../accounts/list_of_accountScreen.dart';
 import '../administration/User/create_userScreen.dart';
 import '../administration/User/user_listScreen.dart';
 import '../administration/model/user_model.dart';
+import '../auth/Controller/auth_controller.dart';
 import '../booking_view/app_booking.dart';
 import '../booking_view/complete_bookingview.dart';
 import '../booking_view/multi_booking.dart';
@@ -104,11 +105,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late final List<NestedMenuItem> hoverMenu;
 
+
+  // AuthController ko yahan register karein taake error na aaye
+  final AuthController authController = Get.isRegistered<AuthController>()
+      ? Get.find<AuthController>()
+      : Get.put(AuthController());
+
   @override
   void initState() {
     super.initState();
+    authController.checkUserStatus();
     RawKeyboard.instance.addListener(_handleKey);
     hoverMenu = _makeMenus(context);
+
   }
 
   @override
@@ -154,6 +163,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
     double itemHeight = 35; // approx height of one chip
     double runSpacing = 6;
 
@@ -347,12 +358,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color: const Color(0xFFE8F2EF),
-                      // Light green/aqua background image jesa
                       borderRadius: BorderRadius.circular(10),
-
                       border: Border.all(
                           color: const Color(0xFFC4D9D4),
-                          width: 1), // Light border
+                          width: 1),
                     ),
                     child: Row(
                       children: [
@@ -363,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          // Nadeem ki jagah dynamic username
+                          // username
                           Employee.selectedEmployee?.username?.toUpperCase() ??
                               "GUEST",
                           style: mozillaTextRegularText(
@@ -414,19 +423,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
 
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                  SizedBox(width: screenWidth * 0.31),
                   // 4. Copyright Text
                   Text(
                     "NEXUS © 2026",
                     style: mozillaTextRegularText(
                         color: Colors.grey, fontSize: 12),
                   ),
-                  SizedBox(width: MediaQuery.of(context).size.width * 0.2),
+                  SizedBox(width: screenWidth * 0.3),
 
                   // 3. Date & Time
                   Text(
-                    // Uppercase format image jesa (FRI, MAR 27TH 2026)
-                    DateFormat("EEE, MMM dd''t'h' yyyy")
+                    DateFormat("EEE, MMM dd yyyy")
                         .format(DateTime.now())
                         .toUpperCase(),
                     style: mozillaTextRegularText(
@@ -440,7 +448,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   // Separator
                   const SizedBox(width: 12),
                   Text(
-                    // Time Format (04:34:29 PM)
                     DateFormat("hh:mm:ss a").format(DateTime.now()),
                     style: mozillaTextRegularText(
                         color: const Color(0xFF4A4A4A),
