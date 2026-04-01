@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
+import '../view/auth/Controller/auth_controller.dart';
 
 class ExtensionAlert {
   static void show() {
@@ -30,9 +31,10 @@ class ExtensionAlert {
       );
 
       if (response.statusCode == 200) {
+        Employee.selectedEmployee!.extensionNumber = extensionNumber;
         BotToast.showText(text: 'Extension Added Successfully');
-        print("ID------------ ${Employee.selectedEmployee!.id}");
         Get.back();
+        print("ID------------ ${Employee.selectedEmployee!.id}");
       }
       postExtensionLoad(false);
     }

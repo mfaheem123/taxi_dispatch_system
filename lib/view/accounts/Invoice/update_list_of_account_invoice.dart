@@ -20,6 +20,7 @@ import '../../../alert/update_invoice_email_alt.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
 import '../model/update_account_invoice_model.dart' hide Booking;
+import 'account_invoice_preview_screen.dart';
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {
   const UpdateAccountInvoiceScreen({super.key});
@@ -55,7 +56,7 @@ class _UpdateAccountInvoiceScreenState
 
     return GetBuilder<InvoiceController>(
         initState: (state) {
-
+          // controller.getSubsidiary();
         },
 
         builder: (controller) {
@@ -182,8 +183,11 @@ class _UpdateAccountInvoiceScreenState
                     btnText: "VIEW",
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
-                    onTap: () {
-
+                    onTap: ()  {
+                      Get.dialog(
+                        InvoicePreviewWindowWrapper(),
+                        barrierDismissible: true,
+                      );
                     },
                   ),
                   SizedBox(width: 5),
@@ -214,28 +218,49 @@ class _UpdateAccountInvoiceScreenState
             SizedBox(
               height: 8,
             ),
+            // labeledField(
+            //   context: context,
+            //   isMobile: isMobile,
+            //   label: AppText.invoiceDate,
+            //   column: true,
+            //   width: fieldWidth / 1.8,
+            //   child: SizedBox(height: 30, child: KeyboardDatePicker(
+            //     key: ValueKey(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate),
+            //     initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
+            //     onChanged: (date) {
+            //       setState(() {
+            //         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+            //         print(date);
+            //       });
+            //     },
+            //     onSubmitted: (date) {
+            //       setState(() {
+            //         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
+            //       });
+            //       print("User pressed enter: $date");
+            //     },
+            //
+            //   )
+            //   )
+            // ),
             labeledField(
               context: context,
               isMobile: isMobile,
               label: AppText.invoiceDate,
               column: true,
-              width: fieldWidth / 1.8,
-              child: SizedBox(height: 30, child: KeyboardDatePicker(
-                initialDate: DateTime.now(),
-                onChanged: (date) {
-                  setState(() {
-                    controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
-                    print(date);
-                  });
-                },
-                onSubmitted: (date) {
-                  setState(() {
-                    controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
-                  });
-                  print("User pressed enter: $date");
-                },
-
-              ))),
+              width: fieldWidth / 1.9,
+              child: Container(
+                height: 30,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.shade100,
+                ),
+                child: Text(controller.invoiceDateController ?? ""),
+              ),
+            ),
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -244,8 +269,9 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.8,
               child: SizedBox(height: 30,
                   child: KeyboardDatePicker(
-                    initialDate: DateTime.now(),
-                onChanged: (date) {
+                    key: ValueKey(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate),
+                    initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
+                    onChanged: (date) {
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
                     print(date);
@@ -275,52 +301,138 @@ class _UpdateAccountInvoiceScreenState
                       )
                     ]))),
 
-            CustomDropdownField<Subsidiaries>(
-              text: "SUBSIDIARY",
-              width: fieldWidth / 1.5,
-              label: "subsidiary",
-              items: controller.subsDiaryModel?.subsidiaries ?? [],
-              value: controller.subsidiaries,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.subsidiaries = val;
-                controller.update();
-              },
-            ),
+            // CustomDropdownField<Subsidiaries>(
+            //   text: "SUBSIDIARY",
+            //   width: fieldWidth / 1.5,
+            //   label: "subsidiary",
+            //   items: controller.subsDiaryModel?.subsidiaries ?? [],
+            //   value: controller.subsidiaries,
+            //   itemLabel: (item) => item.name ?? "",
+            //   onChanged: (val) {
+            //     controller.subsidiaries = val;
+            //     controller.update();
+            //   },
+            // ),
 
-            CustomDropdownField<DepartmentObject>(
-              text: "DEPARTMENT",
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: "SUBSIDIARY",
+              column: true,
               width: fieldWidth / 1.5,
+              child: Container(
+                height: 30,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.shade100,
+                ),
+                child: Text(
+                  controller.subsidiaries?.name ?? "",
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ),
+            ),
+            // CustomDropdownField<DepartmentObject>(
+            //   text: "DEPARTMENT",
+            //   width: fieldWidth / 1.5,
+            //   label: "DEPARTMENT",
+            //   items: controller.selectAccountValue?.departments ?? [],
+            //   value: controller.selectDepartmentData,
+            //   itemLabel: (item) => item.name ?? "",
+            //   onChanged: (val) {
+            //     controller.selectDepartmentData = val;
+            //     controller.update();
+            //   },
+            // ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
               label: "DEPARTMENT",
-              items: controller.selectAccountValue?.departments ?? [],
-              value: controller.selectDepartmentData,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.selectDepartmentData = val;
-                controller.update();
-              },
-            ),
-
-            CustomDropdownField<DashboardAccountObject>(
-              text: "ACCOUNT",
+              column: true,
               width: fieldWidth / 1.5,
-              label: "account",
-              items: controller.updateAccountModel?.accounts ?? [],
-              value: controller.selectedUpdateAccount,
-              itemLabel: (item) => item.name ?? "",
-              onChanged: (val) {
-                controller.selectedUpdateAccount = val;
-                controller.update();
-              },
+              child: Container(
+                height: 30,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.shade100,
+                ),
+                child: Text(
+                  controller.selectDepartmentData?.name ?? "",
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ),
             ),
 
-            CustomTextField(
-              borderRadius: 4,
-              controller: controller.orderNumber,
+            // CustomDropdownField<DashboardAccountObject>(
+            //   text: "ACCOUNT",
+            //   width: fieldWidth / 1.5,
+            //   label: "account",
+            //   items: controller.dashboardAccountData?.accounts ?? [],
+            //   value: controller.selectAccountValue,
+            //   itemLabel: (item) => item.name ?? "",
+            //   onChanged: (val) {
+            //     controller.selectAccountValue = val;
+            //     controller.update();
+            //   },
+            // ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: "ACCOUNT",
+              column: true,
+              width: fieldWidth / 1.5,
+              child: Container(
+                height: 30,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.shade100,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: Text(controller.selectAccountValue?.name ?? "")),
+                    Icon(Icons.arrow_drop_down, size: 20, color: Colors.grey),
+                  ],
+                ),
+              ),
+            ),
+
+            // CustomTextField(
+            //   borderRadius: 4,
+            //   controller: controller.orderNumber,
+            //   width: fieldWidth,
+            //   hintText: AppText.order,
+            //   columnText: true,
+            //   height: 30,
+            // ),
+            labeledField(
+              context: context,
+              isMobile: isMobile,
+              label: AppText.order,
+              column: true,
               width: fieldWidth,
-              hintText: AppText.order,
-              columnText: true,
-              height: 30,
+              child: Container(
+                height: 30,
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.grey.shade100,
+                ),
+                child: Text(
+                  controller.orderNumber.text,
+                  style: TextStyle(color: Colors.black87),
+                ),
+              ),
             ),
 
             SizedBox(

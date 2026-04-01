@@ -107,7 +107,7 @@ class Employee {
   });
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
-    id: json["id"],
+    id: json["id"] is String ? int.parse(json["id"]) : json["id"],
     subsidiaryId: json["subsidiary_id"],
     roleId: json["role_id"],
     username: json["username"],

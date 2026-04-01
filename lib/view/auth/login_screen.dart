@@ -64,24 +64,14 @@ import '../../routes/app_pages.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
-
 AuthController controller = Get.put(AuthController());
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     double width = Get.width;
     double height = Get.height;
-
-
-
     return Scaffold(
       body: Stack(
         children: [
-
           Container(
             width: width,
             height: height,
@@ -92,7 +82,6 @@ AuthController controller = Get.put(AuthController());
               ),
             ),
           ),
-
           //  Gradient Overlay for readability
           Container(
             width: width,

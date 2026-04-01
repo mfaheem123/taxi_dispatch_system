@@ -224,9 +224,12 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                       DataCell(Center(
                                           child: Text(
                                               farefxed.fareByVehicleOperator ??
-                                                  ""))),
+                                                  ""
+                                          ))),
                                       DataCell(Center(
-                                          child: Text(farefxed.value ?? ""))),
+                                          child: Text(farefxed.fareByVehicleOperator == "PERCENTAGE"
+                                              ? "${farefxed.value ?? '0'}%"
+                                              : "£${farefxed.value ?? '0'}"))),
                                       DataCell(
                                         Center(
                                           child: Row(

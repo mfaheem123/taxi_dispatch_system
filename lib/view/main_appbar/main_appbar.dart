@@ -220,10 +220,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   width: 9,
                 ),
-                Icon(
-                  Icons.power_settings_new,
-                  size: 24,
-                  color: DynamicColors.whiteClr,
+                GestureDetector(
+                onTap: () {
+                  authController.logout();
+                },
+                  child: Icon(
+                    Icons.power_settings_new,
+                    size: 24,
+                    color: DynamicColors.whiteClr,
+                  ),
                 ),
                 SizedBox(
                   width: 9,
@@ -343,153 +348,155 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
 
 
-      bottomNavigationBar: (controller.currentPage.value == null ||
-              controller.currentPage.value.runtimeType == ByDefaultDashboard)
-          ? Container(
+      bottomNavigationBar: GetBuilder<AuthController>( // <--- Yeh wrapper add karein
+          builder: (auth) {
+            return (controller.currentPage.value == null ||
+                controller.currentPage.value.runtimeType == ByDefaultDashboard)
+                ? Container(
               width: Get.width,
               height: 60,
               color: DynamicColors.whiteClr,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                  // 1. Username Container
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8F2EF),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: const Color(0xFFC4D9D4),
-                          width: 1),
-                    ),
-                    child: Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 5,
-                          backgroundColor:
-                              Color(0xff424899), // Bright green dot
+                      // 1. Username Container
+                      Container(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8F2EF),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: const Color(0xFFC4D9D4),
+                              width: 1),
                         ),
-                        const SizedBox(width: 10),
-                        Text(
-                          // username
-                          Employee.selectedEmployee?.username?.toUpperCase() ??
-                              "GUEST",
-                          style: mozillaTextRegularText(
-                              color: const Color(0xFF4A4A4A), // Dark grey text
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                    child: SizedBox(
-                      height: kToolbarHeight,
-                      width: 165,
-                      child: Row(
-                        children: [
-                          Text(
-                            "PRESS",
-                            style: mozillaTextRegularText(
-                                color: DynamicColors.textClr, fontSize: 14),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 9, vertical: 4),
-                              decoration: BoxDecoration(
-                                  color: DynamicColors.textClr,
-                                  borderRadius: BorderRadius.circular(4)),
-                              child: Text(
-                                "/",
-                                style: mozillaTextRegularText(
-                                    color: DynamicColors.whiteClr,
-                                    fontSize: 14),
-                              ),
+                        child: Row(
+                          children: [
+                            const CircleAvatar(
+                              radius: 5,
+                              backgroundColor:
+                                  Color(0xff424899), // Bright green dot
                             ),
-                          ),
-                          Text(
-                            "SHORTCUTS",
-                            style: mozillaTextRegularText(
-                                color: DynamicColors.textClr, fontSize: 14),
-                          ),
-                        ],
+                            const SizedBox(width: 10),
+                            Text(
+                              // username
+                              Employee.selectedEmployee?.username?.toUpperCase() ??
+                                  "GUEST",
+                              style: mozillaTextRegularText(
+                                  color: const Color(0xFF4A4A4A), // Dark grey text
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-
-                  SizedBox(width: screenWidth * 0.31),
-                  // 4. Copyright Text
-                  Text(
-                    "NEXUS © 2026",
-                    style: mozillaTextRegularText(
-                        color: Colors.grey, fontSize: 12),
-                  ),
-                  SizedBox(width: screenWidth * 0.3),
-
-                  // 3. Date & Time
-                  Text(
-                    DateFormat("EEE, MMM dd yyyy")
-                        .format(DateTime.now())
-                        .toUpperCase(),
-                    style: mozillaTextRegularText(
-                        color: const Color(0xFF4A4A4A),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text("|",
-                      style: TextStyle(color: Colors.grey, fontSize: 16)),
-                  // Separator
-                  const SizedBox(width: 12),
-                  Text(
-                    DateFormat("hh:mm:ss a").format(DateTime.now()),
-                    style: mozillaTextRegularText(
-                        color: const Color(0xFF4A4A4A),
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold),
-                  ),
-
-                  // 6. Extension Number Button (#310 jahan tha)
-                  GestureDetector(
-                    // onTap: () {
-                    //   ExtensionAlert.show();
-                    // },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          const Text(
-                            "# ",
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                      const SizedBox(width: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                        child: SizedBox(
+                          height: kToolbarHeight,
+                          width: 165,
+                          child: Row(
+                            children: [
+                              Text(
+                                "PRESS",
+                                style: mozillaTextRegularText(
+                                    color: DynamicColors.textClr, fontSize: 14),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 9, vertical: 4),
+                                  decoration: BoxDecoration(
+                                      color: DynamicColors.textClr,
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Text(
+                                    "/",
+                                    style: mozillaTextRegularText(
+                                        color: DynamicColors.whiteClr,
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "SHORTCUTS",
+                                style: mozillaTextRegularText(
+                                    color: DynamicColors.textClr, fontSize: 14),
+                              ),
+                            ],
                           ),
-                          Text(
-                            // Dynamic extension number
-                            Employee.selectedEmployee?.extensionNumber ?? "---",
-                            style: mozillaTextRegularText(
-                                color: const Color(0xff424899),
-                                // Green color image jesa
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+
+                      SizedBox(width: screenWidth * 0.31),
+                      // 4. Copyright Text
+                      Text(
+                        "NEXUS © 2026",
+                        style: mozillaTextRegularText(
+                            color: Colors.grey, fontSize: 12),
+                      ),
+                      SizedBox(width: screenWidth * 0.3),
+
+                      // 3. Date & Time
+                      Text(
+                        DateFormat("EEE, MMM dd yyyy")
+                            .format(DateTime.now())
+                            .toUpperCase(),
+                        style: mozillaTextRegularText(
+                            color: const Color(0xFF4A4A4A),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text("|",
+                          style: TextStyle(color: Colors.grey, fontSize: 16)),
+                      // Separator
+                      const SizedBox(width: 12),
+                      Text(
+                        DateFormat("hh:mm:ss a").format(DateTime.now()),
+                        style: mozillaTextRegularText(
+                            color: const Color(0xFF4A4A4A),
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
+                      ),
+
+                      // 6. Extension Number
+                      GestureDetector(
+                        onTap: () {
+                          ExtensionAlert.show();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "# ",
+                                style: TextStyle(color: Colors.grey, fontSize: 14),
+                              ),
+                              Text(
+                                Employee.selectedEmployee?.extensionNumber ?? "---",
+                                style: mozillaTextRegularText(
+                                    color: const Color(0xff424899),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : const SizedBox.shrink(),
+                )
+              : const SizedBox.shrink();
+        }
+      ),
     );
   }
 

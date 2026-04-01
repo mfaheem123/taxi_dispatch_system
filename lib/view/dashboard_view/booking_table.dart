@@ -219,8 +219,9 @@ class _BookingTableState extends State<BookingTable> {
                         (index) {
                       final item = controller.dashboardTableModelData!.data![index];
                       bool isSelected = index == selectedRowIndex;
-                      return DataRow.byIndex(
-                        index: index,
+                      return DataRow(
+                        key:  ValueKey(item.id),
+                        // index: index,
                         selected: isSelected,
                         cells: [
 
@@ -292,7 +293,6 @@ class _BookingTableState extends State<BookingTable> {
                                 width: double.infinity,
                                 height: double.infinity,
                                 alignment: Alignment.center,
-
                                 // APPLY YOUR COLOR HERE
                                 decoration: BoxDecoration(
                                   color: DynamicColors.secondaryClr.withOpacity(0.7),
@@ -807,21 +807,21 @@ class _BookingTableState extends State<BookingTable> {
     required BuildContext context,
     required RelativeRect position,
     required Offset globalPosition,
-    required dynamic item,
+    required dynamic item, // Ye pehle se majood hai
   }) async {
     await showMenu<String>(
-      context: context,
-      position: position,
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      items: [
-        PopupMenuItem<String>(
-          child: MouseRegion(
-            onEnter: (_) => _showSubMenu(context, globalPosition, [
-              {'title': 'DISPATCH', 'icon': Icons.near_me},
-              {'title': 'FOLLOW ON', 'icon': Icons.sync},
-              {'title': 'SMS', 'icon': Icons.chat_bubble},
-            ]),
+        context: context,
+        position: position,
+        // ... baki decoration
+        items: [
+    PopupMenuItem<String>(
+    child: MouseRegion(
+        // YAHAN ITEM PASS KAREIN
+        onEnter: (_) => _showSubMenu( context, globalPosition, [
+      {'title': 'DISPATCH', 'icon': Icons.near_me},
+      {'title': 'FOLLOW ON', 'icon': Icons.sync},
+      {'title': 'SMS', 'icon': Icons.chat_bubble},
+    ], item ),
             child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
           ),
         ),
@@ -856,7 +856,7 @@ class _BookingTableState extends State<BookingTable> {
     _subMenuEntry = null;
   }
 
-  void _showSubMenu(BuildContext context, Offset globalPosition, List<Map<String, dynamic>> subItems) {
+  void _showSubMenu(BuildContext context, Offset globalPosition, List<Map<String, dynamic>> subItems, dynamic item) {
     _hideSubMenu();
     final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     _subMenuEntry = OverlayEntry(
@@ -883,7 +883,7 @@ class _BookingTableState extends State<BookingTable> {
                     _hideSubMenu();
                     Navigator.pop(context);
 
-                    _handleSubMenuAction(context, sub['title']);
+                    _handleSubMenuAction(context, sub['title'], item);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -908,15 +908,11 @@ class _BookingTableState extends State<BookingTable> {
     Overlay.of(context).insert(_subMenuEntry!);
   }
 
-  void _handleSubMenuAction(BuildContext context, String title) {
+  void _handleSubMenuAction(BuildContext context, String title, dynamic item) {
     if (title == "DISPATCH") {
-      // Aapka Dispatch wala Alert
-      // Get.dialog(
-      //   DispatchBooking(),
-      // );
       showDialog(
         context: context,
-        builder: (context) => DispatchBooking(), // Aapki existing class
+        builder: (context) => DispatchBooking(bookingItem: item), // Aapki existing class
       );
     } else if (title == "SMS") {
       // SMS wala Alert
