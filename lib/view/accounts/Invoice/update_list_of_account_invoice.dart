@@ -55,7 +55,7 @@ class _UpdateAccountInvoiceScreenState
 
     return GetBuilder<InvoiceController>(
         initState: (state) {
-
+          // controller.getSubsidiary();
         },
 
         builder: (controller) {
@@ -221,7 +221,7 @@ class _UpdateAccountInvoiceScreenState
               column: true,
               width: fieldWidth / 1.8,
               child: SizedBox(height: 30, child: KeyboardDatePicker(
-                initialDate: DateTime.now(),
+                initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
                 onChanged: (date) {
                   setState(() {
                     controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
@@ -244,8 +244,8 @@ class _UpdateAccountInvoiceScreenState
               width: fieldWidth / 1.8,
               child: SizedBox(height: 30,
                   child: KeyboardDatePicker(
-                    initialDate: DateTime.now(),
-                onChanged: (date) {
+                    initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
+                    onChanged: (date) {
                   setState(() {
                     controller.invoiceDueDateController = "${date.year}-${date.month}-${date.day}";
                     print(date);
@@ -305,11 +305,11 @@ class _UpdateAccountInvoiceScreenState
               text: "ACCOUNT",
               width: fieldWidth / 1.5,
               label: "account",
-              items: controller.updateAccountModel?.accounts ?? [],
-              value: controller.selectedUpdateAccount,
+              items: controller.dashboardAccountData?.accounts ?? [],
+              value: controller.selectAccountValue,
               itemLabel: (item) => item.name ?? "",
               onChanged: (val) {
-                controller.selectedUpdateAccount = val;
+                controller.selectAccountValue = val;
                 controller.update();
               },
             ),

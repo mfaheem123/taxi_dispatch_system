@@ -317,20 +317,30 @@ class InvoiceController extends GetxController {
 
   getAccountInvoice({selectedInvoiceId}) async {
     isLoadingUpdate = true;
+    update();
+
+    if (subsDiaryModel?.subsidiaries == null || subsDiaryModel!.subsidiaries!.isEmpty) {
+      await getSubsidiary();
+    }
+
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);
-      if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null) {
-        var data = updateInvoiceByIdModel!.accountInvoice!.accountInvoice!;
-        orderNumber.text = data.orderNumber ?? "";
-        print("Invoice Number: ${data.invoiceNumber}");
-        print("Total Line Items: ${data.accountInvoiceLineitems?.length}");
+      var data = updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+      orderNumber.text = data?.orderNumber ?? "";
+      invoiceDateController = "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      invoiceDueDateController = "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      if (data != null) {
+        subsidiaries = subsDiaryModel?.subsidiaries?.firstWhere((s) => "${s.id}" == "${data.subsidiaryId}");
+        await getAccountData(subsidiariesId: data.subsidiaryId);
+        selectAccountValue = dashboardAccountData?.accounts?.firstWhere((a) => "${a.id}" == "${data.accountId}");
+        selectDepartmentData = selectAccountValue?.departments?.firstWhere((d) => "${d.id}" == "${data.departmentId}");
       }
-      BotToast.showText(text: 'EDIT INVOICE');
-    }
       isLoadingUpdate = false;
       update();
+    }
   }
+
 
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
