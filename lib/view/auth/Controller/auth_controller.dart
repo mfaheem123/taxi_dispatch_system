@@ -56,7 +56,7 @@ class AuthController extends GetxController {
       // Extension logic
       List extensions = employeeData['employee_extensions'] ?? [];
       if (extensions.isNotEmpty) {
-        Employee.selectedEmployee!.extensionNumber = extensions.last['extension_number'].toString();
+        Employee.selectedEmployee!.extensionNumber = extensions['extension_number'].toString();
       }
       Get.offAllNamed(Routes.myHomePage);
       if (extensions.isEmpty) {
