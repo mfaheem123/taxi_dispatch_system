@@ -183,9 +183,7 @@ class _UpdateAccountInvoiceScreenState
                     style: mozillaTextRegularText(
                         fontSize: 10, color: DynamicColors.whiteClr),
                     onTap: () {
-                      Get.dialog(
-                          DispatchBooking(),
-                      );
+
                     },
                   ),
                   SizedBox(width: 5),

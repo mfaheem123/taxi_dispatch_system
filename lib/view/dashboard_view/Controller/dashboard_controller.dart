@@ -344,7 +344,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   final typeEmailController = TextEditingController();
   final smsToController = TextEditingController();
   final typeYourMessageController = TextEditingController();
-
+  Timer? dashboardTimer;
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo alert controllers data
 
   @override
@@ -360,6 +360,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     // connectToBusyDriver();
     getAllDrivers();
     getAllOnlineDrivers();
+    // startAutoRefresh(selectedTabId);
 
     // Add listeners to text controllers to detect focus and assign activeFieldKey
     pickupController.addListener(() {
@@ -394,6 +395,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       }
     });
   }
+
 
   var selectedBookingTab = 'TODAY BOOKINGS'.obs;
 
@@ -1789,7 +1791,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     print(formData);
     var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id");
     if (response.statusCode == 200) {
-      if(id == null){
+
         if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
             "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
             selectedTabId == 1) {
@@ -1801,9 +1803,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           dashboardTableModelData!.data!.insert(
               0, BookingObjectData.fromJson(response.data['bookings'][0]));
         }
-      }else{
-        getDashboardTableData(tableId: 1);
-      }
 
       refreshPostAllFields();
       print(response.data);
