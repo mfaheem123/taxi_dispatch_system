@@ -293,7 +293,6 @@ class _BookingTableState extends State<BookingTable> {
                                 width: double.infinity,
                                 height: double.infinity,
                                 alignment: Alignment.center,
-
                                 // APPLY YOUR COLOR HERE
                                 decoration: BoxDecoration(
                                   color: DynamicColors.secondaryClr.withOpacity(0.7),
