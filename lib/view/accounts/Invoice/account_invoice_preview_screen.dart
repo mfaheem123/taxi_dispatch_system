@@ -33,7 +33,7 @@ class _InvoicePreviewWindowWrapperState extends State<InvoicePreviewWindowWrappe
               // Header Bar
               Container(
                 height: 45,
-                color: const Color(0xFF003366), // Apna primary color yahan lagayein
+                color: const Color(0xFF003366),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -163,7 +163,6 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                   ],
                 ),
 
-                // 2. DATA ROWS (Har row mein lazmi 13 cells hone chahiye)
                 ...lineItems.map((item) {
                   final b = item.booking;
                   return TableRow(
@@ -184,19 +183,15 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                     ],
                   );
                 }).toList(),
-
-                // 3. TOTALS ROW (Yahan error tha - Empty cells add karne parenge)
                 TableRow(
                   decoration: BoxDecoration(color: Colors.grey.shade50),
                   children: [
-                    // Pehle 6 columns ko "TOTAL" dikhane ke liye use karein ya empty rakhein
-                    _cell("TOTAL", isBold: true, align: TextAlign.right), // Col 1
-                    _cell(""), // Col 2 (Empty)
-                    _cell(""), // Col 3 (Empty)
-                    _cell(""), // Col 4 (Empty)
-                    _cell(""), // Col 5 (Empty)
-                    _cell(""), // Col 6 (Empty)
-                    // Baqi 7 columns totals ke liye
+                    _cell("TOTAL", isBold: true, align: TextAlign.right),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
                     _cell("£${totalFare.toStringAsFixed(2)}", isBold: true),
                     _cell("£${totalPC.toStringAsFixed(2)}", isBold: true),
                     _cell("£${totalWC.toStringAsFixed(2)}", isBold: true),
