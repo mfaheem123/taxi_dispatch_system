@@ -503,23 +503,19 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   Timer? _debounce;
 
   RxString selectedTextFieldsValue = "".obs;
-
-  // 👇 ye function har baar text change hone par call hoga
   Future<void> onChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
     selectedTextFieldsValue.value = fieldName;
-    // 👇 Agar pehle se koi timer chal raha ho to usse cancel karo
+    //  Agar pehle se koi timer chal raha ho to usse cancel karo
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-    // 👇 Naya timer start karo
+    //  Naya timer start karo
     _debounce = Timer(duration, () {
       _stopTyping(fieldName: fieldName, searchingText: searchingText);
     });
   }
-
   void _stopTyping({required String fieldName, required String searchingText}) {
-    // 👇 Yahan API call ya search function call karna hai
+    //  Yahan API call ya search function call karna hai
     getAddresses(fieldsName: fieldName, searchingText: searchingText);
   }
 
@@ -1399,25 +1395,54 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
 
-  getPhoneNumberOfUSers({fieldsName, searchingText}) async {
-    dashboardDataLoader(true);
-    var response = await Api().get("customers/search?mobile=$searchingText");
-    if (response.statusCode == 200) {
-      if (response.data['customer'].isNotEmpty) {
-        customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-        SuggestionController suggestion_controller =
-            Get.isRegistered<SuggestionController>()
-                ? Get.find<SuggestionController>()
-                : Get.put(SuggestionController());
-        suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-        FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
-        // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
-        selectedTextFieldsValue.value = fieldsName;
-      }
-      dashboardDataLoader(false);
-      update();
-    }
-  }
+   getPhoneNumberOfUSers({fieldsName, searchingText}) async {
+     dashboardDataLoader(true);
+     var response = await Api().get("customers/search?mobile=$searchingText");
+
+     SuggestionController suggestion_controller = Get.isRegistered<SuggestionController>()
+         ? Get.find<SuggestionController>()
+         : Get.put(SuggestionController());
+
+     if (response.statusCode == 200 && response.data['customer'] != null) {
+       if (response.data['customer'].isNotEmpty) {
+         customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
+         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+         selectedTextFieldsValue.value = fieldsName;
+
+         // Focus request tabhi karein agar suggestions dikhani hon
+         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
+       } else {
+         // ✅ AGAR SUGGESTION NAHI HAI TW LIST KHALI KARDO
+         suggestion_controller.allListData.clear();
+         selectedTextFieldsValue.value = "";
+       }
+     } else {
+       // API failure par bhi clear karein
+       suggestion_controller.allListData.clear();
+     }
+
+     dashboardDataLoader(false);
+     update();
+   }
+
+   String getFinalPhoneNumber() {
+     SuggestionController suggestion_controller = Get.find<SuggestionController>();
+
+     // Check karo ke suggestions list mein data hai ya nahi
+     if (suggestion_controller.allListData.isNotEmpty) {
+       // Agar list hai, to jo index highlighted hai uska number uthao
+       int index = suggestion_controller.highlightedIndex.value;
+
+       // Safety check for index range
+       if (index >= 0 && index < suggestion_controller.allListData.length) {
+         return suggestion_controller.allListData[index].mobile ?? mobileController.text;
+       }
+     }
+
+     // Agar suggestion list khali hai ya selection nahi hui, simple textfield uthao
+     return mobileController.text;
+   }
+
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async{
@@ -2324,7 +2349,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     viaLocation2Controller.dispose();
     referenceNumberController.dispose();
     dateController.dispose();
-
+    phoneKeyboardFocusNode.dispose();
     super.onClose();
   }
 

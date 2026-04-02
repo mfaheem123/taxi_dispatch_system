@@ -348,7 +348,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
 
 
-      bottomNavigationBar: GetBuilder<AuthController>( // <--- Yeh wrapper add karein
+      bottomNavigationBar: GetBuilder<AuthController>(
           builder: (auth) {
             return
               // (controller.currentPage.value == null ||  controller.currentPage.value.runtimeType == ByDefaultDashboard) ?
@@ -359,7 +359,7 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                      // 1. Username Container
+                      //  Username
                       Container(
                         padding:
                             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
