@@ -483,7 +483,7 @@ class _BookingTableState extends State<BookingTable> {
                               // onRightClick: () {
                               //   print("RIGHT CLICK FARE: ${item.fares}");
                               // },
-                              child: Text("£ ${item.fares ?? "0.00"}"),
+                              child: Text("£ ${item.totalCharges ?? "0.00"}"),
                             ),
                           ),
 
