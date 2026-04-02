@@ -1,14 +1,15 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/locations_view/controller/zone_controller.dart';
+import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'component/networks/Url.dart';
+import 'view/auth/Controller/auth_controller.dart';
 
 void main() async{
   usePathUrlStrategy(); // removes # from URL
@@ -26,6 +27,8 @@ void main() async{
   //
   // html.document.documentElement?.requestFullscreen();
  Get.put(ZoneController(), permanent: true);
+
+ Get.put(AuthController(), permanent: true);
   const String environment = String.fromEnvironment(
     'ENVIRONMENT',
     defaultValue: Environment.production,

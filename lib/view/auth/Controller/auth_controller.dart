@@ -10,15 +10,11 @@ import '../../administration/model/user_model.dart';
 
 class AuthController extends GetxController {
 
-  final sp = GetStorage(); // Ensure GetStorage is initialized
+  final sp = GetStorage();
   RxString currentExtension = "".obs;
-  // Refresh par data lane wala function
   checkUserStatus() async {
     String? token = sp.read('token');
-
     if (token != null) {
-      // Yahan hum wahi login wali API ya koi profile API hit kar sakte hain
-      // Agar backend pe alag profile API nahi hai, toh local storage best hai
       var storedUser = sp.read('userData');
       if (storedUser != null) {
         Employee.selectedEmployee = Employee.fromJson(storedUser);
@@ -26,7 +22,6 @@ class AuthController extends GetxController {
       }
     }
   }
-
 
 
 
@@ -59,6 +54,7 @@ class AuthController extends GetxController {
         Employee.selectedEmployee!.extensionNumber = latestExtension;
         print("Extension Found: $latestExtension");
         Get.offAllNamed(Routes.myHomePage);
+        update();
       }
     } else {
       BotToast.showText(text: "Login failed!");
