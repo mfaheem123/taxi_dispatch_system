@@ -64,24 +64,14 @@ import '../../routes/app_pages.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
-
 AuthController controller = Get.put(AuthController());
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     double width = Get.width;
     double height = Get.height;
-
-
-
     return Scaffold(
       body: Stack(
         children: [
-
           Container(
             width: width,
             height: height,
@@ -92,7 +82,6 @@ AuthController controller = Get.put(AuthController());
               ),
             ),
           ),
-
           //  Gradient Overlay for readability
           Container(
             width: width,
@@ -171,8 +160,8 @@ AuthController controller = Get.put(AuthController());
                           //   'token',
                           //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
                           // );
-                          controller.postLoginDetails();
-                          // Get.offAllNamed(Routes.myHomePage);
+                          // controller.postLoginDetails();
+                          Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.createBooking);
                         },
                       ),

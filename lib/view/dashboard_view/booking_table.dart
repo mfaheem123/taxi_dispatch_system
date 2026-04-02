@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
@@ -132,7 +133,7 @@ class _BookingTableState extends State<BookingTable> {
                 width: Get.width,
                 child: DataTable(
                   headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-                  columnSpacing: 12, // 👈 default 56 hota hai, isko chhota kardo
+                  columnSpacing: 12,
                   dataRowMinHeight: 40,
                   dataRowMaxHeight: 48,
 
@@ -218,8 +219,9 @@ class _BookingTableState extends State<BookingTable> {
                         (index) {
                       final item = controller.dashboardTableModelData!.data![index];
                       bool isSelected = index == selectedRowIndex;
-                      return DataRow.byIndex(
-                        index: index,
+                      return DataRow(
+                        key:  ValueKey(item.id),
+                        // index: index,
                         selected: isSelected,
                         cells: [
 
@@ -291,7 +293,6 @@ class _BookingTableState extends State<BookingTable> {
                                 width: double.infinity,
                                 height: double.infinity,
                                 alignment: Alignment.center,
-
                                 // APPLY YOUR COLOR HERE
                                 decoration: BoxDecoration(
                                   color: DynamicColors.secondaryClr.withOpacity(0.7),
@@ -318,25 +319,25 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                               item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK PICKUP: ${item.pickup}");
-                                showMenu(
-                                  context: context,
-                                  position: RelativeRect.fromLTRB(
-                                    // event.position.dx,
-                                    // event.position.dy,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                  ),
-                                  items: [
-                                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                                    const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                                  ],
-                                );
-
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK PICKUP: ${item.pickup}");
+                              //   showMenu(
+                              //     context: context,
+                              //     position: RelativeRect.fromLTRB(
+                              //       // event.position.dx,
+                              //       // event.position.dy,
+                              //       15,
+                              //       0,
+                              //       0,
+                              //       0,
+                              //     ),
+                              //     items: [
+                              //       const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                              //       const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                              //     ],
+                              //   );
+                              //
+                              // },
                               child: Container(
                                 width: 160,
                                 // width: double.infinity,
@@ -461,9 +462,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK NOTE");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK NOTE");
+                              // },
                               child: SizedBox(
                                 width: 180,
                                 child: Text(
@@ -478,9 +479,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK FARE: ${item.fares}");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK FARE: ${item.fares}");
+                              // },
                               child: Text("£ ${item.fares ?? "0.00"}"),
                             ),
                           ),
@@ -489,9 +490,9 @@ class _BookingTableState extends State<BookingTable> {
                           DataCell(
                             rightClickTextCell(
                                item: item,
-                              onRightClick: () {
-                                print("RIGHT CLICK STATUS");
-                              },
+                              // onRightClick: () {
+                              //   print("RIGHT CLICK STATUS");
+                              // },
                               child: Container(
                                 width: double.infinity,
                                 height: double.infinity,
@@ -752,29 +753,30 @@ class _BookingTableState extends State<BookingTable> {
     );
   }
 
+
+
+
+
+
   // 1. Modified rightClickTextCell to pass globalPosition
   Widget rightClickTextCell({
     required Widget child,
-    required VoidCallback onRightClick,
     required dynamic item,
+    VoidCallback? onRightClick,
   }) {
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (event) {
         if (event.kind == PointerDeviceKind.mouse &&
             event.buttons == kSecondaryMouseButton) {
-          final RenderBox overlay =
-          Overlay.of(context).context.findRenderObject() as RenderBox;
 
+          if (onRightClick != null) onRightClick();
+          final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
           final RelativeRect position = RelativeRect.fromRect(
-            Rect.fromPoints(
-              event.position,
-              event.position,
-            ),
+            Rect.fromPoints(event.position, event.position),
             Offset.zero & overlay.size,
           );
-
-          // FIX: yahan event.position pass kar rahe hain as globalPosition
+          // Hamara naya menu function call karein
           showRowContextMenu(
             context: context,
             position: position,
@@ -804,79 +806,138 @@ class _BookingTableState extends State<BookingTable> {
   void showRowContextMenu({
     required BuildContext context,
     required RelativeRect position,
-    required Offset globalPosition, // Added this parameter
-    required dynamic item,
+    required Offset globalPosition,
+    required dynamic item, // Ye pehle se majood hai
   }) async {
-    final String? selectedValue = await showMenu<String>(
-      context: context,
-      position: position,
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      items: [
-        PopupMenuItem<String>(
-          value: 'dispatch_main',
-          height: 40,
-          child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+    await showMenu<String>(
+        context: context,
+        position: position,
+        // ... baki decoration
+        items: [
+    PopupMenuItem<String>(
+    child: MouseRegion(
+        // YAHAN ITEM PASS KAREIN
+        onEnter: (_) => _showSubMenu( context, globalPosition, [
+      {'title': 'DISPATCH', 'icon': Icons.near_me},
+      {'title': 'FOLLOW ON', 'icon': Icons.sync},
+      {'title': 'SMS', 'icon': Icons.chat_bubble},
+    ], item ),
+            child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+          ),
         ),
         PopupMenuItem<String>(
-          value: 'actions_main', // updated value
-          height: 40,
-          child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
+          child: MouseRegion(
+            onEnter: (_) => _hideSubMenu(), // Dispatch wala close ho jayega
+            child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
+          ),
         ),
         PopupMenuItem<String>(
-          value: 'send_main', // updated value
-          height: 40,
-          child: _buildMenuRow(Icons.share, "SEND", true),
+          child: MouseRegion(
+            onEnter: (_) => _hideSubMenu(),
+            child: _buildMenuRow(Icons.share, "SEND", true),
+          ),
+        ),
+        const PopupMenuDivider(),
+        PopupMenuItem<String>(
+          onTap: () => print("SMS selected"),
+          child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
         ),
       ],
     );
+    _hideSubMenu(); // Cleanup
+  }
 
-    // FIX: globalPosition ab yahan accessible hai
-    if (selectedValue == 'dispatch_main') {
-      _openDispatchSubMenu(context, globalPosition, item);
+
+
+  OverlayEntry? _subMenuEntry;
+
+  void _hideSubMenu() {
+    _subMenuEntry?.remove();
+    _subMenuEntry = null;
+  }
+
+  void _showSubMenu(BuildContext context, Offset globalPosition, List<Map<String, dynamic>> subItems, dynamic item) {
+    _hideSubMenu();
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    _subMenuEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: globalPosition.dx ,
+        top: globalPosition.dy - 60,
+        child: MouseRegion(
+          onExit: (_) => _hideSubMenu(),
+          child: Material(
+            elevation: 8,
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            child: Container(
+              width: 160, // Submenu ki fixed width
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: subItems.map((sub) => InkWell(
+                  onTap: () {
+                    _hideSubMenu();
+                    Navigator.pop(context);
+
+                    _handleSubMenuAction(context, sub['title'], item);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    child: Row(
+                      children: [
+                        Icon(sub['icon'], size: 18, color: Colors.black87),
+                        const SizedBox(width: 12),
+                        Text(sub['title'],
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)
+                        ),
+                      ],
+                    ),
+                  ),
+                )).toList(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(_subMenuEntry!);
+  }
+
+  void _handleSubMenuAction(BuildContext context, String title, dynamic item) {
+    if (title == "DISPATCH") {
+      showDialog(
+        context: context,
+        builder: (context) => DispatchBooking(bookingItem: item), // Aapki existing class
+      );
+    } else if (title == "SMS") {
+      // SMS wala Alert
+      showShortcutDialog(
+        context,
+        title: "Send SMS",
+        contentWidget: const Text("Do you want to send a notification?"),
+      );
+    } else if (title == "FOLLOW ON") {
+      // Follow on logic
+      print("Follow on logic here");
     }
   }
 
 
-// Submenu Function
-// 3. Submenu Function (Fixed position and syntax)
-  void _openDispatchSubMenu(BuildContext context, Offset globalPosition, dynamic item) {
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
 
-    showMenu<String>(
-      context: context,
-      elevation: 8,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      // position ko width ke hisaab se adjust kiya (dx + 150)
-      position: RelativeRect.fromRect(
-        Rect.fromLTWH(globalPosition.dx + 150, globalPosition.dy, 0, 0),
-        Offset.zero & overlay.size,
-      ),
-      items: [
-        PopupMenuItem(value: 'd', child: _buildMenuRow(Icons.near_me, "DISPATCH", false)),
-        PopupMenuItem(value: 'f', child: _buildMenuRow(Icons.sync, "FOLLOW ON", false)),
-        PopupMenuItem(value: 's', child: _buildMenuRow(Icons.chat_bubble, "SMS", false)),
-      ],
-    ).then((value) {
-      if (value != null) {
-        print("Action selected: $value for ${item.referenceNumber}");
-        // Yahan controller ka logic call karein
-      }
-    });
-  }
 
-// UI Helper taake Row clean dikhe
+
   Widget _buildMenuRow(IconData icon, String title, bool hasArrow) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 18, color: Colors.black87),
         const SizedBox(width: 12),
-        Expanded(
-          child: Text(title,
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-        if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),
+        Expanded(child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+        if (hasArrow) const Icon(Icons.arrow_right, size: 18, color: Colors.black54),
       ],
     );
   }

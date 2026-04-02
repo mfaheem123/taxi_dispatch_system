@@ -2,6 +2,10 @@
 //
 //     final locationListModel = locationListModelFromJson(jsonString);
 
+// To parse this JSON data, do
+//
+//     final locationListModel = locationListModelFromJson(jsonString);
+
 import 'dart:convert';
 
 LocationListModel locationListModelFromJson(String str) => LocationListModel.fromJson(json.decode(str));
@@ -54,7 +58,7 @@ class Location {
   int? locationTypeId;
   String? address;
   String? postcode;
-  dynamic zoneId;
+  int? zoneId;
   String? shortcut;
   dynamic backgroundColor;
   dynamic foregroundColor;
@@ -65,7 +69,7 @@ class Location {
   String? latitude;
   String? longitude;
   LocationType? locationType;
-  dynamic zone;
+  String? zone;
 
   Location({
     this.id,
@@ -159,6 +163,7 @@ class LocationType {
     "foreground_color": foregroundColor,
   };
 }
+
 
 
 

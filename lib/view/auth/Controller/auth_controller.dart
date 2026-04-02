@@ -11,7 +11,7 @@ import '../../administration/model/user_model.dart';
 class AuthController extends GetxController {
 
   final sp = GetStorage(); // Ensure GetStorage is initialized
-
+  RxString currentExtension = "".obs;
   // Refresh par data lane wala function
   checkUserStatus() async {
     String? token = sp.read('token');
@@ -45,32 +45,59 @@ class AuthController extends GetxController {
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
       var token = response.data['token'];
-
-      // 1. Token aur UserData ko permanent save karein
       sp.write('token', token);
       sp.write('userData', employeeData);
-
-      // 2. Global model update karein
       Employee.selectedEmployee = Employee.fromJson(employeeData);
-
-      // Extension logic
       List extensions = employeeData['employee_extensions'] ?? [];
-      if (extensions.isNotEmpty) {
-        Employee.selectedEmployee!.extensionNumber = extensions.last['extension_number'].toString();
-      }
-      Get.offAllNamed(Routes.myHomePage);
       if (extensions.isEmpty) {
+        Get.offAllNamed(Routes.myHomePage);
         Future.delayed(const Duration(milliseconds: 800), () {
           ExtensionAlert.show();
         });
       } else {
         String latestExtension = extensions.last['extension_number'].toString();
         Employee.selectedEmployee!.extensionNumber = latestExtension;
-        print("Latest Extension Found: $latestExtension");
+        print("Extension Found: $latestExtension");
+        Get.offAllNamed(Routes.myHomePage);
       }
     } else {
       BotToast.showText(text: "Login failed!");
     }
     PostAuthLoader(false);
   }
+
+  Future<void> logout() async {
+    try {
+      var rawId = Employee.selectedEmployee?.id;
+      if (rawId != null) {
+        String empId = rawId.toString();
+        var response = await Api().post(
+            {},
+            'employees/logout/$empId',
+            auth: false
+        );
+        if (response.statusCode == 200) {
+          BotToast.showText(text: "Logged out successfully");
+        }
+      }
+    } catch (e) {
+      print("Logout API Error: $e");
+    } finally {
+      sp.remove('token');
+      sp.remove('userData');
+      Employee.selectedEmployee = null;
+      currentExtension.value = "---";
+      Get.offAllNamed(Routes.loginScreen);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
 }
