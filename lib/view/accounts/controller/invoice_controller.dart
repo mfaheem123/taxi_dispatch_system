@@ -321,11 +321,15 @@ class InvoiceController extends GetxController {
     if (subsDiaryModel?.subsidiaries == null || subsDiaryModel!.subsidiaries!.isEmpty) {
       await getSubsidiary();
     }
-
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);
       var data = updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+      if (data?.accountInvoiceLineitems != null) {
+        for (var item in data!.accountInvoiceLineitems!) {
+          recalculateRowTotal(item);
+        }
+      }
       orderNumber.text = data?.orderNumber ?? "";
       invoiceDateController = "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
       invoiceDueDateController = "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
@@ -706,5 +710,38 @@ CC: CONGESTION CHARGES
     if (response.statusCode == 200) {
       BotToast.showText(text: "Success: Charges updated!");
     }
+  }
+
+  double parseDouble(dynamic value) =>
+      double.tryParse(value?.toString() ?? "0") ?? 0.0;
+
+  double getInvoiceColumnTotal(String field) {
+    final updateItems = updateInvoiceByIdModel
+        ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems;
+
+    if (updateItems == null || updateItems.isEmpty) return 0.0;
+
+    // Line items se bookings ki list nikalna
+    final list = updateItems
+        .map((e) => e.booking)
+        .where((b) => b != null)
+        .toList();
+
+    return _calculateInvoiceListTotal(list, field);
+  }
+
+  double _calculateInvoiceListTotal(List<dynamic> list, String field) {
+    return list.fold(0.0, (sum, item) {
+      return sum +
+          parseDouble({
+            'fare': item.companyPrice,
+            'pc': item.parkingCharges,
+            'wc': item.waitingCharges,
+            'edc': item.extraDropCharges,
+            'mg': item.meetAndGreet,
+            'cc': item.congestionCharges,
+            'total': item.totalCharges,
+          }[field]);
+    });
   }
 }
