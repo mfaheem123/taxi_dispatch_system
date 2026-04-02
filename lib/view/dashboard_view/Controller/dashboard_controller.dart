@@ -357,7 +357,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       connectToCli(myExtension);
     });
     connectToDriverLogin();
-    // connectToBusyDriver();
+    connectToBusyDriver();
     getAllDrivers();
     getAllOnlineDrivers();
     // startAutoRefresh(selectedTabId);
@@ -1251,6 +1251,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     getDashboardTableData(tableId: tableId);
   }
 
+   Timer? _timer;
+
   String? jobDue;
   getDashboardTableData({tableId}) async {
     String selectJobDue = "";
@@ -1287,6 +1289,12 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
+      _timer?.cancel();
+
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        getDashboardTableData(tableId: selectedTabId);
+      });
+
       update();
     }
   }
