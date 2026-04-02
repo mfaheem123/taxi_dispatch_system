@@ -4,14 +4,17 @@ import 'package:get/get.dart';
 import '../component/networks/api.dart';
 import '../view/administration/model/user_model.dart';
 import '../view/auth/Controller/auth_controller.dart';
+import '../view/setting/controller/setting_controller.dart';
 
 class ExtensionAlert {
   static void show() {
     final TextEditingController extensionCtrl = TextEditingController(
         text: Employee.selectedEmployee?.extensionNumber ?? ""
     );
+    final authController = Get.find<AuthController>();
     bool isPermanentSave = true;
     RxBool postExtensionLoad = false.obs;
+
     postExtension(String extensionNumber, bool isPermanent) async {
       if (Employee.selectedEmployee == null) {
         BotToast.showText(text: "User not found. Please re-login.");
@@ -23,15 +26,14 @@ class ExtensionAlert {
         "permanent_flag": isPermanent,
         "employee_id": Employee.selectedEmployee!.id,
       };
-
       var response = await Api().post(
         formData,
         'employeeextension/add',
         auth: true,
       );
-
       if (response.statusCode == 200) {
         Employee.selectedEmployee!.extensionNumber = extensionNumber;
+        authController.update();
         BotToast.showText(text: 'Extension Added Successfully');
         Get.back();
         print("ID------------ ${Employee.selectedEmployee!.id}");
@@ -52,7 +54,6 @@ class ExtensionAlert {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // --- Header ---
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     child: Row(
@@ -74,8 +75,6 @@ class ExtensionAlert {
                     ),
                   ),
                   const Divider(height: 1, color: Colors.black12),
-
-                  // --- Body ---
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
@@ -102,7 +101,6 @@ class ExtensionAlert {
 
                         const SizedBox(height: 16),
 
-                        // Permanent Save Toggle Row
                         Row(
                           children: [
                             Transform.scale(
@@ -131,8 +129,6 @@ class ExtensionAlert {
                       ],
                     ),
                   ),
-
-                  // --- Footer ---
                   const Divider(height: 1, color: Colors.black12),
                   Padding(
                     padding: const EdgeInsets.all(12.0),

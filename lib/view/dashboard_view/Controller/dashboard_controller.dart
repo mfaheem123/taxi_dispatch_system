@@ -1751,7 +1751,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
               ? '2'
               : '1',
       'booking_source': 'dashboard',
-      'employee_id': '2',
+      'employee_id': Employee.selectedEmployee?.id,
       if (multiReservationTemp.isNotEmpty)
         "multi_reservation": jsonEncode(multiReservationTemp),
       if (multiVehicleTempList.isNotEmpty)

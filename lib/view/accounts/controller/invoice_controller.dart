@@ -295,11 +295,9 @@ class InvoiceController extends GetxController {
   void togglePaidStatus() {
     isPaid.value = !isPaid.value;
   }
-
   bool isFilterUpdateApplied = false;
   List<int> selectedBookingIds = [];
   bool isAllUpdateSelected = false;
-
   String updateInvoiceDateController = "2000-01-01";
   String updateInvoiceDueDateController = "2000-01-01";
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
@@ -321,7 +319,6 @@ class InvoiceController extends GetxController {
     if (subsDiaryModel?.subsidiaries == null || subsDiaryModel!.subsidiaries!.isEmpty) {
       await getSubsidiary();
     }
-
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);

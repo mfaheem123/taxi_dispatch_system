@@ -350,9 +350,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       bottomNavigationBar: GetBuilder<AuthController>( // <--- Yeh wrapper add karein
           builder: (auth) {
-            return (controller.currentPage.value == null ||
-                controller.currentPage.value.runtimeType == ByDefaultDashboard)
-                ? Container(
+            return
+              // (controller.currentPage.value == null ||  controller.currentPage.value.runtimeType == ByDefaultDashboard) ?
+              Container(
               width: Get.width,
               height: 60,
               color: DynamicColors.whiteClr,
@@ -493,8 +493,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                )
-              : const SizedBox.shrink();
+                );
+              // : const SizedBox.shrink();
         }
       ),
     );
