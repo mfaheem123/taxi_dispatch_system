@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
@@ -565,10 +566,17 @@ class _BookingTableState extends State<BookingTable> {
                                 IconButton(
                                   icon: const Icon(Icons.delete_forever, color: Colors.red),
                                   onPressed: () {
-                                    showShortcutDialog(
-                                      context,
-                                      title: "Delete",
-                                      contentWidget: const Text("Are you sure?"),
+                                    // showShortcutDialog(
+                                    //   context,
+                                    //   title: "Delete",
+                                    //   contentWidget: const Text("Are you sure?"),
+                                    // );
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) =>
+                                          DeletePermissionAlert(
+                                           deleteFunctionName: (){},
+                                          ),
                                     );
                                   },
                                 ),

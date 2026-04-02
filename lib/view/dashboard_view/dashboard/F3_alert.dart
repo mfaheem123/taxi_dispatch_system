@@ -58,6 +58,7 @@ void showShortcutDialog(BuildContext context,{
         ),
         content: contentWidget,
       );
+
     },
   ).then((result) {
     shortCutKeyValue.value = "shortCutKey";
