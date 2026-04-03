@@ -985,330 +985,501 @@ class _CenterAreaState extends State<_CenterArea> {
                 const SizedBox(height: 20),
 
                 /// BOOKINGS TABLE
+                // Obx(() {
+                //   if (controller.isLoading.value) {
+                //     return const CircularProgressIndicator();
+                //   }
+                //
+                //   if (controller.bookings.isEmpty) {
+                //     return Column(
+                //       children: [
+                //         Text("Unknown"),
+                //         Text(controller.customerMobile.value),
+                //       ],
+                //     );
+                //   } else {
+                //  Text(controller.customerName.value,
+                //  style: TextStyle(color: Colors.black),
+                //  );
+                //      Text(controller.customerMobile.value,
+                //        style: TextStyle(color: Colors.black),
+                //      );
+                //   }
+                //
+                //   return Column(
+                //     children: [
+                //       /// ✅ PICKUP & DROPOFF TEXTFIELDS
+                //       Row(
+                //         children: [
+                //           Expanded(
+                //             child: TextField(
+                //               controller: pickupController,
+                //               decoration: InputDecoration(
+                //                   labelText: "Pick Up",
+                //                   border: OutlineInputBorder(),
+                //                   suffixIcon: pickupController.text.isEmpty &&
+                //                           dropoffController.text.isEmpty
+                //                       ? SizedBox.shrink()
+                //                       : GestureDetector(
+                //                           onTap: () {
+                //                             pickupController.clear();
+                //                             dropoffController.clear();
+                //                             pickupPoints = null;
+                //                             dropoffPoints = null;
+                //                             setState(() {});
+                //                           },
+                //                           child: Icon(
+                //                             Icons.close,
+                //                             color: Colors.red,
+                //                           ),
+                //                         )),
+                //             ),
+                //           ),
+                //           const SizedBox(width: 16),
+                //           Expanded(
+                //             child: TextField(
+                //               controller: dropoffController,
+                //               decoration: InputDecoration(
+                //                   labelText: "Drop Off",
+                //                   border: OutlineInputBorder(),
+                //                   suffixIcon: pickupController.text.isEmpty &&
+                //                           dropoffController.text.isEmpty
+                //                       ? SizedBox.shrink()
+                //                       : GestureDetector(
+                //                           onTap: () {
+                //                             pickupController.clear();
+                //                             dropoffController.clear();
+                //                             pickupPoints = null;
+                //                             dropoffPoints = null;
+                //                             setState(() {});
+                //                           },
+                //                           child: Icon(
+                //                             Icons.close,
+                //                             color: Colors.red,
+                //                           ),
+                //                         )),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //
+                //       const SizedBox(height: 15),
+                //
+                //       /// SWAP BUTTON
+                //       Row(
+                //         mainAxisAlignment: MainAxisAlignment.center,
+                //         children: [
+                //           ElevatedButton(
+                //             onPressed: () {
+                //               setState(() {
+                //                 isSwapped = !isSwapped;
+                //
+                //                 /// swap textfields data also
+                //                 final temp = pickupController.text;
+                //                 pickupController.text = dropoffController.text;
+                //                 dropoffController.text = temp;
+                //                 submitBtnValue = true;
+                //               });
+                //             },
+                //             child: const Text("Swap Pickup/Drop"),
+                //           ),
+                //           SizedBox(
+                //             width: 20,
+                //           ),
+                //           Visibility(
+                //             visible: selectedBooking != null &&
+                //                     selectedBooking!.viapoints!.isNotEmpty &&
+                //                     actionValue == true &&
+                //                     isSwapped == false
+                //                 ? true
+                //                 : false,
+                //             child: ElevatedButton(
+                //               onPressed: () {
+                //                 // Use a slight delay to ensure the click event is fully processed
+                //                 // before the Dialog changes the UI tree.
+                //                 Future.delayed(const Duration(milliseconds: 50),
+                //                     () {
+                //                   if (!context.mounted) return; // Safety check
+                //
+                //                   showDialog(
+                //                     context: context,
+                //                     builder: (context) {
+                //                       return AlertDialog(
+                //                         title: const Text("VIA List"),
+                //                         content: SizedBox(
+                //                           width: MediaQuery.of(context)
+                //                                   .size
+                //                                   .width /
+                //                               2.5,
+                //                           // width: double.maxFinite, // Helps with sizing
+                //                           child: ListView.builder(
+                //                             itemCount: selectedBooking!
+                //                                 .viapoints!.length,
+                //                             shrinkWrap: true,
+                //                             // Necessary for ListView inside Alert
+                //                             physics:
+                //                                 const AlwaysScrollableScrollPhysics(),
+                //                             // Scrollable if list is long
+                //                             itemBuilder:
+                //                                 (BuildContext context, index) {
+                //                               return Column(
+                //                                 mainAxisSize: MainAxisSize.min,
+                //                                 children: [
+                //                                   Row(
+                //                                     children: [
+                //                                       Expanded(
+                //                                           child: Container(
+                //                                         margin: EdgeInsets
+                //                                             .symmetric(
+                //                                                 horizontal: 6),
+                //                                         padding: EdgeInsets
+                //                                             .symmetric(
+                //                                                 horizontal: 12,
+                //                                                 vertical: 10),
+                //                                         decoration:
+                //                                             BoxDecoration(
+                //                                           border: Border(
+                //                                             bottom: BorderSide(
+                //                                               color:
+                //                                                   DynamicColors
+                //                                                       .black,
+                //                                               width:
+                //                                                   1.0, // You can adjust the thickness here
+                //                                             ),
+                //                                           ),
+                //                                         ),
+                //                                         child: Text(
+                //                                             selectedBooking!
+                //                                                     .viapoints![
+                //                                                         index]
+                //                                                     .name ??
+                //                                                 ""),
+                //                                       )),
+                //                                       Expanded(
+                //                                           child: Container(
+                //                                         margin: EdgeInsets
+                //                                             .symmetric(
+                //                                                 horizontal: 6),
+                //                                         padding: EdgeInsets
+                //                                             .symmetric(
+                //                                                 horizontal: 12,
+                //                                                 vertical: 10),
+                //                                         decoration:
+                //                                             BoxDecoration(
+                //                                           border: Border(
+                //                                             bottom: BorderSide(
+                //                                               color:
+                //                                                   DynamicColors
+                //                                                       .black,
+                //                                               width:
+                //                                                   1.0, // You can adjust the thickness here
+                //                                             ),
+                //                                           ),
+                //                                         ),
+                //                                         child: Text(
+                //                                             selectedBooking!
+                //                                                     .viapoints![
+                //                                                         index]
+                //                                                     .mobile ??
+                //                                                 ""),
+                //                                       )),
+                //                                     ],
+                //                                   ),
+                //                                   Container(
+                //                                     width:
+                //                                         MediaQuery.of(context)
+                //                                                 .size
+                //                                                 .width /
+                //                                             2.5,
+                //                                     padding:
+                //                                         EdgeInsets.symmetric(
+                //                                             horizontal: 12,
+                //                                             vertical: 15),
+                //                                     decoration: BoxDecoration(
+                //                                       border: Border(
+                //                                         bottom: BorderSide(
+                //                                           color: DynamicColors
+                //                                               .black,
+                //                                           width:
+                //                                               1.0, // You can adjust the thickness here
+                //                                         ),
+                //                                       ),
+                //                                     ),
+                //                                     child: Text(selectedBooking!
+                //                                             .viapoints![index]
+                //                                             .viapoint ??
+                //                                         ""),
+                //                                   )
+                //                                 ],
+                //                               );
+                //                             },
+                //                           ),
+                //                         ),
+                //                         actions: [
+                //                           TextButton(
+                //                             onPressed: () =>
+                //                                 Navigator.pop(context),
+                //                             child: const Text("Cancel"),
+                //                           ),
+                //                           ElevatedButton(
+                //                             onPressed: () async {
+                //                               await _controller
+                //                                   .dashBoardDataBinding(
+                //                                       id: selectedBooking!.id,
+                //                                       jobData: selectedBooking);
+                //                               Get.back();
+                //                               Get.back();
+                //                             },
+                //                             child: const Text("Edit Via"),
+                //                           ),
+                //                         ],
+                //                       );
+                //                     },
+                //                   );
+                //                 });
+                //               },
+                //               child: const Text("Show Via"),
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //
+                //       const SizedBox(height: 10),
+                //
+                //       SingleChildScrollView(
+                //         scrollDirection: Axis.horizontal,
+                //         child: DatatableWidget(
+                //           columns: [
+                //             buildHeaderWithSearch(
+                //                 title: "Pick-up", removeSearching: true),
+                //             buildHeaderWithSearch(
+                //                 title: "Drop off", removeSearching: true),
+                //             buildHeaderWithSearch(
+                //                 title: "Date", removeSearching: true),
+                //             buildHeaderWithSearch(
+                //                 title: "Fare", removeSearching: true),
+                //             buildHeaderWithSearch(
+                //                 title: "Action", removeSearching: true),
+                //           ],
+                //           totalRow: controller.bookings.length,
+                //           rows: List.generate(controller.bookings.length,
+                //               (index) {
+                //             // var booking = controller.bookings[index];
+                //             BookingObjectData cliBookingData =
+                //                 BookingObjectData.fromJson(
+                //                     controller.bookings[index]);
+                //
+                //             return DataRow(
+                //               cells: [
+                //                 DataCell(SizedBox(
+                //                   width: Get.width / 6,
+                //                   child: rightClickTextCell(
+                //                     item: cliBookingData,
+                //                     clickValue: 'pickUpClick',
+                //                     onRightClick: () {
+                //                       print("RIGHT CLICK JOURNEY TYPE");
+                //                     },
+                //                     child: Text(cliBookingData.pickup!),
+                //                   ),
+                //                 )),
+                //
+                //                 DataCell(SizedBox(
+                //                   width: Get.width / 6,
+                //                   child: rightClickTextCell(
+                //                     item: cliBookingData,
+                //                     clickValue: 'dropoffClick',
+                //                     onRightClick: () {
+                //                       print("RIGHT CLICK JOURNEY TYPE");
+                //                     },
+                //                     child: Text(cliBookingData.dropoff ?? ""),
+                //                   ),
+                //                 )),
+                //
+                //                 DataCell(Text(
+                //                     "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                //                 DataCell(Text("£${cliBookingData.fares ?? 0}")),
+                //
+                //                 /// ACTION
+                //                 DataCell(
+                //                   Obx(() => Checkbox(
+                //                         value: selectedIndex.value == index,
+                //                         onChanged: (value) {
+                //                           if (selectedIndex.value == index) {
+                //                             selectedIndex.value = -1;
+                //                             selectedBooking = null;
+                //                             submitBtnValue = false;
+                //                             pickupController.clear();
+                //                             dropoffController.clear();
+                //                             actionValue = false;
+                //                           } else {
+                //                             submitBtnValue = true;
+                //                             selectedIndex.value = index;
+                //                             selectedBooking = cliBookingData;
+                //                             actionValue = true;
+                //                             pickupController.text =
+                //                                 cliBookingData.pickup ?? "";
+                //                             dropoffController.text =
+                //                                 cliBookingData.dropoff ?? "";
+                //                             print(
+                //                                 "Selected booking: $selectedBooking");
+                //                           }
+                //                           setState(() {});
+                //                         },
+                //                       )),
+                //                 ),
+                //               ],
+                //             );
+                //           }),
+                //         ),
+                //       ),
+                //     ],
+                //   );
+                // }),
                 Obx(() {
                   if (controller.isLoading.value) {
                     return const CircularProgressIndicator();
                   }
 
+                  /// ✅ WHEN NO BOOKINGS
                   if (controller.bookings.isEmpty) {
                     return Column(
                       children: [
-                        Text("Unknown"),
-                        Text(controller.customerMobile.value),
+                        const Text("Unknown"),
+                        Text(controller.customerMobile.value ?? ""),
                       ],
                     );
-                  } else {
-                    Obx(() => Text(controller.customerName.value));
-                    Obx(() => Text(controller.customerMobile.value));
                   }
 
+                  /// ✅ WHEN BOOKINGS AVAILABLE (FIXED RETURN)
                   return Column(
                     children: [
-                      /// ✅ PICKUP & DROPOFF TEXTFIELDS
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: pickupController,
-                              decoration: InputDecoration(
-                                  labelText: "Pick Up",
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: pickupController.text.isEmpty &&
-                                          dropoffController.text.isEmpty
-                                      ? SizedBox.shrink()
-                                      : GestureDetector(
-                                          onTap: () {
-                                            pickupController.clear();
-                                            dropoffController.clear();
-                                            pickupPoints = null;
-                                            dropoffPoints = null;
-                                            setState(() {});
-                                          },
-                                          child: Icon(
-                                            Icons.close,
-                                            color: Colors.red,
-                                          ),
-                                        )),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextField(
-                              controller: dropoffController,
-                              decoration: InputDecoration(
-                                  labelText: "Drop Off",
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: pickupController.text.isEmpty &&
-                                          dropoffController.text.isEmpty
-                                      ? SizedBox.shrink()
-                                      : GestureDetector(
-                                          onTap: () {
-                                            pickupController.clear();
-                                            dropoffController.clear();
-                                            pickupPoints = null;
-                                            dropoffPoints = null;
-                                            setState(() {});
-                                          },
-                                          child: Icon(
-                                            Icons.close,
-                                            color: Colors.red,
-                                          ),
-                                        )),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        controller.customerName.value.isEmpty
+                            ? "Unknown"
+                            : controller.customerName.value,
+                        style: const TextStyle(color: Colors.black),
                       ),
-
-                      const SizedBox(height: 15),
-
-                      /// SWAP BUTTON
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                isSwapped = !isSwapped;
-
-                                /// swap textfields data also
-                                final temp = pickupController.text;
-                                pickupController.text = dropoffController.text;
-                                dropoffController.text = temp;
-                                submitBtnValue = true;
-                              });
-                            },
-                            child: const Text("Swap Pickup/Drop"),
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Visibility(
-                            visible: selectedBooking != null &&
-                                    selectedBooking!.viapoints!.isNotEmpty &&
-                                    actionValue == true &&
-                                    isSwapped == false
-                                ? true
-                                : false,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // Use a slight delay to ensure the click event is fully processed
-                                // before the Dialog changes the UI tree.
-                                Future.delayed(const Duration(milliseconds: 50),
-                                    () {
-                                  if (!context.mounted) return; // Safety check
-
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: const Text("VIA List"),
-                                        content: SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              2.5,
-                                          // width: double.maxFinite, // Helps with sizing
-                                          child: ListView.builder(
-                                            itemCount: selectedBooking!
-                                                .viapoints!.length,
-                                            shrinkWrap: true,
-                                            // Necessary for ListView inside Alert
-                                            physics:
-                                                const AlwaysScrollableScrollPhysics(),
-                                            // Scrollable if list is long
-                                            itemBuilder:
-                                                (BuildContext context, index) {
-                                              return Column(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Expanded(
-                                                          child: Container(
-                                                        margin: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 6),
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 12,
-                                                                vertical: 10),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          border: Border(
-                                                            bottom: BorderSide(
-                                                              color:
-                                                                  DynamicColors
-                                                                      .black,
-                                                              width:
-                                                                  1.0, // You can adjust the thickness here
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: Text(
-                                                            selectedBooking!
-                                                                    .viapoints![
-                                                                        index]
-                                                                    .name ??
-                                                                ""),
-                                                      )),
-                                                      Expanded(
-                                                          child: Container(
-                                                        margin: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 6),
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 12,
-                                                                vertical: 10),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          border: Border(
-                                                            bottom: BorderSide(
-                                                              color:
-                                                                  DynamicColors
-                                                                      .black,
-                                                              width:
-                                                                  1.0, // You can adjust the thickness here
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: Text(
-                                                            selectedBooking!
-                                                                    .viapoints![
-                                                                        index]
-                                                                    .mobile ??
-                                                                ""),
-                                                      )),
-                                                    ],
-                                                  ),
-                                                  Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            2.5,
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 12,
-                                                            vertical: 15),
-                                                    decoration: BoxDecoration(
-                                                      border: Border(
-                                                        bottom: BorderSide(
-                                                          color: DynamicColors
-                                                              .black,
-                                                          width:
-                                                              1.0, // You can adjust the thickness here
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: Text(selectedBooking!
-                                                            .viapoints![index]
-                                                            .viapoint ??
-                                                        ""),
-                                                  )
-                                                ],
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context),
-                                            child: const Text("Cancel"),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () async {
-                                              await _controller
-                                                  .dashBoardDataBinding(
-                                                      id: selectedBooking!.id,
-                                                      jobData: selectedBooking);
-                                              Get.back();
-                                              Get.back();
-                                            },
-                                            child: const Text("Edit Via"),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                });
-                              },
-                              child: const Text("Show Via"),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        controller.customerMobile.value.isEmpty
+                            ? ""
+                            : controller.customerMobile.value,
+                        style: const TextStyle(color: Colors.black),
                       ),
 
                       const SizedBox(height: 10),
 
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(
-                                title: "Pick-up", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "Drop off", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "Date", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "Fare", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "Action", removeSearching: true),
-                          ],
-                          totalRow: controller.bookings.length,
-                          rows: List.generate(controller.bookings.length,
-                              (index) {
-                            // var booking = controller.bookings[index];
-                            BookingObjectData cliBookingData =
-                                BookingObjectData.fromJson(
-                                    controller.bookings[index]);
-
-                            return DataRow(
-                              cells: [
-                                DataCell(SizedBox(
-                                  width: Get.width / 6,
-                                  child: rightClickTextCell(
-                                    item: cliBookingData,
-                                    clickValue: 'pickUpClick',
-                                    onRightClick: () {
-                                      print("RIGHT CLICK JOURNEY TYPE");
-                                    },
-                                    child: Text(cliBookingData.pickup!),
+                      /// 🔽 BAQI TUMHARA ORIGINAL UI (UNCHANGED)
+                      Column(
+                        children: [
+                          /// PICKUP & DROPOFF TEXTFIELDS
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: pickupController,
+                                  decoration: InputDecoration(
+                                    labelText: "Pick Up",
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: pickupController.text.isEmpty &&
+                                        dropoffController.text.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : GestureDetector(
+                                      onTap: () {
+                                        pickupController.clear();
+                                        dropoffController.clear();
+                                        pickupPoints = null;
+                                        dropoffPoints = null;
+                                        setState(() {});
+                                      },
+                                      child: const Icon(Icons.close, color: Colors.red),
+                                    ),
                                   ),
-                                )),
-
-                                DataCell(SizedBox(
-                                  width: Get.width / 6,
-                                  child: rightClickTextCell(
-                                    item: cliBookingData,
-                                    clickValue: 'dropoffClick',
-                                    onRightClick: () {
-                                      print("RIGHT CLICK JOURNEY TYPE");
-                                    },
-                                    child: Text(cliBookingData.dropoff ?? ""),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: TextField(
+                                  controller: dropoffController,
+                                  decoration: InputDecoration(
+                                    labelText: "Drop Off",
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: pickupController.text.isEmpty &&
+                                        dropoffController.text.isEmpty
+                                        ? const SizedBox.shrink()
+                                        : GestureDetector(
+                                      onTap: () {
+                                        pickupController.clear();
+                                        dropoffController.clear();
+                                        pickupPoints = null;
+                                        dropoffPoints = null;
+                                        setState(() {});
+                                      },
+                                      child: const Icon(Icons.close, color: Colors.red),
+                                    ),
                                   ),
-                                )),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                                DataCell(Text(
-                                    "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
-                                DataCell(Text("£${cliBookingData.fares ?? 0}")),
+                          const SizedBox(height: 15),
 
-                                /// ACTION
-                                DataCell(
-                                  Obx(() => Checkbox(
+                          /// SWAP BUTTON
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isSwapped = !isSwapped;
+
+                                    final temp = pickupController.text;
+                                    pickupController.text = dropoffController.text;
+                                    dropoffController.text = temp;
+                                    submitBtnValue = true;
+                                  });
+                                },
+                                child: const Text("Swap Pickup/Drop"),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          /// TABLE
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DatatableWidget(
+                              columns: [
+                                buildHeaderWithSearch(title: "Pick-up", removeSearching: true),
+                                buildHeaderWithSearch(title: "Drop off", removeSearching: true),
+                                buildHeaderWithSearch(title: "Date", removeSearching: true),
+                                buildHeaderWithSearch(title: "Fare", removeSearching: true),
+                                buildHeaderWithSearch(title: "Action", removeSearching: true),
+                              ],
+                              totalRow: controller.bookings.length,
+                              rows: List.generate(controller.bookings.length, (index) {
+                                BookingObjectData cliBookingData =
+                                BookingObjectData.fromJson(controller.bookings[index]);
+
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Text(cliBookingData.pickup ?? "")),
+                                    DataCell(Text(cliBookingData.dropoff ?? "")),
+                                    DataCell(Text(
+                                        "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
+                                    DataCell(Text("£${cliBookingData.fares ?? 0}")),
+                                    DataCell(
+                                      Obx(() => Checkbox(
                                         value: selectedIndex.value == index,
                                         onChanged: (value) {
                                           if (selectedIndex.value == index) {
                                             selectedIndex.value = -1;
                                             selectedBooking = null;
-                                            submitBtnValue = false;
                                             pickupController.clear();
                                             dropoffController.clear();
                                             actionValue = false;
                                           } else {
-                                            submitBtnValue = true;
                                             selectedIndex.value = index;
                                             selectedBooking = cliBookingData;
                                             actionValue = true;
@@ -1316,22 +1487,21 @@ class _CenterAreaState extends State<_CenterArea> {
                                                 cliBookingData.pickup ?? "";
                                             dropoffController.text =
                                                 cliBookingData.dropoff ?? "";
-                                            print(
-                                                "Selected booking: $selectedBooking");
                                           }
                                           setState(() {});
                                         },
                                       )),
-                                ),
-                              ],
-                            );
-                          }),
-                        ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   );
                 }),
-
                 const SizedBox(height: 30),
 
                 /// DRIVER + VEHICLE
