@@ -105,7 +105,6 @@ class AccountInvoiceViewScreen extends StatelessWidget {
         totalCC = 0,
         grandTotal = 0;
 
-    // Table rows data calculate karna
     for (var item in lineItems) {
       final b = item.booking;
       if (b == null) continue;
@@ -149,14 +148,11 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left Side
                   _infoColumn([
                     {"EMAIL": "${subsidiaryData?.email ?? ""}"},
                     {"MOBILE": "${accountData?.mobile ?? ""}"},
                     {"TELEPHONE": "${subsidiaryData?.telephoneNumber ?? ""}"},
                   ]),
-
-                  // Right Side
                   _infoColumn([
                     {"ACCOUNT": "${accountData?.name ?? ""}"},
                     {"ORDER #": "${mainData.orderNumber ?? "-"}"},
@@ -198,7 +194,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                 5: FlexColumnWidth(2),
               },
               children: [
-                // 1. HEADER ROW (Total 13 Columns)
+                // 1. HEADER ROW
                 TableRow(
                   decoration: BoxDecoration(color: Colors.grey.shade100),
                   children: [
@@ -242,7 +238,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                   );
                 }).toList(),
 
-                // 1. SUBTOTAL/TOTAL ROW
+                // 1. TOTAL ROW
                 TableRow(
                   children: [
                     _cell(""),
