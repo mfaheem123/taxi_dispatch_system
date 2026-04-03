@@ -252,7 +252,7 @@ class _DriversViewState extends State<DriversView> {
                                       backgroundColor: DynamicColors.redClr),
                                   const SizedBox(width: 6),
                                   Text(
-                                    "(0)",
+                                    "${controller.busyDriversList.length}",
                                     style: mozillaTextRegularText(
                                       fontSize: 13,
                                       color: controller.driverSelectionTab
@@ -282,7 +282,9 @@ class _DriversViewState extends State<DriversView> {
                             vertical: 8),
                         itemBuilder: (context, index) {
 
-                          final driver = controller.onlineDriversList[index];
+                          final driver = controller.driverSelectionTab
+                              .value !=
+                              "activeDriver"?controller.busyDriversList[index]: controller.onlineDriversList[index];
 
                           String timeOnline = "";
 
@@ -305,13 +307,13 @@ class _DriversViewState extends State<DriversView> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    controller.onlineDriversList[index].name??"",
+                                    driver.name??"",
                                     style:
                                     mozillaTextRegularText(fontSize: 13),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
-                                    controller.onlineDriversList[index].vehicleType??"",
+                                    driver.vehicleType??"",
                                     style:
                                     mozillaTextRegularText(fontSize: 13),
                                     overflow: TextOverflow.ellipsis,
