@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/datatable_widget.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/component/keyboard_checkBox_widget.dart';
@@ -76,6 +77,19 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                     Spacer(),
                                     IconButton(
                                         onPressed: () {
+                                         controller.multiReservationFromDate = DateTime.now();
+                                         controller.multiReservationToDate = DateTime.now();
+                                          String currentTime = "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}";
+                                         controller.multiReservationToTimeController.text = currentTime;
+                                         controller.returnMultiReservationToTimeController.text = currentTime;
+                                          controller. mondayValue.value = false;
+                                         controller.tuesdayValue.value = false;
+                                         controller.wednesdayValue.value = false;
+                                         controller.thursdayValue.value = false;
+                                         controller.fridayValue.value = false;
+                                         controller.saturdayValue.value = false;
+                                         controller.sundayValue.value = false;
+
                                           Get.back();
                                         },
                                         icon: Icon(
@@ -98,6 +112,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
+                                key: ValueKey(controller.datePickerResetKey),
                             initialDate: controller.multiReservationFromDate?? DateTime.now(),
                             borderClr: Colors.blue,
                             onChanged: (date) {
@@ -105,7 +120,6 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               controller.update();
                             },
                             onSubmitted: (date) {
-                              // jab user enter press kare
                               print("User pressed enter: $date");
                             },
                           )),
@@ -118,6 +132,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
+                                key: ValueKey(controller.datePickerResetKey),
                             initialDate: controller.multiReservationToDate?? DateTime.now(),
                             borderClr: Colors.blue,
                             onChanged: (date) {
@@ -185,10 +200,10 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         CustomButton(
                           height: 35,
                           onTap: (){
-                            controller.multiReservationList.clear();
-                            controller.multiReservationDaysList.clear();
+                            // Clear the lists
+                            controller.resetMultiReservationFields();
                             controller.update();
-                            Get.back();
+                            // Get.back();
                           },
                           width: 60,
                           fontSize: 10,
@@ -393,11 +408,11 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   .map((object) {
                                 return DataRow(
                                   cells: [
-                                    DataCell(Text(object.exclude.toString().toUpperCase())),
-                                    DataCell(Text(object.day??"")),
-                                    DataCell(Text(object.startDate??"")),
+                                    DataCell(Center(child: Text(object.exclude.toString().toUpperCase()))),
+                                    DataCell(Center(child: Text(object.day??""))),
+                                    DataCell(Center(child: Text(object.startDate??""))),
                                     // DataCell(Text(object.time??"")),
-                                    DataCell(Text(object.returnTime??"")),
+                                    DataCell(Center(child: Text(object.returnTime??""))),
                                   ],
                                 );
                               }).toList(),
@@ -415,6 +430,10 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           alignment: Alignment.bottomRight,
                           child: CustomButton(
                             onTap: () async{
+                              if (controller.multiReservationList.isEmpty) {
+                                BotToast.showText(text: "Please select data first");
+                                return;
+                              }
                               final storedTemFare = await getFares(
                                   journeyTypeId: controller.selectJourneyTypeValue!.id,
                                   multiReservationList: controller.multiReservationList,

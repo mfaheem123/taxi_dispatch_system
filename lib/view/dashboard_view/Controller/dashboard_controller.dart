@@ -1532,7 +1532,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Multi Reservation variables
-
+   var datePickerResetKey = UniqueKey();
   DateTime? multiReservationFromDate = DateTime.now();
   DateTime? multiReservationToDate = DateTime.now();
   final multiReservationToTimeController = TextEditingController(
@@ -1631,7 +1631,24 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         throw Exception("Invalid day name");
     }
   }
-
+   void resetMultiReservationFields() {
+     multiReservationFromDate = DateTime.now();
+     multiReservationToDate = DateTime.now();
+     String currentTime = "${DateTime.now().hour.toString().padLeft(2, '0')}:${DateTime.now().minute.toString().padLeft(2, '0')}";
+     multiReservationToTimeController.text = currentTime;
+     returnMultiReservationToTimeController.text = currentTime;
+     multiReservationList.clear();
+     multiReservationDaysList.clear();
+     mondayValue.value = false;
+     tuesdayValue.value = false;
+     wednesdayValue.value = false;
+     thursdayValue.value = false;
+     fridayValue.value = false;
+     saturdayValue.value = false;
+     sundayValue.value = false;
+     datePickerResetKey = UniqueKey();
+     update();
+   }
   refreshMultiReservationData() async {
     multiReservationDaysList.clear();
     mondayValue.value = false;

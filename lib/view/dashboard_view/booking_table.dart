@@ -558,7 +558,7 @@ class _BookingTableState extends State<BookingTable> {
                                   onPressed: () {
                                     showDialog(
                                       context: context,
-                                      builder: (_) => DispatchBookingAlert(),
+                                      builder: (context) => DispatchBooking(bookingItem: item),
                                     );
                                   },
                                 ),
@@ -766,7 +766,7 @@ class _BookingTableState extends State<BookingTable> {
 
 
 
-  // 1. Modified rightClickTextCell to pass globalPosition
+  // 1. Right Click Wrapper
   Widget rightClickTextCell({
     required Widget child,
     required dynamic item,
@@ -779,12 +779,13 @@ class _BookingTableState extends State<BookingTable> {
             event.buttons == kSecondaryMouseButton) {
 
           if (onRightClick != null) onRightClick();
+
           final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
           final RelativeRect position = RelativeRect.fromRect(
             Rect.fromPoints(event.position, event.position),
             Offset.zero & overlay.size,
           );
-          // Hamara naya menu function call karein
+
           showRowContextMenu(
             context: context,
             position: position,
@@ -810,49 +811,77 @@ class _BookingTableState extends State<BookingTable> {
     ];
   }
 
-// 2. Updated showRowContextMenu with extra parameter
+// 1. Pehle context menu dikhane wala main function
   void showRowContextMenu({
     required BuildContext context,
     required RelativeRect position,
     required Offset globalPosition,
-    required dynamic item, // Ye pehle se majood hai
+    required dynamic item,
   }) async {
+    _hideSubMenu();
+
+    // Humne width fix rakhi hai taake submenu ki calculation asaan ho
+    const double menuWidth = 200.0;
+
     await showMenu<String>(
-        context: context,
-        position: position,
-        // ... baki decoration
-        items: [
-    PopupMenuItem<String>(
-    child: MouseRegion(
-        // YAHAN ITEM PASS KAREIN
-        onEnter: (_) => _showSubMenu( context, globalPosition, [
-      {'title': 'DISPATCH', 'icon': Icons.near_me},
-      {'title': 'FOLLOW ON', 'icon': Icons.sync},
-      {'title': 'SMS', 'icon': Icons.chat_bubble},
-    ], item ),
-            child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+      context: context,
+      position: position,
+      constraints: const BoxConstraints(minWidth: menuWidth, maxWidth: menuWidth),
+      elevation: 8,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      items: [
+        PopupMenuItem<String>(
+          padding: EdgeInsets.zero,
+          child: Builder(
+              builder: (innerContext) {
+                return MouseRegion(
+                  onEnter: (_) {
+                    // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
+                    _showSubMenu(innerContext, [
+                      {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                      {'title': 'SMS', 'icon': Icons.chat_bubble},
+                    ], item);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+                  ),
+                );
+              }
           ),
         ),
         PopupMenuItem<String>(
-          child: MouseRegion(
-            onEnter: (_) => _hideSubMenu(), // Dispatch wala close ho jayega
-            child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
-          ),
-        ),
-        PopupMenuItem<String>(
+          padding: EdgeInsets.zero,
           child: MouseRegion(
             onEnter: (_) => _hideSubMenu(),
-            child: _buildMenuRow(Icons.share, "SEND", true),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
+            ),
+          ),
+        ),
+        PopupMenuItem<String>(
+          padding: EdgeInsets.zero,
+          child: MouseRegion(
+            onEnter: (_) => _hideSubMenu(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: _buildMenuRow(Icons.share, "SEND", true),
+            ),
           ),
         ),
         const PopupMenuDivider(),
         PopupMenuItem<String>(
-          onTap: () => print("SMS selected"),
-          child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
+          onTap: () => _handleSubMenuAction(context, "SMS", item),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
+          ),
         ),
       ],
     );
-    _hideSubMenu(); // Cleanup
+    _hideSubMenu();
   }
 
 
@@ -864,40 +893,57 @@ class _BookingTableState extends State<BookingTable> {
     _subMenuEntry = null;
   }
 
-  void _showSubMenu(BuildContext context, Offset globalPosition, List<Map<String, dynamic>> subItems, dynamic item) {
+// 2. Submenu function jo RenderBox use karega (Dor jane wala masla khatam)
+  void _showSubMenu(BuildContext itemContext, List<Map<String, dynamic>> subItems, dynamic item) {
     _hideSubMenu();
-    final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    // Ye main menu item ki position nikaal raha hai
+    final RenderBox renderBox = itemContext.findRenderObject() as RenderBox;
+    final Offset offset = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
+
+    final screenWidth = MediaQuery.of(itemContext).size.width;
+    const double subMenuWidth = 180.0;
+
+    // Logic: Menu ke right side par space check karein
+    double xPos = offset.dx + size.width - 5; // 5px overlap for smooth feel
+
+    // Agar right side pe jagah nahi hai (Table ke end columns mein), to left side pe dikhayen
+    if (xPos + subMenuWidth > screenWidth) {
+      xPos = offset.dx - subMenuWidth + 5;
+    }
+
     _subMenuEntry = OverlayEntry(
       builder: (context) => Positioned(
-        left: globalPosition.dx ,
-        top: globalPosition.dy - 60,
+        left: xPos,
+        top: offset.dy - 5, // Menu item ke barabar alignment
         child: MouseRegion(
           onExit: (_) => _hideSubMenu(),
           child: Material(
-            elevation: 8,
+            elevation: 10,
             borderRadius: BorderRadius.circular(8),
             color: Colors.white,
             child: Container(
-              width: 160, // Submenu ki fixed width
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              width: subMenuWidth,
+              padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: Colors.grey.shade300),
+                color: Colors.white,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: subItems.map((sub) => InkWell(
                   onTap: () {
                     _hideSubMenu();
-                    Navigator.pop(context);
-
-                    _handleSubMenuAction(context, sub['title'], item);
+                    Navigator.pop(itemContext); // Main menu band karein
+                    _handleSubMenuAction(itemContext, sub['title'], item);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     child: Row(
                       children: [
-                        Icon(sub['icon'], size: 18, color: Colors.black87),
+                        Icon(sub['icon'], size: 18, color: Colors.blueGrey.shade800),
                         const SizedBox(width: 12),
                         Text(sub['title'],
                             style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)
@@ -913,8 +959,9 @@ class _BookingTableState extends State<BookingTable> {
       ),
     );
 
-    Overlay.of(context).insert(_subMenuEntry!);
+    Overlay.of(itemContext).insert(_subMenuEntry!);
   }
+
 
   void _handleSubMenuAction(BuildContext context, String title, dynamic item) {
     if (title == "DISPATCH") {
@@ -939,14 +986,22 @@ class _BookingTableState extends State<BookingTable> {
 
 
 
+// 3. Helper for Menu UI
   Widget _buildMenuRow(IconData icon, String title, bool hasArrow) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: Colors.black87),
-        const SizedBox(width: 12),
-        Expanded(child: Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-        if (hasArrow) const Icon(Icons.arrow_right, size: 18, color: Colors.black54),
-      ],
+    return SizedBox(
+      height: 40,
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.blueGrey.shade800),
+          const SizedBox(width: 12),
+          Expanded(
+              child: Text(title,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)
+              )
+          ),
+          if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),
+        ],
+      ),
     );
   }
 
