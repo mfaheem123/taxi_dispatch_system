@@ -348,18 +348,18 @@ class _MyHomePageState extends State<MyHomePage> {
       }),
 
 
-      bottomNavigationBar: GetBuilder<AuthController>( // <--- Yeh wrapper add karein
+      bottomNavigationBar: GetBuilder<AuthController>(
           builder: (auth) {
-            return (controller.currentPage.value == null ||
-                controller.currentPage.value.runtimeType == ByDefaultDashboard)
-                ? Container(
+            return
+              // (controller.currentPage.value == null ||  controller.currentPage.value.runtimeType == ByDefaultDashboard) ?
+              Container(
               width: Get.width,
               height: 60,
               color: DynamicColors.whiteClr,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 children: [
-                      // 1. Username Container
+                      //  Username
                       Container(
                         padding:
                             const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -493,8 +493,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ],
                   ),
-                )
-              : const SizedBox.shrink();
+                );
+              // : const SizedBox.shrink();
         }
       ),
     );

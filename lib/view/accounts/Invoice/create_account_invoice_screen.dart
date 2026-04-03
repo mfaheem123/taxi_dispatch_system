@@ -123,7 +123,6 @@ class _CreateAccountInvoiceScreenState
                     child: SizedBox(
                         height: 30,
                         child: KeyboardDatePicker(
-                          key: UniqueKey(),
                           initialDate:
                               DateTime.now().add(Duration(days: 7)),
                           onChanged: (date) {

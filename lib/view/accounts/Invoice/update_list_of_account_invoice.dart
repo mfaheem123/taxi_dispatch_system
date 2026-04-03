@@ -1,8 +1,5 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
-import 'package:dashboard_new1/component/dropdown_button.dart';
-import 'package:dashboard_new1/view/accounts/model/account_invoice_booking_model.dart';
-import 'package:dashboard_new1/view/administration/model/list_subsDiary.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:dashboard_new1/view/dashboard_view/booking_table.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
@@ -12,14 +9,10 @@ import 'package:get/get.dart';
 import '../../../../component/color.dart';
 import '../../../../component/datatable_widget.dart';
 import '../../../../component/textStyle.dart';
-import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
-import '../../../alert/dispatch_booking.dart';
 import '../../../alert/stripe_payment.dart';
 import '../../../alert/update_invoice_email_alt.dart';
-import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
-import '../model/update_account_invoice_model.dart' hide Booking;
 import 'account_invoice_preview_screen.dart';
 
 class UpdateAccountInvoiceScreen extends StatefulWidget {
@@ -218,31 +211,7 @@ class _UpdateAccountInvoiceScreenState
             SizedBox(
               height: 8,
             ),
-            // labeledField(
-            //   context: context,
-            //   isMobile: isMobile,
-            //   label: AppText.invoiceDate,
-            //   column: true,
-            //   width: fieldWidth / 1.8,
-            //   child: SizedBox(height: 30, child: KeyboardDatePicker(
-            //     key: ValueKey(controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate),
-            //     initialDate: controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.invoiceDate ?? DateTime.now(),
-            //     onChanged: (date) {
-            //       setState(() {
-            //         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
-            //         print(date);
-            //       });
-            //     },
-            //     onSubmitted: (date) {
-            //       setState(() {
-            //         controller.invoiceDateController = "${date.year}-${date.month}-${date.day}";
-            //       });
-            //       print("User pressed enter: $date");
-            //     },
-            //
-            //   )
-            //   )
-            // ),
+
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -301,19 +270,6 @@ class _UpdateAccountInvoiceScreenState
                       )
                     ]))),
 
-            // CustomDropdownField<Subsidiaries>(
-            //   text: "SUBSIDIARY",
-            //   width: fieldWidth / 1.5,
-            //   label: "subsidiary",
-            //   items: controller.subsDiaryModel?.subsidiaries ?? [],
-            //   value: controller.subsidiaries,
-            //   itemLabel: (item) => item.name ?? "",
-            //   onChanged: (val) {
-            //     controller.subsidiaries = val;
-            //     controller.update();
-            //   },
-            // ),
-
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -335,18 +291,7 @@ class _UpdateAccountInvoiceScreenState
                 ),
               ),
             ),
-            // CustomDropdownField<DepartmentObject>(
-            //   text: "DEPARTMENT",
-            //   width: fieldWidth / 1.5,
-            //   label: "DEPARTMENT",
-            //   items: controller.selectAccountValue?.departments ?? [],
-            //   value: controller.selectDepartmentData,
-            //   itemLabel: (item) => item.name ?? "",
-            //   onChanged: (val) {
-            //     controller.selectDepartmentData = val;
-            //     controller.update();
-            //   },
-            // ),
+
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -369,18 +314,6 @@ class _UpdateAccountInvoiceScreenState
               ),
             ),
 
-            // CustomDropdownField<DashboardAccountObject>(
-            //   text: "ACCOUNT",
-            //   width: fieldWidth / 1.5,
-            //   label: "account",
-            //   items: controller.dashboardAccountData?.accounts ?? [],
-            //   value: controller.selectAccountValue,
-            //   itemLabel: (item) => item.name ?? "",
-            //   onChanged: (val) {
-            //     controller.selectAccountValue = val;
-            //     controller.update();
-            //   },
-            // ),
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -405,14 +338,6 @@ class _UpdateAccountInvoiceScreenState
               ),
             ),
 
-            // CustomTextField(
-            //   borderRadius: 4,
-            //   controller: controller.orderNumber,
-            //   width: fieldWidth,
-            //   hintText: AppText.order,
-            //   columnText: true,
-            //   height: 30,
-            // ),
             labeledField(
               context: context,
               isMobile: isMobile,
@@ -594,8 +519,24 @@ class _UpdateAccountInvoiceScreenState
                     }).toList(),
 
 
-
-
+                    // 1. TOTAL Row
+                    DataRow(
+                      cells: [
+                        for (var i = 0; i < 8; i++) DataCell.empty,
+                        DataCell(Center(
+                            child: Text("TOTAL",
+                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)))),
+                        ...['fare', 'pc', 'wc', 'edc', 'mg', 'cc', 'total'].map((field) => DataCell(
+                          Center(
+                            child: Text(
+                              "£ ${controller.getInvoiceColumnTotal(field).toStringAsFixed(2)}",
+                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900),
+                            ),
+                          ),
+                        )),
+                        DataCell.empty,
+                      ],
+                    ),
 
                     //  Admin Row
 
@@ -613,7 +554,7 @@ class _UpdateAccountInvoiceScreenState
                       ]),
 
 
-                    //  TOTAL Row
+                    //  GRAND TOTAL Row
                     if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
                       DataRow(cells: [
                         for (var i = 0; i < 8; i++) DataCell.empty,
