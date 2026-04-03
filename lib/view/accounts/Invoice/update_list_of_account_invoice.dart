@@ -521,7 +521,6 @@ class _UpdateAccountInvoiceScreenState
 
                     // 1. TOTAL Row
                     DataRow(
-                      // color: WidgetStateProperty.all(Colors.grey.withOpacity(0.1)),
                       cells: [
                         for (var i = 0; i < 8; i++) DataCell.empty,
                         DataCell(Center(

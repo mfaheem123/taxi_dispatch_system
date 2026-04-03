@@ -5,13 +5,14 @@ import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../controller/invoice_controller.dart';
 
-
 class InvoicePreviewWindowWrapper extends StatefulWidget {
   @override
-  _InvoicePreviewWindowWrapperState createState() => _InvoicePreviewWindowWrapperState();
+  _InvoicePreviewWindowWrapperState createState() =>
+      _InvoicePreviewWindowWrapperState();
 }
 
-class _InvoicePreviewWindowWrapperState extends State<InvoicePreviewWindowWrapper> {
+class _InvoicePreviewWindowWrapperState
+    extends State<InvoicePreviewWindowWrapper> {
   bool isFullScreen = false;
 
   @override
@@ -21,11 +22,16 @@ class _InvoicePreviewWindowWrapperState extends State<InvoicePreviewWindowWrappe
         color: Colors.transparent,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: isFullScreen ? MediaQuery.of(context).size.width : MediaQuery.of(context).size.width * 0.9,
-          height: isFullScreen ? MediaQuery.of(context).size.height : MediaQuery.of(context).size.height * 0.9,
+          width: isFullScreen
+              ? MediaQuery.of(context).size.width
+              : MediaQuery.of(context).size.width * 0.9,
+          height: isFullScreen
+              ? MediaQuery.of(context).size.height
+              : MediaQuery.of(context).size.height * 0.9,
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: isFullScreen ? BorderRadius.zero : BorderRadius.circular(10),
+            borderRadius:
+                isFullScreen ? BorderRadius.zero : BorderRadius.circular(10),
             boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 15)],
           ),
           child: Column(
@@ -38,17 +44,26 @@ class _InvoicePreviewWindowWrapperState extends State<InvoicePreviewWindowWrappe
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Account Invoice Preview", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const Text("Account Invoice Preview",
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold)),
                     Row(
                       children: [
                         IconButton(
                           padding: EdgeInsets.zero,
-                          icon: Icon(isFullScreen ? Icons.fullscreen_exit : Icons.crop_square, color: Colors.white, size: 20),
-                          onPressed: () => setState(() => isFullScreen = !isFullScreen),
+                          icon: Icon(
+                              isFullScreen
+                                  ? Icons.fullscreen_exit
+                                  : Icons.crop_square,
+                              color: Colors.white,
+                              size: 20),
+                          onPressed: () =>
+                              setState(() => isFullScreen = !isFullScreen),
                         ),
                         IconButton(
                           padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.close, color: Colors.white, size: 20),
+                          icon: const Icon(Icons.close,
+                              color: Colors.white, size: 20),
                           onPressed: () => Get.back(),
                         ),
                       ],
@@ -65,11 +80,13 @@ class _InvoicePreviewWindowWrapperState extends State<InvoicePreviewWindowWrappe
     );
   }
 }
+
 class AccountInvoiceViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<InvoiceController>();
-    final mainData = controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
+    final mainData =
+        controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
 
     if (mainData == null) {
       return const Center(child: Text("No Invoice Data Found"));
@@ -80,7 +97,13 @@ class AccountInvoiceViewScreen extends StatelessWidget {
     final List lineItems = mainData.accountInvoiceLineitems ?? [];
 
     // Variables for calculations
-    double totalFare = 0, totalPC = 0, totalWC = 0, totalEDC = 0, totalMG = 0, totalCC = 0, grandTotal = 0;
+    double totalFare = 0,
+        totalPC = 0,
+        totalWC = 0,
+        totalEDC = 0,
+        totalMG = 0,
+        totalCC = 0,
+        grandTotal = 0;
 
     // Table rows data calculate karna
     for (var item in lineItems) {
@@ -111,32 +134,58 @@ class AccountInvoiceViewScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Center(
-              child: Text("ACCOUNT INVOICE", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+              child: Text("ACCOUNT INVOICE",
+                  style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2)),
             ),
             const SizedBox(height: 30),
 
             // Header Info Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _infoColumn([
-                  "EMAIL: ${subsidiaryData?.email ?? ""}",
-                  "MOBILE: ${accountData?.mobile ?? ""}",
-                  "TELEPHONE: ${subsidiaryData?.telephoneNumber ?? ""}",
-                ]),
-                _infoColumn([
-                  "ACCOUNT: ${accountData?.name ?? ""}",
-                  "ORDER #: ${mainData.orderNumber ?? "-"}",
-                  "DATE: ${mainData.invoiceDate ?? ""}",
-                  "DUE DATE: ${mainData.invoiceDueDate ?? ""}",
-                ], isRight: true),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left Side
+                  _infoColumn([
+                    {"EMAIL": "${subsidiaryData?.email ?? ""}"},
+                    {"MOBILE": "${accountData?.mobile ?? ""}"},
+                    {"TELEPHONE": "${subsidiaryData?.telephoneNumber ?? ""}"},
+                  ]),
+
+                  // Right Side
+                  _infoColumn([
+                    {"ACCOUNT": "${accountData?.name ?? ""}"},
+                    {"ORDER #": "${mainData.orderNumber ?? "-"}"},
+                    {"DATE": "${mainData.invoiceDate ?? ""}"},
+                    {"DUE DATE": "${mainData.invoiceDueDate ?? ""}"},
+                  ], isRight: true),
+                ],
+              ),
             ),
 
             const SizedBox(height: 15),
-            Text("PERIOD: (${mainData.fromDate ?? ""} TO ${mainData.toDate ?? ""})",
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(
+                      text: "PERIOD: (",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                  ),
+                  TextSpan(
+                      text: "${mainData.fromDate ?? ""} TO ${mainData.toDate ?? ""}",
+                      style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)
+                  ),
+                  const TextSpan(
+                      text: ")",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 15),
 
             // Main Table
@@ -153,12 +202,18 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                 TableRow(
                   decoration: BoxDecoration(color: Colors.grey.shade100),
                   children: [
-                    _cell("REF #", isHeader: true), _cell("DATETIME", isHeader: true),
-                    _cell("VEH", isHeader: true), _cell("CUSTOMER", isHeader: true),
-                    _cell("PICKUP", isHeader: true), _cell("DROPOFF", isHeader: true),
-                    _cell("FARE", isHeader: true), _cell("PC", isHeader: true),
-                    _cell("WC", isHeader: true), _cell("EDC", isHeader: true),
-                    _cell("M&G", isHeader: true), _cell("CC", isHeader: true),
+                    _cell("REF #", isHeader: true),
+                    _cell("DATETIME", isHeader: true),
+                    _cell("VEH", isHeader: true),
+                    _cell("CUSTOMER", isHeader: true),
+                    _cell("PICKUP", isHeader: true),
+                    _cell("DROPOFF", isHeader: true),
+                    _cell("FARE", isHeader: true),
+                    _cell("PC", isHeader: true),
+                    _cell("WC", isHeader: true),
+                    _cell("EDC", isHeader: true),
+                    _cell("M&G", isHeader: true),
+                    _cell("CC", isHeader: true),
                     _cell("TOTAL", isHeader: true),
                   ],
                 ),
@@ -176,22 +231,26 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                       _cell("£${(b?.companyPrice ?? 0).toStringAsFixed(2)}"),
                       _cell("£${(b?.parkingCharges ?? 0).toStringAsFixed(2)}"),
                       _cell("£${(b?.waitingCharges ?? 0).toStringAsFixed(2)}"),
-                      _cell("£${(b?.extraDropCharges ?? 0).toStringAsFixed(2)}"),
+                      _cell(
+                          "£${(b?.extraDropCharges ?? 0).toStringAsFixed(2)}"),
                       _cell("£${(b?.meetAndGreet ?? 0).toStringAsFixed(2)}"),
-                      _cell("£${(b?.congestionCharges ?? 0).toStringAsFixed(2)}"),
-                      _cell("£${(b?.totalCharges ?? 0).toStringAsFixed(2)}", isBold: true),
+                      _cell(
+                          "£${(b?.congestionCharges ?? 0).toStringAsFixed(2)}"),
+                      _cell("£${(b?.totalCharges ?? 0).toStringAsFixed(2)}",
+                          isBold: true),
                     ],
                   );
                 }).toList(),
+
+                // 1. SUBTOTAL/TOTAL ROW
                 TableRow(
-                  decoration: BoxDecoration(color: Colors.grey.shade50),
                   children: [
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
                     _cell("TOTAL", isBold: true, align: TextAlign.right),
-                    _cell(""),
-                    _cell(""),
-                    _cell(""),
-                    _cell(""),
-                    _cell(""),
                     _cell("£${totalFare.toStringAsFixed(2)}", isBold: true),
                     _cell("£${totalPC.toStringAsFixed(2)}", isBold: true),
                     _cell("£${totalWC.toStringAsFixed(2)}", isBold: true),
@@ -201,65 +260,110 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                     _cell("£${grandTotal.toStringAsFixed(2)}", isBold: true),
                   ],
                 ),
+
+                // 2. ADMIN FEES ROW
+                TableRow(
+                  children: [
+                    _cell(""), _cell(""), _cell(""), _cell(""), _cell(""),
+                    _cell("ADMIN FEES",
+                        isBold: true, align: TextAlign.right),
+                    _cell(""), _cell(""), _cell(""), _cell(""), _cell(""),
+                    _cell(""),
+                    _cell("£${adminFees.toStringAsFixed(2)}", isBold: true),
+                  ],
+                ),
+
+                // 3. GRAND TOTAL ROW
+                TableRow(
+                  children: [
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell("GRAND TOTAL", isBold: true, align: TextAlign.right),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell(""),
+                    _cell("£${mainData.amount}", isBold: true),
+                  ],
+                ),
               ],
             ),
-
             const SizedBox(height: 20),
-
-            // Calculation Footer (Right Aligned)
             Align(
               alignment: Alignment.centerRight,
               child: Container(
-                width: 300,
+                padding: const EdgeInsets.only(right: 5),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    _summaryRow("ADMIN FEES", "£${adminFees.toStringAsFixed(2)}"),
-                    const Divider(),
-                    _summaryRow("GRAND TOTAL", "£${mainData.amount}", isGrand: true),
+                    _footer("PC: PARKING CHARGES"),
+                    _footer("WC: WAITING CHARGES"),
+                    _footer("EDC: EXTRA DROP CHARGES"),
+                    _footer("M&G: MEET AND GREET"),
+                    _footer("CC: CONGESTION CHARGES"),
                   ],
                 ),
               ),
             ),
-
-            const SizedBox(height: 20),
-            // Legend
-            const Text("PC: PARKING CHARGES | WC: WAITING CHARGES | EDC: EXTRA DROP CHARGES", style: TextStyle(fontSize: 10, color: Colors.grey)),
-            const Text("M&G: MEET AND GREET | CC: CONGESTION CHARGES", style: TextStyle(fontSize: 10, color: Colors.grey)),
           ],
         ),
       ),
     );
   }
 
-  Widget _infoColumn(List<String> texts, {bool isRight = false}) {
+  Widget _infoColumn(List<Map<String, String>> data, {bool isRight = false}) {
     return Column(
       crossAxisAlignment: isRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: texts.map((t) => Padding(
+      children: data.map((item) => Padding(
         padding: const EdgeInsets.only(bottom: 4),
-        child: Text(t, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+        child: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                  text: "${item.keys.first}: ",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+              ),
+              TextSpan(
+                  text: item.values.first,
+                  style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)
+              ),
+            ],
+          ),
+        ),
       )).toList(),
     );
   }
 
-  Widget _cell(String text, {bool isHeader = false, bool isBold = false, int colspan = 1, TextAlign align = TextAlign.center}) {
+  Widget _cell(String text,
+      {bool isHeader = false,
+      bool isBold = false,
+      TextAlign align = TextAlign.center}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-      child: Text(text, textAlign: align, style: TextStyle(
-        fontSize: isHeader ? 12 : 11,
-        fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
-      )),
+      child: Text(text,
+          textAlign: align,
+          style: TextStyle(
+            fontSize: isHeader ? 15 : 14,
+            fontWeight:
+                (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
+          )),
     );
   }
-
-  Widget _summaryRow(String label, String value, {bool isGrand = false}) {
+  Widget _footer(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(fontSize: isGrand ? 16 : 14, fontWeight: isGrand ? FontWeight.bold : FontWeight.w600)),
-          Text(value, style: TextStyle(fontSize: isGrand ? 16 : 14, fontWeight: FontWeight.bold)),
-        ],
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }
