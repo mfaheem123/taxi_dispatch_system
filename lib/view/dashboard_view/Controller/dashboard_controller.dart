@@ -98,6 +98,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           print(data['event']);
           if (data['event'] == "DRIVER_LOGIN") {
 
+
+
+
             final driver = DriverActivityModel.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
@@ -144,19 +147,22 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           print(data['event']);
           if (data['event'] == "BUSY_DRIVER_UPDATE") {
 
+            if (onlineDriversList.any((e) => e.id.toString() == data['data']['id'].toString())) {
+              onlineDriversList.removeWhere(
+                    (e) => e.id.toString() == data['data']['id'].toString(),
+              );
+            }
+
             final driver = DriverActivityModel.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
             busyDriversList.add(driver);
             update();
           }else{
-            int index = busyDriversList.indexWhere(
-                  (test) => test.id.toString() == data['data']['id'].toString(),
-            );
 
-            if (index >= 0) {
-              busyDriversList.removeAt(index);
-            }
+            busyDriversList.removeWhere(
+                  (e) => e.id.toString() == data['data']['id'].toString(),
+            );
             update();
           }
         },
@@ -1288,7 +1294,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       _timer?.cancel();
 
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        getDashboardTableData(tableId: selectedTabId);
+         getDashboardTableData(tableId: selectedTabId);
       });
 
       update();
