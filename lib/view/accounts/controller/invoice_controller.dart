@@ -361,15 +361,8 @@ class InvoiceController extends GetxController {
   double _calculateInvoiceListTotal(List<dynamic> list, String field) {
     return list.fold(0.0, (sum, item) {
       if (field == 'total') {
-        double rowTotal = parseDouble(item.companyPrice) +
-            parseDouble(item.parkingCharges) +
-            parseDouble(item.waitingCharges) +
-            parseDouble(item.extraDropCharges) +
-            parseDouble(item.meetAndGreet) +
-            parseDouble(item.congestionCharges);
-        return sum + rowTotal;
+        return sum + parseDouble(item.totalCharges);
       }
-
       return sum + parseDouble({
         'fare': item.companyPrice,
         'pc': item.parkingCharges,
@@ -722,7 +715,7 @@ CC: CONGESTION CHARGES
 
   updateBookingCharges(dynamic booking) async {
     var formData = {
-      "fares": booking.fares.toString(),
+      "fares": booking.companyPrice.toString(),
       "parking_charges": booking.parkingCharges.toString(),
       "waiting_charges": booking.waitingCharges.toString(),
       "extra_drop_charges": booking.extraDropCharges.toString(),
@@ -733,6 +726,7 @@ CC: CONGESTION CHARGES
     var response = await Api()
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
+      print("Invoice Update Status: ${response.statusCode}");
       BotToast.showText(text: "Success" "Charges updated!");
     }
   }
@@ -759,7 +753,7 @@ CC: CONGESTION CHARGES
         .post(formData, "account_invoice/update/${invoice.id}", auth: true);
 
     if (response.statusCode == 200) {
-      BotToast.showText(text: "Success: Charges updated!");
+      BotToast.showText(text: "Invoice Updated Successfully!");
     }
   }
 }

@@ -71,7 +71,6 @@ class _UserListscreenState extends State<UserListscreen> {
       child: GetBuilder<AdministrationController>(
           initState: (state) {
             controller.userData();
-
           },
 
           builder: (controller) {
@@ -101,12 +100,15 @@ class _UserListscreenState extends State<UserListscreen> {
                     SizedBox(
                       width: 20,
                     ),
-                    Checkbox(
-                        value: controller.inActive.value,
-                        onChanged: (v) {
-                          controller.inActive.value = v!;
-                          controller.update();
-                        }),
+                    Obx(() => Checkbox(
+                      value: controller.inActive.value,
+                      onChanged: (v) {
+                        controller.inActive.value = v!;
+                        // controller.userCurrentPage.value = 1;
+                        controller.userSearch();
+                      },
+                    ),
+                    ),
                     Text(
                       AppText.active,
                       style: mozillaTextSemiBoldText(

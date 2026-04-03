@@ -370,25 +370,25 @@ class _UpdateAccountInvoiceScreenState
                 width: Get.width,
                 child: DatatableWidget(
                   columns: [
-                    DataColumn(
-                label: Checkbox(
-                value: controller.isAllUpdateSelected,
-                  onChanged: (val) {
-                    controller.isAllUpdateSelected = val ?? false;
-                    controller.selectedBookingIds.clear();
-
-                    if (controller.isAllUpdateSelected) {
-                      controller.selectedBookingIds.addAll(
-                          controller.accountInvoiceBookingModel!.bookings!
-                              .map((e) => e.id!)
-                      );
-                    }
-
-                    controller.update();
-                  },
-                ),
-
-                    ),
+                //     DataColumn(
+                // label: Checkbox(
+                // value: controller.isAllUpdateSelected,
+                //   onChanged: (val) {
+                //     controller.isAllUpdateSelected = val ?? false;
+                //     controller.selectedBookingIds.clear();
+                //
+                //     if (controller.isAllUpdateSelected) {
+                //       controller.selectedBookingIds.addAll(
+                //           controller.accountInvoiceBookingModel!.bookings!
+                //               .map((e) => e.id!)
+                //       );
+                //     }
+                //
+                //     controller.update();
+                //   },
+                // ),
+                //
+                //     ),
                     buildHeaderWithSearch(title: "REF #"),
                     buildHeaderWithSearch(title: "DATETIME"),
                     buildHeaderWithSearch(title: "PICKUP"),
@@ -435,25 +435,25 @@ class _UpdateAccountInvoiceScreenState
 
                       return DataRow(cells: [
 
-                        DataCell(
-                          Checkbox(
-                            value: controller.selectedBookingIds.contains(booking?.id),
-                            onChanged: (val) {
-
-                              if (val == true) {
-                                controller.selectedBookingIds.add(booking!.id!);
-                              } else {
-                                controller.selectedBookingIds.remove(booking?.id);
-                              }
-
-                              controller.isAllUpdateSelected =
-                                  controller.selectedBookingIds.length ==
-                                      controller.accountInvoiceBookingModel!.bookings!.length;
-
-                              controller.update();
-                            },
-                          ),
-                        ),
+                        // DataCell(
+                        //   Checkbox(
+                        //     value: controller.selectedBookingIds.contains(booking?.id),
+                        //     onChanged: (val) {
+                        //
+                        //       if (val == true) {
+                        //         controller.selectedBookingIds.add(booking!.id!);
+                        //       } else {
+                        //         controller.selectedBookingIds.remove(booking?.id);
+                        //       }
+                        //
+                        //       controller.isAllUpdateSelected =
+                        //           controller.selectedBookingIds.length ==
+                        //               controller.accountInvoiceBookingModel!.bookings!.length;
+                        //
+                        //       controller.update();
+                        //     },
+                        //   ),
+                        // ),
                         DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
                         DataCell(Center(child: Text("${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}"))),
                         DataCell(Center(child: Text(booking?.pickup ?? "-"))),
@@ -522,7 +522,7 @@ class _UpdateAccountInvoiceScreenState
                     // 1. TOTAL Row
                     DataRow(
                       cells: [
-                        for (var i = 0; i < 8; i++) DataCell.empty,
+                        for (var i = 0; i < 7; i++) DataCell.empty,
                         DataCell(Center(
                             child: Text("TOTAL",
                               style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)))),
@@ -542,7 +542,7 @@ class _UpdateAccountInvoiceScreenState
 
                     if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
                       DataRow(cells: [
-                        for (var i = 0; i < 8; i++) DataCell.empty,
+                        for (var i = 0; i < 7; i++) DataCell.empty,
                         DataCell(Text("ADMIN FEES", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))),
                         for (var i = 0; i < 6; i++) DataCell.empty,
                         DataCell(Center(
@@ -557,7 +557,7 @@ class _UpdateAccountInvoiceScreenState
                     //  GRAND TOTAL Row
                     if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
                       DataRow(cells: [
-                        for (var i = 0; i < 8; i++) DataCell.empty,
+                        for (var i = 0; i < 7; i++) DataCell.empty,
                         DataCell(Text("GRAND TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))),
                         for (var i = 0; i < 6; i++) DataCell.empty,
                         DataCell(Center(

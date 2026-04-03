@@ -361,6 +361,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                           ),
                           Wrap(
                             verticalDirection: VerticalDirection.down,
+                            runSpacing: 15,
                             spacing: fieldWidth / 2,
                             children: [
                               CustomTextField(
@@ -381,6 +382,16 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 columnText: true,
                                 height: 35,
                               ),
+                              CustomTextField(
+                                borderRadius: 4,
+                                controller: controller.perMileFareController,
+                                width: fieldWidth,
+                                hintText: "PER MILE FARE",
+                                keyboardType: TextInputType.number,
+                                columnText: true,
+                                height: 35,
+                              ),
+
                               Visibility(
                                 visible: controller.fareConfiguration != "NORMAL"
                                     ? true
@@ -401,9 +412,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             child: CustomButton(
                               height: 30,
                               onTap: () {
-                                if (controller.accountValue == null ||
+                                if (
+                                controller.accountValue == null ||
                                     controller.vehicleValue == null) {
-                                  BotToast.showText(text: "Please select account and vehicle");
+                                  BotToast.showText(text: "Please select vehicle");
                                   return;
                                 }
                                 if (controller.fareConfiguration != "NORMAL" && controller.titleController.text.isEmpty) {
@@ -463,6 +475,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               title: "MINIMUM FARES", removeSearching: true),
                           buildHeaderWithSearch(
                               title: "MINIMUM MILES", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "PER MILE FARE", removeSearching: true),
                           if(controller.fareConfiguration != "NORMAL") buildHeaderWithSearch(
                               title: "TITLE", removeSearching: true),
                           buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
@@ -480,6 +494,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     DataCell(Center(child: Text(fare.toTime ?? ""))),
                                     DataCell(Center(child: Text("£ ${fare.minimumFares ?? '0.00'}"))),
                                     DataCell(Center(child: Text("${fare.minimumMiles ?? '0.0'} MI"))),
+                                    DataCell(Center(child: Text(""))),
                                    if(controller.fareConfiguration != "NORMAL") DataCell(Text(fare.title ?? "")),
                                     DataCell(
                                       Center(

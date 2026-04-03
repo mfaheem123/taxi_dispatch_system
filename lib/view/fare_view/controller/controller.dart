@@ -697,6 +697,7 @@ class FareController extends GetxController {
   final toDayController = TextEditingController(text: "09:08 ");
   final startingFareController = TextEditingController();
   final startingMilesController = TextEditingController();
+  final perMileFareController = TextEditingController();
   final titleController = TextEditingController();
 
   List<String> weekDayList = [

@@ -7,12 +7,12 @@ import 'package:dio/dio.dart' as dio;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../User/create_subsiDiary.dart';
 import '../model/get_role.dart';
 
 class AdministrationController extends GetxController {
   /// RxBool variable
-  RxBool inActive = false.obs;
   RxBool subsDiarySelection = false.obs;
   RxBool subsDiaryAllSelection = false.obs;
 
@@ -122,6 +122,7 @@ class AdministrationController extends GetxController {
   UserModel? userModel;
   Employee? employee;
   RxBool userLoading = false.obs;
+  RxBool inActive = false.obs;
   var userCurrentPage = 1.obs;
   var userTotalPage = 1.obs;
   final int userLlimit = 15;
@@ -135,10 +136,11 @@ class AdministrationController extends GetxController {
   RxString searchUserSubsiDiary = ''.obs;
   userData() async {
       userLoading.value = true;
-      final response = await Api().get('employees/get?',
+      final response = await Api().get('employees/get',
           queryParameters: {
         'page' : userCurrentPage.value,
         'limit': userLlimit,
+        'active': inActive.value,
         'username' : searchUserName.value.toLowerCase(),
         'email' : searchUserEmail.value.toLowerCase(),
         'phone' : searchUserPhone.value.toLowerCase(),
