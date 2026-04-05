@@ -1,5 +1,3 @@
-
-
 // To parse this JSON data, do
 //
 //     final getAllFareConfigurationModel = getAllFareConfigurationModelFromJson(jsonString);
@@ -24,13 +22,13 @@ class GetAllFareConfigurationModel {
   factory GetAllFareConfigurationModel.fromJson(Map<String, dynamic> json) => GetAllFareConfigurationModel(
     status: json["status"],
     count: json["count"],
-    fareConfigurations: List<FareConfiguration>.from(json["fare_configurations"].map((x) => FareConfiguration.fromJson(x))),
+    fareConfigurations: json["fare_configurations"] == null ? [] : List<FareConfiguration>.from(json["fare_configurations"]!.map((x) => FareConfiguration.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "status": status,
     "count": count,
-    "fare_configurations": List<dynamic>.from(fareConfigurations!.map((x) => x.toJson())),
+    "fare_configurations": fareConfigurations == null ? [] : List<dynamic>.from(fareConfigurations!.map((x) => x.toJson())),
   };
 }
 
@@ -44,9 +42,10 @@ class FareConfiguration {
   String? toTime;
   num? minimumFares;
   num? minimumMiles;
-  String? fromDate;
-  String? toDate;
-  String? title;
+  dynamic fromDate;
+  dynamic toDate;
+  dynamic title;
+  num? perMileFares;
   GetFareConfigVehicleType? vehicleType;
   GetFareConfigAccount? account;
 
@@ -63,6 +62,7 @@ class FareConfiguration {
     this.fromDate,
     this.toDate,
     this.title,
+    this.perMileFares,
     this.vehicleType,
     this.account,
   });
@@ -75,13 +75,12 @@ class FareConfiguration {
     toDay: json["to_day"],
     fromTime: json["from_time"],
     toTime: json["to_time"],
-    // double.parse ki jagah num.tryParse use karen safety ke liye
     minimumFares: json["minimum_fares"] != null ? num.tryParse(json["minimum_fares"].toString()) ?? 0.0 : 0.0,
     minimumMiles: json["minimum_miles"] != null ? num.tryParse(json["minimum_miles"].toString()) ?? 0.0 : 0.0,
     fromDate: json["from_date"],
     toDate: json["to_date"],
     title: json["title"],
-    // Object null check lazmi hai
+    perMileFares: json["per_mile_fares"]!= null ? num.tryParse(json["per_mile_fares"].toString()) ?? 0.0 : 0.0,
     vehicleType: json["vehicle_type"] == null ? null : GetFareConfigVehicleType.fromJson(json["vehicle_type"]),
     account: json["account"] == null ? null : GetFareConfigAccount.fromJson(json["account"]),
   );
@@ -99,8 +98,9 @@ class FareConfiguration {
     "from_date": fromDate,
     "to_date": toDate,
     "title": title,
-    "vehicle_type": vehicleType!.toJson(),
-    "account": account!.toJson(),
+    "per_mile_fares": perMileFares,
+    "vehicle_type": vehicleType?.toJson(),
+    "account": account?.toJson(),
   };
 }
 

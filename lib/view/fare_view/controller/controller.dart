@@ -731,13 +731,15 @@ class FareController extends GetxController {
   createFareSetting() async {
     var formData = {
       "vehicle_type_id": vehicleValue!.id,
-      "account_id": accountValue!.id,
+      // "account_id": accountValue!.id,
+      if (accountValue != null) "account_id": accountValue!.id,
       "from_day": fromDayValue,
       "to_day": toDayValue,
       "from_time": fromDayController.text,
       "to_time": toDayController.text,
       "minimum_fares": startingFareController.text,
       "minimum_miles": startingMilesController.text,
+      "per_mile_fares": perMileFareController.text,
       if (titleController.text.isNotEmpty && fareConfiguration != "NORMAL")
         "title": titleController.text,
       if (fareConfiguration != "NORMAL") "from_date": startDate,
@@ -801,6 +803,7 @@ class FareController extends GetxController {
     toDayController.clear();
     startingFareController.clear();
     startingMilesController.clear();
+    perMileFareController.clear();
     titleController.clear();
     updateFareValue.value = false;
     fareUpdateId.value = 0;
@@ -828,6 +831,7 @@ class FareController extends GetxController {
 
     startingFareController.text = fare.minimumFares?.toString() ?? "";
     startingMilesController.text = fare.minimumMiles?.toString() ?? "";
+    perMileFareController.text = fare.perMileFares?.toString() ?? "";
 
     titleController.text = fare.title ?? "";
 

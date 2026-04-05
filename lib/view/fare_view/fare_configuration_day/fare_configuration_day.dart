@@ -412,9 +412,13 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             child: CustomButton(
                               height: 30,
                               onTap: () {
-                                if (
-                                controller.accountValue == null ||
-                                    controller.vehicleValue == null) {
+                                // if (
+                                // controller.accountValue == null ||
+                                //     controller.vehicleValue == null) {
+                                //   BotToast.showText(text: "Please select vehicle and account");
+                                //   return;
+                                // }
+                                if (controller.vehicleValue == null) {
                                   BotToast.showText(text: "Please select vehicle");
                                   return;
                                 }
@@ -494,7 +498,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                     DataCell(Center(child: Text(fare.toTime ?? ""))),
                                     DataCell(Center(child: Text("£ ${fare.minimumFares ?? '0.00'}"))),
                                     DataCell(Center(child: Text("${fare.minimumMiles ?? '0.0'} MI"))),
-                                    DataCell(Center(child: Text(""))),
+                                    DataCell(Center(child: Text("${fare.perMileFares ?? '0.0'}"))),
                                    if(controller.fareConfiguration != "NORMAL") DataCell(Text(fare.title ?? "")),
                                     DataCell(
                                       Center(

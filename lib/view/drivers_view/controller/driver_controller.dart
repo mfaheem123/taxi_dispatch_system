@@ -994,7 +994,7 @@ class DriverController extends GetxController {
     var response = await Api()
         .get("drivers/commission?active=true&driver_type=Commission");
     if (response.statusCode == 200) {
-      print("API Response: ${response.data}");
+      // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
 
       oldBalanceVar = 0.0;
@@ -1032,6 +1032,7 @@ class DriverController extends GetxController {
     var response = await Api().get("enumerations/payment-types");
     if (response.statusCode == 200) {
       paymentTypesModel = DriverCommissionPaymentModel.fromJson(response.data);
+      print("PAYMENT API DATA: ${response.data}");
     }
     isLoadingPayments = false;
     update();
@@ -1064,6 +1065,7 @@ class DriverController extends GetxController {
     );
     if (response.statusCode == 200) {
       filterData = DriverCommissionFilterModel.fromJson(response.data);
+      print("API Response: ${response.data}");
       if (filterData?.bookings != null) {
         for (var booking in filterData!.bookings!) {
           recalculateDriverCommissionRow(booking);
