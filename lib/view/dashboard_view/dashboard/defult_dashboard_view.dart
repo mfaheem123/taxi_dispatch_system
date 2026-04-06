@@ -311,8 +311,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onTap: () {
                                                                                       shortCutKeyValue.value = "PICKUP LOCATION";
+                                                                                      controller.dropDownShow.value = true;
                                                                                     },
                                                                                     onChanged: (v) {
+                                                                                      if(v.isEmpty){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      }
                                                                                       controller.onChangeHandler(fieldName: "PICKUP LOCATION", searchingText: v);
                                                                                     },
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -331,6 +335,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   // controller.markers.remove(controller.markers[index]);
                                                                                                   FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                                                   controller.markers.clear();
+                                                                                                  controller.dropDownShow.value = false;
                                                                                                   controller.polyLineMarkerInfo.clear();
                                                                                                   controller.pickupController.clear();
                                                                                                   controller.dropOffController.clear();
@@ -381,6 +386,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     value: _controller.zoneValue,
                                                                                     itemLabel: (templateList) => templateList.name!,
                                                                                     onChanged: (val) {
+                                                                                      controller.dropDownShow.value = false;
                                                                                       _controller.zoneValue = val;
                                                                                       controller.dashboardZoneValue = val;
                                                                                       controller.update();
@@ -402,6 +408,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     controller: controller.pickUpNoteController,
                                                                                     hintText: "PICKUP NOTES",
                                                                                     borderRadius: 6,
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                   ),
@@ -448,6 +457,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       hintText: "Flight Number",
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,
+                                                                                      onTap: (){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      },
                                                                                       onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                     ),
                                                                                   ),
@@ -474,6 +486,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       controller: controller.arrivalTimeController,
                                                                                       hintText: "ARR",
                                                                                       borderRadius: 6,
+                                                                                      onTap: (){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      },
                                                                                       textInputAction: TextInputAction.next,
                                                                                       onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                     ),
@@ -539,9 +554,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     hintText: 'DROP LOCATION',
                                                                                     onTap: () {
                                                                                       shortCutKeyValue.value = "DROP LOCATION";
+                                                                                      controller.dropDownShow.value = true;
                                                                                     },
                                                                                     borderRadius: 4,
                                                                                     onChanged: (v) {
+                                                                                      if(v.isEmpty){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      }
                                                                                       controller.onChangeHandler(fieldName: "DROP LOCATION", searchingText: v);
                                                                                     },
                                                                                     prefixIcon: const Icon(
@@ -570,6 +589,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   controller.polyLineMarkerInfo.clear();
                                                                                                   controller.pickupController.clear();
                                                                                                   controller.polylinePoints.clear();
+                                                                                                  controller.dropDownShow.value = false;
                                                                                                   controller.fetchRouteFromOSRM();
                                                                                                   controller.fixedFare.value = "0";
                                                                                                   controller.totalDistance.value = "0";
@@ -589,6 +609,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                             String tempDrop = controller.dropOffController.text;
                                                                                             controller.pickupController.text = tempDrop;
                                                                                             controller.dropOffController.text = tempPic;
+                                                                                            controller.dropDownShow.value = false;
                                                                                             controller.update();
                                                                                           },
                                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -613,6 +634,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     value: _controller.zoneDValue,
                                                                                     itemLabel: (templateList) => templateList.name!,
                                                                                     onChanged: (val) {
+                                                                                      controller.dropDownShow.value = false;
                                                                                       _controller.zoneDValue = val;
                                                                                       controller.dashboardDZoneValue = val;
                                                                                       controller.update();
@@ -634,6 +656,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     controller: controller.dropUpNoteController,
                                                                                     hintText: "DROP NOTES",
                                                                                     borderRadius: 6,
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                   ),
@@ -690,6 +715,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 AppText.name,
                                                                                 controller.nameController,
                                                                                 width: fieldWidth / 3,
+                                                                                onTap: (){
+                                                                                  controller.dropDownShow.value = false;
+                                                                                },
                                                                                 textInputAction: TextInputAction.next),
                                                                           ),
                                                                           // Email Fields
@@ -699,7 +727,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             child:
                                                                                 FocusTraversalOrder(
                                                                               order: const NumericFocusOrder(10),
-                                                                              child: labeledTextField(context, isMobile, AppText.email, controller.emailController, width: fieldWidth / 2.8, textInputAction: TextInputAction.next),
+                                                                              child: labeledTextField(context, isMobile, AppText.email, controller.emailController, width: fieldWidth / 2.8, textInputAction: TextInputAction.next,
+                                                                                onTap: (){
+                                                                                  controller.dropDownShow.value = false;
+                                                                                },
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                           // MOB fields
@@ -746,10 +778,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           inputFormatters: [
                                                                                             FilteringTextInputFormatter.digitsOnly
                                                                                           ],
+
+                                                                                          onTap: (){
+                                                                                            controller.dropDownShow.value = true;
+                                                                                          },
                                                                                           onChanged: (v) {
                                                                                             if (v.isNotEmpty) {
                                                                                               FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
                                                                                               controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
+                                                                                            }else{
+                                                                                                controller.dropDownShow.value = false;
                                                                                             }
                                                                                           },
                                                                                           width: fieldWidth / 2.9,
@@ -766,7 +804,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             child:
                                                                                 FocusTraversalOrder(
                                                                               order: const NumericFocusOrder(12),
-                                                                              child: labeledTextField(context, isMobile, AppText.tel, controller.telController, width: fieldWidth / 3, textInputAction: TextInputAction.next, keyboardType: TextInputType.phone, formatDigitsOnly: false),
+                                                                              child: labeledTextField(context, isMobile, AppText.tel, controller.telController, width: fieldWidth / 3, textInputAction: TextInputAction.next, keyboardType: TextInputType.phone, formatDigitsOnly: false,
+                                                                                onTap: (){
+                                                                                  controller.dropDownShow.value = false;
+                                                                                },
+                                                                              ),
                                                                             ),
                                                                           ),
                                                                           // date fileds
@@ -779,14 +821,17 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               isMobile: isMobile,
                                                                               label: AppText.date,
                                                                               width: fieldWidth / 3,
+
                                                                               child: SizedBox(
                                                                                   height: 30,
                                                                                   child: KeyboardDatePicker(
                                                                                     initialDate: controller.pickUpDate ?? DateTime.now(),
                                                                                     borderClr: Colors.blue,
+
                                                                                     onChanged: (date) async {
                                                                                       controller.pickUpDate = date;
                                                                                       controller.getFaresCalculation();
+                                                                                        controller.dropDownShow.value = false;
                                                                                     },
                                                                                     onSubmitted: (date) {
                                                                                       // jab user enter press kare
@@ -815,6 +860,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       onTimeSelected: (time) async {
                                                                                         controller.pickUpTimeController.text = time;
                                                                                         controller.getFaresCalculation();
+                                                                                          controller.dropDownShow.value = false;
                                                                                         setState(() {
                                                                                           print(controller.pickUpTimeController.text);
                                                                                         });
@@ -844,6 +890,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     inputFormatters: [
                                                                                       FilteringTextInputFormatter.digitsOnly
                                                                                     ],
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     keyboardType: TextInputType.number,
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -889,6 +938,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           ))
                                                                                       .toList(),
                                                                                   onChanged: (v) {
+                                                                                      controller.dropDownShow.value = false;
                                                                                     if (v!.journeyType == "r/n") {
                                                                                       controller.jourValue = 'W/R';
                                                                                     } else {
@@ -961,6 +1011,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           textInputAction: TextInputAction.next,
                                                                                           onTap: () {
                                                                                             shortCutKeyValue.value = "PICKUP Two Way LOCATION";
+                                                                                              controller.dropDownShow.value = true;
                                                                                           },
                                                                                           onChanged: (v) {
                                                                                             controller.onChangeHandler(fieldName: "PICKUP TWO WAY LOCATION", searchingText: v);
@@ -987,6 +1038,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                         controller.fixedFare.value = "0";
                                                                                                         controller.totalDistance.value = "0";
                                                                                                         controller.totalTimeDuration.value = "0";
+                                                                                                          controller.dropDownShow.value = false;
                                                                                                         controller.update();
 
                                                                                                         // controller.fetchRouteFromOSRM();
@@ -1004,6 +1056,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   String tempDrop = controller.dropOffTwoWayController.text;
                                                                                                   controller.pickupTwoWayController.text = tempDrop;
                                                                                                   controller.dropOffTwoWayController.text = tempPic;
+                                                                                                  controller.dropDownShow.value = false;
                                                                                                   controller.update();
                                                                                                 },
                                                                                                 child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -1028,6 +1081,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           value: _controller.RNzoneValue,
                                                                                           itemLabel: (templateList) => templateList.name!,
                                                                                           onChanged: (val) {
+                                                                                            controller.dropDownShow.value = false;
                                                                                             _controller.RNzoneValue = val;
                                                                                             controller.dashboardRNZoneValue = val;
                                                                                             controller.update();
@@ -1047,6 +1101,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         controller: controller.pickUpNoteController,
                                                                                         hintText: "PICKUP NOTES",
                                                                                         borderRadius: 6,
+                                                                                        onTap: (){
+                                                                                          controller.dropDownShow.value = false;
+                                                                                        },
                                                                                         textInputAction: TextInputAction.next,
                                                                                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                       ),
@@ -1102,6 +1159,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           hintText: 'DROP LOCATION',
                                                                                           onTap: () {
                                                                                             shortCutKeyValue.value = "DROP TWO WAY LOCATION";
+                                                                                            controller.dropDownShow.value = true;
                                                                                           },
                                                                                           borderRadius: 4,
                                                                                           onChanged: (v) {
@@ -1136,6 +1194,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                         controller.fixedFare.value = "0";
                                                                                                         controller.totalDistance.value = "0";
                                                                                                         controller.totalTimeDuration.value = "0";
+                                                                                                        controller.dropDownShow.value = false;
                                                                                                         controller.update();
                                                                                                       },
                                                                                                       child: Icon(
@@ -1151,6 +1210,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   String tempDrop = controller.dropOffTwoWayController.text;
                                                                                                   controller.pickupTwoWayController.text = tempDrop;
                                                                                                   controller.dropOffTwoWayController.text = tempPic;
+                                                                                                  controller.dropDownShow.value = false;
                                                                                                   controller.update();
                                                                                                 },
                                                                                                 child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),
@@ -1174,6 +1234,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           value: _controller.RN1zoneValue,
                                                                                           itemLabel: (templateList) => templateList.name!,
                                                                                           onChanged: (val) {
+                                                                                            controller.dropDownShow.value = false;
                                                                                             _controller.RN1zoneValue = val;
                                                                                             controller.dashboardRN1ZoneValue = val;
                                                                                             controller.update();
@@ -1193,6 +1254,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         controller: controller.dropUpNoteController,
                                                                                         hintText: "DROP NOTES",
                                                                                         borderRadius: 6,
+                                                                                        onTap: (){
+                                                                                          controller.dropDownShow.value = false;
+                                                                                        },
                                                                                         textInputAction: TextInputAction.next,
                                                                                         onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                                                                                       ),
@@ -1214,6 +1278,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       initialDate: controller.pickUpDateReturn ?? DateTime.now(),
                                                                                       borderClr: Colors.blue,
                                                                                       onChanged: (date) {
+                                                                                        controller.dropDownShow.value = false;
                                                                                         controller.pickUpDateReturn = date;
                                                                                         controller.getFaresCalculation();
                                                                                         controller.update();
@@ -1239,7 +1304,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       controller: controller.pickUpTimeControllerReturn,
                                                                                       // optional
                                                                                       onTimeSelected: (time) {
-
+                                                                                        controller.dropDownShow.value = false;
                                                                                         controller.pickUpTimeControllerReturn.text = time;
                                                                                         controller.getFaresCalculation();
                                                                                         setState(() {});
@@ -1264,6 +1329,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     inputFormatters: [
                                                                                       FilteringTextInputFormatter.digitsOnly
                                                                                     ],
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     keyboardType: TextInputType.number,
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -1329,6 +1397,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       FilteringTextInputFormatter.digitsOnly,
                                                                                       LengthLimitingTextInputFormatter(6),
                                                                                     ],
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     keyboardType: TextInputType.number,
                                                                                     textInputAction: TextInputAction.next,
                                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -1371,7 +1442,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         .toList(),
                                                                                     onChanged: (v) async {
                                                                                       controller.selectVehicleValueReturn = v;
-
+                                                                                      controller.dropDownShow.value = false;
                                                                                       final fare = await getActiveFareForVehicle(
                                                                                         controller.dashboardAllData!.fareConfigurations!,
                                                                                         controller.selectVehicleValue!.id!,
@@ -1427,6 +1498,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                               ),
                                                                                             ))
                                                                                         .toList(),
+
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     onChanged: (v) {
                                                                                       controller.selectDriverValueReturn = v;
                                                                                       controller.update();
@@ -1459,6 +1534,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     FilteringTextInputFormatter.digitsOnly,
                                                                                     LengthLimitingTextInputFormatter(6),
                                                                                   ],
+                                                                                  onTap: (){
+                                                                                    controller.dropDownShow.value = false;
+                                                                                  },
                                                                                   keyboardType: TextInputType.number,
                                                                                   textInputAction: TextInputAction.next,
                                                                                   onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -1506,6 +1584,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                   ),
                                                                                                 ))
                                                                                             .toList(),
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     onChanged: (v) {
                                                                                       controller.selectAccountValue = v;
                                                                                       controller.selectDepartmentData = null;
@@ -1553,6 +1634,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                               ),
                                                                                             ))
                                                                                         .toList(),
+                                                                                    onTap: (){
+                                                                                      controller.dropDownShow.value = false;
+                                                                                    },
                                                                                     onChanged: (v) {
                                                                                       controller.selectPaymentTypeValue = v;
                                                                                       controller.update();
@@ -1599,6 +1683,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                             ),
                                                                                           ))
                                                                                       .toList(),
+                                                                                  onTap: (){
+                                                                                    controller.dropDownShow.value = false;
+                                                                                  },
                                                                                   onChanged: (v) async {
                                                                                     controller.selectVehicleValue = v;
                                                                                     controller.getFaresCalculation();
@@ -1643,6 +1730,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                                       ),
                                                                                                     ))
                                                                                                 .toList(),
+                                                                                        onTap: (){
+                                                                                          controller.dropDownShow.value = false;
+                                                                                        },
                                                                                         onChanged: (v) {
                                                                                           controller.selectDepartmentData = v;
                                                                                           controller.update();
@@ -1664,7 +1754,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               activeColor: DynamicColors.primaryClr,
                                                                               inactiveColor: DynamicColors.gryClr,
                                                                               focusScale: 1.5,
-                                                                              onToggle: () {
+                                                                              onToggle: () {    controller.dropDownShow.value = false;
                                                                                 print("Switch toggled: ${controller.switchController.value}");
                                                                               },
                                                                             ),
@@ -1697,7 +1787,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     child: Checkbox(
                                                                                       activeColor: DynamicColors.primaryClr,
                                                                                       value: controller.smsCheckbox.value,
-                                                                                      onChanged: (v) {
+                                                                                      onChanged: (v) {    controller.dropDownShow.value = false;
                                                                                         // controller.smsCheckbox.value = v!;
                                                                                         // controller.update();
                                                                                       },
@@ -1734,7 +1824,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     child: Checkbox(
                                                                                       activeColor: DynamicColors.primaryClr,
                                                                                       value: controller.emailCheckbox.value,
-                                                                                      onChanged: (v) {
+                                                                                      onChanged: (v) {    controller.dropDownShow.value = false;
                                                                                         controller.emailCheckbox.value = v!;
                                                                                         controller.update();
                                                                                       },
@@ -1770,6 +1860,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         FilteringTextInputFormatter.digitsOnly,
                                                                                         LengthLimitingTextInputFormatter(2),
                                                                                       ],
+                                                                                      onTap: (){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      },
                                                                                       keyboardType: TextInputType.number,
                                                                                       contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                                                                       controller: controller.passController,
@@ -1789,6 +1882,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         FilteringTextInputFormatter.digitsOnly,
                                                                                         LengthLimitingTextInputFormatter(2),
                                                                                       ],
+                                                                                      onTap: (){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      },
                                                                                       keyboardType: TextInputType.number,
                                                                                       contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                                                                       controller: controller.luggController,
@@ -1808,6 +1904,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                         FilteringTextInputFormatter.digitsOnly,
                                                                                         LengthLimitingTextInputFormatter(2),
                                                                                       ],
+                                                                                      onTap: (){
+                                                                                        controller.dropDownShow.value = false;
+                                                                                      },
                                                                                       keyboardType: TextInputType.number,
                                                                                       contentPadding: EdgeInsets.symmetric(horizontal: 4),
                                                                                       controller: controller.sluggController,
@@ -1840,7 +1939,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.person,
                                                                                     focusNode: _focusNodes[0],
-                                                                                    onPressed: () {
+                                                                                    onPressed: () {    controller.dropDownShow.value = false;
                                                                                       showDialog(context: context, builder: (_) => RestrictDriversAlert());
                                                                                     },
                                                                                   ),
@@ -1851,7 +1950,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.shopping_cart_checkout_outlined,
                                                                                     focusNode: _focusNodes[1],
-                                                                                    onPressed: () {
+                                                                                    onPressed: () {    controller.dropDownShow.value = false;
                                                                                       showDialog(
                                                                                         context: context,
                                                                                         builder: (_) => ChildSeatsAlert(),
@@ -1865,7 +1964,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.attach_money,
                                                                                     focusNode: _focusNodes[2],
-                                                                                    onPressed: () {
+                                                                                    onPressed: () {    controller.dropDownShow.value = false;
                                                                                       showDialog(
                                                                                         context: context,
                                                                                         barrierDismissible: false,
@@ -1880,7 +1979,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: buildFocusableIcon(
                                                                                     icon: Icons.note_add_sharp,
                                                                                     focusNode: _focusNodes[3],
-                                                                                    onPressed: () {
+                                                                                    onPressed: () {    controller.dropDownShow.value = false;
                                                                                       showDialog(
                                                                                         context: context,
                                                                                         builder: (_) => ExtraInfoAlert(),
@@ -1903,7 +2002,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                               height: 40,
                                                                               child: KbdActivatable(
                                                                                 focusNode: calendarFN,
-                                                                                onActivate: () {
+                                                                                onActivate: () {    controller.dropDownShow.value = false;
                                                                                   // TODO: open your calendar modal/sheet
                                                                                   // For demo:
                                                                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -2091,6 +2190,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           ),
                                                                                         ))
                                                                                     .toList(),
+                                                                                onTap: (){
+                                                                                  controller.dropDownShow.value = false;
+                                                                                },
                                                                                 onChanged: (v) {
                                                                                   controller.selectDriverValue = v;
                                                                                   controller.update();
@@ -2109,7 +2211,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
-                                                                                () {
+                                                                                () {    controller.dropDownShow.value = false;
                                                                               controller.refreshPostAllFields();
                                                                             },
                                                                             btnText:
@@ -2139,7 +2241,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
-                                                                                () {
+                                                                                () {    controller.dropDownShow.value = false;
                                                                               if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
                                                                                 BotToast.showText(text: "Please chose waiting return");
                                                                                 return;
@@ -2215,6 +2317,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                       ),
                                       // 🔽 Address suggestion dropdown with keyboard support
                                       Obx(() {
+                                        if(controller.dropDownShow.value == false){
+                                          controller.allAddressesData.clear();
+                                          // controller.customerPhoneNumber!.customerInfo!.clear();
+                                          return SizedBox();
+                                        }
                                         if (controller.selectedTextFieldsValue
                                                 .value ==
                                             "via") return const SizedBox();
