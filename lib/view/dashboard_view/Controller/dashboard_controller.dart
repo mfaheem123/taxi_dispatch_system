@@ -1484,6 +1484,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
      var response = await Api().get("customers/search?mobile=$searchingText");
      if (response.statusCode == 200) {
        if (response.data['customer'].isNotEmpty) {
+         dropDownShow.value = true;
          customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
          SuggestionController suggestion_controller =
          Get.isRegistered<SuggestionController>()
@@ -1493,6 +1494,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
          FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
 // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
          selectedTextFieldsValue.value = fieldsName;
+       }else{
+         dropDownShow.value = false;
        }
        dashboardDataLoader(false);
        update();

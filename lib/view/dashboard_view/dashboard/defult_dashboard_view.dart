@@ -103,9 +103,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         _controller.getLocationTypeZone();
       }
     }, builder: (controller) {
-      return controller.dashboardDataLoader.value
+      return /*controller.dashboardDataLoader.value
           ? material.Center(child: CircularProgressIndicator())
-          : LayoutBuilder(builder: (context, constraints) {
+          :*/ LayoutBuilder(builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -314,8 +314,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       controller.dropDownShow.value = true;
                                                                                     },
                                                                                     onChanged: (v) {
-                                                                                      if(v.isEmpty){
-                                                                                        controller.dropDownShow.value = false;
+                                                                                      if(v.isEmpty) {
+                                                                                        controller
+                                                                                            .dropDownShow
+                                                                                            .value =
+                                                                                        false;
+                                                                                      }else{
+                                                                                        controller.dropDownShow.value = true;
                                                                                       }
                                                                                       controller.onChangeHandler(fieldName: "PICKUP LOCATION", searchingText: v);
                                                                                     },
@@ -560,6 +565,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     onChanged: (v) {
                                                                                       if(v.isEmpty){
                                                                                         controller.dropDownShow.value = false;
+                                                                                      }else{
+                                                                                        controller.dropDownShow.value = true;
                                                                                       }
                                                                                       controller.onChangeHandler(fieldName: "DROP LOCATION", searchingText: v);
                                                                                     },
@@ -784,6 +791,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                           },
                                                                                           onChanged: (v) {
                                                                                             if (v.isNotEmpty) {
+                                                                                              controller.dropDownShow.value = true;
                                                                                               FocusScope.of(Get.context!).requestFocus(controller.phoneNumberFieldKey);
                                                                                               controller.onPhoneNoChangeHandler(fieldName: "Phone Number", searchingText: v);
                                                                                             }else{
@@ -804,7 +812,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             child:
                                                                                 FocusTraversalOrder(
                                                                               order: const NumericFocusOrder(12),
-                                                                              child: labeledTextField(context, isMobile, AppText.tel, controller.telController, width: fieldWidth / 3, textInputAction: TextInputAction.next, keyboardType: TextInputType.phone, formatDigitsOnly: false,
+                                                                              child: labeledTextField
+                                                                                (context, isMobile, AppText.tel, controller.telController,
+                                                                                width: fieldWidth / 3,
+                                                                                textInputAction: TextInputAction.next,
+                                                                                keyboardType: TextInputType.phone,
+                                                                                formatDigitsOnly: false,
+                                                                                onChanged: (v){
+                                                                                  controller.dropDownShow.value = false;
+                                                                                },
                                                                                 onTap: (){
                                                                                   controller.dropDownShow.value = false;
                                                                                 },

@@ -12,7 +12,8 @@ import 'component/networks/Url.dart';
 import 'view/auth/Controller/auth_controller.dart';
 
 void main() async{
-  usePathUrlStrategy(); // removes # from URL
+  // usePathUrlStrategy(); // removes # from URL
+  setUrlStrategy(const HashUrlStrategy());
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
