@@ -509,6 +509,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   Timer? _debounce;
 
   RxString selectedTextFieldsValue = "".obs;
+  RxBool dropDownShow = false.obs;
+
   Future<void> onChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
@@ -1291,11 +1293,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      _timer?.cancel();
-
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-         getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer?.cancel();
+      //
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //    getDashboardTableData(tableId: selectedTabId);
+      // });
 
       update();
     }

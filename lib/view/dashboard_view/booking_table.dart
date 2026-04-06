@@ -76,6 +76,7 @@ class _BookingTableState extends State<BookingTable> {
                           btnColor: controller.bookingTabsList![index].deletedClr!.value == true ? DynamicColors.redClr:
                           controller.bookingTabsList![index].selectedClr!.value == true ? DynamicColors.primaryClr.withOpacity(0.4) : DynamicColors.secondaryClr,
                           onTap: () {
+                            controller.dropDownShow.value = false;
                             if(controller.bookingTabsList![index].deletedClr!.value == true){
                               controller.deleteJobs();
                             }else{
@@ -111,6 +112,7 @@ class _BookingTableState extends State<BookingTable> {
                                 );
                               }).toList(),
                               onChanged: (value) {
+                                controller.dropDownShow.value = false;
                                 print(controller.bookingTabsList![index].id);
                                 print(index);
                                 controller.getTableDataStatus(index: index, value: value);
