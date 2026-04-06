@@ -9,11 +9,7 @@ class DispatchController extends GetxController {
   var isLoading = false.obs;
   var isAssigning = false.obs; // Isse class ke andar hona chahiye
 
-  @override
-  void onInit() {
-    super.onInit();
-    getDispatchDrivers();
-  }
+
 
   void getDispatchDrivers() async {
     try {

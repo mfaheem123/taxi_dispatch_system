@@ -249,6 +249,7 @@
 // }
 //
 import 'dart:math';
+import 'package:dashboard_new1/alert/sub_map_on_iconButton_alert.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/view/dashboard_view/dashboard/row_button_widget_map.dart';
 import 'package:dio/dio.dart';
@@ -514,14 +515,17 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                         padding: EdgeInsets.zero,
                         icon: const Icon(Icons.crop_square_outlined),
                         onPressed: () {
-                          final newTabUrl = Uri.base.origin +
-                              '/#' +
-                              Routes.viewDriversMap;
-                          html.window.open(
-                            newTabUrl,
-                            '_blank',
-                            'width=1200,height=800,noopener,noreferrer',
-                          );
+                          showDialog(
+                              context: context,
+                              builder: (_) => DriversMapAlert(),);
+                          // final newTabUrl = Uri.base.origin +
+                          //     '/#' +
+                          //     Routes.viewDriversMap;
+                          // html.window.open(
+                          //   newTabUrl,
+                          //   '_blank',
+                          //   'width=1200,height=800,noopener,noreferrer',
+                          // );
                         },
                       ),
                     ),
