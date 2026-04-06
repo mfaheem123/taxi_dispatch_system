@@ -515,8 +515,8 @@ class _CreateAccountInvoiceScreenState
                                               print(
                                                   "Updating Booking ID: ${booking.id}");
                                             }
-                                            controller
-                                                .getAccountInvoiceByFilter();
+                                            // controller
+                                            //     .getAccountInvoiceByFilter();
                                           },
                                         ),
                                       ),

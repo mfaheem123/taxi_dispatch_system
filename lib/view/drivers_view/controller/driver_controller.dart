@@ -994,7 +994,7 @@ class DriverController extends GetxController {
     var response = await Api()
         .get("drivers/commission?active=true&driver_type=Commission");
     if (response.statusCode == 200) {
-      print("API Response: ${response.data}");
+      // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
 
       oldBalanceVar = 0.0;
@@ -1032,6 +1032,7 @@ class DriverController extends GetxController {
     var response = await Api().get("enumerations/payment-types");
     if (response.statusCode == 200) {
       paymentTypesModel = DriverCommissionPaymentModel.fromJson(response.data);
+      print("PAYMENT API DATA: ${response.data}");
     }
     isLoadingPayments = false;
     update();
@@ -1064,6 +1065,7 @@ class DriverController extends GetxController {
     );
     if (response.statusCode == 200) {
       filterData = DriverCommissionFilterModel.fromJson(response.data);
+      print("API Response: ${response.data}");
       if (filterData?.bookings != null) {
         for (var booking in filterData!.bookings!) {
           recalculateDriverCommissionRow(booking);
@@ -1511,7 +1513,11 @@ class DriverController extends GetxController {
       saveUpdatedCommissionLoad = true;
       update();
 
-      String dId = driverSelectionController.text.split(" ").first;
+      String dId = driverSelectionController.text.isNotEmpty
+          ? driverSelectionController.text.split(" ").first
+          : updateDriverCommissionByIdModel?.driverCommission?.driverId?.toString() ?? "";
+
+      // String dId = driverSelectionController.text.split(" ").first;
       String todayDate = DateTime.now().toIso8601String().split("T").first;
 
       final updateItems = updateDriverCommissionByIdModel
@@ -2348,11 +2354,17 @@ class DriverController extends GetxController {
   bool saveUpdatedRentLoad = false;
 
   saveUpdatedRent(int selectedId) async {
+    print("DEBUG: Driver Controller Text: '${rentDriverSelectionController.text}'");
+    print("DEBUG: Model Status: ${updateDriverRentByIdModel == null ? 'NULL' : 'Data Present'}");
+    print("DEBUG: Selected ID: $selectedId");
     try {
       saveUpdatedRentLoad = true;
       update();
 
-      String drId = rentDriverSelectionController.text.split(" ").first;
+      // String drId = rentDriverSelectionController.text.split(" ").first;
+      String drId = rentDriverSelectionController.text.isNotEmpty
+          ? rentDriverSelectionController.text.split(" ").first
+          : updateDriverRentByIdModel?.driverRent?.driverId?.toString() ?? "";
       String todayDate = DateTime.now().toIso8601String().split("T").first;
 
       final updateItems = updateDriverRentByIdModel

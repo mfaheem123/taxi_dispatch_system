@@ -257,21 +257,21 @@ onTap: () {
                       width: isMobile || isTablet ? Get.width + 600 : Get.width,
                       child: DatatableWidget(
                           columns: [
-                            DataColumn(
-                              label: Checkbox(
-                                value: isAllSelected,
-                                tristate: false,
-                                onChanged: (bool? val) {
-                                  setState(() {
-                                    if (val == true) {
-                                      controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
-                                    } else {
-                                      controller.selectedIds.clear();
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
+                            // DataColumn(
+                            //   label: Checkbox(
+                            //     value: isAllSelected,
+                            //     tristate: false,
+                            //     onChanged: (bool? val) {
+                            //       setState(() {
+                            //         if (val == true) {
+                            //           controller.selectedIds = listToShow.map((item) => item.id.toString()).toSet();
+                            //         } else {
+                            //           controller.selectedIds.clear();
+                            //         }
+                            //       });
+                            //     },
+                            //   ),
+                            // ),
                             buildHeaderWithSearch(
                               title: "INVOICE #",
                               onChanged: (v) {
@@ -342,20 +342,20 @@ onTap: () {
                           rows: (listToShow ?? []).map((item) {
                             bool isRowSelected = controller.selectedIds.contains(item.id.toString());
                             return DataRow(cells: [
-                              DataCell(
-                                Checkbox(
-                                  value: isRowSelected,
-                                  onChanged: (bool? val) {
-                                    setState(() {
-                                      if (val == true) {
-                                        controller.selectedIds.add(item.id.toString());
-                                      } else {
-                                        controller.selectedIds.remove(item.id.toString());
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
+                              // DataCell(
+                              //   Checkbox(
+                              //     value: isRowSelected,
+                              //     onChanged: (bool? val) {
+                              //       setState(() {
+                              //         if (val == true) {
+                              //           controller.selectedIds.add(item.id.toString());
+                              //         } else {
+                              //           controller.selectedIds.remove(item.id.toString());
+                              //         }
+                              //       });
+                              //     },
+                              //   ),
+                              // ),
                               // 1. Invoice Number
                               DataCell(Center(child: Text(item.invoiceNumber ?? "-"))),
                               DataCell(Center(child: Text(item.account?.name ?? "-"))),

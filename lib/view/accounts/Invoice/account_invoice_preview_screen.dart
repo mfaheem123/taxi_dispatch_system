@@ -3,6 +3,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../../../component/color.dart';
 import '../controller/invoice_controller.dart';
 
 class InvoicePreviewWindowWrapper extends StatefulWidget {
@@ -39,12 +40,11 @@ class _InvoicePreviewWindowWrapperState
               // Header Bar
               Container(
                 height: 45,
-                color: const Color(0xFF003366),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Account Invoice Preview",
+                    const Text("",
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold)),
                     Row(
@@ -55,7 +55,7 @@ class _InvoicePreviewWindowWrapperState
                               isFullScreen
                                   ? Icons.fullscreen_exit
                                   : Icons.crop_square,
-                              color: Colors.white,
+                              color: Colors.black,
                               size: 20),
                           onPressed: () =>
                               setState(() => isFullScreen = !isFullScreen),
@@ -63,7 +63,7 @@ class _InvoicePreviewWindowWrapperState
                         IconButton(
                           padding: EdgeInsets.zero,
                           icon: const Icon(Icons.close,
-                              color: Colors.white, size: 20),
+                              color: Colors.black, size: 20),
                           onPressed: () => Get.back(),
                         ),
                       ],
@@ -156,8 +156,8 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                   _infoColumn([
                     {"ACCOUNT": "${accountData?.name ?? ""}"},
                     {"ORDER #": "${mainData.orderNumber ?? "-"}"},
-                    {"DATE": "${mainData.invoiceDate ?? ""}"},
-                    {"DUE DATE": "${mainData.invoiceDueDate ?? ""}"},
+                    {"DATE": "${mainData.invoiceDate.toString().split(' ').first}"},
+                    {"DUE DATE": "${mainData.invoiceDueDate.toString().split(' ').first}"},
                   ], isRight: true),
                 ],
               ),
@@ -172,7 +172,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
                   ),
                   TextSpan(
-                      text: "${mainData.fromDate ?? ""} TO ${mainData.toDate ?? ""}",
+                      text: "${mainData.fromDate.toString().split(' ').first} TO ${mainData.toDate.toString().split(' ').first}",
                       style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)
                   ),
                   const TextSpan(
@@ -186,7 +186,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
 
             // Main Table
             Table(
-              border: TableBorder.all(color: Colors.grey.shade300, width: 1),
+              border: TableBorder.all(color: Colors.grey.shade400, width: 1),
               columnWidths: const {
                 0: FlexColumnWidth(1.2),
                 1: FlexColumnWidth(1.5),
@@ -196,7 +196,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
               children: [
                 // 1. HEADER ROW
                 TableRow(
-                  decoration: BoxDecoration(color: Colors.grey.shade100),
+                  decoration: BoxDecoration(color: DynamicColors.primaryClr),
                   children: [
                     _cell("REF #", isHeader: true),
                     _cell("DATETIME", isHeader: true),
@@ -346,7 +346,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: isHeader ? 15 : 14,
             fontWeight:
-                (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
+                (isHeader || isBold) ? FontWeight.bold : FontWeight.normal, color: isHeader ? Colors.white : Colors.black
           )),
     );
   }
