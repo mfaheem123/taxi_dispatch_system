@@ -1293,11 +1293,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      // _timer?.cancel();
-      //
-      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      //    getDashboardTableData(tableId: selectedTabId);
-      // });
+      _timer?.cancel();
+
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+         getDashboardTableData(tableId: selectedTabId);
+      });
 
       update();
     }
