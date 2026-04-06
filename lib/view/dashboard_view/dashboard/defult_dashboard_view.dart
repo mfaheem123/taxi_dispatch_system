@@ -2015,7 +2015,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 BoxFit.scaleDown,
                                                                             child:
                                                                                 Text(
-                                                                              "PR: \$ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
+                                                                              "FARE: \£  ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}",
                                                                               style: TextStyle(
                                                                                 fontWeight: FontWeight.bold,
                                                                                 color: Colors.black,
