@@ -1513,7 +1513,11 @@ class DriverController extends GetxController {
       saveUpdatedCommissionLoad = true;
       update();
 
-      String dId = driverSelectionController.text.split(" ").first;
+      String dId = driverSelectionController.text.isNotEmpty
+          ? driverSelectionController.text.split(" ").first
+          : updateDriverCommissionByIdModel?.driverCommission?.driverId?.toString() ?? "";
+
+      // String dId = driverSelectionController.text.split(" ").first;
       String todayDate = DateTime.now().toIso8601String().split("T").first;
 
       final updateItems = updateDriverCommissionByIdModel
@@ -2350,11 +2354,17 @@ class DriverController extends GetxController {
   bool saveUpdatedRentLoad = false;
 
   saveUpdatedRent(int selectedId) async {
+    print("DEBUG: Driver Controller Text: '${rentDriverSelectionController.text}'");
+    print("DEBUG: Model Status: ${updateDriverRentByIdModel == null ? 'NULL' : 'Data Present'}");
+    print("DEBUG: Selected ID: $selectedId");
     try {
       saveUpdatedRentLoad = true;
       update();
 
-      String drId = rentDriverSelectionController.text.split(" ").first;
+      // String drId = rentDriverSelectionController.text.split(" ").first;
+      String drId = rentDriverSelectionController.text.isNotEmpty
+          ? rentDriverSelectionController.text.split(" ").first
+          : updateDriverRentByIdModel?.driverRent?.driverId?.toString() ?? "";
       String todayDate = DateTime.now().toIso8601String().split("T").first;
 
       final updateItems = updateDriverRentByIdModel

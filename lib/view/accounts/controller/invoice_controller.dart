@@ -116,9 +116,9 @@ class InvoiceController extends GetxController {
       };
     }).toList();
     var formData = {
-      'account_id': selectAccountValue!.id,
-      'subsidiary_id': subsidiaries!.id,
-      'account_invoice_lineitems': jsonEncode(lineItems),
+      'account_id': selectAccountValue?.id,
+      'subsidiary_id': subsidiaries?.id,
+      'account_invoice_lineitems': lineItems,
       'amount': accountInvoiceBookingModel!.total![0].total ?? "0",
       'department_id': selectDepartmentData?.id, // Optional check
       'from_date': fromDate?.toIso8601String().split('T').first,
@@ -128,7 +128,7 @@ class InvoiceController extends GetxController {
       'invoice_date': invoiceDateController,
       'invoice_due_date': invoiceDueDateController,
       'invoice_type': 'post',
-      'order_number': orderNumber.text,
+      'order_number': orderNumber.text.isEmpty ? "" : orderNumber.text,
     };
     print("Payload: $formData");
     var response = await Api().post(
@@ -727,7 +727,7 @@ CC: CONGESTION CHARGES
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
       print("Invoice Update Status: ${response.statusCode}");
-      BotToast.showText(text: "Success" "Charges updated!");
+      BotToast.showText(text: "Charges updated!");
     }
   }
 

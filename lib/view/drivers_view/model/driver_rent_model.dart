@@ -86,7 +86,7 @@ class DriverInfo {
   String? driverType;
   int? driverRent;
   int? pdaRent;
-  int? balance;
+  double? balance;
   bool? active;
   int? subsidiaryId;
 
@@ -107,7 +107,7 @@ class DriverInfo {
     driverType: json["driver_type"],
     driverRent: json["driver_rent"],
     pdaRent: json["pda_rent"],
-    balance: json["balance"],
+    balance: json["balance"]?.toDouble(),
     active: json["active"],
     subsidiaryId: json["subsidiary_id"],
   );
