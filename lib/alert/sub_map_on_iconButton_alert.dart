@@ -165,7 +165,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
             ),
           ),
           const SizedBox(width: 5),
-          const Icon(Icons.send_outlined, size: 16, color: Colors.grey),
+          const Icon(Icons.send_outlined, size: 16, color: Color(0xff424899)),
         ],
       ),
     );
