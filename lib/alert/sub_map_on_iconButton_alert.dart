@@ -17,15 +17,21 @@ class DriversMapAlert extends StatefulWidget {
 class _DriversMapAlertState extends State<DriversMapAlert> {
   final dashBoardCntrl = Get.find<DashboardController>();
 
+  // Boolean variable to track state
+  bool isFullScreen = false;
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.all(20),
+      insetPadding: isFullScreen ? EdgeInsets.zero : const EdgeInsets.all(20),
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Container(
-        width: Get.width * 0.9,
-        height: Get.height * 0.85,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(isFullScreen ? 0 : 8),
+      ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: isFullScreen ? Get.width : Get.width * 0.9,
+        height: isFullScreen ? Get.height : Get.height * 0.85,
         child: Column(
           children: [
             /// HEADER
@@ -41,9 +47,26 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       fontSize: 14,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Icon(Icons.close, color: DynamicColors.textClr, size: 20),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isFullScreen = !isFullScreen;
+                          });
+                        },
+                        child: Icon(
+                          isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                          color: DynamicColors.textClr,
+                          size: 24,
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Icon(Icons.close, color: DynamicColors.textClr, size: 20),
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -58,7 +81,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       children: [
                         FlutterMap(
                           options: const MapOptions(
-                            initialCenter: LatLng(51.5862, -0.1983), // Picture location context
+                            initialCenter: LatLng(51.5862, -0.1983),
                             initialZoom: 13.0,
                           ),
                           children: [
@@ -66,16 +89,11 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                               subdomains: const ['a', 'b', 'c'],
                             ),
-                            //  markers add
-                            // MarkerLayer(markers: dashBoardCntrl.markers),
                           ],
                         ),
-
                       ],
                     ),
                   ),
-
-
 
                   ///  RIGHT SIDE: (Sidebar)
                   Container(
@@ -106,8 +124,6 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                           ),
                         ),
                         const Divider(),
-
-                        // Drivers List
                         Expanded(
                           child: ListView.builder(
                             itemCount: 5,
@@ -128,7 +144,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
     );
   }
 
-
+  // Baki widgets (_actionButton, _driverTile) wese hi rahen ge...
   Widget _actionButton(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -136,7 +152,6 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
       child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
     );
   }
-
 
   Widget _driverTile(String name, String status) {
     return Container(
