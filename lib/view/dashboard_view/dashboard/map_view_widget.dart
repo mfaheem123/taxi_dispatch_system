@@ -518,6 +518,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
                           showDialog(
                               context: context,
                               builder: (_) => DriversMapAlert(),);
+                          print("Map Alert Open");
                           // final newTabUrl = Uri.base.origin +
                           //     '/#' +
                           //     Routes.viewDriversMap;

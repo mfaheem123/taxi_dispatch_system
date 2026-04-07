@@ -49,7 +49,6 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
               ),
             ),
             const Divider(height: 1),
-
             Expanded(
               child: Row(
                 children: [
@@ -75,6 +74,8 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       ],
                     ),
                   ),
+
+
 
                   ///  RIGHT SIDE: (Sidebar)
                   Container(
@@ -109,7 +110,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                         // Drivers List
                         Expanded(
                           child: ListView.builder(
-                            itemCount: 10,
+                            itemCount: 5,
                             itemBuilder: (context, index) {
                               return _driverTile("26 - PAUL DOUBLEDAY", "AVAILABLE");
                             },
@@ -149,7 +150,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
           Expanded(
             child: Text(
               name,
-              style: mozillaTextSemiBoldText(fontSize: 12, fontWeight: FontWeight.w700),
+              style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
           Container(
