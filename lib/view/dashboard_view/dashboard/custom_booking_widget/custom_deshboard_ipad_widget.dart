@@ -2709,6 +2709,8 @@ class _CustomIpadWidgetState extends State<CustomIpadWidget> {
                                 .toString(); // <-- store anywhere
                             controller.nameController.text =
                                 value.name.toString();
+                            controller.emailController.text =
+                                value.email.toString();
                           },
                         );
                       }

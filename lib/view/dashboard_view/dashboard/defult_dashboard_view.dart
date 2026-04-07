@@ -734,7 +734,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             child:
                                                                                 FocusTraversalOrder(
                                                                               order: const NumericFocusOrder(10),
-                                                                              child: labeledTextField(context, isMobile, AppText.email, controller.emailController, width: fieldWidth / 2.8, textInputAction: TextInputAction.next,
+                                                                              child: labeledTextField(context, isMobile, AppText.email,
+                                                                                controller.emailController, width: fieldWidth / 2.8, textInputAction: TextInputAction.next,
                                                                                 onTap: (){
                                                                                   controller.dropDownShow.value = false;
                                                                                 },
@@ -2363,6 +2364,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       .toString(); // <-- store anywhere
                                               controller.nameController.text =
                                                   value.name.toString();
+                                              controller.emailController.text =
+                                                  value.email.toString();
                                             },
                                           );
                                         }
