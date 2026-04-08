@@ -121,7 +121,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     ),
                   ],
                 ),
-                SizedBox(
+                Container(
+                  height: 15,
+              width: 15,
+              alignment: Alignment(15, 20),
+              clipBehavior: Clip.hardEdge,
+              constraints: BoxConstraints(),
+              color: Colors.grey,
+              decoration: BoxDecoration(),
+              foregroundDecoration: BoxDecoration(),
+              margin: EdgeInsets.only(left: 10
+        ),
+
+              child: Text(""),
+            ),
+            SizedBox(
                   height: 10,
                 ),
                 SingleChildScrollView(

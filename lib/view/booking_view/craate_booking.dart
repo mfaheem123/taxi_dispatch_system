@@ -3241,6 +3241,9 @@ class _CreateBookingState extends State<CreateBooking> {
                             ),
                           ),
                           Obx(() {
+                            if(controller.dropDownShow.value == false){
+                              return SizedBox();
+                            }
                             if (controller.selectedTextFieldsValue.value ==
                                 "via") {
                               return SizedBox();

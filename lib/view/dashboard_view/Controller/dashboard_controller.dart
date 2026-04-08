@@ -509,6 +509,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   Timer? _debounce;
 
   RxString selectedTextFieldsValue = "".obs;
+  RxBool dropDownShow = false.obs;
+
   Future<void> onChangeHandler(
       {required String fieldName, required String searchingText}) async {
     const duration = Duration(milliseconds: 800); // 800ms ka delay
@@ -1292,6 +1294,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       _timer?.cancel();
+      ///
 
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
          getDashboardTableData(tableId: selectedTabId);
@@ -1481,6 +1484,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
      var response = await Api().get("customers/search?mobile=$searchingText");
      if (response.statusCode == 200) {
        if (response.data['customer'].isNotEmpty) {
+         dropDownShow.value = true;
          customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
          SuggestionController suggestion_controller =
          Get.isRegistered<SuggestionController>()
@@ -1490,6 +1494,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
          FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
 // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
          selectedTextFieldsValue.value = fieldsName;
+       }else{
+         dropDownShow.value = false;
        }
        dashboardDataLoader(false);
        update();

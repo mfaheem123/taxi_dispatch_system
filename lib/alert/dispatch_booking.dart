@@ -5,19 +5,29 @@ import '../component/textStyle.dart';
 import '../view/dashboard_view/Controller/booking_dispatch_controller.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
-class DispatchBooking extends StatelessWidget {
+class DispatchBooking extends StatefulWidget {
   final dynamic bookingItem;
   const DispatchBooking({super.key, this.bookingItem});
 
   @override
+  State<DispatchBooking> createState() => _DispatchBookingState();
+}
+
+class _DispatchBookingState extends State<DispatchBooking> {
+
+  final controller = Get.put(DispatchController());
+  final _controller = Get.find<DashboardController>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  controller.getDispatchDrivers();
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    final controller = Get.put(DispatchController());
-    final _controller = Get.find<DashboardController>();
-
-
     return Dialog(
-
       insetPadding: const EdgeInsets.only(top: 100, left: 40, right: 40),
       backgroundColor: Colors.transparent,
       child: Align(
@@ -37,7 +47,7 @@ class DispatchBooking extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-            Text("DISPATCH BOOKING ${bookingItem?.referenceNumber ?? "N/A"}",
+            Text("DISPATCH BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
                         style: mozillaTextSemiBoldText(
                             fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
                     InkWell(
