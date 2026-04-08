@@ -82,7 +82,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     }
   }
 
-  List<DriverActivityModel> onlineDriversList = [];
+  List<DashboardDriverObject> onlineDriversList = [];
 
 
   // We pass the context here so we can show the Dialog
@@ -98,20 +98,28 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           print(data['event']);
           if (data['event'] == "DRIVER_LOGIN") {
 
-
-
-
-            final driver = DriverActivityModel.fromJson(
+            final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
+            dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
           }else if (data['event'] != "DRIVER_LIST"){
+
             int index = onlineDriversList.indexWhere(
                   (test) => test.id.toString() == data['data']['driverId'].toString(),
             );
 
+            print(dashboardAllData!.drivers!);
+
+             int idd = dashboardAllData!.drivers!.indexWhere(
+                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            );
+
+            print(dashboardAllData!.drivers!);
+
             if (index >= 0) {
+              dashboardAllData!.drivers!.removeAt(idd);
               onlineDriversList.removeAt(index);
             }
             update();
@@ -131,7 +139,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
 
-  List<DriverActivityModel> busyDriversList = [];
+  List<DashboardDriverObject> busyDriversList = [];
 
 
   // We pass the context here so we can show the Dialog
@@ -153,7 +161,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
               );
             }
 
-            final driver = DriverActivityModel.fromJson(
+            final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
             busyDriversList.add(driver);
@@ -189,7 +197,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print(response.data);
       if(response.data['login_drivers'].isNotEmpty){
         response.data['login_drivers'].forEach((element) {
-          onlineDriversList.insert(0, DriverActivityModel(
+          onlineDriversList.insert(0, DashboardDriverObject(
             id: element['id'],
             name: element['name'],
             username: element['username'],
@@ -204,7 +212,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
       if(response.data['busy_drivers'].isNotEmpty){
         response.data['busy_drivers'].forEach((element) {
-          busyDriversList.insert(0, DriverActivityModel(
+          busyDriversList.insert(0, DashboardDriverObject(
             id: element['id'],
             name: element['name'],
             username: element['username'],
