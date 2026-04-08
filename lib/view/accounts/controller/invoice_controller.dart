@@ -149,45 +149,51 @@ class InvoiceController extends GetxController {
 
   void recalculateCreateInvoiceTotal(dynamic booking) {
     if (booking == null) return;
+    double pV(dynamic v) => double.tryParse(v?.toString().trim() ?? '') ?? 0.0;
 
-    double parseValue(dynamic value) {
-      if (value == null) return 0.0;
-      return double.tryParse(value.toString().trim()) ?? 0.0;
-    }
+    // 1. Row Total Calculation (Current Booking)
+    booking.totalCharges = (pV(booking.fares) +
+            pV(booking.parkingCharges) +
+            pV(booking.waitingCharges) +
+            pV(booking.extraDropCharges) +
+            pV(booking.meetAndGreet) +
+            pV(booking.congestionCharges))
+        .toStringAsFixed(2);
 
-    double fare = parseValue(booking.fares);
-    double pc = parseValue(booking.parkingCharges);
-    double wc = parseValue(booking.waitingCharges);
-    double edc = parseValue(booking.extraDropCharges);
-    double mg = parseValue(booking.meetAndGreet);
-    double cc = parseValue(booking.congestionCharges);
+    final model = accountInvoiceBookingModel;
+    if (model?.bookings != null && model!.bookings!.isNotEmpty) {
+      // Initialize totals
+      double fT = 0, pT = 0, wT = 0, eT = 0, mT = 0, cT = 0, grandT = 0;
 
-    double rowSum = fare + pc + wc + edc + mg + cc;
+      for (var b in model.bookings!) {
+        double f = pV(b.fares),
+            p = pV(b.parkingCharges),
+            w = pV(b.waitingCharges);
+        double e = pV(b.extraDropCharges),
+            m = pV(b.meetAndGreet),
+            c = pV(b.congestionCharges);
 
-    booking.totalCharges = rowSum.toStringAsFixed(2);
-
-    if (accountInvoiceBookingModel?.bookings != null &&
-        accountInvoiceBookingModel!.bookings!.isNotEmpty) {
-      double gSum = 0;
-
-      for (var b in accountInvoiceBookingModel!.bookings!) {
-        double total = parseValue(b.fares) +
-            parseValue(b.parkingCharges) +
-            parseValue(b.waitingCharges) +
-            parseValue(b.extraDropCharges) +
-            parseValue(b.meetAndGreet) +
-            parseValue(b.congestionCharges);
-
-        gSum += total;
+        fT += f;
+        pT += p;
+        wT += w;
+        eT += e;
+        mT += m;
+        cT += c;
+        grandT += (f + p + w + e + m + c);
       }
 
-      if (accountInvoiceBookingModel!.total != null &&
-          accountInvoiceBookingModel!.total!.isNotEmpty) {
-        accountInvoiceBookingModel!.total![0].grandTotal =
-            gSum.toStringAsFixed(2);
+      if (model.total != null && model.total!.isNotEmpty) {
+        var footer = model.total![0];
+        footer.fareTotal = fT.toStringAsFixed(2);
+        footer.parkingChargesTotal = pT.toStringAsFixed(2);
+        footer.waitingChargesTotal = wT.toStringAsFixed(2);
+        footer.extraDropChargesTotal = eT.toStringAsFixed(2);
+        footer.meetAndGreetTotal = mT.toStringAsFixed(2);
+        footer.congestionChargesTotal = cT.toStringAsFixed(2);
+        footer.total = grandT.toStringAsFixed(2);
+        footer.grandTotal = grandT.toStringAsFixed(2);
       }
     }
-
     update();
   }
 
@@ -295,6 +301,7 @@ class InvoiceController extends GetxController {
   void togglePaidStatus() {
     isPaid.value = !isPaid.value;
   }
+
   bool isFilterUpdateApplied = false;
   List<int> selectedBookingIds = [];
   bool isAllUpdateSelected = false;
@@ -302,12 +309,13 @@ class InvoiceController extends GetxController {
   String updateInvoiceDueDateController = "2000-01-01";
   UpdateInvoiceByIdModel? updateInvoiceByIdModel;
   AccountInvoiceAccountInvoice? accountInvoiceAccountInvoice;
+
   ///  UPDATE SCREEN VARIABLES
   SubsDiaryModel? updateSubsidiaryModel;
   Subsidiaries? selectedUpdateSubsidiary;
   DashboardAccountModel? updateAccountModel;
   DashboardAccountObject? selectedUpdateAccount;
-  UpdateInvoiceByIdModel? invoiceData;
+  // UpdateInvoiceByIdModel? invoiceData;
   Subsidiary? selectedSubsidiary;
   Account? account;
   bool isLoadingUpdate = false;
@@ -316,7 +324,8 @@ class InvoiceController extends GetxController {
     isLoadingUpdate = true;
     update();
 
-    if (subsDiaryModel?.subsidiaries == null || subsDiaryModel!.subsidiaries!.isEmpty) {
+    if (subsDiaryModel?.subsidiaries == null ||
+        subsDiaryModel!.subsidiaries!.isEmpty) {
       await getSubsidiary();
     }
     var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
@@ -329,65 +338,23 @@ class InvoiceController extends GetxController {
         }
       }
       orderNumber.text = data?.orderNumber ?? "";
-      invoiceDateController = "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
-      invoiceDueDateController = "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
+      invoiceDateController =
+          "${data?.invoiceDate?.year}-${data?.invoiceDate?.month}-${data?.invoiceDate?.day}";
+      invoiceDueDateController =
+          "${data?.invoiceDueDate?.year}-${data?.invoiceDueDate?.month}-${data?.invoiceDueDate?.day}";
       if (data != null) {
-        subsidiaries = subsDiaryModel?.subsidiaries?.firstWhere((s) => "${s.id}" == "${data.subsidiaryId}");
+        subsidiaries = subsDiaryModel?.subsidiaries
+            ?.firstWhere((s) => "${s.id}" == "${data.subsidiaryId}");
         await getAccountData(subsidiariesId: data.subsidiaryId);
-        selectAccountValue = dashboardAccountData?.accounts?.firstWhere((a) => "${a.id}" == "${data.accountId}");
-        selectDepartmentData = selectAccountValue?.departments?.firstWhere((d) => "${d.id}" == "${data.departmentId}");
+        selectAccountValue = dashboardAccountData?.accounts
+            ?.firstWhere((a) => "${a.id}" == "${data.accountId}");
+        selectDepartmentData = selectAccountValue?.departments
+            ?.firstWhere((d) => "${d.id}" == "${data.departmentId}");
       }
       isLoadingUpdate = false;
       update();
     }
   }
-
-  double parseDouble(dynamic value) =>
-      double.tryParse(value?.toString() ?? "0") ?? 0.0;
-
-  double getInvoiceColumnTotal(String field) {
-    final updateItems = updateInvoiceByIdModel
-        ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems;
-
-    if (updateItems == null || updateItems.isEmpty) return 0.0;
-    final list = updateItems
-        .map((e) => e.booking)
-        .where((b) => b != null)
-        .toList();
-
-    return _calculateInvoiceListTotal(list, field);
-  }
-
-  double _calculateInvoiceListTotal(List<dynamic> list, String field) {
-    return list.fold(0.0, (sum, item) {
-      if (field == 'total') {
-        return sum + parseDouble(item.totalCharges);
-      }
-      return sum + parseDouble({
-        'fare': item.companyPrice,
-        'pc': item.parkingCharges,
-        'wc': item.waitingCharges,
-        'edc': item.extraDropCharges,
-        'mg': item.meetAndGreet,
-        'cc': item.congestionCharges,
-      }[field]);
-    });
-  }
-  // double _calculateInvoiceListTotal(List<dynamic> list, String field) {
-  //   return list.fold(0.0, (sum, item) {
-  //     return sum +
-  //         parseDouble({
-  //           'fare': item.companyPrice,
-  //           'pc': item.parkingCharges,
-  //           'wc': item.waitingCharges,
-  //           'edc': item.extraDropCharges,
-  //           'mg': item.meetAndGreet,
-  //           'cc': item.congestionCharges,
-  //           'total': item.totalCharges,
-  //         }[field]);
-  //   });
-  // }
-
 
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
@@ -415,7 +382,7 @@ class InvoiceController extends GetxController {
       final b = item.booking;
       if (b == null) continue;
 
-      double fare = (b.companyPrice ?? 0).toDouble();
+      double fare = (b.fares ?? 0).toDouble();
       double pc = (b.parkingCharges ?? 0).toDouble();
       double wc = (b.waitingCharges ?? 0).toDouble();
       double edc = (b.extraDropCharges ?? 0).toDouble();
@@ -451,12 +418,14 @@ class InvoiceController extends GetxController {
     }
 
     // Admin fees from API (agar amount type AMOUNT hai)
-    double adminFees = 0;
-    if (accountData?.adminFeesType == "AMOUNT") {
-      adminFees = (accountData?.adminFees ?? 0).toDouble();
-    } else if (accountData?.adminFeesType == "PERCENTAGE") {
-      adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
-    }
+    // Naya Logic (Direct API/Model se)
+    double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+    // double adminFees = 0;
+    // if (accountData?.adminFeesType == "AMOUNT") {
+    //   adminFees = (accountData?.adminFees ?? 0).toDouble();
+    // } else if (accountData?.adminFeesType == "PERCENTAGE") {
+    //   adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
+    // }
 
     double finalTotal = grandTotal + adminFees;
 
@@ -491,12 +460,12 @@ th { background-color: #f2f2f2; }
   <div>
     <b>ACCOUNT:</b> ${accountData?.name ?? ""}<br>
     <b>ORDER #:</b> ${mainData.orderNumber ?? "-"}<br>
-    <b>DATE:</b> ${mainData.invoiceDate ?? ""}<br>
-    <b>DUE DATE:</b> ${mainData.invoiceDueDate ?? ""}
+    <b>DATE:</b> ${mainData.invoiceDate.toString().split(' ').first}<br>
+    <b>DUE DATE:</b> ${mainData.invoiceDueDate.toString().split(' ').first}
   </div>
 </div>
 
-<p><b>PERIOD:</b> (${mainData.fromDate ?? ""} TO ${mainData.toDate ?? ""})</p>
+<p><b>PERIOD:</b> (${mainData.fromDate.toString().split(' ').first} TO ${mainData.toDate.toString().split(' ').first})</p>
 
 <table>
 <thead>
@@ -611,7 +580,7 @@ CC: CONGESTION CHARGES
       final b = item.booking;
       if (b == null) continue;
 
-      double fare = (b.companyPrice ?? 0).toDouble();
+      double fare = (b.fares ?? 0).toDouble();
       double pc = (b.parkingCharges ?? 0).toDouble();
       double wc = (b.waitingCharges ?? 0).toDouble();
       double edc = (b.extraDropCharges ?? 0).toDouble();
@@ -674,30 +643,51 @@ CC: CONGESTION CHARGES
   }
 
   /// Edit Charges Function
+  double totalFare = 0,
+      totalPC = 0,
+      totalWC = 0,
+      totalEDC = 0,
+      totalMG = 0,
+      totalCC = 0,
+      subTotal = 0;
+
   void recalculateRowTotal(dynamic lineItem) {
     final booking = lineItem.booking;
     if (booking != null) {
-      booking.companyPrice = booking.companyPrice ?? 0;
-      booking.parkingCharges = booking.parkingCharges ?? 0;
-      booking.waitingCharges = booking.waitingCharges ?? 0;
-      booking.extraDropCharges = booking.extraDropCharges ?? 0;
-      booking.meetAndGreet = booking.meetAndGreet ?? 0;
-      booking.congestionCharges = booking.congestionCharges ?? 0;
+      // 1. Row Total Calculation
+      booking
+          .totalCharges = ((double.tryParse(booking.fares?.toString() ?? "0") ??
+              0.0) +
+          (double.tryParse(booking.parkingCharges?.toString() ?? "0") ?? 0.0) +
+          (double.tryParse(booking.waitingCharges?.toString() ?? "0") ?? 0.0) +
+          (double.tryParse(booking.extraDropCharges?.toString() ?? "0") ??
+              0.0) +
+          (double.tryParse(booking.meetAndGreet?.toString() ?? "0") ?? 0.0) +
+          (double.tryParse(booking.congestionCharges?.toString() ?? "0") ??
+              0.0));
 
-      booking.totalCharges = (booking.companyPrice as double) +
-          (booking.parkingCharges as double) +
-          (booking.waitingCharges as double) +
-          (booking.extraDropCharges as double) +
-          (booking.meetAndGreet as double) +
-          (booking.congestionCharges as double);
+      // 2. Reset Totals before loop
+      totalFare = 0;
+      totalPC = 0;
+      totalWC = 0;
+      totalEDC = 0;
+      totalMG = 0;
+      totalCC = 0;
+      subTotal = 0;
 
-      double newGrandTotal = 0;
       var lineItems = updateInvoiceByIdModel
               ?.accountInvoice?.accountInvoice?.accountInvoiceLineitems ??
           [];
 
       for (var item in lineItems) {
-        newGrandTotal += (item.booking?.totalCharges ?? 0);
+        var b = item.booking;
+        totalFare += (b?.fares ?? 0.0);
+        totalPC += (b?.parkingCharges ?? 0.0);
+        totalWC += (b?.waitingCharges ?? 0.0);
+        totalEDC += (b?.extraDropCharges ?? 0.0);
+        totalMG += (b?.meetAndGreet ?? 0.0);
+        totalCC += (b?.congestionCharges ?? 0.0);
+        subTotal += (b?.totalCharges ?? 0.0);
       }
 
       double adminFees = double.tryParse(updateInvoiceByIdModel
@@ -705,9 +695,8 @@ CC: CONGESTION CHARGES
                   ?.toString() ??
               "0") ??
           0.0;
-
       updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.amount =
-          (newGrandTotal + adminFees).toStringAsFixed(2);
+          (subTotal + adminFees).toStringAsFixed(2);
 
       update();
     }
@@ -715,7 +704,7 @@ CC: CONGESTION CHARGES
 
   updateBookingCharges(dynamic booking) async {
     var formData = {
-      "fares": booking.companyPrice.toString(),
+      "fares": booking.fares.toString(),
       "parking_charges": booking.parkingCharges.toString(),
       "waiting_charges": booking.waitingCharges.toString(),
       "extra_drop_charges": booking.extraDropCharges.toString(),
@@ -726,7 +715,6 @@ CC: CONGESTION CHARGES
     var response = await Api()
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
-      print("Invoice Update Status: ${response.statusCode}");
       BotToast.showText(text: "Charges updated!");
     }
   }

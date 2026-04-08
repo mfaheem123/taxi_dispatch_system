@@ -118,12 +118,8 @@ class AccountInvoiceViewScreen extends StatelessWidget {
     }
 
     // Admin Fees Calculation
-    double adminFees = 0;
-    if (accountData?.adminFeesType == "AMOUNT") {
-      adminFees = (accountData?.adminFees ?? 0).toDouble();
-    } else if (accountData?.adminFeesType == "PERCENTAGE") {
-      adminFees = (grandTotal * (accountData?.adminFees ?? 0) / 100);
-    }
+    double adminFees = double.tryParse(accountData?.adminFees?.toString() ?? "0") ?? 0.0;
+
 
     return Scaffold(
       backgroundColor: Colors.white,

@@ -416,7 +416,7 @@ class _UpdateAccountInvoiceScreenState
                             child: SizedBox(
                               width: 70,
                               child: TextFormField(
-
+                                key: UniqueKey(),
                                 initialValue: initialValue?.toString() ?? "0",
                                 keyboardType: TextInputType.number,
                                 textAlign: TextAlign.center,
@@ -463,28 +463,28 @@ class _UpdateAccountInvoiceScreenState
                         DataCell(Center(child: Text(booking?.journeyType?.journeyType ?? "-"))),
                         DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))),
 
-                        editableCell(booking?.companyPrice, (val) {
-                          booking?.companyPrice = double.tryParse(val) ?? 0;
+                        editableCell(booking?.fares, (val) {
+                          booking?.fares = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.parkingCharges, (val) {
-                          booking?.parkingCharges = double.tryParse(val) ?? 0;
+                          booking?.parkingCharges = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.waitingCharges, (val) {
-                          booking?.waitingCharges = double.tryParse(val) ?? 0;
+                          booking?.waitingCharges = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.extraDropCharges, (val) {
-                          booking?.extraDropCharges = double.tryParse(val) ?? 0;
+                          booking?.extraDropCharges = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.meetAndGreet, (val) {
-                          booking?.meetAndGreet = double.tryParse(val) ?? 0;
+                          booking?.meetAndGreet = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.congestionCharges, (val) {
-                          booking?.congestionCharges = double.tryParse(val) ?? 0;
+                          booking?.congestionCharges = int.tryParse(val.toString()) ?? 0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         DataCell(Center(
@@ -520,23 +520,47 @@ class _UpdateAccountInvoiceScreenState
 
 
                     // 1. TOTAL Row
-                    DataRow(
-                      cells: [
-                        for (var i = 0; i < 7; i++) DataCell.empty,
-                        DataCell(Center(
-                            child: Text("TOTAL",
-                              style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)))),
-                        ...['fare', 'pc', 'wc', 'edc', 'mg', 'cc', 'total'].map((field) => DataCell(
-                          Center(
-                            child: Text(
-                              "£ ${controller.getInvoiceColumnTotal(field).toStringAsFixed(2)}",
-                                style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900),
-                            ),
+                    // DataRow(
+                    //   cells: [
+                    //     for (var i = 0; i < 7; i++) DataCell.empty,
+                    //     DataCell(Center(
+                    //         child: Text("TOTAL",
+                    //           style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900)))),
+                    //     ...['fare', 'pc', 'wc', 'edc', 'mg', 'cc', 'total'].map((field) => DataCell(
+                    //       Center(
+                    //         child: Text(
+                    //           "£ ${controller.getInvoiceColumnTotal(field).toStringAsFixed(2)}",
+                    //             style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900),
+                    //         ),
+                    //       ),
+                    //     )),
+                    //     DataCell.empty,
+                    //   ],
+                    // ),
+
+
+                    if (controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice != null)
+                      DataRow(
+                        cells: [
+                          for (var i = 0; i < 8; i++)DataCell(
+                              i == 7
+                                  ? Text("TOTAL", style: mozillaTextSemiBoldText(fontWeight: FontWeight.w900))
+                                  : const SizedBox.shrink()
                           ),
-                        )),
-                        DataCell.empty,
-                      ],
-                    ),
+
+                          DataCell(Center(child: Text("£${controller.totalFare.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(child: Text("£${controller.totalPC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(child: Text("£${controller.totalWC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(child: Text("£${controller.totalEDC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(child: Text("£${controller.totalMG.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(child: Text("£${controller.totalCC.toStringAsFixed(2)}", style: mozillaTextSemiBoldText()))),
+                          DataCell(Center(
+                              child: Text("£${controller.subTotal.toStringAsFixed(2)}",
+                                  style: mozillaTextSemiBoldText(color: Colors.blue, fontWeight: FontWeight.bold)))),
+
+                          DataCell.empty,
+                        ],
+                      ),
 
                     //  Admin Row
 
