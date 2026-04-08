@@ -337,7 +337,7 @@ class Subsidiary {
   String? companyNumber;
   String? vatNumber;
   String? iban;
-  double? balance;
+  int? balance;
   String? currency;
   String? webAccessToken;
   String? mobileAccessToken;
@@ -394,7 +394,7 @@ class Subsidiary {
     companyNumber: json["company_number"],
     vatNumber: json["vat_number"],
     iban: json["iban"],
-    balance: json["balance"]?.toDouble(),
+    balance: json["balance"],
     currency: json["currency"],
     webAccessToken: json["web_access_token"],
     mobileAccessToken: json["mobile_access_token"],
@@ -485,6 +485,7 @@ class AccountInvoiceLineitem {
 class Booking {
   int? id;
   String? name;
+  int? fares;
   String? pickup;
   String? dropoff;
   String? viapoints;
@@ -495,18 +496,19 @@ class Booking {
   dynamic orderNumber;
   AccountDepartment? paymentType;
   VehicleType? vehicleType;
-  double? companyPrice;
-  double? totalCharges;
-  double? meetAndGreet;
-  double? parkingCharges;
-  double? waitingCharges;
+  int? companyPrice;
+  int? totalCharges;
+  int? meetAndGreet;
+  int? parkingCharges;
+  int? waitingCharges;
   String? referenceNumber;
-  double? congestionCharges;
-  double? extraDropCharges;
+  int? congestionCharges;
+  int? extraDropCharges;
 
   Booking({
     this.id,
     this.name,
+    this.fares,
     this.pickup,
     this.dropoff,
     this.viapoints,
@@ -530,6 +532,7 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
     id: json["id"],
     name: json["name"],
+    fares: json["fares"],
     pickup: json["pickup"],
     dropoff: json["dropoff"],
     viapoints: json["viapoints"],
@@ -553,6 +556,7 @@ class Booking {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
+    "fares": fares,
     "pickup": pickup,
     "dropoff": dropoff,
     "viapoints": viapoints,

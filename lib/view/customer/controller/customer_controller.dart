@@ -1,4 +1,4 @@
- import 'dart:convert';
+import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
@@ -6,6 +6,8 @@ import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+
+import '../../dashboard_view/models/users_phone_numbers_model.dart';
 
 class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo adding customer functionality
@@ -70,8 +72,10 @@ class CustomerController extends GetxController {
       auth: true,
     );
     if (response.statusCode == 200) {
-      BotToast.showText(text:
-      updateCustomerValue.value ? "'Customer Updated Successfully'" : 'Customer Added Successfully');
+      BotToast.showText(
+          text: updateCustomerValue.value
+              ? "'Customer Updated Successfully'"
+              : 'Customer Added Successfully');
 
       print("✅ Account Created Successfully");
       enableSms.value = false;
@@ -118,8 +122,7 @@ class CustomerController extends GetxController {
   final keyWordsController = TextEditingController();
   getCustomer() async {
     customerLoader(true);
-    var response = await Api().get("customers/get?", 
-    queryParameters: {
+    var response = await Api().get("customers/get?", queryParameters: {
       'blacklist': blackList.value,
       'limit': limit,
       "name": searchName.value.toLowerCase(),
@@ -127,8 +130,7 @@ class CustomerController extends GetxController {
       "telephone": searchTele.value.toLowerCase(),
       "email": searchEmail.value.toLowerCase(),
       "address1": searchAddress.value.toLowerCase(),
-    }
-    );
+    });
     if (response.statusCode == 200) {
       getCustomerModel = GetCustomerModel.fromJson(response.data);
       totalPages.value = getCustomerModel?.totalPages ?? 1;
@@ -170,7 +172,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
       getCustomer();
-      BotToast.showText(text:"Customer deleted successfully!");
+      BotToast.showText(text: "Customer deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -203,4 +205,22 @@ class CustomerController extends GetxController {
   final howDealWithController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
+
+  GetPhoneNumbersModel? getPhoneNumbersModel;
+  bool dataLoader = false;
+  int selectedIndex = -1;
+
+
+  getCustomerNumbers(String mobile) async {
+    dataLoader = true;
+    var response = await Api().get("customers/search?mobile=$mobile");
+    if (response.statusCode == 200) {
+      getPhoneNumbersModel = GetPhoneNumbersModel.fromJson(response.data);
+      dataLoader = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
 }
