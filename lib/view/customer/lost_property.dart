@@ -1,6 +1,3 @@
-
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,7 +18,6 @@ class LostProperty extends StatefulWidget {
 }
 
 class _LostPropertyState extends State<LostProperty> {
-
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
@@ -33,159 +29,168 @@ class _LostPropertyState extends State<LostProperty> {
     shortCutKeyValue.value = "lostProperty";
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 5;  // total rows (dynamic list ke hisaab se change hoga)
-
+  int selectedRowIndex = 0;
+  final int totalRows = 5;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(
-        builder: (controller) {
+    return GetBuilder<CustomerController>(builder: (controller) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isMobile = maxWidth < 600;
+        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
+        final double fieldWidth = isMobile
+            ? maxWidth
+            : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-            return Column(
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: [
-                    Text(
-                      AppText.lostProperties + " (10)",
-                      style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w800, fontSize: 17),
-                    ),
-                    SizedBox(
-                      width: 60,
-                    ),
-                     Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: CustomButton(
-                        height: 40,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 15, vertical: 0.0),
-                          child: Icon(
-                            Icons.refresh,
-                            color: DynamicColors.whiteClr,
-                            size: 25,
-                          ),
-                        ),
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Padding(
+                  padding: EdgeInsetsGeometry.symmetric(horizontal: 15.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        AppText.lostProperties + " (10)",
+                        style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800, fontSize: 17),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "LOST #"),
-                        buildHeaderWithSearch(title: "REPORT DATE"),
-                        buildHeaderWithSearch(title: "LOST DATE"),
-                        buildHeaderWithSearch(title: "CUSTOMER"),
-                        buildHeaderWithSearch(title: "ITEM DESCRIPTION"),
-                        buildHeaderWithSearch(title: "ACTIONS",
-                            customWidget: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.search,
-                                    size: 28,
-                                  ),
-                                ),
-                                Text("|"),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.close,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
-                            )
-                        ),
-                      ],
-                      totalRow: totalRows,
-                      cells: [
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("PHC VEHICLE"))),
-                        DataCell(
-                          Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.edit_calendar,
-                                    size: 28,
-                                  ),
-                                ),
-                                Text("|"),
-                                OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(color: Colors.transparent,), // border color & thickness
-                                  ),
-                                  onPressed: () {},
-                                  child: Icon(Icons.delete_forever,
-                                    size: 28,
-                                    color: DynamicColors.redClr,
-                                  ),
-                                ),
-                              ],
+                      SizedBox(
+                        width: 60,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: CustomButton(
+                          height: 40,
+                          width: 80,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          widget: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 0.0),
+                            child: Icon(
+                              Icons.refresh,
+                              color: DynamicColors.whiteClr,
+                              size: 25,
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  )),
+              SizedBox(
+                height: 10,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: DatatableWidget(
+                    columns: [
+                      buildHeaderWithSearch(title: "LOST #"),
+                      buildHeaderWithSearch(title: "REPORT DATE"),
+                      buildHeaderWithSearch(title: "LOST DATE"),
+                      buildHeaderWithSearch(title: "CUSTOMER"),
+                      buildHeaderWithSearch(title: "ITEM DESCRIPTION"),
+                      buildHeaderWithSearch(
+                          title: "ACTIONS",
+                          customWidget: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.search,
+                                  size: 28,
+                                ),
+                              ),
+                              Text("|"),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.close,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                    totalRow: totalRows,
+                    cells: [
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("20/10/2025"))),
+                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      const DataCell(Center(child: Text("PHC VEHICLE"))),
+                      DataCell(
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.edit_calendar,
+                                  size: 28,
+                                ),
+                              ),
+                              Text("|"),
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: Colors.transparent,
+                                  ),
+                                ),
+                                onPressed: () {},
+                                child: Icon(
+                                  Icons.delete_forever,
+                                  size: 28,
+                                  color: DynamicColors.redClr,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            );
-          }
+              ),
+              SizedBox(
+                height: 10,
+              ),
+            ],
+          ),
         );
-      }
-    );
+      });
+    });
   }
 }
