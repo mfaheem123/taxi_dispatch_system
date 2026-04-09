@@ -18,6 +18,7 @@ import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
+import '../../component/text_field.dart';
 import '../../routes/app_pages.dart';
 import '../booking_view/update_booking.dart';
 import 'Controller/dashboard_controller.dart';
@@ -1032,6 +1033,7 @@ DataColumn buildHeaderWithSearch({String? title,removeSearching = false, Widget?
             child: TextField(
               controller: controller,
              onChanged: onChanged,
+              inputFormatters: [UpperCaseTextFormatter()],
               onTap: () {
                 shortCutKeyValue.value = "tableSelected";
               },

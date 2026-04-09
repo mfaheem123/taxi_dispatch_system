@@ -2711,6 +2711,8 @@ class _CustomIpadWidgetState extends State<CustomIpadWidget> {
                                 value.name.toString();
                             controller.emailController.text =
                                 value.email.toString();
+                            controller.telController.text =
+                                value.telephone.toString();
                           },
                         );
                       }

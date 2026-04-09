@@ -3267,6 +3267,8 @@ class _CreateBookingState extends State<CreateBooking> {
                                       .toString(); // <-- store anywhere
                                   controller.nameController.text =
                                       value.name.toString();
+                                  controller.telController.text =
+                                      value.telephone.toString();
                                 },
                               );
                             }

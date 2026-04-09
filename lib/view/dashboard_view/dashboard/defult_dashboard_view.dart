@@ -301,6 +301,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     key: controller.pickupFieldKey,
                                                                                     controller: controller.pickupController,
                                                                                     focusNode: controller.pickupTextFieldFocusNode,
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     hintText: 'PICKUP LOCATION',
                                                                                     borderRadius: 4,
                                                                                     prefixIcon: const Icon(
@@ -411,6 +414,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   height: 30,
                                                                                   child: CustomTextField(
                                                                                     controller: controller.pickUpNoteController,
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     hintText: "PICKUP NOTES",
                                                                                     borderRadius: 6,
                                                                                     onTap: (){
@@ -460,6 +466,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     child: CustomTextField(
                                                                                       controller: controller.selectAirportController,
                                                                                       hintText: "Flight Number",
+                                                                                      inputFormatters: [
+                                                                                        UpperCaseTextFormatter(),
+                                                                                      ],
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,
                                                                                       onTap: (){
@@ -489,6 +498,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     height: 30,
                                                                                     child: CustomTextField(
                                                                                       controller: controller.arrivalTimeController,
+                                                                                      inputFormatters: [
+                                                                                        UpperCaseTextFormatter(),
+                                                                                      ],
                                                                                       hintText: "ARR",
                                                                                       borderRadius: 6,
                                                                                       onTap: (){
@@ -557,6 +569,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     controller: controller.dropOffController,
                                                                                     focusNode: controller.dropOffTextFieldFocusNode,
                                                                                     hintText: 'DROP LOCATION',
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     onTap: () {
                                                                                       shortCutKeyValue.value = "DROP LOCATION";
                                                                                       controller.dropDownShow.value = true;
@@ -662,6 +677,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: CustomTextField(
                                                                                     controller: controller.dropUpNoteController,
                                                                                     hintText: "DROP NOTES",
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     borderRadius: 6,
                                                                                     onTap: (){
                                                                                       controller.dropDownShow.value = false;
@@ -720,6 +738,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 context,
                                                                                 isMobile,
                                                                                 AppText.name,
+
                                                                                 controller.nameController,
                                                                                 width: fieldWidth / 3,
                                                                                 onTap: (){
@@ -2366,6 +2385,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   value.name.toString();
                                               controller.emailController.text =
                                                   value.email.toString();
+                                              controller.telController.text =
+                                                  value.telephone.toString();
                                             },
                                           );
                                         }
