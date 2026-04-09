@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import '../../dashboard_view/models/users_phone_numbers_model.dart';
+import '../model/get_customer_booking_model.dart';
+import '../model/get_lost_property_model.dart';
 
 class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo adding customer functionality
@@ -207,10 +209,12 @@ class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
 
+  String reportDateController = "";
+  String lostDateController = "";
+
   GetPhoneNumbersModel? getPhoneNumbersModel;
   bool dataLoader = false;
   int selectedIndex = -1;
-
 
   getCustomerNumbers(String mobile) async {
     dataLoader = true;
@@ -222,5 +226,90 @@ class CustomerController extends GetxController {
     }
   }
 
+
+  var selectedBookingForLostProperty;
+  //  Get Bookings (Alert Screen)
+  GetCustomerBookingModel? getCustomerBookingModel;
+  bool bookingsLoader = false;
+
+  getCustomerJobs(String query) async {
+    bookingsLoader = true;
+
+    try {
+      String param = int.tryParse(query) != null ? "mobile" : "name";
+      var response = await Api().get("bookings/customer-jobs?$param=$query");
+      if (response.statusCode == 200) {
+        getCustomerBookingModel =
+            GetCustomerBookingModel.fromJson(response.data);
+        print("Data Loaded: ${response.data}");
+      } else {
+        print("Server Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception: $e");
+    } finally {
+      bookingsLoader = false;
+      update();
+    }
+  }
+
+  // Save Api
+bool saveLostPropertyLoad = false;
+
+  saveLostProperty() async{
+    if (selectedBookingForLostProperty == null) {
+      BotToast.showText(text: "Please select a booking first!");
+      return;
+    }
+    try{
+      saveLostPropertyLoad = true;
+      update();
+
+      var formData = {
+      "booking_id": selectedBookingForLostProperty?.id.toString(),
+      "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+      "item_description": detailOfPropertyController.text,
+      "inquiry": enquiryController.text,
+      "checked_by": checkedByController.text,
+      "method_desposition": methodOfDespositionController.text,
+      "result": resultController.text,
+      "lost_date": lostDateController,
+      "report_date": reportDateController,
+      };
+      print("Sending Data: $formData");
+
+      var response = await Api().post(formData, "lost-property/add", auth: true);
+      if(response.statusCode == 200) {
+        BotToast.showText(text: "Lost Property Added Successfully");
+        refreshFields();
+      }
+    }
+    catch (err) {
+      print("Error: $err");
+    }
+    saveLostPropertyLoad = false;
+    update();
+  }
+
+  refreshFields() {
+    selectedBookingForLostProperty = null;
+    detailOfPropertyController.clear();
+    methodOfDespositionController.clear();
+    nameController.clear();
+    mobileController.clear();
+    address1Controller.clear();
+    enquiryController.clear();
+    checkedByController.clear();
+    resultController.clear();
+  }
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
+
+  GetLostPropertyModel? lostPropertyModel;
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
 }
