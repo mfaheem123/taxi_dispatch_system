@@ -68,8 +68,8 @@ class LostProperty {
   factory LostProperty.fromJson(Map<String, dynamic> json) => LostProperty(
     id: json["id"],
     lostNumber: json["lost_number"],
-    reportDate: json["report_date"] == null ? null : DateTime.parse(json["report_date"]),
-    lostDate: json["lost_date"] == null ? null : DateTime.parse(json["lost_date"]),
+    reportDate: (json["report_date"] == null || json["report_date"] == "") ? null : DateTime.tryParse(json["report_date"]),
+    lostDate: (json["lost_date"] == null || json["lost_date"] == "") ? null : DateTime.tryParse(json["lost_date"]),
     itemDescription: json["item_description"],
     customer: json["customer"] == null ? null : CustomerList.fromJson(json["customer"]),
   );

@@ -10,6 +10,7 @@ import 'package:get_storage/get_storage.dart';
 import '../../dashboard_view/models/users_phone_numbers_model.dart';
 import '../model/get_customer_booking_model.dart';
 import '../model/get_lost_property_model.dart';
+import '../model/lost_property_getById__model.dart';
 
 class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo adding customer functionality
@@ -226,7 +227,6 @@ class CustomerController extends GetxController {
     }
   }
 
-
   var selectedBookingForLostProperty;
   //  Get Bookings (Alert Screen)
   GetCustomerBookingModel? getCustomerBookingModel;
@@ -254,37 +254,37 @@ class CustomerController extends GetxController {
   }
 
   // Save Api
-bool saveLostPropertyLoad = false;
+  bool saveLostPropertyLoad = false;
 
-  saveLostProperty() async{
+  saveLostProperty() async {
     if (selectedBookingForLostProperty == null) {
       BotToast.showText(text: "Please select a booking first!");
       return;
     }
-    try{
+    try {
       saveLostPropertyLoad = true;
       update();
 
       var formData = {
-      "booking_id": selectedBookingForLostProperty?.id.toString(),
-      "customer_id": selectedBookingForLostProperty?.customerId.toString(),
-      "item_description": detailOfPropertyController.text,
-      "inquiry": enquiryController.text,
-      "checked_by": checkedByController.text,
-      "method_desposition": methodOfDespositionController.text,
-      "result": resultController.text,
-      "lost_date": lostDateController,
-      "report_date": reportDateController,
+        "booking_id": selectedBookingForLostProperty?.id.toString(),
+        "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        "item_description": detailOfPropertyController.text,
+        "inquiry": enquiryController.text,
+        "checked_by": checkedByController.text,
+        "method_desposition": methodOfDespositionController.text,
+        "result": resultController.text,
+        "lost_date": lostDateController,
+        "report_date": reportDateController,
       };
       print("Sending Data: $formData");
 
-      var response = await Api().post(formData, "lost-property/add", auth: true);
-      if(response.statusCode == 200) {
+      var response =
+          await Api().post(formData, "lost-property/add", auth: true);
+      if (response.statusCode == 200) {
         BotToast.showText(text: "Lost Property Added Successfully");
         refreshFields();
       }
-    }
-    catch (err) {
+    } catch (err) {
       print("Error: $err");
     }
     saveLostPropertyLoad = false;
@@ -307,9 +307,112 @@ bool saveLostPropertyLoad = false;
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
 
   GetLostPropertyModel? lostPropertyModel;
+  RxBool lostPropertyLoader = false.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<LostProperty> lostPropertyAll = <LostProperty>[].obs;
+  RxList<LostProperty> filteredLostProperty = <LostProperty>[].obs;
+  RxString searchLostNumber = ''.obs;
+  RxString searchReportDate = ''.obs;
+  RxString searchLostDate = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchItemDescription = ''.obs;
+
+  ///--------------------- Pagination
+  var currentPageLostProperty = 1.obs;
+  var totalPagesLostProperty = 1.obs;
+  final int limitLostProperty = 10;
+
+  getAllLostProperty() async {
+    lostPropertyLoader(true);
+    print("Params: lost_number: ${searchLostNumber.value}, report_date: ${searchReportDate.value}");
+    var response = await Api().get("lost-property/get", queryParameters: {
+      "lost_number": searchLostNumber.value.toLowerCase(),
+      "report_date": searchReportDate.value.toLowerCase(),
+      "lost_date": searchLostDate.value.toLowerCase(),
+      "item_description": searchItemDescription.value.toLowerCase(),
+      "name": searchCustomer.value.toLowerCase(),
+    });
+    print("Status Code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      print("Raw Data: ${response.data}");
+      lostPropertyModel = GetLostPropertyModel.fromJson(response.data);
+      totalPagesLostProperty.value = lostPropertyModel?.totalPages ?? 1;
+      lostPropertyAll.value = lostPropertyModel?.lostProperties ?? [];
+      filteredLostProperty.value = lostPropertyAll;
+      print("Total Items Received: ${lostPropertyAll.length}");
+      lostPropertyLoader(false);
+      update();
+    }
+  }
+
+// -----------Search changes function
+  void onSearchLostProperty() {
+    currentPageLostProperty.value = 1;
+    getAllLostProperty();
+  }
+
+  /// ------- pagination function
+  void onPageLostProperty(int page) {
+    currentPageLostProperty.value = page;
+    getAllLostProperty();
+  }
 
 
+  RxBool lostPropertyValue = false.obs;
+  RxInt lostPropertyUpdateId = 0.obs;
 
+  lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
+    print("--- BINDING START ---");
+
+    lostPropertyUpdateId.value = lostPropertyUpdate?.id ?? 0;
+    nameController.text = lostPropertyUpdate?.customer?.name ?? "";
+    detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
+
+    lostPropertyValue(true);
+    update();
+
+    try {
+      print("Calling API for ID: ${lostPropertyUpdate.id}");
+
+      final response = await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
+
+      if (response != null && response.data != null) {
+        var data = response.data;
+
+        var detail = data['lost_property'];
+
+        if (detail != null) {
+          mobileController.text = (detail['mobile'] ?? "").toString();
+          address1Controller.text = (detail['address1'] ?? "").toString();
+          checkedByController.text = (detail['checked_by'] ?? "").toString();
+          enquiryController.text = (detail['inquiry'] ?? "").toString();
+          resultController.text = (detail['result'] ?? "").toString();
+          methodOfDespositionController.text = (detail['method_desposition'] ?? "").toString();
+
+          print("Binding Finished Successfully!");
+        }
+      }
+    } catch (e) {
+      print("Caught Error in Controller: $e");
+    }
+
+    update();
+    print("--- BINDING END ---");
+  }
+
+  // lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
+  //   lostPropertyUpdateId.value = lostPropertyUpdate!.id!;
+  //   nameController.text = lostPropertyUpdate.customer!.name!;
+  //   mobileController.text = lostPropertyUpdate.customer!.mobile!;
+  //   detailOfPropertyController.text = lostPropertyUpdate.itemDescription!;
+  //   methodOfDespositionController.text = lostPropertyUpdate.methodDesposition!;
+  //   address1Controller.text = lostPropertyUpdate.address1!;
+  //   checkedByController.text = lostPropertyUpdate.checkedBy!;
+  //   enquiryController.text = lostPropertyUpdate.inquiry!;
+  //   resultController.text = lostPropertyUpdate.result!;
+  //   lostPropertyValue(true);
+  // }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
 }

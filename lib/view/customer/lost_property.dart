@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +10,7 @@ import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'controller/customer_controller.dart';
+import 'create_lost_propertyScreen.dart';
 
 class LostProperty extends StatefulWidget {
   const LostProperty({super.key});
@@ -21,6 +23,7 @@ class _LostPropertyState extends State<LostProperty> {
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
+  final DashboardController _controller = Get.find();
 
   @override
   void initState() {
@@ -40,7 +43,15 @@ class _LostPropertyState extends State<LostProperty> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(builder: (controller) {
+    return GetBuilder<CustomerController>(initState: (v) {
+      controller.getAllLostProperty();
+    }, builder: (controller) {
+      if (controller.lostPropertyLoader.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      final listToShow = controller.filteredLostProperty.isNotEmpty
+          ? controller.filteredLostProperty
+          : controller.lostPropertyAll;
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -63,7 +74,7 @@ class _LostPropertyState extends State<LostProperty> {
                   child: Row(
                     children: [
                       Text(
-                        AppText.lostProperties + " (10)",
+                        AppText.lostProperties + " (${controller.lostPropertyModel?.count})",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800, fontSize: 17),
                       ),
@@ -99,11 +110,36 @@ class _LostPropertyState extends State<LostProperty> {
                   width: MediaQuery.of(context).size.width,
                   child: DatatableWidget(
                     columns: [
-                      buildHeaderWithSearch(title: "LOST #"),
-                      buildHeaderWithSearch(title: "REPORT DATE"),
-                      buildHeaderWithSearch(title: "LOST DATE"),
-                      buildHeaderWithSearch(title: "CUSTOMER"),
-                      buildHeaderWithSearch(title: "ITEM DESCRIPTION"),
+                      buildHeaderWithSearch(
+                          title: "LOST #",
+                          onChanged: (v) {
+                            controller.searchLostNumber.value = v;
+                            controller.onSearchLostProperty();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "REPORT DATE",
+                          onChanged: (v) {
+                            controller.searchReportDate.value = v;
+                            controller.onSearchLostProperty();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "LOST DATE",
+                          onChanged: (v) {
+                            controller.searchLostDate.value = v;
+                            controller.onSearchLostProperty();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "CUSTOMER",
+                          onChanged: (v) {
+                            controller.searchCustomer.value = v;
+                            controller.onSearchLostProperty();
+                          }),
+                      buildHeaderWithSearch(
+                          title: "ITEM DESCRIPTION",
+                          onChanged: (v) {
+                            controller.searchItemDescription.value = v;
+                            controller.onSearchLostProperty();
+                          }),
                       buildHeaderWithSearch(
                           title: "ACTIONS",
                           customWidget: Row(
@@ -126,7 +162,7 @@ class _LostPropertyState extends State<LostProperty> {
                                 style: OutlinedButton.styleFrom(
                                   side: BorderSide(
                                     color: Colors.transparent,
-                                  ),
+                                  ), // border color & thickness
                                 ),
                                 onPressed: () {},
                                 child: Icon(
@@ -138,51 +174,97 @@ class _LostPropertyState extends State<LostProperty> {
                             ],
                           )),
                     ],
-                    totalRow: totalRows,
-                    cells: [
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("20/10/2025"))),
-                      const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      const DataCell(Center(child: Text("PHC VEHICLE"))),
-                      DataCell(
-                        Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.edit_calendar,
-                                  size: 28,
-                                ),
+                    totalRow: listToShow.length,
+                    rows: listToShow.map((item) {
+                      return DataRow(
+                        cells: [
+                          DataCell(Center(child: Text(item.lostNumber ?? ""))),
+                          DataCell(
+                            Center(
+                              child: Text(
+                                  item.reportDate != null
+                                      ? item.reportDate!.toString().split(' ').first
+                                      : ""
                               ),
-                              Text("|"),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  side: BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                ),
-                                onPressed: () {},
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 28,
-                                  color: DynamicColors.redClr,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
+                          DataCell(
+                            Center(
+                              child: Text(
+                                  item.lostDate != null
+                                      ? item.lostDate!.toString().split(' ').first
+                                      : ""
+                              ),
+                            ),
+                          ),
+                          DataCell(
+                              Center(child: Text(item.customer?.name ?? ""))),
+                          DataCell(
+                              Center(child: Text(item.itemDescription ?? ""))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      controller.lostPropertyUpdate(
+                                          lostPropertyUpdate: item);
+                                      int index = _controller.selectedMenuItems
+                                          .indexWhere((element) =>
+                                      element.title == "LOST PROPERTY");
+                                      if (index != -1) {
+                                        _controller.selectedMenuItems[index]
+                                            .selectedItem = true;
+                                        _controller.currentPage.value =
+                                            LostPropertyScreen();
+                                      } else {
+                                        _controller.currentPage.value =
+                                            LostPropertyScreen();
+                                        _controller.menuBarRefresh(
+                                            title: "LOST PROPERTY",
+                                            pageName: LostPropertyScreen());
+                                      }
+                                      controller.update();
+                                    },
+                                    child: Icon(
+                                      Icons.edit_calendar,
+                                      size: 28,
+                                    ),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ),
+                                    ),
+                                    onPressed: () {},
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      size: 28,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    }).toList(),
                   ),
                 ),
+              ),
+              PaginationWidget(
+                currentPage: controller.currentPageLostProperty.value,
+                totalPages: controller.totalPagesLostProperty.value,
+                onPageChange: controller.onPageLostProperty,
               ),
               SizedBox(
                 height: 10,
