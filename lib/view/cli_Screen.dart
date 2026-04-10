@@ -21,6 +21,9 @@ import 'dashboard_view/models/dashboard_model.dart';
 import 'dashboard_view/models/dashboard_table_model.dart';
 import 'dashboard_view/widgets/user_info_widget.dart';
 
+String temMobileNumber="";
+
+
 class ResponsivePassengerScreen extends StatefulWidget {
   final String extensionNumber;
 
@@ -40,6 +43,7 @@ class _ResponsivePassengerScreenState extends State<ResponsivePassengerScreen> {
   void initState() {
     super.initState();
     print("PHONEEEEEEEEEEEEEEEEE${widget.extensionNumber}");
+    temMobileNumber = widget.extensionNumber;
 
     /// ✅ CLI screen open hote hi socket connect
     // socketController.connectSocket(widget.extensionNumber);
@@ -1657,6 +1661,7 @@ class _CenterAreaState extends State<_CenterArea> {
                         if (!mounted) return;
                       } else {
                         if (selectedBooking == null) {
+                          _controller.mobileController.text = temMobileNumber;
                           Get.back();
                           return;
                         }

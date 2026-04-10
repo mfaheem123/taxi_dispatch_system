@@ -60,12 +60,13 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print( data['data']['callerId']);
-            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
-              // Handle the returned value here
+            Get.to(() => ResponsivePassengerScreen(
+              extensionNumber: data['data']['callerId'],
+            ))?.then((value) {
               connectToCli("200");
             });
 
-            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
+            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
             // _showIncomingCallDialog(
             //   context,
             //   data['data']['callId'].toString(),
@@ -121,6 +122,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             if (index >= 0) {
               dashboardAllData!.drivers!.removeAt(idd);
               onlineDriversList.removeAt(index);
+              selectDriverValue = null;
             }
             update();
           }
@@ -1024,7 +1026,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "PICKUP LOCATION",
         address: '',
       ));
-      pickupController.text = "$suggestion $postCode";
+      pickupController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
       int index = polyLineMarkerInfo
@@ -1041,7 +1043,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "DROP LOCATION",
         address: '',
       ));
-      dropOffController.text = "$suggestion $postCode";
+      dropOffController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "Create Booking PICKUP") {
       int index = polyLineMarkerInfo
@@ -1058,7 +1060,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "Create Booking PICKUP",
         address: '',
       ));
-      pickupController.text = "$suggestion $postCode";
+      pickupController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value ==
         "Create Booking DROP LOCATION") {
@@ -1079,7 +1081,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffController.text = "$suggestion $postCode";
+      dropOffController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
       int index = polyLineMarkerInfo
@@ -1099,7 +1101,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffTwoWayController.text = "$suggestion $postCode";
+      dropOffTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP TWO WAY LOCATION") {
       int index = polyLineMarkerInfo
@@ -1119,7 +1121,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffTwoWayController.text = "$suggestion $postCode";
+      dropOffTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
       int index = polyLineMarkerInfo
@@ -1139,7 +1141,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      pickupTwoWayController.text = "$suggestion $postCode";
+      pickupTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     }
 
