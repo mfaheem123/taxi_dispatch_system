@@ -11,6 +11,7 @@ import '../../dashboard_view/models/users_phone_numbers_model.dart';
 import '../model/get_customer_booking_model.dart';
 import '../model/get_lost_property_model.dart';
 import '../model/lost_property_getById__model.dart';
+import '../model/search_customer_by_mobile.dart';
 
 class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo adding customer functionality
@@ -210,18 +211,44 @@ class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
 
+  final ScrollController listScrollController = ScrollController();
+
+  void scrollToIndex(int index) {
+    if (listScrollController.hasClients) {
+      double itemHeight = 45.0;
+      double targetOffset = index * itemHeight;
+      double currentScroll = listScrollController.offset;
+      double viewportHeight = 300.0;
+      if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+        listScrollController.animateTo(
+          (targetOffset - viewportHeight + itemHeight) + 40,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+      else if (targetOffset < currentScroll) {
+        listScrollController.animateTo(
+          targetOffset - 20,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+  }
+
+
   String reportDateController = "";
   String lostDateController = "";
 
-  GetPhoneNumbersModel? getPhoneNumbersModel;
+  SearchCustomerByMobileModel? getPhoneNumbersModel;
   bool dataLoader = false;
   int selectedIndex = -1;
 
   getCustomerNumbers(String mobile) async {
     dataLoader = true;
-    var response = await Api().get("customers/search?mobile=$mobile");
+    var response = await Api().get("customers/search-data?mobile=$mobile");
     if (response.statusCode == 200) {
-      getPhoneNumbersModel = GetPhoneNumbersModel.fromJson(response.data);
+      getPhoneNumbersModel = SearchCustomerByMobileModel.fromJson(response.data);
       dataLoader = false;
       update();
     }
@@ -365,9 +392,20 @@ class CustomerController extends GetxController {
   lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
     print("--- BINDING START ---");
 
-    lostPropertyUpdateId.value = lostPropertyUpdate?.id ?? 0;
+    lostPropertyUpdateId.value = lostPropertyUpdate?.id;
     nameController.text = lostPropertyUpdate?.customer?.name ?? "";
     detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
+    // lostDateController = lostPropertyUpdate.lostDate != null ? lostPropertyUpdate.lostDate.toString().split(' ')[0] : "";
+    // reportDateController = lostPropertyUpdate.reportDate != null ? lostPropertyUpdate.reportDate.toString().split(' ')[0] : "";
+    // Galat: lostDateController.text = ... (Agar ye String hai)
+// Sahi:
+    lostDateController = lostPropertyUpdate?.lostDate != null
+        ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
+        : "";
+
+    reportDateController = lostPropertyUpdate?.reportDate != null
+        ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
+        : "";
 
     lostPropertyValue(true);
     update();
@@ -376,22 +414,50 @@ class CustomerController extends GetxController {
       print("Calling API for ID: ${lostPropertyUpdate.id}");
 
       final response = await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
+      print("API Raw Data: ${response.data}");
 
       if (response != null && response.data != null) {
-        var data = response.data;
+        var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
+        var detail = apiModel.lostProperty;
 
-        var detail = data['lost_property'];
+        // var data = response.data;
+
+        // var detail = data['lost_property'];
 
         if (detail != null) {
-          mobileController.text = (detail['mobile'] ?? "").toString();
-          address1Controller.text = (detail['address1'] ?? "").toString();
-          checkedByController.text = (detail['checked_by'] ?? "").toString();
-          enquiryController.text = (detail['inquiry'] ?? "").toString();
-          resultController.text = (detail['result'] ?? "").toString();
-          methodOfDespositionController.text = (detail['method_desposition'] ?? "").toString();
+          mobileController.text = detail.mobile ?? "";
+          address1Controller.text = detail.address1?.toString() ?? detail.customer?.address1?.toString() ?? "";
+          // address1Controller.text = detail.address1 ?? "";
+          checkedByController.text = detail.checkedBy ?? "";
+          enquiryController.text = detail.inquiry ?? "";
+          resultController.text = detail.result ?? "";
+          methodOfDespositionController.text = detail.methodDesposition ?? "";
 
-          print("Binding Finished Successfully!");
+          if (detail.booking != null) {
+            selectedBookingForLostProperty = detail.booking;
+          }
+          else {
+            selectedBookingForLostProperty = BookingGetById(
+              referenceNumber: detail.referenceNumber,
+              pickupDate: detail.pickupDate,
+              pickupTime: detail.pickupTime,
+              pickup: detail.pickup,
+              dropoff: detail.dropoff,
+              vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
+            );
+          }
+
+          print("Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
         }
+          // mobileController.text = (detail['mobile'] ?? "").toString();
+          // address1Controller.text = (detail['address1'] ?? "").toString();
+          // checkedByController.text = (detail['checked_by'] ?? "").toString();
+          // enquiryController.text = (detail['inquiry'] ?? "").toString();
+          // resultController.text = (detail['result'] ?? "").toString();
+          // methodOfDespositionController.text = (detail['method_desposition'] ?? "").toString();
+
+        //   print("Binding Finished Successfully!");
+        // }
       }
     } catch (e) {
       print("Caught Error in Controller: $e");

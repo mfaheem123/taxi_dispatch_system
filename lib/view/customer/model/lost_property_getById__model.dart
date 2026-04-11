@@ -53,7 +53,7 @@ class LostPropertyById {
   dynamic doorNumber;
   dynamic address1;
   dynamic address2;
-  Booking? booking;
+  BookingGetById? booking;
   CustomerById? customer;
 
   LostPropertyById({
@@ -94,8 +94,12 @@ class LostPropertyById {
     checkedBy: json["checked_by"],
     methodDesposition: json["method_desposition"],
     result: json["result"],
-    lostDate: json["lost_date"] == null ? null : DateTime.parse(json["lost_date"]),
-    reportDate: json["report_date"] == null ? null : DateTime.parse(json["report_date"]),
+    lostDate: (json["lost_date"] == null || json["lost_date"].toString().isEmpty)
+        ? null
+        : DateTime.tryParse(json["lost_date"].toString()),
+    reportDate: (json["report_date"] == null || json["report_date"].toString().isEmpty)
+        ? null
+        : DateTime.tryParse(json["report_date"].toString()),
     lostNumber: json["lost_number"],
     status: json["status"],
     createdAt: json["created_at"],
@@ -110,7 +114,7 @@ class LostPropertyById {
     doorNumber: json["door_number"],
     address1: json["address1"],
     address2: json["address2"],
-    booking: json["booking"] == null ? null : Booking.fromJson(json["booking"]),
+    booking: json["booking"] == null ? null : BookingGetById.fromJson(json["booking"]),
     customer: json["customer"] == null ? null : CustomerById.fromJson(json["customer"]),
   );
 
@@ -144,15 +148,15 @@ class LostPropertyById {
   };
 }
 
-class Booking {
+class BookingGetById {
   String? referenceNumber;
   String? pickupDate;
   String? pickupTime;
   String? pickup;
   String? dropoff;
-  VehicleType? vehicleType;
+  VehicleTypeGetById? vehicleType;
 
-  Booking({
+  BookingGetById({
     this.referenceNumber,
     this.pickupDate,
     this.pickupTime,
@@ -161,13 +165,13 @@ class Booking {
     this.vehicleType,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
+  factory BookingGetById.fromJson(Map<String, dynamic> json) => BookingGetById(
     referenceNumber: json["reference_number"],
     pickupDate: json["pickup_date"],
     pickupTime: json["pickup_time"],
     pickup: json["pickup"],
     dropoff: json["dropoff"],
-    vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
+    vehicleType: json["vehicle_type"] == null ? null : VehicleTypeGetById.fromJson(json["vehicle_type"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -180,14 +184,14 @@ class Booking {
   };
 }
 
-class VehicleType {
+class VehicleTypeGetById {
   String? name;
 
-  VehicleType({
+  VehicleTypeGetById({
     this.name,
   });
 
-  factory VehicleType.fromJson(Map<String, dynamic> json) => VehicleType(
+  factory VehicleTypeGetById.fromJson(Map<String, dynamic> json) => VehicleTypeGetById(
     name: json["name"],
   );
 

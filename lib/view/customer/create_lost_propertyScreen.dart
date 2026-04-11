@@ -96,20 +96,20 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   width: fieldWidth * 0.92,
                                   column: true,
                                   child: SizedBox(
-                                      height: 32,
-                                      child: KeyboardDatePicker(
-                                        initialDate: DateTime.now(),
-                                        onChanged: (date) {
-                                          controller.reportDateController =
-                                              date.toIso8601String().split("T").first;
-                                          controller.update();
-                                        },
-                                        onSubmitted: (date) {
-                                          controller.reportDateController =
-                                              date.toIso8601String().split("T").first;
-                                          controller.update();
-                                        },
-                                      ),
+                                    height: 32,
+                                    child: KeyboardDatePicker(
+                                      initialDate: controller.reportDateController != ""
+                                          ? DateTime.parse(controller.reportDateController)
+                                          : DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.reportDateController = date.toIso8601String().split("T").first;
+                                        controller.update();
+                                      },
+                                      onSubmitted: (date) {
+                                        controller.reportDateController = date.toIso8601String().split("T").first;
+                                        controller.update();
+                                      },
+                                    ),
                                   ),
                                 ),
                                 // SizedBox(width: fieldWidth/2),
@@ -120,20 +120,20 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   width: fieldWidth * 0.92,
                                   column: true,
                                   child: SizedBox(
-                                      height: 32,
-                                      child: KeyboardDatePicker(
-                                        initialDate: DateTime.now(),
-                                        onChanged: (date) {
-                                          controller.lostDateController =
-                                              date.toIso8601String().split("T").first;
-                                          controller.update();
-                                        },
-                                        onSubmitted: (date) {
-                                          controller.lostDateController =
-                                              date.toIso8601String().split("T").first;
-                                          controller.update();
-                                        },
-                                      ),
+                                    height: 32,
+                                    child: KeyboardDatePicker(
+                                      initialDate: controller.lostDateController != ""
+                                          ? DateTime.parse(controller.lostDateController)
+                                          : DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.lostDateController = date.toIso8601String().split("T").first;
+                                        controller.update();
+                                      },
+                                      onSubmitted: (date) {
+                                        controller.lostDateController = date.toIso8601String().split("T").first;
+                                        controller.update();
+                                      },
+                                    ),
                                   ),
                                 ),
                                 CustomTextField(
@@ -196,8 +196,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   width: fieldWidth * 0.92,
                                   hintText: AppText.name,
                                   columnText: true,
-                                  suffixIcon: GestureDetector(
+                                  suffixIcon: (controller.lostPropertyUpdateId.value == null || controller.lostPropertyUpdateId.value == 0)
+                                      ? GestureDetector(
                                     onTap: () async {
+                                  // GestureDetector(
+                                  //   onTap: () async {
                                       if (controller
                                           .nameController.text.isNotEmpty) {
                                         var result = await Get.dialog(
@@ -209,6 +212,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                           controller
                                                   .selectedBookingForLostProperty =
                                               result;
+                                          controller.mobileController.text =
+                                              result.mobile ?? "";
                                           controller.update();
                                         }
                                       } else {
@@ -226,7 +231,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       child: const Icon(Icons.search,
                                           size: 25, color: Colors.black),
                                     ),
-                                  ),
+                                  )
+                                      : const SizedBox.shrink(),
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,11 +241,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       focusNode: FocusNode(),
                                       onKeyEvent: (event) {
                                         if (controller.getPhoneNumbersModel
-                                                ?.customerInfo !=
+                                                ?.customer !=
                                             null) {
                                           int listLength = controller
                                               .getPhoneNumbersModel!
-                                              .customerInfo!
+                                              .customer!
                                               .length;
                                           if (event is KeyDownEvent) {
                                             if (event.logicalKey ==
@@ -248,6 +254,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                   (controller.selectedIndex +
                                                           1) %
                                                       listLength;
+                                              controller.scrollToIndex(controller.selectedIndex);
                                               controller.update();
                                             } else if (event.logicalKey ==
                                                 LogicalKeyboardKey.arrowUp) {
@@ -256,6 +263,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                           1 +
                                                           listLength) %
                                                       listLength;
+                                              controller.scrollToIndex(controller.selectedIndex);
                                               controller.update();
                                             } else if (event.logicalKey ==
                                                     LogicalKeyboardKey.enter &&
@@ -263,7 +271,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                     -1) {
                                               var selectedUser = controller
                                                       .getPhoneNumbersModel!
-                                                      .customerInfo![
+                                                      .customer![
                                                   controller.selectedIndex];
                                               controller.nameController.text =
                                                   selectedUser.name ?? "";
@@ -481,12 +489,12 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   },
                 ),
                 SizedBox(
-                  height: 10,
+                    height: 10,
                 ),
               ],
             )),
-            if (controller.getPhoneNumbersModel?.customerInfo != null &&
-                controller.getPhoneNumbersModel!.customerInfo!.isNotEmpty &&
+            if (controller.getPhoneNumbersModel?.customer != null &&
+                controller.getPhoneNumbersModel!.customer!.isNotEmpty &&
                 controller.mobileController.text.isNotEmpty)
               Positioned(
                 // top: 120,
@@ -508,52 +516,53 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.blue.shade200, width: 2),
                     ),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      itemCount:
-                          controller.getPhoneNumbersModel!.customerInfo!.length,
-                      itemBuilder: (context, index) {
-                        var user = controller
-                            .getPhoneNumbersModel!.customerInfo![index];
-                        bool isSelected = controller.selectedIndex == index;
+                      child: ListView.builder(
+                        controller: controller.listScrollController,
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount:
+                            controller.getPhoneNumbersModel!.customer!.length,
+                        itemBuilder: (context, index) {
+                          var user =
+                              controller.getPhoneNumbersModel!.customer![index];
+                          bool isSelected = controller.selectedIndex == index;
 
-                        return InkWell(
-                          onTap: () {
-                            controller.nameController.text = user.name ?? "";
-                            controller.mobileController.text =
-                                user.mobile ?? "";
-                            controller.address1Controller.text =
-                                user.address1 ?? "";
+                          return InkWell(
+                            onTap: () {
+                              controller.nameController.text = user.name ?? "";
+                              controller.mobileController.text =
+                                  user.mobile ?? "";
+                              controller.address1Controller.text =
+                                  user.address1 ?? "";
 
-                            controller.getPhoneNumbersModel = null;
-                            controller.selectedIndex = -1;
-                            controller.update();
+                              controller.getPhoneNumbersModel = null;
+                              controller.selectedIndex = -1;
+                              controller.update();
 
-                            FocusScope.of(context).unfocus();
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
-                            color: isSelected
-                                ? Colors.blue.withOpacity(0.15)
-                                : Colors.transparent,
-                            child: Text(
-                              "${user.name}  ${user.mobile}",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
+                              FocusScope.of(context).unfocus();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 12),
+                              color: isSelected
+                                  ? Colors.blue.withOpacity(0.15)
+                                  : Colors.transparent,
+                              child: Text(
+                                "${user.name}  ${user.mobile}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
           ],
         );
       });
