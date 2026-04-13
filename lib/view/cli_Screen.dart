@@ -1468,8 +1468,33 @@ class _CenterAreaState extends State<_CenterArea> {
 
                                 return DataRow(
                                   cells: [
-                                    DataCell(Text(cliBookingData.pickup ?? "")),
-                                    DataCell(Text(cliBookingData.dropoff ?? "")),
+                                    // DataCell(Text(cliBookingData.pickup ?? "")),
+                                    // DataCell(Text(cliBookingData.dropoff ?? "")),
+
+                                    DataCell(SizedBox(
+                                      width: Get.width/6,
+                                      child:
+                                      rightClickTextCell(
+                                        item: cliBookingData,
+                                        clickValue: 'pickUpClick',
+                                        onRightClick: () {
+                                          print("RIGHT CLICK JOURNEY TYPE");
+                                        },
+                                        child: Text(cliBookingData.pickup!),
+                                      ),
+                                    )),
+
+                                    DataCell(SizedBox(
+                                      width: Get.width/6,
+                                      child: rightClickTextCell(
+                                        item: cliBookingData,
+                                        clickValue: 'dropoffClick',
+                                        onRightClick: () {
+                                          print("RIGHT CLICK JOURNEY TYPE");
+                                        },
+                                        child: Text(cliBookingData.dropoff ?? ""),
+                                      ),
+                                    )),
                                     DataCell(Text(
                                         "${cliBookingData.pickupDate!.year}-${cliBookingData.pickupDate!.month}-${cliBookingData.pickupDate!.day}")),
                                     DataCell(Text("£${cliBookingData.fares ?? 0}")),
@@ -1738,22 +1763,22 @@ class _CenterAreaState extends State<_CenterArea> {
       switch (value) {
         case 'pickup':
           if (clickValue == "dropoffClick") {
-            pickupController.text = item.dropoff;
+            pickupController.text = item.dropoff.toUpperCase();
             pickupPoints = LatLng(double.parse(item.dropoffLatitude),
                 double.parse(item.dropoffLongitude));
           } else {
-            pickupController.text = item.pickup;
+            pickupController.text = item.pickup.toUpperCase();
             pickupPoints = LatLng(double.parse(item.pickupLatitude),
                 double.parse(item.pickupLongitude));
           }
           name = item.name;
           email = item.email;
-          mobileNumber = item.mobile;
+          mobileNumber = item.mobile.toString();
           telNumber = item.telephone;
           break;
         case 'dropoff':
           if (clickValue == "dropoffClick") {
-            dropoffController.text = item.dropoff;
+            dropoffController.text = item.dropoff.toUpperCase();
             dropoffPoints = LatLng(double.parse(item.dropoffLatitude),
                 double.parse(item.dropoffLongitude));
           } else {

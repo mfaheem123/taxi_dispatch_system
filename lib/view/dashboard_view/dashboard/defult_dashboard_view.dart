@@ -2382,7 +2382,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   value.mobile
                                                       .toString(); // <-- store anywhere
                                               controller.nameController.text =
-                                                  value.name.toString();
+                                                  value.name.toString().toUpperCase();
                                               controller.emailController.text =
                                                   value.email.toString();
                                               controller.telController.text =

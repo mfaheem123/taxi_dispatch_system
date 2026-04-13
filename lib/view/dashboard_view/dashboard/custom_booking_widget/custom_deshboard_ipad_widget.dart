@@ -2708,7 +2708,7 @@ class _CustomIpadWidgetState extends State<CustomIpadWidget> {
                                 .mobile
                                 .toString(); // <-- store anywhere
                             controller.nameController.text =
-                                value.name.toString();
+                                value.name.toString().toUpperCase();
                             controller.emailController.text =
                                 value.email.toString();
                             controller.telController.text =
