@@ -2172,7 +2172,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
 
       fetchRouteFromOSRM();
 
-      nameController.text = jobData.name!;
+      nameController.text = jobData.name!.toUpperCase();
       emailController.text = jobData.email!;
       mobileController.text = jobData.mobile!;
       if(jobData.telephone != null){
@@ -2346,7 +2346,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
        address: '',
      ));
 
-     nameController.text = name;
+     nameController.text = name.toUpperCase();
      emailController.text = email;
      mobileController.text = mobile;
      telController.text = phoneNumber ?? "";
