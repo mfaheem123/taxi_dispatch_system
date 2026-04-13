@@ -195,25 +195,27 @@ class _LeftSidebar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             child: Column(
               children: [
-                const CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person, size: 36, color: Color(0xFF5C7EA6)),
-                ),
+                // const CircleAvatar(
+                //   radius: 28,
+                //   // backgroundColor: Colors.transparent,
+                //   backgroundColor: Colors.white,
+                //   child: Icon(Icons.person, size: 36, color: Color(0xFF5C7EA6)),
+                // ),
+                Image(image: AssetImage('assets/logo.jpeg'),width: 70,height: 70,),
                 SizedBox(height: 12),
                 Text(
-                  "Mr Mareevan",
+                  "Nexus Tech Groups",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white, fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 8),
-                Text(
-                  "04:08 PM",
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: Colors.white70, letterSpacing: .2),
-                ),
+                // SizedBox(height: 8),
+                // Text(
+                //   "04:08 PM",
+                //   style: Theme.of(context)
+                //       .textTheme
+                //       .bodySmall
+                //       ?.copyWith(color: Colors.white70, letterSpacing: .2),
+                // ),
               ],
             ),
           ),
@@ -963,6 +965,7 @@ class _CenterAreaState extends State<_CenterArea> {
   @override
   void initState() {
     super.initState();
+    _controller.cliJobHit = false;
     if (dashboard.dashboardAllData == null) {
       dashboard.dashboardData();
     }
@@ -1690,6 +1693,7 @@ class _CenterAreaState extends State<_CenterArea> {
                           Get.back();
                           return;
                         }
+                        _controller.cliJobHit = true;
                         await _controller.dashBoardDataBinding(
                           id: selectedBooking!.id,
                           jobData: selectedBooking,

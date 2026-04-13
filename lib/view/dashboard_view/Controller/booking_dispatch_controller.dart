@@ -46,7 +46,7 @@ class DispatchController extends GetxController {
         BotToast.showText(text: 'Driver Assigned Successfully');
         Get.back();
       } else {
-        BotToast.showText(text: 'Failed to assign driver');
+        BotToast.showText(text: response.data['message']);
       }
     } catch (e) {
       print("Error: $e");

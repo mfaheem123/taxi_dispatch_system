@@ -2283,12 +2283,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
-                                                                                () {    controller.dropDownShow.value = false;
+                                                                                () {
+                                                                              controller.dropDownShow.value = false;
                                                                               if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
                                                                                 BotToast.showText(text: "Please chose waiting return");
                                                                                 return;
                                                                               }
-                                                                              controller.dashBoardApiValidation(id: controller.jobDetails == null?null: int.parse(controller.jobDetails!.id!));
+                                                                              controller.dashBoardApiValidation(id: controller.jobDetails == null?null: controller.cliJobHit == true?null: int.parse(controller.jobDetails!.id!));
                                                                             },
                                                                             btnText:
                                                                                 "SAVE[HOME]",
