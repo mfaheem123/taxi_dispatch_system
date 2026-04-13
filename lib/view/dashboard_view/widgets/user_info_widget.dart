@@ -510,12 +510,13 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               hintText: hintTex,
+
               onTap: onTap,
               onChanged: onChanged,
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
+                  : [UpperCaseTextFormatter()],
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -533,7 +534,7 @@ Widget labeledTextField(
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
+                  : [UpperCaseTextFormatter()],
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -560,7 +561,7 @@ Widget labeledTextField(
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
+                  : [UpperCaseTextFormatter()],
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -579,7 +580,7 @@ Widget labeledTextField(
               keyboardType: keyboardType,
               inputFormatters: formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : null,
+                  : [UpperCaseTextFormatter()],
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,

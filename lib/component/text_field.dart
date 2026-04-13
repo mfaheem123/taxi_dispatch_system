@@ -71,6 +71,7 @@ class CustomTextField extends StatelessWidget {
               width: width?? Get.width/2.5,
             height: height?? 30,
               child: TextField(
+                textCapitalization: TextCapitalization.characters,
                 controller: controller,
                 focusNode: focusNode,
                 onChanged: onChanged,
@@ -120,6 +121,21 @@ class CustomTextField extends StatelessWidget {
 
           ),
       ],
+    );
+  }
+}
+
+
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    return TextEditingValue(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

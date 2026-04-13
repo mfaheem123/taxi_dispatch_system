@@ -492,7 +492,7 @@ class _CreateAccountInvoiceScreenState
                                     }),
                                     DataCell(Center(
                                       child: Text(
-                                        "£${booking.totalCharges.toString() ?? 0.0}",
+                                        "£${booking.totalCharges ?? '0.0'}",
                                         style: mozillaTextSemiBoldText(
                                             fontWeight: FontWeight.bold),
                                       ),
@@ -542,31 +542,31 @@ class _CreateAccountInvoiceScreenState
                                                   fontWeight:
                                                       FontWeight.bold))),
                                           DataCell(Text(
-                                              "£${totalData.fareTotal ?? "0"}",
+                                              "£${totalData.fareTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.parkingChargesTotal ?? "0"}",
+                                              "£${totalData.parkingChargesTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.waitingChargesTotal ?? "0"}",
+                                              "£${totalData.waitingChargesTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.extraDropChargesTotal ?? "0"}",
+                                              "£${totalData.extraDropChargesTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.meetAndGreetTotal ?? "0"}",
+                                              "£${totalData.meetAndGreetTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.congestionChargesTotal ?? "0"}",
+                                              "£${totalData.congestionChargesTotal ?? "0.00"}",
                                               style:
                                                   mozillaTextSemiBoldText())),
                                           DataCell(Text(
-                                              "£${totalData.total ?? "0"}",
+                                              "£${totalData.total ?? "0.00"}",
                                               style: mozillaTextSemiBoldText(
                                                   color: Colors.blue))),
                                           DataCell.empty,
@@ -598,7 +598,7 @@ class _CreateAccountInvoiceScreenState
                                       DataCell.empty,
                                       DataCell.empty,
                                       DataCell(Text(
-                                        "£${booking.grandTotal ?? "0"}",
+                                        "£${booking.grandTotal ?? "0.00"}",
                                         style: mozillaTextSemiBoldText(
                                             fontWeight: FontWeight.bold),
                                       )),

@@ -1,7 +1,10 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../alert/lost_property_booking_alert.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
@@ -17,11 +20,9 @@ class LostPropertyScreen extends StatefulWidget {
 
   @override
   State<LostPropertyScreen> createState() => _LostPropertyScreenState();
-
 }
 
 class _LostPropertyScreenState extends State<LostPropertyScreen> {
-
   CustomerController controller = Get.isRegistered<CustomerController>()
       ? Get.find<CustomerController>()
       : Get.put(CustomerController());
@@ -33,148 +34,356 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
     shortCutKeyValue.value = "lostPropertyScreen";
   }
 
-  int selectedRowIndex = 0; // currently selected row
-  final int totalRows = 1;  // total rows (dynamic list ke hisaab se change hoga)
+  int selectedRowIndex = 0;
+  final int totalRows = 1;
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
-        .instance.platformDispatcher.views.first.physicalSize.width /
+            .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<CustomerController>(
-        builder: (controller) {
-
-          return LayoutBuilder(builder: (context, constraints) {
-            final double maxWidth = constraints.maxWidth;
-            final bool isMobile = maxWidth < 600;
-            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-            // Instead of fixed width, we calculate flexible field widths
-            final double fieldWidth = isMobile
-                ? maxWidth // full width
-                : isTablet
+    return GetBuilder<CustomerController>(builder: (controller) {
+      return LayoutBuilder(builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final bool isMobile = maxWidth < 600;
+        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+        // Instead of fixed width, we calculate flexible field widths
+        final double fieldWidth = isMobile
+            ? maxWidth // full width
+            : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
 
-            return Column(
+        return Stack(
+          children: [
+            SingleChildScrollView(
+                child: Column(
               children: [
                 Wrap(
                   children: [
                     Container(
-                      width: fieldWidth*2.0,
+                      width: fieldWidth * 2.0,
+                      constraints: const BoxConstraints(minHeight: 200),
                       decoration: BoxDecoration(
-                          border: Border.all(color: DynamicColors.gryClr)
-                      ),
-                      child: Wrap(
-                        runSpacing: 18,
-                        spacing: fieldWidth/2,
+                          border: Border.all(
+                              color: DynamicColors.gryClr, width: 1.2)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
+                            width: double.infinity,
                             color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
-                            child: Center(child: Text(AppText.lostProperty, style: titleDesign())),
+                            child: Center(
+                                child: Text(AppText.lostProperty,
+                                    style: mozillaTextSemiBoldText(
+                                        fontWeight: FontWeight.w900))),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: labeledField(
-                              context: context,
-                              isMobile: isMobile,
-                              label: AppText.reportDate,
-                              width: fieldWidth/1.5,
-                              column: true,
-                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                            padding: const EdgeInsets.all(15.0),
+                            child: Wrap(
+                              runSpacing: 25,
+                              spacing: 25,
+                              alignment: WrapAlignment.start,
+                              children: [
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: AppText.reportDate,
+                                  width: fieldWidth * 0.92,
+                                  column: true,
+                                  child: SizedBox(
+                                    height: 32,
+                                    child: KeyboardDatePicker(
+                                      initialDate: controller
+                                                  .reportDateController !=
+                                              ""
+                                          ? DateTime.parse(
+                                              controller.reportDateController)
+                                          : DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.reportDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
+                                        controller.update();
+                                      },
+                                      onSubmitted: (date) {
+                                        controller.reportDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
+                                        controller.update();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                // SizedBox(width: fieldWidth/2),
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: AppText.foundDate,
+                                  width: fieldWidth * 0.92,
+                                  column: true,
+                                  child: SizedBox(
+                                    height: 32,
+                                    child: KeyboardDatePicker(
+                                      initialDate:
+                                          controller.lostDateController != ""
+                                              ? DateTime.parse(
+                                                  controller.lostDateController)
+                                              : DateTime.now(),
+                                      onChanged: (date) {
+                                        controller.lostDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
+                                        controller.update();
+                                      },
+                                      onSubmitted: (date) {
+                                        controller.lostDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
+                                        controller.update();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller:
+                                      controller.detailOfPropertyController,
+                                  width: fieldWidth * 0.92,
+                                  hintText: AppText.detailOfProperty,
+                                  columnText: true,
+                                  contentPadding:
+                                      EdgeInsets.only(left: 10, top: 20),
+                                  maxLines: 6,
+                                  height: 100,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller:
+                                      controller.methodOfDespositionController,
+                                  width: fieldWidth * 0.92,
+                                  hintText: AppText.methodOfDesposition,
+                                  columnText: true,
+                                  contentPadding:
+                                      EdgeInsets.only(left: 10, top: 20),
+                                  maxLines: 6,
+                                  height: 100,
+                                ),
+                              ],
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: labeledField(
-                              context: context,
-                              isMobile: isMobile,
-                              label: AppText.foundDate,
-                              width: fieldWidth/1.5,
-                              column: true,
-                              child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.detailOfPropertyController,
-                              width: fieldWidth/1.5,
-                              hintText: AppText.detailOfProperty,
-                              columnText: true,
-                              contentPadding: EdgeInsets.only(left: 10,top: 20),
-                              maxLines: 6,
-                              height: 100,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.methodOfDespositionController,
-                              width: fieldWidth/1.5,
-                              hintText: AppText.methodOfDesposition,
-                              columnText: true,
-                              contentPadding: EdgeInsets.only(left: 10,top: 20),
-                              maxLines: 6,
-                              height: 100,
-                            ),
-                          ),
+                          // const SizedBox(height: 10),
                         ],
                       ),
                     ),
                     Container(
-                      width: fieldWidth*2.0,
+                      width: fieldWidth * 2.0,
+                      constraints: const BoxConstraints(minHeight: 280),
                       decoration: BoxDecoration(
-                        border: Border.all(color: DynamicColors.gryClr)
-                      ),
-                      child: Wrap(
-                        runSpacing: 18,
-                        spacing: fieldWidth/2,
+                          border: Border.all(color: DynamicColors.gryClr)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
+                            width: double.infinity,
                             color: DynamicColors.secondaryClr,
                             padding: const EdgeInsets.all(12),
-                            child: Center(child: Text(AppText.customer, style: titleDesign())),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.nameController,
-                              width: fieldWidth/1.5,
-                              hintText: AppText.name,
-                              columnText: true,
-                              suffixIcon: Icon(Icons.search),
-                            ),
+                            child: Center(
+                                child: Text(AppText.customer,
+                                    style: mozillaTextSemiBoldText(
+                                        fontWeight: FontWeight.w900))),
                           ),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.mobileController,
-                              width: fieldWidth/1.5,
-                              hintText: AppText.mobileNo,
-                              columnText: true,
-                              suffixIcon: Icon(Icons.search),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: CustomTextField(
-                              borderRadius: 4,
-                              controller: controller.address1Controller,
-                              width: fieldWidth/1.5,
-                              hintText: AppText.address,
-                              columnText: true,
-                              contentPadding: EdgeInsets.only(left: 10,top: 20),
-                              maxLines: 6,
-                              height: 100,
+                            padding: const EdgeInsets.all(15.0),
+                            child: Wrap(
+                              runSpacing: 25,
+                              spacing: 25,
+                              children: [
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.nameController,
+                                  width: fieldWidth * 0.92,
+                                  hintText: AppText.name,
+                                  columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                  ],
+                                  suffixIcon: (controller
+                                                  .lostPropertyUpdateId.value == null ||
+                                          controller
+                                                  .lostPropertyUpdateId.value ==
+                                              0)
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            // GestureDetector(
+                                            //   onTap: () async {
+                                            if (controller.nameController.text
+                                                .isNotEmpty) {
+                                              var result = await Get.dialog(
+                                                LostPropertyBookingAlert(
+                                                    searchQuery: controller
+                                                        .nameController.text),
+                                              );
+                                              if (result != null) {
+                                                controller
+                                                        .selectedBookingForLostProperty =
+                                                    result;
+                                                controller.mobileController
+                                                    .text = result.mobile ?? "";
+                                                controller.update();
+                                              }
+                                            } else {
+                                              BotToast.showText(
+                                                  text:
+                                                      "Please enter name first!");
+                                            }
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              border: Border.all(
+                                                  color: DynamicColors.gryClr),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(Icons.search,
+                                                size: 25, color: Colors.black),
+                                          ),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    KeyboardListener(
+                                      focusNode: FocusNode(),
+                                      onKeyEvent: (event) {
+                                        if (controller.getPhoneNumbersModel
+                                                ?.customer !=
+                                            null) {
+                                          int listLength = controller
+                                              .getPhoneNumbersModel!
+                                              .customer!
+                                              .length;
+                                          if (event is KeyDownEvent) {
+                                            if (event.logicalKey ==
+                                                LogicalKeyboardKey.arrowDown) {
+                                              controller.selectedIndex =
+                                                  (controller.selectedIndex +
+                                                          1) %
+                                                      listLength;
+                                              controller.scrollToIndex(
+                                                  controller.selectedIndex);
+                                              controller.update();
+                                            } else if (event.logicalKey ==
+                                                LogicalKeyboardKey.arrowUp) {
+                                              controller.selectedIndex =
+                                                  (controller.selectedIndex -
+                                                          1 +
+                                                          listLength) %
+                                                      listLength;
+                                              controller.scrollToIndex(
+                                                  controller.selectedIndex);
+                                              controller.update();
+                                            } else if (event.logicalKey ==
+                                                    LogicalKeyboardKey.enter &&
+                                                controller.selectedIndex !=
+                                                    -1) {
+                                              var selectedUser = controller
+                                                      .getPhoneNumbersModel!
+                                                      .customer![
+                                                  controller.selectedIndex];
+                                              controller.nameController.text =
+                                                  selectedUser.name ?? "";
+                                              controller.mobileController.text =
+                                                  selectedUser.mobile ?? "";
+                                              controller
+                                                      .address1Controller.text =
+                                                  selectedUser.address1 ?? "";
+                                              controller.getPhoneNumbersModel =
+                                                  null;
+                                              controller.selectedIndex = -1;
+                                              controller.update();
+                                            }
+                                          }
+                                        }
+                                      },
+                                      child: CustomTextField(
+                                        borderRadius: 4,
+                                        controller: controller.mobileController,
+                                        width: fieldWidth * 0.92,
+                                        hintText: AppText.mobileNo,
+                                        columnText: true,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
+                                        onChanged: (val) {
+                                          controller.selectedIndex = -1;
+                                          if (val.isNotEmpty) {
+                                            controller.getCustomerNumbers(val);
+                                          } else {
+                                            controller.getPhoneNumbersModel =
+                                                null;
+                                            controller.update();
+                                          }
+                                        },
+                                        suffixIcon: GestureDetector(
+                                          onTap: () async {
+                                            if (controller.mobileController.text
+                                                .isNotEmpty) {
+                                              var result = await Get.dialog(
+                                                LostPropertyBookingAlert(
+                                                    searchQuery: controller
+                                                        .mobileController.text),
+                                              );
+                                              if (result != null) {
+                                                controller
+                                                        .selectedBookingForLostProperty =
+                                                    result;
+                                                controller.update();
+                                              }
+                                            } else {
+                                              BotToast.showText(
+                                                  text:
+                                                      "Please enter mobile first!");
+                                            }
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              border: Border.all(
+                                                  color: DynamicColors.gryClr),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(Icons.search,
+                                                size: 25, color: Colors.black),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.address1Controller,
+                                  width: fieldWidth * 0.92,
+                                  hintText: AppText.address,
+                                  columnText: true,
+                                  contentPadding:
+                                      EdgeInsets.only(left: 10, top: 20),
+                                  maxLines: 6,
+                                  height: 100,
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -185,83 +394,113 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                 SizedBox(
                   height: 10,
                 ),
-
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "REF #",removeSearching: true),
-                          buildHeaderWithSearch(title: "DATETIME",removeSearching: true),
-                          buildHeaderWithSearch(title: "VEHICLE",removeSearching: true),
-                          buildHeaderWithSearch(title: "PICKUP",removeSearching: true),
-                          buildHeaderWithSearch(title: "DROPOFF",removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "REF #", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "DATETIME", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "VEHICLE", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "PICKUP", removeSearching: true),
+                          buildHeaderWithSearch(
+                              title: "DROPOFF", removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("BCB75029"))),
-                          const DataCell(Center(child: Text("07-08-25 06:07"))),
-                          const DataCell(Center(child: Text("SALOON"))),
-                          const DataCell(Center(child: Text("FLAT 10 BLANDFORD COURT 4-6 BRONDESBURY PARK LONDON NW6 7BP"))),
-                          const DataCell(Center(child: Text("10 WARRIOR GARDENS ST. LEONARDS-ON-SEA TN37 6EB"))),
-                        ],
-                    ),
+                        rows: controller.selectedBookingForLostProperty == null
+                            ? []
+                            : [
+                                DataRow(
+                                  cells: [
+                                    DataCell(Center(
+                                        child: Text(controller
+                                                .selectedBookingForLostProperty
+                                                .referenceNumber ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}"))),
+                                    DataCell(Center(
+                                        child: Text(controller
+                                                .selectedBookingForLostProperty
+                                                .vehicleType
+                                                ?.name ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child: Text(controller
+                                                .selectedBookingForLostProperty
+                                                .pickup ??
+                                            "-"))),
+                                    DataCell(Center(
+                                        child: Text(controller
+                                                .selectedBookingForLostProperty
+                                                .dropoff ??
+                                            "-"))),
+                                  ],
+                                ),
+                              ]),
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 30,
                 ),
                 Container(
                   color: DynamicColors.secondaryClr,
                   padding: const EdgeInsets.all(12),
-                  child: Center(child: Text(AppText.enquiry, style: titleDesign())),
+                  child: Center(
+                      child: Text(AppText.enquiry,
+                          style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.w900))),
                 ),
                 Container(
-                  width: fieldWidth*2.0,
-                  padding: EdgeInsets.symmetric(vertical: 10),
+                  // width: fieldWidth * 2.0,
+                  // padding: EdgeInsets.symmetric(vertical: 10),
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
-                      border: Border.all(color: DynamicColors.gryClr)
-                  ),
+                      border:
+                          Border.all(color: DynamicColors.gryClr, width: 1.2)),
                   child: Wrap(
-                    runSpacing: 18,
-                    spacing: fieldWidth/2,
+                    spacing: 30,
+                    runSpacing: 20,
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.start,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 10),
-                        child: CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.checkedByController,
-                          width: fieldWidth,
-                          hintText: AppText.checkedBy,
-                          columnText: true,
-                        ),
+                      Column(
+                        children: [
+                          CustomTextField(
+                            borderRadius: 4,
+                            controller: controller.checkedByController,
+                            width: fieldWidth * 0.92,
+                            hintText: AppText.checkedBy,
+                            columnText: true,
+                          ),
+                          SizedBox(height: 25),
+                          CustomTextField(
+                            borderRadius: 4,
+                            controller: controller.enquiryController,
+                            width: fieldWidth * 0.92,
+                            hintText: AppText.enquiry,
+                            columnText: true,
+                            contentPadding: EdgeInsets.only(left: 10, top: 20),
+                            maxLines: 6,
+                            height: 100,
+                          ),
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.enquiryController,
-                          width: fieldWidth/1.5,
-                          hintText: AppText.enquiry,
-                          columnText: true,
-                          contentPadding: EdgeInsets.only(left: 10,top: 20),
-                          maxLines: 6,
-                          height: 100,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CustomTextField(
-                          borderRadius: 4,
-                          controller: controller.resultController,
-                          width: fieldWidth/1.5,
-                          hintText: AppText.result,
-                          columnText: true,
-                          contentPadding: EdgeInsets.only(left: 10,top: 20),
-                          maxLines: 6,
-                          height: 100,
-                        ),
+                      CustomTextField(
+                        borderRadius: 4,
+                        controller: controller.resultController,
+                        width: fieldWidth * 0.92,
+                        hintText: AppText.result,
+                        columnText: true,
+                        contentPadding: EdgeInsets.only(left: 10, top: 20),
+                        maxLines: 12,
+                        height: 170,
                       ),
                     ],
                   ),
@@ -270,24 +509,96 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   height: 10,
                 ),
                 CustomButton(
+                  onTap: () {
+                    controller.saveLostProperty();
+                  },
                   borderRadius: 4,
                   verticalPadding: 0.0,
-                  fontSize: 11,
+                  fontSize: 17,
                   height: 30,
-                  btnText: AppText.save,
-                  onTap: (){
-
-                  },
+                  width: fieldWidth * 0.9,
+                  btnText: controller.lostPropertyValue.value == false
+                      ? AppText.save
+                      : "UPDATE",
                 ),
-
                 SizedBox(
                   height: 10,
                 ),
               ],
-            );
-          }
-          );
-        }
-    );
+            )),
+            if (controller.getPhoneNumbersModel?.customer != null &&
+                controller.getPhoneNumbersModel!.customer!.isNotEmpty &&
+                controller.mobileController.text.isNotEmpty)
+              Positioned(
+                // top: 120,
+                top: isMobile ? 250 : (isTablet ? 400 : 120),
+                // left: (fieldWidth * 2) + (fieldWidth * 0.92) + 50,
+                left: isMobile
+                    ? 15
+                    : isTablet
+                        ? (fieldWidth * 1.02)
+                        : (fieldWidth * 2) + (fieldWidth * 0.92) + 50,
+                child: Material(
+                  elevation: 15,
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.grey.shade200,
+                  child: Container(
+                    width: fieldWidth * 0.92,
+                    constraints: const BoxConstraints(maxHeight: 300),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200, width: 2),
+                    ),
+                    child: ListView.builder(
+                      controller: controller.listScrollController,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount:
+                          controller.getPhoneNumbersModel!.customer!.length,
+                      itemBuilder: (context, index) {
+                        var user =
+                            controller.getPhoneNumbersModel!.customer![index];
+                        bool isSelected = controller.selectedIndex == index;
+
+                        return InkWell(
+                          onTap: () {
+                            controller.nameController.text = user.name ?? "";
+                            controller.mobileController.text =
+                                user.mobile ?? "";
+                            controller.address1Controller.text =
+                                user.address1 ?? "";
+
+                            controller.getPhoneNumbersModel = null;
+                            controller.selectedIndex = -1;
+                            controller.update();
+
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            color: isSelected
+                                ? Colors.blue.withOpacity(0.15)
+                                : Colors.transparent,
+                            child: Text(
+                              "${user.name}  ${user.mobile}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        );
+      });
+    });
   }
 }

@@ -60,12 +60,13 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           if (data['event'] == "CLI_OPEN") {
             print(data['data']);
             print( data['data']['callerId']);
-            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],))!.then((value) {
-              // Handle the returned value here
+            Get.to(() => ResponsivePassengerScreen(
+              extensionNumber: data['data']['callerId'],
+            ))?.then((value) {
               connectToCli("200");
             });
 
-            Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
+            // Get.to(ResponsivePassengerScreen(extensionNumber: data['data']['callerId'],));
             // _showIncomingCallDialog(
             //   context,
             //   data['data']['callId'].toString(),
@@ -82,7 +83,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     }
   }
 
-  List<DriverActivityModel> onlineDriversList = [];
+  List<DashboardDriverObject> onlineDriversList = [];
 
 
   // We pass the context here so we can show the Dialog
@@ -98,21 +99,30 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           print(data['event']);
           if (data['event'] == "DRIVER_LOGIN") {
 
-
-
-
-            final driver = DriverActivityModel.fromJson(
+            final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
+            dashboardAllData!.drivers!.add(driver);
             onlineDriversList.add(driver);
             update();
           }else if (data['event'] != "DRIVER_LIST"){
+
             int index = onlineDriversList.indexWhere(
                   (test) => test.id.toString() == data['data']['driverId'].toString(),
             );
 
+            print(dashboardAllData!.drivers!);
+
+             int idd = dashboardAllData!.drivers!.indexWhere(
+                  (test) => test.id.toString() == data['data']['driverId'].toString(),
+            );
+
+            print(dashboardAllData!.drivers!);
+
             if (index >= 0) {
+              dashboardAllData!.drivers!.removeAt(idd);
               onlineDriversList.removeAt(index);
+              selectDriverValue = null;
             }
             update();
           }
@@ -131,7 +141,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
 
-  List<DriverActivityModel> busyDriversList = [];
+  List<DashboardDriverObject> busyDriversList = [];
 
 
   // We pass the context here so we can show the Dialog
@@ -153,7 +163,19 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
               );
             }
 
-            final driver = DriverActivityModel.fromJson(
+            print(dashboardAllData!.drivers);
+            print(selectDriverValue);
+
+            if (dashboardAllData!.drivers!.any((e) => e.id.toString() == data['data']['id'].toString())) {
+              dashboardAllData!.drivers!.removeWhere(
+                    (e) => e.id.toString() == data['data']['id'].toString(),
+              );
+              selectDriverValue = null;
+            }
+
+            print(dashboardAllData!.drivers);
+
+            final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
             busyDriversList.add(driver);
@@ -189,7 +211,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       print(response.data);
       if(response.data['login_drivers'].isNotEmpty){
         response.data['login_drivers'].forEach((element) {
-          onlineDriversList.insert(0, DriverActivityModel(
+          onlineDriversList.insert(0, DashboardDriverObject(
             id: element['id'],
             name: element['name'],
             username: element['username'],
@@ -204,7 +226,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
       if(response.data['busy_drivers'].isNotEmpty){
         response.data['busy_drivers'].forEach((element) {
-          busyDriversList.insert(0, DriverActivityModel(
+          busyDriversList.insert(0, DashboardDriverObject(
             id: element['id'],
             name: element['name'],
             username: element['username'],
@@ -1016,7 +1038,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "PICKUP LOCATION",
         address: '',
       ));
-      pickupController.text = "$suggestion $postCode";
+      pickupController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
       int index = polyLineMarkerInfo
@@ -1033,7 +1055,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "DROP LOCATION",
         address: '',
       ));
-      dropOffController.text = "$suggestion $postCode";
+      dropOffController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "Create Booking PICKUP") {
       int index = polyLineMarkerInfo
@@ -1050,7 +1072,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         markerType: "Create Booking PICKUP",
         address: '',
       ));
-      pickupController.text = "$suggestion $postCode";
+      pickupController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value ==
         "Create Booking DROP LOCATION") {
@@ -1071,7 +1093,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffController.text = "$suggestion $postCode";
+      dropOffController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP LOCATION") {
       int index = polyLineMarkerInfo
@@ -1091,7 +1113,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffTwoWayController.text = "$suggestion $postCode";
+      dropOffTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "DROP TWO WAY LOCATION") {
       int index = polyLineMarkerInfo
@@ -1111,7 +1133,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      dropOffTwoWayController.text = "$suggestion $postCode";
+      dropOffTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     } else if (selectedTextFieldsValue.value == "PICKUP TWO WAY LOCATION") {
       int index = polyLineMarkerInfo
@@ -1131,7 +1153,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         address: '',
       ));
 
-      pickupTwoWayController.text = "$suggestion $postCode";
+      pickupTwoWayController.text = "$suggestion $postCode".toUpperCase();
       fetchRouteFromOSRM();
     }
 
@@ -1294,8 +1316,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       _timer?.cancel();
-      ///
-
       _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
          getDashboardTableData(tableId: selectedTabId);
       });
@@ -2088,6 +2108,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
+    fixedFare.value = "0";
     selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
@@ -2164,7 +2185,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
 
       fetchRouteFromOSRM();
 
-      nameController.text = jobData.name!;
+      nameController.text = jobData.name!.toUpperCase();
       emailController.text = jobData.email!;
       mobileController.text = jobData.mobile!;
       if(jobData.telephone != null){
@@ -2338,7 +2359,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
        address: '',
      ));
 
-     nameController.text = name;
+     nameController.text = name.toUpperCase();
      emailController.text = email;
      mobileController.text = mobile;
      telController.text = phoneNumber ?? "";

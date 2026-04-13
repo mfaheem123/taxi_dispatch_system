@@ -1,4 +1,4 @@
- import 'dart:convert';
+import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/customer/model/getCustomer.dart';
@@ -6,6 +6,12 @@ import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+
+import '../../dashboard_view/models/users_phone_numbers_model.dart';
+import '../model/get_customer_booking_model.dart';
+import '../model/get_lost_property_model.dart';
+import '../model/lost_property_getById__model.dart';
+import '../model/search_customer_by_mobile.dart';
 
 class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo adding customer functionality
@@ -50,6 +56,7 @@ class CustomerController extends GetxController {
   RxBool postCustomerLoad = false.obs;
   postCustomer() async {
     postCustomerLoad(true);
+
     var formData = {
       "name": nameController.text,
       "email": emailController.text,
@@ -70,8 +77,10 @@ class CustomerController extends GetxController {
       auth: true,
     );
     if (response.statusCode == 200) {
-      BotToast.showText(text:
-      updateCustomerValue.value ? "'Customer Updated Successfully'" : 'Customer Added Successfully');
+      BotToast.showText(
+          text: updateCustomerValue.value
+              ? "Customer Updated Successfully"
+              : 'Customer Added Successfully');
 
       print("✅ Account Created Successfully");
       enableSms.value = false;
@@ -118,8 +127,7 @@ class CustomerController extends GetxController {
   final keyWordsController = TextEditingController();
   getCustomer() async {
     customerLoader(true);
-    var response = await Api().get("customers/get?", 
-    queryParameters: {
+    var response = await Api().get("customers/get?", queryParameters: {
       'blacklist': blackList.value,
       'limit': limit,
       "name": searchName.value.toLowerCase(),
@@ -127,8 +135,7 @@ class CustomerController extends GetxController {
       "telephone": searchTele.value.toLowerCase(),
       "email": searchEmail.value.toLowerCase(),
       "address1": searchAddress.value.toLowerCase(),
-    }
-    );
+    });
     if (response.statusCode == 200) {
       getCustomerModel = GetCustomerModel.fromJson(response.data);
       totalPages.value = getCustomerModel?.totalPages ?? 1;
@@ -170,7 +177,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
       getCustomer();
-      BotToast.showText(text:"Customer deleted successfully!");
+      BotToast.showText(text: "Customer deleted successfully!");
       print(json.encode(response.data));
     }
   }
@@ -203,4 +210,270 @@ class CustomerController extends GetxController {
   final howDealWithController = TextEditingController();
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
+
+  int? updateBookingId;
+  int? updateCustomerId;
+  final ScrollController listScrollController = ScrollController();
+
+  void scrollToIndex(int index) {
+    if (listScrollController.hasClients) {
+      double itemHeight = 45.0;
+      double targetOffset = index * itemHeight;
+      double currentScroll = listScrollController.offset;
+      double viewportHeight = 300.0;
+      if (targetOffset + itemHeight > currentScroll + viewportHeight) {
+        listScrollController.animateTo(
+          (targetOffset - viewportHeight + itemHeight) + 40,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      } else if (targetOffset < currentScroll) {
+        listScrollController.animateTo(
+          targetOffset - 20,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      }
+    }
+  }
+
+  String reportDateController = "";
+  String lostDateController = "";
+
+  SearchCustomerByMobileModel? getPhoneNumbersModel;
+  bool dataLoader = false;
+  int selectedIndex = -1;
+
+  getCustomerNumbers(String mobile) async {
+    dataLoader = true;
+    var response = await Api().get("customers/search-data?mobile=$mobile");
+    if (response.statusCode == 200) {
+      getPhoneNumbersModel =
+          SearchCustomerByMobileModel.fromJson(response.data);
+      dataLoader = false;
+      update();
+    }
+  }
+
+  var selectedBookingForLostProperty;
+  //  Get Bookings (Alert Screen)
+  GetCustomerBookingModel? getCustomerBookingModel;
+  bool bookingsLoader = false;
+
+  getCustomerJobs(String query) async {
+    bookingsLoader = true;
+
+    try {
+      String param = int.tryParse(query) != null ? "mobile" : "name";
+      var response = await Api().get("bookings/customer-jobs?$param=$query");
+      if (response.statusCode == 200) {
+        getCustomerBookingModel =
+            GetCustomerBookingModel.fromJson(response.data);
+        print("Data Loaded: ${response.data}");
+      } else {
+        print("Server Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception: $e");
+    } finally {
+      bookingsLoader = false;
+      update();
+    }
+  }
+
+  // Save Api
+  bool saveLostPropertyLoad = false;
+
+  saveLostProperty() async {
+    if (selectedBookingForLostProperty == null) {
+      BotToast.showText(text: "Please select a booking first!");
+      return;
+    }
+    try {
+      saveLostPropertyLoad = true;
+      update();
+
+      var formData = {
+        // "booking_id": selectedBookingForLostProperty?.id.toString(),
+        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        "booking_id":
+            (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
+        "customer_id":
+            (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
+                .toString(),
+        "item_description": detailOfPropertyController.text,
+        "inquiry": enquiryController.text,
+        "checked_by": checkedByController.text,
+        "method_desposition": methodOfDespositionController.text,
+        "result": resultController.text,
+        "lost_date": lostDateController,
+        "report_date": reportDateController,
+      };
+      print("Sending Data: $formData");
+
+      var response = await Api().post(
+          formData,
+          lostPropertyValue.value == false
+              ? "lost-property/add"
+              : "lost-property/update/${lostPropertyUpdateId.value}",
+          auth: true);
+      if (response.statusCode == 200) {
+        BotToast.showText(
+            text: lostPropertyValue.value
+                ? "Lost Property Updated Successfully"
+                : 'Lost Property Added Successfully');
+        refreshFields();
+      }
+    } catch (err) {
+      print("Error: $err");
+    }
+    saveLostPropertyLoad = false;
+    update();
+  }
+
+  refreshFields() {
+    selectedBookingForLostProperty = null;
+    detailOfPropertyController.clear();
+    methodOfDespositionController.clear();
+    nameController.clear();
+    mobileController.clear();
+    address1Controller.clear();
+    enquiryController.clear();
+    checkedByController.clear();
+    resultController.clear();
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
+
+  GetLostPropertyModel? lostPropertyModel;
+  RxBool lostPropertyLoader = false.obs;
+
+  /// >>>>>>>>>>>>>>>>>>>>> Search Work
+  RxList<LostProperty> lostPropertyAll = <LostProperty>[].obs;
+  RxList<LostProperty> filteredLostProperty = <LostProperty>[].obs;
+  RxString searchLostNumber = ''.obs;
+  RxString searchReportDate = ''.obs;
+  RxString searchLostDate = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchItemDescription = ''.obs;
+
+  ///--------------------- Pagination
+  var currentPageLostProperty = 1.obs;
+  var totalPagesLostProperty = 1.obs;
+  final int limitLostProperty = 10;
+
+  getAllLostProperty() async {
+    lostPropertyLoader(true);
+    var response = await Api().get("lost-property/get", queryParameters: {
+      "lost_number": searchLostNumber.value.toLowerCase(),
+      "report_date": searchReportDate.value.toLowerCase(),
+      "lost_date": searchLostDate.value.toLowerCase(),
+      "item_description": searchItemDescription.value.toLowerCase(),
+      "name": searchCustomer.value.toLowerCase(),
+    });
+    print("Status Code: ${response.statusCode}");
+    if (response.statusCode == 200) {
+      print("Raw Data: ${response.data}");
+      lostPropertyModel = GetLostPropertyModel.fromJson(response.data);
+      totalPagesLostProperty.value = lostPropertyModel?.totalPages ?? 1;
+      lostPropertyAll.value = lostPropertyModel?.lostProperties ?? [];
+      filteredLostProperty.value = lostPropertyAll;
+      print("Total Items Received: ${lostPropertyAll.length}");
+      lostPropertyLoader(false);
+      update();
+    }
+  }
+
+  /// -----------Search changes function
+  void onSearchLostProperty() {
+    currentPageLostProperty.value = 1;
+    getAllLostProperty();
+  }
+
+  /// ------- pagination function
+  void onPageLostProperty(int page) {
+    currentPageLostProperty.value = page;
+    getAllLostProperty();
+  }
+
+  RxBool lostPropertyValue = false.obs;
+  RxInt lostPropertyUpdateId = 0.obs;
+
+  lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
+    print("--- BINDING START ---");
+
+    lostPropertyUpdateId.value = lostPropertyUpdate?.id;
+    nameController.text = lostPropertyUpdate?.customer?.name ?? "";
+    detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
+    lostDateController = lostPropertyUpdate?.lostDate != null
+        ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
+        : "";
+    reportDateController = lostPropertyUpdate?.reportDate != null
+        ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
+        : "";
+
+    lostPropertyValue(true);
+    update();
+
+    try {
+      print("Calling API for ID: ${lostPropertyUpdate.id}");
+
+      final response =
+          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
+      print("API Raw Data: ${response.data}");
+
+      if (response != null && response.data != null) {
+        var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
+        var detail = apiModel.lostProperty;
+
+        if (detail != null) {
+          updateBookingId = detail.bookingId;
+          updateCustomerId = detail.customerId;
+          mobileController.text = detail.mobile ?? "";
+          address1Controller.text = detail.address1?.toString() ??
+              detail.customer?.address1?.toString() ??
+              "";
+          // address1Controller.text = detail.address1 ?? "";
+          checkedByController.text = detail.checkedBy ?? "";
+          enquiryController.text = detail.inquiry ?? "";
+          resultController.text = detail.result ?? "";
+          methodOfDespositionController.text = detail.methodDesposition ?? "";
+
+          if (detail.booking != null) {
+            selectedBookingForLostProperty = detail.booking;
+          } else {
+            selectedBookingForLostProperty = BookingGetById(
+              referenceNumber: detail.referenceNumber,
+              pickupDate: detail.pickupDate,
+              pickupTime: detail.pickupTime,
+              pickup: detail.pickup,
+              dropoff: detail.dropoff,
+              vehicleType: VehicleTypeGetById(name: detail.vehicleTypeName),
+            );
+          }
+
+          print(
+              "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+        }
+      }
+    } catch (e) {
+      print("Caught Error in Controller: $e");
+    }
+
+    update();
+    print("--- BINDING END ---");
+  }
+
+  deleteLostProperty(int? id) async {
+    var response = await Api().delete("lost-property/delete/$id");
+    if (response.statusCode == 200) {
+      getAllLostProperty();
+      BotToast.showText(text: "Lost Property Deleted Successfully");
+      print("Lost Property Deleted successfully!");
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
 }

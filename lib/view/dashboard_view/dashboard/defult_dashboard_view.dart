@@ -103,9 +103,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         _controller.getLocationTypeZone();
       }
     }, builder: (controller) {
-      return /*controller.dashboardDataLoader.value
+      return controller.dashboardAllData == null
           ? material.Center(child: CircularProgressIndicator())
-          :*/ LayoutBuilder(builder: (context, constraints) {
+          : LayoutBuilder(builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -301,6 +301,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     key: controller.pickupFieldKey,
                                                                                     controller: controller.pickupController,
                                                                                     focusNode: controller.pickupTextFieldFocusNode,
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     hintText: 'PICKUP LOCATION',
                                                                                     borderRadius: 4,
                                                                                     prefixIcon: const Icon(
@@ -384,7 +387,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 child: FocusTraversalOrder(
                                                                                   order: const NumericFocusOrder(2),
                                                                                   child: CustomDropdownField<ZoneObject>(
-                                                                                    label: "Select Zone",
+                                                                                    label: "Select Zone".toUpperCase(),
                                                                                     width: Get.width / 7,
                                                                                     height: 30,
                                                                                     items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -411,6 +414,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   height: 30,
                                                                                   child: CustomTextField(
                                                                                     controller: controller.pickUpNoteController,
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     hintText: "PICKUP NOTES",
                                                                                     borderRadius: 6,
                                                                                     onTap: (){
@@ -460,6 +466,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     child: CustomTextField(
                                                                                       controller: controller.selectAirportController,
                                                                                       hintText: "Flight Number",
+                                                                                      inputFormatters: [
+                                                                                        UpperCaseTextFormatter(),
+                                                                                      ],
                                                                                       borderRadius: 6,
                                                                                       textInputAction: TextInputAction.next,
                                                                                       onTap: (){
@@ -489,6 +498,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     height: 30,
                                                                                     child: CustomTextField(
                                                                                       controller: controller.arrivalTimeController,
+                                                                                      inputFormatters: [
+                                                                                        UpperCaseTextFormatter(),
+                                                                                      ],
                                                                                       hintText: "ARR",
                                                                                       borderRadius: 6,
                                                                                       onTap: (){
@@ -557,6 +569,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                     controller: controller.dropOffController,
                                                                                     focusNode: controller.dropOffTextFieldFocusNode,
                                                                                     hintText: 'DROP LOCATION',
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     onTap: () {
                                                                                       shortCutKeyValue.value = "DROP LOCATION";
                                                                                       controller.dropDownShow.value = true;
@@ -634,7 +649,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 child: FocusTraversalOrder(
                                                                                   order: const NumericFocusOrder(7),
                                                                                   child: CustomDropdownField<ZoneObject>(
-                                                                                    label: "Select Zone",
+                                                                                    label: "Select Zone".toUpperCase(),
                                                                                     width: Get.width / 7,
                                                                                     height: 30,
                                                                                     items: _controller.updateDLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -662,6 +677,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                   child: CustomTextField(
                                                                                     controller: controller.dropUpNoteController,
                                                                                     hintText: "DROP NOTES",
+                                                                                    inputFormatters: [
+                                                                                      UpperCaseTextFormatter(),
+                                                                                    ],
                                                                                     borderRadius: 6,
                                                                                     onTap: (){
                                                                                       controller.dropDownShow.value = false;
@@ -720,6 +738,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 context,
                                                                                 isMobile,
                                                                                 AppText.name,
+
                                                                                 controller.nameController,
                                                                                 width: fieldWidth / 3,
                                                                                 onTap: (){
@@ -1091,7 +1110,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       child: FocusTraversalOrder(
                                                                                         order: const NumericFocusOrder(18),
                                                                                         child: CustomDropdownField<ZoneObject>(
-                                                                                          label: "Select Zone",
+                                                                                          label: "Select Zone".toUpperCase(),
                                                                                           width: Get.width / 7,
                                                                                           height: 30,
                                                                                           items: _controller.updateRNLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -1244,7 +1263,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       child: FocusTraversalOrder(
                                                                                         order: const NumericFocusOrder(21),
                                                                                         child: CustomDropdownField<ZoneObject>(
-                                                                                          label: "Select Zone",
+                                                                                          label: "Select Zone".toUpperCase(),
                                                                                           width: Get.width / 7,
                                                                                           height: 30,
                                                                                           items: _controller.updateRN1LocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -2190,6 +2209,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                               ),
                                                                               child: DropdownButtonFormField<DashboardDriverObject>(
+                                                                                hint: Text("Select Driver".toUpperCase()),
+                                                                                style: mozillaTextSemiBoldText(
+                                                                                  context: context,
+                                                                                  fontSize: 10,
+                                                                                  fontWeight: FontWeight.w800,
+                                                                                ),
                                                                                 decoration: const InputDecoration(
                                                                                   border: OutlineInputBorder(),
                                                                                   isDense: true,
@@ -2363,9 +2388,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                   value.mobile
                                                       .toString(); // <-- store anywhere
                                               controller.nameController.text =
-                                                  value.name.toString();
+                                                  value.name.toString().toUpperCase();
                                               controller.emailController.text =
                                                   value.email.toString();
+                                              controller.telController.text =
+                                                  value.telephone.toString();
                                             },
                                           );
                                         }

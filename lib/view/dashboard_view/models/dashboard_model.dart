@@ -497,29 +497,39 @@ class BookingType {
 
 class DashboardDriverObject {
   int? id;
-  String? username;
   String? name;
-  String? email;
+  String? username;
+  String? zone;
+  String? vehicleType;
+  DateTime? lastLoginAt;
 
   DashboardDriverObject({
     this.id,
     this.username,
     this.name,
-    this.email,
+    this.zone,
+    this.lastLoginAt,
+    this.vehicleType,
   });
 
   factory DashboardDriverObject.fromJson(Map<String, dynamic> json) => DashboardDriverObject(
-    id: json["id"],
-    username: json["username"],
-    name: json["name"],
-    email: json["email"],
+    id: json['id'],
+    name: json['name'],
+    username: json['username'],
+    zone: json['zone'],
+    vehicleType: json['vehicle_type'],
+    lastLoginAt: json['last_login_at'] != null
+        ? DateTime.parse(json['last_login_at']).toLocal()
+        : null,
   );
 
   Map<String, dynamic> toJson() => {
     "id": id,
     "username": username,
     "name": name,
-    "email": email,
+    "zone": zone,
+    "last_login_at": lastLoginAt,
+    "vehicle_type": vehicleType,
   };
 }
 
