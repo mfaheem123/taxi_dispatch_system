@@ -98,15 +98,24 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
-                                      initialDate: controller.reportDateController != ""
-                                          ? DateTime.parse(controller.reportDateController)
+                                      initialDate: controller
+                                                  .reportDateController !=
+                                              ""
+                                          ? DateTime.parse(
+                                              controller.reportDateController)
                                           : DateTime.now(),
                                       onChanged: (date) {
-                                        controller.reportDateController = date.toIso8601String().split("T").first;
+                                        controller.reportDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
                                         controller.update();
                                       },
                                       onSubmitted: (date) {
-                                        controller.reportDateController = date.toIso8601String().split("T").first;
+                                        controller.reportDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
                                         controller.update();
                                       },
                                     ),
@@ -122,15 +131,23 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   child: SizedBox(
                                     height: 32,
                                     child: KeyboardDatePicker(
-                                      initialDate: controller.lostDateController != ""
-                                          ? DateTime.parse(controller.lostDateController)
-                                          : DateTime.now(),
+                                      initialDate:
+                                          controller.lostDateController != ""
+                                              ? DateTime.parse(
+                                                  controller.lostDateController)
+                                              : DateTime.now(),
                                       onChanged: (date) {
-                                        controller.lostDateController = date.toIso8601String().split("T").first;
+                                        controller.lostDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
                                         controller.update();
                                       },
                                       onSubmitted: (date) {
-                                        controller.lostDateController = date.toIso8601String().split("T").first;
+                                        controller.lostDateController = date
+                                            .toIso8601String()
+                                            .split("T")
+                                            .first;
                                         controller.update();
                                       },
                                     ),
@@ -196,42 +213,51 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   width: fieldWidth * 0.92,
                                   hintText: AppText.name,
                                   columnText: true,
-                                  suffixIcon: (controller.lostPropertyUpdateId.value == null || controller.lostPropertyUpdateId.value == 0)
-                                      ? GestureDetector(
-                                    onTap: () async {
-                                  // GestureDetector(
-                                  //   onTap: () async {
-                                      if (controller
-                                          .nameController.text.isNotEmpty) {
-                                        var result = await Get.dialog(
-                                          LostPropertyBookingAlert(
-                                              searchQuery: controller
-                                                  .nameController.text),
-                                        );
-                                        if (result != null) {
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                  ],
+                                  suffixIcon: (controller
+                                                  .lostPropertyUpdateId.value == null ||
                                           controller
-                                                  .selectedBookingForLostProperty =
-                                              result;
-                                          controller.mobileController.text =
-                                              result.mobile ?? "";
-                                          controller.update();
-                                        }
-                                      } else {
-                                        BotToast.showText(
-                                            text: "Please enter name first!");
-                                      }
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade300,
-                                        border: Border.all(
-                                            color: DynamicColors.gryClr),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: const Icon(Icons.search,
-                                          size: 25, color: Colors.black),
-                                    ),
-                                  )
+                                                  .lostPropertyUpdateId.value ==
+                                              0)
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            // GestureDetector(
+                                            //   onTap: () async {
+                                            if (controller.nameController.text
+                                                .isNotEmpty) {
+                                              var result = await Get.dialog(
+                                                LostPropertyBookingAlert(
+                                                    searchQuery: controller
+                                                        .nameController.text),
+                                              );
+                                              if (result != null) {
+                                                controller
+                                                        .selectedBookingForLostProperty =
+                                                    result;
+                                                controller.mobileController
+                                                    .text = result.mobile ?? "";
+                                                controller.update();
+                                              }
+                                            } else {
+                                              BotToast.showText(
+                                                  text:
+                                                      "Please enter name first!");
+                                            }
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey.shade300,
+                                              border: Border.all(
+                                                  color: DynamicColors.gryClr),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: const Icon(Icons.search,
+                                                size: 25, color: Colors.black),
+                                          ),
+                                        )
                                       : const SizedBox.shrink(),
                                 ),
                                 Column(
@@ -254,7 +280,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                   (controller.selectedIndex +
                                                           1) %
                                                       listLength;
-                                              controller.scrollToIndex(controller.selectedIndex);
+                                              controller.scrollToIndex(
+                                                  controller.selectedIndex);
                                               controller.update();
                                             } else if (event.logicalKey ==
                                                 LogicalKeyboardKey.arrowUp) {
@@ -263,7 +290,8 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                           1 +
                                                           listLength) %
                                                       listLength;
-                                              controller.scrollToIndex(controller.selectedIndex);
+                                              controller.scrollToIndex(
+                                                  controller.selectedIndex);
                                               controller.update();
                                             } else if (event.logicalKey ==
                                                     LogicalKeyboardKey.enter &&
@@ -294,6 +322,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                         width: fieldWidth * 0.92,
                                         hintText: AppText.mobileNo,
                                         columnText: true,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
                                         onChanged: (val) {
                                           controller.selectedIndex = -1;
                                           if (val.isNotEmpty) {
@@ -478,18 +509,20 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                   height: 10,
                 ),
                 CustomButton(
+                  onTap: () {
+                    controller.saveLostProperty();
+                  },
                   borderRadius: 4,
                   verticalPadding: 0.0,
                   fontSize: 17,
                   height: 30,
                   width: fieldWidth * 0.9,
-                  btnText: AppText.save,
-                  onTap: () {
-                    controller.saveLostProperty();
-                  },
+                  btnText: controller.lostPropertyValue.value == false
+                      ? AppText.save
+                      : "UPDATE",
                 ),
                 SizedBox(
-                    height: 10,
+                  height: 10,
                 ),
               ],
             )),
@@ -516,53 +549,53 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(color: Colors.blue.shade200, width: 2),
                     ),
-                      child: ListView.builder(
-                        controller: controller.listScrollController,
-                        shrinkWrap: true,
-                        padding: EdgeInsets.zero,
-                        itemCount:
-                            controller.getPhoneNumbersModel!.customer!.length,
-                        itemBuilder: (context, index) {
-                          var user =
-                              controller.getPhoneNumbersModel!.customer![index];
-                          bool isSelected = controller.selectedIndex == index;
+                    child: ListView.builder(
+                      controller: controller.listScrollController,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount:
+                          controller.getPhoneNumbersModel!.customer!.length,
+                      itemBuilder: (context, index) {
+                        var user =
+                            controller.getPhoneNumbersModel!.customer![index];
+                        bool isSelected = controller.selectedIndex == index;
 
-                          return InkWell(
-                            onTap: () {
-                              controller.nameController.text = user.name ?? "";
-                              controller.mobileController.text =
-                                  user.mobile ?? "";
-                              controller.address1Controller.text =
-                                  user.address1 ?? "";
+                        return InkWell(
+                          onTap: () {
+                            controller.nameController.text = user.name ?? "";
+                            controller.mobileController.text =
+                                user.mobile ?? "";
+                            controller.address1Controller.text =
+                                user.address1 ?? "";
 
-                              controller.getPhoneNumbersModel = null;
-                              controller.selectedIndex = -1;
-                              controller.update();
+                            controller.getPhoneNumbersModel = null;
+                            controller.selectedIndex = -1;
+                            controller.update();
 
-                              FocusScope.of(context).unfocus();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 12),
-                              color: isSelected
-                                  ? Colors.blue.withOpacity(0.15)
-                                  : Colors.transparent,
-                              child: Text(
-                                "${user.name}  ${user.mobile}",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
+                            FocusScope.of(context).unfocus();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 12),
+                            color: isSelected
+                                ? Colors.blue.withOpacity(0.15)
+                                : Colors.transparent,
+                            child: Text(
+                              "${user.name}  ${user.mobile}",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
+              ),
           ],
         );
       });

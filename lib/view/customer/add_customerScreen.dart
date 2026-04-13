@@ -1,7 +1,9 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/alert/restricted_driver.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../component/textStyle.dart';
@@ -131,6 +133,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   width: fieldWidth,
                                   hintText: AppText.name,
                                   columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                  ],
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
@@ -138,6 +143,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   width: fieldWidth,
                                   hintText: AppText.email,
                                   columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                  ],
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
@@ -145,6 +153,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   width: fieldWidth,
                                   hintText: AppText.mobile,
                                   columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
@@ -152,6 +163,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   width: fieldWidth,
                                   hintText: AppText.tel,
                                   columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
                                 ),
                               ],
                             ),
@@ -167,7 +181,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         child: Text(AppText.other, style: titleDesign())),
                   ),
                   Wrap(
-                    spacing: fieldWidth / 5.5, // horizontal space
+                    spacing: fieldWidth / 5.5,
                     runSpacing: 16,
                     children: [
                       CustomTextField(
@@ -211,7 +225,17 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                   ),
                   CustomButton(
                     onTap: () {
-                      controller.postCustomer();
+                      String email = controller.emailController.text.trim();
+
+                      if (email.isEmpty) {
+                        BotToast.showText(text: "Email is required");
+                      }
+                      else if (!email.contains('@')) {
+                        BotToast.showText(text:"Invalid Email Format");
+                      }
+                      else {
+                        controller.postCustomer();
+                      }
                     },
                     height: 35,
                     fontSize: 12,

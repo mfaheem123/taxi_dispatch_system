@@ -74,7 +74,8 @@ class _LostPropertyState extends State<LostProperty> {
                   child: Row(
                     children: [
                       Text(
-                        AppText.lostProperties + " (${controller.lostPropertyModel?.count})",
+                        AppText.lostProperties +
+                            " (${controller.lostPropertyModel?.count})",
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.w800, fontSize: 17),
                       ),
@@ -181,20 +182,16 @@ class _LostPropertyState extends State<LostProperty> {
                           DataCell(Center(child: Text(item.lostNumber ?? ""))),
                           DataCell(
                             Center(
-                              child: Text(
-                                  item.reportDate != null
-                                      ? item.reportDate!.toString().split(' ').first
-                                      : ""
-                              ),
+                              child: Text(item.reportDate != null
+                                  ? item.reportDate!.toString().split(' ').first
+                                  : ""),
                             ),
                           ),
                           DataCell(
                             Center(
-                              child: Text(
-                                  item.lostDate != null
-                                      ? item.lostDate!.toString().split(' ').first
-                                      : ""
-                              ),
+                              child: Text(item.lostDate != null
+                                  ? item.lostDate!.toString().split(' ').first
+                                  : ""),
                             ),
                           ),
                           DataCell(
@@ -217,7 +214,7 @@ class _LostPropertyState extends State<LostProperty> {
                                           lostPropertyUpdate: item);
                                       int index = _controller.selectedMenuItems
                                           .indexWhere((element) =>
-                                      element.title == "LOST PROPERTY");
+                                              element.title == "LOST PROPERTY");
                                       if (index != -1) {
                                         _controller.selectedMenuItems[index]
                                             .selectedItem = true;
@@ -244,12 +241,14 @@ class _LostPropertyState extends State<LostProperty> {
                                         color: Colors.transparent,
                                       ),
                                     ),
-                                    onPressed: () {},
                                     child: Icon(
                                       Icons.delete_forever,
                                       size: 28,
                                       color: DynamicColors.redClr,
                                     ),
+                                    onPressed: () {
+                                      controller.deleteLostProperty(item.id);
+                                    },
                                   ),
                                 ],
                               ),

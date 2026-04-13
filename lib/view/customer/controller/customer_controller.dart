@@ -56,6 +56,7 @@ class CustomerController extends GetxController {
   RxBool postCustomerLoad = false.obs;
   postCustomer() async {
     postCustomerLoad(true);
+
     var formData = {
       "name": nameController.text,
       "email": emailController.text,
@@ -78,7 +79,7 @@ class CustomerController extends GetxController {
     if (response.statusCode == 200) {
       BotToast.showText(
           text: updateCustomerValue.value
-              ? "'Customer Updated Successfully'"
+              ? "Customer Updated Successfully"
               : 'Customer Added Successfully');
 
       print("✅ Account Created Successfully");
@@ -211,6 +212,8 @@ class CustomerController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo customers list functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create lost property functionality
 
+  int? updateBookingId;
+  int? updateCustomerId;
   final ScrollController listScrollController = ScrollController();
 
   void scrollToIndex(int index) {
@@ -225,8 +228,7 @@ class CustomerController extends GetxController {
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
-      }
-      else if (targetOffset < currentScroll) {
+      } else if (targetOffset < currentScroll) {
         listScrollController.animateTo(
           targetOffset - 20,
           duration: const Duration(milliseconds: 200),
@@ -235,7 +237,6 @@ class CustomerController extends GetxController {
       }
     }
   }
-
 
   String reportDateController = "";
   String lostDateController = "";
@@ -248,7 +249,8 @@ class CustomerController extends GetxController {
     dataLoader = true;
     var response = await Api().get("customers/search-data?mobile=$mobile");
     if (response.statusCode == 200) {
-      getPhoneNumbersModel = SearchCustomerByMobileModel.fromJson(response.data);
+      getPhoneNumbersModel =
+          SearchCustomerByMobileModel.fromJson(response.data);
       dataLoader = false;
       update();
     }
@@ -293,8 +295,13 @@ class CustomerController extends GetxController {
       update();
 
       var formData = {
-        "booking_id": selectedBookingForLostProperty?.id.toString(),
-        "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        // "booking_id": selectedBookingForLostProperty?.id.toString(),
+        // "customer_id": selectedBookingForLostProperty?.customerId.toString(),
+        "booking_id":
+            (updateBookingId ?? selectedBookingForLostProperty?.id).toString(),
+        "customer_id":
+            (updateCustomerId ?? selectedBookingForLostProperty?.customerId)
+                .toString(),
         "item_description": detailOfPropertyController.text,
         "inquiry": enquiryController.text,
         "checked_by": checkedByController.text,
@@ -305,10 +312,17 @@ class CustomerController extends GetxController {
       };
       print("Sending Data: $formData");
 
-      var response =
-          await Api().post(formData, "lost-property/add", auth: true);
+      var response = await Api().post(
+          formData,
+          lostPropertyValue.value == false
+              ? "lost-property/add"
+              : "lost-property/update/${lostPropertyUpdateId.value}",
+          auth: true);
       if (response.statusCode == 200) {
-        BotToast.showText(text: "Lost Property Added Successfully");
+        BotToast.showText(
+            text: lostPropertyValue.value
+                ? "Lost Property Updated Successfully"
+                : 'Lost Property Added Successfully');
         refreshFields();
       }
     } catch (err) {
@@ -352,7 +366,6 @@ class CustomerController extends GetxController {
 
   getAllLostProperty() async {
     lostPropertyLoader(true);
-    print("Params: lost_number: ${searchLostNumber.value}, report_date: ${searchReportDate.value}");
     var response = await Api().get("lost-property/get", queryParameters: {
       "lost_number": searchLostNumber.value.toLowerCase(),
       "report_date": searchReportDate.value.toLowerCase(),
@@ -373,7 +386,7 @@ class CustomerController extends GetxController {
     }
   }
 
-// -----------Search changes function
+  /// -----------Search changes function
   void onSearchLostProperty() {
     currentPageLostProperty.value = 1;
     getAllLostProperty();
@@ -385,7 +398,6 @@ class CustomerController extends GetxController {
     getAllLostProperty();
   }
 
-
   RxBool lostPropertyValue = false.obs;
   RxInt lostPropertyUpdateId = 0.obs;
 
@@ -395,14 +407,9 @@ class CustomerController extends GetxController {
     lostPropertyUpdateId.value = lostPropertyUpdate?.id;
     nameController.text = lostPropertyUpdate?.customer?.name ?? "";
     detailOfPropertyController.text = lostPropertyUpdate?.itemDescription ?? "";
-    // lostDateController = lostPropertyUpdate.lostDate != null ? lostPropertyUpdate.lostDate.toString().split(' ')[0] : "";
-    // reportDateController = lostPropertyUpdate.reportDate != null ? lostPropertyUpdate.reportDate.toString().split(' ')[0] : "";
-    // Galat: lostDateController.text = ... (Agar ye String hai)
-// Sahi:
     lostDateController = lostPropertyUpdate?.lostDate != null
         ? lostPropertyUpdate.lostDate.toString().split(' ')[0]
         : "";
-
     reportDateController = lostPropertyUpdate?.reportDate != null
         ? lostPropertyUpdate.reportDate.toString().split(' ')[0]
         : "";
@@ -413,20 +420,21 @@ class CustomerController extends GetxController {
     try {
       print("Calling API for ID: ${lostPropertyUpdate.id}");
 
-      final response = await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
+      final response =
+          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
       print("API Raw Data: ${response.data}");
 
       if (response != null && response.data != null) {
         var apiModel = LostPropertyGetByIdModel.fromJson(response.data);
         var detail = apiModel.lostProperty;
 
-        // var data = response.data;
-
-        // var detail = data['lost_property'];
-
         if (detail != null) {
+          updateBookingId = detail.bookingId;
+          updateCustomerId = detail.customerId;
           mobileController.text = detail.mobile ?? "";
-          address1Controller.text = detail.address1?.toString() ?? detail.customer?.address1?.toString() ?? "";
+          address1Controller.text = detail.address1?.toString() ??
+              detail.customer?.address1?.toString() ??
+              "";
           // address1Controller.text = detail.address1 ?? "";
           checkedByController.text = detail.checkedBy ?? "";
           enquiryController.text = detail.inquiry ?? "";
@@ -435,8 +443,7 @@ class CustomerController extends GetxController {
 
           if (detail.booking != null) {
             selectedBookingForLostProperty = detail.booking;
-          }
-          else {
+          } else {
             selectedBookingForLostProperty = BookingGetById(
               referenceNumber: detail.referenceNumber,
               pickupDate: detail.pickupDate,
@@ -447,17 +454,9 @@ class CustomerController extends GetxController {
             );
           }
 
-          print("Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
+          print(
+              "Table Data Bound: ${selectedBookingForLostProperty?.referenceNumber}");
         }
-          // mobileController.text = (detail['mobile'] ?? "").toString();
-          // address1Controller.text = (detail['address1'] ?? "").toString();
-          // checkedByController.text = (detail['checked_by'] ?? "").toString();
-          // enquiryController.text = (detail['inquiry'] ?? "").toString();
-          // resultController.text = (detail['result'] ?? "").toString();
-          // methodOfDespositionController.text = (detail['method_desposition'] ?? "").toString();
-
-        //   print("Binding Finished Successfully!");
-        // }
       }
     } catch (e) {
       print("Caught Error in Controller: $e");
@@ -467,18 +466,14 @@ class CustomerController extends GetxController {
     print("--- BINDING END ---");
   }
 
-  // lostPropertyUpdate({dynamic lostPropertyUpdate}) async {
-  //   lostPropertyUpdateId.value = lostPropertyUpdate!.id!;
-  //   nameController.text = lostPropertyUpdate.customer!.name!;
-  //   mobileController.text = lostPropertyUpdate.customer!.mobile!;
-  //   detailOfPropertyController.text = lostPropertyUpdate.itemDescription!;
-  //   methodOfDespositionController.text = lostPropertyUpdate.methodDesposition!;
-  //   address1Controller.text = lostPropertyUpdate.address1!;
-  //   checkedByController.text = lostPropertyUpdate.checkedBy!;
-  //   enquiryController.text = lostPropertyUpdate.inquiry!;
-  //   resultController.text = lostPropertyUpdate.result!;
-  //   lostPropertyValue(true);
-  // }
+  deleteLostProperty(int? id) async {
+    var response = await Api().delete("lost-property/delete/$id");
+    if (response.statusCode == 200) {
+      getAllLostProperty();
+      BotToast.showText(text: "Lost Property Deleted Successfully");
+      print("Lost Property Deleted successfully!");
+    }
+  }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo list of lost property functionality
 }
