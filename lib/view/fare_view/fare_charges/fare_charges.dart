@@ -116,14 +116,12 @@ class _FareChargesState extends State<FareCharges> {
                                   controller: controller.surChargesFareController,
                                   width: fieldWidth/1.8,
                                   hintText: AppText.fare,
-                                  columnText: true,
                                   height: 30,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  columnText: true,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly,
-                                    LengthLimitingTextInputFormatter(6),
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                                   ],
-                                  keyboardType: TextInputType.number,
                                 ),
 
                                 CustomTextField(
@@ -139,14 +137,12 @@ class _FareChargesState extends State<FareCharges> {
                                   controller: controller.extraDropOffFareController,
                                   width: fieldWidth/1.8,
                                   hintText: AppText.extraDropOff,
-                                  columnText: true,
                                   height: 30,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  columnText: true,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly,
-                                    LengthLimitingTextInputFormatter(6),
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                                   ],
-                                  keyboardType: TextInputType.number,
                                 ),
                                 SizedBox(
                                   width: fieldWidth/1.8,
@@ -180,14 +176,12 @@ class _FareChargesState extends State<FareCharges> {
                                   controller: controller.congestionFareController,
                                   width: fieldWidth/1.8,
                                   hintText: AppText.congestion,
-                                  columnText: true,
                                   height: 30,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                  columnText: true,
                                   inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly,
-                                    LengthLimitingTextInputFormatter(6),
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                                   ],
-                                  keyboardType: TextInputType.number,
                                 ),
 
                                 SizedBox(
@@ -222,13 +216,11 @@ class _FareChargesState extends State<FareCharges> {
                                   controller: controller.parkingFareController,
                                   width: fieldWidth/1.8,
                                   hintText: AppText.parking,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter
-                                        .digitsOnly,
-                                    LengthLimitingTextInputFormatter(6),
-                                  ],
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                                   columnText: true,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                  ],
                                   height: 30,
                                 ),
                                 SizedBox(

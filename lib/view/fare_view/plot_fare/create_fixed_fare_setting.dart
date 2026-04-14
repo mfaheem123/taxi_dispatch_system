@@ -129,7 +129,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                 controller: controller.fareController,
                                 width: fieldWidth,
                                 hintText: AppText.fare,
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                ],
                                 height: 35,
                               ),
                             ],

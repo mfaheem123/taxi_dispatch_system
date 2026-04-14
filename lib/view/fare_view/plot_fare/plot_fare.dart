@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/dropdown_button.dart';
 import 'package:dashboard_new1/view/fare_view/model/plotVehicleModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../alert/restrict_drivers_alert.dart';
@@ -119,7 +120,11 @@ class _PlotFareState extends State<PlotFare> {
                               controller: controller.fareController,
                               width: fieldWidth,
                               hintText: AppText.fare,
+                              keyboardType: TextInputType.numberWithOptions(decimal: true),
                               columnText: true,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                              ],
                               height: 35,
                             ),
 

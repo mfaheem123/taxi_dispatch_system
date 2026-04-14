@@ -1,6 +1,7 @@
 import 'package:dashboard_new1/view/fare_view/fare_by_vehicle/model/fare_by_vehicle_model.dart'
     as prefix0;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../alert/restrict_drivers_alert.dart';
@@ -135,7 +136,11 @@ class _FareByVehicleState extends State<FareByVehicle> {
                           controller: controller.fareValueVehicleController,
                           width: fieldWidth / 1.3,
                           hintText: AppText.value,
+                          keyboardType: TextInputType.numberWithOptions(decimal: true),
                           columnText: true,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                          ],
                           height: 35,
                         ),
                       ],
