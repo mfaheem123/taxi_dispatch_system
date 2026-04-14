@@ -51,6 +51,7 @@
 //   }
 // }
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/auth/Controller/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -160,8 +161,13 @@ AuthController controller = Get.put(AuthController());
                           //   'token',
                           //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwidXNlcm5hbWUiOiJuZXh1cyIsInJvbGVfaWQiOi0xLCJpYXQiOjE3Njc3MTkxMTEsImV4cCI6MTc2ODMyMzkxMX0.FLkrfOerQInZVtWeeQZ_jsiMZY3zIG3vjDUyufaDN1Q',
                           // );
-                          // controller.postLoginDetails();
-                          Get.offAllNamed(Routes.myHomePage);
+
+                          if(controller.usernameController.text.isEmpty || controller.passwordController.text.isEmpty){
+                            BotToast.showText(text: "Please enter user name or password");
+                            return;
+                          }
+                          controller.postLoginDetails();
+                          // Get.offAllNamed(Routes.myHomePage);
                           // Get.offAllNamed(Routes.createBooking);
                         },
                       ),

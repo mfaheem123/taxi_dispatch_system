@@ -12,7 +12,7 @@ class DevConfig implements BaseConfig {
   @override
   // String get baseUrl => "http://192.168.110.5:5000/api/";
   String get baseUrl => "https://www.nexustechnologys.com/api/";
-  //
+
   @override
   String get imageUrl => "https://bloodlines.gologonow.app";
 

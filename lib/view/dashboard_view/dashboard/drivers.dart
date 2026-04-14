@@ -307,7 +307,7 @@ class _DriversViewState extends State<DriversView> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    driver.name??"",
+                                    driver.username??"",
                                     style:
                                     mozillaTextRegularText(fontSize: 13),
                                     overflow: TextOverflow.ellipsis,

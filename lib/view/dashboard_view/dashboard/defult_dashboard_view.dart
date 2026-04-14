@@ -103,9 +103,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         _controller.getLocationTypeZone();
       }
     }, builder: (controller) {
-      return /*controller.dashboardDataLoader.value
+      return controller.dashboardAllData == null
           ? material.Center(child: CircularProgressIndicator())
-          :*/ LayoutBuilder(builder: (context, constraints) {
+          : LayoutBuilder(builder: (context, constraints) {
               final double maxWidth = constraints.maxWidth;
               final bool isMobile = maxWidth < 600;
               final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
@@ -387,7 +387,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 child: FocusTraversalOrder(
                                                                                   order: const NumericFocusOrder(2),
                                                                                   child: CustomDropdownField<ZoneObject>(
-                                                                                    label: "Select Zone",
+                                                                                    label: "Select Zone".toUpperCase(),
                                                                                     width: Get.width / 7,
                                                                                     height: 30,
                                                                                     items: _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -649,7 +649,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 child: FocusTraversalOrder(
                                                                                   order: const NumericFocusOrder(7),
                                                                                   child: CustomDropdownField<ZoneObject>(
-                                                                                    label: "Select Zone",
+                                                                                    label: "Select Zone".toUpperCase(),
                                                                                     width: Get.width / 7,
                                                                                     height: 30,
                                                                                     items: _controller.updateDLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -1110,7 +1110,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       child: FocusTraversalOrder(
                                                                                         order: const NumericFocusOrder(18),
                                                                                         child: CustomDropdownField<ZoneObject>(
-                                                                                          label: "Select Zone",
+                                                                                          label: "Select Zone".toUpperCase(),
                                                                                           width: Get.width / 7,
                                                                                           height: 30,
                                                                                           items: _controller.updateRNLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -1263,7 +1263,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                       child: FocusTraversalOrder(
                                                                                         order: const NumericFocusOrder(21),
                                                                                         child: CustomDropdownField<ZoneObject>(
-                                                                                          label: "Select Zone",
+                                                                                          label: "Select Zone".toUpperCase(),
                                                                                           width: Get.width / 7,
                                                                                           height: 30,
                                                                                           items: _controller.updateRN1LocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
@@ -2209,6 +2209,12 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                                 border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                               ),
                                                                               child: DropdownButtonFormField<DashboardDriverObject>(
+                                                                                hint: Text("Select Driver".toUpperCase()),
+                                                                                style: mozillaTextSemiBoldText(
+                                                                                  context: context,
+                                                                                  fontSize: 10,
+                                                                                  fontWeight: FontWeight.w800,
+                                                                                ),
                                                                                 decoration: const InputDecoration(
                                                                                   border: OutlineInputBorder(),
                                                                                   isDense: true,
@@ -2277,12 +2283,13 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           child:
                                                                               CustomButton(
                                                                             onTap:
-                                                                                () {    controller.dropDownShow.value = false;
+                                                                                () {
+                                                                              controller.dropDownShow.value = false;
                                                                               if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
                                                                                 BotToast.showText(text: "Please chose waiting return");
                                                                                 return;
                                                                               }
-                                                                              controller.dashBoardApiValidation(id: controller.jobDetails == null?null: int.parse(controller.jobDetails!.id!));
+                                                                              controller.dashBoardApiValidation(id: controller.jobDetails == null?null: controller.cliJobHit == true?null: int.parse(controller.jobDetails!.id!));
                                                                             },
                                                                             btnText:
                                                                                 "SAVE[HOME]",

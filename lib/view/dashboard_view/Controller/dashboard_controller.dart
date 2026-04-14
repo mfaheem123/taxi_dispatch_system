@@ -163,6 +163,18 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
               );
             }
 
+            print(dashboardAllData!.drivers);
+            print(selectDriverValue);
+
+            if (dashboardAllData!.drivers!.any((e) => e.id.toString() == data['data']['id'].toString())) {
+              dashboardAllData!.drivers!.removeWhere(
+                    (e) => e.id.toString() == data['data']['id'].toString(),
+              );
+              selectDriverValue = null;
+            }
+
+            print(dashboardAllData!.drivers);
+
             final driver = DashboardDriverObject.fromJson(
               Map<String, dynamic>.from(data['data']),
             );
@@ -1909,6 +1921,9 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id");
     if (response.statusCode == 200) {
 
+      if(id != null){
+        refreshPostAllFields();
+      }else{
         if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
             "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
             selectedTabId == 1) {
@@ -1921,7 +1936,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
               0, BookingObjectData.fromJson(response.data['bookings'][0]));
         }
 
-      refreshPostAllFields();
+        refreshPostAllFields();
+      }
       print(response.data);
     }
   }
@@ -2096,6 +2112,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     totalDistance.value = "0";
     totalDistance.value = "0";
     totalTimeDuration.value = "0";
+    fixedFare.value = "0";
     selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
     selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
     selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
@@ -2118,8 +2135,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       polyLineMarkerInfo.clear();
       viaPoints.clear();
       polylinePoints.clear();
-      pickupController.text = jobData.pickup.toString();
-      dropOffController.text = jobData.dropoff.toString();
+      pickupController.text = jobData.pickup.toString().toUpperCase();
+      dropOffController.text = jobData.dropoff.toString().toUpperCase();
 
       polylinePoints.add(
         LatLng(double.parse(jobData.pickupLatitude!), double.parse(jobData.pickupLongitude!)),
@@ -2315,6 +2332,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     }
   }
 
+  bool cliJobHit = false;
+
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo data binding for update
 
 
@@ -2324,8 +2343,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
      polyLineMarkerInfo.clear();
      viaPoints.clear();
      polylinePoints.clear();
-     pickupController.text = pickup.toString();
-     dropOffController.text = dropoff.toString();
+     pickupController.text = pickup.toString().toUpperCase();
+     dropOffController.text = dropoff.toString().toUpperCase();
 
      polylinePoints.add(
        LatLng(double.parse(pickupLatitude!), double.parse(pickupLongitude!)),
