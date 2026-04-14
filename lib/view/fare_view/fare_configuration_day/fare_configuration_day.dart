@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/networks/ErrorMethod.dart';
 import 'package:dashboard_new1/view/fare_view/fare_configuration_day/fare_configuration_model.dart';
 import 'package:dashboard_new1/view/fare_view/model/getVehicleTypeAccountModel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
@@ -370,6 +371,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 width: fieldWidth,
                                 hintText: AppText.startingFare,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 height: 35,
                                 keyboardType: TextInputType.number,
                               ),
@@ -380,6 +384,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 hintText: AppText.startingMiles,
                                 keyboardType: TextInputType.number,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 height: 35,
                               ),
                               CustomTextField(
@@ -389,6 +396,9 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 hintText: "PER MILE FARE",
                                 keyboardType: TextInputType.number,
                                 columnText: true,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 height: 35,
                               ),
 
