@@ -2408,7 +2408,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                         final stackBox = controller
                                             .stackKey.currentContext
                                             ?.findRenderObject() as RenderBox?;
-
                                         double top = 0.0;
                                         double left = 0.0;
                                         double width =
