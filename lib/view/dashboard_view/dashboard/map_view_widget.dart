@@ -259,6 +259,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
+import '../../../component/marker_class.dart';
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
 
@@ -276,6 +277,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   final controller = Get.find<DashboardController>();
 
   final List<Polygon> zonePolygons = [];
+
 
   @override
   void initState() {
@@ -317,6 +319,27 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     }
 
     print('✅ Total polygons added: ${zonePolygons.length}');
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Icon(Icons.car_crash_outlined,
+          color:Colors.pink,
+          size: 30),
+      type: "via",
+      point: LatLng(51.2709722, 0.1893883),
+      width: 30,
+      height: 30,
+    ),);
+
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Icon(Icons.car_crash_outlined,
+          color:Colors.black,
+          size: 30),
+      type: "via",
+      point: LatLng(51.302359, 0.1005435),
+      width: 30,
+      height: 30,
+    ),);
 
     setState(() {}); // redraw map
   }
