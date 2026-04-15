@@ -86,7 +86,7 @@ class _FareIncrementState extends State<FareIncrement> {
                             labeledField(
                               context: context,
                               isMobile: isMobile,
-                              label: AppText.startDate,
+                              label: "START DATE",
                               width: fieldWidth / 2.0,
                               column: true,
                               child: SizedBox(
@@ -112,7 +112,7 @@ class _FareIncrementState extends State<FareIncrement> {
                             labeledField(
                               context: context,
                               isMobile: isMobile,
-                              label: AppText.endDate,
+                              label: "END DATE",
                               column: true,
                               width: fieldWidth / 2.0,
                               child: SizedBox(
@@ -141,12 +141,12 @@ class _FareIncrementState extends State<FareIncrement> {
                                       style: mozillaTextSemiBoldText(
                                           context: context, fontSize: 13)),
                                   CustomDropdownField<String>(
-                                    label: "Select Operator",
+                                    label: "SELECT OPERATOR",
                                     width: Get.width / 6,
                                     height: 30,
                                     items: ["Percentage", "Amount"],
                                     value: controller.operatorType,
-                                    itemLabel: (v) => v,
+                                    itemLabel: (v) => v.toUpperCase(),
                                     onChanged: (val) {
                                       controller.operatorType = val;
                                       controller.update();
@@ -241,7 +241,7 @@ class _FareIncrementState extends State<FareIncrement> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 15, vertical: 0.0),
                                 child: Text(
-                                  AppText.save,
+                                  controller.isFareIncrementEditMode ? "UPDATE" : AppText.save,
                                   style: mozillaTextRegularText(
                                       fontSize: 12,
                                       color: DynamicColors.whiteClr),
@@ -293,9 +293,9 @@ class _FareIncrementState extends State<FareIncrement> {
                                                 .split(' ')[0] ??
                                             ""))),
                                     DataCell(Center(
-                                        child: Text(fareIncrement
+                                        child: Text((fareIncrement
                                                 .fareIncrementOperator ??
-                                            ""))),
+                                            "").toUpperCase()))),
                                     DataCell(
                                       Center(
                                         child: Text(

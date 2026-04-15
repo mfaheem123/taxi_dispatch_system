@@ -275,13 +275,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     totalRow: listToShow.length ?? 0,
                     rows: (listToShow ?? []).map((item) {
                       return DataRow(cells: [
-                        DataCell(Center(child: Text(item.name ?? "-"))),
+                        DataCell(Center(child: Text((item.name ?? "-").toUpperCase()))),
                         DataCell(Center(child: Text(item.mobile ?? "-"))),
                         DataCell(
                             Center(child: Text(item.telephone ?? "-"))),
-                        DataCell(Center(child: Text(item.email ?? "-"))),
+                        DataCell(Center(child: Text((item.email ?? "-").toUpperCase()))),
                         DataCell(
-                            Center(child: Text(item.address1 ?? "-"))),
+                            Center(child: Text((item.address1 ?? "-").toUpperCase()))),
                         DataCell(
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

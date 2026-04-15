@@ -90,7 +90,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                 style: mozillaTextSemiBoldText(
                                     context: context, fontSize: 13)),
                             CustomDropdownField<VehicleTypeFixed>(
-                              label: "Select Vehicle Type",
+                              label: "SELECT VEHICLE TYPE",
                               width: Get.width / 5,
                               height: 35,
                               items: controller
@@ -98,7 +98,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                   [],
                               value: controller.createByVehicleTypes,
                               itemLabel: (templateList) =>
-                                  templateList.name ?? "",
+                              (templateList.name ?? "").toUpperCase(),
                               onChanged: (val) {
                                 controller.createByVehicleTypes = val;
 
@@ -114,7 +114,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                 style: mozillaTextSemiBoldText(
                                     context: context, fontSize: 13)),
                             CustomDropdownField<String>(
-                              label: "SELECT Operater",
+                              label: "SELECT OPERATOR",
                               width: Get.width / 6,
                               height: 35,
                               items: [
@@ -159,7 +159,7 @@ class _FareByVehicleState extends State<FareByVehicle> {
 
                             controller.getFareByVehicleSetting();
 
-                            controller.updateFarebyVehicle(false);
+                            // controller.updateFarebyVehicle(false);
                           },
                           height: 30,
                           width: fieldWidth,
@@ -224,8 +224,8 @@ class _FareByVehicleState extends State<FareByVehicle> {
                                     cells: [
                                       DataCell(Center(
                                           child: Text(
-                                              farefxed.vehicleType?.name ??
-                                                  ""))),
+                                              (farefxed.vehicleType?.name ??
+                                                  "").toUpperCase()))),
                                       DataCell(Center(
                                           child: Text(
                                               farefxed.fareByVehicleOperator ??

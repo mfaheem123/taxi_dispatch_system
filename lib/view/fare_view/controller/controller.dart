@@ -86,14 +86,13 @@ class FareController extends GetxController {
             ? "plotfares/update/${plotUpdateId.value}"
             : "plotfares/add");
     if (response.statusCode == 200) {
-      clearFormData();
-      print(response.data);
-      BotToast.showText(text: "Plot Fare successfully added");
-      getAllPlotFare();
       BotToast.showText(
           text: isUpdatePlot.value
-              ? "Plot Fare Updated"
-              : "Plot Fare successfully added");
+              ? "PLOT FARE UPDATED SUCCESSFULLY"
+              : "PLOT FARE ADDED SUCCESSFULLY");
+      clearFormData();
+      print(response.data);
+      getAllPlotFare();
       isUpdatePlot(false);
     }
   }
@@ -137,7 +136,7 @@ class FareController extends GetxController {
     var response = await Api().delete("plotfares/delete/$id");
     if (response.statusCode == 200) {
       getAllPlotFare();
-      BotToast.showText(text: "Success, PlotFare Deleted Successfully");
+      BotToast.showText(text: "PLOT FARE DELETED SUCCESSFULLY");
       print("PloteFare deleted successfully!");
     }
   }
@@ -154,8 +153,8 @@ class FareController extends GetxController {
     selectedDropoffIds.clear();
 
     // Description fields fill karein
-    ploteFareDescriptionController.text = fare.pickupPlot?.name ?? "";
-    ploteFareDescription2ndController.text = fare.dropoffPlot?.name ?? "";
+    ploteFareDescriptionController.text = (fare.pickupPlot?.name ?? "").toUpperCase();
+    ploteFareDescription2ndController.text = (fare.dropoffPlot?.name ?? "").toUpperCase();
 
     if (fare.pickupPlot != null) {
       selectedPickupIds.add(fare.pickupPlot!.id!);
@@ -269,7 +268,7 @@ class FareController extends GetxController {
     var response = await Api().delete("fixedfares/delete/${id}");
     if (response.statusCode == 200) {
       getAllFixedFare();
-      BotToast.showText(text: "Fixed Fare Setting Deleted successfully ");
+      BotToast.showText(text: " FIXED FARE SETTING DELETED SUCCESSFULLY ");
       update();
     }
   }
@@ -345,8 +344,8 @@ class FareController extends GetxController {
     if (response.statusCode == 200) {
       BotToast.showText(
           text: isUpdateFixedFare.value
-              ? "Fixed Fare is Updated successfully!"
-              : "Fixed Fare is Added successfully!");
+              ? "FIXED FARE IS UPDATED SUCCESSFULLY!"
+              : "FIXED FARE IS ADDED SUCCESSFULLY!");
       clearForm();
       getAllFixedFare();
       print("POST success: ${response.data}");
@@ -373,8 +372,8 @@ class FareController extends GetxController {
   RxBool isUpdateFixedFare = false.obs;
   RxInt fixedFareUpdateId = 0.obs;
   void fixedFareBinding(FixedFare editModel) {
-    addressController.text = editModel.area1 ?? "";
-    addressController1.text = editModel.area2 ?? "";
+    addressController.text = (editModel.area1 ?? "").toUpperCase();
+    addressController1.text = (editModel.area2 ?? "").toUpperCase();
     fareController.text = editModel.fares?.toString() ?? "";
 
     if (fixedFareVehicleLocationTypeModel != null) {
@@ -776,8 +775,8 @@ class FareController extends GetxController {
       print(response.data);
       BotToast.showText(
           text: updateFareValue.value
-              ? "Fare configuration is Updated successfully!"
-              : "Fare configuration is Added successfully!");
+              ? "FARE CONFIGURATION IS UPDATED SUCCESSFULLY!"
+              : "FARE CONFIGURATION IS ADDED SUCCESSFULLY!");
       refreshCreateFareFields();
     }
   }
@@ -787,7 +786,7 @@ class FareController extends GetxController {
     if (response.statusCode == 200) {
       // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       // print(response.data);
-      BotToast.showText(text: "Fare configuration deleted successfully");
+      BotToast.showText(text: "FARE CONFIGURATION DELETED SUCCESSFULLY");
       getAllFareConfiguration();
       refreshCreateFareFields();
       update();
@@ -912,14 +911,15 @@ class FareController extends GetxController {
             ? "fareincrement/update/${editingId}"
             : "fareincrement/add");
     if (response.statusCode == 200) {
+      String msg = isFareIncrementEditMode
+          ? "FARE INCREMENT UPDATED SUCCESSFULLY"
+          : "FARE INCREMENT ADDED SUCCESSFULLY";
+
+      BotToast.showText(text: msg);
       getFareIncrement();
       incrementValueVehicleController.clear();
       isFareIncrementEditMode = false;
       print(response.data);
-      String msg = isFareIncrementEditMode
-          ? "Fare Increment Updated successfully"
-          : "Fare Increment Added successfully";
-      BotToast.showText(text: msg);
     }
   }
 
@@ -963,7 +963,7 @@ class FareController extends GetxController {
     var response = await Api().delete("fareincrement/delete/$id");
     if (response.statusCode == 200) {
       getFareIncrement();
-      BotToast.showText(text: "Fare Increment Deleted successfully");
+      BotToast.showText(text: "FARE INCREMENT DELETED SUCCESSFULLY");
     }
   }
 
@@ -1017,8 +1017,8 @@ class FareController extends GetxController {
             : "surcharges/add");
     if (response.statusCode == 200) {
       String message = sureChargeObject != null
-          ? "Surcharges Updated Successfully"
-          : "Surcharge Added successfully";
+          ? "SURCHARGES UPDATED SUCCESSFULLY"
+          : "SURCHARGES ADDED SUCCESSFULLY";
       if (sureChargeObject == null) {
         getSurchargesModel!.surcharges!
             .insert(0, SurchargeObject.fromJson(response.data['surcharges']));
@@ -1029,8 +1029,9 @@ class FareController extends GetxController {
             SurchargeObject.fromJson(response.data['surcharges']);
       }
       sureChargeObject = null;
-      clearSurchargesData();
       BotToast.showText(text: message);
+      clearSurchargesData();
+
     }
   }
 
@@ -1106,7 +1107,7 @@ class FareController extends GetxController {
           getSurchargesModel!.surcharges!.indexWhere((test) => test.id == id);
       getSurchargesModel!.surcharges!
           .remove(getSurchargesModel!.surcharges![index]);
-      BotToast.showText(text: "Surcharges deleted successfully");
+      BotToast.showText(text: "SURCHARGES DELETED SUCCESSFULLY");
       update();
     }
   }
@@ -1171,7 +1172,7 @@ class FareController extends GetxController {
       airportChargesController.clear();
       pickUpChargesController.clear();
       dropOffChargesController.clear();
-      BotToast.showText(text: "Airport Charges Updated");
+      BotToast.showText(text: "AIRPORT CHARGES UPDATED");
       filterAirports("");
       update();
     }
@@ -1184,7 +1185,7 @@ class FareController extends GetxController {
           airportChargesData!.locations!.indexWhere((test) => test.id == id);
       airportChargesData!.locations![index].pickupCharges = "0.0";
       airportChargesData!.locations![index].dropoffCharges = "0.0";
-      BotToast.showText(text: "Success! Saved");
+      BotToast.showText(text: "SUCCESS! SAVED");
       update();
     }
   }
@@ -1285,12 +1286,16 @@ class FareController extends GetxController {
             ? "farebyvehicle/add"
             : "farebyvehicle/update/${fareByVehicleUpdateId.value}");
     if (response.statusCode == 200) {
+      BotToast.showText(
+          text: updateFarebyVehicle.value
+              ? "FARE BY VEHICLE UPDATED SUCCESSFULLY"
+              : "FARE BY VEHICLE ADDED SUCCESSFULLY"
+      );
       getFareByVehicleSetting();
       fareValueVehicleController.clear();
       createByVehicleTypes = null;
       fareByVehicleOperater = 'AMOUNT';
       print(response.data);
-      BotToast.showText(text: "Fare By Vehicle is successfully added");
     }
   }
 
@@ -1311,7 +1316,7 @@ class FareController extends GetxController {
     var response = await Api().delete("farebyvehicle/delete/$id");
     if (response.statusCode == 200) {
       getFareByVehicleSetting();
-      BotToast.showText(text: "Fare By Vehicle is Deleted");
+      BotToast.showText(text: "FARE BY VEHICLE DELETED SUCCESSFULLY");
     }
   }
 

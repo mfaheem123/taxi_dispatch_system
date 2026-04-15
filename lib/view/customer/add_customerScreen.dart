@@ -104,8 +104,8 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                             .map((e) => {
                                                   'id': e['id'].toString(),
                                                   'username':
-                                                      e['username'].toString(),
-                                                  'name': e['name'].toString(),
+                                                      e['username'].toString().toUpperCase(),
+                                                  'name': e['name'].toString().toUpperCase(),
                                                 })
                                             .toList(),
                                       ),
@@ -135,6 +135,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   columnText: true,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                    UpperCaseTextFormatter(),
                                   ],
                                 ),
                                 CustomTextField(
@@ -145,13 +146,14 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   columnText: true,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                    UpperCaseTextFormatter(),
                                   ],
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
                                   controller: controller.mobileController,
                                   width: fieldWidth,
-                                  hintText: AppText.mobile,
+                                  hintText: "MOBILE",
                                   columnText: true,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
@@ -161,7 +163,7 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                                   borderRadius: 4,
                                   controller: controller.telController,
                                   width: fieldWidth,
-                                  hintText: AppText.tel,
+                                  hintText: "TELEPHONE",
                                   columnText: true,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
@@ -190,6 +192,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         width: fieldWidth,
                         hintText: AppText.door,
                         columnText: true,
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                       CustomTextField(
                         borderRadius: 4,
@@ -197,6 +202,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         width: fieldWidth,
                         hintText: AppText.note,
                         columnText: true,
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                       CustomTextField(
                         borderRadius: 4,
@@ -207,6 +215,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         height: 80,
                         maxLines: 5,
                         contentPadding: EdgeInsets.only(top: 15, left: 6),
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                       CustomTextField(
                         borderRadius: 4,
@@ -217,6 +228,9 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                         height: 80,
                         maxLines: 5,
                         contentPadding: EdgeInsets.only(top: 15, left: 6),
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                     ],
                   ),

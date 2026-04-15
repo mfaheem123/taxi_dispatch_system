@@ -130,6 +130,7 @@ class _FareChargesState extends State<FareCharges> {
                                   width: fieldWidth/1.8,
                                   hintText: AppText.postCode,
                                   columnText: true,
+                                  inputFormatters: [UpperCaseTextFormatter()],
                                   height: 30,
                                 ),
                                 CustomTextField(
@@ -255,7 +256,7 @@ class _FareChargesState extends State<FareCharges> {
                                   child: labeledField(
                                     context: context,
                                     isMobile: isMobile,
-                                    label: AppText.from,
+                                    label: "FROM",
                                     column: true,
                                     width: fieldWidth/1.8,
                                     child: SizedBox(height: 30, child: KeyboardDatePicker(
@@ -271,7 +272,7 @@ class _FareChargesState extends State<FareCharges> {
                                   context: context,
                                   isMobile: isMobile,
                                   column: true,
-                                  label: AppText.from,
+                                  label: "FROM",
                                   width: fieldWidth/1.8,
                                   child: SizedBox(height: 30,
                                       child: CustomTimePicker(
@@ -289,7 +290,7 @@ class _FareChargesState extends State<FareCharges> {
                                   child: labeledField(
                                     context: context,
                                     isMobile: isMobile,
-                                    label: AppText.to,
+                                    label: "TO",
                                     column: true,
                                     width: fieldWidth/1.8,
                                     child: SizedBox(height: 30, child: KeyboardDatePicker(
@@ -305,7 +306,7 @@ class _FareChargesState extends State<FareCharges> {
                                   context: context,
                                   isMobile: isMobile,
                                   column: true,
-                                  label: AppText.to,
+                                  label: "TO",
                                   width: fieldWidth/1.8,
                                   child: SizedBox(height: 30, child: CustomTimePicker(
                                     controller: controller.endTimeSurCharge, // optional

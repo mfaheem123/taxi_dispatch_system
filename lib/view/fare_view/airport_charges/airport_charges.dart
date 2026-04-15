@@ -117,6 +117,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                     width: fieldWidth / 2,
                                     hintText: "FROM",
                                     prefixIcon: Icon(Icons.search),
+                                    inputFormatters: [UpperCaseTextFormatter()],
                                     onChanged: (value) {
                                       controller.filterAirports(value);
                                     },
@@ -179,7 +180,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                 .map((location) {
                               return DataRow(
                                 cells: [
-                                  DataCell(Text(location.name.toString())),
+                                  DataCell(Text(location.name.toString().toUpperCase())),
                                   DataCell(Text(location.pickupCharges ?? "0")),
                                   DataCell(
                                       Text(location.dropoffCharges ?? "0")),
@@ -195,7 +196,7 @@ class _AirportChargesState extends State<AirportCharges> {
                                             controller.isEditing = true;
                                             controller.airportChargesController
                                                     .text =
-                                                location.name.toString();
+                                                location.name.toString().toUpperCase();
                                             controller.pickUpChargesController
                                                     .text =
                                                 location.pickupCharges

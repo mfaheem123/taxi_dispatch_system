@@ -100,7 +100,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         style: mozillaTextSemiBoldText(
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<VehicleTypeFixed>(
-                                      label: "Select Subsidiary",
+                                      label: "SELECT SUBSIDIARY",
                                       width: Get.width / 5,
                                       height: 35,
                                       items: controller
@@ -115,7 +115,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                           ? controller.vehicleTypesFixedvalue
                                           : null,
                                       itemLabel: (templateList) =>
-                                          templateList.name!,
+                                          templateList.name!.toUpperCase(),
                                       onChanged: (val) {
                                         controller.vehicleTypesFixedvalue = val;
                                         controller.update();
@@ -158,7 +158,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         style: mozillaTextSemiBoldText(
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<LocationType>(
-                                      label: "Select Subsidiary",
+                                      label: "SELECT LOCATION TYPE",
                                       width: Get.width / 5,
                                       height: 35,
                                       items: controller
@@ -166,7 +166,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                           .locationTypes!,
                                       value: controller.fromLocationTypeValue,
                                       itemLabel: (templateList) =>
-                                          templateList.name!,
+                                          templateList.name!.toUpperCase(),
                                       onChanged: (val) {
                                         controller.fromLocationTypeValue = val;
                                         controller.update();
@@ -185,7 +185,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         style: mozillaTextSemiBoldText(
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<LocationType>(
-                                      label: "Select Location Type",
+                                      label: "SELECT LOCATION TYPE",
                                       width: Get.width / 5,
                                       height: 35,
                                       items: controller
@@ -193,7 +193,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                           .locationTypes!,
                                       value: controller.toLocationTypeValue,
                                       itemLabel: (templateList) =>
-                                          templateList.name!,
+                                          templateList.name!.toUpperCase(),
                                       onChanged: (val) {
                                         controller.toLocationTypeValue = val;
                                         controller.update();
@@ -226,7 +226,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text("From Location",
+                                          Text("FROM LOCATION",
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
@@ -285,6 +285,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
+                                                  inputFormatters: [UpperCaseTextFormatter()],
                                                   focusNode: controller
                                                       .viaFieldFocusNode,
                                                   controller: controller
@@ -305,7 +306,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                         searchingText: v);
                                                   },
                                                   decoration: InputDecoration(
-                                                    hintText: "Search Address",
+                                                    hintText: "SEARCH ADDRESS",
                                                     border:
                                                         OutlineInputBorder(),
                                                     isDense: true,
@@ -374,7 +375,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text("To Location ",
+                                          Text("TO LOCATION ",
                                               style: mozillaTextSemiBoldText(
                                                   context: context,
                                                   fontSize: 13)),
@@ -432,6 +433,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                               width: Get.width / 4,
                                               height: 35,
                                               child: TextField(
+                                                  inputFormatters: [UpperCaseTextFormatter()],
                                                   focusNode: controller
                                                       .viaFieldFocusNode1,
                                                   controller: controller
@@ -452,7 +454,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                         searchingText: v);
                                                   },
                                                   decoration: InputDecoration(
-                                                    hintText: "Search Address",
+                                                    hintText: "SEARCH ADDRESS",
                                                     border:
                                                         OutlineInputBorder(),
                                                     isDense: true,
@@ -629,15 +631,15 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                   cells: [
                                     DataCell(Center(
                                         child:
-                                            Text(item.vehicleTypeName ?? ""))),
+                                            Text((item.vehicleTypeName ?? "").toUpperCase()))),
                                     DataCell(Center(
                                         child:
-                                            Text(item.area1.toString() ?? ""))),
+                                            Text((item.area1.toString() ?? "").toUpperCase()))),
                                     DataCell(Center(
                                         child:
-                                            Text(item.area2.toString() ?? ""))),
+                                            Text((item.area2.toString() ?? "").toUpperCase()))),
                                     DataCell(
-                                        Center(child: Text(item.fares ?? ""))),
+                                        Center(child: Text((item.fares ?? "").toUpperCase()))),
                                     DataCell(
                                       Center(
                                         child: Row(
@@ -875,7 +877,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                       : Colors.black,
                                                 ),
                                                 child: Text(
-                                                    "${item.name} ${item.postcode}"),
+                                                    "${item.name} ${item.postcode}".toUpperCase()),
                                               ),
                                               onTap: () {
                                                 controller.selectedModel = item;
@@ -885,11 +887,11 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                     "from") {
                                                   controller.addressController
                                                           .text =
-                                                      "${item.name} ${item.postcode}";
+                                                      "${item.name} ${item.postcode}".toUpperCase();
                                                 } else {
                                                   controller.addressController1
                                                           .text =
-                                                      "${item.name} ${item.postcode}";
+                                                      "${item.name} ${item.postcode}".toUpperCase();
                                                 }
 
                                                 controller.allAddressesData

@@ -179,7 +179,7 @@ class _LostPropertyState extends State<LostProperty> {
                     rows: listToShow.map((item) {
                       return DataRow(
                         cells: [
-                          DataCell(Center(child: Text(item.lostNumber ?? ""))),
+                          DataCell(Center(child: Text((item.lostNumber ?? "").toUpperCase()))),
                           DataCell(
                             Center(
                               child: Text(item.reportDate != null
@@ -195,9 +195,9 @@ class _LostPropertyState extends State<LostProperty> {
                             ),
                           ),
                           DataCell(
-                              Center(child: Text(item.customer?.name ?? ""))),
+                              Center(child: Text((item.customer?.name ?? "").toUpperCase()))),
                           DataCell(
-                              Center(child: Text(item.itemDescription ?? ""))),
+                              Center(child: Text((item.itemDescription ?? "").toUpperCase()))),
                           DataCell(
                             Center(
                               child: Row(

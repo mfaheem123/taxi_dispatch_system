@@ -88,11 +88,11 @@ class _LostPropertyBookingAlertState extends State<LostPropertyBookingAlert> {
                     ],
                     rows: controller.getCustomerBookingModel!.bookings!.map((booking) {
                       return DataRow(cells: [
-                        DataCell(Center(child: Text(booking.referenceNumber ?? "-"))),
-                        DataCell(Center(child: Text("${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}"))),
-                        DataCell(Center(child: Text(booking.vehicleType?.name ?? "-"))),
-                        DataCell(Center(child: Text(booking.pickup ?? "-"))),
-                        DataCell(Center(child: Text(booking.dropoff ?? "-"))),
+                        DataCell(Center(child: Text((booking.referenceNumber ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text("${booking.pickupDate ?? ''} ${booking.pickupTime ?? ''}".toUpperCase()))),
+                        DataCell(Center(child: Text((booking.vehicleType?.name ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.pickup ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking.dropoff ?? "-").toUpperCase()))),
                         DataCell(Center(
                           child: InkWell(
                             onTap: () => Get.back(result: booking),

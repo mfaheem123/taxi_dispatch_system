@@ -145,12 +145,12 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
 
                                   CustomDropdownField<VehicleTypeConfiguration>(
-                                    label: "Select Vehicle",
+                                    label: "SELECT VEHICLE",
                                     width: fieldWidth,
                                     height: 35,
                                     items: controller.fareGetVehicleTypeAccount!.vehicleTypes!,
                                     value: controller.vehicleValue,
-                                    itemLabel: (templateList) => templateList.name!,
+                                    itemLabel: (templateList) => templateList.name!.toUpperCase(),
                                     onChanged: (val) {
                                       controller.vehicleValue = val;
                                       controller.update();
@@ -163,12 +163,12 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                 children: [
                                   Text(AppText.account, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                   CustomDropdownField<Account>(
-                                    label: "Select Account",
+                                    label: "SELECT ACCOUNT",
                                     width: fieldWidth,
                                     height: 35,
                                     items: controller.fareGetVehicleTypeAccount!.accounts!,
                                     value: controller.accountValue,
-                                    itemLabel: (templateList) => templateList.name!,
+                                    itemLabel: (templateList) => templateList.name!.toUpperCase(),
                                     onChanged: (val) {
                                       controller.accountValue = val;
                                       controller.update();
@@ -198,7 +198,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                           height: 35,
                                           items: controller. weekDayList,
                                           value: controller.fromDayValue,
-                                          itemLabel: (day) => day,
+                                          itemLabel: (day) => day.toUpperCase(),
                                           onChanged: (val) {
                                             controller.fromDayValue = val;
                                             controller.update();
@@ -236,7 +236,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                           height: 35,
                                           items: controller.weekDayList,
                                           value: controller.toDayValue,
-                                          itemLabel: (day) => day,
+                                          itemLabel: (day) => day.toUpperCase(),
                                           onChanged: (val) {
                                             controller.toDayValue = val;
                                             controller.update();
@@ -501,10 +501,10 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                             .getAllFareConfigurationData!.fareConfigurations!
                             .map((fare) => DataRow(
                                   cells: [
-                                    DataCell(Center(child: Text(fare.vehicleType?.name ?? ""))),
-                                    DataCell(Center(child: Text(fare.account == null ? "": fare.account?.name ?? ""))),
-                                    DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??""))),
-                                    DataCell(Center(child: Text(controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? ""))),
+                                    DataCell(Center(child: Text((fare.vehicleType?.name ?? "").toUpperCase()))),
+                                    DataCell(Center(child: Text((fare.account == null ? "": fare.account?.name ?? "").toUpperCase()))),
+                                    DataCell(Center(child: Text((controller.fareConfiguration != "NORMAL"?fare.fromDate.toString():fare.fromDay??"").toUpperCase()))),
+                                    DataCell(Center(child: Text((controller.fareConfiguration != "NORMAL"?fare.toDate.toString():fare.toDay ?? "").toUpperCase()))),
                                     DataCell(Center(child: Text(fare.fromTime ?? ""))),
                                     DataCell(Center(child: Text(fare.toTime ?? ""))),
                                     DataCell(Center(child: Text("£ ${fare.minimumFares ?? '0.00'}"))),

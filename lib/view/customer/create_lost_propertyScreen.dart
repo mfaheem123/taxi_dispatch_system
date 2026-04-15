@@ -164,6 +164,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       EdgeInsets.only(left: 10, top: 20),
                                   maxLines: 6,
                                   height: 100,
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
                                 ),
                                 CustomTextField(
                                   borderRadius: 4,
@@ -176,6 +179,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       EdgeInsets.only(left: 10, top: 20),
                                   maxLines: 6,
                                   height: 100,
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
                                 ),
                               ],
                             ),
@@ -215,6 +221,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                   columnText: true,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                                    UpperCaseTextFormatter(),
                                   ],
                                   suffixIcon: (controller
                                                   .lostPropertyUpdateId.value == null ||
@@ -302,12 +309,12 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                                       .customer![
                                                   controller.selectedIndex];
                                               controller.nameController.text =
-                                                  selectedUser.name ?? "";
+                                              (selectedUser.name ?? "").toUpperCase();
                                               controller.mobileController.text =
                                                   selectedUser.mobile ?? "";
                                               controller
                                                       .address1Controller.text =
-                                                  selectedUser.address1 ?? "";
+                                              (selectedUser.address1 ?? "").toUpperCase();
                                               controller.getPhoneNumbersModel =
                                                   null;
                                               controller.selectedIndex = -1;
@@ -382,6 +389,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                       EdgeInsets.only(left: 10, top: 20),
                                   maxLines: 6,
                                   height: 100,
+                                  inputFormatters: [
+                                    UpperCaseTextFormatter(),
+                                  ],
                                 ),
                               ],
                             ),
@@ -417,29 +427,29 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                 DataRow(
                                   cells: [
                                     DataCell(Center(
-                                        child: Text(controller
+                                        child: Text((controller
                                                 .selectedBookingForLostProperty
                                                 .referenceNumber ??
-                                            "-"))),
+                                            "-").toUpperCase()))),
                                     DataCell(Center(
                                         child: Text(
-                                            "${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}"))),
+                                            "${controller.selectedBookingForLostProperty.pickupDate ?? ''} ${controller.selectedBookingForLostProperty.pickupTime ?? ''}".toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(controller
+                                        child: Text((controller
                                                 .selectedBookingForLostProperty
                                                 .vehicleType
                                                 ?.name ??
-                                            "-"))),
+                                            "-").toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(controller
+                                        child: Text((controller
                                                 .selectedBookingForLostProperty
                                                 .pickup ??
-                                            "-"))),
+                                            "-").toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(controller
+                                        child: Text((controller
                                                 .selectedBookingForLostProperty
                                                 .dropoff ??
-                                            "-"))),
+                                            "-").toUpperCase()))),
                                   ],
                                 ),
                               ]),
@@ -478,6 +488,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                             width: fieldWidth * 0.92,
                             hintText: AppText.checkedBy,
                             columnText: true,
+                            inputFormatters: [
+                              UpperCaseTextFormatter(),
+                            ],
                           ),
                           SizedBox(height: 25),
                           CustomTextField(
@@ -489,6 +502,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                             contentPadding: EdgeInsets.only(left: 10, top: 20),
                             maxLines: 6,
                             height: 100,
+                            inputFormatters: [
+                              UpperCaseTextFormatter(),
+                            ],
                           ),
                         ],
                       ),
@@ -501,6 +517,9 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                         contentPadding: EdgeInsets.only(left: 10, top: 20),
                         maxLines: 12,
                         height: 170,
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                        ],
                       ),
                     ],
                   ),
@@ -562,11 +581,11 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
 
                         return InkWell(
                           onTap: () {
-                            controller.nameController.text = user.name ?? "";
+                            controller.nameController.text = (user.name ?? "").toUpperCase();
                             controller.mobileController.text =
                                 user.mobile ?? "";
                             controller.address1Controller.text =
-                                user.address1 ?? "";
+                            (user.address1 ?? "").toUpperCase();
 
                             controller.getPhoneNumbersModel = null;
                             controller.selectedIndex = -1;
@@ -581,7 +600,7 @@ class _LostPropertyScreenState extends State<LostPropertyScreen> {
                                 ? Colors.blue.withOpacity(0.15)
                                 : Colors.transparent,
                             child: Text(
-                              "${user.name}  ${user.mobile}",
+                              "${user.name?.toUpperCase() ?? ""}  ${user.mobile ?? ""}",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: isSelected

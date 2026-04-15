@@ -60,7 +60,7 @@ class _RestrictedDriversDialogState extends State<RestrictedDriversDialog> {
                           isExpanded: true,
                           dropdownColor: Colors.white,
                           value: selectedDriver,
-                          hint: const Text("Select Driver"),
+                          hint: const Text("SELECT DRIVER"),
                           onChanged: (value) {
                             setState(() {
                               selectedDriver = value;

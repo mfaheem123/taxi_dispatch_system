@@ -79,8 +79,8 @@ class CustomerController extends GetxController {
     if (response.statusCode == 200) {
       BotToast.showText(
           text: updateCustomerValue.value
-              ? "Customer Updated Successfully"
-              : 'Customer Added Successfully');
+              ? "CUSTOMER UPDATED SUCCESSFULLY"
+              : 'CUSTOMER ADDED SUCCESSFULLY');
 
       print("✅ Account Created Successfully");
       enableSms.value = false;
@@ -177,7 +177,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("customers/delete/$id");
     if (response.statusCode == 200) {
       getCustomer();
-      BotToast.showText(text: "Customer deleted successfully!");
+      BotToast.showText(text: "CUSTOMER DELETED SUCCESSFULLY!");
       print(json.encode(response.data));
     }
   }
@@ -287,7 +287,7 @@ class CustomerController extends GetxController {
 
   saveLostProperty() async {
     if (selectedBookingForLostProperty == null) {
-      BotToast.showText(text: "Please select a booking first!");
+      BotToast.showText(text: "PLEASE SELECT A BOOKING FIRST!");
       return;
     }
     try {
@@ -321,8 +321,8 @@ class CustomerController extends GetxController {
       if (response.statusCode == 200) {
         BotToast.showText(
             text: lostPropertyValue.value
-                ? "Lost Property Updated Successfully"
-                : 'Lost Property Added Successfully');
+                ? "LOST PROPERTY UPDATED SUCCESSFULLY"
+                : 'LOST PROPERTY ADDED SUCCESSFULLY');
         refreshFields();
       }
     } catch (err) {
@@ -470,7 +470,7 @@ class CustomerController extends GetxController {
     var response = await Api().delete("lost-property/delete/$id");
     if (response.statusCode == 200) {
       getAllLostProperty();
-      BotToast.showText(text: "Lost Property Deleted Successfully");
+      BotToast.showText(text: "LOST PROPERTY DELETED SUCCESSFULLY");
       print("Lost Property Deleted successfully!");
     }
   }

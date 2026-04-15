@@ -11,7 +11,7 @@ class AppText {
   static get booking => "Booking";
   static get pick => "PICK";
   static get drop => "DROP";
-  static get name => "Name";
+  static get name => "NAME";
   static get email => "EMAIL";
   static get mobile => "MOB";
   static get tel => "TEL";
@@ -245,9 +245,9 @@ class AppText {
   static get restrictionDrivers => "RESTRICTED DRIVERS";
   static get other => "OTHERS";
   static get door => "DOOR #";
-  static get note => "Note";
-  static get address1 => "Address 01";
-  static get address2 => "Address 02";
+  static get note => "NOTE";
+  static get address1 => "ADDRESS 01";
+  static get address2 => "ADDRESS 02";
   static get search => "SEARCH";
   static get lostProperty => "LOST PROPERTY";
   static get reportDate => "REPORT DATE";

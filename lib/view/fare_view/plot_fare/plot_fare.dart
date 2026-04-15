@@ -98,13 +98,13 @@ class _PlotFareState extends State<PlotFare> {
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
 
                                   CustomDropdownField<VehicleTypee>(
-                                    label: "Select Subsidiary",
+                                    label: "SELECT SUBSIDIARY",
                                     width: Get.width / 5,
                                     height: 35,
                                     items: controller.plotVehicleTypeModel!.vehicleTypes!,
                                     value: controller.plotVehicleTypevalue,
                                     itemLabel: (templateList) =>
-                                    templateList.name!,
+                                    templateList.name!.toUpperCase(),
                                     onChanged: (val) {
                                       controller.plotVehicleTypevalue = val;
                                       controller.update();
@@ -155,13 +155,13 @@ class _PlotFareState extends State<PlotFare> {
                                       children: [
                                         Text(AppText.fromPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
                                         CustomDropdownField<Zonee>(
-                                          label: "Select Subsidiary",
+                                          label: "SELECT ZONE",
                                           width: Get.width / 5,
                                           height: 35,
                                           items: controller.plotVehicleTypeModel!.zones!,
                                           value: controller.Zoneevalue,
                                           itemLabel: (templateList) =>
-                                          templateList.name!,
+                                          templateList.name!.toUpperCase(),
                                           onChanged: (val) {
                                             controller.Zoneevalue = val;
                                             controller.update();
@@ -185,7 +185,7 @@ class _PlotFareState extends State<PlotFare> {
                                           controller.addPickupPlot(controller.Zoneevalue!.id!);
 
                                           // 2. UI Description (Jo aapne pehle likha tha)
-                                          String newValue = controller.Zoneevalue!.name!;
+                                          String newValue = controller.Zoneevalue!.name!.toUpperCase();
                                           String currentText = controller.ploteFareDescriptionController.text;
                                           controller.ploteFareDescriptionController.text = currentText.isEmpty
                                               ? newValue
@@ -228,16 +228,16 @@ class _PlotFareState extends State<PlotFare> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
 
-                                        Text(AppText.fromPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
+                                        Text(AppText.toPlot, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
 
                                         CustomDropdownField<Zonee>(
-                                          label: "Select Subsidiary",
+                                          label: "SELECT ZONE",
                                           width: Get.width / 5,
                                           height: 35,
                                           items: controller.plotVehicleTypeModel!.zones!,
                                           value: controller.Zonee1value,
                                           itemLabel: (templateList) =>
-                                          templateList.name!,
+                                          templateList.name!.toUpperCase(),
                                           onChanged: (val) {
                                             controller.Zonee1value = val;
                                             controller.update();
@@ -263,7 +263,7 @@ class _PlotFareState extends State<PlotFare> {
                                           controller.addDropoffPlot(controller.Zonee1value!.id!);
 
                                           // 2. UI Description (2nd Controller) update karein
-                                          String newValue = controller.Zonee1value!.name!;
+                                          String newValue = controller.Zonee1value!.name!.toUpperCase();
                                           String currentText = controller.ploteFareDescription2ndController.text;
 
                                           controller.ploteFareDescription2ndController.text = currentText.isEmpty
@@ -398,9 +398,9 @@ class _PlotFareState extends State<PlotFare> {
 
                               cells: [
 
-                                DataCell(Center(child: Text(plot.vehicleType!.name ?? ""))),
-                                DataCell(Center(child: Text(plot.pickupPlot!.name ?? ""))),
-                                DataCell(Center(child: Text(plot.dropoffPlot!.name ?? ""))),
+                                DataCell(Center(child: Text((plot.vehicleType!.name ?? "").toUpperCase()))),
+                                DataCell(Center(child: Text((plot.pickupPlot!.name ?? "").toUpperCase()))),
+                                DataCell(Center(child: Text((plot.dropoffPlot!.name ?? "").toUpperCase()))),
                                 DataCell(Center(child: Text(plot.fares ?? ""))),
 
                                 DataCell(
