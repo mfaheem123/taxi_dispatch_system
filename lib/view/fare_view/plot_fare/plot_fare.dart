@@ -349,8 +349,6 @@ class _PlotFareState extends State<PlotFare> {
                               width: fieldWidth,
                               btnText:
                               controller.isUpdatePlot.value ? "UPDATE" : AppText.save,
-
-
                               verticalPadding: 0.0,
                               borderRadius: 4,
                               style: mozillaTextRegularText(
