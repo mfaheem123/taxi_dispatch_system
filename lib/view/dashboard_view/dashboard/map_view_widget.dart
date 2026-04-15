@@ -259,6 +259,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:html' as html;
+import '../../../component/marker_class.dart';
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
 
@@ -276,6 +277,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
   final controller = Get.find<DashboardController>();
 
   final List<Polygon> zonePolygons = [];
+
 
   @override
   void initState() {
@@ -317,6 +319,99 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     }
 
     print('✅ Total polygons added: ${zonePolygons.length}');
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Stack(
+        children: [
+          Icon(Icons.car_crash_outlined,
+              color:Colors.pink,
+              size: 30),
+          Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("data1",
+              style: TextStyle(
+                fontSize: 8
+              ),
+              ))
+        ],
+      ),
+      type: "via",
+      point: LatLng(51.2709722, 0.1893883),
+      width: 40,
+      height: 40,
+    ),);
+
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Stack(
+        children: [
+          Icon(Icons.car_crash_outlined,
+              color:Colors.black,
+              size: 30),
+          Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("data2",style: TextStyle(
+                  fontSize: 8
+              ),))
+        ],
+      ),
+      type: "via",
+      point: LatLng(51.302359, 0.1005435),
+      width: 40,
+      height: 40,
+    ),);
+
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Stack(
+        children: [
+          Icon(Icons.car_crash_outlined,
+              color:Colors.black,
+              size: 30),
+          Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("data3",style: TextStyle(
+                  fontSize: 8
+              ),))
+        ],
+      ),
+      type: "via",
+      point: LatLng(51.1602093, 0.5522935),
+      width: 40,
+      height: 40,
+    ),);
+
+    controller.markers.add(CustomMarker(
+      withReturnType: "via",
+      child: Stack(
+        children: [
+          Icon(Icons.car_crash_outlined,
+              color:Colors.black,
+              size: 30),
+          Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text("data4",style: TextStyle(
+                  fontSize: 8
+              ),))
+        ],
+      ),
+      type: "via",
+      point: LatLng(51.2930174, 0.2188372),
+      width: 40,
+      height: 40,
+    ),);
 
     setState(() {}); // redraw map
   }
@@ -332,7 +427,7 @@ class _MapViewWidgetState extends State<MapViewWidget> {
     final List<LatLng> polylinePoints =
     controller.polylinePoints.isNotEmpty
         ? controller.polylinePointsCoordinate
-        : [LatLng(50.85496238858419, 0.561166687845978)];
+        : [LatLng(51.2709722, 0.1893883)];
 
     double width = WidgetsBinding.instance.platformDispatcher.views.first
         .physicalSize.width /
