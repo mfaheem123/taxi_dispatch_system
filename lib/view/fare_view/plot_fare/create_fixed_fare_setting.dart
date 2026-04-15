@@ -100,7 +100,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                         style: mozillaTextSemiBoldText(
                                             context: context, fontSize: 13)),
                                     CustomDropdownField<VehicleTypeFixed>(
-                                      label: "SELECT SUBSIDIARY",
+                                      label: "SELECT VEHICLE TYPE",
                                       width: Get.width / 5,
                                       height: 35,
                                       items: controller

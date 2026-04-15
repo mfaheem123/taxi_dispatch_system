@@ -98,7 +98,7 @@ class _PlotFareState extends State<PlotFare> {
                                   Text(AppText.vehicleType, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
 
                                   CustomDropdownField<VehicleTypee>(
-                                    label: "SELECT SUBSIDIARY",
+                                    label: "SELECT VEHICLE TYPE",
                                     width: Get.width / 5,
                                     height: 35,
                                     items: controller.plotVehicleTypeModel!.vehicleTypes!,
