@@ -78,7 +78,7 @@ class _DriverFormState extends State<DriverForm> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Driver",
+                      "DRIVER",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -90,7 +90,7 @@ class _DriverFormState extends State<DriverForm> {
                           width: 80,
                           height: 35,
                           verticalPadding: 0.0,
-                          btnText: "Shifts",
+                          btnText: "SHIFTS",
                           borderRadius: 4,
                           style: mozillaTextRegularText(
                               fontSize: 14, color: DynamicColors.whiteClr),
@@ -144,7 +144,7 @@ class _DriverFormState extends State<DriverForm> {
                               controller.profileImg!.bytes,
                               fit: BoxFit.fill,
                             ):
-                            ((controller.singleDriverData != null) && (controller.singleDriverData!.driver!.image != null))?
+                            ((controller.singleDriverData != null) && (controller.singleDriverData!.driver!.image != null ))?
                             Image(image: NetworkImage(controller.singleDriverData!.driver!.image!))
                                 : Text(
                               AppText.uploadImage,
@@ -170,7 +170,7 @@ class _DriverFormState extends State<DriverForm> {
                         buildHeaderWithSearch(title: "BATCH #", removeSearching: true),
                         buildHeaderWithSearch(title: "DOCUMENT TITLE", removeSearching: true),
                         buildHeaderWithSearch(title: "FILE", removeSearching: true),
-                        buildHeaderWithSearch(title: "Document", removeSearching: true),
+                        buildHeaderWithSearch(title: "DOCUMENT", removeSearching: true),
                       ],
                       totalRow: 7,
                       rows: List.generate(controller.rows.length, (index) {
@@ -218,7 +218,7 @@ class _DriverFormState extends State<DriverForm> {
                                   controller.addDocument(index);
                                 },
                                 child: Text(
-                                  row.fileName != null? "Documents (1)": "Documents",
+                                  row.fileName != null? "DOCUMENTS (1)": "DOCUMENTS",
                                   style: TextStyle(color: DynamicColors.primaryClr),
                                 ),
                               ),
@@ -289,8 +289,8 @@ class _DriverFormState extends State<DriverForm> {
           color: Colors.black,
         ),
         columns: const [
-          DataColumn(label: Text("Start Date")),
-          DataColumn(label: Text("End Date")),
+          DataColumn(label: Text("START DATE")),
+          DataColumn(label: Text("END DATE")),
         ],
         rows: [
           DataRow(

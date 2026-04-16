@@ -49,7 +49,7 @@ class LocationForm extends StatelessWidget {
                         children: [
                           _buildField("LOCATION NAME",
                               controller.locationNameCtrl,
-                              inputType: "text"),
+                              inputType: "both"),
                           const SizedBox(height: 10),
                           _buildField("LONGITUDE",
                               controller.longitudeCtrl,
@@ -61,7 +61,7 @@ class LocationForm extends StatelessWidget {
                           Expanded(
                               child: _buildField("LOCATION NAME",
                                   controller.locationNameCtrl,
-                                  inputType: "text")),
+                                  inputType: "both")),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildField("LONGITUDE",
@@ -119,7 +119,7 @@ class LocationForm extends StatelessWidget {
                                   .zonesList!,
                               value: controller.zoneValue,
                               itemLabel: (templateList) =>
-                              templateList.name!,
+                              templateList.name!.toUpperCase(),
                               onChanged: (val) {
                                 controller.zoneValue = val;
                                 controller.update();
@@ -170,7 +170,7 @@ class LocationForm extends StatelessWidget {
                             items: controller.locationtypezoneModel!.locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
-                            templateList.name!,
+                            templateList.name!.toUpperCase(),
                             onChanged: (val) {
                               controller.locationTypeValue = val;
                               controller.update();
@@ -197,7 +197,7 @@ class LocationForm extends StatelessWidget {
                                 .locationTypesList!,
                             value: controller.locationTypeValue,
                             itemLabel: (templateList) =>
-                            templateList.name!,
+                            templateList.name!.toUpperCase(),
                             onChanged: (val) {
                               controller.locationTypeValue = val;
                               controller.update();
@@ -293,6 +293,13 @@ class LocationForm extends StatelessWidget {
         const SizedBox(height: 5),
         TextField(
           controller: controller,
+          textCapitalization: TextCapitalization.characters,
+          onChanged: (value) {
+            controller.value = controller.value.copyWith(
+              text: value.toUpperCase(),
+              selection: TextSelection.collapsed(offset: value.length),
+            );
+          },
           // Number ke liye decimal aur signed (minus) options enable karein
           keyboardType: inputType == "number"
               ? const TextInputType.numberWithOptions(decimal: true, signed: true)
@@ -328,6 +335,13 @@ class LocationForm extends StatelessWidget {
         TextField(
           controller: controller,
           maxLines: 3,
+          textCapitalization: TextCapitalization.characters,
+          onChanged: (value) {
+            controller.value = controller.value.copyWith(
+              text: value.toUpperCase(),
+              selection: TextSelection.collapsed(offset: value.length),
+            );
+          },
           keyboardType: TextInputType.text,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),

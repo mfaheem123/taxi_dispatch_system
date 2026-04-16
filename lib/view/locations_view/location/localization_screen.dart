@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData;
 
 import '../../../component/networks/api.dart';
+import '../../../component/text_field.dart';
 
 class Postcode {
   final int id;
@@ -231,7 +232,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "Enter Postcode",
+              "ENTER POSTCODE",
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
@@ -240,6 +241,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: textController,
+              inputFormatters: [UpperCaseTextFormatter()],
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.zero,
@@ -298,11 +300,11 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
           postcodes = loaded;
         });
       } else {
-        BotToast.showText(text: 'Error' + 'Failed to fetch data');
+        BotToast.showText(text: 'ERROR' + 'FAILED TO FETCH DATA');
 
       }
     } catch (e) {
-      BotToast.showText(text: 'Error');
+      BotToast.showText(text: 'ERROR');
     } finally {
       setState(() => isLoading = false);
     }
@@ -316,17 +318,16 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         await _fetchPostcodes();
         BotToast.showText(text:
-        'Success'
-          'Postcode added successfully');
+          'POSTCODE ADDED SUCCESSFULLY');
 
       } else {
         BotToast.showText(text:
-        'Error' 'Failed to add postcode');
+        'ERROR' 'FAILED TO ADD POSTCODE');
 
       }
     } catch (e) {
       BotToast.showText(text:
-      'Error');
+      'ERROR');
 
 
     }
@@ -341,17 +342,17 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
         await _fetchPostcodes();
 
         BotToast.showText(text:
-        'Deleted' ' Postcode deleted successfully');
+        'POSTCODE DELETED SUCCESSFULLY');
 
       } else {
         BotToast.showText(text:
-        'Error'
-            'Failed to delete postcode');
+        'ERROR'
+            'FAILED TO DELETED POSTCODE');
 
       }
     } catch (e) {
       BotToast.showText(text:
-      'Error');
+      'ERROR');
 
     }
   }

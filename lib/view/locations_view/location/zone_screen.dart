@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../component/text_field.dart';
+
 enum DrawMode { navigate, freehand, rectangle, points, edit }
 
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
@@ -936,6 +938,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     SizedBox(height: 15),
                     TextField(
                       controller: controller.zonenameContoller,
+                      inputFormatters: [UpperCaseTextFormatter()],
                       decoration: InputDecoration(
                         labelText: 'NAME',
                         border: OutlineInputBorder(
@@ -946,6 +949,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     SizedBox(height: 15),
                     TextField(
                       controller: controller.secondarynamezoneController,
+                      inputFormatters: [UpperCaseTextFormatter()],
                       decoration: InputDecoration(
                         labelText: 'SHORT NAME',
                         border: OutlineInputBorder(
@@ -956,21 +960,31 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     SizedBox(height: 15),
                     CustomDropdown(
                       width: MediaQuery.of(context).size.width * 0.15,
-                      items: controller.zoneItems,
-                      selecteditem: controller.zoneValue.value,
+                      // items: controller.zoneItems,
+                      // selecteditem: controller.zoneValue.value,
+                      // onchanged: (String? newValue) {
+                      //   setState(() {
+                      //     controller.zoneValue.value = newValue!;
+                      items: List<String>.from(controller.zoneItems).map((e) => e.toUpperCase()).toList(),
+                      selecteditem: controller.zoneValue.value.toUpperCase(),
                       onchanged: (String? newValue) {
                         setState(() {
-                          controller.zoneValue.value = newValue!;
+                          controller.zoneValue.value = newValue!.toUpperCase();
                         });
                       },
                     ),
                     CustomDropdown(
                         width: MediaQuery.of(context).size.width * 0.15,
-                        items: controller.categoryItems,
-                        selecteditem: controller.categoryValue.value,
+                        // items: controller.categoryItems,
+                        // selecteditem: controller.categoryValue.value,
+                        // onchanged: (String? newValue) {
+                        //   setState(() {
+                        //     controller.categoryValue.value = newValue!;
+                        items: List<String>.from(controller.categoryItems).map((e) => e.toUpperCase()).toList(),
+                        selecteditem: controller.categoryValue.value.toUpperCase(),
                         onchanged: (String? newValue) {
                           setState(() {
-                            controller.categoryValue.value = newValue!;
+                            controller.categoryValue.value = newValue!.toUpperCase();
                           });
                         }),
                     SizedBox(height: 20),

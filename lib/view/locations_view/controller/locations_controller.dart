@@ -198,13 +198,13 @@ class LocationController extends GetxController {
     if (locationUpdate == null) return;
 
     locationUpdateId.value = locationUpdate.id ?? 0;
-    locationNameCtrl.text = locationUpdate.name ?? '';
+    locationNameCtrl.text = (locationUpdate.name ?? '').toUpperCase();
     longitudeCtrl.text = locationUpdate.longitude ?? '';
     latitudeCtrl.text = locationUpdate.latitude ?? '';
-    postcodeCtrl.text = locationUpdate.postcode ?? '';
-    shortcutCtrl.text = locationUpdate.shortcut ?? '';
-    addressCtrl.text = locationUpdate.address ?? '';
-    extraChargesCtrl.text = (locationUpdate.extraCharges.toString() ?? '');
+    postcodeCtrl.text = (locationUpdate.postcode ?? '').toUpperCase();
+    shortcutCtrl.text = (locationUpdate.shortcut ?? '').toUpperCase();
+    addressCtrl.text = (locationUpdate.address ?? '').toUpperCase();
+    extraChargesCtrl.text = (locationUpdate.extraCharges.toString()).toUpperCase();
 
     updateLocationValue(true);
 

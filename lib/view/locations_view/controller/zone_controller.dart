@@ -234,8 +234,8 @@ class ZoneController extends GetxController {
     if (zoneUpdate == null) return;
 
     zoneUpdateId.value = zoneUpdate.id ?? 0;
-    zonenameContoller.text = zoneUpdate.name ?? '';
-    secondarynamezoneController.text = zoneUpdate.secondaryName ?? '';
+    zonenameContoller.text = (zoneUpdate.name ?? '').toUpperCase();
+    secondarynamezoneController.text = (zoneUpdate.secondaryName ?? '').toUpperCase();
     zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
     categoryValue.value = zoneUpdate.category ?? 'Select Category';
     base.value = zoneUpdate.base ?? false;

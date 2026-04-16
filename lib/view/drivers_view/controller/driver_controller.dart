@@ -54,6 +54,7 @@ class DriverController extends GetxController {
   RxBool vehicleInformation = false.obs;
 
   String? driverType;
+  // String driverType = 'COMMISSION';
   String? dobDate =
       "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}";
   String? vehicleStartDate;
@@ -451,39 +452,39 @@ class DriverController extends GetxController {
 
       if (singleDriverData!.driver!.address != null) {
         driverAddressController.text =
-            singleDriverData!.driver!.address.toString();
+            singleDriverData!.driver!.address.toString().toUpperCase();
       }
 
-      if (singleDriverData!.driver!.useCompanyVehicle == false) {
+      if (singleDriverData!.driver!.useCompanyVehicle == false && singleDriverData!.driver!.vehicle != null) {
         if (singleDriverData!.driver!.vehicle!.vehicleNumber != null) {
           vehicleNameController.text =
-              singleDriverData!.driver!.vehicle!.vehicleNumber.toString();
+              singleDriverData!.driver!.vehicle!.vehicleNumber.toString().toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.make != null) {
           vehicleMakeController.text =
-              singleDriverData!.driver!.vehicle!.make.toString();
+              singleDriverData!.driver!.vehicle!.make.toString().toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.model != null) {
           vehicleModelController.text =
-              singleDriverData!.driver!.vehicle!.model.toString();
+              singleDriverData!.driver!.vehicle!.model.toString().toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.color != null) {
           vehicleColorController.text =
-              singleDriverData!.driver!.vehicle!.color.toString();
+              singleDriverData!.driver!.vehicle!.color.toString().toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.owner != null) {
           vehicleOwnerController.text =
-              singleDriverData!.driver!.vehicle!.owner.toString();
+              singleDriverData!.driver!.vehicle!.owner.toString().toUpperCase();
         }
 
         if (singleDriverData!.driver!.vehicle!.logBook!.logBookNumber != null) {
           vehicleLogBookController.text = singleDriverData!
               .driver!.vehicle!.logBook!.logBookNumber
-              .toString();
+              .toString().toUpperCase();
         }
 
         int index = getCombineVehicleData!.vehicleTypes!.indexWhere((test) =>
@@ -555,14 +556,26 @@ class DriverController extends GetxController {
                 singleDriverData!.driver!.vehicle!.roadTax!.roadTaxNumber ?? "";
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.roadTax!.roadTaxDocument!;
           } else if (action.documentTitle == "V5 REGISTRATION") {
-            action.expiryDate = DateTime.parse(singleDriverData!
-                .driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
-            action.expiryTime.text = singleDriverData!.driver!.vehicle!
-                    .v5Registration!.v5RegistrationExpiryTime ??
-                "";
-            action.batchNo.text = singleDriverData!
-                    .driver!.vehicle!.v5Registration!.v5RegistrationNumber ??
-                "";
+            if (singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry != null) {
+              action.expiryDate = DateTime.parse(singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+            }
+            else if (singleDriverData!.driver!.createdAt != null) {
+              action.expiryDate = singleDriverData!.driver!.createdAt;
+            }
+            else {
+              action.expiryDate = DateTime.now();
+            }
+            action.expiryTime.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationExpiryTime ?? "";
+            action.batchNo.text = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationNumber ?? "";
+          // } else if (action.documentTitle == "V5 REGISTRATION") {
+          //   action.expiryDate = DateTime.parse(singleDriverData!
+          //       .driver!.vehicle!.v5Registration!.v5RegistrationExpiry!);
+          //   action.expiryTime.text = singleDriverData!.driver!.vehicle!
+          //           .v5Registration!.v5RegistrationExpiryTime ??
+          //       "";
+          //   action.batchNo.text = singleDriverData!
+          //           .driver!.vehicle!.v5Registration!.v5RegistrationNumber ??
+          //       "";
             // action.fileName!.name = singleDriverData!.driver!.vehicle!.v5Registration!.v5RegistrationDocument!;
           } else {
             action.expiryDate = DateTime.parse(singleDriverData!
@@ -580,22 +593,25 @@ class DriverController extends GetxController {
         // selectCompanyVehicle = null;
         int indexx = getCombineVehicleData!.companyVehicles!.indexWhere(
             (test) => test.id == singleDriverData!.driver!.companyVehicleId);
-        vehicleType = getCombineVehicleData!.companyVehicles![indexx];
+        // vehicleType = getCombineVehicleData!.companyVehicles![indexx];
+        if (indexx != -1) {
+          vehicleType = getCombineVehicleData!.companyVehicles![indexx];
+        }
       }
       if (singleDriverData!.driver!.username != null) {
         driverUserNameController.text =
-            singleDriverData!.driver!.username.toString();
+            singleDriverData!.driver!.username.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.password != null) {
         driverPasswordController.text =
-            singleDriverData!.driver!.password.toString();
+            singleDriverData!.driver!.password.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.name != null) {
         driverFullNameController.text =
-            singleDriverData!.driver!.name.toString();
+            singleDriverData!.driver!.name.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.email != null) {
-        driverEmailController.text = singleDriverData!.driver!.email.toString();
+        driverEmailController.text = singleDriverData!.driver!.email.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.mobile != null) {
         driverMobileController.text =
@@ -619,7 +635,12 @@ class DriverController extends GetxController {
       vehicleInformation.value = singleDriverData!.driver!.useCompanyVehicle!;
       int companyTypeIndex = getCombineVehicleData!.subsidiaries!.indexWhere(
           (test) => test.id == singleDriverData!.driver!.subsidiaryId);
-      companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+      // companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+      if (companyTypeIndex != -1) {
+        companyType = getCombineVehicleData!.subsidiaries![companyTypeIndex];
+      } else {
+        print("Subsidiary not found or ID is null");
+      }
 
       print(singleDriverData!.driver);
       if (singleDriverData!.driver!.shifts!.isNotEmpty) {
@@ -739,7 +760,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverList();
-      BotToast.showText(text:"Driver deleted successfully!");
+      BotToast.showText(text:"DRIVER DELETED SUCCESSFULLY!");
       print(json.encode(response.data));
     }
   }

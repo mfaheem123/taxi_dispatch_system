@@ -97,7 +97,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                           Row(
                             children: [
                               Text(
-                                AppText.drivers +
+                                "DRIVERS" +
                                     " (${controller.listDriverModel?.count})",
                                 style: mozillaTextSemiBoldText(
                                     fontWeight: FontWeight.w800, fontSize: 17),
@@ -239,10 +239,10 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                   return DataRow(
                                     cells: [
                                       DataCell(Center(
-                                          child: Text(
-                                              item.username ?? "-"))),
+                                          child: Text((
+                                              item.username ?? "-").toUpperCase()))),
                                       DataCell(Center(
-                                          child: Text(item.name ?? "-"))),
+                                          child: Text((item.name ?? "-").toUpperCase()))),
                                       DataCell(Center(
                                           child: Text(
                                               item.vehicle?.vehicleType?.name ??

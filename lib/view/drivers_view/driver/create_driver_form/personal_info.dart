@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/dropdown_button.dart';
+import '../../../../component/text_field.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/driver_controller.dart';
@@ -120,7 +121,7 @@ class DriverPersonalInfo extends StatelessWidget {
                        },
                      ),
                    ),
-                   const Text("Active"),
+                   Text(AppText.active),
                    SizedBox(
                      width: 20,
                    ),
@@ -137,7 +138,7 @@ class DriverPersonalInfo extends StatelessWidget {
                        //     .zonesList!,
                        value: controller.companyType,
                        itemLabel: (templateList) =>
-                       templateList.name!,
+                       templateList.name!.toUpperCase(),
                        onChanged: (val) {
                          controller.companyType = val;
                          controller.update();
@@ -147,7 +148,7 @@ class DriverPersonalInfo extends StatelessWidget {
 
                    FocusTraversalOrder(
                      order: NumericFocusOrder(5),
-                     child: labeledTextField(context, isMobile, AppText.userName, controller.driverUserNameController,
+                     child: labeledTextField(context, isMobile, "USERNAME", controller.driverUserNameController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
                          column: true
@@ -156,7 +157,7 @@ class DriverPersonalInfo extends StatelessWidget {
 
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(6),
-                     child: labeledTextField(context, isMobile, AppText.password, controller.driverPasswordController,
+                     child: labeledTextField(context, isMobile, "PASSWORD", controller.driverPasswordController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
                          column: true
@@ -165,11 +166,14 @@ class DriverPersonalInfo extends StatelessWidget {
 
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(7),
-                     child: labeledTextField(context, isMobile, AppText.fullName, controller.driverFullNameController,
+                     child: labeledTextField(context, isMobile, "FULL NAME", controller.driverFullNameController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
-                         keyboardType: TextInputType.phone,
-                         formatDigitsOnly: false,
+                         keyboardType: TextInputType.name,
+                         inputFormatters: [
+                           FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                           UpperCaseTextFormatter(),
+                         ],
                          column: true
                      ),
                    ),
@@ -212,22 +216,23 @@ class DriverPersonalInfo extends StatelessWidget {
                      order: const NumericFocusOrder(10),
                      child: labeledTextField(context,
                          isMobile,
-                         AppText.mobile,
+                         "MOBILE",
                          controller.driverMobileController,
                          width: fieldWidth/1.4,
+                         formatDigitsOnly: true,
                          column: true,
                          textInputAction: TextInputAction.next),
                    ),
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(11),
                      child: labeledTextField(context, isMobile,
-                         AppText.tel,
+                         "TELEPHONE",
                          controller.driverTelController,
                          width: fieldWidth/1.4,
                          column: true,
                          textInputAction: TextInputAction.next,
                          keyboardType: TextInputType.phone,
-                         formatDigitsOnly: false),
+                         formatDigitsOnly: true),
                    ),
 
                    FocusTraversalOrder(
@@ -253,16 +258,30 @@ class DriverPersonalInfo extends StatelessWidget {
                            width: fieldWidth,
                            // height: 30,
                            child:
+                           // CustomDropdownField<String>(
+                           //   label: "DRIVER TYPE",
+                           //   width: Get.width / 5,
+                           //   height: 35,
+                           //   items: ['Commission', "Rent/Week"],
+                           //   value: controller.driverType,
+                           //   itemLabel: (templateList) =>
+                           //   templateList,
+                           //   onChanged: (val) {
+                           //     controller.driverType = val;
+                           //     controller.update();
+                           //   },
+                           // ),
                            CustomDropdownField<String>(
                              label: "DRIVER TYPE",
                              width: Get.width / 5,
                              height: 35,
-                             items: ['Commission', "Rent/Week"],
-                             value: controller.driverType,
-                             itemLabel: (templateList) =>
-                             templateList,
+                             items: ['COMMISSION', "RENT/WEEK"],
+                             value: (['COMMISSION', "RENT/WEEK"].contains(controller.driverType?.toUpperCase()))
+                                 ? controller.driverType?.toUpperCase()
+                                 : null,
+                             itemLabel: (item) => item,
                              onChanged: (val) {
-                               controller.driverType = val;
+                               controller.driverType = val!.toUpperCase();
                                controller.update();
                              },
                            ),
@@ -275,7 +294,7 @@ class DriverPersonalInfo extends StatelessWidget {
                      order: const NumericFocusOrder(14),
                      child: labeledTextField(context,
                          isMobile,
-                         AppText.commission,
+                         "COMMISSION",
                          formatDigitsOnly: true,
                          controller.driverCommissionController,
                          width: fieldWidth/1.4,
@@ -286,7 +305,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(15),
                      child: labeledTextField(context, isMobile,
-                         AppText.rentLimit,
+                         "RENT LIMIT",
                          controller.driverRendLimitController,
                          width: fieldWidth/1.4,
                          column: true,
@@ -298,7 +317,7 @@ class DriverPersonalInfo extends StatelessWidget {
                    FocusTraversalOrder(
                      order: const NumericFocusOrder(16),
                      child: labeledTextField(context, isMobile,
-                         AppText.balance,
+                         "BALANCE",
                          controller.driverBalanceController,
                          width: fieldWidth/1.4,
                          column: true,
@@ -337,7 +356,10 @@ class DriverPersonalInfo extends StatelessWidget {
                                 || controller.driverPasswordController.text.isEmpty || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty
                             ){
                               BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number,");
-                            }else{
+                            }else if (!controller.driverEmailController.text.contains('@')) {
+                              BotToast.showText(text: "Invalid Email Format");
+                            }
+                            else{
                               if(controller.vehicleInformation.value && controller.vehicleType == null){
                                 BotToast.showText(text: "Please select the company vehicle type");
                               }else{

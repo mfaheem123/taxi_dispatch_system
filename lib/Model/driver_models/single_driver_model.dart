@@ -357,9 +357,12 @@ class Note {
 
   factory Note.fromJson(Map<String, dynamic> json) => Note(
     id: json["id"],
-    note: json["note"],
-    createdAt: DateFormat("dd-MM-yyyy").parse(json["created_at"]),
-    createdBy: json["created_by"],
+    note: json["note"] ?? "",
+    // createdAt: DateFormat("dd-MM-yyyy").parse(json["created_at"]),
+    createdAt: json["created_at"] != null
+        ? DateFormat("dd-MM-yyyy").parse(json["created_at"])
+        : DateTime.now(),
+    createdBy: json["created_by"]?.toString() ?? "",
   );
 
   Map<String, dynamic> toJson() => {

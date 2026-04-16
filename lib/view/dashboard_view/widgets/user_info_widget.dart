@@ -489,8 +489,7 @@ Widget labeledTextField(
       borderWidth = 2,
       final GestureTapCallback? onTap,
       final ValueChanged<String>? onChanged,
-
-
+      List<TextInputFormatter>? inputFormatters,
     }) {
 
   return SizedBox(
@@ -510,13 +509,12 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               hintText: hintTex,
-
               onTap: onTap,
               onChanged: onChanged,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly
+              inputFormatters: inputFormatters ?? ( formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : [UpperCaseTextFormatter()],
+                  : [UpperCaseTextFormatter()]),
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -532,9 +530,9 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly
+              inputFormatters: inputFormatters ?? ( formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : [UpperCaseTextFormatter()],
+                  : [UpperCaseTextFormatter()]),
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -559,9 +557,9 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly
+              inputFormatters: inputFormatters ?? (formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : [UpperCaseTextFormatter()],
+                  : [UpperCaseTextFormatter()]),
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,
@@ -578,9 +576,9 @@ Widget labeledTextField(
               controller: controller,
               borderRadius: 4,
               keyboardType: keyboardType,
-              inputFormatters: formatDigitsOnly
+              inputFormatters: inputFormatters ?? (formatDigitsOnly
                   ? [FilteringTextInputFormatter.digitsOnly]
-                  : [UpperCaseTextFormatter()],
+                  : [UpperCaseTextFormatter()]),
               textInputAction: textInputAction,
               readOnly: readOnly,
               borderColor: borderColor,

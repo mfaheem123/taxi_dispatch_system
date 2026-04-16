@@ -85,7 +85,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                 Row(
                   children: [
                     Text(
-                      "Zones",
+                      "ZONES",
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w800, fontSize: 17),
                     ),
@@ -136,13 +136,13 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                         return DataRow(
                           cells: [
 
-                            DataCell(Center(child: Text(item.name ?? '—'))),
+                            DataCell(Center(child: Text((item.name ?? '—').toUpperCase()))),
 
-                            DataCell(Center(child: Text(item.secondaryName ?? '—'))),
+                            DataCell(Center(child: Text((item.secondaryName ?? '—').toUpperCase()))),
 
-                            DataCell(Center(child: Text(item.type ?? '—'))),
+                            DataCell(Center(child: Text((item.type ?? '—').toUpperCase()))),
 
-                            DataCell(Center(child: Text(item.category ?? '—'))),
+                            DataCell(Center(child: Text((item.category ?? '—').toUpperCase()))),
 
                             DataCell(Center(
                                 child: Row(

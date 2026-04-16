@@ -269,6 +269,13 @@ class ShiftAlert {
       height: 32,
       child: TextField(
         controller: controller,
+        textCapitalization: TextCapitalization.characters,
+        onChanged: (value) {
+          controller.value = controller.value.copyWith(
+            text: value.toUpperCase(),
+            selection: controller.selection,
+          );
+        },
         style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
@@ -349,6 +356,13 @@ class NoteAlert {
                                 maxLines: 5,
                                 minLines: 5,
                                 controller: controller.notesCtrl,
+                                textCapitalization: TextCapitalization.characters,
+                                onChanged: (value) {
+                                  controller.notesCtrl.value = controller.notesCtrl.value.copyWith(
+                                    text: value.toUpperCase(),
+                                    selection: controller.notesCtrl.selection,
+                                  );
+                                },
                                 style: const TextStyle(fontSize: 12),
                                 decoration: InputDecoration(
                                   labelText: "NOTES",

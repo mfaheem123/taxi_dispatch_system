@@ -85,7 +85,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                     Row(
                       children: [
                         Text(
-                          "Location" + "(${controller.locationListModel?.count})",
+                          "LOCATIONS" + "(${controller.locationListModel?.count})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -186,12 +186,12 @@ class _LocationListScreenState extends State<LocationListScreen> {
                           rows: listToShow.map((item) {
                             return DataRow(
                               cells: [
-                                DataCell(Center(child: Text(item.name ?? '—'))),
-                                DataCell(Center(child: Text(item.postcode ?? '—'))),
-                                DataCell(Center(child: Text(item.shortcut ?? '—'))),
-                                DataCell(Center(child: Text(item.address ?? '—'))),
-                                DataCell(Center(child: Text(item.locationType?.name ?? 'N/A'))),
-                                DataCell(Center(child: Text(item.zone ?? 'N/A'))),
+                                DataCell(Center(child: Text((item.name ?? '—').toUpperCase()))),
+                                DataCell(Center(child: Text((item.postcode ?? '—').toUpperCase()))),
+                                DataCell(Center(child: Text((item.shortcut ?? '—').toUpperCase()))),
+                                DataCell(Center(child: Text((item.address ?? '—').toUpperCase()))),
+                                DataCell(Center(child: Text((item.locationType?.name ?? 'N/A').toUpperCase()))),
+                                DataCell(Center(child: Text((item.zone ?? 'N/A').toUpperCase()))),
                                 DataCell(
                                   Center(
                                     child: Row(

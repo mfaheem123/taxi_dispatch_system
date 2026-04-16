@@ -1,9 +1,11 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/dropdown_button.dart';
+import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
@@ -77,7 +79,7 @@ class VehicleInformation extends StatelessWidget {
                   FocusTraversalOrder(
                     order: const NumericFocusOrder(19),
                     child: CustomDropdownField<CompanyVehicleObject>(
-                      text: "COMANY ACCOUNTS",
+                      text: "COMPANY ACCOUNTS",
                       label: "SELECT COMPANY VEHICLE",
                       width: fieldWidth/2,
                       height: 35,
@@ -89,7 +91,7 @@ class VehicleInformation extends StatelessWidget {
                       //     .zonesList!,
                       value: controller.vehicleType,
                       itemLabel: (templateList) =>
-                      templateList.vehicleTypeName!,
+                      templateList.vehicleTypeName!.toUpperCase(),
                       onChanged: (val) {
                         controller.vehicleType = val;
                         controller.update();
@@ -185,7 +187,12 @@ class VehicleInformation extends StatelessWidget {
                         readOnly:controller.vehicleInformation.value,
                         borderWidth: controller.vehicleInformation.value?0:2,
                         borderColor: controller.vehicleInformation.value?Colors.grey:DynamicColors.primaryClr,
-                        column: true),
+                        column: true,
+                        inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                        UpperCaseTextFormatter(),
+                      ],
+                    ),
                   ),
                   FocusTraversalOrder(
                     order: NumericFocusOrder(26),
@@ -221,9 +228,12 @@ class VehicleInformation extends StatelessWidget {
                           : controller.getCombineVehicleData?.vehicleTypes ?? [],
                       // items: controller.locationtypezoneModel!
                       //     .zonesList!,
-                      value: controller.selectCompanyVehicle,
+                      // value: controller.selectCompanyVehicle,
+                      value: (controller.vehicleInformation.value == true || controller.getCombineVehicleData == null)
+                          ? null
+                          : controller.selectCompanyVehicle,
                       itemLabel: (templateList) =>
-                      templateList.name!,
+                      templateList.name!.toUpperCase(),
                       onChanged: (val) {
                         controller.selectCompanyVehicle = val;
                         controller.update();
@@ -337,7 +347,7 @@ class VehicleInformation extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             alignment: Alignment.center,
                             child: const Text(
-                              "Choose File",
+                              "CHOOSE FILE",
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
