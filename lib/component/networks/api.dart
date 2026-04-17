@@ -100,7 +100,9 @@ class Api {
   }
 
 
-  Future<dynamic> get(String url, {fullUrl, queryParameters, auth = false,    sendCompanyId = false,}) async {
+  Future<dynamic> get(String url, {fullUrl, queryParameters, auth = false,
+    sendCompanyId = false,
+  }) async {
     Dio dio = Dio(BaseOptions(
         connectTimeout: Duration(seconds: 50),
         receiveTimeout: Duration(seconds: 50),
@@ -112,7 +114,7 @@ class Api {
     // queryParameters ??= {};
 
     // get CompanyID
-    if (sendCompanyId) {
+    if (sendCompanyId == true && queryParameters != null) {
       queryParameters['company_id'] = globalCompanyId;
     }
     print("Final Query Parameters: $queryParameters");
@@ -124,7 +126,9 @@ class Api {
     try {
       final response = await dio.get(
         fullUrl ?? apiUrl + url,
-        queryParameters: queryParameters,
+        queryParameters: queryParameters ?? (sendCompanyId == true ? {
+          "company_id": globalCompanyId,
+        } : {}),
         options: Options(
           headers: {
             Headers.acceptHeader: "application/json",
