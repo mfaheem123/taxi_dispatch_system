@@ -236,13 +236,14 @@ class VehicleController extends GetxController {
       if (searchMinMiles.value.isNotEmpty)
         query += '&minimum_miles=${searchMinMiles.value}';
       print("API Query: vehicle-type/ge?$query");
-      final response = await Api().get('vehicle-type/get?$query');
+      final response = await Api().get('vehicle-type/get',queryParameters: query , sendCompanyId: true,);
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
         totalPages.value = vehicleTypeModel?.totalPages ?? 1;
         allVehicleTypes.value = vehicleTypeModel?.vehicleTypes ?? [];
         filteredVehicleTypes.value = allVehicleTypes;
       isLoading.value = false;
+      print(response);
       update();
       }
   }

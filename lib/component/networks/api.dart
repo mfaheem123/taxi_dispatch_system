@@ -111,7 +111,6 @@ class Api {
     print("user auth token :: ${sp.read('token')}");
     print("api url :: ${fullUrl ?? apiUrl + url}");
 
-    // queryParameters ??= {};
 
     // get CompanyID
     if (sendCompanyId == true && queryParameters != null) {
