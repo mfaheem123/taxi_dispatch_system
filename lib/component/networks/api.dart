@@ -33,6 +33,9 @@ class Api {
 
   Api._internal();
 
+// Company ID
+  final String globalCompanyId = "1";
+
   var sp = GetStorage();
   Future<dynamic> interceptorGet(String url,
       {fullUrl, queryParameters, firstTime = false}) async {
@@ -73,8 +76,31 @@ class Api {
   }
 
 
+  // ✅ Step 1: Common function بنا لیں
+  dynamic injectCompanyId(data) {
+    if (data == null) {
+      return {'company_id': globalCompanyId};
+    }
 
-  Future<dynamic> get(String url, {fullUrl, queryParameters, auth = false}) async {
+    if (data is Map<String, dynamic>) {
+      return {
+        ...data,
+        'company_id': globalCompanyId,
+      };
+    }
+
+    if (data is FormData) {
+      // fields.add ki bajaye .fields.add use karein, jo aap kar rahe hain
+      // Lekin verify karein ke backend 'company_id' hi expect kar raha hai
+      data.fields.add(MapEntry('company_id', globalCompanyId));
+      return data;
+    }
+
+    return data;
+  }
+
+
+  Future<dynamic> get(String url, {fullUrl, queryParameters, auth = false,    sendCompanyId = false,}) async {
     Dio dio = Dio(BaseOptions(
         connectTimeout: Duration(seconds: 50),
         receiveTimeout: Duration(seconds: 50),
@@ -82,6 +108,13 @@ class Api {
     print('Api Get, url $url');
     print("user auth token :: ${sp.read('token')}");
     print("api url :: ${fullUrl ?? apiUrl + url}");
+
+    // queryParameters ??= {};
+
+    // ✅ sirf tab add hoga jab zarurat ho
+    if (sendCompanyId) {
+      queryParameters['company_id'] = globalCompanyId;
+    }
 
     if (auth == false) {
       dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
@@ -217,12 +250,17 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
         nonFormContent = false,
         isProgressShow = false,
         noCloseLoading = false,
+        bool sendCompanyId = false,
         fullUrl}) async {
 
     print('Api Post, url $url');
 
     if (isProgressShow == false) {
       showLoading();
+    }
+// --- Company ID
+    if (sendCompanyId == true) {
+      formData = injectCompanyId(formData);
     }
 
     try {

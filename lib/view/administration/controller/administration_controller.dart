@@ -33,8 +33,11 @@ class AdministrationController extends GetxController {
   Subsidiaries? selectedSubsidiary;
 
  listSubsDiary() async {
+
       subsDiaryLoading.value = true;
-      final response = await Api().get('subsidiaries/get?', queryParameters: {
+      final response = await Api().get('subsidiaries/get?',
+          sendCompanyId: true,
+          queryParameters: {
         "page" : subsiCurrentPage.value,
         '&limit' : subsiiLimit,
         "name" :searchSubsiDiaryName.value.toLowerCase(),
@@ -137,6 +140,7 @@ class AdministrationController extends GetxController {
   userData() async {
       userLoading.value = true;
       final response = await Api().get('employees/get',
+          sendCompanyId: true,
           queryParameters: {
         'page' : userCurrentPage.value,
         'limit': userLlimit,
@@ -291,7 +295,8 @@ class AdministrationController extends GetxController {
             ? "subsidiaries/edit/${subsidiaryToUpdate!.id}"
             : 'subsidiaries/add',
         auth: true,
-        multiPart: multipartFile != null ? true : false
+        multiPart: multipartFile != null ? true : false,
+        sendCompanyId: true
     );
     if (response.statusCode == 200) {
       subsidiaryImg = null;
@@ -406,6 +411,7 @@ class AdministrationController extends GetxController {
       employee != null ? "employees/update/${employee!.id}" : "employees/add",
       auth: true,
       multiPart: multipartFile != null ? true : false,
+      sendCompanyId: true,
     );
     if (response.statusCode == 200) {
       String message = employee != null
