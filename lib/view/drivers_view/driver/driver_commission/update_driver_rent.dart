@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -113,10 +114,10 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                           padding: EdgeInsetsGeometry.symmetric(
                                               horizontal: 10),
                                           decoration: BoxDecoration(
-                                            color: Colors.grey[200],
+                                            color: Colors.grey.shade100,
                                             border: Border.all(
-                                                color: DynamicColors.gryClr),
-                                            borderRadius: BorderRadius.circular(4),
+                                                color: Colors.grey),
+                                            borderRadius: BorderRadius.circular(6),
                                           ),
                                           alignment: Alignment.centerLeft,
                                           child: Text(
@@ -124,8 +125,8 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                                 ? "NO DRIVER"
                                                 : controller.updateRentDriverSelectionController.text.toUpperCase(),
                                             style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black54),
+                                                fontSize: 13,
+                                                color: Colors.black),
                                           ),
                                         ),
                                       ],
@@ -166,6 +167,10 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                     width: fieldWidth,
                                     hintText: AppText.rentWeek,
                                     columnText: true,
+                                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                    ],
                                   ),
                                   CustomTextField(
                                     borderRadius: 4,
@@ -173,6 +178,10 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                     width: fieldWidth,
                                     hintText: AppText.pdaRent,
                                     columnText: true,
+                                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                    ],
                                   ),
                                 ],
                               ),
@@ -185,50 +194,59 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Column(
-                                          crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                          children: [
-                                            Text(AppText.from,
-                                                style: mozillaTextSemiBoldText(
-                                                    context: context,
-                                                    fontSize: 13,
-                                                    color: DynamicColors.gryClr)),
-                                            Container(
-                                              width: fieldWidth / 1.2,
-                                              height: 30,
-                                              alignment: Alignment.centerLeft,
-                                              decoration: BoxDecoration(
-                                                  border: Border(
-                                                      bottom: BorderSide(
-                                                          color: Colors
-                                                              .grey.shade300))),
-                                              child: Text(
-                                                  controller.updateRentFilterFromDate,
-                                                  style: TextStyle(fontSize: 13)),
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(AppText.from,
+                                              style: mozillaTextSemiBoldText(
+                                                  context: context, fontSize: 13)),
+                                          const SizedBox(height: 5),
+                                          SizedBox(
+                                            width: fieldWidth / 1.2,
+                                            height: 35,
+                                            child: TextField(
+                                              readOnly: true,
+                                              controller: TextEditingController(text: controller.updateRentFilterFromDate),
+                                              style: const TextStyle(fontSize: 13),
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: Colors.grey.shade100,
+                                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderSide: BorderSide(color: Colors.grey),
+                                                ),
+                                              ),
                                             ),
-                                          ]),
+                                          ),
+                                        ],
+                                      ),
                                       SizedBox(width: 20),
                                       Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(AppText.to,
                                               style: mozillaTextSemiBoldText(
-                                                  context: context,
-                                                  fontSize: 13,
-                                                  color: DynamicColors.gryClr)),
-                                          Container(
+                                                  context: context, fontSize: 13)),
+                                          const SizedBox(height: 5),
+                                          SizedBox(
                                             width: fieldWidth / 1.2,
-                                            height: 30,
-                                            alignment: Alignment.centerLeft,
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    bottom: BorderSide(
-                                                        color:
-                                                        Colors.grey.shade300))),
-                                            child: Text(
-                                                controller.updateRentFilterToDate,
-                                                style: TextStyle(fontSize: 13)),
+                                            height: 35,
+                                            child: TextField(
+                                              readOnly: true,
+                                              controller: TextEditingController(text: controller.updateRentFilterToDate),
+                                              style: const TextStyle(fontSize: 13),
+                                              decoration: InputDecoration(
+                                                filled: true,
+                                                fillColor: Colors.grey.shade100,
+                                                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(6),
+                                                  borderSide: BorderSide(color: Colors.grey),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -373,7 +391,7 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                 buildHeaderWithSearch(title: "EDC"),
                                 buildHeaderWithSearch(title: "CC"),
                                 buildHeaderWithSearch(title: "TOTAL"),
-                                buildHeaderWithSearch(title: "ACTION"),
+                                buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                               ],
                               rows: [
                                 ...(controller
@@ -383,8 +401,9 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                     [])
                                     .map((lineItem) {
                                   final booking = lineItem.booking;
-                                  if (booking == null)
+                                  if (booking == null) {
                                     return const DataRow(cells: []);
+                                  }
                                   DataCell editableCell(dynamic initialValue,
                                       Function(String) onChanged) {
                                     return DataCell(
@@ -425,23 +444,23 @@ class _UpdateDriverRentScreenState extends State<UpdateDriverRentScreen> {
                                         DataCell(Center(
                                             child: Text(
                                                 "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
-                                        DataCell(Text(booking.pickup ?? "")),
-                                        DataCell(Text(booking.dropoff ?? "")),
+                                        DataCell(Text((booking.pickup ?? "").toUpperCase())),
+                                        DataCell(Text((booking.dropoff ?? "").toUpperCase())),
                                         DataCell(Center(
-                                            child: Text(
+                                            child: Text((
                                                 booking.vehicleType?.name ??
-                                                    ""))),
+                                                    "").toUpperCase()))),
                                         DataCell(Center(
-                                            child: Text(
-                                                booking.account?.name ?? ""))),
+                                            child: Text((
+                                                booking.account?.name ?? "").toUpperCase()))),
                                         DataCell(Center(
-                                            child: Text(booking.journeyType
+                                            child: Text((booking.journeyType
                                                 ?.journeyType ??
-                                                ""))),
+                                                "").toUpperCase()))),
                                         DataCell(Center(
-                                            child: Text(
+                                            child: Text((
                                                 booking.paymentType?.name ??
-                                                    ""))),
+                                                    "").toUpperCase()))),
                                         editableCell(booking.fares, (val) {
                                           booking.fares = val;
                                           controller

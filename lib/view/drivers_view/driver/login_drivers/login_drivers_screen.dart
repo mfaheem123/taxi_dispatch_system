@@ -245,13 +245,13 @@ class _LoginDriversScreenState extends State<LoginDriversScreen> {
                                 cells: [
                                   DataCell(Center(
                                       child: Text(
-                                          item.username ?? "-"))),
+                                          (item.username ?? "-").toUpperCase()))),
                                   DataCell(Center(
-                                      child: Text(item.name ?? "-"))),
+                                      child: Text((item.name ?? "-").toUpperCase()))),
                                   DataCell(Center(
                                       child: Text(
-                                          item.vehicle?.vehicleType?.name ??
-                                              "-"))),
+                                          (item.vehicle?.vehicleType?.name ??
+                                              "-").toUpperCase()))),
                                   DataCell(Center(
                                       child: Text(item.vehicle?.endDate ??
                                           "-"))),

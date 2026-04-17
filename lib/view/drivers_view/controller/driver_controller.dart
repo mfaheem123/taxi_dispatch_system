@@ -1159,7 +1159,7 @@ class DriverController extends GetxController {
     if (response.statusCode == 200) {
       calculateUpdateTotals();
       update();
-      BotToast.showText(text: "charges Updated Successfully");
+      BotToast.showText(text: "CHARGES UPDATED SUCCESSFULLY");
     }
   }
 
@@ -1416,7 +1416,7 @@ class DriverController extends GetxController {
     var response =
         await Api().post(formData, "driver_commission/add", auth: true);
     if (response.statusCode == 200) {
-      BotToast.showText(text: "Commission Saved Successfully!");
+      BotToast.showText(text: "DRIVER COMMISSION ADDED SUCCESSFULLY!");
     }
     saveDriverCommissionLoad = false;
     update();
@@ -1465,7 +1465,7 @@ class DriverController extends GetxController {
   driverCommissionDelete(int? id) async {
     var response = await Api().delete("driver_commission/delete/$id");
     if (response.statusCode == 200) {
-      BotToast.showText(text:"Driver Commission deleted successfully!");
+      BotToast.showText(text:"DRIVER COMMISSION DELETED SUCCESSFULLY!");
       print("DriverCommission deleted successfully!");
     }
   }
@@ -1568,7 +1568,7 @@ class DriverController extends GetxController {
           .post(formData, "driver_commission/update/$selectedId", auth: true);
 
       if (response.statusCode == 200) {
-        BotToast.showText(text: "Commission Updated Successfully");
+        BotToast.showText(text: "DRIVER COMMISSION UPDATED SUCCESSFULLY");
       }
     } catch (err) {
       print("Error: $err");
@@ -1579,7 +1579,14 @@ class DriverController extends GetxController {
   }
 
   /// Download pdf
-  Future<void> exportToPdf() async {
+  Future<void> exportToPdf({int? selectedId}) async {
+    if (selectedId != null) {
+      await getDriverCommissionData(selectedId: selectedId);
+    }
+    if (updateDriverCommissionByIdModel == null) {
+      print("Error: No data available for PDF");
+      return;
+    }
     if (listDriverCommission == null) {
       await getCreateDriverCommission();
     }
@@ -1623,7 +1630,7 @@ class DriverController extends GetxController {
                 _buildInfoColumn(
                     "FROM",
                     [
-                      "EMAIL: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? ""}",
+                      "EMAIL: ${(updateDriverCommissionByIdModel?.driverCommission?.driver?.email ?? "").toUpperCase()}",
                       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                       "",
@@ -1634,7 +1641,7 @@ class DriverController extends GetxController {
                     "TO",
                     [
                       "DRIVER: (${updateDriverCommissionByIdModel?.driverCommission?.driver?.id ?? ""})",
-                      "${updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? ""}",
+                      "${(updateDriverCommissionByIdModel?.driverCommission?.driver?.name ?? "").toUpperCase()}",
                       "DATE: $updateTransactionDateController",
                       "COMMISSION: ${updateDriverCommissionByIdModel?.driverCommission?.driver?.driverCommission ?? ""}%",
                     ],
@@ -1689,12 +1696,12 @@ class DriverController extends GetxController {
                 return [
                   b?.referenceNumber ?? "",
                   "${b?.pickupDate}\n${b?.pickupTime}",
-                  b?.pickup ?? "",
-                  b?.dropoff ?? "",
-                  b?.vehicleType?.name ?? "",
-                  b?.account?.name ?? "",
-                  b?.journeyType?.journeyType ?? "",
-                  b?.paymentType?.name ?? "",
+                  (b?.pickup ?? "").toUpperCase(),
+                  (b?.dropoff ?? "").toUpperCase(),
+                  (b?.vehicleType?.name ?? "").toUpperCase(),
+                  (b?.account?.name ?? "").toUpperCase(),
+                  (b?.journeyType?.journeyType ?? "").toUpperCase(),
+                  (b?.paymentType?.name ?? "").toUpperCase(),
                   "£${b?.fares ?? '0'}",
                   "£${b?.parkingCharges ?? '0'}",
                   "£${b?.waitingCharges ?? '0'}",
@@ -1820,12 +1827,12 @@ class DriverController extends GetxController {
       sheetObject.appendRow([
         TextCellValue(b.referenceNumber ?? ""),
         TextCellValue("${b.pickupDate ?? ""} ${b.pickupTime ?? ""}"),
-        TextCellValue(b.pickup ?? ""),
-        TextCellValue(b.dropoff ?? ""),
-        TextCellValue(b.vehicleType?.name?.toLowerCase() ?? ""),
-        TextCellValue(b.account?.name ?? ""),
-        TextCellValue(b.journeyType?.journeyType ?? ""),
-        TextCellValue(b.paymentType?.name ?? ""),
+        TextCellValue((b.pickup ?? "").toUpperCase()),
+        TextCellValue((b.dropoff ?? "").toUpperCase()),
+        TextCellValue((b.vehicleType?.name?.toLowerCase() ?? "").toUpperCase()),
+        TextCellValue((b.account?.name ?? "").toUpperCase()),
+        TextCellValue((b.journeyType?.journeyType ?? "").toUpperCase()),
+        TextCellValue((b.paymentType?.name ?? "").toUpperCase()),
         DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
         DoubleCellValue(
             double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),
@@ -1935,7 +1942,7 @@ class DriverController extends GetxController {
     var response = await Api().delete("drivers/delete/$id");
     if (response.statusCode == 200) {
       getDriverLoginLogout();
-      BotToast.showText(text:"Driver Login logout deleted successfully!");
+      BotToast.showText(text:"DRIVER LOGIN LOGOUT DELETED SUCCESSFULLY!");
       print("Driver Login logout deleted successfully!");
     }
   }
@@ -2267,7 +2274,7 @@ class DriverController extends GetxController {
     var response =
     await Api().post(formData, "driver_rent/add", auth: true);
     if (response.statusCode == 200) {
-      BotToast.showText(text: "Driver Rent Saved Successfully!");
+      BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
     }
     saveDriverRentLoad = false;
     update();
@@ -2315,7 +2322,7 @@ class DriverController extends GetxController {
   driverRentDelete(int? id) async {
     var response = await Api().delete("driver_rent/delete/$id");
     if (response.statusCode == 200) {
-      BotToast.showText(text:"Driver Rent deleted successfully!");
+      BotToast.showText(text:"DRIVER RENT DELETED SUCCESSFULLY!");
       print("DriverRent deleted successfully!");
     }
   }
@@ -2415,7 +2422,7 @@ class DriverController extends GetxController {
           .post(formData, "driver_rent/update/$selectedId", auth: true);
 
       if (response.statusCode == 200) {
-        BotToast.showText(text: "Rent Updated Successfully");
+        BotToast.showText(text: "DRIVER RENT UPDATED SUCCESSFULLY");
       }
     } catch (err) {
       print("Error: $err");
@@ -2426,7 +2433,14 @@ class DriverController extends GetxController {
   }
 
   /// Download pdf
-  Future<void> exportPdf() async {
+  Future<void> exportPdf({int? selectedId}) async {
+    if (selectedId != null) {
+      await getDriverRentData(selectedId: selectedId);
+    }
+    if (updateDriverRentByIdModel == null) {
+      print("Error: No data available for PDF");
+      return;
+    }
     if (driverRentModel == null) {
       await getDriver();
     }
@@ -2470,7 +2484,7 @@ class DriverController extends GetxController {
                 _buildInfoRentColumn(
                     "FROM",
                     [
-                      "EMAIL: ${updateDriverRentByIdModel?.driverRent?.driver?.email ?? ""}",
+                      "EMAIL: ${(updateDriverRentByIdModel?.driverRent?.driver?.email ?? "").toUpperCase()}",
                       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                       "",
@@ -2481,7 +2495,7 @@ class DriverController extends GetxController {
                     "TO",
                     [
                       "DRIVER: (${updateDriverRentByIdModel?.driverRent?.driver?.id ?? ""})",
-                      "${updateDriverRentByIdModel?.driverRent?.driver?.name ?? ""}",
+                      "${(updateDriverRentByIdModel?.driverRent?.driver?.name ?? "").toUpperCase()}",
                       "DATE: $rentTransactionDateController",
                       "COMMISSION: ${updateDriverRentByIdModel?.driverRent?.driver?.driverCommission ?? ""}%",
                     ],
@@ -2534,12 +2548,12 @@ class DriverController extends GetxController {
                 return [
                   b?.referenceNumber ?? "",
                   "${b?.pickupDate}\n${b?.pickupTime}",
-                  b?.pickup ?? "",
-                  b?.dropoff ?? "",
-                  b?.vehicleType?.name ?? "",
-                  b?.account?.name ?? "",
-                  b?.journeyType?.journeyType ?? "",
-                  b?.paymentType?.name ?? "",
+                  (b?.pickup ?? "").toUpperCase(),
+                  (b?.dropoff ?? "").toUpperCase(),
+                  (b?.vehicleType?.name ?? "").toUpperCase(),
+                  (b?.account?.name ?? "").toUpperCase(),
+                  (b?.journeyType?.journeyType ?? "").toUpperCase(),
+                  (b?.paymentType?.name ?? "").toUpperCase(),
                   "£${b?.fares ?? '0'}",
                   "£${b?.parkingCharges ?? '0'}",
                   "£${b?.waitingCharges ?? '0'}",
@@ -2660,12 +2674,12 @@ class DriverController extends GetxController {
       sheetObject.appendRow([
         TextCellValue(b.referenceNumber ?? ""),
         TextCellValue("${b.pickupDate ?? ""} ${b.pickupTime ?? ""}"),
-        TextCellValue(b.pickup ?? ""),
-        TextCellValue(b.dropoff ?? ""),
-        TextCellValue(b.vehicleType?.name?.toLowerCase() ?? ""),
-        TextCellValue(b.account?.name ?? ""),
-        TextCellValue(b.journeyType?.journeyType ?? ""),
-        TextCellValue(b.paymentType?.name ?? ""),
+        TextCellValue((b.pickup ?? "").toUpperCase()),
+        TextCellValue((b.dropoff ?? "").toUpperCase()),
+        TextCellValue((b.vehicleType?.name ?? "").toUpperCase()),
+        TextCellValue((b.account?.name ?? "").toUpperCase()),
+        TextCellValue((b.journeyType?.journeyType ?? "").toUpperCase()),
+        TextCellValue((b.paymentType?.name ?? "").toUpperCase()),
         DoubleCellValue(double.tryParse(b.fares?.toString() ?? '0') ?? 0.0),
         DoubleCellValue(
             double.tryParse(b.parkingCharges?.toString() ?? '0') ?? 0.0),

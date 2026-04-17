@@ -120,8 +120,8 @@ class DriverCommissionAlt {
                                 return DataRow(
                                   cells: [
                                     DataCell(Center(
-                                        child: Text(
-                                            item.transactionNumber ?? "-"))),
+                                        child: Text((
+                                            item.transactionNumber ?? "-").toUpperCase()))),
                                     DataCell(Center(
                                         child: Text(item.transactionDate
                                             ?.toIso8601String()
@@ -203,7 +203,8 @@ class DriverCommissionAlt {
                                                     size: 18,
                                                     color: Colors.black),
                                                 onPressed: () {
-                                                  Get.back();
+                                                  // Get.back();
+                                                  controller.exportToPdf(selectedId: item.id);
                                                 }),
                                             Text("|"),
                                             IconButton(

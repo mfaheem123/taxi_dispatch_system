@@ -132,11 +132,11 @@ class _DriverRentState extends State<DriverRent> {
                             onTap: () => _onRowTap(driverRent.driverId),
                           ),
                           DataCell(
-                            Center(child: Text(driver?.name ?? "-")),
+                            Center(child: Text((driver?.name ?? "-").toUpperCase())),
                             onTap: () => _onRowTap(driverRent.driverId),
                           ),
                           DataCell(
-                            Center(child: Text(driver?.driverType ?? "-")),
+                            Center(child: Text((driver?.driverType ?? "-").toUpperCase())),
                             onTap: () => _onRowTap(driverRent.driverId),
                           ),
                           DataCell(
