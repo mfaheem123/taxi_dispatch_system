@@ -35,7 +35,7 @@ class AdministrationController extends GetxController {
  listSubsDiary() async {
 
       subsDiaryLoading.value = true;
-      final response = await Api().get('subsidiaries/get?',
+      final response = await Api().get('subsidiaries/get',
           sendCompanyId: true,
           queryParameters: {
         "page" : subsiCurrentPage.value,
@@ -54,7 +54,9 @@ class AdministrationController extends GetxController {
         filteredSubsiDiary.value = subsiDiaryAll;
         print('SubsiDiary ${SubsDiaryModel}');
         subsDiaryLoading.value = false;
+        print(response.data);
         update();
+
       }
   }
   // -----------Search changes function

@@ -111,11 +111,11 @@ class Api {
 
     // queryParameters ??= {};
 
-    // ✅ sirf tab add hoga jab zarurat ho
+    // get CompanyID
     if (sendCompanyId) {
       queryParameters['company_id'] = globalCompanyId;
     }
-
+    print("Final Query Parameters: $queryParameters");
     if (auth == false) {
       dio.options.headers['Authorization'] = "Bearer ${sp.read('token')}";
       // dio.options.headers['Connection'] = "keep-alive";
@@ -264,6 +264,13 @@ Future<dynamic> delete(String url, {isProgressShow = false, formData}) async {
     }
 
     try {
+      // post method ke andar
+      if (formData is FormData) {
+        print("--- POST Debugging ---");
+        print("Fields: ${formData.fields}");
+        print("Files: ${formData.files}");
+        print("----------------------");
+      }
       dynamic response = await Dio().post(fullUrl ?? apiUrl + url,
           data: formData,
           options: Options(
