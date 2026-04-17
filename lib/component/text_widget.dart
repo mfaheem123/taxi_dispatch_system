@@ -36,9 +36,9 @@ class AppText {
   static get model => "MODEL";
   static get mobileNo => "MOBILE #";
   static get driverEarning => "DRIVER EARNINGS";
-  static get from => "From";
+  static get from => "FROM";
   static get comingSoon => "coming soon...";
-  static get to => "To";
+  static get to => "TO";
   static get drivers => "Drivers";
   static get welcomeText => "WELCOME TO YOUR DASHBOARD...!";
   static get restrictDrivers => "RESTRICT DRIVERS";
@@ -75,7 +75,7 @@ class AppText {
   static get fullName => "Full Name";
   static get dob => "DOB";
   static get nl => "Nl";
-  static get commission => "Commission";
+  static get commission => "COMMISSION";
   static get rentLimit => "Rent Limit";
   static get balance => "Balance";
   static get address => "ADDRESS";

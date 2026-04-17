@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
@@ -104,14 +105,14 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                   decoration: BoxDecoration(
                                       color: Colors.white,
                                       border: Border.all(
-                                          color: DynamicColors.gryClr),
+                                          color: DynamicColors.primaryClr),
                                       borderRadius: BorderRadius.circular(4)),
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton<String>(
-                                      hint: const Text("SELECT DRIVER",
+                                      hint: Text("SELECT DRIVER",
                                           style: TextStyle(
                                               fontSize: 12,
-                                              color: Colors.grey)),
+                                              color: DynamicColors.black)),
                                       value: controller
                                               .rentDriverSelectionController
                                               .text
@@ -179,6 +180,10 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             width: fieldWidth,
                             hintText: AppText.rentWeek,
                             columnText: true,
+                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                            ],
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -186,6 +191,10 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             width: fieldWidth,
                             hintText: AppText.pdaRent,
                             columnText: true,
+                            keyboardType: TextInputType.numberWithOptions(decimal: true),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                            ],
                           ),
                         ],
                       ),
@@ -400,7 +409,7 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                             buildHeaderWithSearch(title: "EDC"),
                             buildHeaderWithSearch(title: "CC"),
                             buildHeaderWithSearch(title: "TOTAL"),
-                            buildHeaderWithSearch(title: "ACTIONS"),
+                            buildHeaderWithSearch(title: "ACTIONS", removeSearching: true),
                           ],
                           rows: controller.driverRentFilterModel == null
                               ? []
@@ -462,21 +471,21 @@ class _CreateDriverRentState extends State<CreateDriverRent> {
                                       DataCell(Center(
                                           child: Text(
                                               "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
-                                      DataCell(Text(booking.pickup ?? "")),
-                                      DataCell(Text(booking.dropoff ?? "")),
+                                      DataCell(Text((booking.pickup ?? "").toUpperCase())),
+                                      DataCell(Text((booking.dropoff ?? "").toUpperCase())),
                                       DataCell(Center(
-                                          child: Text(
-                                              booking.vehicleType?.name ?? ""))),
+                                          child: Text((
+                                              booking.vehicleType?.name ?? "").toUpperCase()))),
                                       DataCell(Center(
-                                          child: Text(
-                                              booking.account?.name ?? ""))),
+                                          child: Text((
+                                              booking.account?.name ?? "").toUpperCase()))),
                                       DataCell(Center(
-                                          child: Text(
+                                          child: Text((
                                               booking.journeyType?.journeyType ??
-                                                  ""))),
+                                                  "").toUpperCase()))),
                                       DataCell(Center(
-                                          child: Text(
-                                              booking.paymentType?.name ?? ""))),
+                                          child: Text((
+                                              booking.paymentType?.name ?? "").toUpperCase()))),
                                       editableCell(booking.fares, (val) {
                                         booking.fares = val;
                                         controller

@@ -115,12 +115,13 @@ class DriverRentAlt {
                                     return DataRow(
                                       cells: [
                                         DataCell(Center(
-                                            child: Text(
+                                            child: Text((
                                                 item.transactionNumber ??
-                                                    "-"))),
+                                                    "-").toUpperCase()))),
                                         DataCell(Center(
                                             child: Text(item.transactionDate
-                                                    .toString() ??
+                                                ?.toIso8601String()
+                                                .split('T')[0] ??
                                                 "-"))),
                                         DataCell(Center(
                                             child: Text(
@@ -197,8 +198,8 @@ class DriverRentAlt {
                                                     size: 18,
                                                     color: Colors.black),
                                                 onPressed: () {
-                                                  Get.back();
-                                                  controller.exportPdf();
+                                                  // Get.back();
+                                                  controller.exportPdf(selectedId: item.id);
                                                 }),
                                             Text("|"),
                                             IconButton(

@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -113,10 +114,10 @@ class _UpdateDriverCommissionScreenState
                                       padding: EdgeInsetsGeometry.symmetric(
                                           horizontal: 10),
                                       decoration: BoxDecoration(
-                                        color: Colors.grey[200],
+                                        color: Colors.grey.shade100,
                                         border: Border.all(
-                                            color: DynamicColors.gryClr),
-                                        borderRadius: BorderRadius.circular(4),
+                                            color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
                                       alignment: Alignment.centerLeft,
                                       child: Text(
@@ -129,12 +130,9 @@ class _UpdateDriverCommissionScreenState
                                                 .updateDriverSelectionController
                                                 .text
                                                 .toUpperCase(),
-                                        // controller
-                                        //     .updateDriverSelectionController.text
-                                        //     .toUpperCase(),
                                         style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black54),
+                                            fontSize: 13,
+                                            color: Colors.black),
                                       ),
                                     ),
                                   ],
@@ -180,6 +178,10 @@ class _UpdateDriverCommissionScreenState
                                 width: fieldWidth,
                                 hintText: AppText.commission,
                                 columnText: true,
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -187,6 +189,10 @@ class _UpdateDriverCommissionScreenState
                                 width: fieldWidth,
                                 hintText: AppText.pdaRent,
                                 columnText: true,
+                                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                                ],
                               ),
                             ],
                           ),
@@ -199,50 +205,59 @@ class _UpdateDriverCommissionScreenState
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(AppText.from,
-                                            style: mozillaTextSemiBoldText(
-                                                context: context,
-                                                fontSize: 13,
-                                                color: DynamicColors.gryClr)),
-                                        Container(
-                                          width: fieldWidth / 1.2,
-                                          height: 30,
-                                          alignment: Alignment.centerLeft,
-                                          decoration: BoxDecoration(
-                                              border: Border(
-                                                  bottom: BorderSide(
-                                                      color: Colors
-                                                          .grey.shade300))),
-                                          child: Text(
-                                              controller.updateFilterFromDate,
-                                              style: TextStyle(fontSize: 13)),
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(AppText.from,
+                                          style: mozillaTextSemiBoldText(
+                                              context: context, fontSize: 13)),
+                                      const SizedBox(height: 5),
+                                      SizedBox(
+                                        width: fieldWidth / 1.2,
+                                        height: 35,
+                                        child: TextField(
+                                          readOnly: true,
+                                          controller: TextEditingController(text: controller.updateFilterFromDate),
+                                          style: const TextStyle(fontSize: 13),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: Colors.grey.shade100,
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(6),
+                                              borderSide: BorderSide(color: Colors.grey),
+                                            ),
+                                          ),
                                         ),
-                                      ]),
+                                      ),
+                                    ],
+                                  ),
                                   SizedBox(width: 20),
                                   Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(AppText.to,
                                           style: mozillaTextSemiBoldText(
-                                              context: context,
-                                              fontSize: 13,
-                                              color: DynamicColors.gryClr)),
-                                      Container(
+                                              context: context, fontSize: 13)),
+                                      const SizedBox(height: 5),
+                                      SizedBox(
                                         width: fieldWidth / 1.2,
-                                        height: 30,
-                                        alignment: Alignment.centerLeft,
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    color:
-                                                        Colors.grey.shade300))),
-                                        child: Text(
-                                            controller.updateFilterToDate,
-                                            style: TextStyle(fontSize: 13)),
+                                        height: 35,
+                                        child: TextField(
+                                          readOnly: true,
+                                          controller: TextEditingController(text: controller.updateFilterToDate),
+                                          style: const TextStyle(fontSize: 13),
+                                          decoration: InputDecoration(
+                                            filled: true,
+                                            fillColor: Colors.grey.shade100,
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(6),
+                                              borderSide: BorderSide(color: Colors.grey),
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -421,7 +436,7 @@ class _UpdateDriverCommissionScreenState
                                   buildHeaderWithSearch(title: "W/COMM"),
                                   buildHeaderWithSearch(title: "COMM"),
                                   buildHeaderWithSearch(title: "TOTAL"),
-                                  buildHeaderWithSearch(title: "ACTION"),
+                                  buildHeaderWithSearch(title: "ACTION", removeSearching: true),
                                 ],
                                 rows: [
                                   ...(controller
@@ -431,8 +446,9 @@ class _UpdateDriverCommissionScreenState
                                           [])
                                       .map((lineItem) {
                                     final booking = lineItem.booking;
-                                    if (booking == null)
+                                    if (booking == null) {
                                       return const DataRow(cells: []);
+                                    }
                                     DataCell editableCell(dynamic initialValue,
                                         Function(String) onChanged) {
                                       return DataCell(
@@ -487,24 +503,24 @@ class _UpdateDriverCommissionScreenState
                                           DataCell(Center(
                                               child: Text(
                                                   "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}"))),
-                                          DataCell(Text(booking.pickup ?? "")),
-                                          DataCell(Text(booking.dropoff ?? "")),
+                                          DataCell(Text((booking.pickup ?? "").toUpperCase())),
+                                          DataCell(Text((booking.dropoff ?? "").toUpperCase())),
                                           DataCell(Center(
-                                              child: Text(
+                                              child: Text((
                                                   booking.vehicleType?.name ??
-                                                      ""))),
+                                                      "").toUpperCase()))),
                                           DataCell(Center(
-                                              child: Text(
+                                              child: Text((
                                                   booking.account?.name ??
-                                                      ""))),
+                                                      "").toUpperCase()))),
                                           DataCell(Center(
-                                              child: Text(booking.journeyType
+                                              child: Text((booking.journeyType
                                                       ?.journeyType ??
-                                                  ""))),
+                                                  "").toUpperCase()))),
                                           DataCell(Center(
-                                              child: Text(
+                                              child: Text((
                                                   booking.paymentType?.name ??
-                                                      ""))),
+                                                      "").toUpperCase()))),
                                           editableCell(booking.fares, (val) {
                                             booking.fares = val;
                                             controller

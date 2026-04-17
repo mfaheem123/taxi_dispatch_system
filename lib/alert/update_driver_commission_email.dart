@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
 import '../component/color.dart';
+import '../component/text_field.dart';
 
 class EmailDriverCommissionAlt {
   static void show() {
@@ -47,17 +48,20 @@ class EmailDriverCommissionAlt {
               const Divider(height: 30),
 
               // Label
-              const Text(
+              Text(
                 "RECIPIENT",
                 style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black54
+                    color: DynamicColors.black
                 ),
               ),
               const SizedBox(height: 8),
               TextField(
                 controller: emailCtrl,
+                inputFormatters: [
+                  UpperCaseTextFormatter(),
+                ],
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   enabledBorder: OutlineInputBorder(

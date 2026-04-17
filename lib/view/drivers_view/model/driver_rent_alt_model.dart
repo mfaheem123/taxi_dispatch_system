@@ -35,7 +35,7 @@ class DriverRentAltModel {
 class DriverRent {
   int? id;
   String? transactionNumber;
-  String? transactionDate;
+  DateTime? transactionDate;
   int? driverId;
   String? jobsTotal;
   String? rentTotal;
@@ -72,7 +72,7 @@ class DriverRent {
   factory DriverRent.fromJson(Map<String, dynamic> json) => DriverRent(
     id: json["id"],
     transactionNumber: json["transaction_number"],
-    transactionDate: json["transaction_date"],
+    transactionDate: _parseDate(json["transaction_date"]),
     driverId: json["driver_id"],
     jobsTotal: json["jobs_total"],
     rentTotal: json["rent_total"],
@@ -91,7 +91,7 @@ class DriverRent {
   Map<String, dynamic> toJson() => {
     "id": id,
     "transaction_number": transactionNumber,
-    "transaction_date": transactionDate,
+    "transaction_date": transactionDate?.toIso8601String(),
     "driver_id": driverId,
     "jobs_total": jobsTotal,
     "rent_total": rentTotal,
@@ -106,6 +106,26 @@ class DriverRent {
     "last_modified": lastModified,
     "driver": driver?.toJson(),
   };
+
+  // Helper function to handle flexible date formats
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null || date == "") return null;
+    try {
+      return DateTime.parse(date.toString());
+    } catch (e) {
+      // If 2026-2-20 fails, we try to split and pad it manually
+      try {
+        List<String> parts = date.toString().split('-');
+        if (parts.length == 3) {
+          int year = int.parse(parts[0]);
+          int month = int.parse(parts[1]);
+          int day = int.parse(parts[2]);
+          return DateTime(year, month, day);
+        }
+      } catch (_) {}
+      return null;
+    }
+  }
 }
 
 class RentAltDriver {

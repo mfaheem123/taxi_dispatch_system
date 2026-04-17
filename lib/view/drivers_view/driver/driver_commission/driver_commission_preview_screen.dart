@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../component/color.dart';
+import '../../../../component/textStyle.dart';
 import '../../model/list_driver_commission_model.dart';
 
 class DriverComissionWindowWrapper extends StatefulWidget {
@@ -38,7 +39,7 @@ class _DriverComissionWindowWrapper extends State<DriverComissionWindowWrapper> 
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Driver Commission Preview", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const Text("", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     Row(
                       children: [
                         IconButton(
@@ -93,7 +94,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: isPopup ? null : AppBar(
-        title: const Text("Driver Commission Preview", style: TextStyle(color: Colors.white, fontSize: 20)),
+        title: Text("", style: mozillaTextSemiBoldText(color: Colors.white, fontSize: 20)),
         backgroundColor: DynamicColors.primaryClr,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -101,8 +102,8 @@ class DriverCommissionViewScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
           children: [
-            const Center(
-              child: Text("DRIVER COMMISSION", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+            Center(
+              child: Text("DRIVER COMMISSION", style: mozillaTextSemiBoldText(fontSize: 30, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 30),
 
@@ -116,7 +117,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: _buildUIInfoColumn("", [
-                    "EMAIL: ${data?.driver?.email ?? ""}",
+                    "EMAIL: ${(data?.driver?.email ?? "").toUpperCase()}",
                     "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                     "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                   ]),
@@ -125,7 +126,7 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   flex: 3,
                   child: _buildUIInfoColumn("", [
                     "DRIVER: (${data?.driver?.id ?? ""})",
-                    "${data?.driver?.name ?? ""}",
+                    "${(data?.driver?.name ?? "").toUpperCase()}",
                     "COMMISSION: ${data?.driver?.driverCommission ?? ""}%",
                     "DATE: ${controller.updateTransactionDateController}",
                   ], ),
@@ -161,9 +162,9 @@ class DriverCommissionViewScreen extends StatelessWidget {
                   return TableRow(
                     children: [
                       _buildTableCell(b?.referenceNumber ?? ""), _buildTableCell("${b?.pickupDate ?? ''}\n${b?.pickupTime ?? ''}"),
-                      _buildTableCell(b?.pickup ?? ""), _buildTableCell(b?.dropoff ?? ""),
-                      _buildTableCell(b?.vehicleType?.name ?? ""), _buildTableCell(b?.account?.name ?? ""),
-                      _buildTableCell(b?.journeyType?.journeyType ?? ""), _buildTableCell(b?.paymentType?.name ?? ""),
+                      _buildTableCell((b?.pickup ?? "").toUpperCase()), _buildTableCell((b?.dropoff ?? "").toUpperCase()),
+                      _buildTableCell((b?.vehicleType?.name ?? "").toUpperCase()), _buildTableCell((b?.account?.name ?? "").toUpperCase()),
+                      _buildTableCell((b?.journeyType?.journeyType ?? "").toUpperCase()), _buildTableCell((b?.paymentType?.name ?? "").toUpperCase()),
                       _buildTableCell("£${b?.fares ?? '0'}"), _buildTableCell("£${b?.parkingCharges ?? '0'}"),
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"), _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
@@ -175,30 +176,6 @@ class DriverCommissionViewScreen extends StatelessWidget {
                 }).toList(),
               ],
             ),
-
-  //           // FOOTER
-  //           Table(
-  //             border: tableBorder,
-  //             columnWidths: const {
-  //               0: FlexColumnWidth(1),
-  //               1: FixedColumnWidth(98), // Matching TOTAL column
-  //             },
-  //             children: [
-  //               _buildFooterRow("CASH TOTAL", controller.updateCashTotal),
-  //               _buildFooterRow("COMMISSION TOTAL", controller.updateTotalCommissionVar),
-  //               _buildFooterRow("OWED", controller.updateOwed),
-  //               _buildFooterRow("TOTAL", controller.updateGrandTotal),
-  //               _buildFooterRow("ACCOUNT W/COMM TOTAL", controller.updateAccountFareTotalVar),
-  //               _buildFooterRow("ACCOUNT WO/COMM TOTAL", controller.updateAccountWOCmmVar),
-  //               _buildFooterRow("PARKING/CONGESTION TOTAL", controller.updateParkingCongestion),
-  //             ],
-  //           ),
-  //           const SizedBox(height: 50),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
             const SizedBox(height: 20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,9 +222,9 @@ class DriverCommissionViewScreen extends StatelessWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(label, style: TextStyle(fontSize: 13, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
+            child: Text(label, style: TextStyle(fontSize: 15, fontWeight: isBold ? FontWeight.bold : FontWeight.w600)),
           ),
-          Text("£${value.toStringAsFixed(2)}", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          Text("£${value.toStringAsFixed(2)}", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ],
       ),
     );
