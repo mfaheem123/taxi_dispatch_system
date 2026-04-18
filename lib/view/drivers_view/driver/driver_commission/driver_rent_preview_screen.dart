@@ -1,288 +1,9 @@
-// import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get_core/src/get_main.dart';
-// import 'package:get/get_instance/src/extension_instance.dart';
-//
-// import '../../../../component/color.dart';
-// import '../../model/create_driver_rent_model.dart';
-//
-// class DriverRentViewScreen extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     final controller = Get.find<DriverController>();
-//     final data = controller.updateDriverRentByIdModel?.driverRent;
-//     final items = data?.driverRentLineitems ?? [];
-//
-//     final currentDriverId = data?.driver?.id;
-//     final selectedDriverData = controller.driverRentModel?.drivers?.firstWhere(
-//           (d) => d.id == currentDriverId,
-//       orElse: () => CreateDriverRent(),
-//     );
-//
-//     // Common Border Style
-//     const tableBorder = TableBorder(
-//       verticalInside: BorderSide(color: Colors.black, width: 0.5),
-//       horizontalInside: BorderSide(color: Colors.black, width: 0.5),
-//       top: BorderSide(color: Colors.black, width: 0.5),
-//       left: BorderSide(color: Colors.black, width: 0.5),
-//       right: BorderSide(color: Colors.black, width: 0.5),
-//       bottom: BorderSide(color: Colors.black, width: 0.5),
-//     );
-//
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       appBar: AppBar(
-//         title: const Text("Driver Rent Preview", style: TextStyle(color: Colors.white, fontSize: 20)),
-//         backgroundColor: DynamicColors.primaryClr,
-//         iconTheme: const IconThemeData(color: Colors.white),
-//       ),
-//       body: SingleChildScrollView(
-//         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-//         child: Column(
-//           children: [
-//             const Center(
-//               child: Text("DRIVER RENT",
-//                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
-//             ),
-//             const SizedBox(height: 30),
-//
-//             // Info Row
-//             // Row(
-//             //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             //   crossAxisAlignment: CrossAxisAlignment.start,
-//             //   children: [
-//             //     _buildUIInfoColumn("", [
-//             //       "EMAIL: ${data?.driver?.email ?? ""}",
-//             //       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-//             //       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
-//             //       "",
-//             //       "PERIOD: (${controller.updateRentFilterFromDate} - ${controller.updateRentFilterToDate})",
-//             //     ]),
-//             //     _buildUIInfoColumn("", [
-//             //       "DRIVER: (${data?.driver?.id ?? ""})",
-//             //       "${data?.driver?.name ?? ""}",
-//             //       "RENT: ${data?.driver?.driverCommission ?? ""}",
-//             //       "DATE: ${controller.rentTransactionDateController}",
-//             //
-//             //     ], alignEnd: true),
-//             //   ],
-//             // ),
-//               Row(
-//                 crossAxisAlignment: CrossAxisAlignment.end,
-//                 children: [
-//                   // 1. PERIOD Section
-//                   _buildUIInfoColumn("", [
-//                     "PERIOD: (${controller.updateRentFilterFromDate} - ${controller.updateRentFilterToDate})",
-//                   ]),
-//
-//                   const Spacer(flex: 1),
-//
-//                   Expanded(
-//                     flex: 5,
-//                     child: _buildUIInfoColumn("", [
-//                       "EMAIL: ${data?.driver?.email ?? ""}",
-//                       "MOBILE: ${selectedDriverData?.mobile ?? ""}",
-//                       "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
-//                     ]),
-//                   ),
-//
-//                   Expanded(
-//                     flex: 2,
-//                     child: _buildUIInfoColumn("", [
-//                       "DRIVER: (${data?.driver?.id ?? ""})",
-//                       "${data?.driver?.name ?? ""}",
-//                       "RENT: ${data?.driver?.driverCommission ?? ""}",
-//                       "DATE: ${controller.rentTransactionDateController}",
-//                     ],),
-//                   ),
-//                 ],
-//               ),
-//
-//             const SizedBox(height: 20),
-//
-//             // --- MAIN DATA TABLE ---
-//             Table(
-//               border: tableBorder,
-//               columnWidths: const {
-//                 0: FlexColumnWidth(1.2), // REF#
-//                 1: FlexColumnWidth(1.2), // D/T
-//                 2: FlexColumnWidth(3), // PICKUP
-//                 3: FlexColumnWidth(3), // DROPOFF
-//                 8: FlexColumnWidth(1.2), // FARE
-//                 13: FlexColumnWidth(1), // TOTAL
-//               },
-//               children: [
-//                 // Header Row
-//                 TableRow(
-//                   decoration: BoxDecoration(color: DynamicColors.primaryClr),
-//                   children: [
-//                     _buildTableCell("REF#", isHeader: true),
-//                     _buildTableCell("D/T", isHeader: true),
-//                     _buildTableCell("PICKUP", isHeader: true),
-//                     _buildTableCell("DROPOFF", isHeader: true),
-//                     _buildTableCell("VEH", isHeader: true),
-//                     _buildTableCell("ACC", isHeader: true),
-//                     _buildTableCell("J/T", isHeader: true),
-//                     _buildTableCell("P/T", isHeader: true),
-//                     _buildTableCell("FARE", isHeader: true),
-//                     _buildTableCell("PC", isHeader: true),
-//                     _buildTableCell("WC", isHeader: true),
-//                     _buildTableCell("EDC", isHeader: true),
-//                     _buildTableCell("CC", isHeader: true),
-//                     _buildTableCell("TOTAL", isHeader: true),
-//                   ],
-//                 ),
-//                 // Data Rows
-//                 ...items.map((item) {
-//                   final b = item.booking;
-//                   return TableRow(
-//                     children: [
-//                       _buildTableCell(b?.referenceNumber ?? ""),
-//                       _buildTableCell("${b?.pickupDate ?? ''}\n${b?.pickupTime ?? ''}"),
-//                       _buildTableCell(b?.pickup ?? ""),
-//                       _buildTableCell(b?.dropoff ?? ""),
-//                       _buildTableCell(b?.vehicleType?.name ?? ""),
-//                       _buildTableCell(b?.account?.name ?? ""),
-//                       _buildTableCell(b?.journeyType?.journeyType ?? ""),
-//                       _buildTableCell(b?.paymentType?.name ?? ""),
-//                       _buildTableCell("£${b?.fares ?? '0'}"),
-//                       _buildTableCell("£${b?.parkingCharges ?? '0'}"),
-//                       _buildTableCell("£${b?.waitingCharges ?? '0'}"),
-//                       _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
-//                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
-//                       _buildTableCell("£${b?.totalCharges ?? '0'}", isBold: true),
-//                     ],
-//                   );
-//                 }).toList(),
-//               ],
-//             ),
-//
-//             // --- CALCULATION FOOTER (Same width as Table) ---
-//             Table(
-//               border: const TableBorder(
-//                 left: BorderSide(color: Colors.black, width: 0.5),
-//                 right: BorderSide(color: Colors.black, width: 0.5),
-//                 bottom: BorderSide(color: Colors.black, width: 0.5),
-//                 verticalInside: BorderSide(color: Colors.black, width: 0.5),
-//                 horizontalInside: BorderSide(color: Colors.black, width: 0.5),
-//               ),
-//               columnWidths: const {
-//                 0: FlexColumnWidth(1),
-//                 1: FixedColumnWidth(98),
-//               },
-//               children: [
-//                 _buildFooterRow("CASH TOTAL", controller.updateCashTotal),
-//                 _buildFooterRow("TOTAL", controller.updateGrandTotal),
-//                 _buildFooterRow("ACCOUNT TOTAL", controller.updateAccountTotal),
-//                 _buildFooterRow("PARKING/CONGESTION TOTAL", controller.updateParkingCongestion),
-//                 _buildFooterRow("RENT TOTAL", controller.rTotal),
-//                 _buildFooterRow("OWED", controller.updateOwed),
-//               ],
-//             ),
-//             const SizedBox(height: 50),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildTableCell(String text, {bool isHeader = false, bool isBold = false}) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-//       child: Text(
-//         text,
-//         textAlign: TextAlign.center,
-//         style: TextStyle(
-//           fontSize: isHeader ? 15 : 13,
-//           fontWeight: (isHeader || isBold) ? FontWeight.bold : FontWeight.normal,
-//           color: isHeader ? Colors.white : Colors.black,
-//         ),
-//       ),
-//     );
-//   }
-//
-//   TableRow _buildFooterRow(String label, double value, {bool isBold = false, bool isRed = false}) {
-//     return TableRow(
-//       children: [
-//         Container(
-//           alignment: Alignment.centerRight,
-//           padding: const EdgeInsets.only(right: 15, top: 6, bottom: 6),
-//           child: Text(label,
-//               style: TextStyle(
-//                 fontSize: 14,
-//                 fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
-//               )),
-//         ),
-//         Container(
-//           alignment: Alignment.center,
-//           padding: const EdgeInsets.symmetric(vertical: 6),
-//           child: Text("£${value.toStringAsFixed(2)}",
-//               style: TextStyle(
-//                 fontSize: 14,
-//                 fontWeight: FontWeight.bold,
-//                 color: isRed ? Colors.red : Colors.black,
-//               )),
-//         ),
-//       ],
-//     );
-//   }
-//
-//   Widget _buildUIInfoColumn(String title, List<String> lines, {bool alignEnd = false}) {
-//     return Column(
-//       crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-//       children: [
-//         if (title.isNotEmpty)
-//           Text(title,
-//               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: DynamicColors.primaryClr)),
-//         const SizedBox(height: 5),
-//         ...lines.map((line) {
-//           if (line.isEmpty) return const SizedBox(height: 10);
-//
-//           if (line.contains(":")) {
-//             final parts = line.split(":");
-//             final label = parts[0];
-//             final value = parts.sublist(1).join(":");
-//
-//             return Padding(
-//               padding: const EdgeInsets.only(bottom: 4),
-//               child: Text.rich(
-//                 TextSpan(
-//                   children: [
-//                     TextSpan(
-//                       text: "$label: ",
-//                       style: const TextStyle(
-//                         fontWeight: FontWeight.bold,
-//                         fontSize: 16,
-//                         color: Colors.black,
-//                       ),
-//                     ),
-//                     TextSpan(
-//                       text: value,
-//                       style: const TextStyle(
-//                         fontWeight: FontWeight.normal,
-//                         fontSize: 16,
-//                         color: Colors.black87,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//                 textAlign: alignEnd ? TextAlign.right : TextAlign.left,
-//               ),
-//             );
-//           }
-//           return Text(line, style: const TextStyle(fontSize: 18));
-//         }),
-//       ],
-//     );
-//   }
-// }
-
-
 import 'package:dashboard_new1/view/drivers_view/controller/driver_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../component/color.dart';
+import '../../../../component/textStyle.dart';
 import '../../model/create_driver_rent_model.dart';
 
 class DriverRentWindowWrapper extends StatefulWidget {
@@ -317,7 +38,7 @@ class _DriverRentWindowWrapperState extends State<DriverRentWindowWrapper> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("Driver Rent Preview", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const Text("", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     Row(
                       children: [
                         IconButton(
@@ -372,7 +93,7 @@ class DriverRentViewScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: isPopup ? null : AppBar(
-        title: const Text("Driver Rent Preview", style: TextStyle(color: Colors.white, fontSize: 20)),
+        title: Text("", style: mozillaTextSemiBoldText(color: Colors.white, fontSize: 20)),
         backgroundColor: DynamicColors.primaryClr,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -380,8 +101,8 @@ class DriverRentViewScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
         child: Column(
           children: [
-            const Center(
-              child: Text("DRIVER RENT", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+            Center(
+              child: Text("DRIVER RENT", style: mozillaTextSemiBoldText(fontSize: 30, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 30),
 
@@ -395,7 +116,7 @@ class DriverRentViewScreen extends StatelessWidget {
                 Expanded(
                   flex: 5,
                   child: _buildUIInfoColumn("", [
-                    "EMAIL: ${data?.driver?.email ?? ""}",
+                    "EMAIL: ${(data?.driver?.email ?? "").toUpperCase()}",
                     "MOBILE: ${selectedDriverData?.mobile ?? ""}",
                     "TELEPHONE: ${selectedDriverData?.telephone ?? ""}",
                   ]),
@@ -404,7 +125,7 @@ class DriverRentViewScreen extends StatelessWidget {
                   flex: 3,
                   child: _buildUIInfoColumn("", [
                     "DRIVER: (${data?.driver?.id ?? ""})",
-                    "${data?.driver?.name ?? ""}",
+                    "${(data?.driver?.name ?? "").toUpperCase()}",
                     "RENT: ${data?.driver?.driverCommission ?? ""}",
                     "DATE: ${controller.rentTransactionDateController}",
                   ], ),
@@ -439,9 +160,9 @@ class DriverRentViewScreen extends StatelessWidget {
                   return TableRow(
                     children: [
                       _buildTableCell(b?.referenceNumber ?? ""), _buildTableCell("${b?.pickupDate ?? ''}\n${b?.pickupTime ?? ''}"),
-                      _buildTableCell(b?.pickup ?? ""), _buildTableCell(b?.dropoff ?? ""),
-                      _buildTableCell(b?.vehicleType?.name ?? ""), _buildTableCell(b?.account?.name ?? ""),
-                      _buildTableCell(b?.journeyType?.journeyType ?? ""), _buildTableCell(b?.paymentType?.name ?? ""),
+                      _buildTableCell((b?.pickup ?? "").toUpperCase()), _buildTableCell((b?.dropoff ?? "").toUpperCase()),
+                      _buildTableCell((b?.vehicleType?.name ?? "").toUpperCase()), _buildTableCell((b?.account?.name ?? "").toUpperCase()),
+                      _buildTableCell((b?.journeyType?.journeyType ?? "").toUpperCase()), _buildTableCell((b?.paymentType?.name ?? "").toUpperCase()),
                       _buildTableCell("£${b?.fares ?? '0'}"), _buildTableCell("£${b?.parkingCharges ?? '0'}"),
                       _buildTableCell("£${b?.waitingCharges ?? '0'}"), _buildTableCell("£${b?.extraDropCharges ?? '0'}"),
                       _buildTableCell("£${b?.congestionCharges ?? '0'}"),
