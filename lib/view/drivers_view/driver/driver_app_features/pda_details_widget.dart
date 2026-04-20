@@ -381,6 +381,14 @@ Widget textFieldsWidget(BuildContext context,
             borderRadius: 4,
             controller: controller,
             textInputAction: TextInputAction.next,
+            onChanged: (value) {
+              if (value.isNotEmpty) {
+                controller.value = controller.value.copyWith(
+                  text: value.toUpperCase(),
+                  selection: TextSelection.collapsed(offset: value.length),
+                );
+              }
+            },
           ),
         ],
       ),

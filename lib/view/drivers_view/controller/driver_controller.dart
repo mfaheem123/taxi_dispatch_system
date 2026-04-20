@@ -882,7 +882,7 @@ class DriverController extends GetxController {
   RxBool saveFeaturesLoad = false.obs;
   saveDriverFeatures() async {
     if (selectDriverObject == null) {
-      BotToast.showText(text: 'Please select a driver first');
+      BotToast.showText(text: 'PLEASE SELECT A DRIVER FIRST');
       return;
     }
     saveFeaturesLoad(true);
@@ -928,7 +928,7 @@ class DriverController extends GetxController {
       auth: true,
     );
     if (response.statusCode == 200) {
-      BotToast.showText(text: 'Driver Features Updated Successfully');
+      BotToast.showText(text: 'DRIVER FEATURES UPDATED SUCCESSFULLY');
       print("Features Updated Successfully");
       saveFeaturesLoad(false);
       print("Error Updating Features");

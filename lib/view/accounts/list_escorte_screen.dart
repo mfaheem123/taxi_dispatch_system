@@ -178,7 +178,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                               //   ),
                               // ),
 
-                              DataCell(Center(child: Text(item.name))),
+                              DataCell(Center(child: Text((item.name).toUpperCase()))),
                               DataCell(Center(child: Text(item.safeguardingExpiry))),
                               DataCell(Center(child: Text(item.patExpiry))),
                               DataCell(Center(child: Text(item.firstaidExpiry))),

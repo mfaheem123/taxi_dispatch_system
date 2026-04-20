@@ -107,42 +107,62 @@ class InvoiceController extends GetxController {
   RxBool addAccountInvoiceLoad = false.obs;
 
   addAccountInvoice() async {
+    if (accountInvoiceBookingModel == null ||
+        accountInvoiceBookingModel!.bookings == null ||
+        accountInvoiceBookingModel!.bookings!.isEmpty) {
+      BotToast.showText(text: "NO BOOKINGS FOUND");
+      return;
+    }
+
     addAccountInvoiceLoad(true);
-    List<Map<String, dynamic>> lineItems =
-        accountInvoiceBookingModel!.bookings!.map((booking) {
-      return {
-        "booking_id": booking.id,
-        "total_charges": booking.totalCharges ?? "0",
+    try {
+      List<Map<String, dynamic>> lineItems =
+      accountInvoiceBookingModel!.bookings!.map((booking) {
+        return {
+          "booking_id": booking.id,
+          "total_charges": booking.totalCharges ?? "0",
+        };
+      }).toList();
+      var formData = {
+        'account_id': selectAccountValue?.id,
+        'subsidiary_id': subsidiaries?.id,
+        'account_invoice_lineitems': lineItems,
+        'amount': accountInvoiceBookingModel!.total![0].total ?? "0",
+        'department_id': selectDepartmentData?.id, // Optional check
+        'from_date': fromDate
+            ?.toIso8601String()
+            .split('T')
+            .first,
+        'to_date': toDate
+            ?.toIso8601String()
+            .split('T')
+            .first,
+        'invoice_number':
+        "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel
+            ?.documentNumber?.endNumber ?? ''}",
+        'invoice_date': invoiceDateController,
+        'invoice_due_date': invoiceDueDateController,
+        'invoice_type': 'post',
+        'order_number': orderNumber.text.isEmpty ? "" : orderNumber.text,
       };
-    }).toList();
-    var formData = {
-      'account_id': selectAccountValue?.id,
-      'subsidiary_id': subsidiaries?.id,
-      'account_invoice_lineitems': lineItems,
-      'amount': accountInvoiceBookingModel!.total![0].total ?? "0",
-      'department_id': selectDepartmentData?.id, // Optional check
-      'from_date': fromDate?.toIso8601String().split('T').first,
-      'to_date': toDate?.toIso8601String().split('T').first,
-      'invoice_number':
-          "${invoiceNumberModel?.documentNumber?.prefix ?? ''}${invoiceNumberModel?.documentNumber?.endNumber ?? ''}",
-      'invoice_date': invoiceDateController,
-      'invoice_due_date': invoiceDueDateController,
-      'invoice_type': 'post',
-      'order_number': orderNumber.text.isEmpty ? "" : orderNumber.text,
-    };
-    print("Payload: $formData");
-    var response = await Api().post(
-      formData,
-      "account_invoice/add",
-      auth: true,
-    );
-    if (response.statusCode == 200) {
-      orderNumber.text =
-          updateInvoiceByIdModel?.accountInvoice?.accountInvoice?.orderNumber ??
-              "";
-      BotToast.showText(text: 'Account Invoice Created');
-      print(' Account Invoice Created');
-      update();
+      print("Payload: $formData");
+      var response = await Api().post(
+        formData,
+        "account_invoice/add",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        orderNumber.text =
+            updateInvoiceByIdModel?.accountInvoice?.accountInvoice
+                ?.orderNumber ??
+                "";
+        BotToast.showText(text: 'Account Invoice Created');
+        print(' Account Invoice Created');
+        update();
+      }
+    }catch (e) {
+    print("Error in addAccountInvoice: $e");
+    BotToast.showText(text: "Error creating invoice: $e");
     }
     addAccountInvoiceLoad(false);
   }

@@ -5,7 +5,7 @@ class AppText {
   static get manage => 'Manage';
   static get dispatch => 'Dispatch';
   static get track => 'Track';
-  static get password => "Password";
+  static get password => "PASSWORD";
   static get username => "Username";
   static get appName => "NEXUS";
   static get booking => "Booking";
@@ -119,12 +119,12 @@ class AppText {
   static get bookingTimer => "BOOKING TIMER";
   static get breakTimer => "BREAK TIMER";
   static get ime => "IMEI";
-  static get simNetwork => "SIM Network";
-  static get simNumber => "SIM Number";
-  static get networkProvider => "Network Provider";
-  static get dataAllowance => "Data Allowance";
-  static get pdaDeposit => "PDA Deposit";
-  static get comments => "Comments";
+  static get simNetwork => "SIM NETWORK";
+  static get simNumber => "SIM NUMBER";
+  static get networkProvider => "NETWORK PROVIDER";
+  static get dataAllowance => "DATA ALLOWANCE";
+  static get pdaDeposit => "PDA DEPOSIT";
+  static get comments => "COMMENTS";
   static get driverCommission => "DRIVER COMMISSION";
   static get transactionDate => "TRANSACTION DATE";
   static get pdaRent => "PDA RENT/WEEK";

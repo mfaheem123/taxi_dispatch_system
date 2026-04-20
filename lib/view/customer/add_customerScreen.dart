@@ -242,10 +242,10 @@ class _CustomerFormScreenState extends State<CustomerFormScreen> {
                       String email = controller.emailController.text.trim();
 
                       if (email.isEmpty) {
-                        BotToast.showText(text: "Email is required");
+                        BotToast.showText(text: "EMAIL IS REQUIRED");
                       }
                       else if (!email.contains('@')) {
-                        BotToast.showText(text:"Invalid Email Format");
+                        BotToast.showText(text:"INVALID EMAIL FORMAT");
                       }
                       else {
                         controller.postCustomer();

@@ -1,11 +1,11 @@
-
-
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/time_picker_widget.dart';
 import 'package:dashboard_new1/view/dashboard_view/widgets/user_info_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/image_pick_widget.dart';
 import '../../component/textStyle.dart';
@@ -70,7 +70,8 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                     GestureDetector(
                       onTap: () {
                         // Sirf tab pick kare jab dono images null hon
-                        if (controller.profileImg == null && controller.selectedEscort?.image == null) {
+                        if (controller.profileImg == null &&
+                            controller.selectedEscort?.image == null) {
                           controller.pickImage();
                         }
                       },
@@ -83,49 +84,54 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                           border: Border.all(color: Colors.grey),
                           image: controller.profileImg != null
                               ? DecorationImage(
-                            image: MemoryImage(controller.profileImg!.bytes),
-                            fit: BoxFit.fill,
-                          )
+                                  image:
+                                      MemoryImage(controller.profileImg!.bytes),
+                                  fit: BoxFit.fill,
+                                )
                               : (controller.selectedEscort?.image != null
-                              ? DecorationImage(
-                            image: NetworkImage(controller.selectedEscort!.image!),
-                            fit: BoxFit.fill,
-                          )
-                              : null),
+                                  ? DecorationImage(
+                                      image: NetworkImage(
+                                          controller.selectedEscort!.image!),
+                                      fit: BoxFit.fill,
+                                    )
+                                  : null),
                         ),
                         // Check karein ke kya koi bhi image (Local ya Network) maujood hai?
-                        child: (controller.profileImg != null || controller.selectedEscort?.image != null)
+                        child: (controller.profileImg != null ||
+                                controller.selectedEscort?.image != null)
                             ? Align(
-                          alignment: Alignment.topRight,
-                          child: GestureDetector(
-                            onTap: () {
-                              // Image remove karne ki logic
-                              controller.profileImg = null;
-                              if (controller.selectedEscort != null) {
-                                controller.selectedEscort!.image = null; // Purani image hide karne ke liye
-                              }
-                              controller.update();
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(4),
-                              color: Colors.white.withOpacity(0.7), // Icon nazar aaye isliye background
-                              child: Icon(
-                                Icons.close_rounded,
-                                color: DynamicColors.redClr,
-                              ),
-                            ),
-                          ),
-                        )
+                                alignment: Alignment.topRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // Image remove karne ki logic
+                                    controller.profileImg = null;
+                                    if (controller.selectedEscort != null) {
+                                      controller.selectedEscort!.image =
+                                          null; // Purani image hide karne ke liye
+                                    }
+                                    controller.update();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(4),
+                                    color: Colors.white.withOpacity(
+                                        0.7), // Icon nazar aaye isliye background
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: DynamicColors.redClr,
+                                    ),
+                                  ),
+                                ),
+                              )
                             : Center(
-                          child: Text(
-                            "UPLOAD IMAGE",
-                            style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
+                                child: Text(
+                                  "UPLOAD IMAGE",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
                       ),
                     ),
                     SizedBox(
@@ -165,6 +171,11 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.name,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'[a-zA-Z\s]')),
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -173,6 +184,11 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.email,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'\s')),
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -181,43 +197,48 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.mobile,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                               ),
                               labeledField(
-
                                 column: true,
                                 context: context,
                                 isMobile: isMobile,
                                 label: AppText.dob,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
-                                  onChanged: (date) {
-                                    // jab bhi user change kare
-                                    setState(() {
-                                      controller.dobDate = "${date.year}-${date.month}-${date.day}";
-                                      print(date);
-                                    });
-                                  },
-                                  onSubmitted: (date) {
-                                    // jab user enter press kare
-                                    setState(() {
-                                      controller.dobDate = "${date.year}-${date.month}-${date.day}";
-                                    });
-                                    print("User pressed enter: $date");
-                                  },
-
-                                )),
+                                    height: 35,
+                                    child: KeyboardDatePicker(
+                                      initialDate: DateTime.now(),
+                                      onChanged: (date) {
+                                        // jab bhi user change kare
+                                        setState(() {
+                                          controller.dobDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                          print(date);
+                                        });
+                                      },
+                                      onSubmitted: (date) {
+                                        // jab user enter press kare
+                                        setState(() {
+                                          controller.dobDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                        });
+                                        print("User pressed enter: $date");
+                                      },
+                                    )),
                               ),
-
                               CustomTextField(
                                 borderRadius: 4,
-                                controller:
-                                    controller.escortAddress,
+                                controller: controller.escortAddress,
                                 width: fieldWidth / 1.5,
                                 hintText: AppText.address,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               labeledField(
                                 column: true,
@@ -226,23 +247,28 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.safeguardingExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
-                                  onChanged: (date) {
-                                    // jab bhi user change kare
-                                    setState(() {
-                                      controller.safeguardingExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                      print(date);
-                                    });
-                                  },
-                                  onSubmitted: (date) {
-                                    // jab user enter press kare
-                                    setState(() {
-                                      controller.safeguardingExpiryExpireDate = "${date.year}-${date.month}-${date.day}";
-                                    });
-                                    print("User pressed enter: $date");
-                                  },
-                                )),
+                                    height: 35,
+                                    child: KeyboardDatePicker(
+                                      initialDate: DateTime.now(),
+                                      onChanged: (date) {
+                                        // jab bhi user change kare
+                                        setState(() {
+                                          controller
+                                                  .safeguardingExpiryExpireDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                          print(date);
+                                        });
+                                      },
+                                      onSubmitted: (date) {
+                                        // jab user enter press kare
+                                        setState(() {
+                                          controller
+                                                  .safeguardingExpiryExpireDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                        });
+                                        print("User pressed enter: $date");
+                                      },
+                                    )),
                               ),
                               labeledField(
                                 context: context,
@@ -251,23 +277,26 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.patExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
-                                  onChanged: (date) {
-                                    // jab bhi user change kare
-                                    setState(() {
-                                      controller.patExpiryDate = "${date.year}-${date.month}-${date.day}";
-                                      print(date);
-                                    });
-                                  },
-                                  onSubmitted: (date) {
-                                    // jab user enter press kare
-                                    setState(() {
-                                      controller.patExpiryDate = "${date.year}-${date.month}-${date.day}";
-                                    });
-                                    print("User pressed enter: $date");
-                                  },
-                                )),
+                                    height: 35,
+                                    child: KeyboardDatePicker(
+                                      initialDate: DateTime.now(),
+                                      onChanged: (date) {
+                                        // jab bhi user change kare
+                                        setState(() {
+                                          controller.patExpiryDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                          print(date);
+                                        });
+                                      },
+                                      onSubmitted: (date) {
+                                        // jab user enter press kare
+                                        setState(() {
+                                          controller.patExpiryDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                        });
+                                        print("User pressed enter: $date");
+                                      },
+                                    )),
                               ),
                               labeledField(
                                 column: true,
@@ -276,23 +305,26 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.firstAid,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: KeyboardDatePicker(
-                                  initialDate: DateTime.now(),
-                                  onChanged: (date) {
-                                    // jab bhi user change kare
-                                    setState(() {
-                                      controller.firstAidDate = "${date.year}-${date.month}-${date.day}";
-                                      print(date);
-                                    });
-                                  },
-                                  onSubmitted: (date) {
-                                    // jab user enter press kare
-                                    setState(() {
-                                      controller.firstAidDate = "${date.year}-${date.month}-${date.day}";
-                                    });
-                                    print("User pressed enter: $date");
-                                  },
-                                )),
+                                    height: 35,
+                                    child: KeyboardDatePicker(
+                                      initialDate: DateTime.now(),
+                                      onChanged: (date) {
+                                        // jab bhi user change kare
+                                        setState(() {
+                                          controller.firstAidDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                          print(date);
+                                        });
+                                      },
+                                      onSubmitted: (date) {
+                                        // jab user enter press kare
+                                        setState(() {
+                                          controller.firstAidDate =
+                                              "${date.year}-${date.month}-${date.day}";
+                                        });
+                                        print("User pressed enter: $date");
+                                      },
+                                    )),
                               ),
                               labeledField(
                                 context: context,
@@ -301,17 +333,18 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 label: AppText.dbsExpiry,
                                 width: fieldWidth / 1.5,
                                 child: SizedBox(
-                                    height: 35, child: CustomTimePicker(
-                                  controller: controller.dbsExpireTime, // optional
-                                  onTimeSelected: (time) {
-                                    setState(() {
-                                      print(controller.dbsExpireTime.text);
-                                      print(time);
-                                    });
-                                  },
-                                )),
+                                    height: 35,
+                                    child: CustomTimePicker(
+                                      controller:
+                                          controller.dbsExpireTime, // optional
+                                      onTimeSelected: (time) {
+                                        setState(() {
+                                          print(controller.dbsExpireTime.text);
+                                          print(time);
+                                        });
+                                      },
+                                    )),
                               ),
-
                               CustomTextField(
                                 borderRadius: 4,
                                 controller: controller.safeguardingBatch,
@@ -319,6 +352,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.safeguardingBatch,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -327,6 +363,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.patPicBatch,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -335,6 +374,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.firstAidBatch,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                               CustomTextField(
                                 borderRadius: 4,
@@ -343,6 +385,9 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                                 hintText: AppText.dbsBatch,
                                 columnText: true,
                                 height: 35,
+                                inputFormatters: [
+                                  UpperCaseTextFormatter(),
+                                ],
                               ),
                             ],
                           ),
@@ -386,41 +431,54 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               border: Border.all(color: Colors.grey),
                               image: controller.safeguardingDocPic != null
                                   ? DecorationImage(
-                                image: MemoryImage(controller.safeguardingDocPic!),
-                                fit: BoxFit.fill,
-                              )
-                                  : (controller.selectedEscort?.safeguardingDocument != null
-                                  ? DecorationImage(
-                                image: NetworkImage(controller.selectedEscort!.safeguardingDocument!),
-                                fit: BoxFit.fill,
-                              )
-                                  : null),
+                                      image: MemoryImage(
+                                          controller.safeguardingDocPic!),
+                                      fit: BoxFit.fill,
+                                    )
+                                  : (controller.selectedEscort
+                                              ?.safeguardingDocument !=
+                                          null
+                                      ? DecorationImage(
+                                          image: NetworkImage(controller
+                                              .selectedEscort!
+                                              .safeguardingDocument!),
+                                          fit: BoxFit.fill,
+                                        )
+                                      : null),
                             ),
                             // Agar bytes hain YA server ka image path hai, to text hide kar do
-                            child: (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
+                            child: (controller.safeguardingDocPic != null ||
+                                    controller.selectedEscort
+                                            ?.safeguardingDocument !=
+                                        null)
                                 ? SizedBox.shrink()
                                 : Center(
-                              child: Text(
-                                AppText.safeguarding,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                                    child: Text(
+                                      AppText.safeguarding,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
                           ),
                           GestureDetector(
                             onTap: () async {
                               // Agar koi bhi image (Local ya Network) maujood hai, to usay remove karo
-                              if (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null) {
+                              if (controller.safeguardingDocPic != null ||
+                                  controller.selectedEscort
+                                          ?.safeguardingDocument !=
+                                      null) {
                                 controller.safeguardingDocPic = null;
                                 if (controller.selectedEscort != null) {
-                                  controller.selectedEscort!.safeguardingDocument = null;
+                                  controller.selectedEscort!
+                                      .safeguardingDocument = null;
                                 }
                               } else {
                                 // Warna nayi image pick karo
-                                final image = await ImagePickerHelper.pickImage();
+                                final image =
+                                    await ImagePickerHelper.pickImage();
                                 if (image != null) {
                                   controller.safeguardingDocPic = image.bytes;
                                 }
@@ -429,12 +487,19 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                             },
                             child: Icon(
                               // Icon change logic based on both conditions
-                              (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
+                              (controller.safeguardingDocPic != null ||
+                                      controller.selectedEscort
+                                              ?.safeguardingDocument !=
+                                          null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: (controller.safeguardingDocPic != null || controller.selectedEscort?.safeguardingDocument != null)
-                                  ? DynamicColors.redClr // Remove ke liye red color behtar hai
+                              color: (controller.safeguardingDocPic != null ||
+                                      controller.selectedEscort
+                                              ?.safeguardingDocument !=
+                                          null)
+                                  ? DynamicColors
+                                      .redClr // Remove ke liye red color behtar hai
                                   : DynamicColors.primaryClr,
                             ),
                           )
@@ -461,41 +526,49 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               border: Border.all(color: Colors.grey),
                               image: controller.patDocPic != null
                                   ? DecorationImage(
-                                image: MemoryImage(controller.patDocPic!),
-                                fit: BoxFit.fill,
-                              )
-                                  : (controller.selectedEscort?.patDocument != null
-                                  ? DecorationImage(
-                                image: NetworkImage(controller.selectedEscort!.patDocument!),
-                                fit: BoxFit.fill,
-                              )
-                                  : null),
+                                      image: MemoryImage(controller.patDocPic!),
+                                      fit: BoxFit.fill,
+                                    )
+                                  : (controller.selectedEscort?.patDocument !=
+                                          null
+                                      ? DecorationImage(
+                                          image: NetworkImage(controller
+                                              .selectedEscort!.patDocument!),
+                                          fit: BoxFit.fill,
+                                        )
+                                      : null),
                             ),
                             // Agar image (Local ya Network) mil gayi to text hide kar do
-                            child: (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
+                            child: (controller.patDocPic != null ||
+                                    controller.selectedEscort?.patDocument !=
+                                        null)
                                 ? SizedBox.shrink()
                                 : Center(
-                              child: Text(
-                                AppText.patPic,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                                    child: Text(
+                                      AppText.patPic,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
                           ),
                           GestureDetector(
                             onTap: () async {
                               // Agar pehle se koi image hai to usay remove karo
-                              if (controller.patDocPic != null || controller.selectedEscort?.patDocument != null) {
+                              if (controller.patDocPic != null ||
+                                  controller.selectedEscort?.patDocument !=
+                                      null) {
                                 controller.patDocPic = null;
                                 if (controller.selectedEscort != null) {
-                                  controller.selectedEscort!.patDocument = null; // Model se path clear karein
+                                  controller.selectedEscort!.patDocument =
+                                      null; // Model se path clear karein
                                 }
                               } else {
                                 // Warna nayi image pick karo
-                                final image = await ImagePickerHelper.pickImage();
+                                final image =
+                                    await ImagePickerHelper.pickImage();
                                 if (image != null) {
                                   controller.patDocPic = image.bytes;
                                 }
@@ -503,11 +576,15 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               controller.update();
                             },
                             child: Icon(
-                              (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
+                              (controller.patDocPic != null ||
+                                      controller.selectedEscort?.patDocument !=
+                                          null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: (controller.patDocPic != null || controller.selectedEscort?.patDocument != null)
+                              color: (controller.patDocPic != null ||
+                                      controller.selectedEscort?.patDocument !=
+                                          null)
                                   ? DynamicColors.redClr
                                   : DynamicColors.primaryClr,
                             ),
@@ -535,41 +612,53 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               border: Border.all(color: Colors.grey),
                               image: controller.firstAidDocPic != null
                                   ? DecorationImage(
-                                image: MemoryImage(controller.firstAidDocPic!),
-                                fit: BoxFit.fill,
-                              )
-                                  : (controller.selectedEscort?.firstaidDocument != null
-                                  ? DecorationImage(
-                                image: NetworkImage(controller.selectedEscort!.firstaidDocument!),
-                                fit: BoxFit.fill,
-                              )
-                                  : null),
+                                      image: MemoryImage(
+                                          controller.firstAidDocPic!),
+                                      fit: BoxFit.fill,
+                                    )
+                                  : (controller.selectedEscort
+                                              ?.firstaidDocument !=
+                                          null
+                                      ? DecorationImage(
+                                          image: NetworkImage(controller
+                                              .selectedEscort!
+                                              .firstaidDocument!),
+                                          fit: BoxFit.fill,
+                                        )
+                                      : null),
                             ),
                             // Check for both Local and Network image to hide text
-                            child: (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
+                            child: (controller.firstAidDocPic != null ||
+                                    controller
+                                            .selectedEscort?.firstaidDocument !=
+                                        null)
                                 ? SizedBox.shrink()
                                 : Center(
-                              child: Text(
-                                AppText.firstAid,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                                    child: Text(
+                                      AppText.firstAid,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
                           ),
                           GestureDetector(
                             onTap: () async {
                               // Agar koi bhi image exist karti hai to pehle clear karo
-                              if (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null) {
+                              if (controller.firstAidDocPic != null ||
+                                  controller.selectedEscort?.firstaidDocument !=
+                                      null) {
                                 controller.firstAidDocPic = null;
                                 if (controller.selectedEscort != null) {
-                                  controller.selectedEscort!.firstaidDocument = null; // UI se purani image hatane ke liye
+                                  controller.selectedEscort!.firstaidDocument =
+                                      null; // UI se purani image hatane ke liye
                                 }
                               } else {
                                 // Warna nayi image pick karo
-                                final image = await ImagePickerHelper.pickImage();
+                                final image =
+                                    await ImagePickerHelper.pickImage();
                                 if (image != null) {
                                   controller.firstAidDocPic = image.bytes;
                                 }
@@ -577,11 +666,17 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               controller.update();
                             },
                             child: Icon(
-                              (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
+                              (controller.firstAidDocPic != null ||
+                                      controller.selectedEscort
+                                              ?.firstaidDocument !=
+                                          null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: (controller.firstAidDocPic != null || controller.selectedEscort?.firstaidDocument != null)
+                              color: (controller.firstAidDocPic != null ||
+                                      controller.selectedEscort
+                                              ?.firstaidDocument !=
+                                          null)
                                   ? DynamicColors.redClr
                                   : DynamicColors.primaryClr,
                             ),
@@ -609,41 +704,49 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               border: Border.all(color: Colors.grey),
                               image: controller.dbsDocPic != null
                                   ? DecorationImage(
-                                image: MemoryImage(controller.dbsDocPic!),
-                                fit: BoxFit.fill,
-                              )
-                                  : (controller.selectedEscort?.dbsDocument != null
-                                  ? DecorationImage(
-                                image: NetworkImage(controller.selectedEscort!.dbsDocument!),
-                                fit: BoxFit.fill,
-                              )
-                                  : null),
+                                      image: MemoryImage(controller.dbsDocPic!),
+                                      fit: BoxFit.fill,
+                                    )
+                                  : (controller.selectedEscort?.dbsDocument !=
+                                          null
+                                      ? DecorationImage(
+                                          image: NetworkImage(controller
+                                              .selectedEscort!.dbsDocument!),
+                                          fit: BoxFit.fill,
+                                        )
+                                      : null),
                             ),
                             // Dono conditions check karein taake placeholder text hide ho jaye
-                            child: (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
+                            child: (controller.dbsDocPic != null ||
+                                    controller.selectedEscort?.dbsDocument !=
+                                        null)
                                 ? SizedBox.shrink()
                                 : Center(
-                              child: Text(
-                                AppText.dbs,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                                    child: Text(
+                                      AppText.dbs,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
                           ),
                           GestureDetector(
                             onTap: () async {
                               // Agar koi image hai (Local ya Network) to usay remove karein
-                              if (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null) {
+                              if (controller.dbsDocPic != null ||
+                                  controller.selectedEscort?.dbsDocument !=
+                                      null) {
                                 controller.dbsDocPic = null;
                                 if (controller.selectedEscort != null) {
-                                  controller.selectedEscort!.dbsDocument = null; // Purani image path clear karein
+                                  controller.selectedEscort!.dbsDocument =
+                                      null; // Purani image path clear karein
                                 }
                               } else {
                                 // Warna nayi image pick karein
-                                final image = await ImagePickerHelper.pickImage();
+                                final image =
+                                    await ImagePickerHelper.pickImage();
                                 if (image != null) {
                                   controller.dbsDocPic = image.bytes;
                                 }
@@ -651,11 +754,15 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
                               controller.update();
                             },
                             child: Icon(
-                              (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
+                              (controller.dbsDocPic != null ||
+                                      controller.selectedEscort?.dbsDocument !=
+                                          null)
                                   ? Icons.remove_circle
                                   : Icons.add_circle_outlined,
                               size: 30,
-                              color: (controller.dbsDocPic != null || controller.selectedEscort?.dbsDocument != null)
+                              color: (controller.dbsDocPic != null ||
+                                      controller.selectedEscort?.dbsDocument !=
+                                          null)
                                   ? DynamicColors.redClr
                                   : DynamicColors.primaryClr,
                             ),
@@ -670,10 +777,19 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
             Center(
               child: CustomButton(
                 onTap: () {
-                  controller.createEscort();
+                  String email = controller.escortEmail.text.trim();
+
+                  if (email.isEmpty) {
+                    BotToast.showText(text: "Email is required");
+                  } else if (!email.contains('@')) {
+                    BotToast.showText(text: "Invalid Email Format");
+                  } else {
+                    controller.createEscort();
+                  }
                 },
                 width: Get.width / 2,
-                btnText: controller.selectedEscort != null?"Update": AppText.save,
+                btnText:
+                    controller.selectedEscort != null ? "UPDATE" : AppText.save,
                 verticalPadding: 0.0,
                 height: 40,
                 borderRadius: 4,

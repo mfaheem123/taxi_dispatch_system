@@ -1,6 +1,9 @@
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+import '../component/text_field.dart';
 
 class WebLoginAlert {
   static void show() {
@@ -28,38 +31,45 @@ class WebLoginAlert {
                     controller.webLogintelephoneCtrl.text.isEmpty) return;
 
                 setState(() {
+                  // if (editingIndex == null) {
+                  //   controller.webLoginDataList.add(WebLoginClass(
+                  WebLoginClass entry = WebLoginClass(
+                      account: controller.webLoginaccountCtrl.text,
+                      userName: controller.webLoginusernameCtrl.text,
+                      password: controller.webLoginpasswordCtrl.text,
+                      mobile: controller.webLoginmobileCtrl.text,
+                      telphone: controller.webLogintelephoneCtrl.text,
+                    );
                   if (editingIndex == null) {
-                    controller.webLoginDataList.add(WebLoginClass(
-                      account: controller.webLoginaccountCtrl.text,
-                      userName: controller.webLoginusernameCtrl.text,
-                      password: controller.webLoginpasswordCtrl.text,
-                      mobile: controller.webLoginmobileCtrl.text,
-                      telphone: controller.webLogintelephoneCtrl.text,
-                    ));
-                    rows.add({
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
-                    });
+                    controller.webLoginDataList.add(entry);
                   } else {
-                    controller.webLoginDataList.add(WebLoginClass(
-                      account: controller.webLoginaccountCtrl.text,
-                      userName: controller.webLoginusernameCtrl.text,
-                      password: controller.webLoginpasswordCtrl.text,
-                      mobile: controller.webLoginmobileCtrl.text,
-                      telphone: controller.webLogintelephoneCtrl.text,
-                    ));
-                    rows[editingIndex!] = {
-                      "account": controller.webLoginaccountCtrl.text,
-                      "username": controller.webLoginusernameCtrl.text,
-                      "password": controller.webLoginpasswordCtrl.text,
-                      "mobile": controller.webLoginmobileCtrl.text,
-                      "telephone": controller.webLogintelephoneCtrl.text,
-                    };
+                    controller.webLoginDataList[editingIndex!] = entry;
                     editingIndex = null;
                   }
+                  //   rows.add({
+                  //     "account": controller.webLoginaccountCtrl.text,
+                  //     "username": controller.webLoginusernameCtrl.text,
+                  //     "password": controller.webLoginpasswordCtrl.text,
+                  //     "mobile": controller.webLoginmobileCtrl.text,
+                  //     "telephone": controller.webLogintelephoneCtrl.text,
+                  //   });
+                  // } else {
+                  //   controller.webLoginDataList.add(WebLoginClass(
+                  //     account: controller.webLoginaccountCtrl.text,
+                  //     userName: controller.webLoginusernameCtrl.text,
+                  //     password: controller.webLoginpasswordCtrl.text,
+                  //     mobile: controller.webLoginmobileCtrl.text,
+                  //     telphone: controller.webLogintelephoneCtrl.text,
+                  //   ));
+                  //   rows[editingIndex!] = {
+                  //     "account": controller.webLoginaccountCtrl.text,
+                  //     "username": controller.webLoginusernameCtrl.text,
+                  //     "password": controller.webLoginpasswordCtrl.text,
+                  //     "mobile": controller.webLoginmobileCtrl.text,
+                  //     "telephone": controller.webLogintelephoneCtrl.text,
+                  //   };
+                  //   editingIndex = null;
+                  // }
 
                   // Clear fields
                   controller.webLoginaccountCtrl.clear();
@@ -124,12 +134,12 @@ class WebLoginAlert {
                         const SizedBox(width: 8),
                         _buildField("PASSWORD", controller.webLoginpasswordCtrl),
                         const SizedBox(width: 8),
-                        _buildField("MOBILE", controller.webLoginmobileCtrl),
+                        _buildField("MOBILE", controller.webLoginmobileCtrl, isNumber: true),
                         const SizedBox(width: 8),
-                        _buildField("TELEPHONE", controller.webLogintelephoneCtrl),
+                        _buildField("TELEPHONE", controller.webLogintelephoneCtrl, isNumber: true),
                         const SizedBox(width: 8),
                         SizedBox(
-                          width: 90,
+                          width: 100,
                           height: 34,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -281,7 +291,8 @@ class WebLoginAlert {
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        rows.removeAt(index);
+                                        // rows.removeAt(index);
+                                        controller.webLoginDataList.removeAt(index);
                                         if (editingIndex == index) {
                                           editingIndex = null;
                                           controller.webLoginaccountCtrl.clear();
@@ -311,12 +322,24 @@ class WebLoginAlert {
     );
   }
 
-  static Widget _buildField(String label, TextEditingController controller) {
+  static Widget _buildField(String label, TextEditingController controller, {bool isNumber = false}) {
     return Expanded(
       child: SizedBox(
         height: 32,
         child: TextField(
           controller: controller,
+          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          onChanged: (value) {
+            if (!isNumber) {
+              controller.value = controller.value.copyWith(
+                text: value.toUpperCase(),
+                selection: TextSelection.collapsed(offset: value.length),
+              );
+            }
+          },
+          inputFormatters: [
+            if (isNumber) FilteringTextInputFormatter.digitsOnly,
+          ],
           style: const TextStyle(fontSize: 12),
           decoration: InputDecoration(
             labelText: label,

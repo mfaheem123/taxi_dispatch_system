@@ -108,7 +108,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                           controller.update();
                         }),
                     Text(
-                      "Closed",
+                      "CLOSED",
                       style: mozillaTextSemiBoldText(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -213,14 +213,14 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                 return DataRow(
                                   cells: [
                                     DataCell(Center(
-                                        child: Text(item.name ?? "-"))),
+                                        child: Text((item.name ?? "-").toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(
-                                            item.accountType ?? "-"))),
+                                        child: Text((
+                                            item.accountType ?? "-").toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(item.address ?? "-"))),
+                                        child: Text((item.address ?? "-").toUpperCase()))),
                                     DataCell(Center(
-                                        child: Text(item.email ?? "-"))),
+                                        child: Text((item.email ?? "-").toUpperCase()))),
                                     DataCell(Center(
                                         child: Text(item.mobile ?? "-"))),
                                     DataCell(Center(
@@ -230,8 +230,8 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                         child: Text(
                                             item.contactName ?? "-"))),
                                     DataCell(Center(
-                                        child: Text(
-                                            item.subsidiary?.name ?? "-"))),
+                                        child: Text((
+                                            item.subsidiary?.name ?? "-").toUpperCase()))),
                                     DataCell(
                                       Center(
                                         child: Row(

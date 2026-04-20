@@ -1,3 +1,4 @@
+import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -63,7 +64,7 @@ class CompanyAddressAlert {
                         const SizedBox(width: 8),
 
                         SizedBox(
-                          width: 90,
+                          width: 100,
                           height: 34,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -189,6 +190,8 @@ class CompanyAddressAlert {
         height: 32,
         child: TextField(
           controller: controller,
+          textCapitalization: TextCapitalization.characters,
+          inputFormatters: [UpperCaseTextFormatter()],
           style: const TextStyle(fontSize: 12),
           decoration: InputDecoration(
             labelText: label,

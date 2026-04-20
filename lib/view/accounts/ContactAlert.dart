@@ -1,5 +1,7 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 class ContactAlert {
@@ -20,7 +22,11 @@ class ContactAlert {
           child: StatefulBuilder(
             builder: (context, setState) {
               void saveRow() {
-                
+                if (controller.contactAlertEmailCtrl.text.isNotEmpty &&
+                    !controller.contactAlertEmailCtrl.text.contains('@')) {
+                  BotToast.showText(text:"INVALID EMAIL FORMAT");
+                  return;
+                }
                 if (controller.contactAlertNameCtrl.text.isEmpty &&
                     controller.contactAlertEmailCtrl.text.isEmpty &&
                     controller.contactAlertPasswordCtrl.text.isEmpty &&
@@ -99,12 +105,12 @@ class ContactAlert {
                         const SizedBox(width: 8),
                         _buildField("PASSWORD", controller.contactAlertPasswordCtrl),
                         const SizedBox(width: 8),
-                        _buildField("MOBILE", controller.contactAlertMobileCtrl),
+                        _buildField("MOBILE", controller.contactAlertMobileCtrl, isNumber: true),
                         const SizedBox(width: 8),
-                        _buildField("TELEPHONE", controller.contactAlertTelephoneCtrl),
+                        _buildField("TELEPHONE", controller.contactAlertTelephoneCtrl, isNumber: true),
                         const SizedBox(width: 8),
                         SizedBox(
-                          width: 90,
+                          width: 100,
                           height: 34,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
@@ -214,12 +220,24 @@ class ContactAlert {
     );
   }
 
-  static Widget _buildField(String label, TextEditingController controller) {
+  static Widget _buildField(String label, TextEditingController controller, {bool isNumber = false}) {
     return Expanded(
       child: SizedBox(
         height: 32,
         child: TextField(
           controller: controller,
+          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          onChanged: (value) {
+            if (!isNumber) {
+              controller.value = controller.value.copyWith(
+                text: value.toUpperCase(),
+                selection: TextSelection.collapsed(offset: value.length),
+              );
+            }
+          },
+          inputFormatters: [
+            if (isNumber) FilteringTextInputFormatter.digitsOnly,
+          ],
           style: const TextStyle(fontSize: 12),
           decoration: InputDecoration(
             labelText: label,

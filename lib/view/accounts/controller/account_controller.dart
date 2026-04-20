@@ -200,8 +200,8 @@ class AccountController extends GetxController {
 
     if (response.statusCode == 200) {
       String message = accountObjectData != null
-          ? "Account Updated Successfully"
-          : "Account Created Successfully";
+          ? "ACCOUNT UPDATED SUCCESSFULLY"
+          : "ACCOUNT CREATED SUCCESSFULLY";
       BotToast.showText(text: message);
       print("$message");
       accountObjectData = null;
@@ -476,20 +476,20 @@ class AccountController extends GetxController {
   bindAccountUpdateValue({AccountObject? data}) async {
     accountObjectData = data;
     accountType = data!.accountType!.toString().capitalize;
-    accountNameController.text = data.name.toString();
+    accountNameController.text = data.name.toString().toUpperCase();
     accountCodeController.text = data.code.toString();
-    accountEmailController.text = data.email.toString();
+    accountEmailController.text = data.email.toString().toUpperCase();
     accountPasswordController.text = data.password.toString();
     accountMobileController.text = data.mobile.toString();
     accountTelController.text = data.telephone.toString();
-    accountFaxController.text = data.fax.toString();
-    accountWebSiteController.text = data.website.toString();
+    accountFaxController.text = data.fax.toString().toUpperCase();
+    accountWebSiteController.text = data.website.toString().toUpperCase();
     accountNumberController.text = data.accountNumber.toString();
     accountCreditCardController.text = data.creditCard.toString();
-    accountAddressController.text = data.address.toString();
+    accountAddressController.text = data.address.toString().toUpperCase();
     paymentType = data.paymentTypes.toString().capitalize;
-    accountInformationController.text = data.information.toString();
-    accountContactNameController.text = data.contactName.toString();
+    accountInformationController.text = data.information.toString().toUpperCase();
+    accountContactNameController.text = data.contactName.toString().toUpperCase();
     commissionDropDown = data.agentCommissionType!.toUpperCase().toString();
     accountAgentCommissionController.text = data.agentCommission.toString();
     adminFeesDropDown = data.adminFeesType!.toUpperCase().toString();
@@ -539,8 +539,7 @@ class AccountController extends GetxController {
     var response = await Api().delete("accounts/delete/$id");
     if (response.statusCode == 200) {
       listOFAccount();
-      BotToast.showText(text: "Account Deleted Successfully");
-      print("Escort deleted successfully!");
+      BotToast.showText(text: "ACCOUNT DELETED SUCCESSFULLY");
     }
   }
 
@@ -652,8 +651,8 @@ class AccountController extends GetxController {
         auth: true, multiPart: true);
     if (response.statusCode == 200) {
       String message = selectedEscort != null
-          ? "Escort Updated Successfully"
-          : "Escort Created Successfully";
+          ? "ESCORT UPDATED SUCCESSFULLY"
+          : "ESCORT CREATED SUCCESSFULLY";
       escortName.clear();
       escortEmail.clear();
       escortMobile.clear();
@@ -680,7 +679,7 @@ class AccountController extends GetxController {
     var response = await Api().delete("escorts/delete/$id");
     if (response.statusCode == 200) {
       listEscort();
-      BotToast.showText(text: "Escort deleted Successfully");
+      BotToast.showText(text: "ESCORT DELETED SUCCESSFULLY");
     }
   }
 
