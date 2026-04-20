@@ -258,30 +258,16 @@ class DriverPersonalInfo extends StatelessWidget {
                            width: fieldWidth,
                            // height: 30,
                            child:
-                           // CustomDropdownField<String>(
-                           //   label: "DRIVER TYPE",
-                           //   width: Get.width / 5,
-                           //   height: 35,
-                           //   items: ['Commission', "Rent/Week"],
-                           //   value: controller.driverType,
-                           //   itemLabel: (templateList) =>
-                           //   templateList,
-                           //   onChanged: (val) {
-                           //     controller.driverType = val;
-                           //     controller.update();
-                           //   },
-                           // ),
                            CustomDropdownField<String>(
                              label: "DRIVER TYPE",
                              width: Get.width / 5,
                              height: 35,
-                             items: ['COMMISSION', "RENT/WEEK"],
-                             value: (['COMMISSION', "RENT/WEEK"].contains(controller.driverType?.toUpperCase()))
-                                 ? controller.driverType?.toUpperCase()
-                                 : null,
-                             itemLabel: (item) => item,
+                             items: ['Commission', "Rent/Week"],
+                             value: controller.driverType,
+                             itemLabel: (templateList) =>
+                             templateList,
                              onChanged: (val) {
-                               controller.driverType = val!.toUpperCase();
+                               controller.driverType = val;
                                controller.update();
                              },
                            ),
