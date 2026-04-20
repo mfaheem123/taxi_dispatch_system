@@ -501,6 +501,11 @@ class DashboardDriverObject {
   String? username;
   String? zone;
   String? vehicleType;
+  String? latitude;
+  String? longitude;
+  String? bookingStatus;
+  String? sessionStatus;
+  String? driverStatus;
   DateTime? lastLoginAt;
 
   DashboardDriverObject({
@@ -510,6 +515,11 @@ class DashboardDriverObject {
     this.zone,
     this.lastLoginAt,
     this.vehicleType,
+    this.bookingStatus,
+    this.sessionStatus,
+    this.driverStatus,
+    this.latitude,
+    this.longitude,
   });
 
   factory DashboardDriverObject.fromJson(Map<String, dynamic> json) => DashboardDriverObject(
@@ -517,6 +527,11 @@ class DashboardDriverObject {
     name: json['name'],
     username: json['username'],
     zone: json['zone'],
+    latitude: json['latitude'],
+    longitude: json['longitude'],
+    bookingStatus: json["booking_status"],
+    sessionStatus: json["session_status"],
+    driverStatus: json["driver_status"],
     vehicleType: json['vehicle_type'],
     lastLoginAt: json['last_login_at'] != null
         ? DateTime.parse(json['last_login_at']).toLocal()
@@ -528,6 +543,11 @@ class DashboardDriverObject {
     "username": username,
     "name": name,
     "zone": zone,
+    "latitude": latitude,
+    "longitude": longitude,
+    "booking_status": bookingStatus,
+    "session_status": sessionStatus,
+    "driver_status": driverStatus,
     "last_login_at": lastLoginAt,
     "vehicle_type": vehicleType,
   };

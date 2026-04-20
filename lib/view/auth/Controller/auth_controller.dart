@@ -26,8 +26,8 @@ class AuthController extends GetxController {
 
 
 
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController(text: "nexus");
+  final TextEditingController passwordController = TextEditingController(text: "123");
   RxBool PostAuthLoader = false.obs;
 
   postLoginDetails() async {

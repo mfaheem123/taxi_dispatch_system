@@ -217,6 +217,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            latitude: element['latitude'],
+            longitude: element['longitude'],
+            bookingStatus: element['booking_status'],
+            sessionStatus: element['session_status'],
+            driverStatus: element['driver_status'],
             lastLoginAt: element['last_login_at'] != null
                 ? DateTime.parse(element['last_login_at']).toLocal()
                 : null,
@@ -232,6 +237,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             username: element['username'],
             vehicleType: element['vehicle_type'],
             zone: element['zone'],
+            latitude: element['latitude'],
+            longitude: element['longitude'],
+            bookingStatus: element['booking_status'],
+            sessionStatus: element['session_status'],
+            driverStatus: element['driver_status'],
             lastLoginAt:  element['last_login_at'] != null
                 ? DateTime.parse(element['last_login_at']).toLocal()
                 : null,

@@ -7,13 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../alert/child_seats_alert.dart';
 import '../../../alert/send_email_alert.dart';
+import '../../../component/marker_class.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/time_duration_method.dart';
 import '../Controller/dashboard_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
+
+import '../models/dashboard_model.dart';
 
 class DriversView extends StatefulWidget {
   const DriversView({super.key});
@@ -297,110 +301,115 @@ class _DriversViewState extends State<DriversView> {
                           }
 
 
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 10),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    driver.username??"",
-                                    style:
-                                    mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                    driver.vehicleType??"",
-                                    style:
-                                    mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Text(
-                                  timeOnline??"",
-                                    style:
-                                    mozillaTextRegularText(fontSize: 13),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                              //     SizedBox(
-                              //       width: 50,
-                              //       child: Container(
-                              //         height: 32,
-                              //         decoration: BoxDecoration(
-                              //           borderRadius: BorderRadius.circular(4),
-                              //           color: DynamicColors.primaryClr
-                              //         ),
-                              //         child: Center(
-                              //           child: Text("X1",
-                              //             style: mozillaTextRegularText(
-                              //               fontSize: 14,
-                              //               color: DynamicColors.whiteClr,
-                              //             ),
-                              //
-                              //           ),
-                              //         ),
-                              //       ),
-                              //
-                              //
-                              //       // CustomButton(
-                              //       //   height: 28,
-                              //       //   borderRadius: 4,
-                              //       //   verticalPadding: 0,
-                              //       //   btnText: "X1",
-                              //       //   style: mozillaTextRegularText(
-                              //       //     fontSize: 14,
-                              //       //     color: DynamicColors.whiteClr,
-                              //       //   ),
-                              //       // ),
-                              //     ),
-                              //     const SizedBox(width: 10),
-                              //     Expanded(
-                              //       child: Text(
-                              //         "SALOON",
-                              //         style:
-                              //         mozillaTextRegularText(fontSize: 13),
-                              //         overflow: TextOverflow.ellipsis,
-                              //       ),
-                              //     ),
-                              //     const SizedBox(width: 10),
-                              //     const Icon(Icons.phone_android_rounded,
-                              //         size: 18),
-                              //     const SizedBox(width: 10),
-                              //     Expanded(
-                              //       child: Text(
-                              //         "1133Hr 01Min -",
-                              //         style:
-                              //         mozillaTextRegularText(fontSize: 13),
-                              //         overflow: TextOverflow.ellipsis,
-                              //         maxLines: 1,
-                              //       ),
-                              //     ),
-                              //     const SizedBox(width: 10),
-                              // SizedBox(
-                              //   width: 48,
-                              //   child: Container(
-                              //     height: 32,
-                              //     decoration: BoxDecoration(
-                              //         borderRadius: BorderRadius.circular(4),
-                              //         color: DynamicColors.secondaryClr
-                              //     ),
-                              //     child: Center(
-                              //       child: Text("-",
-                              //         style: mozillaTextRegularText(
-                              //           fontSize: 14,
-                              //           color: DynamicColors.whiteClr,
-                              //         ),
-                              //
-                              //       ),
-                              //     ),
-                              //   ),
-                              //
-                              //     ),
-                                ],
+                          return GestureDetector(
+                            onSecondaryTapDown: (details) {
+                              _showContextMenu(context, details.globalPosition, driver, index: index);
+                            },
+                            child: Card(
+                              margin: const EdgeInsets.symmetric(vertical: 6),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              color: Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      driver.username??"",
+                                      style:
+                                      mozillaTextRegularText(fontSize: 13),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      driver.vehicleType??"",
+                                      style:
+                                      mozillaTextRegularText(fontSize: 13),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                    timeOnline??"",
+                                      style:
+                                      mozillaTextRegularText(fontSize: 13),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                //     SizedBox(
+                                //       width: 50,
+                                //       child: Container(
+                                //         height: 32,
+                                //         decoration: BoxDecoration(
+                                //           borderRadius: BorderRadius.circular(4),
+                                //           color: DynamicColors.primaryClr
+                                //         ),
+                                //         child: Center(
+                                //           child: Text("X1",
+                                //             style: mozillaTextRegularText(
+                                //               fontSize: 14,
+                                //               color: DynamicColors.whiteClr,
+                                //             ),
+                                //
+                                //           ),
+                                //         ),
+                                //       ),
+                                //
+                                //
+                                //       // CustomButton(
+                                //       //   height: 28,
+                                //       //   borderRadius: 4,
+                                //       //   verticalPadding: 0,
+                                //       //   btnText: "X1",
+                                //       //   style: mozillaTextRegularText(
+                                //       //     fontSize: 14,
+                                //       //     color: DynamicColors.whiteClr,
+                                //       //   ),
+                                //       // ),
+                                //     ),
+                                //     const SizedBox(width: 10),
+                                //     Expanded(
+                                //       child: Text(
+                                //         "SALOON",
+                                //         style:
+                                //         mozillaTextRegularText(fontSize: 13),
+                                //         overflow: TextOverflow.ellipsis,
+                                //       ),
+                                //     ),
+                                //     const SizedBox(width: 10),
+                                //     const Icon(Icons.phone_android_rounded,
+                                //         size: 18),
+                                //     const SizedBox(width: 10),
+                                //     Expanded(
+                                //       child: Text(
+                                //         "1133Hr 01Min -",
+                                //         style:
+                                //         mozillaTextRegularText(fontSize: 13),
+                                //         overflow: TextOverflow.ellipsis,
+                                //         maxLines: 1,
+                                //       ),
+                                //     ),
+                                //     const SizedBox(width: 10),
+                                // SizedBox(
+                                //   width: 48,
+                                //   child: Container(
+                                //     height: 32,
+                                //     decoration: BoxDecoration(
+                                //         borderRadius: BorderRadius.circular(4),
+                                //         color: DynamicColors.secondaryClr
+                                //     ),
+                                //     child: Center(
+                                //       child: Text("-",
+                                //         style: mozillaTextRegularText(
+                                //           fontSize: 14,
+                                //           color: DynamicColors.whiteClr,
+                                //         ),
+                                //
+                                //       ),
+                                //     ),
+                                //   ),
+                                //
+                                //     ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -416,4 +425,89 @@ class _DriversViewState extends State<DriversView> {
       },
     );
   }
+
+  void _showContextMenu(BuildContext context, Offset offset, DashboardDriverObject? driver, {index}) async {
+    double left = offset.dx;
+    double top = offset.dy;
+
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromLTRB(left, top, left, top),
+      items: [
+        PopupMenuItem(
+          value: 1,
+          height: 12,
+          child: Text("TRACK"),
+        ),
+        PopupMenuItem(
+          value: 2,
+          height: 12,
+          child: Text("SINBIN"),
+        ),
+        PopupMenuItem(
+          value: 3,
+          height: 12,
+          child: Text("FORCE BREAK"),
+        ),
+        PopupMenuItem(
+          value: 4,
+          height: 12,
+          child: Text("LOGOUT"),
+        ),
+        PopupMenuItem(
+          value: 5,
+          height: 12,
+          child: Text("CALL DRIVER"),
+        ),
+      ],
+      elevation: 8.0,
+    ).then((value) {
+      // Handle the action based on the value selected
+      if (value == 1) {
+
+        DashboardController _controller = Get.find();
+
+        print(index);
+        _controller.markers.add(CustomMarker(
+          withReturnType: "driverMarker",
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // ImageIcon(AssetImage("assets/sedan.png"),
+              // color: DynamicColors.greenClr,
+              //   size: 65,
+              // ),
+              Image(image: AssetImage("assets/car3.png"),
+                width: 70,
+                height: 70,
+              ),
+              Text("${driver!.username}",style: TextStyle(
+                  fontSize: 12,
+                color: Colors.white
+              ),)
+            ],
+          ),
+          type: "driverMarker",
+          point: LatLng(double.parse(driver.latitude!), double.parse(driver.longitude!)),
+          width: 70,
+          height: 70,
+        ),);
+
+          final target = LatLng(double.parse(driver.latitude!), double.parse(driver.longitude!));
+
+        _controller.mapController.move(target, 16); // 16 = zoom level (you can adjust)
+
+          debugPrint("Tapped on marker ${driver.latitude}");
+          debugPrint("Tapped on marker ${driver.longitude}");
+          setState(() {
+
+          });
+
+        print("Viewing profile of ${driver.username}");
+      } else if (value == 2) {
+        print("Assigning task...");
+      }
+    });
+  }
+
 }
