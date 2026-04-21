@@ -89,7 +89,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
         controller.updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
 
     if (mainData == null) {
-      return const Center(child: Text("No Invoice Data Found"));
+      return const Center(child: Text("NO INVOICE DATA FOUND"));
     }
 
     final accountData = mainData.account;
@@ -145,13 +145,13 @@ class AccountInvoiceViewScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _infoColumn([
-                    {"EMAIL": "${subsidiaryData?.email ?? ""}"},
+                    {"EMAIL": "${(subsidiaryData?.email ?? "").toUpperCase()}"},
                     {"MOBILE": "${accountData?.mobile ?? ""}"},
                     {"TELEPHONE": "${subsidiaryData?.telephoneNumber ?? ""}"},
                   ]),
                   _infoColumn([
-                    {"ACCOUNT": "${accountData?.name ?? ""}"},
-                    {"ORDER #": "${mainData.orderNumber ?? "-"}"},
+                    {"ACCOUNT": "${(accountData?.name ?? "").toUpperCase()}"},
+                    {"ORDER #": "${(mainData.orderNumber ?? "-").toUpperCase()}"},
                     {"DATE": "${mainData.invoiceDate.toString().split(' ').first}"},
                     {"DUE DATE": "${mainData.invoiceDueDate.toString().split(' ').first}"},
                   ], isRight: true),
@@ -337,7 +337,7 @@ class AccountInvoiceViewScreen extends StatelessWidget {
       TextAlign align = TextAlign.center}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-      child: Text(text,
+      child: Text(text.toUpperCase(),
           textAlign: align,
           style: TextStyle(
             fontSize: isHeader ? 15 : 14,

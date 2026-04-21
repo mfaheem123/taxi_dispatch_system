@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 
+import '../component/text_field.dart';
+
 class EmailInvoiceAlert {
   static void show() {
     final emailCtrl = TextEditingController(text: "ABC@ABC.COM");
@@ -48,7 +50,7 @@ class EmailInvoiceAlert {
               const Text(
                 "RECIPIENT",
                 style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black54
                 ),
@@ -58,6 +60,7 @@ class EmailInvoiceAlert {
               // Email TextField with Green Border
               TextField(
                 controller: emailCtrl,
+                inputFormatters: [UpperCaseTextFormatter()],
                 decoration: InputDecoration(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   enabledBorder: OutlineInputBorder(

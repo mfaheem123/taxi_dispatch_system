@@ -259,7 +259,7 @@ class _UpdateAccountInvoiceScreenState
                 padding: EdgeInsets.only(top: 25),
                 child: RichText(
                     text: TextSpan(
-                        text: 'Invoice #',
+                        text: 'INVOICE #',
                         style: mozillaTextSemiBoldText(
                             fontWeight: FontWeight.bold),
                         children: [
@@ -285,8 +285,8 @@ class _UpdateAccountInvoiceScreenState
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.grey.shade100,
                 ),
-                child: Text(
-                  controller.subsidiaries?.name ?? "",
+                child: Text((
+                  controller.subsidiaries?.name ?? "").toUpperCase(),
                   style: TextStyle(color: Colors.black87),
                 ),
               ),
@@ -307,8 +307,8 @@ class _UpdateAccountInvoiceScreenState
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.grey.shade100,
                 ),
-                child: Text(
-                  controller.selectDepartmentData?.name ?? "",
+                child: Text((
+                  controller.selectDepartmentData?.name ?? "").toUpperCase(),
                   style: TextStyle(color: Colors.black87),
                 ),
               ),
@@ -331,7 +331,7 @@ class _UpdateAccountInvoiceScreenState
                 ),
                 child: Row(
                   children: [
-                    Expanded(child: Text(controller.selectAccountValue?.name ?? "")),
+                    Expanded(child: Text((controller.selectAccountValue?.name ?? "").toUpperCase())),
                     Icon(Icons.arrow_drop_down, size: 20, color: Colors.grey),
                   ],
                 ),
@@ -353,8 +353,8 @@ class _UpdateAccountInvoiceScreenState
                   borderRadius: BorderRadius.circular(4),
                   color: Colors.grey.shade100,
                 ),
-                child: Text(
-                  controller.orderNumber.text,
+                child: Text((
+                  controller.orderNumber.text).toUpperCase(),
                   style: TextStyle(color: Colors.black87),
                 ),
               ),
@@ -456,12 +456,12 @@ class _UpdateAccountInvoiceScreenState
                         // ),
                         DataCell(Center(child: Text(booking?.referenceNumber ?? "-"))),
                         DataCell(Center(child: Text("${booking?.pickupDate ?? ""} ${booking?.pickupTime ?? ""}"))),
-                        DataCell(Center(child: Text(booking?.pickup ?? "-"))),
-                        DataCell(Center(child: Text(booking?.dropoff ?? "-"))),
-                        DataCell(Center(child: Text(booking?.name ?? "-"))), // Customer Name
-                        DataCell(Center(child: Text(booking?.vehicleType?.name ?? "-"))),
-                        DataCell(Center(child: Text(booking?.journeyType?.journeyType ?? "-"))),
-                        DataCell(Center(child: Text(booking?.paymentType?.name ?? "-"))),
+                        DataCell(Center(child: Text((booking?.pickup ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking?.dropoff ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking?.name ?? "-").toUpperCase()))), // Customer Name
+                        DataCell(Center(child: Text((booking?.vehicleType?.name ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking?.journeyType?.journeyType ?? "-").toUpperCase()))),
+                        DataCell(Center(child: Text((booking?.paymentType?.name ?? "-").toUpperCase()))),
 
                         editableCell(booking?.fares, (val) {
                           booking?.fares = int.tryParse(val.toString()) ?? 0;
