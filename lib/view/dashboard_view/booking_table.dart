@@ -224,9 +224,18 @@ class _BookingTableState extends State<BookingTable> {
                       final item = controller.dashboardTableModelData!.data![index];
                       bool isSelected = index == selectedRowIndex;
                       return DataRow(
-                        key:  ValueKey(item.id),
+                        key: ValueKey(item.id),
                         // index: index,
                         selected: isSelected,
+                        color: MaterialStateProperty.resolveWith<Color?>(
+                              (states) {
+                            if (isSelected) {
+                              return Colors.blue.withOpacity(0.2);
+                            }
+                            return null;
+                          },
+                        ),
+
                         cells: [
 
                           /// Checkbox ❌ (NO right click)
@@ -349,7 +358,7 @@ class _BookingTableState extends State<BookingTable> {
                                 alignment: Alignment.center,
                                 // APPLY YOUR COLOR HERE
                                 decoration: BoxDecoration(
-                                  color: item.airport!.pickup!.locationType!.backgroundColor == null?DynamicColors.whiteClr:
+                                  color: item.airport!.pickup!.locationType!.backgroundColor == null?Colors.transparent:
                                   Color(int.parse("0xFF${item.airport!.pickup!.locationType!.backgroundColor}")),
                                   // Optional: borderRadius: BorderRadius.circular(2),
                                 ),
@@ -380,7 +389,7 @@ class _BookingTableState extends State<BookingTable> {
                                 alignment: Alignment.center,
                                 // APPLY YOUR COLOR HERE
                                 decoration: BoxDecoration(
-                                  color: item.airport!.dropoff!.locationType!.backgroundColor == null?DynamicColors.whiteClr:
+                                  color: item.airport!.dropoff!.locationType!.backgroundColor == null?Colors.transparent:
                                   Color(int.parse("0xFF${item.airport!.dropoff!.locationType!.backgroundColor}")),
                                   // Optional: borderRadius: BorderRadius.circular(2),
                                 ),
@@ -412,7 +421,7 @@ class _BookingTableState extends State<BookingTable> {
 
                                   // APPLY YOUR COLOR HERE
                                   decoration: BoxDecoration(
-                                    color: item.account!.backgroundColor == null?DynamicColors.whiteClr: Color(int.parse("0xFF${item.account!.backgroundColor}")),
+                                    color: item.account!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.account!.backgroundColor}")),
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
                                   child: Text(item.account?.name ?? "",
@@ -449,7 +458,7 @@ class _BookingTableState extends State<BookingTable> {
 
                                   // APPLY YOUR COLOR HERE
                                   decoration: BoxDecoration(
-                                    color: item.vehicleType!.backgroundColor == null?DynamicColors.whiteClr: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
+                                    color: item.vehicleType!.backgroundColor == null?Colors.transparent: Color(int.parse("0xFF${item.vehicleType!.backgroundColor}")),
                                     // Optional: borderRadius: BorderRadius.circular(2),
                                   ),
                                   child: Text(item.vehicleType?.name ?? "-",

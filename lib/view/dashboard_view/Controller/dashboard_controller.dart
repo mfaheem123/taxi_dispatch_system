@@ -28,6 +28,7 @@ import '../models/account_darshboard_model.dart';
 import '../models/all_addresses_model.dart';
 import 'package:dashboard_new1/view/customer/model/restricDriver.dart';
 import '../models/dashboard_table_model.dart' hide Employee;
+import '../models/tracking_drivers_model.dart';
 import '../models/users_phone_numbers_model.dart';
 import '../widgets/fare_configuration.dart';
 import '../widgets/via_location.dart';
@@ -205,6 +206,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   RxInt timerTick = 0.obs;
   Timer? timer;
 
+
   getAllOnlineDrivers() async{
     var response = await Api().get("drivers/login-busy");
     if(response.statusCode == 200){
@@ -247,7 +249,6 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
                 : null,
           ));
         });
-
       }
       timer = Timer.periodic(Duration(seconds: 5), (_) {
         timerTick.value++; // trigger UI update
@@ -279,6 +280,23 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   ///===========================================================>See Zone On Map
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo drivers tracking functionality
+
+  GetAllLabelsFromWidowModel? onlineBusyDriversList;
+
+  getAllDriversTracking() async{
+    var response = await Api().get("drivers/tracking-drivers");
+    if(response.statusCode == 200){
+      onlineBusyDriversList = GetAllLabelsFromWidowModel.fromJson(response.data);
+      update();
+    }
+  }
+
+
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo drivers tracking functionality
+
+
 
   ///Todo menu bar functionality
   // Widget? currentPage;
@@ -652,6 +670,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   AllAddressesModel? selectedModel;
   late final MapController mapController;
+  MapController? mapTrackingController;
   final List<ViaPoint> viaPoints = [];
   List<ViaTextEditingControllerClass> viaTextEditingController = [];
 
@@ -660,6 +679,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   List<LatLng> polylinePointsCoordinate = [];
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
+  List<CustomMarker> trackingMarkers = [];
   RxString totalDistance = "0".obs;
   RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
