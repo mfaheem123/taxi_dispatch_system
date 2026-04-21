@@ -145,7 +145,7 @@ class _CreateAccountInvoiceScreenState
                       padding: EdgeInsets.only(top: 25),
                       child: RichText(
                           text: TextSpan(
-                              text: 'Invoice #',
+                              text: 'INVOICE #',
                               style: mozillaTextSemiBoldText(
                                   fontWeight: FontWeight.bold),
                               children: [
@@ -261,6 +261,8 @@ class _CreateAccountInvoiceScreenState
                     hintText: AppText.order,
                     columnText: true,
                     height: 30,
+                    inputFormatters: [UpperCaseTextFormatter()
+                    ],
                   ),
                   labeledField(
                     column: true,
@@ -435,17 +437,17 @@ class _CreateAccountInvoiceScreenState
                                         Text(booking.referenceNumber ?? "")),
                                     DataCell(Text(
                                         "${booking.pickupDate ?? ""} ${booking.pickupTime ?? ""}")),
-                                    DataCell(Text(booking.pickup ?? "")),
-                                    DataCell(Text(booking.dropoff ?? "")),
+                                    DataCell(Text((booking.pickup ?? "").toUpperCase())),
+                                    DataCell(Text((booking.dropoff ?? "").toUpperCase())),
                                     DataCell(
-                                        Text(booking.customer?.address1 ?? "")),
+                                        Text((booking.customer?.address1 ?? "").toUpperCase())),
                                     DataCell(
-                                        Text(booking.vehicleType?.name ?? "")),
-                                    DataCell(Text(
+                                        Text((booking.vehicleType?.name ?? "").toUpperCase())),
+                                    DataCell(Text((
                                         booking.journeyType?.journeyType ??
-                                            "")),
+                                            "").toUpperCase())),
                                     DataCell(
-                                        Text(booking.paymentType?.name ?? "")),
+                                        Text((booking.paymentType?.name ?? "").toUpperCase())),
                                     editableCell(booking.fares, (val) {
                                       booking.fares =
                                           (double.tryParse(val) ?? 0.0)

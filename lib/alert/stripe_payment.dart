@@ -50,6 +50,7 @@ class StripePayment {
                         child: CustomTextField(
                           controller: amountCtrl,
                           borderRadius: 5,
+                          inputFormatters: [UpperCaseTextFormatter()],
                           // hintText: "99.87",
                         ),
                       ),
@@ -89,6 +90,7 @@ class StripePayment {
                           controller: mobileCtrl,
                           hintText: "MOBILE",
                           borderRadius: 5,
+                          inputFormatters: [UpperCaseTextFormatter()],
                         ),
                       ),
                       const SizedBox(width: 10),

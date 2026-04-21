@@ -79,15 +79,15 @@ class AdministrationController extends GetxController {
     if (data == null) return;
     isSubsiDiaryUpdating.value = true;
     subsidiaryToUpdate = data;
-    nameController.text = data.name ?? "";
-    emailController.text = data.email ?? "";
-    faxController.text = data.fax ?? "";
-    websiteController.text = data.website ?? "";
+    nameController.text = (data.name ?? "").toUpperCase();
+    emailController.text = (data.email ?? "").toUpperCase();
+    faxController.text = (data.fax ?? "").toUpperCase();
+    websiteController.text = (data.website ?? "").toUpperCase();
     telephoneController.text = data.telephoneNumber ?? "";
     emergencyContactController.text = data.emergencyContactNumber ?? "";
     companyController.text = data.companyNumber ?? "";
-    currencyController.text = data.currency ?? "";
-    addressController.text = data.address ?? "";
+    currencyController.text = (data.currency ?? "").toUpperCase();
+    addressController.text = (data.address ?? "").toUpperCase();
     balanceController.text = data.balance?.toString() ?? "";
     // --- 2. Color Binding (Hex to Color) ---
     if (data.backgroundColor != null && data.backgroundColor!.isNotEmpty) {
@@ -117,7 +117,7 @@ class AdministrationController extends GetxController {
     if (response.statusCode == 200) {
       listSubsDiary();
       print("Subsidiaries deleted successfully!");
-      BotToast.showText(text: "Subsidiaries Deleted Successfully!");
+      BotToast.showText(text: "SUBSIDIARIES DELETED SUCCESSFULLY!");
     }
   }
 
@@ -181,7 +181,7 @@ class AdministrationController extends GetxController {
   userDelete(int? id) async {
     var response = await Api().delete("employees/delete/$id");
     if (response.statusCode == 200) {
-      BotToast.showText(text: "User deleted successfully!");
+      BotToast.showText(text: "USER DELETED SUCCESSFULLY!");
       userData();
        }
   }
@@ -207,10 +207,10 @@ class AdministrationController extends GetxController {
         orElse: () => getRole!.roles!.first,
       );
     }
-    userNameController.text = userUpdate.username ?? "";
+    userNameController.text = (userUpdate.username ?? "").toUpperCase();
     passwordController.text = userUpdate.password ?? "";
     confirmController.text = userUpdate.confirmpassword ?? "";
-    userEmailController.text = userUpdate.email ?? "";
+    userEmailController.text = (userUpdate.email ?? "").toUpperCase();
     phoneController.text = userUpdate.phone ?? "";
     faxUserController.text = userUpdate.fax ?? "";
     activeValue.value = userUpdate.active ?? false;
@@ -301,7 +301,16 @@ class AdministrationController extends GetxController {
         sendCompanyId: true
     );
     if (response.statusCode == 200) {
+      BotToast.showText(
+          text: isSubsiDiaryUpdating.value
+              ? "SUBSIDIARY UPDATED SUCCESSFULLY"
+              : "SUBSIDIARY ADDED SUCCESSFULLY"
+      );
       subsidiaryImg = null;
+      if (subsidiaryToUpdate != null) {
+        subsidiaryToUpdate!.logo = null;
+      }
+      subsidiaryToUpdate = null;
       nameController.clear();
       emailController.clear();
       faxController.clear();
@@ -315,11 +324,6 @@ class AdministrationController extends GetxController {
       addressController.clear();
       balanceController.clear();
       isSubsiDiaryUpdating.value = false;
-      BotToast.showText(
-          text: isSubsiDiaryUpdating.value
-              ? "Subsidiary Update Successfully"
-              : "Subsidiary Add Successfully"
-      );
       update();
       print(response.data);
     }
@@ -417,8 +421,8 @@ class AdministrationController extends GetxController {
     );
     if (response.statusCode == 200) {
       String message = employee != null
-          ? "User Update Successfully"
-          : "User Added Successfully";
+          ? "USER UPDATED SUCCESSFULLY"
+          : "USER ADDED SUCCESSFULLY";
       print(response);
       userNameController.clear();
       passwordController.clear();

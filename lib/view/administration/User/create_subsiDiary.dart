@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/color_picker_widget.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/vehicles_view/controller/controller.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../alert/bank_details_alert.dart';
@@ -34,14 +36,15 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "vehicleTypes";
-  
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    double width = WidgetsBinding
+            .instance.platformDispatcher.views.first.physicalSize.width /
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AdministrationController>(builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
@@ -68,7 +71,8 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                 GestureDetector(
                   onTap: () {
                     // Agar koi image nahi hai (na local na network), tabhi picker khule
-                    if (controller.subsidiaryImg == null && controller.subsidiaryToUpdate?.logo == null) {
+                    if (controller.subsidiaryImg == null &&
+                        controller.subsidiaryToUpdate?.logo == null) {
                       controller.pickImage();
                     }
                   },
@@ -81,53 +85,57 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                       border: Border.all(color: Colors.grey),
                       image: controller.subsidiaryImg != null
                           ? DecorationImage(
-                        image: MemoryImage(controller.subsidiaryImg!.bytes),
-                        fit: BoxFit.fill,
-                      )
+                              image:
+                                  MemoryImage(controller.subsidiaryImg!.bytes),
+                              fit: BoxFit.fill,
+                            )
                           : (controller.subsidiaryToUpdate?.logo != null
-                          ? DecorationImage(
-                        // Agar image URL full nahi hai to yahan baseUrl add kar lena
-                        image: NetworkImage(controller.subsidiaryToUpdate!.logo!),
-                        fit: BoxFit.fill,
-                      )
-                          : null),
+                              ? DecorationImage(
+                                  // Agar image URL full nahi hai to yahan baseUrl add kar lena
+                                  image: NetworkImage(
+                                      controller.subsidiaryToUpdate!.logo!),
+                                  fit: BoxFit.fill,
+                                )
+                              : null),
                     ),
                     // Check: Agar koi bhi image maujood hai to close button dikhao, warna text dikhao
-                    child: (controller.subsidiaryImg != null || controller.subsidiaryToUpdate?.logo != null)
+                    child: (controller.subsidiaryImg != null ||
+                            controller.subsidiaryToUpdate?.logo != null)
                         ? Align(
-                      alignment: Alignment.topRight,
-                      child: GestureDetector(
-                        onTap: () {
-                          controller.subsidiaryImg = null;
-                          if (controller.subsidiaryToUpdate != null) {
-                            controller.subsidiaryToUpdate!.logo = null; // UI se purani image hatane ke liye
-                          }
-                          controller.update();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          margin: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.close_rounded,
-                            color: DynamicColors.redClr,
-                          ),
-                        ),
-                      ),
-                    )
+                            alignment: Alignment.topRight,
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.subsidiaryImg = null;
+                                if (controller.subsidiaryToUpdate != null) {
+                                  controller.subsidiaryToUpdate!.logo =
+                                      null; // UI se purani image hatane ke liye
+                                }
+                                controller.update();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(4),
+                                margin: EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.7),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  color: DynamicColors.redClr,
+                                ),
+                              ),
+                            ),
+                          )
                         : Center(
-                      child: Text(
-                        "UPLOAD IMAGE",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
+                            child: Text(
+                              "UPLOAD IMAGE",
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
                   ),
                 ),
                 SizedBox(
@@ -139,10 +147,10 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         width: Get.width,
                         color: DynamicColors.gryClr,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 18.0, vertical: 12),
                           child: Row(
                             children: [
-
                               Text(
                                 AppText.subsidiary,
                                 style: TextStyle(
@@ -153,7 +161,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                 children: [
                                   // Icon(Icons.other_houses_outlined),
                                   CustomButton(
-                                    onTap: (){
+                                    onTap: () {
                                       BankDetailsAlert.show();
                                     },
                                     verticalPadding: 0.0,
@@ -178,7 +186,6 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                         runSpacing: 16,
                         spacing: 10,
                         children: [
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.nameController,
@@ -186,8 +193,12 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.name,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[a-zA-Z\s]')),
+                              UpperCaseTextFormatter(),
+                            ],
                           ),
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.emailController,
@@ -195,8 +206,11 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.email,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                              UpperCaseTextFormatter(),
+                            ],
                           ),
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.faxController,
@@ -204,8 +218,8 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.fax,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.websiteController,
@@ -213,8 +227,8 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.website,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.telephoneController,
@@ -222,8 +236,10 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.tel,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                           ),
-
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.emergencyContactController,
@@ -231,16 +247,16 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.emergencyContactHash,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
                           ),
-
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               Text(AppText.backgroundClr,
                                   style: mozillaTextSemiBoldText(
                                       context: context, fontSize: 13)),
-
                               ColorPickerWidget(
                                 width: fieldWidth / 2,
                                 pickerColor: controller.subsiDiarypickerColor,
@@ -249,7 +265,6 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                                     controller.subsiDiarypickerColor =
                                         color; // live preview
                                   });
-
                                 },
                                 onColorSelected: (color) {
                                   setState(() {
@@ -294,6 +309,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.company,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -302,6 +318,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.currency,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -310,6 +327,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             hintText: AppText.address,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [UpperCaseTextFormatter()],
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -324,14 +342,23 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                       SizedBox(
                         height: 20,
                       ),
-
                       CustomButton(
                         onTap: () {
-                          controller.createSubsiDiary();
+                          String email = controller.emailController.text.trim();
+
+                          if (email.isEmpty) {
+                            BotToast.showText(text: "EMAIL IS REQUIRED");
+                          } else if (!email.contains('@')) {
+                            BotToast.showText(text: "INVALID EMAIL FORMAT");
+                          } else {
+                            controller.createSubsiDiary();
+                          }
                         },
                         height: 30,
                         width: fieldWidth,
-                        btnText: controller.isSubsiDiaryUpdating.value ? "UPDATE USER" : "SAVE",
+                        btnText: controller.isSubsiDiaryUpdating.value
+                            ? "UPDATE"
+                            : "SAVE",
                         fontSize: 11,
                         verticalPadding: 0.0,
                         borderRadius: 4,
@@ -348,8 +375,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
   }
 }
 
-
-class BankDetailsAlertClass{
+class BankDetailsAlertClass {
   String? bank;
   String? accountTitle;
   String? account;
@@ -357,6 +383,11 @@ class BankDetailsAlertClass{
   String? sortCode;
   String? vat;
 
-
-  BankDetailsAlertClass({this.bank ,this.accountTitle ,this.account, this.iban, this.sortCode, this.vat});
+  BankDetailsAlertClass(
+      {this.bank,
+      this.accountTitle,
+      this.account,
+      this.iban,
+      this.sortCode,
+      this.vat});
 }

@@ -216,18 +216,18 @@ class _UserListscreenState extends State<UserListscreen> {
                                 //   ),
                                 // ),
                                 DataCell(Center(
-                                    child: Text(item.username ?? 'no data'))),
+                                    child: Text((item.username ?? 'no data').toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text(item.email ?? 'no data'))),
+                                    child: Text((item.email ?? 'no data').toUpperCase()))),
                                 DataCell(Center(
                                     child: Text(item.phone ?? 'no data'))),
                                 DataCell(
-                                    Center(child: Text(item.fax ?? 'no data'))),
+                                    Center(child: Text((item.fax ?? 'no data').toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text(item.role?.name ?? 'no data'))),
+                                    child: Text((item.role?.name ?? 'no data').toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text(
-                                        item.subsidiary?.name ?? 'no data'))),
+                                    child: Text((
+                                        item.subsidiary?.name ?? 'no data').toUpperCase()))),
                                 DataCell(Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,

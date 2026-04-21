@@ -182,12 +182,12 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                             // ),
 
                             /// 🔥 Null Safe Fields
-                            DataCell(Center(child: Text(item.name ?? "-"))),
-                            DataCell(Center(child: Text(item.email ?? "-"))),
+                            DataCell(Center(child: Text((item.name ?? "-").toUpperCase()))),
+                            DataCell(Center(child: Text((item.email ?? "-").toUpperCase()))),
                             DataCell(Center(
                                 child: Text(item.telephoneNumber ?? "-"))),
-                            DataCell(Center(child: Text(item.address ?? "-"))),
-                            DataCell(Center(child: Text(item.fax ?? "-"))),
+                            DataCell(Center(child: Text((item.address ?? "-").toUpperCase()))),
+                            DataCell(Center(child: Text((item.fax ?? "-").toUpperCase()))),
 
                             /// Actions
                             DataCell(

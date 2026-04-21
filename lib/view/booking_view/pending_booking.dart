@@ -350,15 +350,20 @@ class _PendingBookingState extends State<PendingBooking> {
 
                                   DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
                                   DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-                                  DataCell(Center(child: Text(item.name ?? '—'))),
-                                  DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.account!.name ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.paymentType!.name ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.account?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.driver?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.paymentType?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
+                                  // DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text(
+                                      ((item.notes != null && item.notes!.isNotEmpty)
+                                          ? item.notes!.first.note ?? ''
+                                          : ''
+                                      ).toUpperCase()))),
+                                  DataCell(Center(child: Text(item.fares?.toString() ?? ''))),
                                   DataCell(Center(child: Container(
                                     width: double.infinity,
                                     height: double.infinity,
@@ -367,15 +372,15 @@ class _PendingBookingState extends State<PendingBooking> {
                                       color: DynamicColors.statusColor,
                                       // Optional: borderRadius: BorderRadius.circular(2),
                                     ),
-                                    child: Text(
-                                      item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                                    child: Text((
+                                      item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
                                       style: TextStyle(color: DynamicColors.whiteClr),
                                     ),
                                   ),
 
                                   )),
-                                  DataCell(Center(child: Text(item.journeyType!.journeyType.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.subsidiary!.name ?? 'N/A'))),
+                                  DataCell(Center(child: Text((item.journeyType?.journeyType.toString() ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.subsidiary?.name ?? '').toUpperCase()))),
                                   DataCell(
                                     Center(
                                       child: Row(

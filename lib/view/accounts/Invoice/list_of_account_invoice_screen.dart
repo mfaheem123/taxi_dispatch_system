@@ -93,7 +93,7 @@ class _ListOfAccountInvoiceScreenState
                     child: Row(
                       children: [
                         Text(
-                          "ACCOUNTS Invoice (${controller.listOfAccountInvoice!.count ?? "0"})",
+                          "ACCOUNT INVOICES (${controller.listOfAccountInvoice!.count ?? "0"})",
                           style: mozillaTextSemiBoldText(
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
@@ -199,7 +199,7 @@ onTap: () {
                             SizedBox(width: 14),
                                 CustomDropdownField<String>(
                                   width: fieldWidth / 4,
-                                  label: "Status",
+                                  label: "STATUS",
                                   items: ["all", "paid", "unpaid"],
                                   value: controller.status,
                                   itemLabel: (val) => val, // just show the string
@@ -358,19 +358,19 @@ onTap: () {
                               // ),
                               // 1. Invoice Number
                               DataCell(Center(child: Text(item.invoiceNumber ?? "-"))),
-                              DataCell(Center(child: Text(item.account?.name ?? "-"))),
-                              DataCell(Center(child: Text(
+                              DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase()))),
+                              DataCell(Center(child: Text((
                                   item.department is Map
                                       ? item.department['name'] ?? "-"
                                       : item.department?.name ?? "-"
-                              ))),
-                              DataCell(Center(child: Text(item.orderNumber ?? "-"))),
+                              ).toUpperCase()))),
+                              DataCell(Center(child: Text((item.orderNumber ?? "-").toUpperCase()))),
                               DataCell(Center(child: Text(item.invoiceDate != null ? item.invoiceDate!.toIso8601String().split('T').first : "-"))),
                               DataCell(Center(child: Text(item.invoiceDueDate != null ? item.invoiceDueDate!.toIso8601String().split('T').first : "-"))),
                               DataCell(Center(
                                 child: Text(item.status?.toUpperCase() ?? "-",))),
                               DataCell(Center(child: Text(item.amount ?? "0.00"))),
-                              DataCell(Center(child: Text(item.account?.subsidiary?.name ?? "-"))),
+                              DataCell(Center(child: Text((item.account?.subsidiary?.name ?? "-").toUpperCase()))),
                               DataCell(
                                 Row(
                                   children: [

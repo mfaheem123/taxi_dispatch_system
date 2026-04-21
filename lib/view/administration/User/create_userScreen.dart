@@ -1,10 +1,13 @@
- import 'package:dashboard_new1/component/color.dart';
+ import 'package:bot_toast/bot_toast.dart';
+import 'package:dashboard_new1/component/color.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:dashboard_new1/view/administration/model/get_role.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
@@ -155,10 +158,10 @@ class CreateUserScreen extends StatelessWidget {
               spacing: 20,
               children: [
                 _buildTextField("USER", controller.userNameController),
-                _buildTextField("EMAIL", controller.userEmailController),
+                _buildTextField("EMAIL", controller.userEmailController, isEmail: true),
                 _buildPasswordField("PASSWORD", controller.passwordController),
                 _buildPasswordField("CONFIRM PASSWORD", controller.confirmController),
-                _buildTextField("PHONE", controller.phoneController),
+                _buildTextField("PHONE", controller.phoneController, isPhone: true),
                 _buildTextField("FAX", controller.faxUserController),
                 CustomDropdownField<Role>(
                   text: "SELECT ROLE",
@@ -166,7 +169,7 @@ class CreateUserScreen extends StatelessWidget {
                   items: controller.getRole?.roles ?? [],   // safe
                   value: controller.selectedRole,
                   itemLabel: (role) {// debug
-                    return role.name ?? "";
+                    return (role.name ?? "").toUpperCase();
                   },
                   onChanged: (val) {
                     controller.selectedRole = val;
@@ -178,7 +181,7 @@ class CreateUserScreen extends StatelessWidget {
                   text: "SUBSIDIARY",
                   items: controller.subsDiaryModel?.subsidiaries ?? [],
                   value: controller.selectedSubsidiary,
-                  itemLabel: (item) => item.name ?? "",
+                  itemLabel: (item) => (item.name ?? "").toUpperCase(),
                   onChanged: (val) {
                     controller.selectedSubsidiary = val;
                     controller.update();
@@ -267,7 +270,16 @@ class CreateUserScreen extends StatelessWidget {
               child:
                   CustomButton(
                 onTap: () {
-                  controller.createUser();
+                  String email =
+                  controller.userEmailController.text.trim();
+
+                  if (email.isEmpty) {
+                    BotToast.showText(text: "Email is required");
+                  } else if (!email.contains('@')) {
+                    BotToast.showText(text: "Invalid Email Format");
+                  } else {
+                    controller.createUser();
+                  }
                 },
                 height: 30,
                 width: screenWidth / 4,
@@ -285,12 +297,18 @@ class CreateUserScreen extends StatelessWidget {
     );
   }
 
-  static Widget _buildTextField(String label, controller) {
+  static Widget _buildTextField(String label, controller, {bool isPhone = false, bool isEmail = false}) {
     return SizedBox(
       width: Get.width / 4,
       height: 30,
       child: TextField(
         controller: controller,
+        keyboardType: isPhone ? TextInputType.number : (isEmail ? TextInputType.emailAddress : TextInputType.text),
+        inputFormatters: [
+          if (isPhone) FilteringTextInputFormatter.digitsOnly,
+          if (isEmail) FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          if (!isPhone) UpperCaseTextFormatter(),
+        ],
         style: mozillaTextRegularText(
           fontSize: 10,
         ),

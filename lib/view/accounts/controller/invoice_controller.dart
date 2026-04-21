@@ -95,7 +95,7 @@ class InvoiceController extends GetxController {
     if (response.statusCode == 200) {
       accountInvoiceBookingModel =
           AccountInvoiceBookingModel.fromJson(response.data);
-      BotToast.showText(text: 'Filter Done');
+      BotToast.showText(text: 'FILTER DONE');
       print(' Filter Data');
     }
     isLoadingInvoice = false;
@@ -107,15 +107,7 @@ class InvoiceController extends GetxController {
   RxBool addAccountInvoiceLoad = false.obs;
 
   addAccountInvoice() async {
-    if (accountInvoiceBookingModel == null ||
-        accountInvoiceBookingModel!.bookings == null ||
-        accountInvoiceBookingModel!.bookings!.isEmpty) {
-      BotToast.showText(text: "NO BOOKINGS FOUND");
-      return;
-    }
-
     addAccountInvoiceLoad(true);
-    try {
       List<Map<String, dynamic>> lineItems =
       accountInvoiceBookingModel!.bookings!.map((booking) {
         return {
@@ -156,14 +148,10 @@ class InvoiceController extends GetxController {
             updateInvoiceByIdModel?.accountInvoice?.accountInvoice
                 ?.orderNumber ??
                 "";
-        BotToast.showText(text: 'Account Invoice Created');
+        BotToast.showText(text: 'ACCOUNT INVOICE CREATED');
         print(' Account Invoice Created');
         update();
       }
-    }catch (e) {
-    print("Error in addAccountInvoice: $e");
-    BotToast.showText(text: "Error creating invoice: $e");
-    }
     addAccountInvoiceLoad(false);
   }
 
@@ -307,7 +295,7 @@ class InvoiceController extends GetxController {
     var response = await Api().delete("account_invoice/delete/$id");
     if (response.statusCode == 200) {
       listAccountInvoice(isFirstTime: true);
-      BotToast.showText(text: "AccountInvoice deleted successfully!");
+      BotToast.showText(text: "ACCOUNT INVOICE DELETED SUCCESSFULLY!");
     }
   }
 
@@ -379,7 +367,7 @@ class InvoiceController extends GetxController {
   /// Download PDF
   Future<void> downloadApiContentAsFile() async {
     if (updateInvoiceByIdModel?.accountInvoice?.accountInvoice == null) {
-      Get.snackbar("Error", "No invoice data found to export.");
+      Get.snackbar("ERROR", "NO INVOICE DATA FOUND TO EXPORT.");
       return;
     }
 
@@ -458,12 +446,15 @@ class InvoiceController extends GetxController {
 body { font-family: Arial; padding: 30px; font-size: 12px; }
 h2 { text-align: center; margin-bottom: 20px; }
 table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-th, td { border: 1px solid #ccc; padding: 6px; }
+th, td { border: 1px solid #ccc; padding: 6px; text-transform: uppercase; }
 th { background-color: #f2f2f2; }
 .right { text-align: right; }
 .no-border td { border: none; }
 .header { display: flex; justify-content: space-between; margin-bottom: 20px; }
 .footer-note { font-size: 11px; text-align: right; margin-top: 30px; }
+.header div, p b { 
+  text-transform: uppercase; 
+}
 </style>
 </head>
 <body>
@@ -591,7 +582,7 @@ CC: CONGESTION CHARGES
       "CC",
       "TOTAL"
     ];
-    sheetObject.appendRow(headers.map((e) => TextCellValue(e)).toList());
+    sheetObject.appendRow(headers.map((e) => TextCellValue(e.toUpperCase())).toList());
 
     double grandTotal = 0;
 
@@ -613,10 +604,10 @@ CC: CONGESTION CHARGES
         TextCellValue(b.referenceNumber ?? ""),
         TextCellValue(b.pickupDate ?? ""),
         TextCellValue(b.pickupTime ?? ""),
-        TextCellValue(b.vehicleType?.name ?? ""),
-        TextCellValue(b.name ?? ""),
-        TextCellValue(b.pickup ?? ""),
-        TextCellValue(b.dropoff ?? ""),
+        TextCellValue((b.vehicleType?.name ?? "").toUpperCase()),
+        TextCellValue((b.name ?? "").toUpperCase()),
+        TextCellValue((b.pickup ?? "").toUpperCase()),
+        TextCellValue((b.dropoff ?? "").toUpperCase()),
         DoubleCellValue(fare),
         DoubleCellValue(pc),
         DoubleCellValue(wc),
@@ -735,7 +726,7 @@ CC: CONGESTION CHARGES
     var response = await Api()
         .post(formData, "bookings/fare-charges/${booking.id}", auth: true);
     if (response.statusCode == 200) {
-      BotToast.showText(text: "Charges updated!");
+      BotToast.showText(text: "CHARGES UPDATED!");
     }
   }
 
@@ -761,7 +752,7 @@ CC: CONGESTION CHARGES
         .post(formData, "account_invoice/update/${invoice.id}", auth: true);
 
     if (response.statusCode == 200) {
-      BotToast.showText(text: "Invoice Updated Successfully!");
+      BotToast.showText(text: "INVOICE UPDATED SUCCESSFULLY!");
     }
   }
 }
