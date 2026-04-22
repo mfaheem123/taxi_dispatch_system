@@ -1,6 +1,8 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 
+import '../../component/textStyle.dart';
+
 class AuthorizationScreen extends StatefulWidget {
   const AuthorizationScreen({super.key});
 
@@ -28,6 +30,313 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
 
   // Permissions data for each menu
   final Map<String, List<Map<String, List<String>>>> permissions = {
+    "SETTINGS": [
+      {
+        "COMPANY SETTINGS": [
+          "UPDATE COMPANY INFORMATION",
+          "READ COMPANY INFORMATIONS",
+          "UPDATE COMPANY CONFIGURATION",
+          "READ COMPANY CONFIGURATIONS",
+          "CREATE USER",
+          "READ VOIP SETTINGS",
+          "CREATE SMS TEMPLATE",
+        ]
+      },
+      {
+        "TEMPLATE": [
+          "CREATE TEMPLATE",
+          "READ TEMPLATES",
+          "READ TEMPLATE",
+          "UPDATE TEMPLATE",
+          "DELETE TEMPLATE",
+        ],
+      },
+      {
+        "TEMPLATE TYPE": [
+          "CREATE TEMPLATE TYPE",
+          "READ TEMPLATE TYPES",
+          "READ TEMPLATE TYPE",
+          "UPDATE TEMPLATE TYPE",
+          "DELETE TEMPLATE TYPE",
+        ],
+      },
+      {
+        "DOCUMENT NUMBER": [
+          "CREATE DOCUMENT NUMBER",
+          "READ DOCUMENT NUMBERS",
+          "READ DOCUMENT NUMBER",
+          "UPDATE DOCUMENT NUMBER",
+          "DELETE DOCUMENT NUMBER",
+        ],
+      },
+      {
+        "FEEDBACK": [
+          "CREATE FEEDBACK",
+          "READ FEEDBACKS",
+          "READ FEEDBACK",
+          "UPDATE FEEDBACK",
+          "DELETE FEEDBACK",
+        ],
+      },
+      {
+        "MESSAGE": [
+          "CREATE MESSAGE",
+          "READ MESSAGES",
+          "READ MESSAGE",
+          "UPDATE MESSAGE",
+          "DELETE MESSAGE",
+        ],
+      },
+      {
+        "NOTIFICATION": [
+          "CREATE NOTIFICATION",
+          "READ NOTIFICATIONS",
+          "READ NOTIFICATION",
+          "UPDATE NOTIFICATION",
+          "DELETE NOTIFICATION",
+        ],
+      },
+      {
+        "AUDIT": [
+          "CREATE AUDIT",
+          "READ AUDITS",
+          "READ AUDIT",
+          "UPDATE AUDIT",
+          "DELETE AUDIT",
+        ],
+      },
+    ],
+    "SUBSIDIARY": [
+      {
+        "SUBSIDIARY": [
+          "CREATE SUBSIDIARY",
+          "READ SUBSIDIARY",
+          "READ SUBSIDIARIES",
+          "UPDATE SUBSIDIARY",
+          "DELETE SUBSIDIARY",
+        ],
+      },
+    ],
+    "EMPLOYEE": [
+      {
+        "EMPLOYEE": [
+          "CREATE EMPLOYEE",
+          "READ EMPLOYEE",
+          "READ EMPLOYEES",
+          "UPDATE EMPLOYEE",
+          "DELETE EMPLOYEE",
+        ]
+      },
+      {
+        "ROLE": [
+          "READ ROLE",
+          "READ ROLES",
+          "UPDATE ROLE",
+        ],
+      },
+      {
+        "EMPLOYEE SHIFT HISTORY": [
+          "CREATE EMPLOYEE SHIFT HISTORY",
+          "READ EMPLOYEE SHIFT HISTORY",
+          "UPDATE EMPLOYEE SHIFT HISTORY",
+        ],
+      },
+    ],
+    "VEHICLE": [
+      {
+        "VEHICLE TYPE": [
+          "CREATE VEHICLE TYPE",
+          "READ VEHICLE TYPE",
+          "READ VEHICLE TYPES",
+          "UPDATE VEHICLE TYPE",
+          "DELETE VEHICLE TYPE",
+        ]
+      },
+      {
+        "COMPANY VEHICLE": [
+          "CREATE COMPANY VEHICLE",
+          "READ COMPANY VEHICLE",
+          "READ COMPANY VEHICLES",
+          "UPDATE COMPANY VEHICLE",
+          "DELETE COMPANY VEHICLE",
+        ],
+      },
+      {
+        "VEHICLE": [
+          "CREATE VEHICLE",
+          "READ VEHICLE",
+          "READ VEHICLES",
+          "UPDATE VEHICLE",
+          "DELETE VEHICLE",
+        ],
+      },
+      {
+        "END VEHICLE": [
+          "CREATE END VEHICLE",
+        ],
+      },
+    ],
+    "CUSTOMER": [
+      {
+        "CUSTOMER": [
+          "CREATE CUSTOMER",
+          "READ CUSTOMER",
+          "READ CUSTOMERS",
+          "UPDATE CUSTOMER",
+          "DELETE CUSTOMER",
+        ]
+      },
+      {
+        "LOST PROPERTY": [
+          "CREATE LOST PROPERTY",
+          "READ LOST PROPERTY",
+          "READ LOST PROPERTIES",
+          "UPDATE LOST PROPERTY",
+          "DELETE LOST PROPERTY",
+        ],
+      },
+      {
+        "COMPLAINT": [
+          "CREATE COMPLAINT",
+          "READ COMPLAINT",
+          "READ COMPLAINTS",
+          "UPDATE COMPLAINT",
+          "DELETE COMPLAINT",
+        ],
+      },
+    ],
+    "DRIVER": [
+      {
+        "DRIVER": [
+          "CREATE DRIVER",
+          "READ DRIVER",
+          "READ DRIVERS",
+          "UPDATE DRIVER",
+          "DELETE DRIVER",
+          "UPDATE DRIVER ZONE",
+          "CREATE END DRIVER",
+        ]
+      },
+      {
+        "DRIVER SHIFT": [
+          "CREATE DRIVER SHIFT",
+          "READ DRIVER SHIFT",
+          "READ DRIVER SHIFTS",
+          "UPDATE DRIVER SHIFT",
+          "DELETE DRIVER SHIFT",
+        ],
+      },
+      {
+        "DRIVER AVAILABILITY": [
+          "CREATE DRIVER AVAILABILITY",
+          "READ DRIVER AVAILABILITY",
+          "READ DRIVER AVAILABILITIES",
+          "UPDATE DRIVER AVAILABILITY",
+          "DELETE DRIVER AVAILABILITY",
+        ],
+      },
+      {
+        "DRIVER BOOKING": [
+          "CREATE DRIVER BOOKING",
+          "READ DRIVER BOOKING",
+          "READ DRIVER BOOKINGS",
+          "UPDATE DRIVER BOOKING",
+          "DELETE DRIVER BOOKING",
+        ],
+      },
+      {
+        "DRIVER COMMISSION": [
+          "CREATE DRIVER COMMISSION",
+          "READ DRIVER COMMISSION",
+          "READ DRIVER COMMISSIONS",
+          "UPDATE DRIVER COMMISSION",
+          "DELETE DRIVER COMMISSION",
+        ],
+      },
+      {
+        "DRIVER COMMISSION ACCOUNT": [
+          "CREATE DRIVER COMMISSION ACCOUNT",
+          "READ DRIVER COMMISSION ACCOUNT",
+          "READ DRIVER COMMISSION ACCOUNTS",
+          "UPDATE DRIVER COMMISSION ACCOUNT",
+          "DELETE DRIVER COMMISSION ACCOUNT",
+        ],
+      },
+      {
+        "DRIVER COMMISSION LINEITEM": [
+          "CREATE DRIVER COMMISSION LINEITEM",
+          "READ DRIVER COMMISSION LINEITEM",
+          "READ DRIVER COMMISSION LINEITEMS",
+          "UPDATE DRIVER COMMISSION LINEITEM",
+          "DELETE DRIVER COMMISSION LINEITEM",
+        ],
+      },
+      {
+        "DRIVER SHIFT HISTORY": [
+          "CREATE DRIVER SHIFT HISTORY",
+          "READ DRIVER SHIFT HISTORY",
+          "READ DRIVER SHIFT HISTORIES",
+          "UPDATE DRIVER SHIFT HISTORY",
+          "DELETE DRIVER SHIFT HISTORY",
+        ],
+      },
+    ],
+    "ACCOUNT": [
+      {
+        "ACCOUNT": [
+          "CREATE ACCOUNT",
+          "READ ACCOUNT",
+          "READ ACCOUNTS",
+          "UPDATE ACCOUNT",
+          "DELETE ACCOUNT",
+        ],
+      },
+      {
+        "ACCOUNT WEB LOGIN": [
+          "CREATE ACCOUNT WEB LOGIN",
+          "READ ACCOUNT WEB LOGIN",
+          "READ ACCOUNT WEB LOGINS",
+          "UPDATE ACCOUNT WEB LOGIN",
+          "DELETE ACCOUNT WEB LOGIN",
+        ],
+      },
+      {
+        "ACCOUNT ORDER NUMBER": [
+          "CREATE ACCOUNT ORDER NUMBER",
+          "READ ACCOUNT ORDER NUMBER",
+          "READ ACCOUNT ORDER NUMBERS",
+          "UPDATE ACCOUNT ORDER NUMBER",
+          "DELETE ACCOUNT ORDER NUMBER"
+        ],
+      },
+      {
+        "ACCOUNT DEPARTMENT": [
+          "CREATE ACCOUNT DEPARTMENT",
+          "READ ACCOUNT DEPARTMENT",
+          "READ ACCOUNT DEPARTMENTS",
+          "UPDATE ACCOUNT DEPARTMENT",
+          "DELETE ACCOUNT DEPARTMENT",
+        ],
+      },
+      {
+        "ACCOUNT CONTACT": [
+          "CREATE ACCOUNT CONTACT",
+          "READ ACCOUNT CONTACT",
+          "READ ACCOUNT CONTACTS",
+          "UPDATE ACCOUNT CONTACT",
+          "DELETE ACCOUNT CONTACT",
+        ],
+      },
+      {
+        "ACCOUNT COMPANY ADDRESS": [
+          "CREATE ACCOUNT COMPANY ADDRESS",
+          "READ ACCOUNT COMPANY ADDRESS",
+          "READ ACCOUNT COMPANY ADDRESSES",
+          "UPDATE ACCOUNT COMPANY ADDRESS",
+          "DELETE ACCOUNT COMPANY ADDRESS",
+        ],
+      },
+    ],
     "FARE": [
       {
         "FARE CONFIGURATION": [
@@ -62,47 +371,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         ]
       },
     ],
-    "EMPLOYEE": [
-      {
-        "EMPLOYEE MANAGEMENT": [
-          "Create Employee",
-          "Read Employee",
-          "Read Employees",
-          "Update Employee",
-        ]
-      },
-    ],
-    "VEHICLE": [
-      {
-        "VEHICLE MANAGEMENT": [
-          "Create Vehicle",
-          "Read Vehicle",
-          "Read Vehicles",
-          "Update Vehicle",
-        ]
-      },
-    ],
-    "CUSTOMER": [
-      {
-        "CUSTOMER MANAGEMENT": [
-          "Create Customer",
-          "Read Customer",
-          "Read Customers",
-          "Update Customer",
-        ]
-      },
-    ],
-    "DRIVER": [
-      {
-        "DRIVER MANAGEMENT": [
-          "Create Driver",
-          "Read Driver",
-          "Read Drivers",
-          "Update Driver",
-        ]
-      },
-    ],
-    // baki ke liye tum apne cards add kar lena
   };
 
   @override
@@ -132,6 +400,18 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                     DropdownMenuItem(value: "user", child: Text("User")),
                   ],
                   onChanged: (value) {},
+                ),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "AUTHORIZATION",
+                    style: mozillaTextSemiBoldText(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
                 ),
               ),
               ElevatedButton(

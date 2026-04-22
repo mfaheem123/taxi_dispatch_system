@@ -343,7 +343,7 @@ class _WebBookingState extends State<WebBooking> {
                                   controller.onSearchpreBooking();
                                 },
                               ),
-                              buildHeaderWithSearch(title: "NOT",
+                              buildHeaderWithSearch(title: "NOTE",
                                 onChanged: (v) {
                                   controller.webnotes.text = v;
                                   controller.onSearchpreBooking();
@@ -381,17 +381,22 @@ class _WebBookingState extends State<WebBooking> {
                             rows: listToShow.map((item) {
                               return DataRow(
                                 cells: [
-                                  DataCell(Center(child: Text(item.referenceNumber ?? '—'))),
+                                  DataCell(Center(child: Text(item.referenceNumber ?? ''))),
                                   DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-                                  DataCell(Center(child: Text(item.name ?? '—'))),
-                                  DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.account.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.toggleDriverText ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.paymentType.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.vehicleType?.name ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.notes.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.fares.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.account?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.driver?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.paymentType?.name ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
+                                  // DataCell(Center(child: Text(item.notes.toString() ?? ''))),
+                                  DataCell(Center(child: Text(
+                                      ((item.notes != null && item.notes!.isNotEmpty)
+                                          ? item.notes!.first.note ?? ''
+                                          : ''
+                                      ).toUpperCase()))),
+                                  DataCell(Center(child: Text(item.fares?.toString() ?? ''))),
 
                                   DataCell(Center(child:
 
@@ -405,15 +410,15 @@ class _WebBookingState extends State<WebBooking> {
                                       color: DynamicColors.statusColor,
                                       // Optional: borderRadius: BorderRadius.circular(2),
                                     ),
-                                    child: Text(
-                                      item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                                    child: Text((
+                                      item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
                                       style: TextStyle(color: DynamicColors.whiteClr),
                                     ),
                                   ),
 
                                   )),
-                                  DataCell(Center(child: Text(item.journeyType.toString() ?? 'N/A'))),
-                                  DataCell(Center(child: Text(item.subsidiary.toString() ?? 'N/A'))),
+                                  DataCell(Center(child: Text((item.journeyType?.journeyType ?? '').toUpperCase()))),
+                                  DataCell(Center(child: Text(item.subsidiary?.name ?? ''))),
                                   DataCell(
                                     Center(
                                       child: Row(

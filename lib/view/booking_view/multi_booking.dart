@@ -141,10 +141,10 @@ class _MultiBookingState extends State<MultiBooking> {
         return DataRow(
           cells: [
             DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-            DataCell(Center(child: Text(item.customer.toString() ?? "-"))),
-            DataCell(Center(child: Text( item.mobile ?? "-"))),
-            DataCell(Center(child: Text( item.pickup ?? "-"))),
-            DataCell(Center(child: Text(item.dropoff ?? "-"))),
+            DataCell(Center(child: Text((item.customer.toString() ?? "").toUpperCase()))),
+            DataCell(Center(child: Text(item.mobile ?? ""))),
+            DataCell(Center(child: Text((item.pickup ?? "").toUpperCase()))),
+            DataCell(Center(child: Text((item.dropoff ?? "").toUpperCase()))),
             DataCell(
             Center(
               child: Row(
