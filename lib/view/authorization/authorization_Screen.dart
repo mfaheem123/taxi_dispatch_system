@@ -340,35 +340,189 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
     "FARE": [
       {
         "FARE CONFIGURATION": [
-          "Create Fare Configuration",
-          "Read Fare Configuration",
-          "Read Fare Configurations",
-          "Update Fare Configuration",
+          "CREATE FARE CONFIGURATION",
+          "READ FARE CONFIGURATION",
+          "READ FARE CONFIGURATIONS",
+          "UPDATE FARE CONFIGURATION",
+          "DELETE FARE CONFIGURATION",
         ]
       },
       {
         "FIXED FARE": [
-          "Create Fixed Fare",
-          "Read Fixed Fare",
-          "Read Fixed Fares",
-          "Update Fixed Fare",
+          "CREATE FIXED FARE",
+          "READ FIXED FARE",
+          "READ FIXED FARES",
+          "UPDATE FIXED FARE",
+          "DELETE FIXED FARE"
         ]
       },
       {
         "FARE BY VEHICLE": [
-          "Create Fare By Vehicle",
-          "Read Fare By Vehicle",
-          "Read Fare By Vehicles",
-          "Update Fare By Vehicle",
+          "CREATE FARE BY VEHICLE",
+          "READ FARE BY VEHICLE",
+          "READ FARE BY VEHICLES",
+          "UPDATE FARE BY VEHICLE",
+          "DELETE FARE BY VEHICLE",
         ]
       },
       {
         "FARE CONFIGURATION MILEAGE": [
-          "Create Fare Configuration Mileage",
-          "Read Fare Configuration Mileage",
-          "Read Fare Configuration Mileages",
-          "Update Fare Configuration Mileage",
+          "CREATE FARE CONFIGURATION MILEAGE",
+          "READ FARE CONFIGURATION MILEAGE",
+          "READ FARE CONFIGURATION MILEAGES",
+          "UPDATE FARE CONFIGURATION MILEAGE",
+          "DELETE FARE CONFIGURATION MILEAGE",
         ]
+      },
+    ],
+    "LOCATION": [
+      {
+        "LOCATION TYPE": [
+          "CREATE LOCATION TYPE",
+          "READ LOCATION TYPE",
+          "READ LOCATION TYPES",
+          "UPDATE LOCATION TYPE",
+          "DELETE LOCATION TYPE",
+        ],
+      },
+      {
+        "LOCATION": [
+          "CREATE LOCATION",
+          "READ LOCATION",
+          "READ LOCATIONS",
+          "UPDATE LOCATION",
+          "DELETE LOCATION",
+        ],
+      },
+      {
+        "LOCALIZATION DETAIL": [
+          "CREATE LOCALIZATION DETAIL",
+          "READ LOCALIZATION DETAIL",
+          "READ LOCALIZATION DETAILS",
+          "UPDATE LOCALIZATION DETAIL",
+          "DELETE LOCALIZATION DETAIL",
+        ],
+      },
+      {
+        "MAIN DATA": [
+          "CREATE MAIN DATA",
+          "READ MAIN DATA",
+          "READ MAIN DATAS",
+          "UPDATE MAIN DATA",
+          "DELETE MAIN DATA",
+        ],
+      },
+      {
+        "DETAIL DATAS": [
+          "CREATE DETAIL DATA",
+          "READ DETAIL DATA",
+          "READ DETAIL DATAS",
+          "UPDATE DETAIL DATA",
+          "DELETE DETAIL DATA",
+        ],
+      },
+      {
+        "ZONE": [
+          "CREATE ZONE",
+          "READ ZONE",
+          "READ ZONES",
+          "UPDATE ZONE",
+          "DELETE ZONE",
+        ],
+      },
+    ],
+    "BOOKING": [
+      {
+        "JOURNEY TYPE": [
+          "CREATE JOURNEY TYPE",
+          "READ JOURNEY TYPE",
+          "READ JOURNEY TYPES",
+          "UPDATE JOURNEY TYPE",
+          "DELETE JOURNEY TYPE",
+        ],
+      },
+      {
+        "PAYMENT TYPE": [
+          "CREATE PAYMENT TYPE",
+          "READ PAYMENT TYPE",
+          "READ PAYMENT TYPES",
+          "UPDATE PAYMENT TYPE",
+          "DELETE PAYMENT TYPE",
+        ],
+      },
+      {
+        "BOOKING": [
+          "CREATE BOOKING",
+          "READ BOOKING",
+          "READ BOOKINGS",
+          "UPDATE BOOKING",
+          "DELETE BOOKING",
+        ],
+      },
+      {
+        "BOOKING ROUTE": [
+          "CREATE BOOKING ROUTE",
+          "READ BOOKING ROUTE",
+          "READ BOOKING ROUTES",
+          "UPDATE BOOKING ROUTE",
+          "DELETE BOOKING ROUTE",
+        ],
+      },
+      {
+        "TRASH BOOKING": [
+          "CREATE TRASH BOOKING",
+          "READ TRASH BOOKING",
+          "READ TRASH BOOKINGS",
+          "UPDATE TRASH BOOKING",
+          "DELETE TRASH BOOKING",
+        ],
+      },
+      {
+        "BOOKING AUDIT": [
+          "CREATE BOOKING AUDIT",
+          "READ BOOKING AUDIT",
+          "READ BOOKING AUDITS",
+          "UPDATE BOOKING AUDIT",
+          "DELETE BOOKING AUDIT",
+        ],
+      },
+    ],
+    "INVOICE": [
+      {
+        "CUSTOMER INVOICE": [
+          "CREATE CUSTOMER INVOICE",
+          "READ CUSTOMER INVOICE",
+          "READ CUSTOMER INVOICES",
+          "UPDATE CUSTOMER INVOICE",
+          "DELETE CUSTOMER INVOICE",
+        ],
+      },
+      {
+        "CUSTOMER INVOICE LINEITEM": [
+          "CREATE CUSTOMER INVOICE LINEITEM",
+          "READ CUSTOMER INVOICE LINEITEM",
+          "READ CUSTOMER INVOICE LINEITEMS",
+          "UPDATE CUSTOMER INVOICE LINEITEM",
+          "DELETE CUSTOMER INVOICE LINEITEM",
+        ],
+      },
+      {
+        "ACCOUNT INVOICE": [
+          "CREATE ACCOUNT INVOICE",
+          "READ ACCOUNT INVOICE",
+          "READ ACCOUNT INVOICES",
+          "UPDATE ACCOUNT INVOICE",
+          "DELETE ACCOUNT INVOICE",
+        ],
+      },
+      {
+        "ACCOUNT INVOICE LINEITEM": [
+          "CREATE ACCOUNT INVOICE LINEITEM",
+          "READ ACCOUNT INVOICE LINEITEM",
+          "READ ACCOUNT INVOICE LINEITEMS",
+          "UPDATE ACCOUNT INVOICE LINEITEM",
+          "DELETE ACCOUNT INVOICE LINEITEM",
+        ],
       },
     ],
   };
