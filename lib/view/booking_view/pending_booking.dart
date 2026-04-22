@@ -75,36 +75,36 @@ class _PendingBookingState extends State<PendingBooking> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Row(
-                      //   children: [
-                      //     Text(AppText.pendingBookings+" (10)",
-                      //       style: mozillaTextSemiBoldText(
-                      //           fontWeight: FontWeight.w800,
-                      //           fontSize: 17
-                      //       ),
-                      //     ),
-                      //     SizedBox(
-                      //       width: 20,
-                      //     ),
-                      //
-                      //     Container(
-                      //       decoration: BoxDecoration(
-                      //           color: DynamicColors.primaryClr,
-                      //           borderRadius: BorderRadius.circular(8)
-                      //       ),
-                      //       child: IconButton(
-                      //           padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                      //           onPressed: (){
-                      //
-                      //           }, icon: Icon(Icons.refresh,
-                      //         color: DynamicColors.whiteClr,
-                      //         size: 25,
-                      //       )),
-                      //     )
-                      //   ],
-                      // ),SizedBox(
-                      //   height: 10,
-                      // ),
+                      Row(
+                        children: [
+                          Text(AppText.pendingBookings + " (${controller.pendingBookingModelData?.total.toString()})",
+                            style: mozillaTextSemiBoldText(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 17
+                            ),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+
+                          Container(
+                            decoration: BoxDecoration(
+                                color: DynamicColors.primaryClr,
+                                borderRadius: BorderRadius.circular(8)
+                            ),
+                            child: IconButton(
+                                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
+                                onPressed: (){
+
+                                }, icon: Icon(Icons.refresh,
+                              color: DynamicColors.whiteClr,
+                              size: 25,
+                            )),
+                          )
+                        ],
+                      ),SizedBox(
+                        height: 10,
+                      ),
                       // Wrap(
                       //   spacing: 10,
                       //   runSpacing: 16,

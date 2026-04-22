@@ -183,7 +183,7 @@ class _PreBookingState extends State<PreBooking> {
                               },
                             ),
                             buildHeaderWithSearch(
-                              title: "NOT",
+                              title: "NOTE",
                               onChanged: (v) {
                                 controller.notes.text = v;
                                 controller.onSearchpreBooking();

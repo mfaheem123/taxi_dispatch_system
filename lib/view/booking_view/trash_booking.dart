@@ -197,23 +197,23 @@ class _TrashBookingState extends State<TrashBooking> {
                             ),
                           ),
                           DataCell(
-                              Center(child: Text(item.referenceNumber ?? '—'))),
+                              Center(child: Text(item.referenceNumber ?? ''))),
                           DataCell(Center(
                               child: Text(
                                   "${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
-                          DataCell(Center(child: Text(item.name ?? '—'))),
-                          DataCell(Center(child: Text(item.pickup ?? 'N/A'))),
-                          DataCell(Center(child: Text(item.dropoff ?? 'N/A'))),
+                          DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
+                          DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
+                          DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),
                           DataCell(Center(
-                              child: Text(item.account.toString() ?? 'N/A'))),
+                              child: Text((item.account?.name ?? '').toUpperCase()))),
                           DataCell(Center(
-                              child: Text(item.toggleDriverText ?? 'N/A'))),
+                              child: Text((item.driver?.name ?? '').toUpperCase()))),
 
                           DataCell(Center(
-                              child: Text(item.vehicleType?.name ?? 'N/A'))),
+                              child: Text((item.vehicleType?.name ?? '').toUpperCase()))),
 
                           DataCell(Center(
-                              child: Text(item.fares.toString() ?? 'N/A'))),
+                              child: Text(item.fares?.toString() ?? ''))),
                           DataCell(Center(
                               child: Container(
                                   width: double.infinity,
@@ -221,11 +221,11 @@ class _TrashBookingState extends State<TrashBooking> {
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
                                       color: DynamicColors.statusColor),
-                                  child: Text(item.bookingStatus?.bookingStatus.toString() ?? 'N/A',
+                                  child: Text((item.bookingStatus?.bookingStatus.toString() ?? '').toUpperCase(),
                                       style: TextStyle(color: DynamicColors.whiteClr))))),
                           DataCell(Center(
                               child:
-                                  Text(item.journeyType.toString() ?? 'N/A'))),
+                                  Text((item.journeyType?.journeyType ?? '').toUpperCase()))),
 
                           DataCell(
                             Row(
