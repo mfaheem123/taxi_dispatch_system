@@ -289,7 +289,38 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     var response = await Api().get("drivers/tracking-drivers");
     if(response.statusCode == 200){
       onlineBusyDriversList = GetAllLabelsFromWidowModel.fromJson(response.data);
+      trackingDriverSocket();
       update();
+    }
+  }
+
+
+  void trackingDriverSocket() {
+    final url = Uri.parse("$socketUrl/driver-tracking-dashboard");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+
+          print(data['event']);
+          print(data['data']['latitude']);
+          print(data['data']['longitude']);
+          print(data['event']);
+     
+
+            },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
     }
   }
 
@@ -679,7 +710,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   List<LatLng> polylinePointsCoordinate = [];
   List<Polyline> polylines = [];
   List<CustomMarker> markers = [];
-  List<CustomMarker> trackingMarkers = [];
+
   RxString totalDistance = "0".obs;
   RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
@@ -1345,10 +1376,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-         getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer?.cancel();
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //    getDashboardTableData(tableId: selectedTabId);
+      // });
 
       update();
     }

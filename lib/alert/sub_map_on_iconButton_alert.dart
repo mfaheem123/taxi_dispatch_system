@@ -21,13 +21,20 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
 
   // Boolean variable to track state
   bool isFullScreen = false;
+  late final MapController mapController;
+  /// 👇 MUST be RxList
+  final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    mapController = MapController();
     dashBoardCntrl.getAllDriversTracking();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -41,220 +48,570 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
         duration: const Duration(milliseconds: 300),
         width: isFullScreen ? Get.width : Get.width * 0.9,
         height: isFullScreen ? Get.height : Get.height * 0.85,
-        child: GetBuilder<DashboardController>(
-          builder: (controller) {
-            return controller.onlineBusyDriversList == null?Center(
-              child: CircularProgressIndicator(),
-            ): Column(
-              children: [
-                /// HEADER
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "DRIVERS MAP",
-                        style: mozillaTextSemiBoldText(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isFullScreen = !isFullScreen;
-                              });
-                            },
-                            child: Icon(
-                              isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
-                              color: DynamicColors.textClr,
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          GestureDetector(
-                            onTap: () => Get.back(),
-                            child: Icon(Icons.close, color: DynamicColors.textClr, size: 20),
-                          ),
-                        ],
-                      )
-                    ],
+        child: Column(
+          children: [
+            /// HEADER
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "DRIVERS MAP",
+                    style: mozillaTextSemiBoldText(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
                   ),
-                ),
-                const Divider(height: 1),
-                Expanded(
-                  child: Row(
+                  Row(
                     children: [
-                      Expanded(
-                        flex: 3,
-                        child:
-                        Positioned.fill(
-                          child: ClipRRect(
-                            child: FlutterMap(
-                              mapController: controller.mapController,
-                              options: MapOptions(
-                                initialCenter: LatLng(50.5, 30.51),
-                                initialZoom: 13.0,
-                                interactionOptions: const InteractionOptions(
-                                  flags: InteractiveFlag.all,
-                                  enableMultiFingerGestureRace: true,
-                                ),
-                                onMapReady: () {
-                                  // if (controller.onlineBusyDriversList.length >= 2) {
-                                  //   final bounds =
-                                  //   LatLngBounds.fromPoints(polylinePoints);
-                                  //   controller.mapController.fitCamera(
-                                  //     CameraFit.bounds(
-                                  //         bounds: bounds,
-                                  //         padding: const EdgeInsets.all(60)),
-                                  //   );
-                                  // }
-                                },
-                              ),
-
-                              children: [
-                                /// 🗺️ Base map
-                                TileLayer(
-                                  urlTemplate:
-                                  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                  subdomains: const ['a', 'b', 'c'],
-                                ),
-
-                                /// 📌 Markers
-                                MarkerLayer(markers: controller.markers),
-                              ],
-                            ),
-                          ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isFullScreen = !isFullScreen;
+                          });
+                        },
+                        child: Icon(
+                          isFullScreen
+                              ? Icons.fullscreen_exit
+                              : Icons.fullscreen,
+                          color: DynamicColors.textClr,
+                          size: 24,
                         ),
-                        // Stack(
-                        //   children: [
-                        //     FlutterMap(
-                        //       options: const MapOptions(
-                        //         initialCenter: LatLng(51.5862, -0.1983),
-                        //         initialZoom: 13.0,
-                        //       ),
-                        //       children: [
-                        //         TileLayer(
-                        //           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        //           subdomains: const ['a', 'b', 'c'],
-                        //         ),
-                        //         MarkerLayer(markers: controller.markers),
-                        //       ],
-                        //     ),
-                        //   ],
-                        // ),
                       ),
+                      const SizedBox(width: 15),
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: Icon(Icons.close,
+                            color: DynamicColors.textClr, size: 20),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
 
-                      ///  RIGHT SIDE: (Sidebar)
-                      Container(
-                        width: 300,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border(left: BorderSide(color: Colors.grey.shade300)),
+            const Divider(height: 1),
+
+            /// 🔥 MAP (NOT inside GetBuilder)
+            Expanded(
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  ClipRRect(
+                    child: FlutterMap(
+                      mapController: mapController,
+                      options: MapOptions(
+                        initialCenter: LatLng(50.5, 30.51),
+                        initialZoom: 13.0,
+                        interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.all,
+                          enableMultiFingerGestureRace: true,
                         ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    AppText.drivers.toUpperCase(),
-                                    style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w800),
+                      ),
+                      children: [
+                        TileLayer(
+                          urlTemplate:
+                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                          subdomains: const ['a', 'b', 'c'],
+                        ),
+
+                        /// ✅ Reactive markers (NO rebuild crash)
+                        MarkerLayer(
+                          markers: trackingMarkers,
+                        ),
+                      ],
+                    ),
+                  ),
+                  /// 🔥 DRIVER LIST (ONLY THIS uses GetBuilder)
+                  Container(
+                    height: Get.height,
+                    width: 250,
+                    color: DynamicColors.whiteClr,
+                    child: GetBuilder<DashboardController>(
+                      builder: (controller) {
+                        if (controller.onlineBusyDriversList == null) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+
+                        return ListView.builder(
+                          itemCount: controller
+                              .onlineBusyDriversList?.trackingDrivers?.length ??
+                              0,
+                          itemBuilder: (context, index) {
+                            final driver = controller
+                                .onlineBusyDriversList!.trackingDrivers![index];
+
+                            return GestureDetector(
+                              onTap: () {
+                                final lat = double.parse(driver.latitude!);
+                                final lng = double.parse(driver.longitude!);
+                                final target = LatLng(lat, lng);
+
+                                /// 🔥 Update markers safely
+                                trackingMarkers.removeWhere((m) =>
+                                m is CustomMarker &&
+                                    m.withReturnType == "driverMarker");
+
+                                trackingMarkers.add(
+                                  CustomMarker(
+                                    withReturnType: "driverMarker",
+                                    type: "driverMarker",
+                                    point: target,
+                                    width: 70,
+                                    height: 70,
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        const Image(
+                                          image:
+                                          AssetImage("assets/car3.png"),
+                                          width: 70,
+                                          height: 70,
+                                        ),
+                                        Text(
+                                          driver.username ?? "",
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  Row(
-                                    children: [
-                                      _actionButton("SHOW ZONES", Color(0xff424899)),
-                                      const SizedBox(width: 5),
-                                      _actionButton("CLEAR", Color(0xff424899)),
-                                    ],
-                                  )
-                                ],
+                                );
+
+                                /// 🔥 Move map safely
+                                Future.delayed(
+                                    const Duration(milliseconds: 100), () {
+                                  mapController.move(target, 16);
+                                });
+                                setState(() {
+
+                                });
+                              },
+                              child: _driverTile(
+                                driver.username ?? "",
+                                driver.bookingStatus ?? "",
                               ),
-                            ),
-                            const Divider(),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: controller.onlineBusyDriversList!.trackingDrivers!.length,
-                                itemBuilder: (context, index) {
-                                  TrackingDriverObject driverIndex = controller.onlineBusyDriversList!.trackingDrivers![index];
-
-                                  return GestureDetector(
-                                      onTap: () {
-                                        // Wrap the logic in a post-frame callback to avoid the build collision
-                                        WidgetsBinding.instance.addPostFrameCallback((_) {
-
-                                          // 1. Remove the existing marker
-                                          controller.markers.removeWhere((marker) {
-                                            return marker is CustomMarker &&
-                                                marker.withReturnType == "driverMarker" &&
-                                                marker.child is Stack &&
-                                                (marker.child as Stack).children.any((widget) =>
-                                                widget is Text && widget.data == driverIndex.username);
-                                          });
-
-                                          // 2. Add the new updated marker
-                                          controller.markers.add(
-                                            CustomMarker(
-                                              withReturnType: "driverMarker",
-                                              child: Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  const Image(
-                                                    image: AssetImage("assets/car3.png"),
-                                                    width: 70,
-                                                    height: 70,
-                                                  ),
-                                                  Text(
-                                                    "${driverIndex.username}",
-                                                    style: const TextStyle(fontSize: 12, color: Colors.white),
-                                                  )
-                                                ],
-                                              ),
-                                              type: "driverMarker",
-                                              point: LatLng(
-                                                double.parse(driverIndex.latitude!),
-                                                double.parse(driverIndex.longitude!),
-                                              ),
-                                              width: 70,
-                                              height: 70,
-                                            ),
-                                          );
-
-                                          final target = LatLng(
-                                            double.parse(driverIndex.latitude!),
-                                            double.parse(driverIndex.longitude!),
-                                          );
-
-                                          controller.mapController.move(target, 16);
-
-                                          // Now it is safe to update the state
-                                          controller.update();
-                                          if (mounted) {
-                                            setState(() {});
-                                          }
-                                        });
-                                      },
-                                      child: _driverTile(driverIndex.username!, driverIndex.bookingStatus!));
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            );
-          }
+                ],
+              ),
+            ),
+
+          ],
         ),
       ),
     );
+
+    // return Dialog(
+    //   insetPadding: isFullScreen ? EdgeInsets.zero : const EdgeInsets.all(20),
+    //   backgroundColor: Colors.white,
+    //   shape: RoundedRectangleBorder(
+    //     borderRadius: BorderRadius.circular(isFullScreen ? 0 : 8),
+    //   ),
+    //   child: AnimatedContainer(
+    //     duration: const Duration(milliseconds: 300),
+    //     width: isFullScreen ? Get.width : Get.width * 0.9,
+    //     height: isFullScreen ? Get.height : Get.height * 0.85,
+    //     child: GetBuilder<DashboardController>(
+    //       builder: (controller) {
+    //         return controller.onlineBusyDriversList == null?Center(
+    //           child: CircularProgressIndicator(),
+    //         ): Column(
+    //           children: [
+    //             /// HEADER
+    //             Padding(
+    //               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+    //               child: Row(
+    //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                 children: [
+    //                   Text(
+    //                     "DRIVERS MAP",
+    //                     style: mozillaTextSemiBoldText(
+    //                       fontWeight: FontWeight.w700,
+    //                       fontSize: 14,
+    //                     ),
+    //                   ),
+    //                   Row(
+    //                     children: [
+    //                       GestureDetector(
+    //                         onTap: () {
+    //                           setState(() {
+    //                             isFullScreen = !isFullScreen;
+    //                           });
+    //                         },
+    //                         child: Icon(
+    //                           isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+    //                           color: DynamicColors.textClr,
+    //                           size: 24,
+    //                         ),
+    //                       ),
+    //                       const SizedBox(width: 15),
+    //                       GestureDetector(
+    //                         onTap: () => Get.back(),
+    //                         child: Icon(Icons.close, color: DynamicColors.textClr, size: 20),
+    //                       ),
+    //                     ],
+    //                   )
+    //                 ],
+    //               ),
+    //             ),
+    //             const Divider(height: 1),
+    //             ClipRRect(
+    //               child: FlutterMap(
+    //                 mapController: controller.mapController,
+    //                 options: MapOptions(
+    //                   initialCenter: LatLng(50.5, 30.51),
+    //                   initialZoom: 13.0,
+    //                   interactionOptions: const InteractionOptions(
+    //                     flags: InteractiveFlag.all,
+    //                     enableMultiFingerGestureRace: true,
+    //                   ),
+    //                   onMapReady: () {},
+    //                 ),
+    //                 children: [
+    //                   /// 🗺️ Base map
+    //                   TileLayer(
+    //                     urlTemplate:
+    //                     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    //                     subdomains: const ['a', 'b', 'c'],
+    //                   ),
+    //
+    //                   /// 📌 Markers
+    //                   MarkerLayer(markers: controller.markers),
+    //                 ],
+    //               ),
+    //             ),
+    //             // Row(
+    //             //   children: [
+    //             //     /// LEFT SIDE: MAP
+    //             //     Expanded(
+    //             //       flex: 3,
+    //             //       child: ClipRRect(
+    //             //         child: FlutterMap(
+    //             //           mapController: controller.mapController,
+    //             //           options: MapOptions(
+    //             //             initialCenter: LatLng(50.5, 30.51),
+    //             //             initialZoom: 13.0,
+    //             //             interactionOptions: const InteractionOptions(
+    //             //               flags: InteractiveFlag.all,
+    //             //               enableMultiFingerGestureRace: true,
+    //             //             ),
+    //             //             onMapReady: () {},
+    //             //           ),
+    //             //           children: [
+    //             //             /// 🗺️ Base map
+    //             //             TileLayer(
+    //             //               urlTemplate:
+    //             //               'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    //             //               subdomains: const ['a', 'b', 'c'],
+    //             //             ),
+    //             //
+    //             //             /// 📌 Markers
+    //             //             MarkerLayer(markers: controller.markers),
+    //             //           ],
+    //             //         ),
+    //             //       ),
+    //             //     ),
+    //             //
+    //             //     /// RIGHT SIDE: SIDEBAR
+    //             //     Container(
+    //             //       width: 300,
+    //             //       decoration: BoxDecoration(
+    //             //         color: Colors.white,
+    //             //         border: Border(
+    //             //           left: BorderSide(color: Colors.grey.shade300),
+    //             //         ),
+    //             //       ),
+    //             //       child: Column(
+    //             //         children: [
+    //             //           /// HEADER
+    //             //           Padding(
+    //             //             padding: const EdgeInsets.all(10.0),
+    //             //             child: Row(
+    //             //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //             //               children: [
+    //             //                 Text(
+    //             //                   AppText.drivers.toUpperCase(),
+    //             //                   style: mozillaTextSemiBoldText(
+    //             //                     fontSize: 16,
+    //             //                     fontWeight: FontWeight.w800,
+    //             //                   ),
+    //             //                 ),
+    //             //                 Row(
+    //             //                   children: [
+    //             //                     _actionButton("SHOW ZONES", Color(0xff424899)),
+    //             //                     const SizedBox(width: 5),
+    //             //                     _actionButton("CLEAR", Color(0xff424899)),
+    //             //                   ],
+    //             //                 )
+    //             //               ],
+    //             //             ),
+    //             //           ),
+    //             //
+    //             //           const Divider(),
+    //             //
+    //             //           /// DRIVER LIST
+    //             //           Expanded(
+    //             //             child: ListView.builder(
+    //             //               itemCount: controller
+    //             //                   .onlineBusyDriversList?.trackingDrivers?.length ??
+    //             //                   0,
+    //             //               itemBuilder: (context, index) {
+    //             //                 final driver = controller
+    //             //                     .onlineBusyDriversList!.trackingDrivers![index];
+    //             //
+    //             //                 return GestureDetector(
+    //             //                   onTap: () {
+    //             //                     WidgetsBinding.instance
+    //             //                         .addPostFrameCallback((_) {
+    //             //                       final lat = double.parse(driver.latitude!);
+    //             //                       final lng = double.parse(driver.longitude!);
+    //             //
+    //             //                       final target = LatLng(lat, lng);
+    //             //
+    //             //                       /// Remove old marker of this driver
+    //             //                       controller.markers.removeWhere((marker) {
+    //             //                         return marker is CustomMarker &&
+    //             //                             marker.withReturnType == "driverMarker" &&
+    //             //                             marker.child is Stack &&
+    //             //                             (marker.child as Stack)
+    //             //                                 .children
+    //             //                                 .any((widget) =>
+    //             //                             widget is Text &&
+    //             //                                 widget.data ==
+    //             //                                     driver.username);
+    //             //                       });
+    //             //
+    //             //                       /// Add updated marker
+    //             //                       controller.markers.add(
+    //             //                         CustomMarker(
+    //             //                           withReturnType: "driverMarker",
+    //             //                           type: "driverMarker",
+    //             //                           point: target,
+    //             //                           width: 70,
+    //             //                           height: 70,
+    //             //                           child: Stack(
+    //             //                             alignment: Alignment.center,
+    //             //                             children: [
+    //             //                               const Image(
+    //             //                                 image: AssetImage(
+    //             //                                     "assets/car3.png"),
+    //             //                                 width: 70,
+    //             //                                 height: 70,
+    //             //                               ),
+    //             //                               Text(
+    //             //                                 driver.username ?? "",
+    //             //                                 style: const TextStyle(
+    //             //                                   fontSize: 12,
+    //             //                                   color: Colors.white,
+    //             //                                 ),
+    //             //                               )
+    //             //                             ],
+    //             //                           ),
+    //             //                         ),
+    //             //                       );
+    //             //
+    //             //                       /// Move camera
+    //             //                       Future.microtask(() {
+    //             //                         controller.mapController.move(target, 16);
+    //             //                       });
+    //             //
+    //             //                       /// Update UI
+    //             //                       controller.update();
+    //             //                     });
+    //             //                   },
+    //             //                   child: _driverTile(
+    //             //                     driver.username ?? "",
+    //             //                     driver.bookingStatus ?? "",
+    //             //                   ),
+    //             //                 );
+    //             //               },
+    //             //             ),
+    //             //           ),
+    //             //         ],
+    //             //       ),
+    //             //     ),
+    //             //   ],
+    //             // )
+    //
+    //
+    //
+    //             // Expanded(
+    //             //   child: Row(
+    //             //     children: [
+    //             //       Expanded(
+    //             //         flex: 3,
+    //             //         child:
+    //             //         Positioned.fill(
+    //             //           child: ClipRRect(
+    //             //             child: FlutterMap(
+    //             //               mapController: controller.mapController,
+    //             //               options: MapOptions(
+    //             //                 initialCenter: LatLng(50.5, 30.51),
+    //             //                 initialZoom: 13.0,
+    //             //                 interactionOptions: const InteractionOptions(
+    //             //                   flags: InteractiveFlag.all,
+    //             //                   enableMultiFingerGestureRace: true,
+    //             //                 ),
+    //             //                 onMapReady: () {
+    //             //                   // if (controller.onlineBusyDriversList.length >= 2) {
+    //             //                   //   final bounds =
+    //             //                   //   LatLngBounds.fromPoints(polylinePoints);
+    //             //                   //   controller.mapController.fitCamera(
+    //             //                   //     CameraFit.bounds(
+    //             //                   //         bounds: bounds,
+    //             //                   //         padding: const EdgeInsets.all(60)),
+    //             //                   //   );
+    //             //                   // }
+    //             //                 },
+    //             //               ),
+    //             //
+    //             //               children: [
+    //             //                 /// 🗺️ Base map
+    //             //                 TileLayer(
+    //             //                   urlTemplate:
+    //             //                   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    //             //                   subdomains: const ['a', 'b', 'c'],
+    //             //                 ),
+    //             //
+    //             //                 /// 📌 Markers
+    //             //                 MarkerLayer(markers: controller.markers),
+    //             //               ],
+    //             //             ),
+    //             //           ),
+    //             //         ),
+    //             //         // Stack(
+    //             //         //   children: [
+    //             //         //     FlutterMap(
+    //             //         //       options: const MapOptions(
+    //             //         //         initialCenter: LatLng(51.5862, -0.1983),
+    //             //         //         initialZoom: 13.0,
+    //             //         //       ),
+    //             //         //       children: [
+    //             //         //         TileLayer(
+    //             //         //           urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    //             //         //           subdomains: const ['a', 'b', 'c'],
+    //             //         //         ),
+    //             //         //         MarkerLayer(markers: controller.markers),
+    //             //         //       ],
+    //             //         //     ),
+    //             //         //   ],
+    //             //         // ),
+    //             //       ),
+    //             //
+    //             //       ///  RIGHT SIDE: (Sidebar)
+    //             //       Container(
+    //             //         width: 300,
+    //             //         decoration: BoxDecoration(
+    //             //           color: Colors.white,
+    //             //           border: Border(left: BorderSide(color: Colors.grey.shade300)),
+    //             //         ),
+    //             //         child: Column(
+    //             //           children: [
+    //             //             Padding(
+    //             //               padding: const EdgeInsets.all(10.0),
+    //             //               child: Row(
+    //             //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //             //                 children: [
+    //             //                   Text(
+    //             //                     AppText.drivers.toUpperCase(),
+    //             //                     style: mozillaTextSemiBoldText(fontSize: 16, fontWeight: FontWeight.w800),
+    //             //                   ),
+    //             //                   Row(
+    //             //                     children: [
+    //             //                       _actionButton("SHOW ZONES", Color(0xff424899)),
+    //             //                       const SizedBox(width: 5),
+    //             //                       _actionButton("CLEAR", Color(0xff424899)),
+    //             //                     ],
+    //             //                   )
+    //             //                 ],
+    //             //               ),
+    //             //             ),
+    //             //             const Divider(),
+    //             //             Expanded(
+    //             //               child: ListView.builder(
+    //             //                 itemCount: controller.onlineBusyDriversList!.trackingDrivers!.length,
+    //             //                 itemBuilder: (context, index) {
+    //             //                   TrackingDriverObject driverIndex = controller.onlineBusyDriversList!.trackingDrivers![index];
+    //             //
+    //             //                   return GestureDetector(
+    //             //                       onTap: () {
+    //             //                         // Wrap the logic in a post-frame callback to avoid the build collision
+    //             //                         WidgetsBinding.instance.addPostFrameCallback((_) {
+    //             //
+    //             //                           // 1. Remove the existing marker
+    //             //                           controller.markers.removeWhere((marker) {
+    //             //                             return marker is CustomMarker &&
+    //             //                                 marker.withReturnType == "driverMarker" &&
+    //             //                                 marker.child is Stack &&
+    //             //                                 (marker.child as Stack).children.any((widget) =>
+    //             //                                 widget is Text && widget.data == driverIndex.username);
+    //             //                           });
+    //             //
+    //             //                           // 2. Add the new updated marker
+    //             //                           controller.markers.add(
+    //             //                             CustomMarker(
+    //             //                               withReturnType: "driverMarker",
+    //             //                               child: Stack(
+    //             //                                 alignment: Alignment.center,
+    //             //                                 children: [
+    //             //                                   const Image(
+    //             //                                     image: AssetImage("assets/car3.png"),
+    //             //                                     width: 70,
+    //             //                                     height: 70,
+    //             //                                   ),
+    //             //                                   Text(
+    //             //                                     "${driverIndex.username}",
+    //             //                                     style: const TextStyle(fontSize: 12, color: Colors.white),
+    //             //                                   )
+    //             //                                 ],
+    //             //                               ),
+    //             //                               type: "driverMarker",
+    //             //                               point: LatLng(
+    //             //                                 double.parse(driverIndex.latitude!),
+    //             //                                 double.parse(driverIndex.longitude!),
+    //             //                               ),
+    //             //                               width: 70,
+    //             //                               height: 70,
+    //             //                             ),
+    //             //                           );
+    //             //
+    //             //                           final target = LatLng(
+    //             //                             double.parse(driverIndex.latitude!),
+    //             //                             double.parse(driverIndex.longitude!),
+    //             //                           );
+    //             //
+    //             //                           controller.mapController.move(target, 16);
+    //             //
+    //             //                           // Now it is safe to update the state
+    //             //                           controller.update();
+    //             //                           if (mounted) {
+    //             //                             setState(() {});
+    //             //                           }
+    //             //                         });
+    //             //                       },
+    //             //                       child: _driverTile(driverIndex.username!, driverIndex.bookingStatus!));
+    //             //                 },
+    //             //               ),
+    //             //             ),
+    //             //           ],
+    //             //         ),
+    //             //       ),
+    //             //     ],
+    //             //   ),
+    //             // ),
+    //           ],
+    //         );
+    //       }
+    //     ),
+    //   ),
+    // );
   }
 
   // Baki widgets (_actionButton, _driverTile) wese hi rahen ge...
