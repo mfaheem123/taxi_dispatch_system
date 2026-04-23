@@ -285,110 +285,86 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   GetAllLabelsFromWidowModel? onlineBusyDriversList;
 
+  RxBool showDataLoader = false.obs;
   getAllDriversTracking() async{
+    showDataLoader(true);
     var response = await Api().get("drivers/tracking-drivers");
     if(response.statusCode == 200){
       onlineBusyDriversList = GetAllLabelsFromWidowModel.fromJson(response.data);
-      onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
-          id: 171,
-          username: "mark",
-          name: "Mark",
-          zone: null,
-          latitude:   "24.909889",
-          longitude: "67.106173",
-          bookingStatus: "Available",
-          sessionStatus: "logged_in",
-          driverStatus: "Available",
-          lastLoginAt: null,
-          vehicleType: "SALOON"
-          ));
-      onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
-          id: 168,
-          username: "Testing2",
-          name: "Testing2",
-          zone: null,
-          latitude: "24.9109147",
-          longitude: "67.1059215",
-          bookingStatus: "Available",
-          sessionStatus: "logged_in",
-          driverStatus: "Available",
-          lastLoginAt: null,
-          vehicleType: "SALOON"
-      ));
-      onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
-          id: 169,
-          username: "Testing3",
-          name: "Testing3",
-          zone: null,
-          latitude: "24.9115094",
-          longitude: "67.105151",
-          bookingStatus: "Available",
-          sessionStatus: "logged_in",
-          driverStatus: "Available",
-          lastLoginAt: null,
-          vehicleType: "SALOON"
-      ));
-      onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
-          id: 170,
-          username: "Testing4",
-          name: "Testing4",
-          zone: null,
-          latitude: "68.860547",
-          longitude: "65.007114",
-          bookingStatus: "Available",
-          sessionStatus: "logged_in",
-          driverStatus: "Available",
-          lastLoginAt: null,
-          vehicleType: "SALOON"
-      ));
-      onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
-          id: 170,
-          username: "Testing5",
-          name: "Testing5",
-          zone: null,
-          latitude: "24.9120991",
-          longitude: "67.1043783",
-          bookingStatus: "Available",
-          sessionStatus: "logged_in",
-          driverStatus: "Available",
-          lastLoginAt: null,
-          vehicleType: "SALOON"
-      ));
+      showDataLoader(false);
+      // onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
+      //     id: 171,
+      //     username: "mark",
+      //     name: "Mark",
+      //     zone: null,
+      //     latitude:   "24.909889",
+      //     longitude: "67.106173",
+      //     bookingStatus: "Available",
+      //     sessionStatus: "logged_in",
+      //     driverStatus: "Available",
+      //     lastLoginAt: null,
+      //     vehicleType: "SALOON"
+      //     ));
+      // onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
+      //     id: 168,
+      //     username: "Testing2",
+      //     name: "Testing2",
+      //     zone: null,
+      //     latitude: "24.9109147",
+      //     longitude: "67.1059215",
+      //     bookingStatus: "Available",
+      //     sessionStatus: "logged_in",
+      //     driverStatus: "Available",
+      //     lastLoginAt: null,
+      //     vehicleType: "SALOON"
+      // ));
+      // onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
+      //     id: 169,
+      //     username: "Testing3",
+      //     name: "Testing3",
+      //     zone: null,
+      //     latitude: "24.9115094",
+      //     longitude: "67.105151",
+      //     bookingStatus: "Available",
+      //     sessionStatus: "logged_in",
+      //     driverStatus: "Available",
+      //     lastLoginAt: null,
+      //     vehicleType: "SALOON"
+      // ));
+      // onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
+      //     id: 170,
+      //     username: "Testing4",
+      //     name: "Testing4",
+      //     zone: null,
+      //     latitude: "68.860547",
+      //     longitude: "65.007114",
+      //     bookingStatus: "Available",
+      //     sessionStatus: "logged_in",
+      //     driverStatus: "Available",
+      //     lastLoginAt: null,
+      //     vehicleType: "SALOON"
+      // ));
+      // onlineBusyDriversList!.trackingDrivers!.add(TrackingDriverObject(
+      //     id: 170,
+      //     username: "Testing5",
+      //     name: "Testing5",
+      //     zone: null,
+      //     latitude: "24.9120991",
+      //     longitude: "67.1043783",
+      //     bookingStatus: "Available",
+      //     sessionStatus: "logged_in",
+      //     driverStatus: "Available",
+      //     lastLoginAt: null,
+      //     vehicleType: "SALOON"
+      // ));
 
-      // trackingDriverSocket();
+
       update();
     }
   }
 
 
-  void trackingDriverSocket() {
-    final url = Uri.parse("$socketUrl/driver-tracking-dashboard");
-    try {
-      _channel = WebSocketChannel.connect(url);
 
-      _channel!.stream.listen(
-            (message) {
-          final data = jsonDecode(message);
-
-          print(data['event']);
-          print(data['data']['latitude']);
-          print(data['data']['longitude']);
-          print(data['event']);
-     
-
-            },
-        onError: (error) => print("Connection Error: $error"),
-        onDone: () {
-          
-          print("🔌 Socket Disconnected");
-          print("Close Code: ${_channel?.closeCode}");
-          print("Close Reason: ${_channel?.closeReason}");
-        },
-      );
-    } catch (e) {
-      print("Error: $e");
-    }
-  }
 
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo drivers tracking functionality
