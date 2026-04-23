@@ -605,15 +605,39 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                     ),
                   ),
                 ),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: DynamicColors.primaryClr,
+                //     padding: const EdgeInsets.symmetric(
+                //         horizontal: 30, vertical: 16),
+                //   ),
+                //   onPressed: () {},
+                //   child: const Text("SAVE",
+                //       style: TextStyle(color: Colors.white, fontSize: 16)),
+                // ),
+
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: DynamicColors.primaryClr,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 16),
                   ),
-                  onPressed: () {},
-                  child: const Text("SAVE",
-                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                  onPressed: (controller.rolesLoader || controller.saveLoader)
+                      ? null
+                      : () => controller.savePermissions(),
+                  child: controller.saveLoader
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
+                    "SAVE",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                 ),
               ],
             ),
