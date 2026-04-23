@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import '../component/color.dart';
 import '../component/marker_class.dart';
+import '../component/networks/api.dart';
 import '../component/textStyle.dart';
 import '../component/text_widget.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
@@ -23,79 +27,136 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
   bool isFullScreen = false;
   late final MapController mapController;
 
-  /// 👇 MUST be RxList
-  final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     mapController = MapController();
     dashBoardCntrl.getAllDriversTracking();
+    trackingDriverSocket();
   }
 
-  List<String> driverLocationHistory = [
-    "24.909889, 67.106173",
-    "24.9109147, 67.1059215",
-    "24.9115094, 67.105151",
-    "24.9120991, 67.1043783",
-    "24.9113895, 67.1055239",
-    "24.9104233, 67.1067902",
-    "24.9100975, 67.1072872",
-    "24.909889, 67.106174",
-    "24.9097128, 67.1077684",
-    "24.909890, 67.106167",
-    "24.909890, 67.106167",
-    "24.909890, 67.106167",
-    "24.909890, 67.106167",
-    "24.9084417, 67.1092331",
-    "24.9078434, 67.1099769",
-    "24.9067876, 67.1113991",
-    "24.9059671, 67.1123048",
-    "24.9045838, 67.1135057",
-    "24.9029529, 67.1149134",
-    "24.9019996, 67.1157195",
-    "24.901137, 67.1163152",
-    "24.900352, 67.1164471",
-    "24.8991878, 67.1169969",
-    "24.8981947, 67.1176861",
-    "24.896762, 67.1187551",
-    "24.8950935, 67.1198867",
-    "24.8939085, 67.120719",
-    "24.8927398, 67.1215323",
-    "24.8917472, 67.1222442",
-    "24.890704, 67.1229451",
-    "24.8888685, 67.1242575",
-    "24.8875499, 67.1252398",
-    "24.8869557, 67.1247261",
-    "24.8867062, 67.1239379",
-    "24.8860716, 67.121655",
-    "24.8857308, 67.1203653",
-    "24.8849748, 67.1181545",
-    "24.8841344, 67.1162239",
-    "24.8835274, 67.1149183",
-    "24.8823875, 67.1127445",
-    "24.8815327, 67.1112582",
-    "24.8804619, 67.1094201",
-    "24.8798028, 67.1082343",
-    "24.8787762, 67.1063233",
-    "24.8780628, 67.1049535",
-    "24.8769302, 67.1026747",
-    "24.8763638, 67.101371",
-    "24.8758901, 67.0996081",
-    "24.8754906, 67.0982251",
-    "24.8751276, 67.0971151",
-    "24.8747247, 67.0959027",
-    "24.8743961, 67.0951499",
-    "24.8743348, 67.0959812",
-    "24.8737473, 67.0962205",
-    "24.8735642, 67.0970089",
-    "24.8743665, 67.0972417",
-    "24.8748212, 67.0970329",
-    "24.8753574, 67.0983971"
-  ];
+  int? selectTrackingCarId;
+  /// 👇 MUST be RxList
+  final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
+  WebSocketChannel? _channel;
 
-  int? iddd;
+  void trackingDriverSocket() {
+    final url = Uri.parse("$socketUrl/driver-tracking-dashboard");
+    try {
+      _channel = WebSocketChannel.connect(url);
+
+      _channel!.stream.listen(
+            (message) {
+          final data = jsonDecode(message);
+          if(data['event'] == 'DRIVER_LOCATION_UPDATE'|| data['event']== "DRIVER_BOOKING_STATUS_UPDATE"){
+            int indexxx = trackingMarkers.indexWhere((test) => test.id == selectTrackingCarId);
+
+            if (indexxx == -1) return; // safety
+
+            double lat = double.parse(data['data']['latitude'].toString());
+            double lng = double.parse(data['data']['longitude'].toString());
+            final target = LatLng(lat, lng);
+
+            final oldMarker = trackingMarkers[indexxx];
+            print(oldMarker.point.latitude);
+            print(oldMarker.point.longitude);
+            print(data['data']['booking_status']);
+
+            int indexes = dashBoardCntrl.onlineBusyDriversList!.trackingDrivers!.indexWhere((test) => test.id == selectTrackingCarId);
+
+            TrackingDriverObject objectData = dashBoardCntrl.onlineBusyDriversList!.trackingDrivers![indexes];
+
+            objectData.latitude = lat.toString();
+            objectData.longitude = lng.toString();
+            objectData.bookingStatus = data['data']['booking_status'];
+
+            if(data['event'] == "DRIVER_BOOKING_STATUS_UPDATE"){
+              /// ✅ Replace with new updated marker
+              trackingMarkers[indexxx] = CustomMarker(
+                id: oldMarker.id,
+                withReturnType: oldMarker.withReturnType,
+                type: oldMarker.type,
+                width: oldMarker.width,
+                height: oldMarker.height,
+                point: target,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(Icons.directions_car,
+                        size: 70,
+                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      objectData.bookingStatus == "On Route"?Colors.red:
+                      objectData.bookingStatus == "STC"?Colors.blue:
+                      Colors.green,
+                    ),
+                    Text(
+                      data['data']['username'] ?? "",
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white),
+                    ),
+                  ],
+                ),
+              );
+            }else{
+
+              /// ✅ Replace with new updated marker
+              trackingMarkers[indexxx] = CustomMarker(
+                id: oldMarker.id,
+                withReturnType: oldMarker.withReturnType,
+                type: oldMarker.type,
+                width: oldMarker.width,
+                height: oldMarker.height,
+                point: target,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(Icons.directions_car,
+                      size: 70,
+                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      objectData.bookingStatus == "On Route"?Colors.red:
+                      objectData.bookingStatus == "STC"?Colors.blue:
+                      Colors.green,
+                    ),
+                    Text(
+                      data['data']['username'] ?? "",
+                      style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            print(trackingMarkers[indexxx].point.latitude);
+            print(trackingMarkers[indexxx].point.longitude);
+            setState(() {
+
+            });
+          }
+          print(data['event']);
+          print(data['data']['latitude']);
+          print(data['data']['longitude']);
+          print(data['event']);
+
+
+        },
+        onError: (error) => print("Connection Error: $error"),
+        onDone: () {
+          trackingDriverSocket();
+          print("🔌 Socket Disconnected");
+          print("Close Code: ${_channel?.closeCode}");
+          print("Close Reason: ${_channel?.closeReason}");
+        },
+      );
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -185,50 +246,6 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                     ),
                   ),
 
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      height: Get.height,
-                      width: 150,
-                      color: DynamicColors.whiteClr,
-                      child: ListView.builder(
-                        itemCount: driverLocationHistory.length,
-                        shrinkWrap: true,
-                        physics: AlwaysScrollableScrollPhysics(),
-                        itemBuilder: (BuildContext context,index){
-                        return ListTile(
-                            onTap: () {
-                              int indexxx = trackingMarkers.indexWhere((test) => test.id == iddd);
-
-                              if (indexxx == -1) return; // safety
-
-                              List<String> parts = driverLocationHistory[index].split(',');
-
-                              double lat = double.parse(parts[0].trim());
-                              double lng = double.parse(parts[1].trim());
-                              final target = LatLng(lat, lng);
-
-                              final oldMarker = trackingMarkers[indexxx];
-
-                              /// ✅ Replace with new updated marker
-                              trackingMarkers[indexxx] = CustomMarker(
-                                id: oldMarker.id,
-                                withReturnType: oldMarker.withReturnType,
-                                type: oldMarker.type,
-                                width: oldMarker.width,
-                                height: oldMarker.height,
-                                point: target,
-                                child: oldMarker.child,
-                              );
-
-                              setState(() {});
-                            },
-                          title: Text(driverLocationHistory[index]),
-                        );
-                      }),
-                    ),
-                  ),
-
                   /// 🔥 DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
@@ -256,9 +273,13 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                 final target = LatLng(lat, lng);
 
                                 /// 🔥 Update markers safely
-                                trackingMarkers.removeWhere((m) =>
-                                    m is CustomMarker &&
-                                    m.withReturnType == "driverMarker");
+                                // trackingMarkers.removeWhere((m) =>
+                                //     m is CustomMarker &&
+                                //     m.withReturnType == "driverMarker");
+                                trackingMarkers.removeWhere((marker) =>
+                                    controller.onlineBusyDriversList!.trackingDrivers!
+                                        .any((id) => id.toString() == marker.id.toString())
+                                );
 
                                 trackingMarkers.add(
                                   CustomMarker(
@@ -271,10 +292,13 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
-                                        const Image(
-                                          image: AssetImage("assets/car3.png"),
-                                          width: 70,
-                                          height: 70,
+                                        Icon(Icons.directions_car,
+                                          size: 70,
+                                          color: driver.bookingStatus == "Accepted"?Colors.orange:
+                                          driver.bookingStatus == "Arrived"?Colors.yellow:
+                                          driver.bookingStatus == "On Route"?Colors.red:
+                                          driver.bookingStatus == "STC"?Colors.blue:
+                                          Colors.green,
                                         ),
                                         Text(
                                           driver.username ?? "",
@@ -286,13 +310,15 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     ),
                                   ),
                                 );
-                                iddd = driver.id;
-
+                                selectTrackingCarId = driver.id;
+                                print(trackingMarkers.length);
+                                print("trackingMarkers.length");
                                 /// 🔥 Move map safely
                                 Future.delayed(
                                     const Duration(milliseconds: 100), () {
                                   mapController.move(target, 16);
                                 });
+                                print(trackingMarkers.length);
                                 setState(() {});
                               },
                               child: _driverTile(

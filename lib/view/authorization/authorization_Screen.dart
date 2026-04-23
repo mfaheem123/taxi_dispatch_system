@@ -1,7 +1,9 @@
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../component/textStyle.dart';
+import 'controller/authorization_controller.dart';
 
 class AuthorizationScreen extends StatefulWidget {
   const AuthorizationScreen({super.key});
@@ -11,6 +13,11 @@ class AuthorizationScreen extends StatefulWidget {
 }
 
 class _AuthorizationScreenState extends State<AuthorizationScreen> {
+  AuthorizationController controller =
+      Get.isRegistered<AuthorizationController>()
+          ? Get.find<AuthorizationController>()
+          : Get.put(AuthorizationController());
+
   String selectedMenu = "FARE";
 
   // Menu items
@@ -28,7 +35,6 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
     "INVOICE",
   ];
 
-  // Permissions data for each menu
   final Map<String, List<Map<String, List<String>>>> permissions = {
     "SETTINGS": [
       {
@@ -45,7 +51,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "TEMPLATE": [
           "CREATE TEMPLATE",
-          "READ TEMPLATES",
+          // "READ TEMPLATES",
           "READ TEMPLATE",
           "UPDATE TEMPLATE",
           "DELETE TEMPLATE",
@@ -54,7 +60,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "TEMPLATE TYPE": [
           "CREATE TEMPLATE TYPE",
-          "READ TEMPLATE TYPES",
+          // "READ TEMPLATE TYPES",
           "READ TEMPLATE TYPE",
           "UPDATE TEMPLATE TYPE",
           "DELETE TEMPLATE TYPE",
@@ -63,7 +69,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "DOCUMENT NUMBER": [
           "CREATE DOCUMENT NUMBER",
-          "READ DOCUMENT NUMBERS",
+          // "READ DOCUMENT NUMBERS",
           "READ DOCUMENT NUMBER",
           "UPDATE DOCUMENT NUMBER",
           "DELETE DOCUMENT NUMBER",
@@ -72,7 +78,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "FEEDBACK": [
           "CREATE FEEDBACK",
-          "READ FEEDBACKS",
+          // "READ FEEDBACKS",
           "READ FEEDBACK",
           "UPDATE FEEDBACK",
           "DELETE FEEDBACK",
@@ -81,7 +87,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "MESSAGE": [
           "CREATE MESSAGE",
-          "READ MESSAGES",
+          // "READ MESSAGES",
           "READ MESSAGE",
           "UPDATE MESSAGE",
           "DELETE MESSAGE",
@@ -90,7 +96,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "NOTIFICATION": [
           "CREATE NOTIFICATION",
-          "READ NOTIFICATIONS",
+          // "READ NOTIFICATIONS",
           "READ NOTIFICATION",
           "UPDATE NOTIFICATION",
           "DELETE NOTIFICATION",
@@ -99,7 +105,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "AUDIT": [
           "CREATE AUDIT",
-          "READ AUDITS",
+          // "READ AUDITS",
           "READ AUDIT",
           "UPDATE AUDIT",
           "DELETE AUDIT",
@@ -111,7 +117,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "SUBSIDIARY": [
           "CREATE SUBSIDIARY",
           "READ SUBSIDIARY",
-          "READ SUBSIDIARIES",
+          // "READ SUBSIDIARIES",
           "UPDATE SUBSIDIARY",
           "DELETE SUBSIDIARY",
         ],
@@ -122,7 +128,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "EMPLOYEE": [
           "CREATE EMPLOYEE",
           "READ EMPLOYEE",
-          "READ EMPLOYEES",
+          // "READ EMPLOYEES",
           "UPDATE EMPLOYEE",
           "DELETE EMPLOYEE",
         ]
@@ -130,7 +136,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       {
         "ROLE": [
           "READ ROLE",
-          "READ ROLES",
+          // "READ ROLES",
           "UPDATE ROLE",
         ],
       },
@@ -147,7 +153,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "VEHICLE TYPE": [
           "CREATE VEHICLE TYPE",
           "READ VEHICLE TYPE",
-          "READ VEHICLE TYPES",
+          // "READ VEHICLE TYPES",
           "UPDATE VEHICLE TYPE",
           "DELETE VEHICLE TYPE",
         ]
@@ -156,7 +162,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "COMPANY VEHICLE": [
           "CREATE COMPANY VEHICLE",
           "READ COMPANY VEHICLE",
-          "READ COMPANY VEHICLES",
+          // "READ COMPANY VEHICLES",
           "UPDATE COMPANY VEHICLE",
           "DELETE COMPANY VEHICLE",
         ],
@@ -165,7 +171,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "VEHICLE": [
           "CREATE VEHICLE",
           "READ VEHICLE",
-          "READ VEHICLES",
+          // "READ VEHICLES",
           "UPDATE VEHICLE",
           "DELETE VEHICLE",
         ],
@@ -181,7 +187,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "CUSTOMER": [
           "CREATE CUSTOMER",
           "READ CUSTOMER",
-          "READ CUSTOMERS",
+          // "READ CUSTOMERS",
           "UPDATE CUSTOMER",
           "DELETE CUSTOMER",
         ]
@@ -190,7 +196,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "LOST PROPERTY": [
           "CREATE LOST PROPERTY",
           "READ LOST PROPERTY",
-          "READ LOST PROPERTIES",
+          // "READ LOST PROPERTIES",
           "UPDATE LOST PROPERTY",
           "DELETE LOST PROPERTY",
         ],
@@ -199,7 +205,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "COMPLAINT": [
           "CREATE COMPLAINT",
           "READ COMPLAINT",
-          "READ COMPLAINTS",
+          // "READ COMPLAINTS",
           "UPDATE COMPLAINT",
           "DELETE COMPLAINT",
         ],
@@ -210,7 +216,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER": [
           "CREATE DRIVER",
           "READ DRIVER",
-          "READ DRIVERS",
+          // "READ DRIVERS",
           "UPDATE DRIVER",
           "DELETE DRIVER",
           "UPDATE DRIVER ZONE",
@@ -221,7 +227,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER SHIFT": [
           "CREATE DRIVER SHIFT",
           "READ DRIVER SHIFT",
-          "READ DRIVER SHIFTS",
+          // "READ DRIVER SHIFTS",
           "UPDATE DRIVER SHIFT",
           "DELETE DRIVER SHIFT",
         ],
@@ -230,7 +236,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER AVAILABILITY": [
           "CREATE DRIVER AVAILABILITY",
           "READ DRIVER AVAILABILITY",
-          "READ DRIVER AVAILABILITIES",
+          // "READ DRIVER AVAILABILITIES",
           "UPDATE DRIVER AVAILABILITY",
           "DELETE DRIVER AVAILABILITY",
         ],
@@ -239,7 +245,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER BOOKING": [
           "CREATE DRIVER BOOKING",
           "READ DRIVER BOOKING",
-          "READ DRIVER BOOKINGS",
+          // "READ DRIVER BOOKINGS",
           "UPDATE DRIVER BOOKING",
           "DELETE DRIVER BOOKING",
         ],
@@ -248,7 +254,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER COMMISSION": [
           "CREATE DRIVER COMMISSION",
           "READ DRIVER COMMISSION",
-          "READ DRIVER COMMISSIONS",
+          // "READ DRIVER COMMISSIONS",
           "UPDATE DRIVER COMMISSION",
           "DELETE DRIVER COMMISSION",
         ],
@@ -257,7 +263,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER COMMISSION ACCOUNT": [
           "CREATE DRIVER COMMISSION ACCOUNT",
           "READ DRIVER COMMISSION ACCOUNT",
-          "READ DRIVER COMMISSION ACCOUNTS",
+          // "READ DRIVER COMMISSION ACCOUNTS",
           "UPDATE DRIVER COMMISSION ACCOUNT",
           "DELETE DRIVER COMMISSION ACCOUNT",
         ],
@@ -266,7 +272,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER COMMISSION LINEITEM": [
           "CREATE DRIVER COMMISSION LINEITEM",
           "READ DRIVER COMMISSION LINEITEM",
-          "READ DRIVER COMMISSION LINEITEMS",
+          // "READ DRIVER COMMISSION LINEITEMS",
           "UPDATE DRIVER COMMISSION LINEITEM",
           "DELETE DRIVER COMMISSION LINEITEM",
         ],
@@ -275,7 +281,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DRIVER SHIFT HISTORY": [
           "CREATE DRIVER SHIFT HISTORY",
           "READ DRIVER SHIFT HISTORY",
-          "READ DRIVER SHIFT HISTORIES",
+          // "READ DRIVER SHIFT HISTORIES",
           "UPDATE DRIVER SHIFT HISTORY",
           "DELETE DRIVER SHIFT HISTORY",
         ],
@@ -286,7 +292,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT": [
           "CREATE ACCOUNT",
           "READ ACCOUNT",
-          "READ ACCOUNTS",
+          // "READ ACCOUNTS",
           "UPDATE ACCOUNT",
           "DELETE ACCOUNT",
         ],
@@ -295,7 +301,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT WEB LOGIN": [
           "CREATE ACCOUNT WEB LOGIN",
           "READ ACCOUNT WEB LOGIN",
-          "READ ACCOUNT WEB LOGINS",
+          // "READ ACCOUNT WEB LOGINS",
           "UPDATE ACCOUNT WEB LOGIN",
           "DELETE ACCOUNT WEB LOGIN",
         ],
@@ -304,7 +310,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT ORDER NUMBER": [
           "CREATE ACCOUNT ORDER NUMBER",
           "READ ACCOUNT ORDER NUMBER",
-          "READ ACCOUNT ORDER NUMBERS",
+          // "READ ACCOUNT ORDER NUMBERS",
           "UPDATE ACCOUNT ORDER NUMBER",
           "DELETE ACCOUNT ORDER NUMBER"
         ],
@@ -313,7 +319,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT DEPARTMENT": [
           "CREATE ACCOUNT DEPARTMENT",
           "READ ACCOUNT DEPARTMENT",
-          "READ ACCOUNT DEPARTMENTS",
+          // "READ ACCOUNT DEPARTMENTS",
           "UPDATE ACCOUNT DEPARTMENT",
           "DELETE ACCOUNT DEPARTMENT",
         ],
@@ -322,7 +328,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT CONTACT": [
           "CREATE ACCOUNT CONTACT",
           "READ ACCOUNT CONTACT",
-          "READ ACCOUNT CONTACTS",
+          // "READ ACCOUNT CONTACTS",
           "UPDATE ACCOUNT CONTACT",
           "DELETE ACCOUNT CONTACT",
         ],
@@ -331,7 +337,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT COMPANY ADDRESS": [
           "CREATE ACCOUNT COMPANY ADDRESS",
           "READ ACCOUNT COMPANY ADDRESS",
-          "READ ACCOUNT COMPANY ADDRESSES",
+          // "READ ACCOUNT COMPANY ADDRESSES",
           "UPDATE ACCOUNT COMPANY ADDRESS",
           "DELETE ACCOUNT COMPANY ADDRESS",
         ],
@@ -342,7 +348,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "FARE CONFIGURATION": [
           "CREATE FARE CONFIGURATION",
           "READ FARE CONFIGURATION",
-          "READ FARE CONFIGURATIONS",
+          // "READ FARE CONFIGURATIONS",
           "UPDATE FARE CONFIGURATION",
           "DELETE FARE CONFIGURATION",
         ]
@@ -351,7 +357,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "FIXED FARE": [
           "CREATE FIXED FARE",
           "READ FIXED FARE",
-          "READ FIXED FARES",
+          // "READ FIXED FARES",
           "UPDATE FIXED FARE",
           "DELETE FIXED FARE"
         ]
@@ -360,7 +366,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "FARE BY VEHICLE": [
           "CREATE FARE BY VEHICLE",
           "READ FARE BY VEHICLE",
-          "READ FARE BY VEHICLES",
+          // "READ FARE BY VEHICLES",
           "UPDATE FARE BY VEHICLE",
           "DELETE FARE BY VEHICLE",
         ]
@@ -369,7 +375,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "FARE CONFIGURATION MILEAGE": [
           "CREATE FARE CONFIGURATION MILEAGE",
           "READ FARE CONFIGURATION MILEAGE",
-          "READ FARE CONFIGURATION MILEAGES",
+          // "READ FARE CONFIGURATION MILEAGES",
           "UPDATE FARE CONFIGURATION MILEAGE",
           "DELETE FARE CONFIGURATION MILEAGE",
         ]
@@ -380,7 +386,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "LOCATION TYPE": [
           "CREATE LOCATION TYPE",
           "READ LOCATION TYPE",
-          "READ LOCATION TYPES",
+          // "READ LOCATION TYPES",
           "UPDATE LOCATION TYPE",
           "DELETE LOCATION TYPE",
         ],
@@ -389,7 +395,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "LOCATION": [
           "CREATE LOCATION",
           "READ LOCATION",
-          "READ LOCATIONS",
+          // "READ LOCATIONS",
           "UPDATE LOCATION",
           "DELETE LOCATION",
         ],
@@ -398,7 +404,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "LOCALIZATION DETAIL": [
           "CREATE LOCALIZATION DETAIL",
           "READ LOCALIZATION DETAIL",
-          "READ LOCALIZATION DETAILS",
+          // "READ LOCALIZATION DETAILS",
           "UPDATE LOCALIZATION DETAIL",
           "DELETE LOCALIZATION DETAIL",
         ],
@@ -407,7 +413,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "MAIN DATA": [
           "CREATE MAIN DATA",
           "READ MAIN DATA",
-          "READ MAIN DATAS",
+          // "READ MAIN DATAS",
           "UPDATE MAIN DATA",
           "DELETE MAIN DATA",
         ],
@@ -416,7 +422,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "DETAIL DATAS": [
           "CREATE DETAIL DATA",
           "READ DETAIL DATA",
-          "READ DETAIL DATAS",
+          // "READ DETAIL DATAS",
           "UPDATE DETAIL DATA",
           "DELETE DETAIL DATA",
         ],
@@ -425,7 +431,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ZONE": [
           "CREATE ZONE",
           "READ ZONE",
-          "READ ZONES",
+          // "READ ZONES",
           "UPDATE ZONE",
           "DELETE ZONE",
         ],
@@ -436,7 +442,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "JOURNEY TYPE": [
           "CREATE JOURNEY TYPE",
           "READ JOURNEY TYPE",
-          "READ JOURNEY TYPES",
+          // "READ JOURNEY TYPES",
           "UPDATE JOURNEY TYPE",
           "DELETE JOURNEY TYPE",
         ],
@@ -445,7 +451,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "PAYMENT TYPE": [
           "CREATE PAYMENT TYPE",
           "READ PAYMENT TYPE",
-          "READ PAYMENT TYPES",
+          // "READ PAYMENT TYPES",
           "UPDATE PAYMENT TYPE",
           "DELETE PAYMENT TYPE",
         ],
@@ -454,7 +460,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "BOOKING": [
           "CREATE BOOKING",
           "READ BOOKING",
-          "READ BOOKINGS",
+          // "READ BOOKINGS",
           "UPDATE BOOKING",
           "DELETE BOOKING",
         ],
@@ -463,7 +469,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "BOOKING ROUTE": [
           "CREATE BOOKING ROUTE",
           "READ BOOKING ROUTE",
-          "READ BOOKING ROUTES",
+          // "READ BOOKING ROUTES",
           "UPDATE BOOKING ROUTE",
           "DELETE BOOKING ROUTE",
         ],
@@ -472,7 +478,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "TRASH BOOKING": [
           "CREATE TRASH BOOKING",
           "READ TRASH BOOKING",
-          "READ TRASH BOOKINGS",
+          // "READ TRASH BOOKINGS",
           "UPDATE TRASH BOOKING",
           "DELETE TRASH BOOKING",
         ],
@@ -481,7 +487,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "BOOKING AUDIT": [
           "CREATE BOOKING AUDIT",
           "READ BOOKING AUDIT",
-          "READ BOOKING AUDITS",
+          // "READ BOOKING AUDITS",
           "UPDATE BOOKING AUDIT",
           "DELETE BOOKING AUDIT",
         ],
@@ -492,7 +498,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "CUSTOMER INVOICE": [
           "CREATE CUSTOMER INVOICE",
           "READ CUSTOMER INVOICE",
-          "READ CUSTOMER INVOICES",
+          // "READ CUSTOMER INVOICES",
           "UPDATE CUSTOMER INVOICE",
           "DELETE CUSTOMER INVOICE",
         ],
@@ -501,7 +507,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "CUSTOMER INVOICE LINEITEM": [
           "CREATE CUSTOMER INVOICE LINEITEM",
           "READ CUSTOMER INVOICE LINEITEM",
-          "READ CUSTOMER INVOICE LINEITEMS",
+          // "READ CUSTOMER INVOICE LINEITEMS",
           "UPDATE CUSTOMER INVOICE LINEITEM",
           "DELETE CUSTOMER INVOICE LINEITEM",
         ],
@@ -510,7 +516,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT INVOICE": [
           "CREATE ACCOUNT INVOICE",
           "READ ACCOUNT INVOICE",
-          "READ ACCOUNT INVOICES",
+          // "READ ACCOUNT INVOICES",
           "UPDATE ACCOUNT INVOICE",
           "DELETE ACCOUNT INVOICE",
         ],
@@ -519,7 +525,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         "ACCOUNT INVOICE LINEITEM": [
           "CREATE ACCOUNT INVOICE LINEITEM",
           "READ ACCOUNT INVOICE LINEITEM",
-          "READ ACCOUNT INVOICE LINEITEMS",
+          // "READ ACCOUNT INVOICE LINEITEMS",
           "UPDATE ACCOUNT INVOICE LINEITEM",
           "DELETE ACCOUNT INVOICE LINEITEM",
         ],
@@ -532,106 +538,218 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
 
-    return Container(
-      width: w,
-      height: h,
-      color: Colors.white,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SizedBox(
-                width: 250,
-                child: DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(), labelText: "Select Role"),
-                  items: const [
-                    DropdownMenuItem(value: "admin", child: Text("Admin")),
-                    DropdownMenuItem(value: "user", child: Text("User")),
-                  ],
-                  onChanged: (value) {},
+    return GetBuilder<AuthorizationController>(builder: (controller) {
+      return Container(
+        width: w,
+        height: h,
+        color: Colors.white,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // SizedBox(
+                //   width: 250,
+                //   child: DropdownButtonFormField<String>(
+                //     decoration: const InputDecoration(
+                //         border: OutlineInputBorder(),
+                //         labelText: "Select Role"),
+                //     items: const [
+                //       DropdownMenuItem(
+                //           value: "admin", child: Text("Admin")),
+                //       DropdownMenuItem(value: "user", child: Text("User")),
+                //     ],
+                //     onChanged: (value) {},
+                //   ),
+                // ),
+
+                SizedBox(
+                  width: 250,
+                  child: controller.rolesLoader
+                      ? const Center(child: CircularProgressIndicator())
+                      : DropdownButtonFormField<int>(
+                          value: controller.selectedRoleId,
+                          decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: "SELECT ROLE"),
+                          items: controller.getRoleModel?.roles?.map((role) {
+                                return DropdownMenuItem<int>(
+                                  value: role.id,
+                                  child: Text((role.name ?? "").toUpperCase(),
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                      )),
+                                );
+                              }).toList() ??
+                              [],
+                          onChanged: (value) {
+                            controller.selectedRoleId = value;
+                            controller.fetchPermissions(value!);
+                            controller.update();
+                            print("Selected Role ID: $value");
+                          },
+                        ),
                 ),
-              ),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    "AUTHORIZATION",
-                    style: mozillaTextSemiBoldText(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      "AUTHORIZATION",
+                      style: mozillaTextSemiBoldText(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DynamicColors.primaryClr,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 16),
-                ),
-                onPressed: () {},
-                child: const Text("SAVE",
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-              ),
-            ],
-          ),
+                // ElevatedButton(
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: DynamicColors.primaryClr,
+                //     padding: const EdgeInsets.symmetric(
+                //         horizontal: 30, vertical: 16),
+                //   ),
+                //   onPressed: () {},
+                //   child: const Text("SAVE",
+                //       style: TextStyle(color: Colors.white, fontSize: 16)),
+                // ),
 
-          const SizedBox(height: 20),
-
-          Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Left Sidebar
-
-                Container(
-                  width: 200,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: DynamicColors.primaryClr,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 16),
                   ),
-                  child: ListView(
-                  
-                    children: menuItems
-                        .map((item) => _menuItem(item,
-                                selected: item == selectedMenu, onTap: () {
-                              setState(() {
-                                selectedMenu = item;
-                              });
-                            }))
-                        .toList(),
+                  onPressed: (controller.rolesLoader || controller.saveLoader)
+                      ? null
+                      : () => controller.savePermissions(),
+                  child: controller.saveLoader
+                      ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                      : const Text(
+                    "SAVE",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-
-                const SizedBox(width: 16),
-
-                // Right Side Permission Panels
-                Expanded(
-                  child: permissions[selectedMenu] == null
-                      ? const Center(
-                          child: Text("No Permissions Configured"),
-                        )
-                      : GridView.count(
-                          crossAxisCount: w > 1200 ? 4 : 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          children: permissions[selectedMenu]!
-                              .map((card) => _permissionCard(
-                                  card.keys.first, card.values.first))
-                              .toList(),
-                        ),
-                )
               ],
             ),
-          ),
-        ],
-      ),
-    );
+
+            const SizedBox(height: 20),
+
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Left Sidebar
+
+                  Container(
+                    width: 200,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: ListView(
+                      children: menuItems
+                          .map((item) => _menuItem(item,
+                                  selected: item == selectedMenu, onTap: () {
+                                setState(() {
+                                  selectedMenu = item;
+                                });
+                              }))
+                          .toList(),
+                    ),
+                  ),
+
+                  const SizedBox(width: 16),
+
+                  // Right Side Permission Panels
+                  // Expanded(
+                  //   child: permissions[selectedMenu] == null
+                  //       ? const Center(child: Text("No Permissions Configured"))
+                  //       : GridView.count(
+                  //           crossAxisCount: w > 1200 ? 4 : 2,
+                  //           crossAxisSpacing: 16,
+                  //           mainAxisSpacing: 16,
+                  //           children: permissions[selectedMenu]!
+                  //               .map((card) => _permissionCard(
+                  //                   card.keys.first, card.values.first))
+                  //               .toList(),
+                  //         ),
+                  // )
+                  // Right Side Permission Panels
+                  // Expanded(
+                  //   child: permissions[selectedMenu] == null
+                  //       ? const Center(child: Text("No Permissions Configured"))
+                  //       : GridView.builder(
+                  //     // Logic: Agar cards 3 ya 6 hain to 3 dikhao, warna 4 dikhao
+                  //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //       crossAxisCount: (permissions[selectedMenu]!.length == 3 || permissions[selectedMenu]!.length == 6) ? 3 : 4,
+                  //       crossAxisSpacing: 16,
+                  //       mainAxisSpacing: 16,
+                  //       childAspectRatio: 0.9, // Isse aap height control kar sakte hain (increase/decrease)
+                  //     ),
+                  //     itemCount: permissions[selectedMenu]!.length,
+                  //     itemBuilder: (context, index) {
+                  //       final card = permissions[selectedMenu]![index];
+                  //       return _permissionCard(card.keys.first, card.values.first);
+                  //     },
+                  //   ),
+                  // )
+
+                  Expanded(
+                    child: permissions[selectedMenu] == null
+                        ? const Center(child: Text("No Permissions Configured"))
+                        : LayoutBuilder(
+                            builder: (context, constraints) {
+                              int crossAxisCount =
+                                  (permissions[selectedMenu]!.length == 3 ||
+                                          permissions[selectedMenu]!.length ==
+                                              6)
+                                      ? 3
+                                      : 4;
+
+                              double cardWidth = (constraints.maxWidth -
+                                      (crossAxisCount - 1) * 16) /
+                                  crossAxisCount;
+                              double fixedHeight = 500;
+                              double dynamicAspectRatio =
+                                  cardWidth / fixedHeight;
+
+                              return GridView.builder(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: crossAxisCount,
+                                  crossAxisSpacing: 16,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: dynamicAspectRatio,
+                                ),
+                                itemCount: permissions[selectedMenu]!.length,
+                                itemBuilder: (context, index) {
+                                  final card =
+                                      permissions[selectedMenu]![index];
+                                  return _permissionCard(
+                                      card.keys.first, card.values.first);
+                                },
+                              );
+                            },
+                          ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   // Sidebar Menu
@@ -662,6 +780,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade300),
         color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -670,15 +789,34 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
               style:
                   const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
           const Divider(),
-          ...options.map((opt) => Row(
-                children: [
-                  Switch(value: false, onChanged: (val) {}),
-                  Expanded(
-                      child: Text(opt, style: const TextStyle(fontSize: 13))),
-                ],
-              )),
+          ...options.map((opt) {
+            String key = _convertToApiKey(opt);
+            // Map<String, dynamic> fullPermissions = controller.getAuthorizationByRoleIdModel?.permissions?.toJson() ?? {};
+            bool isActive = controller.localPermissions[key] ?? false;
+            // print("UI Check -> Key: $key | IsActive: $isActive");
+
+            return Row(
+              children: [
+                Switch(
+                    value: isActive,
+                    onChanged: (val) {
+                      controller.togglePermission(key, val);
+                    }),
+                Expanded(
+                  child: Text(
+                    opt,
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ),
+              ],
+            );
+          }),
         ],
       ),
     );
+  }
+
+  String _convertToApiKey(String text) {
+    return text.toLowerCase().trim().replaceAll(" ", "_");
   }
 }
