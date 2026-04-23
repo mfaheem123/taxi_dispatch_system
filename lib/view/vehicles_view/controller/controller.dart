@@ -223,20 +223,18 @@ class VehicleController extends GetxController {
   final int limit = 20;
   getVehicleTypes() async {
       isLoading.value = true;
-      String query = 'page=${currentPage.value}&limit=$limit';
-      if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
-      if (searchPassengers.value.isNotEmpty)
-        query += '&passengers=${searchPassengers.value}';
-      if (searchLuggages.value.isNotEmpty)
-        query += '&luggages=${searchLuggages.value}';
-      if (searchHandLuggages.value.isNotEmpty)
-        query += '&hand_luggages=${searchHandLuggages.value}';
-      if (searchMinFare.value.isNotEmpty)
-        query += '&minimum_fares=${searchMinFare.value}';
-      if (searchMinMiles.value.isNotEmpty)
-        query += '&minimum_miles=${searchMinMiles.value}';
-      print("API Query: vehicle-type/ge?$query");
-      final response = await Api().get('vehicle-type/get',queryParameters: query , sendCompanyId: true,);
+      final response = await Api().get('vehicle-type/get' , sendCompanyId: true,
+        queryParameters: {
+        "page": currentPage.value,
+        "limit": limit,
+        "name": searchName.value,
+        "passengers": searchPassengers.value,
+        "luggages": searchLuggages.value,
+        "hand_luggages": searchHandLuggages.value,
+        "minimum_fares": searchMinFare.value,
+        "minimum_miles": searchMinMiles.value,
+        },
+      );
       if (response.statusCode == 200) {
         vehicleTypeModel = VehicleTypeModel.fromJson(response.data);
         totalPages.value = vehicleTypeModel?.totalPages ?? 1;
@@ -296,6 +294,7 @@ class VehicleController extends GetxController {
           "model" : searchModel.text,
           "color" : searchColor.text,
       }, auth: true,
+        sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         companyVehicleModel = CompanyVehicleModel.fromJson(response.data);

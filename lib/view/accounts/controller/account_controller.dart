@@ -196,6 +196,7 @@ class AccountController extends GetxController {
           ? "accounts/edit/${accountObjectData!.id}"
           : 'accounts/add',
       auth: true,
+      sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
@@ -204,6 +205,8 @@ class AccountController extends GetxController {
           : "ACCOUNT CREATED SUCCESSFULLY";
       BotToast.showText(text: message);
       print("$message");
+      print("$response");
+
       accountObjectData = null;
       escoptCheckBox.value = false;
       arrivalSmsCheckBox.value = false;
@@ -427,26 +430,22 @@ class AccountController extends GetxController {
   listOFAccount() async {
     try {
       isLoadingListOfAccount.value = true;
-
-      String query = 'page=${currentPage.value}&limit=$limit';
-      if (searchName.value.isNotEmpty) query += '&name=${searchName.value}';
-      if (searchAccountType.value.isNotEmpty)
-        query += '&accountType=${searchAccountType.value}';
-      if (searchAddress.value.isNotEmpty)
-        query += '&address=${searchAddress.value}';
-      if (searchEmail.value.isNotEmpty) query += '&email=${searchEmail.value}';
-      if (searchMobile.value.isNotEmpty)
-        query += '&mobile=${searchMobile.value}';
-      if (searchTelephone.value.isNotEmpty)
-        query += '&telephone=${searchTelephone.value}';
-      if (searchcontactName.value.isNotEmpty)
-        query += '&contact_name=${searchcontactName.value}';
-      if (searchSubsiDiary.value.isNotEmpty)
-        query += '&subsidiary=${searchSubsiDiary.value}';
-      print("API Query: accounts/get?$query");
-
-      /// --------------------- Api Hit
-      var response = await Api().get('accounts/get?$query');
+      var response = await Api().get(
+        'accounts/get',
+        sendCompanyId: true,
+        queryParameters: {
+          "page": currentPage.value,
+          "limit": limit,
+          "name": searchName.value,
+          "accountType": searchAccountType.value,
+          "address": searchAddress.value,
+          "email": searchEmail.value,
+          "mobile": searchMobile.value,
+          "telephone": searchTelephone.value,
+          "contact_name": searchcontactName.value,
+          "subsidiary": searchSubsiDiary.value,
+        },
+      );
       if (response.statusCode == 200) {
         listofAccount = ListOfAccountModel.fromJson(response.data);
         totalPages.value = listofAccount?.totalPages ?? 1;
@@ -648,8 +647,11 @@ class AccountController extends GetxController {
         selectedEscort != null
             ? 'escorts/edit/${selectedEscort!.id}'
             : 'escorts/add',
-        auth: true, multiPart: true);
+        auth: true,
+        sendCompanyId: true,
+        multiPart: true);
     if (response.statusCode == 200) {
+      print(response);
       String message = selectedEscort != null
           ? "ESCORT UPDATED SUCCESSFULLY"
           : "ESCORT CREATED SUCCESSFULLY";
@@ -697,28 +699,26 @@ class AccountController extends GetxController {
   RxString searchEscortPAT = ''.obs;
   RxString searchEscortFirstAid = ''.obs;
   RxString searchEscortDBS = ''.obs;
-
-//   ///------------------------- Pagination
+  ///------------------------- Pagination
   var escortCurrentPage = 1.obs;
   var escortTotalPages = 1.obs;
   final int escortLimit = 10;
   listEscort() async {
     try {
-      String query = 'page=${escortCurrentPage.value}&limit=${escortLimit}';
-      if (searchEscortName.value.isNotEmpty)
-        query += '&name=${searchEscortName.value}';
-      if (searchEscortSafeguarding.value.isNotEmpty)
-        query += '&safeguarding_expiry=${searchEscortSafeguarding.value}';
-      if (searchEscortPAT.value.isNotEmpty)
-        query += '&pat_expiry=${searchEscortPAT.value}';
-      if (searchEscortFirstAid.value.isNotEmpty)
-        query += '&firstaid_expiry=${searchEscortFirstAid.value}';
-      if (searchEscortDBS.value.isNotEmpty)
-        query += '&dbs_expiry=${searchEscortDBS.value}';
-      print("API Query: escorts/get?$query");
-
       listEscortLoding.value = true;
-      final response = await Api().get('escorts/get?$query');
+      final response = await Api().get('escorts/get?',queryParameters: {
+      "page": escortCurrentPage.value,
+      "limit": escortLimit,
+      "name": searchEscortName.value,
+      "safeguarding_expiry": searchEscortSafeguarding.value,
+      "pat_expiry": searchEscortPAT.value,
+      "firstaid_expiry": searchEscortFirstAid.value,
+      "dbs_expiry": searchEscortDBS.value,
+      },
+        sendCompanyId: true,
+        auth: true,
+
+      );
       if (response.statusCode == 200) {
         listEscortModel = EscortModel.fromJson(response.data);
         escortTotalPages.value = listEscortModel?.totalPages ?? 1;
