@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:get/get.dart';
 
@@ -91,4 +92,36 @@ class AuthorizationController extends GetxController{
 //     getAuthorizationByRoleIdModel!.permissions = Permissions.fromJson(json);
 //     update();
 //   }
+
+// save
+  bool saveLoader = false;
+
+  savePermissions() async {
+    saveLoader = true;
+    update();
+
+    var formData = <String, dynamic>{};
+    localPermissions.forEach((key, value) {
+      String apiKey = keyOverrides.entries
+          .firstWhere((e) => e.value == key, orElse: () => MapEntry(key, key))
+          .key;
+
+      formData[apiKey] = value;
+    });
+
+    print("Submitting Payload: $formData");
+
+    var response = await Api().post(
+        formData,
+        "authorizations/update/$selectedRoleId",
+        auth: true
+    );
+    if (response.statusCode == 200) {
+      BotToast.showText(text: "PERMISSIONS SAVED SUCCESSFULLY!");
+    } else {
+      BotToast.showText(text: "FAILED TO UPDATE");
+    }
+    saveLoader = false;
+    update();
+  }
 }
