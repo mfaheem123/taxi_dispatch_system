@@ -22,6 +22,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
   // Boolean variable to track state
   bool isFullScreen = false;
   late final MapController mapController;
+
   /// 👇 MUST be RxList
   final RxList<CustomMarker> trackingMarkers = <CustomMarker>[].obs;
 
@@ -33,8 +34,68 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
     dashBoardCntrl.getAllDriversTracking();
   }
 
+  List<String> driverLocationHistory = [
+    "24.909889, 67.106173",
+    "24.9109147, 67.1059215",
+    "24.9115094, 67.105151",
+    "24.9120991, 67.1043783",
+    "24.9113895, 67.1055239",
+    "24.9104233, 67.1067902",
+    "24.9100975, 67.1072872",
+    "24.909889, 67.106174",
+    "24.9097128, 67.1077684",
+    "24.909890, 67.106167",
+    "24.909890, 67.106167",
+    "24.909890, 67.106167",
+    "24.909890, 67.106167",
+    "24.9084417, 67.1092331",
+    "24.9078434, 67.1099769",
+    "24.9067876, 67.1113991",
+    "24.9059671, 67.1123048",
+    "24.9045838, 67.1135057",
+    "24.9029529, 67.1149134",
+    "24.9019996, 67.1157195",
+    "24.901137, 67.1163152",
+    "24.900352, 67.1164471",
+    "24.8991878, 67.1169969",
+    "24.8981947, 67.1176861",
+    "24.896762, 67.1187551",
+    "24.8950935, 67.1198867",
+    "24.8939085, 67.120719",
+    "24.8927398, 67.1215323",
+    "24.8917472, 67.1222442",
+    "24.890704, 67.1229451",
+    "24.8888685, 67.1242575",
+    "24.8875499, 67.1252398",
+    "24.8869557, 67.1247261",
+    "24.8867062, 67.1239379",
+    "24.8860716, 67.121655",
+    "24.8857308, 67.1203653",
+    "24.8849748, 67.1181545",
+    "24.8841344, 67.1162239",
+    "24.8835274, 67.1149183",
+    "24.8823875, 67.1127445",
+    "24.8815327, 67.1112582",
+    "24.8804619, 67.1094201",
+    "24.8798028, 67.1082343",
+    "24.8787762, 67.1063233",
+    "24.8780628, 67.1049535",
+    "24.8769302, 67.1026747",
+    "24.8763638, 67.101371",
+    "24.8758901, 67.0996081",
+    "24.8754906, 67.0982251",
+    "24.8751276, 67.0971151",
+    "24.8747247, 67.0959027",
+    "24.8743961, 67.0951499",
+    "24.8743348, 67.0959812",
+    "24.8737473, 67.0962205",
+    "24.8735642, 67.0970089",
+    "24.8743665, 67.0972417",
+    "24.8748212, 67.0970329",
+    "24.8753574, 67.0983971"
+  ];
 
-
+  int? iddd;
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +173,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       children: [
                         TileLayer(
                           urlTemplate:
-                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                           subdomains: const ['a', 'b', 'c'],
                         ),
 
@@ -123,6 +184,51 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       ],
                     ),
                   ),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      height: Get.height,
+                      width: 150,
+                      color: DynamicColors.whiteClr,
+                      child: ListView.builder(
+                        itemCount: driverLocationHistory.length,
+                        shrinkWrap: true,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (BuildContext context,index){
+                        return ListTile(
+                            onTap: () {
+                              int indexxx = trackingMarkers.indexWhere((test) => test.id == iddd);
+
+                              if (indexxx == -1) return; // safety
+
+                              List<String> parts = driverLocationHistory[index].split(',');
+
+                              double lat = double.parse(parts[0].trim());
+                              double lng = double.parse(parts[1].trim());
+                              final target = LatLng(lat, lng);
+
+                              final oldMarker = trackingMarkers[indexxx];
+
+                              /// ✅ Replace with new updated marker
+                              trackingMarkers[indexxx] = CustomMarker(
+                                id: oldMarker.id,
+                                withReturnType: oldMarker.withReturnType,
+                                type: oldMarker.type,
+                                width: oldMarker.width,
+                                height: oldMarker.height,
+                                point: target,
+                                child: oldMarker.child,
+                              );
+
+                              setState(() {});
+                            },
+                          title: Text(driverLocationHistory[index]),
+                        );
+                      }),
+                    ),
+                  ),
+
                   /// 🔥 DRIVER LIST (ONLY THIS uses GetBuilder)
                   Container(
                     height: Get.height,
@@ -131,12 +237,13 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                     child: GetBuilder<DashboardController>(
                       builder: (controller) {
                         if (controller.onlineBusyDriversList == null) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
                         return ListView.builder(
-                          itemCount: controller
-                              .onlineBusyDriversList?.trackingDrivers?.length ??
+                          itemCount: controller.onlineBusyDriversList
+                                  ?.trackingDrivers?.length ??
                               0,
                           itemBuilder: (context, index) {
                             final driver = controller
@@ -150,7 +257,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
 
                                 /// 🔥 Update markers safely
                                 trackingMarkers.removeWhere((m) =>
-                                m is CustomMarker &&
+                                    m is CustomMarker &&
                                     m.withReturnType == "driverMarker");
 
                                 trackingMarkers.add(
@@ -160,12 +267,12 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     point: target,
                                     width: 70,
                                     height: 70,
+                                    id: driver.id,
                                     child: Stack(
                                       alignment: Alignment.center,
                                       children: [
                                         const Image(
-                                          image:
-                                          AssetImage("assets/car3.png"),
+                                          image: AssetImage("assets/car3.png"),
                                           width: 70,
                                           height: 70,
                                         ),
@@ -179,15 +286,14 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                     ),
                                   ),
                                 );
+                                iddd = driver.id;
 
                                 /// 🔥 Move map safely
                                 Future.delayed(
                                     const Duration(milliseconds: 100), () {
                                   mapController.move(target, 16);
                                 });
-                                setState(() {
-
-                                });
+                                setState(() {});
                               },
                               child: _driverTile(
                                 driver.username ?? "",
@@ -202,7 +308,6 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                 ],
               ),
             ),
-
           ],
         ),
       ),
@@ -618,8 +723,11 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
   Widget _actionButton(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
-      child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+      decoration:
+          BoxDecoration(color: color, borderRadius: BorderRadius.circular(4)),
+      child: Text(label,
+          style: const TextStyle(
+              color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -635,7 +743,8 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
           Expanded(
             child: Text(
               name,
-              style: mozillaTextSemiBoldText(fontSize: 14, fontWeight: FontWeight.w700),
+              style: mozillaTextSemiBoldText(
+                  fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
           Container(
@@ -646,7 +755,10 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
             ),
             child: Text(
               status,
-              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(width: 5),
