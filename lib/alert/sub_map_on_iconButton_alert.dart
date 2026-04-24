@@ -50,7 +50,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
             (message) {
           final data = jsonDecode(message);
           if(data['event'] == 'DRIVER_LOCATION_UPDATE'|| data['event']== "DRIVER_BOOKING_STATUS_UPDATE"){
-            int indexxx = trackingMarkers.indexWhere((test) => test.id == selectTrackingCarId);
+            int indexxx = trackingMarkers.indexWhere((test) => test.id == data['data']['id']);
 
             if (indexxx == -1) return; // safety
 
@@ -63,13 +63,15 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
             print(oldMarker.point.longitude);
             print(data['data']['booking_status']);
 
-            int indexes = dashBoardCntrl.onlineBusyDriversList!.trackingDrivers!.indexWhere((test) => test.id == selectTrackingCarId);
+            int indexes = dashBoardCntrl.onlineBusyDriversList!.trackingDrivers!.indexWhere((test) => test.id == data['data']['id']);
 
             TrackingDriverObject objectData = dashBoardCntrl.onlineBusyDriversList!.trackingDrivers![indexes];
 
             objectData.latitude = lat.toString();
             objectData.longitude = lng.toString();
             objectData.bookingStatus = data['data']['booking_status'];
+            print(data['data']['id']);
+            print(data['data']['username']);
 
             if(data['event'] == "DRIVER_BOOKING_STATUS_UPDATE"){
               /// ✅ Replace with new updated marker
@@ -91,11 +93,19 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       objectData.bookingStatus == "STC"?Colors.blue:
                       Colors.green,
                     ),
-                    Text(
-                      data['data']['username'] ?? "",
-                      style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white),
+                    Container(
+                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      objectData.bookingStatus == "On Route"?Colors.red:
+                      objectData.bookingStatus == "STC"?Colors.blue:
+                      Colors.green,
+                      padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
+                      child: Text(
+                        objectData.username ?? "",
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
@@ -121,11 +131,19 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                       objectData.bookingStatus == "STC"?Colors.blue:
                       Colors.green,
                     ),
-                    Text(
-                      data['data']['username'] ?? "",
-                      style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.white),
+                    Container(
+                      color: objectData.bookingStatus == "Accepted"?Colors.orange:
+                      objectData.bookingStatus == "Arrived"?Colors.yellow:
+                      objectData.bookingStatus == "On Route"?Colors.red:
+                      objectData.bookingStatus == "STC"?Colors.blue:
+                      Colors.green,
+                      padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
+                      child: Text(
+                        objectData.username ?? "",
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
@@ -273,12 +291,8 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                 final target = LatLng(lat, lng);
 
                                 /// 🔥 Update markers safely
-                                // trackingMarkers.removeWhere((m) =>
-                                //     m is CustomMarker &&
-                                //     m.withReturnType == "driverMarker");
                                 trackingMarkers.removeWhere((marker) =>
-                                    controller.onlineBusyDriversList!.trackingDrivers!
-                                        .any((id) => id.toString() == marker.id.toString())
+                                    marker.id.toString() == controller.onlineBusyDriversList!.trackingDrivers![index].id.toString()
                                 );
 
                                 trackingMarkers.add(
@@ -300,25 +314,32 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                                           driver.bookingStatus == "STC"?Colors.blue:
                                           Colors.green,
                                         ),
-                                        Text(
-                                          driver.username ?? "",
-                                          style: const TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white),
+                                        Container(
+                                          color: driver.bookingStatus == "Accepted"?Colors.orange:
+                                          driver.bookingStatus == "Arrived"?Colors.yellow:
+                                          driver.bookingStatus == "On Route"?Colors.red:
+                                          driver.bookingStatus == "STC"?Colors.blue:
+                                          Colors.green,
+                                          padding: const EdgeInsets.only(bottom: 10.0,left: 4,right: 4),
+                                          child: Text(
+                                            driver.username ?? "",
+                                            style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.white),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 );
                                 selectTrackingCarId = driver.id;
-                                print(trackingMarkers.length);
-                                print("trackingMarkers.length");
+
                                 /// 🔥 Move map safely
                                 Future.delayed(
                                     const Duration(milliseconds: 100), () {
                                   mapController.move(target, 16);
                                 });
-                                print(trackingMarkers.length);
+
                                 setState(() {});
                               },
                               child: _driverTile(
