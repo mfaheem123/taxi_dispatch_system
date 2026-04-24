@@ -1833,13 +1833,13 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       return BotToast.showText(text: "Please select subsidiaries");
     }
 
-    if (nameController.text.isEmpty) {
-      return BotToast.showText(text: "Please write name");
-    }
-
-    if (emailController.text.isEmpty) {
-      return BotToast.showText(text: "Please write email");
-    }
+    // if (nameController.text.isEmpty) {
+    //   return BotToast.showText(text: "Please write name");
+    // }
+    //
+    // if (emailController.text.isEmpty) {
+    //   return BotToast.showText(text: "Please write email");
+    // }
 
     if (mobileController.text.isEmpty) {
       return BotToast.showText(text: "Please write mobile");
@@ -1923,12 +1923,17 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       'dropoff_latitude': dropOffLatLat,
       'dropoff_longitude': dropOffLngLat,
       if (viaPostList.isNotEmpty) 'viapoints': jsonEncode(viaPostList),
-      if (nameController.text.isNotEmpty) 'name': nameController.text,
-      if (emailController.text.isNotEmpty) 'email': emailController.text,
+      // if (nameController.text.isNotEmpty) 'name': nameController.text,
+      // if (emailController.text.isNotEmpty) 'email': emailController.text,
+
+        'name': nameController.text.isNotEmpty ? nameController.text : 'Passenger',
+        'email': emailController.text.isNotEmpty ? emailController.text : 'Dumy@gmail.com',
+
       if (mobileController.text.isNotEmpty) 'mobile': mobileController.text,
       if (telController.text.isNotEmpty) 'telephone': telController.text,
       'customer':
-          '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
+          // '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
+          '[{name: "${nameController.text==""?"Passenger":nameController.text}", email: "${emailController.text==''?"Dumy@gmail.com":emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
       'pickup_date':
           "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       if (pickUpTimeController.text.isNotEmpty)
