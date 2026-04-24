@@ -706,7 +706,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
 
                   Expanded(
                     child: permissions[selectedMenu] == null
-                        ? const Center(child: Text("No Permissions Configured"))
+                        ? const Center(child: Text("NO PERMISSIONS CONFIGURED"))
                         : LayoutBuilder(
                             builder: (context, constraints) {
                               int crossAxisCount =
@@ -764,6 +764,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
       child: ListTile(
         title: Text(
           title,
+          textAlign: TextAlign.center,
           style: TextStyle(
               color: selected ? Colors.white : DynamicColors.primaryClr,
               fontWeight: FontWeight.bold),
@@ -787,7 +788,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
         children: [
           Text(title,
               style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           const Divider(),
           ...options.map((opt) {
             String key = _convertToApiKey(opt);
@@ -805,7 +806,7 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                 Expanded(
                   child: Text(
                     opt,
-                    style: const TextStyle(fontSize: 13),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
