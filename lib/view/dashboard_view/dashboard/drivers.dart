@@ -18,6 +18,7 @@ import '../Controller/dashboard_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 import '../models/dashboard_model.dart';
+import 'defult_dashboard_view.dart';
 
 class DriversView extends StatefulWidget {
   const DriversView({super.key});
@@ -118,7 +119,8 @@ class _DriversViewState extends State<DriversView> {
           },
           child: SizedBox(
             width: screenWidth >= 1270 ? screenWidth/6.8 : screenWidth / 4.8,
-            height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
+            height: containerFormHeight,
+            // height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
             child: Card(
               elevation: 4,
               // shape: RoundedRectangleBorder(
