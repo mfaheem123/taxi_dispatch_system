@@ -75,7 +75,6 @@ import '../locations_view/location/location_listScreen.dart';
 import '../locations_view/location/zone_listScreen.dart';
 import '../locations_view/location/zone_screen.dart';
 import 'dart:html' as html;
-
 import '../reports/driver_booking_view/all_booking_view.dart';
 import '../reports/driver_booking_view/report_transfered_booking.dart';
 import '../reports/driver_reports_view/driver_login_screen.dart';

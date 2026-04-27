@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart'
     hide Zone;
@@ -349,6 +350,7 @@ void zonePageChange(int page) {
     var response = await Api().delete("zones/delete/$id");
     if (response.statusCode == 200) {
       getZoneList();
+      BotToast.showText(text: 'ZONE DELETED SUCCESSFULLY');
       update();
     }
   }

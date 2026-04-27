@@ -51,7 +51,6 @@ import 'booking_list.dart';
 import 'dashboard/F3_alert.dart';
 import 'dashboard/defult_dashboard_view.dart';
 import 'dart:html' as html;
-
 class DashBoarScreen extends StatefulWidget {
   final void Function(String)? onSelect;
 

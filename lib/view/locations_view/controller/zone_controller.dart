@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/view/locations_view/Model/locationListModel.dart'
     hide Zone;
@@ -78,8 +79,8 @@ class ZoneController extends GetxController {
   final postcodeController = TextEditingController();
 
   // -------- Reactive Variables --------
-  var categoryValue = 'Select Category'.obs;
-  var zoneValue = 'Select Zone Type'.obs;
+  var categoryValue = 'SELECT CATEGORY'.obs;
+  var zoneValue = 'SELECT ZONE TYPE'.obs;
   var isEditing = false.obs;
   var base = false.obs;
   var selectedPolyId = RxnString();
@@ -90,8 +91,8 @@ class ZoneController extends GetxController {
   Rx<DrawMode> mode = DrawMode.navigate.obs;
   LatLng? rectStart;
   LatLng? rectCurrent;
-  final categoryItems = ['Select Category', 'Inner', 'Outer'];
-  final zoneItems = ['Select Zone Type', 'Major', 'Minor'];
+  final categoryItems = ['SELECT CATEGORY', 'INNER', 'OUTER'];
+  final zoneItems = ['SELECT ZONE TYPE', 'MAJOR', 'MINOR'];
 
   // -------- Google Map Data --------
   final Completer<GoogleMapController> ctrl = Completer();
@@ -129,12 +130,18 @@ class ZoneController extends GetxController {
   void clearZoneForm() {
     zonenameContoller.clear();
     secondarynamezoneController.clear();
-    zoneValue.value = 'Select Value';
-    categoryValue.value = "Select category";
+    zoneValue.value = 'SELECT ZONE TYPE';
+    categoryValue.value = "SELECT CATEGORY";
+    base.value = false;
+    updateZone.value = false;
+    isEditing.value = false;
     draft.clear();
     pointsDraft.clear();
     rectStart = null;
     rectCurrent = null;
+    selectedPolyId.value = null;
+    editMarkers.clear();
+    polyPoints.clear();
     mode.value = DrawMode.navigate;
   }
 
@@ -176,6 +183,11 @@ class ZoneController extends GetxController {
           .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
           .toList();
     }
+    else if (pointsDraft.isNotEmpty) {
+      vertices = pointsDraft
+          .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
+          .toList();
+    }
     // Handle rectangle draw
     else if (rectStart != null && rectCurrent != null) {
       vertices = [
@@ -191,7 +203,7 @@ class ZoneController extends GetxController {
     }
 
     if (vertices.length < 3) {
-      Get.snackbar('Error', 'Please draw/select a zone (at least 3 points)');
+      BotToast.showText(text: 'Please draw/select a zone (at least 3 points)');
       return;
     }
 
@@ -236,8 +248,8 @@ class ZoneController extends GetxController {
     zoneUpdateId.value = zoneUpdate.id ?? 0;
     zonenameContoller.text = (zoneUpdate.name ?? '').toUpperCase();
     secondarynamezoneController.text = (zoneUpdate.secondaryName ?? '').toUpperCase();
-    zoneValue.value = zoneUpdate.type ?? 'Select Zone Type';
-    categoryValue.value = zoneUpdate.category ?? 'Select Category';
+    zoneValue.value = zoneUpdate.type ?? 'SELECT ZONE TYPE';
+    categoryValue.value = zoneUpdate.category ?? 'SELECT CATEGORY';
     base.value = zoneUpdate.base ?? false;
     //  Clear previous state
     draft.clear();
@@ -258,14 +270,16 @@ class ZoneController extends GetxController {
 
       // Detect shape
       if (loadedVertices.length == 4 && _isRectangle(loadedVertices)) {
-        rectStart = loadedVertices.first;
+        // rectStart = loadedVertices.first;
+        rectStart = loadedVertices[0];
         rectCurrent = loadedVertices[2];
         mode.value = DrawMode.rectangle;
         print(" Detected Rectangle zone for editing");
       } else {
         draft.assignAll(loadedVertices);
         pointsDraft.assignAll(loadedVertices);
-        mode.value = DrawMode.polygon;
+        // mode.value = DrawMode.polygon;
+        mode.value = DrawMode.edit;
         print(" Detected Polygon zone for editing");
       }
 
