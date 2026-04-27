@@ -262,6 +262,7 @@ import 'dart:html' as html;
 import '../../../component/marker_class.dart';
 import '../../../routes/app_pages.dart';
 import '../Controller/dashboard_controller.dart';
+import 'defult_dashboard_view.dart';
 
 
 
@@ -346,11 +347,11 @@ class _MapViewWidgetState extends State<MapViewWidget> {
           : width >= 1270
           ? screenWidth / 2.95
           : screenWidth / 1.2,
-      height: widget.createBooking == true
+      height: containerFormHeight/*widget.createBooking == true
           ? Get.height / 1.4
           : screenHeight >= 940
           ? screenHeight * 0.51
-          : screenHeight * 0.80,
+          : screenHeight * 0.80*/,
       child: GetBuilder<DashboardController>(
         builder: (controller) {
           return Container(
