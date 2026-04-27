@@ -765,8 +765,8 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
           border: Border.all(color: widget.borderClr?? DynamicColors.primaryClr),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // mainAxisSize: MainAxisSize.min,
+          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
@@ -778,7 +778,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                   });
                 }),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: Text('/', style: mozillaTextSemiBoldText(
                       context: context,
                       fontSize: widget.fontSize,
@@ -792,7 +792,7 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                   });
                 }),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: Text('/', style: mozillaTextSemiBoldText(
                       context: context,
                       fontSize: widget.fontSize,
@@ -808,12 +808,17 @@ class _KeyboardDatePickerState extends State<KeyboardDatePicker> {
                 }),
               ],
             ),
-            GestureDetector(
-              onTap: (){
-                _selectDate(context);
-              },
-              child: Icon(Icons.calendar_month,
-              size: widget.iconSize,
+            Expanded(
+              child: GestureDetector(
+                onTap: (){
+                  _selectDate(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                  child: Icon(Icons.calendar_month,
+                  size: widget.iconSize,
+                  ),
+                ),
               ),
             )
           ],

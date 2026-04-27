@@ -461,7 +461,7 @@ Widget labeledField({
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-        const SizedBox(width: 17),
+        const SizedBox(width: 15),
         if (isMobile)
           Expanded(child: child)
         else
@@ -477,7 +477,7 @@ Widget labeledTextField(
     bool isMobile,
     String label,
     TextEditingController controller, {
-      required double width,
+      double? width,
       TextInputType? keyboardType,
       bool formatDigitsOnly = false,
       TextInputAction textInputAction = TextInputAction.next,
