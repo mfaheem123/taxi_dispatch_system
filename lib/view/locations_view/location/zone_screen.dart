@@ -88,17 +88,15 @@ class _ZoneScreenState extends State<ZoneScreen> {
     if (controller.updateZone.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
-          // Controller se vertices utha kar UI ke state mein daalna zaroori hai
           if (controller.draft.isNotEmpty) {
             _polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
             _selectedPolyId = controller.zoneUpdateId.value.toString();
             mode = DrawMode.edit;
           } else if (controller.rectStart != null && controller.rectCurrent != null) {
-            // Agar rectangle hai toh uske points bana kar daalein
             final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
             _polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
             _selectedPolyId = controller.zoneUpdateId.value.toString();
-            mode = DrawMode.rectangle; // Ya DrawMode.edit
+            mode = DrawMode.rectangle;
           }
         });
       });
