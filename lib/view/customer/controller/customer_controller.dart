@@ -75,6 +75,7 @@ class CustomerController extends GetxController {
           ? "customers/add"
           : 'customers/edit/${customerUpdateId.value}',
       auth: true,
+      sendCompanyId: true,
     );
     if (response.statusCode == 200) {
       BotToast.showText(
@@ -82,7 +83,7 @@ class CustomerController extends GetxController {
               ? "CUSTOMER UPDATED SUCCESSFULLY"
               : 'CUSTOMER ADDED SUCCESSFULLY');
 
-      print("✅ Account Created Successfully");
+      print("✅ Account Created Successfully=== $response" );
       enableSms.value = false;
       nameController.clear();
       emailController.clear();
@@ -135,7 +136,9 @@ class CustomerController extends GetxController {
       "telephone": searchTele.value.toLowerCase(),
       "email": searchEmail.value.toLowerCase(),
       "address1": searchAddress.value.toLowerCase(),
-    });
+    },
+sendCompanyId: true,    
+    );
     if (response.statusCode == 200) {
       getCustomerModel = GetCustomerModel.fromJson(response.data);
       totalPages.value = getCustomerModel?.totalPages ?? 1;
