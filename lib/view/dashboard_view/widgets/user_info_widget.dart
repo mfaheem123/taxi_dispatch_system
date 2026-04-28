@@ -444,6 +444,7 @@ Widget labeledField({
   required double width,
    double? heights,
   bool column = false,
+  double? widthss
 }) {
   return SizedBox(
     height: column == true ? null : heights??30,
@@ -461,7 +462,7 @@ Widget labeledField({
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(label, style: mozillaTextSemiBoldText(context: context, fontSize: 13)),
-        const SizedBox(width: 15),
+        SizedBox(width: widthss?? 5),
         if (isMobile)
           Expanded(child: child)
         else
@@ -550,7 +551,7 @@ Widget labeledTextField(
         Text(label,
             style:
             mozillaTextSemiBoldText(context: context, fontSize: 13)),
-        const SizedBox(width: 15),
+        const SizedBox(width: 5),
         if (isMobile)
           Expanded(
             child: CustomTextField(

@@ -20,6 +20,7 @@ class FormShortCutKey extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return GetBuilder<DashboardController>(
       builder: (controller) {
         return Container(
@@ -74,7 +75,7 @@ class FormShortCutKey extends StatelessWidget {
                             '+ MULTI RESERVATION [F8]',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 13,
+                              fontSize: MediaQuery.of(context).size.width/130,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -102,7 +103,7 @@ class FormShortCutKey extends StatelessWidget {
                                   '+ VEHICLES [F9]',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 13,
+                                    fontSize: MediaQuery.of(context).size.width/130,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -168,7 +169,7 @@ class FormShortCutKey extends StatelessWidget {
                                 'VIA (${dashboardController.viaPoints.length})',
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13,
+                                  fontSize: MediaQuery.of(context).size.width/130,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -180,7 +181,7 @@ class FormShortCutKey extends StatelessWidget {
                         'SUB',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 13,
+                          fontSize: MediaQuery.of(context).size.width/130,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -191,12 +192,16 @@ class FormShortCutKey extends StatelessWidget {
                         width: 200,
                         height: 35,
                         child: DropdownButtonFormField<DashboardSubsidiaryObject>(
+                          isExpanded: true, // Use true here so text reaches the icon and then clips
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             isDense: true,
                             filled: true,
-                            fillColor: DynamicColors.whiteClr
+                            fillColor: DynamicColors.whiteClr,
+                            contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                           ),
+                          icon: const Icon(Icons.arrow_drop_down, size: 20),
+                          padding: EdgeInsets.zero,
                           value: controller.selectSubsidiariesValue,
                           items: controller.dashboardAllData!
                               .subsidiaries!
@@ -204,6 +209,8 @@ class FormShortCutKey extends StatelessWidget {
                               DropdownMenuItem<DashboardSubsidiaryObject>(
                                 value: subsidiaries,
                                 child: Text(subsidiaries.name ?? "",
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: mozillaTextRegularText(
                                     fontSize: 12,
                                     color: DynamicColors.textClr,
