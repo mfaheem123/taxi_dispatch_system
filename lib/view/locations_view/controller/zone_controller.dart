@@ -95,7 +95,8 @@ class ZoneController extends GetxController {
   final zoneItems = ['SELECT ZONE TYPE', 'MAJOR', 'MINOR'];
 
   // -------- Google Map Data --------
-  final Completer<GoogleMapController> ctrl = Completer();
+  // final Completer<GoogleMapController> ctrl = Completer();
+  Completer<GoogleMapController> ctrl = Completer();
   GoogleMapController? mapController;
   final mapKey = GlobalKey();
   final polyPoints = <String, List<LatLng>>{}.obs;
@@ -132,6 +133,7 @@ class ZoneController extends GetxController {
     secondarynamezoneController.clear();
     zoneValue.value = 'SELECT ZONE TYPE';
     categoryValue.value = "SELECT CATEGORY";
+    postcodeController.clear();
     base.value = false;
     updateZone.value = false;
     isEditing.value = false;
@@ -143,6 +145,11 @@ class ZoneController extends GetxController {
     editMarkers.clear();
     polyPoints.clear();
     mode.value = DrawMode.navigate;
+    update();
+  }
+  void refreshMapController() {
+    ctrl = Completer<GoogleMapController>();
+    update();
   }
 
   List<Map<String, double>> toApiVertices(List<LatLng> pts) {

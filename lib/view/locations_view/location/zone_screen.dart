@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../component/text_field.dart';
 
-enum DrawMode { navigate, freehand, rectangle, points, edit }
+// enum DrawMode { navigate, freehand, rectangle, points, edit }
 
 enum RectHandle { nw, n, ne, e, se, s, sw, w }
 
@@ -81,27 +81,54 @@ class _ZoneScreenState extends State<ZoneScreen> {
   //     });
   //   }
   // }
-
   @override
   void initState() {
     super.initState();
-    if (controller.updateZone.value) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    controller.refreshMapController();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
         setState(() {
-          if (controller.draft.isNotEmpty) {
-            _polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
-            _selectedPolyId = controller.zoneUpdateId.value.toString();
-            mode = DrawMode.edit;
-          } else if (controller.rectStart != null && controller.rectCurrent != null) {
-            final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
-            _polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
-            _selectedPolyId = controller.zoneUpdateId.value.toString();
-            mode = DrawMode.rectangle;
+          if (controller.updateZone.value) {
+            // --- UPDATE MODE LOGIC ---
+            if (controller.draft.isNotEmpty) {
+              _polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
+              _selectedPolyId = controller.zoneUpdateId.value.toString();
+              mode = DrawMode.edit;
+            } else if (controller.rectStart != null && controller.rectCurrent != null) {
+              final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
+              _polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
+              _selectedPolyId = controller.zoneUpdateId.value.toString();
+              mode = DrawMode.rectangle;
+            }
+          } else {
+            mode = DrawMode.navigate;
+            controller.mode.value = DrawMode.navigate;
           }
         });
-      });
-    }
+      }
+    });
   }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   controller.refreshMapController();
+  //   if (controller.updateZone.value) {
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       setState(() {
+  //         if (controller.draft.isNotEmpty) {
+  //           _polyPoints[controller.zoneUpdateId.value.toString()] = List<LatLng>.from(controller.draft);
+  //           _selectedPolyId = controller.zoneUpdateId.value.toString();
+  //           mode = DrawMode.edit;
+  //         } else if (controller.rectStart != null && controller.rectCurrent != null) {
+  //           final rectPts = _rectFromDiagonal(controller.rectStart!, controller.rectCurrent!);
+  //           _polyPoints[controller.zoneUpdateId.value.toString()] = rectPts;
+  //           _selectedPolyId = controller.zoneUpdateId.value.toString();
+  //           mode = DrawMode.rectangle;
+  //         }
+  //       });
+  //     });
+  //   }
+  // }
 
   // TextEditingController zonenameContoller = TextEditingController();
   // TextEditingController secondarynamezoneController = TextEditingController();
@@ -734,7 +761,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
         controller.rectCurrent != null) {
       final rectPts = _rectFromDiagonal(
           // controller.rectStart! as LatLng
-          controller.rectStart!, controller.rectCurrent! as LatLng);
+          controller.rectStart!, controller.rectCurrent!);
       set.add(Polygon(
         polygonId: const PolygonId('live_rect'),
         points: rectPts,
@@ -794,7 +821,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
       final b = _boundsFromTwo(
           // controller.rectStart! as LatLng
           controller.rectStart!
-          , controller.rectCurrent! as LatLng);
+          , controller.rectCurrent!);
       final hp = _handlePositions(b);
       for (final entry in hp.entries) {
         final handle = entry.key;
@@ -1069,6 +1096,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             setState(() {
                               _polyPoints.clear();
                               _selectedPolyId = null;
+                              mode = DrawMode.navigate;
+                              _cancelActiveRectDrag();
                             });
                             BotToast.showText(text: 'ZONE DATA SUBMITTED SUCCESSFULLY');
                           },
@@ -1104,16 +1133,18 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
                         child: GoogleMap(
 
-                          key: ValueKey("main-map"),
+                          // key: ValueKey("main-map"),
+                          key: ValueKey("map_${controller.updateZone.value}_${_polyPoints.length}"),
+                          // key: const ValueKey("google_map_zone_screen"),
                           initialCameraPosition: _initialCamera,
-                          onMapCreated: (c) {
+                          onMapCreated: (c) async {
                             if (!controller.ctrl.isCompleted) {
                               controller.ctrl.complete(c);
                             }
+                            await Future.delayed(const Duration(milliseconds: 500));
                             /// Yahan map listener safe ho jata hai
                             if (mounted) setState(() {});
                           },
-
                           scrollGesturesEnabled: !_lockMapGestures,
                           zoomGesturesEnabled: !_lockMapGestures,
                           rotateGesturesEnabled: !_lockMapGestures,
@@ -1123,18 +1154,34 @@ class _ZoneScreenState extends State<ZoneScreen> {
                           myLocationButtonEnabled: false,
                           zoomControlsEnabled: false,
                           compassEnabled: false,
+                          // onTap: (latLng) async {
+                          //
+                          //   final ctrl = await controller.ctrl.future;
+                          //   final screen = await ctrl.getScreenCoordinate(latLng);
+                          //
+                          //   // Agar tap toolbar ke area me hua hai to ignore karo
+                          //   if (screen.y <= _toolbarHeight) return;
+                          //
+                          //   if (mode == DrawMode.points) {
+                          //     setState(() => controller.pointsDraft.add(latLng));
+                          //   } else if (mode == DrawMode.edit) {
+                          //     setState(() => _selectedPolyId = null);
+                          //   }
+                          // },
                           onTap: (latLng) async {
+                            if (!controller.ctrl.isCompleted) return;
 
-                            final ctrl = await controller.ctrl.future;
-                            final screen = await ctrl.getScreenCoordinate(latLng);
-
-                            // Agar tap toolbar ke area me hua hai to ignore karo
-                            if (screen.y <= _toolbarHeight) return;
-
-                            if (mode == DrawMode.points) {
-                              setState(() => controller.pointsDraft.add(latLng));
-                            } else if (mode == DrawMode.edit) {
-                              setState(() => _selectedPolyId = null);
+                            try {
+                              final ctrl = await controller.ctrl.future;
+                              final screen = await ctrl.getScreenCoordinate(latLng);
+                              if (screen.y <= _toolbarHeight) return;
+                              if (mode == DrawMode.points) {
+                                setState(() => controller.pointsDraft.add(latLng));
+                              } else if (mode == DrawMode.edit) {
+                                setState(() => _selectedPolyId = null);
+                              }
+                            } catch (e) {
+                              debugPrint("Map coordinate error: $e");
                             }
                           },
                         )),
@@ -1155,6 +1202,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         right: 0,
                         bottom: 0,
                         child: Listener(
+                          key: UniqueKey(),
                           behavior: HitTestBehavior.opaque,
                           onPointerDown: (e) => _onPanStart(e.position),
                           onPointerMove: (e) => _onPanUpdate(e.position),
