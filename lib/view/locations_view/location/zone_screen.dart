@@ -348,6 +348,34 @@ class _ZoneScreenState extends State<ZoneScreen> {
   //     }),
   //   );
   // }
+  // Widget _modeButton(DrawMode m, IconData icon, String tip) {
+  //   final active = mode == m;
+  //   return IconButton(
+  //     tooltip: tip,
+  //     icon: Icon(
+  //       icon,
+  //       color: active ? Theme.of(context).colorScheme.primary : null,
+  //     ),
+  //     onPressed: () {
+  //       setState(() {
+  //         mode = m;
+  //
+  //         controller.draft.clear();
+  //         controller.pointsDraft.clear();
+  //
+  //         // ✅ reset rectangle draft
+  //         controller.rectStart = null;
+  //         controller.rectCurrent = null;
+  //
+  //         if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
+  //           _selectedPolyId = null;
+  //         }
+  //
+  //         _cancelActiveRectDrag();
+  //       });
+  //     },
+  //   );
+  // }
   Widget _modeButton(DrawMode m, IconData icon, String tip) {
     final active = mode == m;
     return IconButton(
@@ -359,19 +387,16 @@ class _ZoneScreenState extends State<ZoneScreen> {
       onPressed: () {
         setState(() {
           mode = m;
-
-          controller.draft.clear();
-          controller.pointsDraft.clear();
-
-          // ✅ reset rectangle draft
-          controller.rectStart = null;
-          controller.rectCurrent = null;
-
-          if (mode != DrawMode.edit && mode != DrawMode.rectangle) {
+          if (mode == DrawMode.navigate) {
+            controller.rectStart = null;
+            controller.rectCurrent = null;
             _selectedPolyId = null;
+            _cancelActiveRectDrag();
           }
 
-          _cancelActiveRectDrag();
+          if (mode == DrawMode.edit && controller.updateZone.value) {
+            _selectedPolyId = controller.zoneUpdateId.value.toString();
+          }
         });
       },
     );
@@ -1133,8 +1158,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
 
                         child: GoogleMap(
 
-                          // key: ValueKey("main-map"),
-                          key: ValueKey("map_${controller.updateZone.value}_${_polyPoints.length}"),
+                          key: ValueKey("main-map"),
+                          // key: ValueKey("map_${controller.updateZone.value}_${_polyPoints.length}"),
                           // key: const ValueKey("google_map_zone_screen"),
                           initialCameraPosition: _initialCamera,
                           onMapCreated: (c) async {
@@ -1275,17 +1300,33 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             _modeButton(
                                 DrawMode.points, Icons.more_horiz, "Points"),
                             _modeButton(DrawMode.edit, Icons.edit, "Edit"),
+                            // IconButton(
+                            //   tooltip: "Clear all",
+                            //   icon: const Icon(Icons.delete_outline),
+                            //   onPressed: () => setState(() {
+                            //     controller.draft.clear();
+                            //     controller.rectStart;
+                            //     controller.rectCurrent;
+                            //     controller.pointsDraft.clear();
+                            //     _polyPoints.clear();
+                            //     _selectedPolyId = null;
+                            //     _cancelActiveRectDrag();
+                            //   }),
+                            // ),
                             IconButton(
                               tooltip: "Clear all",
                               icon: const Icon(Icons.delete_outline),
                               onPressed: () => setState(() {
                                 controller.draft.clear();
-                                controller.rectStart;
-                                controller.rectCurrent;
                                 controller.pointsDraft.clear();
+                                controller.rectStart = null;
+                                controller.rectCurrent = null;
                                 _polyPoints.clear();
                                 _selectedPolyId = null;
-                                _cancelActiveRectDrag();
+                                if (mode == DrawMode.edit || mode == DrawMode.navigate) {
+                                  mode = DrawMode.points;
+                                  controller.mode.value = DrawMode.points;
+                                }
                               }),
                             ),
                           ],

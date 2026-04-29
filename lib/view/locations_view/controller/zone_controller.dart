@@ -177,53 +177,107 @@ class ZoneController extends GetxController {
     return null;
   }
 
+  // postZone(context) async {
+  //   print("Draw mode: ${mode.value}");
+  //   print("Draft points: ${draft.length}");
+  //   print("Points draft: ${pointsDraft.length}");
+  //   print("Rect start: $rectStart, Rect end: $rectCurrent");
+  //
+  //   List<Vertices> vertices = [];
+  //   // Handle polygon/freehand draw
+  //   if (draft.isNotEmpty) {
+  //     vertices = draft
+  //         .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
+  //         .toList();
+  //   }
+  //   else if (pointsDraft.isNotEmpty) {
+  //     vertices = pointsDraft
+  //         .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
+  //         .toList();
+  //   }
+  //   // Handle rectangle draw
+  //   else if (rectStart != null && rectCurrent != null) {
+  //     vertices = [
+  //       Vertices(
+  //           latitude: rectStart!.latitude, longitude: rectStart!.longitude),
+  //       Vertices(
+  //           latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
+  //       Vertices(
+  //           latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
+  //       Vertices(
+  //           latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
+  //     ];
+  //   }
+  //
+  //   if (vertices.length < 3) {
+  //     BotToast.showText(text: 'Please draw/select a zone (at least 3 points)');
+  //     return;
+  //   }
+  //
+  //   var formData = {
+  //     if (updateZone.value)
+  //       "id": zoneUpdateId.value,
+  //     "name": zonenameContoller.text.trim(),
+  //     "secondary_name": secondarynamezoneController.text.trim(),
+  //     "type": zoneValue.value,
+  //     "category": categoryValue.value,
+  //     "base": base.value,
+  //     "vertices": vertices.map((v) => v.toJson()).toList(),
+  //     "overlay": mode.value == DrawMode.rectangle ? "rectangle" : "polygon",
+  //   };
+  //
+  //   final response = await Api().post(
+  //     formData,
+  //     updateZone.value ? 'zones/edit/${zoneUpdateId.value}' : 'zones',
+  //   );
+  //
+  //   if (response.statusCode == 200) {
+  //     update();
+  //     clearZoneForm();
+  //     print("FormData saved: ${response.statusCode}");
+  //     print("Zone saved: ${response.data}");
+  //     print("FormData saved: ${formData}");
+  //   } else {
+  //     print(
+  //       "Error saving zone: $response",
+  //     );
+  //   }
+  // }
+
   postZone(context) async {
-    print("Draw mode: ${mode.value}");
-    print("Draft points: ${draft.length}");
-    print("Points draft: ${pointsDraft.length}");
-    print("Rect start: $rectStart, Rect end: $rectCurrent");
+    List<LatLng> finalPoints = [];
+    if (updateZone.value) {
+      String id = zoneUpdateId.value.toString();
+      if (polyPoints.containsKey(id)) {
+        finalPoints.addAll(polyPoints[id]!);
+      }
+    }
+    if (pointsDraft.isNotEmpty) {
+      finalPoints.addAll(pointsDraft);
+    }
 
-    List<Vertices> vertices = [];
-    // Handle polygon/freehand draw
     if (draft.isNotEmpty) {
-      vertices = draft
-          .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
-          .toList();
+      finalPoints.addAll(draft);
     }
-    else if (pointsDraft.isNotEmpty) {
-      vertices = pointsDraft
-          .map((p) => Vertices(latitude: p.latitude, longitude: p.longitude))
-          .toList();
+    if (rectStart != null && rectCurrent != null) {
+      finalPoints.addAll(rectFromDiagonal(rectStart!, rectCurrent!));
     }
-    // Handle rectangle draw
-    else if (rectStart != null && rectCurrent != null) {
-      vertices = [
-        Vertices(
-            latitude: rectStart!.latitude, longitude: rectStart!.longitude),
-        Vertices(
-            latitude: rectStart!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(
-            latitude: rectCurrent!.latitude, longitude: rectCurrent!.longitude),
-        Vertices(
-            latitude: rectCurrent!.latitude, longitude: rectStart!.longitude),
-      ];
-    }
+    final uniquePoints = finalPoints.toSet().toList();
 
-    if (vertices.length < 3) {
-      BotToast.showText(text: 'Please draw/select a zone (at least 3 points)');
+    if (uniquePoints.length < 3) {
+      BotToast.showText(text: 'Please draw at least 3 points');
       return;
     }
 
     var formData = {
-      if (updateZone.value)
-        "id": zoneUpdateId.value,
+      if (updateZone.value) "id": zoneUpdateId.value,
       "name": zonenameContoller.text.trim(),
       "secondary_name": secondarynamezoneController.text.trim(),
       "type": zoneValue.value,
       "category": categoryValue.value,
       "base": base.value,
-      "vertices": vertices.map((v) => v.toJson()).toList(),
-      "overlay": mode.value == DrawMode.rectangle ? "rectangle" : "polygon",
+      "vertices": uniquePoints.map((p) => {"latitude": p.latitude, "longitude": p.longitude}).toList(),
+      "overlay": uniquePoints.length == 4 ? "rectangle" : "polygon",
     };
 
     final response = await Api().post(
@@ -234,13 +288,7 @@ class ZoneController extends GetxController {
     if (response.statusCode == 200) {
       update();
       clearZoneForm();
-      print("FormData saved: ${response.statusCode}");
-      print("Zone saved: ${response.data}");
-      print("FormData saved: ${formData}");
-    } else {
-      print(
-        "Error saving zone: $response",
-      );
+      BotToast.showText(text: 'SAVED SUCCESSFULLY');
     }
   }
 
