@@ -19,13 +19,12 @@ class VoipSettingsScreen extends StatefulWidget {
 class _VoipSettingsScreenState extends State<VoipSettingsScreen> {
   // Temporary new rows for adding extension
   List<Map<String, dynamic>> newExtensions = [];
+  SettingController controller = Get.put(SettingController());
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
     final h = MediaQuery.of(context).size.height;
-
-    SettingController controller = Get.put(SettingController());
 
     return GetBuilder<SettingController>(
       initState: (v) {
