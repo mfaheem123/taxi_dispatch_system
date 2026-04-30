@@ -137,6 +137,7 @@ class VehicleController extends GetxController {
           'company-vehicles/add',
           auth: true,
           multiPart: true,
+        sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         String message = singleVehicleData != null
@@ -377,6 +378,7 @@ class VehicleController extends GetxController {
             ? "vehicle-type/edit/${singleVehicle!.id}"
             : 'vehicle-type/add',
         auth: true,
+        sendCompanyId: true,
         multiPart: multipartFile != null ? true : false);
     if (response.statusCode == 200) {
       String message = singleVehicle != null

@@ -51,7 +51,20 @@ class _PlotFareState extends State<PlotFare> {
 
 
         builder: (controller) {
-          return  LayoutBuilder(
+
+
+
+
+          return
+
+
+           controller.getPlotVehicleTypeLoader.value
+              ? Center(
+            child: CircularProgressIndicator(),
+          )
+              :
+
+            LayoutBuilder(
               builder: (context, constraints) {
                 final double maxWidth = constraints.maxWidth;
                 final bool isMobile = maxWidth < 600;

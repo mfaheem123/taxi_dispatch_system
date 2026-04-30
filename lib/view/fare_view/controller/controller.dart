@@ -46,7 +46,7 @@ class FareController extends GetxController {
   RxBool getPlotVehicleTypeLoader = false.obs;
   getPlotVehicleType() async {
     getPlotVehicleTypeLoader(true);
-    var response = await Api().get("combined/zone-vehicle-types");
+    var response = await Api().get("combined/zone-vehicle-types", sendCompanyId: true,);
     if (response.statusCode == 200) {
       plotVehicleTypeModel = PlotVehicleTypeModel.fromJson(response.data);
       getPlotVehicleTypeLoader(false);
@@ -84,8 +84,11 @@ class FareController extends GetxController {
         formData,
         isUpdatePlot.value
             ? "plotfares/update/${plotUpdateId.value}"
-            : "plotfares/add");
+            : "plotfares/add",
+    sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
+
       BotToast.showText(
           text: isUpdatePlot.value
               ? "PLOT FARE UPDATED SUCCESSFULLY"
@@ -124,7 +127,7 @@ class FareController extends GetxController {
   RxBool getAllPlotFareLoader = false.obs;
   getAllPlotFare() async {
     getAllPlotFareLoader(true);
-    var response = await Api().get("plotfares/get");
+    var response = await Api().get("plotfares/get", sendCompanyId: true, );
     if (response.statusCode == 200) {
       allPlotFareModel = AllPlotFareModel.fromJson(response.data);
       getAllPlotFareLoader(false);
@@ -240,7 +243,9 @@ class FareController extends GetxController {
       "area1": searchFromLocation.value.toLowerCase(),
       "area2": searchToLocation.value.toLowerCase(),
       "fares": searchFares.value.toLowerCase(),
-    });
+    },
+    sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
       getAllFixedFareModels = GetAllFixedFareModel.fromJson(response.data);
       totalPagesFixedFare.value = getAllFixedFareModels?.totalPages ?? 1;
@@ -282,7 +287,7 @@ class FareController extends GetxController {
   RxBool getFixedFareVehicleLocationTypeLoader = false.obs;
   getFixedFareVehicleLocationType() async {
     getFixedFareVehicleLocationTypeLoader(true);
-    var response = await Api().get("combined/vehicle-location-types");
+    var response = await Api().get("combined/vehicle-location-types", sendCompanyId: true);
     if (response.statusCode == 200) {
       fixedFareVehicleLocationTypeModel =
           FixedFareVehicleLocationTypeModel.fromJson(response.data);
@@ -340,7 +345,9 @@ class FareController extends GetxController {
         isUpdateFixedFare.value
             ? "fixedfares/edit/${fixedFareUpdateId.value}"
             : 'fixedfares/add',
-        auth: true);
+        auth: true,
+    sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
       BotToast.showText(
           text: isUpdateFixedFare.value
@@ -360,7 +367,6 @@ class FareController extends GetxController {
     fareDescription2ndController.clear();
     fromAddressList.clear();
     toAddressList.clear();
-
     vehicleTypesFixedvalue = null;
     fromLocationTypeValue = null;
     toLocationTypeValue = null;
@@ -715,7 +721,7 @@ class FareController extends GetxController {
   RxBool getFareGetVehicleTypeAccountLoader = false.obs;
   getFareGetVehicleTypeAccount() async {
     getFareGetVehicleTypeAccountLoader(true);
-    var response = await Api().get("combined/vehicle-type-accounts");
+    var response = await Api().get("combined/vehicle-type-accounts", sendCompanyId: true);
     if (response.statusCode == 200) {
       fareGetVehicleTypeAccount =
           FareGetVehicleTypeAccount.fromJson(response.data);
@@ -750,7 +756,7 @@ class FareController extends GetxController {
         formData,
         updateFareValue.value == false
             ? "faresconfiguration/add"
-            : "faresconfiguration/edit/${fareUpdateId.value}");
+            : "faresconfiguration/edit/${fareUpdateId.value}", sendCompanyId: true,);
     if (response.statusCode == 200) {
       // getAllFareConfigurationData!.fareConfigurations!.insert(0, FareConfiguration.fromJson(response.data['fare_configuration']));
       var newFare =
@@ -850,7 +856,7 @@ class FareController extends GetxController {
     getAllFareViewLoader(true);
 
     var response =
-        await Api().get("faresconfiguration/get?title=$fareConfiguration");
+        await Api().get("faresconfiguration/get?title=$fareConfiguration", sendCompanyId: true);
 
     if (response.statusCode == 200) {
       getAllFareConfigurationData =
@@ -1120,7 +1126,9 @@ class FareController extends GetxController {
   RxBool getAllAirPortChargesLoader = true.obs;
   getAllAirPortCharges() async {
     getAllAirPortChargesLoader(false);
-    var response = await Api().get("airports/get");
+    var response = await Api().get("airports/get",
+    sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
       airportChargesData = AirPortChargesModel.fromJson(response.data);
       filteredLocations = airportChargesData?.locations ?? [];
@@ -1265,6 +1273,7 @@ class FareController extends GetxController {
     farebyVehicleLoader(true);
     var response = await Api().get(
       "farebyvehicle/get",
+      sendCompanyId: true,
     );
     if (response.statusCode == 200) {
       fareByVehicleSetting = FareByVehicleSetting.fromJson(response.data);
@@ -1284,7 +1293,9 @@ class FareController extends GetxController {
         formData,
         updateFarebyVehicle.value == false
             ? "farebyvehicle/add"
-            : "farebyvehicle/update/${fareByVehicleUpdateId.value}");
+            : "farebyvehicle/update/${fareByVehicleUpdateId.value}",
+    sendCompanyId: true,
+    );
     if (response.statusCode == 200) {
       BotToast.showText(
           text: updateFarebyVehicle.value

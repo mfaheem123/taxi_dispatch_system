@@ -5,6 +5,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide FormData;
+import 'package:get_storage/get_storage.dart';
 
 import '../../../component/networks/api.dart';
 import '../../../component/text_field.dart';
@@ -37,7 +38,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   List<Postcode> postcodes = [];
   final Dio _dio = Dio();
   bool isLoading = false;
-
+  final String globalCompanyId = "1";
   @override
   void initState() {
     super.initState();
@@ -291,14 +292,19 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   Future<void> _fetchPostcodes() async {
     setState(() => isLoading = true);
     try {
-      final response = await _dio.get('${baseUrl}localizations/getlocalization',);
-      if (response.statusCode == 200 && response.data['status'] == true) {
+      final response = await _dio.get(
+        '${baseUrl}localizations/getlocalization',
+        queryParameters: {'company_id': globalCompanyId},
+      );
+      print("URL: ${baseUrl}localizations");
+      if (response.statusCode == 200 ) {
         final List<dynamic> list = response.data['localizationdetail'];
         final List<Postcode> loaded =
         list.map((e) => Postcode.fromJson(e)).toList();
         setState(() {
           postcodes = loaded;
         });
+
       } else {
         BotToast.showText(text: 'ERROR' + 'FAILED TO FETCH DATA');
 
@@ -313,17 +319,22 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   /// 📌 POST API call for adding postcode
   Future<void> _addPostcodeApi(String code) async {
     try {
-      final response = await _dio.post('${baseUrl}localizations', data: FormData.fromMap({'postcode': code,}),);
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      Map<String, dynamic> dataToSend = {
+        'postcode': code,
+        'company_id': globalCompanyId,
+      };
+      print("URL: ${baseUrl}localizations");
+      print("Sending Data: $dataToSend");
+      final response = await _dio.post('${baseUrl}localizations',
+        data: FormData.fromMap(dataToSend));
+      print("URL: ${baseUrl}localizations");
+      if (response.statusCode == 200 ) {
         await _fetchPostcodes();
         BotToast.showText(text:
           'POSTCODE ADDED SUCCESSFULLY');
-
       } else {
         BotToast.showText(text:
         'ERROR' 'FAILED TO ADD POSTCODE');
-
       }
     } catch (e) {
       BotToast.showText(text:
@@ -337,23 +348,18 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   Future<void> _deletePostcodeApi(int id) async {
     try {
       final response = await _dio.delete('${baseUrl}localizations/delete/$id',);
-
       if (response.statusCode == 200) {
         await _fetchPostcodes();
-
         BotToast.showText(text:
         'POSTCODE DELETED SUCCESSFULLY');
-
       } else {
         BotToast.showText(text:
         'ERROR'
             'FAILED TO DELETED POSTCODE');
-
       }
     } catch (e) {
       BotToast.showText(text:
       'ERROR');
-
     }
   }
 }

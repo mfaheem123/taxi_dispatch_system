@@ -117,6 +117,7 @@ class LocationController extends GetxController {
         ?'locations':
         'locations/${locationUpdateId.value}'
              ,
+        sendCompanyId: true,
         auth: true);
     if (response.statusCode == 200) {
       print(formData);
@@ -167,7 +168,10 @@ class LocationController extends GetxController {
         "address": searchAddress.value.toLowerCase(),
         "location_type": searchLocationType.value.toLowerCase(),
         "zone": searchZone.value.toLowerCase(),
-      });
+      },
+
+      sendCompanyId: true,
+      );
       if (response.statusCode == 200) {
         locationListModel = LocationListModel.fromJson(response.data);
         locationTotalPages.value = locationListModel?.totalPages ?? 1;
