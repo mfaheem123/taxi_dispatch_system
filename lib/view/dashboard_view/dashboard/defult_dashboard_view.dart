@@ -115,10 +115,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
-
-        print(maxWidth);
-        print(maxWidth);
-        print("maxWidth");
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final context = _containerKey.currentContext;
           final box = context?.findRenderObject() as RenderBox;

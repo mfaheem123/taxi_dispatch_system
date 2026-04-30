@@ -915,7 +915,7 @@ class FareController extends GetxController {
         formData,
         isFareIncrementEditMode
             ? "fareincrement/update/${editingId}"
-            : "fareincrement/add");
+            : "fareincrement/add", sendCompanyId: true);
     if (response.statusCode == 200) {
       String msg = isFareIncrementEditMode
           ? "FARE INCREMENT UPDATED SUCCESSFULLY"
@@ -934,7 +934,7 @@ class FareController extends GetxController {
 
   getFareIncrement() async {
     getFareIncrementLoader(true);
-    var response = await Api().get("fareincrement/get");
+    var response = await Api().get("fareincrement/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getFareIncrementMoodel = GetFareIncrementMoodel.fromJson(response.data);
       getFareIncrementLoader(false);
@@ -1020,7 +1020,7 @@ class FareController extends GetxController {
         formData,
         sureChargeObject != null
             ? "surcharges/edit/${sureChargeObject!.id}"
-            : "surcharges/add");
+            : "surcharges/add", sendCompanyId: true);
     if (response.statusCode == 200) {
       String message = sureChargeObject != null
           ? "SURCHARGES UPDATED SUCCESSFULLY"
@@ -1061,7 +1061,7 @@ class FareController extends GetxController {
   RxBool getSurchargesLoader = false.obs;
   getSurcharges() async {
     getSurchargesLoader(true);
-    var response = await Api().get("surcharges/get");
+    var response = await Api().get("surcharges/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       sureChargeObject = null;
       getSurchargesModel = GetSurchargesModel.fromJson(response.data);
@@ -1205,7 +1205,7 @@ class FareController extends GetxController {
 
   GetAllFareMeterRateModel? getAllFareMeterRateModel;
   getAllFareMeterRate() async {
-    var response = await Api().get("faremeter/get");
+    var response = await Api().get("faremeter/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getAllFareMeterRateModel =
           GetAllFareMeterRateModel.fromJson(response.data);
