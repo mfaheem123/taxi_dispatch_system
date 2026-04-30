@@ -80,7 +80,7 @@ class Environment {
       case Environment.production:
         return ProductionConfig();
       default:
-        return DevConfig();
+        return ProductionConfig();
     }
   }
 }
