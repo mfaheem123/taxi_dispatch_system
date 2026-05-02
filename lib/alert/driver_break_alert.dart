@@ -10,28 +10,32 @@ void showDriverActionAlert() {
     barrierColor: Colors.black54,
   );
 }
-
 class DriverActionAlert extends StatelessWidget {
   final String driverName;
   const DriverActionAlert({super.key, required this.driverName});
 
   @override
   Widget build(BuildContext context) {
-    const primaryGreen = Color(0xFF5AB65B);
-
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 480,
+        width: 450,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+              padding: const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 10),
               child: RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
@@ -47,7 +51,7 @@ class DriverActionAlert extends StatelessWidget {
                       style: mozillaTextSemiBoldText(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: primaryGreen
+                          color: DynamicColors.primaryClr
                       ),
                     ),
                   ],
@@ -55,30 +59,42 @@ class DriverActionAlert extends StatelessWidget {
               ),
             ),
 
-            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 25, left: 20, right: 20),
+              child: Text(
+                "WANTS TO TAKE A BREAK",
+                textAlign: TextAlign.center,
+                style: mozillaTextSemiBoldText(
+                  fontSize: 15,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            const Divider(height: 1, thickness: 1),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
                 children: [
                   Expanded(
                     child: CustomButton(
-                      height: 45,
+                      height: 48,
                       btnText: "REJECT",
-                      btnColor: Colors.red,
+                      btnColor: Colors.red.shade600,
                       borderRadius: 8,
                       style: mozillaTextSemiBoldText(
                           fontSize: 14,
                           color: Colors.white,
                           fontWeight: FontWeight.bold
                       ),
-                      onTap: () {},
+                      onTap: () => Get.back(),
                     ),
                   ),
                   const SizedBox(width: 15),
-                  // ACCEPT Button
                   Expanded(
                     child: CustomButton(
-                      height: 45,
+                      height: 48,
                       btnText: "ACCEPT",
                       btnColor: DynamicColors.primaryClr,
                       borderRadius: 8,
@@ -87,7 +103,9 @@ class DriverActionAlert extends StatelessWidget {
                           color: Colors.white,
                           fontWeight: FontWeight.bold
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        Get.back();
+                      },
                     ),
                   ),
                 ],

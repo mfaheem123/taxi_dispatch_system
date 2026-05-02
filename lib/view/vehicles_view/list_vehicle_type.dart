@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:number_pagination/number_pagination.dart';
 
+import '../../alert/customer_detail_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/textStyle.dart';
