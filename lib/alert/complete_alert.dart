@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../component/customButton.dart';
+import '../component/dropdown_button.dart';
 import '../component/textStyle.dart';
+import '../controller/fob_controller.dart';
+import '../view/customer/model/restricDriver.dart';
 
-void showCompleteBookingAlert() {
-  Get.dialog(
-    const CompleteBookingAlert(),
+void showCompleteBookingAlert(int id) {
+  Get.dialog(CompleteBookingAlert(bookingId: id),
     barrierColor: Colors.black54,
   );
 }
 
-class CompleteBookingAlert extends StatelessWidget {
-  const CompleteBookingAlert({super.key});
+class CompleteBookingAlert extends StatefulWidget {
+  final dynamic bookingItem;
+  final int bookingId;
+  const CompleteBookingAlert({super.key, required this.bookingId, this.bookingItem});
+
+  @override
+  State<CompleteBookingAlert> createState() => _CompleteBookingAlertState();
+}
+
+class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
+  final controller = Get.put(FobController());
+
+  @override
+  void initState() {
+    super.initState();
+    // controller.getAllDrivers;
+    controller.getAllDrivers().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +39,7 @@ class CompleteBookingAlert extends StatelessWidget {
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        width: 550,
+        width: 450,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -33,7 +53,7 @@ class CompleteBookingAlert extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    "COMPLETE BOOKING",
+                    "COMPLETE BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
                     style: mozillaTextSemiBoldText(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -66,30 +86,20 @@ class CompleteBookingAlert extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue.shade100),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: "25 GEORGE HAMPTON",
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        items: ["25 GEORGE HAMPTON", "OTHER DRIVER"]
-                            .map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: mozillaTextSemiBoldText(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (_) {},
-                      ),
+                     child: CustomDropdownField<DriverObject>(
+                      label: "SELECT DRIVERS",
+                      width: 320,
+                      height: 35,
+                      items: controller.allDriverData?.drivers ?? [],
+                      value: controller.selectDriverObject,
+                      itemLabel: (driver) =>
+                      driver.name ?? "".toUpperCase(),
+                      onChanged: (val) {
+                        controller.selectDriverObject = val;
+                        controller.update();
+                      },
                     ),
                   ),
                 ],
@@ -107,7 +117,7 @@ class CompleteBookingAlert extends StatelessWidget {
                     height: 28,
                     verticalPadding: 0.0,
                     btnText: "BACK",
-                    btnColor: const Color(0xFFEEEEEE),
+                    btnColor: Colors.grey,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
@@ -121,7 +131,9 @@ class CompleteBookingAlert extends StatelessWidget {
                     width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
                     btnText: "COMPLETE BOOKING",
                     style: const TextStyle(color: Colors.white, fontSize: 14),
-                    onTap: () {},
+                    onTap: () {
+                      controller.postCompleteBooking(widget.bookingId);
+                    },
                   ),
                 ],
               ),

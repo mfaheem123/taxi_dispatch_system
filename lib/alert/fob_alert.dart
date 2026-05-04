@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../component/customButton.dart';
 import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
+import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
 void showDispatchFob() {
   Get.dialog(
@@ -23,11 +24,10 @@ class DispatchFobAlert extends StatefulWidget {
 class _DispatchFobAlertState extends State<DispatchFobAlert> {
 
   final controller = Get.put(FobController());
-  final _controller = Get.find<FobController>();
+  final _controller = Get.find<DashboardController>();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller.getDispatchFob();
   }
@@ -139,7 +139,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                     if (controller.drivers.isEmpty) {
                       return const SizedBox(
                         height: 100,
-                        child: Center(child: Text("No Drivers Found")),
+                        child: Center(child: Text("NO DRIVERS FOUND")),
                       );
                     }
 
@@ -182,7 +182,9 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                                     btnText: "DISPATCH",
                                     style: mozillaTextSemiBoldText(
                                         fontSize: 14, color: Colors.white),
-                                    onTap: () {},
+                                    onTap: () {
+                                      controller.fobBooking(_controller.dashboardTableModelData?.data!.first.id, driver.id);
+                                    },
                                   ),
                                 ),
                               ),
