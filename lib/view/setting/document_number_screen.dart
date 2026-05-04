@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 
@@ -33,6 +34,10 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
     shortCutKeyValue.value = "DocumentNumberScreen";
   }
 
+
+  List permissions = [];
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -41,7 +46,11 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AdministrationController>(builder: (controller) {
+    return GetBuilder<AdministrationController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+        },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -130,7 +139,7 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                     DataCell(
                       Row(
                         children: [
-                          OutlinedButton(
+                          if(permissions.contains('update_document_number')) OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
                                 color: Colors.transparent,
@@ -143,7 +152,7 @@ class _DocumentNumberScreenState extends State<DocumentNumberScreen> {
                               color: DynamicColors.primaryClr,
                             ),
                           ),
-                          OutlinedButton(
+                          if(permissions.contains('delete_document_number')) OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               side: BorderSide(
                                 color: Colors.transparent,

@@ -6,6 +6,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/view/administration/controller/administration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../component/networks/api.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import 'create_subsiDiary.dart';
@@ -30,10 +31,14 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
     shortCutKeyValue.value = "SubsiDiariesScreen";
   }
 
+  List permissions = [];
+
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<AdministrationController>(
       initState: (state) {
+          permissions = Api().sp.read('all_permissions') ?? [];
         controller.listSubsDiary();
       },
       builder: (controller) {
@@ -198,27 +203,30 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                     icon: Icon(Icons.edit_calendar,
                                         color: DynamicColors.primaryClr),
                                     onPressed: () {
-                                      controller.subsidiaryUpdate(data: item);
+                                      if(permissions.contains('update_subsidiary')){
+                                        controller.subsidiaryUpdate(data: item);
 
-                                      controller.isSubsiDiaryUpdating.value =
-                                          true;
+                                        controller.isSubsiDiaryUpdating.value =
+                                        true;
 
-                                      int index = _controller.selectedMenuItems
-                                          .indexWhere((element) =>
-                                              element.title ==
-                                              "CREATE SUBSIDIARY");
-                                      if (index != -1) {
-                                        _controller.selectedMenuItems[index]
-                                            .selectedItem = true;
-                                      } else {
-                                        _controller.menuBarRefresh(
-                                            title: "CREATE SUBSIDIARY",
-                                            pageName: CreateSubsiDiary());
-                                      }
+                                        int index = _controller.selectedMenuItems
+                                            .indexWhere((element) =>
+                                        element.title ==
+                                            "CREATE SUBSIDIARY");
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index]
+                                              .selectedItem = true;
+                                        } else {
+                                          _controller.menuBarRefresh(
+                                              title: "CREATE SUBSIDIARY",
+                                              pageName: CreateSubsiDiary());
+                                        }
                                         // Page switch karein
-                                      _controller.currentPage.value =
-                                          CreateSubsiDiary();
-                                      controller.update();
+                                        _controller.currentPage.value =
+                                            CreateSubsiDiary();
+                                        controller.update();
+                                      }
+
                                     },
                                   ),
                                   Text("|"),
@@ -226,7 +234,10 @@ class _SubsiDiariesScreenState extends State<SubsiDiariesScreen> {
                                     icon: Icon(Icons.delete,
                                         color: DynamicColors.redClr),
                                     onPressed: () {
-                                      controller.subsidiariesDelete(item.id);
+
+            if(permissions.contains('delete_subsidiary')){
+              controller.subsidiariesDelete(item.id);
+            }
                                     },
                                   ),
                                 ],
