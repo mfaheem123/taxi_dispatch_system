@@ -848,20 +848,30 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "ADD DRIVER",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverForm();
-                  controller.menuBarRefresh(
-                      title: "ADD DRIVER", pageName: DriverForm());
+                  if(permissions.contains('create_driver')){
+                    controller.currentPage.value = DriverForm();
+                    controller.menuBarRefresh(
+                        title: "ADD DRIVER", pageName: DriverForm());
+                  }
                 });
               },
             ),
             NestedMenuItem(
               title: "DRIVERS",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverListScreen();
-                  controller.menuBarRefresh(
-                      title: "DRIVERS", pageName: DriverListScreen());
+                  if(permissions.contains('read_driver')){
+                    controller.currentPage.value = DriverListScreen();
+                    controller.menuBarRefresh(
+                        title: "DRIVERS", pageName: DriverListScreen());
+                  }
                 });
               },
             ),
@@ -884,22 +894,31 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "CREATE DRIVER COMMISSION",
               onTap: () {
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = ListDriverCommission();
-                  controller.menuBarRefresh(
-                      title: "CREATE DRIVER COMMISSION",
-                      pageName: ListDriverCommission());
+                  if(permissions.contains('create_driver_commission')){
+                    controller.currentPage.value = ListDriverCommission();
+                    controller.menuBarRefresh(
+                        title: "CREATE DRIVER COMMISSION",
+                        pageName: ListDriverCommission());
+                  }
                 });
               },
             ),
             NestedMenuItem(
               title: "DRIVER COMMISSIONS",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverCommission();
-                  controller.menuBarRefresh(
-                      title: "DRIVER COMMISSIONS",
-                      pageName: DriverCommission());
+                  if(permissions.contains('read_driver_commission')){
+                    controller.currentPage.value = DriverCommission();
+                    controller.menuBarRefresh(
+                        title: "DRIVER COMMISSIONS",
+                        pageName: DriverCommission());
+                  }
                 });
               },
             ),

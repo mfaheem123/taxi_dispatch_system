@@ -381,7 +381,9 @@ class DriverController extends GetxController {
           singleDriverData != null
               ? "drivers/edit/${singleDriverData!.driver!.id}"
               : "drivers/add",
-          multiPart: true);
+          multiPart: true,
+      sendCompanyId: true,
+      );
       if (response.statusCode == 200) {
         clearAddDriverData();
         BotToast.showText(text: response.data['message']);
@@ -712,7 +714,7 @@ class DriverController extends GetxController {
     try {
       driverLoading.value = true;
       final response =
-          await Api().get(auth: true, 'drivers/get?', queryParameters: {
+          await Api().get( 'drivers/get?', auth: true ,sendCompanyId: true, queryParameters: {
         'active': activeDrivers.value == true ? false : true,
         'page': driverCurrentPage.value,
         'limit': driverLimit,
@@ -1910,7 +1912,7 @@ class DriverController extends GetxController {
         "licence_expiry": searchLicenseLoginExpiry.value.toLowerCase(),
         "mobile": searchMobileLogin.value.toLowerCase(),
         "subsidiary": searchSubsiDiaryLogin.value.toLowerCase(),
-      });
+      }, sendCompanyId: true,);
 
       if (response.statusCode == 200) {
         driverLoginLogoutModel = DriverLoginLogoutModel.fromJson(response.data);

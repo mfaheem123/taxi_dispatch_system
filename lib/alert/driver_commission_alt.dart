@@ -5,6 +5,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import '../component/datatable_widget.dart';
+import '../component/networks/api.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
 import '../view/drivers_view/driver/driver_commission/update_driver_commission.dart';
@@ -15,6 +16,8 @@ class DriverCommissionAlt {
         ? Get.find<DriverController>()
         : Get.put(DriverController());
     final DashboardController _controller = Get.find();
+    List permissions = [];
+    permissions = Api().sp.read('all_permissions') ?? [];
 
     // var transactions = controller.getDriverCommissionDetails(id);
 
@@ -149,7 +152,7 @@ class DriverCommissionAlt {
                                           mainAxisAlignment: MainAxisAlignment
                                               .center,
                                           children: [
-                                            IconButton(
+                                            if(permissions.contains('update_driver_commission')) IconButton(
                                               padding: EdgeInsets.zero,
                                               icon: Icon(Icons.edit,
                                                   size: 18,
@@ -185,7 +188,7 @@ class DriverCommissionAlt {
                                               },
                                             ),
                                             Text("|"),
-                                            IconButton(
+                                            if(permissions.contains('delete_driver_commission')) IconButton(
                                                 padding: EdgeInsets.zero,
                                                 icon: Icon(
                                                     Icons.delete, size: 18,
