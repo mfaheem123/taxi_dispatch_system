@@ -320,6 +320,7 @@ getZoneList() async {
         "category": searchCategory.value.toLowerCase(),
       },
      auth: true,
+      sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {

@@ -282,7 +282,7 @@ class ZoneController extends GetxController {
 
     final response = await Api().post(
       formData,
-      updateZone.value ? 'zones/edit/${zoneUpdateId.value}' : 'zones',
+      updateZone.value ? 'zones/edit/${zoneUpdateId.value}' : 'zones', sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
