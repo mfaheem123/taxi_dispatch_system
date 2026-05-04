@@ -485,7 +485,7 @@ class AccountInvoiceLineitem {
 class Booking {
   int? id;
   String? name;
-  int? fares;
+  double? fares;
   String? pickup;
   String? dropoff;
   String? viapoints;
@@ -496,14 +496,14 @@ class Booking {
   dynamic orderNumber;
   AccountDepartment? paymentType;
   VehicleType? vehicleType;
-  int? companyPrice;
-  int? totalCharges;
-  int? meetAndGreet;
-  int? parkingCharges;
-  int? waitingCharges;
+  double? companyPrice;
+  double? totalCharges;
+  double? meetAndGreet;
+  double? parkingCharges;
+  double? waitingCharges;
   String? referenceNumber;
-  int? congestionCharges;
-  int? extraDropCharges;
+  double? congestionCharges;
+  double? extraDropCharges;
 
   Booking({
     this.id,
@@ -532,7 +532,7 @@ class Booking {
   factory Booking.fromJson(Map<String, dynamic> json) => Booking(
     id: json["id"],
     name: json["name"],
-    fares: json["fares"],
+    fares: (json["fares"] as num?)?.toDouble(),
     pickup: json["pickup"],
     dropoff: json["dropoff"],
     viapoints: json["viapoints"],
@@ -543,14 +543,14 @@ class Booking {
     orderNumber: json["order_number"],
     paymentType: json["payment_type"] == null ? null : AccountDepartment.fromJson(json["payment_type"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
-    companyPrice: json["company_price"],
-    totalCharges: json["total_charges"],
-    meetAndGreet: json["meet_and_greet"],
-    parkingCharges: json["parking_charges"],
-    waitingCharges: json["waiting_charges"],
+    companyPrice: (json["company_price"] as num?)?.toDouble(),
+    totalCharges: (json["total_charges"] as num?)?.toDouble(),
+    meetAndGreet: (json["meet_and_greet"] as num?)?.toDouble(),
+    parkingCharges: (json["parking_charges"] as num?)?.toDouble(),
+    waitingCharges: (json["waiting_charges"] as num?)?.toDouble(),
     referenceNumber: json["reference_number"],
-    congestionCharges: json["congestion_charges"],
-    extraDropCharges: json["extra_drop_charges"],
+    congestionCharges: (json["congestion_charges"] as num?)?.toDouble(),
+    extraDropCharges: (json["extra_drop_charges"] as num?)?.toDouble(),
   );
 
   Map<String, dynamic> toJson() => {

@@ -464,27 +464,27 @@ class _UpdateAccountInvoiceScreenState
                         DataCell(Center(child: Text((booking?.paymentType?.name ?? "-").toUpperCase()))),
 
                         editableCell(booking?.fares, (val) {
-                          booking?.fares = int.tryParse(val.toString()) ?? 0;
+                          booking?.fares = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.parkingCharges, (val) {
-                          booking?.parkingCharges = int.tryParse(val.toString()) ?? 0;
+                          booking?.parkingCharges = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.waitingCharges, (val) {
-                          booking?.waitingCharges = int.tryParse(val.toString()) ?? 0;
+                          booking?.waitingCharges = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.extraDropCharges, (val) {
-                          booking?.extraDropCharges = int.tryParse(val.toString()) ?? 0;
+                          booking?.extraDropCharges = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.meetAndGreet, (val) {
-                          booking?.meetAndGreet = int.tryParse(val.toString()) ?? 0;
+                          booking?.meetAndGreet = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         editableCell(booking?.congestionCharges, (val) {
-                          booking?.congestionCharges = int.tryParse(val.toString()) ?? 0;
+                          booking?.congestionCharges = double.tryParse(val.toString()) ?? 0.0;
                           controller.recalculateRowTotal(lineItem);
                         }),
                         DataCell(Center(

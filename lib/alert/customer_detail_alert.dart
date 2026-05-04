@@ -211,7 +211,7 @@ class CustomerDetailsAlert extends StatelessWidget {
               value: "MARK",
               items: const [
                 DropdownMenuItem(value: "MARK", child: Text("MARK")),
-                DropdownMenuItem(value: "JOHAN", child: Text("JOHAN")),
+                DropdownMenuItem(value: "JOHN", child: Text("JOHN")),
               ],
               onChanged: (value) {},
             ),
