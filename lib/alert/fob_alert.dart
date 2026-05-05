@@ -6,12 +6,12 @@ import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 import '../view/dashboard_view/Controller/dashboard_controller.dart';
 
-void showDispatchFob() {
-  Get.dialog(
-    DispatchFobAlert(),
-    barrierColor: Colors.black54,
-  );
-}
+// void showDispatchFob() {
+//   Get.dialog(
+//     DispatchFobAlert(),
+//     barrierColor: Colors.black54,
+//   );
+// }
 
 class DispatchFobAlert extends StatefulWidget {
   final dynamic bookingItem;
@@ -53,22 +53,6 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                   Text("DISPATCH FOB ${widget.bookingItem?.referenceNumber ?? "N/A"}",
                       style: mozillaTextSemiBoldText(
                           fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87)),
-                  // RichText(
-                  //   text: TextSpan(
-                  //     text: "DISPATCH FOB ",
-                  //     style: mozillaTextSemiBoldText(fontSize: 18,
-                  //         fontWeight: FontWeight.bold,
-                  //         color: Colors.black87),
-                  //     children: [
-                  //       TextSpan(
-                  //         text: "(DCB75402)",
-                  //         style: mozillaTextSemiBoldText(fontSize: 18,
-                  //             fontWeight: FontWeight.bold,
-                  //             color: Colors.black),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
                   const Spacer(),
                   InkWell(
                     onTap: () => Get.back(),
