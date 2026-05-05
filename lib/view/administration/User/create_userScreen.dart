@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
+import '../../../component/networks/api.dart';
 import '../model/get_role.dart';
 import '../model/list_subsDiary.dart';
 
@@ -21,13 +22,20 @@ class CreateUserScreen extends StatelessWidget {
   AdministrationController controller = Get.isRegistered<AdministrationController>()
       ? Get.find<AdministrationController>()
       : Get.put(AdministrationController());
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    return GetBuilder<AdministrationController>(builder: (controller) {
+    return GetBuilder<AdministrationController>(
+
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+          print(permissions);
+        },
+        builder: (controller) {
       return LayoutBuilder(
         builder: (context, constraints) {
           bool isMobile = constraints.maxWidth < 800;

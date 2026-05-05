@@ -8,6 +8,7 @@ import 'package:dashboard_new1/view/administration/controller/administration_con
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import '../../../component/networks/api.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import 'create_userScreen.dart';
@@ -238,23 +239,33 @@ class _UserListscreenState extends State<UserListscreen> {
                                         color: DynamicColors.primaryClr,
                                       ),
                                       onPressed: () {
-                                        controller.isUpdating.value = true;
-                                        controller.userUpdate(userUpdate: item);
 
-                                        int index = _controller.selectedMenuItems
-                                            .indexWhere((element) => element.title == "CREATE USER");
 
-                                        if (index != -1) {
-                                          _controller.selectedMenuItems[index].selectedItem = true;
-                                        } else {
-                                          _controller.menuBarRefresh(
-                                              title: "CREATE USER",
-                                              pageName: CreateUserScreen());
-                                        }
+          List permissions = [];
+          permissions = Api().sp.read('all_permissions') ?? [];
+          print(permissions);
+          if(permissions.contains('read_company_information')){
 
-                                        // Page switch karein
-                                        _controller.currentPage.value = CreateUserScreen();
-                                        controller.update();
+            controller.isUpdating.value = true;
+            controller.userUpdate(userUpdate: item);
+
+            int index = _controller.selectedMenuItems
+                .indexWhere((element) => element.title == "CREATE USER");
+
+            if (index != -1) {
+              _controller.selectedMenuItems[index].selectedItem = true;
+            } else {
+              _controller.menuBarRefresh(
+                  title: "CREATE USER",
+                  pageName: CreateUserScreen());
+            }
+
+            // Page switch karein
+            _controller.currentPage.value = CreateUserScreen();
+            controller.update();
+          }
+
+
                                       },
                                     ),
                                     const Text("|"),

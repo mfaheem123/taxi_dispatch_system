@@ -4,6 +4,7 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../component/networks/api.dart';
 import '../view/dashboard_view/widgets/time_picker_widget.dart';
 import '../view/drivers_view/controller/driver_controller.dart';
 import '../view/drivers_view/driver/create_driver_form/driver_form.dart';
@@ -17,7 +18,8 @@ class ShiftAlert {
     DriverController controller = Get.isRegistered<DriverController>()
         ? Get.find<DriverController>()
         : Get.put(DriverController());
-
+    List permissions = [];
+    permissions = Api().sp.read('all_permissions') ?? [];
 
     int? editingIndex;
 
@@ -112,7 +114,7 @@ class ShiftAlert {
                                 ),
                             ),
                             const SizedBox(width: 8),
-                            Expanded(
+                            if(permissions.contains('create_driver_shift')|| permissions.contains('update_driver_shift'))  Expanded(
                               flex: 2,
                               child: SizedBox(
                                 height: 34,
@@ -234,7 +236,7 @@ class ShiftAlert {
 
                                         },
                                       ),
-                                      IconButton(
+                                      if(permissions.contains('delete_driver_shift'))  IconButton(
                                         icon: const Icon(Icons.delete,
                                             size: 18, color: Colors.red),
                                         onPressed: () {

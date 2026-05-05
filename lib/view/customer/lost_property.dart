@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -32,6 +33,11 @@ class _LostPropertyState extends State<LostProperty> {
     shortCutKeyValue.value = "lostProperty";
   }
 
+  List permissions = [];
+
+
+
+
   int selectedRowIndex = 0;
   final int totalRows = 5;
 
@@ -44,6 +50,8 @@ class _LostPropertyState extends State<LostProperty> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<CustomerController>(initState: (v) {
+
+        permissions = Api().sp.read('all_permissions') ?? [];
       controller.getAllLostProperty();
     }, builder: (controller) {
       if (controller.lostPropertyLoader.value) {
@@ -210,24 +218,29 @@ class _LostPropertyState extends State<LostProperty> {
                                       ),
                                     ),
                                     onPressed: () {
-                                      controller.lostPropertyUpdate(
-                                          lostPropertyUpdate: item);
-                                      int index = _controller.selectedMenuItems
-                                          .indexWhere((element) =>
-                                              element.title == "LOST PROPERTY");
-                                      if (index != -1) {
-                                        _controller.selectedMenuItems[index]
-                                            .selectedItem = true;
-                                        _controller.currentPage.value =
-                                            LostPropertyScreen();
-                                      } else {
-                                        _controller.currentPage.value =
-                                            LostPropertyScreen();
-                                        _controller.menuBarRefresh(
-                                            title: "LOST PROPERTY",
-                                            pageName: LostPropertyScreen());
+
+                                      if(permissions.contains('update_lost_property')){
+                                        controller.lostPropertyUpdate(
+                                            lostPropertyUpdate: item);
+                                        int index = _controller.selectedMenuItems
+                                            .indexWhere((element) =>
+                                        element.title == "LOST PROPERTY");
+                                        if (index != -1) {
+                                          _controller.selectedMenuItems[index]
+                                              .selectedItem = true;
+                                          _controller.currentPage.value =
+                                              LostPropertyScreen();
+                                        } else {
+                                          _controller.currentPage.value =
+                                              LostPropertyScreen();
+                                          _controller.menuBarRefresh(
+                                              title: "LOST PROPERTY",
+                                              pageName: LostPropertyScreen());
+                                        }
+                                        controller.update();
                                       }
-                                      controller.update();
+
+
                                     },
                                     child: Icon(
                                       Icons.edit_calendar,
@@ -247,7 +260,9 @@ class _LostPropertyState extends State<LostProperty> {
                                       color: DynamicColors.redClr,
                                     ),
                                     onPressed: () {
-                                      controller.deleteLostProperty(item.id);
+                      if(permissions.contains('delete_lost_property')){
+                        controller.deleteLostProperty(item.id);
+                      }
                                     },
                                   ),
                                 ],

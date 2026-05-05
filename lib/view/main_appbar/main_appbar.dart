@@ -24,6 +24,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../alert/cli_extention_alert.dart';
 import '../../component/color.dart';
+import '../../component/networks/api.dart';
 import '../../tabbarview.dart';
 import '../accounts/Invoice/list_customer_invoices.dart';
 import '../accounts/account/account_view.dart';
@@ -605,61 +606,89 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "ADD CUSTOMER",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CustomerFormScreen();
-              controller.menuBarRefresh(
-                  title: "ADD CUSTOMER", pageName: CustomerFormScreen());
+              if(permissions.contains('create_customer')){
+                controller.currentPage.value = CustomerFormScreen();
+                controller.menuBarRefresh(
+                    title: "ADD CUSTOMER", pageName: CustomerFormScreen());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "CUSTOMERS",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CustomersScreen();
-              controller.menuBarRefresh(
-                  title: "CUSTOMERS", pageName: CustomersScreen());
+              if(permissions.contains('read_customer')){
+                controller.currentPage.value = CustomersScreen();
+                controller.menuBarRefresh(
+                    title: "CUSTOMERS", pageName: CustomersScreen());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "CREATE LOST PROPERTY",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = LostPropertyScreen();
-              controller.menuBarRefresh(
-                  title: "CREATE LOST PROPERTY",
-                  pageName: LostPropertyScreen());
+              if(permissions.contains('create_lost_property')){
+                controller.currentPage.value = LostPropertyScreen();
+                controller.menuBarRefresh(
+                    title: "CREATE LOST PROPERTY",
+                    pageName: LostPropertyScreen());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "LOST PROPERTY",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = LostProperty();
-              controller.menuBarRefresh(
-                  title: "LOST PROPERTY", pageName: LostProperty());
+              if(permissions.contains('read_lost_property')){
+                controller.currentPage.value = LostProperty();
+                controller.menuBarRefresh(
+                    title: "LOST PROPERTY", pageName: LostProperty());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "CREATE COMPLAINT",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CreateComplaint();
-              controller.menuBarRefresh(
-                  title: "CREATE COMPLAINT", pageName: CreateComplaint());
+              if(permissions.contains('create_complaint')){
+                controller.currentPage.value = CreateComplaint();
+                controller.menuBarRefresh(
+                    title: "CREATE COMPLAINT", pageName: CreateComplaint());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "COMPLAINTS",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ComplaintsView();
-              controller.menuBarRefresh(
-                  title: "COMPLAINTS", pageName: ComplaintsView());
+              if(permissions.contains('read_complaint')){
+                controller.currentPage.value = ComplaintsView();
+                controller.menuBarRefresh(
+                    title: "COMPLAINTS", pageName: ComplaintsView());
+              }
             });
           },
         ),
@@ -819,20 +848,30 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "ADD DRIVER",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverForm();
-                  controller.menuBarRefresh(
-                      title: "ADD DRIVER", pageName: DriverForm());
+                  if(permissions.contains('create_driver')){
+                    controller.currentPage.value = DriverForm();
+                    controller.menuBarRefresh(
+                        title: "ADD DRIVER", pageName: DriverForm());
+                  }
                 });
               },
             ),
             NestedMenuItem(
               title: "DRIVERS",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverListScreen();
-                  controller.menuBarRefresh(
-                      title: "DRIVERS", pageName: DriverListScreen());
+                  if(permissions.contains('read_driver')){
+                    controller.currentPage.value = DriverListScreen();
+                    controller.menuBarRefresh(
+                        title: "DRIVERS", pageName: DriverListScreen());
+                  }
                 });
               },
             ),
@@ -855,22 +894,31 @@ class _MyHomePageState extends State<MyHomePage> {
             NestedMenuItem(
               title: "CREATE DRIVER COMMISSION",
               onTap: () {
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = ListDriverCommission();
-                  controller.menuBarRefresh(
-                      title: "CREATE DRIVER COMMISSION",
-                      pageName: ListDriverCommission());
+                  if(permissions.contains('create_driver_commission')){
+                    controller.currentPage.value = ListDriverCommission();
+                    controller.menuBarRefresh(
+                        title: "CREATE DRIVER COMMISSION",
+                        pageName: ListDriverCommission());
+                  }
                 });
               },
             ),
             NestedMenuItem(
               title: "DRIVER COMMISSIONS",
               onTap: () {
+
+                List permissions = [];
+                permissions = Api().sp.read('all_permissions') ?? [];
                 setState(() {
-                  controller.currentPage.value = DriverCommission();
-                  controller.menuBarRefresh(
-                      title: "DRIVER COMMISSIONS",
-                      pageName: DriverCommission());
+                  if(permissions.contains('read_driver_commission')){
+                    controller.currentPage.value = DriverCommission();
+                    controller.menuBarRefresh(
+                        title: "DRIVER COMMISSIONS",
+                        pageName: DriverCommission());
+                  }
                 });
               },
             ),
@@ -1054,31 +1102,46 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE VEHICLE TYPE",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CreateVehicleTypes();
-              controller.menuBarRefresh(
-                  title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
+              if(permissions.contains('create_vehicle_type')){
+                controller.currentPage.value = CreateVehicleTypes();
+                controller.menuBarRefresh(
+                    title: "CREATE VEHICLE TYPE", pageName: CreateVehicleTypes());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "VEHICLE TYPE",
           onTap: () {
+
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ListVehicleType();
-              controller.menuBarRefresh(
-                  title: "VEHICLE TYPE", pageName: ListVehicleType());
+              if(permissions.contains('read_vehicle_type')){
+                controller.currentPage.value = ListVehicleType();
+                controller.menuBarRefresh(
+                    title: "VEHICLE TYPE", pageName: ListVehicleType());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "CREATE COMPANY VEHICLE",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CreateCompanyVehicle();
-              controller.menuBarRefresh(
-                  title: "CREATE COMPANY VEHICLE",
-                  pageName: CreateCompanyVehicle());
+              if(permissions.contains('create_company_vehicle')){
+                controller.currentPage.value = CreateCompanyVehicle();
+                controller.menuBarRefresh(
+                    title: "CREATE COMPANY VEHICLE",
+                    pageName: CreateCompanyVehicle());
+              }
             });
           },
         ),
@@ -1094,11 +1157,16 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "COMPANY VEHICLES LIST",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CompanyVehiclesScreen();
-              controller.menuBarRefresh(
-                  title: "COMPANY VEHICLES LIST",
-                  pageName: CompanyVehiclesScreen());
+              if(permissions.contains('read_company_vehicle')){
+                controller.currentPage.value = CompanyVehiclesScreen();
+                controller.menuBarRefresh(
+                    title: "COMPANY VEHICLES LIST",
+                    pageName: CompanyVehiclesScreen());
+              }
             });
           },
         ),
@@ -1108,31 +1176,50 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "CREATE USER",
             onTap: () {
+
+              List permissions = [];
+              permissions = Api().sp.read('all_permissions') ?? [];
+              print(permissions);
               setState(() {
-                controller.currentPage.value = CreateUserScreen();
-                controller.menuBarRefresh(
-                    title: "CREATE USER", pageName: CreateUserScreen());
+                if(permissions.contains('create_user')){
+                  controller.currentPage.value = CreateUserScreen();
+                  controller.menuBarRefresh(
+                      title: "CREATE USER", pageName: CreateUserScreen());
+                }
               });
             },
           ),
           NestedMenuItem(
             title: "USERS",
             onTap: () {
+
+              List permissions = [];
+              permissions = Api().sp.read('all_permissions') ?? [];
+              print(permissions);
               setState(() {
-                controller.currentPage.value = UserListscreen();
-                controller.menuBarRefresh(
-                    title: "USERS", pageName: UserListscreen());
+                if(permissions.contains('read_company_information')){
+
+                  controller.currentPage.value = UserListscreen();
+                  controller.menuBarRefresh(
+                      title: "USERS", pageName: UserListscreen());
+                }
               });
+
             },
           ),
           // CreateSubsiDiary
           NestedMenuItem(
             title: "CREATE SUBSIDIARY",
             onTap: () {
+
+              List permissions = [];
+              permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
-                controller.currentPage.value = CreateSubsiDiary();
-                controller.menuBarRefresh(
-                    title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
+                if(permissions.contains('create_subsidiary')){
+                  controller.currentPage.value = CreateSubsiDiary();
+                  controller.menuBarRefresh(
+                      title: "CREATE SUBSIDIARY", pageName: CreateSubsiDiary());
+                }
               });
             },
           ),
@@ -1140,10 +1227,15 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "SUBSIDIARIES",
             onTap: () {
+
+              List permissions = [];
+              permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
-                controller.currentPage.value = SubsiDiariesScreen();
-                controller.menuBarRefresh(
-                    title: "SUBSIDIARIES", pageName: SubsiDiariesScreen());
+                if(permissions.contains('read_subsidiary')){
+                  controller.currentPage.value = SubsiDiariesScreen();
+                  controller.menuBarRefresh(
+                      title: "SUBSIDIARIES", pageName: SubsiDiariesScreen());
+                }
               });
             },
           ),
@@ -1297,22 +1389,35 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "COMPANY INFORMATION",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            print(permissions);
             setState(() {
-              controller.currentPage.value = ComapanyInformationScreen();
-              controller.menuBarRefresh(
-                  title: "COMPANY INFORMATION",
-                  pageName: ComapanyInformationScreen());
+              if(permissions.contains('read_company_information')){
+                controller.currentPage.value = ComapanyInformationScreen();
+                controller.menuBarRefresh(
+                    title: "COMPANY INFORMATION",
+                    pageName: ComapanyInformationScreen());  }
             });
+
           },
         ),
         NestedMenuItem(
           title: "COMPANY CONFIGURATION",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            print(permissions);
             setState(() {
-              controller.currentPage.value = CompanyConfigurationView();
-              controller.menuBarRefresh(
-                  title: "COMPANY CONFIGURATION",
-                  pageName: CompanyConfigurationView());
+              if(permissions.contains('read_company_configuration')){
+
+                controller.currentPage.value = CompanyConfigurationView();
+                controller.menuBarRefresh(
+                    title: "COMPANY CONFIGURATION",
+                    pageName: CompanyConfigurationView());
+              }
             });
           },
         ),
@@ -1320,20 +1425,30 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "DOCUMENT NUMBER",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = DocumentNumberScreen();
-              controller.menuBarRefresh(
-                  title: "DOCUMENT NUMBER", pageName: DocumentNumberScreen());
+              if(permissions.contains('read_document_number')){
+                controller.currentPage.value = DocumentNumberScreen();
+                controller.menuBarRefresh(
+                    title: "DOCUMENT NUMBER", pageName: DocumentNumberScreen());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "TEMPLATE SETTINGS",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            print(permissions);
             setState(() {
-              controller.currentPage.value = TemplateSettings();
-              controller.menuBarRefresh(
-                  title: "TEMPLATE SETTINGS", pageName: TemplateSettings());
+              if(permissions.contains('read_template_type')){
+                controller.currentPage.value = TemplateSettings();
+                controller.menuBarRefresh(
+                    title: "TEMPLATE SETTINGS", pageName: TemplateSettings());
+              }
             });
           },
         ),
@@ -1362,10 +1477,16 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "VOIP SETTINGS",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            print(permissions);
             setState(() {
-              controller.currentPage.value = VoipSettingsScreen();
-              controller.menuBarRefresh(
-                  title: "VOIP SETTINGS", pageName: VoipSettingsScreen());
+              if(permissions.contains('read_voip_settings')){
+                controller.currentPage.value = VoipSettingsScreen();
+                controller.menuBarRefresh(
+                    title: "VOIP SETTINGS", pageName: VoipSettingsScreen());
+              }
             });
           },
         ),

@@ -9,6 +9,8 @@ import 'package:dashboard_new1/view/setting/setting_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/networks/api.dart';
+
 class ComapanyInformationScreen extends StatefulWidget {
   const ComapanyInformationScreen({super.key});
 
@@ -26,6 +28,9 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
 
       : Get.put(SettingController());
 
+
+  List permissions = [];
+
   @override
   void initState() {
     // TODO: implement initState
@@ -41,7 +46,12 @@ class _ComapanyInformationScreenState extends State<ComapanyInformationScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<SettingController>(builder: (controller) {
+    return GetBuilder<SettingController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+          print(permissions);
+        },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;

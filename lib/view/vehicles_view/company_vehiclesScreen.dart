@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../drivers_view/controller/driver_controller.dart';
@@ -55,6 +56,11 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
     }
   }
 
+
+
+  List permissions = [];
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -67,7 +73,11 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<VehicleController>(builder: (controller) {
+      child: GetBuilder<VehicleController>(
+          initState: (v){
+            permissions = Api().sp.read('all_permissions') ?? [];
+          },
+          builder: (controller) {
         final listToShow = controller.filteredCompanyVehicle.isNotEmpty
             ? controller.filteredCompanyVehicle
             : controller.companyAllVehicle;
@@ -200,27 +210,29 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                     ), // border color & thickness
                                   ),
                                   onPressed: () {
-                                    controller.companyDataBinding(
-                                        data: item);
-                                    int index = _controller
-                                        .selectedMenuItems
-                                        .indexWhere((element) =>
-                                    element.title ==
-                                        "LocationForm");
-                                    if (index != -1) {
-                                      _controller.selectedMenuItems[index]
-                                          .selectedItem = true;
-                                      _controller.currentPage.value =
-                                          CreateCompanyVehicle();
-                                    } else {
-                                      _controller.currentPage.value =
-                                          CreateCompanyVehicle();
-                                      _controller.menuBarRefresh(
-                                          title: "CREATE COMPANY VEHICLE",
-                                          pageName:
-                                          CreateCompanyVehicle());
+                                    if(permissions.contains('update_company_vehicle')){
+                                      controller.companyDataBinding(
+                                          data: item);
+                                      int index = _controller
+                                          .selectedMenuItems
+                                          .indexWhere((element) =>
+                                      element.title ==
+                                          "LocationForm");
+                                      if (index != -1) {
+                                        _controller.selectedMenuItems[index]
+                                            .selectedItem = true;
+                                        _controller.currentPage.value =
+                                            CreateCompanyVehicle();
+                                      } else {
+                                        _controller.currentPage.value =
+                                            CreateCompanyVehicle();
+                                        _controller.menuBarRefresh(
+                                            title: "CREATE COMPANY VEHICLE",
+                                            pageName:
+                                            CreateCompanyVehicle());
+                                      }
+                                      controller.update();
                                     }
-                                    controller.update();
                                   },
                                   child: Icon(
                                     Icons.edit_calendar,
@@ -235,9 +247,11 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                                     ), // border color & thickness
                                   ),
                                   onPressed: () {
-                                    controller
-                                        .deleteCompanyVehicle(
-                                        item.id!);
+            if(permissions.contains('delete_company_vehicle')){
+              controller
+                  .deleteCompanyVehicle(
+                  item.id!);
+            }
 
 
                                   },

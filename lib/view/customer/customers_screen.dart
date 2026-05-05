@@ -9,6 +9,7 @@ import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
 import '../../component/dropdown_button.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
@@ -37,6 +38,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
   }
 
+  List permissions = [];
+
+
   // int selectedRowIndex = 0; // currently selected row
   // final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
@@ -50,6 +54,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
 
     return GetBuilder<CustomerController>(
         initState: (state) {
+          permissions = Api().sp.read('all_permissions') ?? [];
           controller.getCustomer();
         },
         builder: (controller) {
@@ -294,24 +299,27 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                   ), // border color & thickness
                                 ),
                                 onPressed: () {
-                                  controller.customerUpdate(
-                                      customerUpdate: item);
-                                  int index = _controller.selectedMenuItems
-                                      .indexWhere((element) =>
-                                          element.title == "CUSTOMERS");
-                                  if (index != -1) {
-                                    _controller.selectedMenuItems[index]
-                                        .selectedItem = true;
-                                    _controller.currentPage.value =
-                                        CustomerFormScreen();
-                                  } else {
-                                    _controller.currentPage.value =
-                                        CustomerFormScreen();
-                                    _controller.menuBarRefresh(
-                                        title: "CUSTOMERS",
-                                        pageName: CustomerFormScreen());
+
+                                  if(permissions.contains('update_customer')){
+                                    controller.customerUpdate(
+                                        customerUpdate: item);
+                                    int index = _controller.selectedMenuItems
+                                        .indexWhere((element) =>
+                                    element.title == "CUSTOMERS");
+                                    if (index != -1) {
+                                      _controller.selectedMenuItems[index]
+                                          .selectedItem = true;
+                                      _controller.currentPage.value =
+                                          CustomerFormScreen();
+                                    } else {
+                                      _controller.currentPage.value =
+                                          CustomerFormScreen();
+                                      _controller.menuBarRefresh(
+                                          title: "CUSTOMERS",
+                                          pageName: CustomerFormScreen());
+                                    }
+                                    controller.update();
                                   }
-                                  controller.update();
                                 },
                                 child: Icon(
                                   Icons.edit_calendar,
@@ -326,13 +334,15 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                   ), // border color & thickness
                                 ),
                                 onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (_) => DeletePermissionAlert(
-                                      deleteFunctionName: () =>
-                                          controller.deleteCustomer(item.id!),
-                                    ),
-                                  );
+                      if(permissions.contains('delete_customer')){
+                        showDialog(
+                          context: context,
+                          builder: (_) => DeletePermissionAlert(
+                            deleteFunctionName: () =>
+                                controller.deleteCustomer(item.id!),
+                          ),
+                        );
+                      }
                                 },
                                 child: Icon(
                                   Icons.delete_forever,

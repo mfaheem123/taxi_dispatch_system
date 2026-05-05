@@ -9,6 +9,7 @@ import '../../../../alert/shift_alert.dart';
 import '../../../../component/color.dart';
 import '../../../../component/customButton.dart';
 import '../../../../component/datatable_widget.dart';
+import '../../../../component/networks/api.dart';
 import '../../../../component/textStyle.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
@@ -37,6 +38,9 @@ class _DriverFormState extends State<DriverForm> {
     shortCutKeyValue.value = "createDriver";
   }
 
+  List permissions = [];
+
+
   @override
   Widget build(BuildContext context) {
     double maxWidth = MediaQuery.of(context).size.width;
@@ -57,7 +61,8 @@ class _DriverFormState extends State<DriverForm> {
 
       child: GetBuilder<DriverController>(
           initState: (v){
-          if(controller.getCombineVehicleData == null)  {
+            permissions = Api().sp.read('all_permissions') ?? [];
+            if(controller.getCombineVehicleData == null)  {
           controller.getCombineVehicle();
         }
           if(widget.driverUpdateFlow == false){
@@ -86,7 +91,7 @@ class _DriverFormState extends State<DriverForm> {
                     ),
                     Row(
                       children: [
-                        CustomButton(
+                        if(permissions.contains('read_driver_shift')) CustomButton(
                           width: 80,
                           height: 35,
                           verticalPadding: 0.0,

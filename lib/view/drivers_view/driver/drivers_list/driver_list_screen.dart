@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../../component/datatable_widget.dart';
+import '../../../../component/networks/api.dart';
 import '../../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../../dashboard_view/booking_table.dart';
 import '../../controller/driver_controller.dart';
@@ -56,6 +57,9 @@ class _DriverListScreenState extends State<DriverListScreen> {
     }
   }
 
+  List permissions = [];
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -85,7 +89,12 @@ class _DriverListScreenState extends State<DriverListScreen> {
             autofocus: true,
             focusNode: FocusNode(),
             onKey: _handleKey,
-            child: GetBuilder<DriverController>(builder: (controller) {
+            child: GetBuilder<DriverController>(
+                initState: (v){
+                  permissions = Api().sp.read('all_permissions') ?? [];
+                },
+
+                builder: (controller) {
               return controller.driverLoading.value == true
                   ? Center(
                       child: CircularProgressIndicator(),
@@ -277,7 +286,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                             children: [
-                                              OutlinedButton(
+                                              if(permissions.contains('update_driver')) OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
                                                   side: BorderSide(
                                                     color: Colors.transparent,
@@ -293,7 +302,7 @@ class _DriverListScreenState extends State<DriverListScreen> {
                                                 ),
                                               ),
                                               Text("|"),
-                                              OutlinedButton(
+                                              if(permissions.contains('delete_driver')) OutlinedButton(
                                                 style: OutlinedButton.styleFrom(
                                                   side: BorderSide(
                                                     color: Colors.transparent,
