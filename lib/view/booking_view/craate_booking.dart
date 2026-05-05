@@ -20,6 +20,7 @@ import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/dropdown_button.dart';
+import '../../component/networks/api.dart';
 import '../../component/suggestion_widget/suggestion_controller.dart';
 import '../../component/suggestion_widget/suggestion_view.dart';
 import '../../component/textStyle.dart';
@@ -66,11 +67,13 @@ class _CreateBookingState extends State<CreateBooking> {
 
   final List<FocusNode> _focusNodes =
       List.generate(4, (index) => FocusNode()); // 4 icons
+  List permissions = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    permissions = Api().sp.read('all_permissions') ?? [];
     if (!Get.isRegistered<DashboardController>()) {
       Get.put(DashboardController());
       print("Controller initialized ✅");
@@ -3207,7 +3210,7 @@ class _CreateBookingState extends State<CreateBooking> {
                                           controller.refreshPostAllFields();
                                         },
                                       ),
-                                      CustomButton(
+                                      if(permissions.contains('create_booking_route'))  CustomButton(
                                         onTap: () {
                                           if (controller.jourValue == 'W/R' &&
                                               controller.pickupTwoWayController

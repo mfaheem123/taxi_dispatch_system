@@ -509,8 +509,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE BOOKINGS",
           onTap: () {
-            final newTabUrl = Uri.base.origin + Routes.createBooking;
-            html.window.open(newTabUrl, '_blank');
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_booking_route')){
+                final newTabUrl = Uri.base.origin + Routes.createBooking;
+                html.window.open(newTabUrl, '_blank');
+              }
+            });
+
             // Get.toNamed(Routes.createBooking);
           },
         ),
@@ -799,10 +806,14 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE ZONE",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ZoneScreen();
-              controller.menuBarRefresh(
-                  title: "CREATE ZONE", pageName: ZoneScreen());
+              if(permissions.contains('read_zone')){
+                controller.currentPage.value = ZoneScreen();
+                controller.menuBarRefresh(
+                    title: "CREATE ZONE", pageName: ZoneScreen());
+              }
             });
           },
         ),
@@ -1127,7 +1138,6 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE VEHICLE TYPE",
           onTap: () {
-
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {

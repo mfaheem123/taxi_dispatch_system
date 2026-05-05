@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../component/networks/api.dart';
 import '../component/text_field.dart';
 
 class WebLoginAlert {
@@ -12,6 +13,8 @@ class WebLoginAlert {
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
         : Get.put(AccountController());
+    List permissions = [];
+    permissions = Api().sp.read('all_permissions') ?? [];
 
     int? editingIndex;
 
@@ -138,7 +141,7 @@ class WebLoginAlert {
                         const SizedBox(width: 8),
                         _buildField("TELEPHONE", controller.webLogintelephoneCtrl, isNumber: true),
                         const SizedBox(width: 8),
-                        SizedBox(
+                        if(permissions.contains('create_account_web_login')) SizedBox(
                           width: 100,
                           height: 34,
                           child: ElevatedButton(
@@ -261,7 +264,7 @@ class WebLoginAlert {
                             Expanded(
                               child: Row(
                                 children: [
-                                  IconButton(
+                                  if(permissions.contains('update_account_web_login')) IconButton(
                                     icon: const Icon(
                                       Icons.edit,
                                       size: 18,
@@ -283,7 +286,7 @@ class WebLoginAlert {
                                       });
                                     },
                                   ),
-                                  IconButton(
+                                  if(permissions.contains('delete_account_web_login')) IconButton(
                                     icon: const Icon(
                                       Icons.delete,
                                       size: 18,

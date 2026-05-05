@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../../component/networks/api.dart';
+
 class ContactAlert {
   static void show() {
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
         : Get.put(AccountController());
+    List permissions = [];
+    permissions = Api().sp.read('all_permissions') ?? [];
 
     int? editingIndex;
 
@@ -109,7 +113,7 @@ class ContactAlert {
                         const SizedBox(width: 8),
                         _buildField("TELEPHONE", controller.contactAlertTelephoneCtrl, isNumber: true),
                         const SizedBox(width: 8),
-                        SizedBox(
+                        if(permissions.contains('create_account_contact')) SizedBox(
                           width: 100,
                           height: 34,
                           child: ElevatedButton(
@@ -173,7 +177,7 @@ class ContactAlert {
                             Expanded(
                               child: Row(
                                 children: [
-                                  IconButton(
+                                  if(permissions.contains('update_account_contact')) IconButton(
                                     icon: const Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
                                     onPressed: () {
                                       setState(() {
@@ -186,7 +190,7 @@ class ContactAlert {
                                       });
                                     },
                                   ),
-                                  IconButton(
+                                  if(permissions.contains('delete_account_contact')) IconButton(
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {
