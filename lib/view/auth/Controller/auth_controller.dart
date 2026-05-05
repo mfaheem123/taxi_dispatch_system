@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
@@ -42,6 +44,7 @@ class AuthController extends GetxController {
       var token = response.data['token'];
       sp.write('token', token);
       sp.write('userData', employeeData);
+      getRole(id: employeeData['role_id']);
       Employee.selectedEmployee = Employee.fromJson(employeeData);
       List extensions = employeeData['employee_extensions'] ?? [];
       if (extensions.isEmpty) {
@@ -60,6 +63,19 @@ class AuthController extends GetxController {
       BotToast.showText(text: "Login failed!");
     }
     PostAuthLoader(false);
+  }
+
+  /// get role
+  getRole({id}) async{
+    var response = await Api().get('authorizations/role/$id');
+    if(response.statusCode == 200){
+      Map<String, dynamic> permissionsMap = response.data['permissions'];
+
+      List<String> permissionList = permissionsMap.entries
+          .where((entry) => entry.value == false).map((entry) => entry.key).toList();
+      sp.write('authorizations', jsonEncode(permissionList));
+      update();
+    }
   }
 
   Future<void> logout() async {
@@ -86,10 +102,6 @@ class AuthController extends GetxController {
       Get.offAllNamed(Routes.loginScreen);
     }
   }
-
-
-
-
 
 
 
