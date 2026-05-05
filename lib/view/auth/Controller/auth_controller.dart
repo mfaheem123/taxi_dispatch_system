@@ -44,10 +44,10 @@ class AuthController extends GetxController {
       var token = response.data['token'];
       sp.write('token', token);
       sp.write('userData', employeeData);
-      getRole(id: employeeData['role_id']);
+      await getRole(id: employeeData['role_id']);
       Employee.selectedEmployee = Employee.fromJson(employeeData);
       List extensions = employeeData['employee_extensions'] ?? [];
-      await addData();
+      // await addData();
       if (extensions.isEmpty) {
         Get.offAllNamed(Routes.myHomePage);
         Future.delayed(const Duration(milliseconds: 800), () {
@@ -74,7 +74,10 @@ class AuthController extends GetxController {
 
       List<String> permissionList = permissionsMap.entries
           .where((entry) => entry.value == true).map((entry) => entry.key).toList();
-      sp.write('authorizations', jsonEncode(permissionList));
+      sp.write('all_permissions', permissionList);
+      List permissions = sp.read('all_permissions') ?? [];
+
+      print(permissions);
       update();
     }
   }

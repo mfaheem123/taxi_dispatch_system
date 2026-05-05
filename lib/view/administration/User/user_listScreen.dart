@@ -29,10 +29,13 @@ class _UserListscreenState extends State<UserListscreen> {
           ? Get.find<AdministrationController>()
           : Get.put(AdministrationController());
   final DashboardController _controller = Get.find();
+
+  List permissions = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "driversList";
   }
 
@@ -233,19 +236,12 @@ class _UserListscreenState extends State<UserListscreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    IconButton(
+                                    if(permissions.contains('read_company_information')) IconButton(
                                       icon: Icon(
                                         Icons.edit_calendar,
                                         color: DynamicColors.primaryClr,
                                       ),
                                       onPressed: () {
-
-
-          List permissions = [];
-          permissions = Api().sp.read('all_permissions') ?? [];
-          print(permissions);
-          if(permissions.contains('read_company_information')){
-
             controller.isUpdating.value = true;
             controller.userUpdate(userUpdate: item);
 
@@ -263,7 +259,7 @@ class _UserListscreenState extends State<UserListscreen> {
             // Page switch karein
             _controller.currentPage.value = CreateUserScreen();
             controller.update();
-          }
+
 
 
                                       },
