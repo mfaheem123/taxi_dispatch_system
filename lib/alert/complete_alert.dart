@@ -6,15 +6,15 @@ import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 import '../view/customer/model/restricDriver.dart';
 
-void showCompleteBookingAlert(int id) {
-  Get.dialog(CompleteBookingAlert(bookingId: id),
-    barrierColor: Colors.black54,
-  );
-}
+// void showCompleteBookingAlert(int id) {
+//   Get.dialog(CompleteBookingAlert(bookingId: id),
+//     barrierColor: Colors.black54,
+//   );
+// }
 
 class CompleteBookingAlert extends StatefulWidget {
   final dynamic bookingItem;
-  final int bookingId;
+  final dynamic bookingId;
   const CompleteBookingAlert({super.key, required this.bookingId, this.bookingItem});
 
   @override
@@ -27,10 +27,8 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
   @override
   void initState() {
     super.initState();
-    // controller.getAllDrivers;
-    controller.getAllDrivers().then((_) {
-      if (mounted) setState(() {});
-    });
+    controller.selectDriverObject = null;
+    controller.getAllDrivers();
   }
 
   @override
@@ -78,7 +76,6 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     "SELECT DRIVER",
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
-                        color: Colors.blueGrey,
                         fontWeight: FontWeight.bold
                     ),
                   ),
@@ -88,19 +85,22 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                     child: CustomDropdownField<DriverObject>(
-                      label: "SELECT DRIVERS",
-                      width: 320,
-                      height: 35,
-                      items: controller.allDriverData?.drivers ?? [],
-                      value: controller.selectDriverObject,
-                      itemLabel: (driver) =>
-                      driver.name ?? "".toUpperCase(),
-                      onChanged: (val) {
-                        controller.selectDriverObject = val;
-                        controller.update();
-                      },
-                    ),
+                     child: GetBuilder<FobController>(
+                         builder: (ctrl) {
+                           return CustomDropdownField<DriverObject>(
+                             label: "SELECT DRIVERS",
+                             width: 320,
+                             height: 35,
+                             items: controller.allDriverData?.drivers ?? [],
+                             value: controller.selectDriverObject,
+                             itemLabel: (driver) =>
+                             driver.name ?? "".toUpperCase(),
+                             onChanged: (val) {
+                               controller.selectDriverObject = val;
+                               controller.update();
+                             },
+                           );
+                         }),
                   ),
                 ],
               ),
@@ -129,11 +129,13 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                   const SizedBox(width: 12),
                   CustomButton(
                     width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
-                    btnText: "COMPLETE BOOKING",
+                    btnText: controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
                     style: const TextStyle(color: Colors.white, fontSize: 14),
-                    onTap: () {
-                      controller.postCompleteBooking(widget.bookingId);
-                    },
+                    onTap:
+                      // controller.postCompleteBooking(widget.bookingId);
+                      controller.isCompleteStatus
+                          ? null
+                          : () => controller.postCompleteBooking(widget.bookingId)
                   ),
                 ],
               ),

@@ -63,6 +63,10 @@ class FobController extends GetxController {
       var response = await Api().get("drivers/get");
       if (response.statusCode == 200) {
         allDriverData = RestricDriverModel.fromJson(response.data);
+
+        if (allDriverData?.drivers != null && allDriverData!.drivers!.isNotEmpty) {
+          selectDriverObject = allDriverData!.drivers![0];
+        }
       }
     } catch (e) {
       print("Error fetching drivers: $e");
@@ -73,20 +77,21 @@ class FobController extends GetxController {
   }
 
   bool isCompleteStatus = false;
-  postCompleteBooking(int bookingId) async {
+  postCompleteBooking(dynamic bookingId) async {
     isCompleteStatus = true;
     update();
 
     try {
       var formData = {
-        "booking_status_id": 11,
+        "driver_id": selectDriverObject?.id,
       };
       var response =
-          await Api().post(formData, "bookings/status/$bookingId", auth: true);
+          await Api().post(formData, "bookings/completed-booking/$bookingId", auth: true);
       if (response.statusCode == 200) {
-        print("BOOKING COMPLETED SUCCESSFULLY");
+        BotToast.showText(text: "BOOKING COMPLETED SUCCESSFULLY");
       } else {
-        print("Failed to update status: ${response.statusCode}");
+        BotToast.showText(text: "FAILED TO COMPLETE BOOKING");
+        print("Error: ${response.statusCode} - ${response.data}");
       }
     } catch (e) {
       print("Error updating booking status: $e");
