@@ -1017,20 +1017,28 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE ACCOUNT",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = AccountView();
-              controller.menuBarRefresh(
-                  title: "CREATE ACCOUNT", pageName: AccountView());
+              if(permissions.contains('create_account')){
+                controller.currentPage.value = AccountView();
+                controller.menuBarRefresh(
+                    title: "CREATE ACCOUNT", pageName: AccountView());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "LIST OF ACCOUNTS",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ListOfAccountScreen();
-              controller.menuBarRefresh(
-                  title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
+              if(permissions.contains('read_account')){
+                controller.currentPage.value = ListOfAccountScreen();
+                controller.menuBarRefresh(
+                    title: "LIST OF ACCOUNTS", pageName: ListOfAccountScreen());
+              }
             });
           },
         ),

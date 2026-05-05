@@ -16,7 +16,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
-import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
@@ -1049,10 +1048,6 @@ double widthss = MediaQuery.of(context).size.width;
       );
     } else if (title == "FOLLOW ON") {
       // Follow on logic
-      showDialog(
-          context: context,
-          builder: (context) => DispatchFobAlert(bookingItem: item),
-      );
       print("Follow on logic here");
     }
   }
