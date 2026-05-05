@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../component/image_pick_widget.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -35,6 +36,7 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
     shortCutKeyValue.value = "vehicleTypes";
   }
 
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -43,7 +45,8 @@ class _CreateEscortScreenState extends State<CreateEscortScreen> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
+    return GetBuilder<AccountController>(
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;

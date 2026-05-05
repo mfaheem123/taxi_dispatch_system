@@ -995,11 +995,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
             title: "DRIVER APP FEATURES",
             onTap: () {
+              List permissions = [];
+              permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
-                controller.currentPage.value = DriverAppFeatureScreen();
-                controller.menuBarRefresh(
-                    title: "DRIVER APP FEATURES",
-                    pageName: DriverAppFeatureScreen());
+                if(permissions.contains('read_app_feature')){
+                  controller.currentPage.value = DriverAppFeatureScreen();
+                  controller.menuBarRefresh(
+                      title: "DRIVER APP FEATURES",
+                      pageName: DriverAppFeatureScreen());
+                }
               });
             }),
         NestedMenuItem(
@@ -1045,9 +1049,16 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE ESCORT",
           onTap: () {
-            controller.currentPage.value = CreateEscortScreen();
-            controller.menuBarRefresh(
-                title: "CREATE ESCORT", pageName: CreateEscortScreen());
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('create_escort')){
+                controller.currentPage.value = CreateEscortScreen();
+                controller.menuBarRefresh(
+                    title: "CREATE ESCORT", pageName: CreateEscortScreen());
+              }
+            });
+
 
             ///------------------------------------------------------------------------------------------------------------------
           },
@@ -1056,9 +1067,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "ESCORT LIST ",
           onTap: () {
-            controller.currentPage.value = ESCORTScreen();
-            controller.menuBarRefresh(
-                title: "ESCORT LIST", pageName: ESCORTScreen());
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
+            setState(() {
+              if(permissions.contains('read_escort')){
+                controller.currentPage.value = ESCORTScreen();
+              controller.menuBarRefresh(
+                  title: "ESCORT LIST", pageName: ESCORTScreen());
+              }
+            });
           },
         ),
         NestedMenuItem(
