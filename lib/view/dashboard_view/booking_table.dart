@@ -13,9 +13,11 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/complete_alert.dart';
 import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
+import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
@@ -896,6 +898,7 @@ double widthss = MediaQuery.of(context).size.width;
     await showMenu<String>(
       context: context,
       position: position,
+      color: Colors.white,
       constraints: const BoxConstraints(minWidth: menuWidth, maxWidth: menuWidth),
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -923,12 +926,28 @@ double widthss = MediaQuery.of(context).size.width;
         ),
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
-          child: MouseRegion(
-            onEnter: (_) => _hideSubMenu(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
-            ),
+          child: Builder(
+              builder: (innerContext) {
+                return MouseRegion(
+                  onEnter: (_){
+                    _showSubMenu(innerContext, [
+                      {'title': 'COMPLETE', 'icon': Icons.task_alt},
+                      {'title': 'COPY', 'icon': Icons.copy},
+                      {'title': 'AUDIT REPORT', 'icon': Icons.description},
+                      {'title': 'UPDATE', 'icon': Icons.update},
+                      {'title': 'CANCEL', 'icon': Icons.block},
+                      {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
+                      {'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
+                    ], item);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _buildMenuRow(
+                        Icons.build_circle_outlined, "ACTIONS", true),
+                  ),
+                );
+              }
           ),
         ),
         PopupMenuItem<String>(
@@ -1048,7 +1067,17 @@ double widthss = MediaQuery.of(context).size.width;
       );
     } else if (title == "FOLLOW ON") {
       // Follow on logic
-      print("Follow on logic here");
+      showDialog(
+        context: context,
+        builder: (context) => DispatchFobAlert(bookingItem: item),
+      );
+    }
+    else if (title == "COMPLETE") {
+      showDialog(
+          context: context,
+          builder: (context) => CompleteBookingAlert(bookingId: item.id,
+              bookingItem: item),
+      );
     }
   }
 
@@ -1066,7 +1095,7 @@ double widthss = MediaQuery.of(context).size.width;
           const SizedBox(width: 12),
           Expanded(
               child: Text(title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black)
               )
           ),
           if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),
