@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:number_pagination/number_pagination.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import '../drivers_view/controller/driver_controller.dart';
@@ -59,6 +60,8 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
   }
 
   final DashboardController _controller = Get.find();
+  List permissions = [];
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +85,11 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
             : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
-        return GetBuilder<AccountController>(builder: (controller) {
+        return GetBuilder<AccountController>(
+            initState: (v){
+              permissions = Api().sp.read('all_permissions') ?? [];
+            },
+            builder: (controller) {
           final listToShow = controller.filteredAccount.isNotEmpty
               ? controller.filteredAccount
               : controller.AccountList;
@@ -238,7 +245,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            OutlinedButton(
+                                            if(permissions.contains('update_account')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 side: BorderSide(
                                                   color: Colors.transparent,
@@ -264,7 +271,7 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                               ),
                                             ),
                                             Text("|"),
-                                            OutlinedButton(
+                                            if(permissions.contains('delete_account')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 side: BorderSide(
                                                   color: Colors.transparent,
