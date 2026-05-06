@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../controller/locations_controller.dart';
@@ -27,11 +28,14 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
       : Get.put(LocationController());
   final DashboardController _controller = Get.find();
   final ZoneController zoneController = Get.find();
+  List permissions = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "driversList";
 
   }
@@ -150,7 +154,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                   MainAxisAlignment.center,
                                   children: [
 
-                                    OutlinedButton(
+                                    if(permissions.contains('update_zone')) OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                             color: Colors.transparent),
@@ -185,7 +189,7 @@ class _ZoneListScreenState extends State<ZoneListScreen> {
                                       child: Icon(Icons.edit_calendar, size: 28),
                                     ),
                                     Text("|"),
-                                    OutlinedButton(
+                                    if(permissions.contains('delete_zone')) OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                             color: Colors.transparent),

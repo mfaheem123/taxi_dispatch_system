@@ -71,10 +71,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
   Timer? _debounce;
 
-  DashboardController controller =  Get.find();
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+  DashboardController controller = Get.find();
 
   SuggestionController suggestion_controller =
   Get.isRegistered<SuggestionController>()
@@ -84,6 +84,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   @override
   void initState() {
     // TODO: implement initState
+    controller = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : Get.put(DashboardController());
     super.initState();
     if (controller.dashboardAllData == null) {
       controller.dashboardData();

@@ -809,7 +809,7 @@ class _MyHomePageState extends State<MyHomePage> {
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              if(permissions.contains('read_zone')){
+              if(permissions.contains('create_zone')){
                 controller.currentPage.value = ZoneScreen();
                 controller.menuBarRefresh(
                     title: "CREATE ZONE", pageName: ZoneScreen());
@@ -820,10 +820,14 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "LIST OF ZONES",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ZoneListScreen();
+              if(permissions.contains('read_zone')){
+                controller.currentPage.value = ZoneListScreen();
               controller.menuBarRefresh(
                   title: "LIST OF ZONES", pageName: ZoneListScreen());
+              }
             });
           },
         ),
