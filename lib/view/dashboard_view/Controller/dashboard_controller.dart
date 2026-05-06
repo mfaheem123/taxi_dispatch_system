@@ -2637,6 +2637,46 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
   List<NoteClass> controllerAlert = [];
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo create booking
+  /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
+
+   bool isRecoverLoading = false;
+
+   recoverBooking(dynamic bookingId) async {
+     isRecoverLoading = true;
+     update();
+     try {
+       var formData = {};
+
+       var response = await Api().post(
+         formData,
+         "bookings/recover-booking/$bookingId",
+         auth: true,
+       );
+       if (response.statusCode == 200) {
+         BotToast.showText(text: "BOOKING RECOVERED SUCCESSFULLY");
+       } else if (response.statusCode == 404) {
+         BotToast.showText(text: "BOOKING NOT FOUND");
+       } else {
+         BotToast.showText(text: "FAILED TO RECOVER BOOKING");
+       }
+     } catch (e) {
+       print("Error recovering booking: $e");
+       BotToast.showText(text: "SOMETHING WENT WRONG");
+     } finally {
+       isRecoverLoading = false;
+       update();
+     }
+   }
+ /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo booking recover
+ /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo delete booking
+
+   deleteBooking(dynamic id) async {
+     var response = await Api().delete("bookings/delete/$id");
+     if (response.statusCode == 200) {
+       BotToast.showText(text: "BOOKING DELETED SUCCESSFULLY!");
+       print(json.encode(response.data));
+     }
+   }
 }
 
 class DashBoardBindings implements Bindings {

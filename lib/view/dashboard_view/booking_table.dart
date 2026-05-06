@@ -657,7 +657,9 @@ double widthss = MediaQuery.of(context).size.width;
                                         context: context,
                                         builder: (_) =>
                                             DeletePermissionAlert(
-                                              deleteFunctionName: (){},
+                                              deleteFunctionName: (){
+                                                controller.deleteBooking(item.id);
+                                              },
                                             ),
                                       );
                                     },
@@ -1112,6 +1114,9 @@ double widthss = MediaQuery.of(context).size.width;
           builder: (context) => CompleteBookingAlert(bookingId: item.id,
               bookingItem: item),
       );
+    }
+    else if (title == "RECOVER") {
+      controller.recoverBooking(item.id);
     }
   }
 
