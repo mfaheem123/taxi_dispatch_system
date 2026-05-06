@@ -15,6 +15,7 @@ import '../../../../component/text_field.dart';
 import '../../../../component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/model/account_invoice_model.dart';
 
+import '../../../component/networks/api.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../controller/invoice_controller.dart';
 
@@ -34,11 +35,12 @@ class _CreateAccountInvoiceScreenState
   InvoiceController Controller = Get.isRegistered<InvoiceController>()
       ? Get.find<InvoiceController>()
       : Get.put(InvoiceController());
-
+  List permissions = [];
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "CreateAccountInvoiceScreen";
   }
 

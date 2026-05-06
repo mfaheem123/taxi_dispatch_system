@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -47,8 +48,9 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
     // TODO: implement initState
     super.initState();
     shortCutKeyValue.value = "CreateCustomerinvoice";
-
   }
+
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,11 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<AccountController>(builder: (controller) {
+    return GetBuilder<AccountController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+        },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -212,7 +218,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                   style: mozillaTextRegularText(
                       fontSize: 10, color: DynamicColors.whiteClr),
                 ),
-                CustomButton(
+                if(permissions.contains('create_customer_invoice')) CustomButton(
                   onTap: (){
                     controller.showDownloadButtons.value = true;
                   },
@@ -324,7 +330,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                         Center(
                           child:   Row(
                           children: [
-                            OutlinedButton(
+                            if(permissions.contains('update_customer_invoice')) OutlinedButton(
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                   color: Colors.transparent,
@@ -337,7 +343,7 @@ class _CreateCustomerinvoiceState extends State<CreateCustomerinvoice> {
                                 color: DynamicColors.primaryClr,
                               ),
                             ),
-                            OutlinedButton(
+                            if(permissions.contains('delete_customer_invoice')) OutlinedButton(
                               style: OutlinedButton.styleFrom(
                                 side: BorderSide(
                                   color: Colors.transparent,

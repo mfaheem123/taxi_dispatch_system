@@ -1092,11 +1092,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE CUSTOMER INVOICE",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CreateCustomerinvoice();
-              controller.menuBarRefresh(
-                  title: "CREATE CUSTOMER INVOICE",
-                  pageName: CreateCustomerinvoice());
+              if(permissions.contains('read_customer_invoice')){
+                controller.currentPage.value = CreateCustomerinvoice();
+                controller.menuBarRefresh(
+                    title: "CREATE CUSTOMER INVOICE",
+                    pageName: CreateCustomerinvoice());
+              }
             });
           },
         ),
@@ -1113,11 +1117,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE ACCOUNT INVOICE",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = CreateAccountInvoiceScreen();
-              controller.menuBarRefresh(
-                  title: "CREATE ACCOUNT INVOICE",
-                  pageName: CreateAccountInvoiceScreen());
+              if(permissions.contains('create_account_invoice')){
+                controller.currentPage.value = CreateAccountInvoiceScreen();
+                controller.menuBarRefresh(
+                    title: "CREATE ACCOUNT INVOICE",
+                    pageName: CreateAccountInvoiceScreen());
+              }
             });
           },
         ),
@@ -1125,11 +1133,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "LIST OF ACCOUNT INVOICES",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = ListOfAccountInvoiceScreen();
-              controller.menuBarRefresh(
-                  title: "LIST OF ACCOUNT INVOICES",
-                  pageName: ListOfAccountInvoiceScreen());
+              if(permissions.contains('read_account_invoice')){
+                controller.currentPage.value = ListOfAccountInvoiceScreen();
+                controller.menuBarRefresh(
+                    title: "LIST OF ACCOUNT INVOICES",
+                    pageName: ListOfAccountInvoiceScreen());
+              }
             });
           },
         ),
