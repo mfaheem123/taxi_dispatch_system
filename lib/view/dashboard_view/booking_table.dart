@@ -919,7 +919,7 @@ double widthss = MediaQuery.of(context).size.width;
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
-        if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4)
+        if (tabIndex != 2 && tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
           child: Builder(
@@ -949,19 +949,14 @@ double widthss = MediaQuery.of(context).size.width;
                 return MouseRegion(
                   onEnter: (_){
                     _showSubMenu(innerContext, [
-                      if (tabIndex == 4) ...[
-                        {'title': 'ACCEPT', 'icon': Icons.thumb_up_alt_outlined},
-                        {'title': 'DECLINE', 'icon': Icons.thumb_down_off_alt},
-                      ],
-                      if (tabIndex != 3){'title': 'COMPLETE', 'icon': Icons.task_alt},
+
+                      {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
                       {'title': 'AUDIT REPORT', 'icon': Icons.description},
-                      if (tabIndex != 3){'title': 'UPDATE', 'icon': Icons.update},
-                      if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4) ...[
-                        {'title': 'CANCEL', 'icon': Icons.block},
-                        {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
-                      ],
-                      if (tabIndex != 3){'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      {'title': 'UPDATE', 'icon': Icons.update},
+                      if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
+                      if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
+                      {'title': 'EDIT FARE', 'icon': Icons.edit_note},
                       if (tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
                       {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
                     ], item);
@@ -1115,7 +1110,7 @@ double widthss = MediaQuery.of(context).size.width;
               bookingItem: item),
       );
     }
-    else if (title == "RECOVER") {
+    else if(title == "RECOVER"){
       controller.recoverBooking(item.id);
     }
   }
