@@ -917,6 +917,7 @@ double widthss = MediaQuery.of(context).size.width;
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
+        if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
           child: Builder(
@@ -925,15 +926,15 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      if(tabIndex != 2) {'title': 'DISPATCH', 'icon': Icons.near_me},
-                      {'title': 'FOLLOW ON', 'icon': Icons.sync},
-                      {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
+                      if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                      if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
                     ], item);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: tabIndex != 2? _buildMenuRow(Icons.local_shipping, "DISPATCH", true):
-                    _buildMenuRow(Icons.sync, "FOLLOW ON", true),
+                    child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
                   ),
                 );
               }
@@ -946,13 +947,20 @@ double widthss = MediaQuery.of(context).size.width;
                 return MouseRegion(
                   onEnter: (_){
                     _showSubMenu(innerContext, [
-                      {'title': 'COMPLETE', 'icon': Icons.task_alt},
+                      if (tabIndex == 4) ...[
+                        {'title': 'ACCEPT', 'icon': Icons.thumb_up_alt_outlined},
+                        {'title': 'DECLINE', 'icon': Icons.thumb_down_off_alt},
+                      ],
+                      if (tabIndex != 3){'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
                       {'title': 'AUDIT REPORT', 'icon': Icons.description},
-                      {'title': 'UPDATE', 'icon': Icons.update},
-                      {'title': 'CANCEL', 'icon': Icons.block},
-                      {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
-                      {'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      if (tabIndex != 3){'title': 'UPDATE', 'icon': Icons.update},
+                      if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4) ...[
+                        {'title': 'CANCEL', 'icon': Icons.block},
+                        {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
+                      ],
+                      if (tabIndex != 3){'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      if (tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
                       {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
                     ], item);
                   },
@@ -965,24 +973,35 @@ double widthss = MediaQuery.of(context).size.width;
               }
           ),
         ),
+          if (tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
-          child: MouseRegion(
-            onEnter: (_) => _hideSubMenu(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildMenuRow(Icons.share, "SEND", true),
-            ),
+          child: Builder(
+             builder: (innerContext) {
+               return MouseRegion(
+                 onEnter: (_) {
+                   _showSubMenu(innerContext, [
+                     if (tabIndex == 2) {'title': 'RESEND DISPATCH SMS', 'icon': Icons.send},
+                     if (tabIndex != 2) {'title': 'EMAIL', 'icon': Icons.email},
+                     if (tabIndex != 2) {'title': 'SMS', 'icon': Icons.sms},
+                   ], item);
+                   },
+                 child: Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 12),
+                   child: _buildMenuRow(Icons.share, "SEND", true),
+                 ),
+               );
+             }
           ),
         ),
-        const PopupMenuDivider(),
-        PopupMenuItem<String>(
-          onTap: () => _handleSubMenuAction(context, "SMS", item),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
-          ),
-        ),
+        // const PopupMenuDivider(),
+        // PopupMenuItem<String>(
+        //   onTap: () => _handleSubMenuAction(context, "SMS", item),
+        //   child: Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 12),
+        //     child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
+        //   ),
+        // ),
       ],
     );
     _hideSubMenu();
@@ -1007,7 +1026,7 @@ double widthss = MediaQuery.of(context).size.width;
     final Size size = renderBox.size;
 
     final screenWidth = MediaQuery.of(itemContext).size.width;
-    const double subMenuWidth = 180.0;
+    const double subMenuWidth = 200.0;
 
     // Logic: Menu ke right side par space check karein
     double xPos = offset.dx + size.width - 5; // 5px overlap for smooth feel
