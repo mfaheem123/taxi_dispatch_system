@@ -831,7 +831,7 @@ class DriverController extends GetxController {
 
   DriverAppFutureModel? driverAppFutureModel;
   getDriversAppFuture(int driverId) async {
-    var response = await Api().get("drivers-app/app_features?driver_id=$driverId");
+    var response = await Api().get("drivers-app/app_features?driver_id=$driverId", sendCompanyId: true);
     if (response.statusCode == 200) {
 
       driverAppFutureModel = DriverAppFutureModel.fromJson(response.data);

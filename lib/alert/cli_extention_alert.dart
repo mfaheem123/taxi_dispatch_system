@@ -28,7 +28,7 @@ class ExtensionAlert {
       };
       var response = await Api().post(
         formData,
-        'employeeextension/add',
+        'employeeextension/add', sendCompanyId: true,
         auth: true,
       );
       if (response.statusCode == 200) {

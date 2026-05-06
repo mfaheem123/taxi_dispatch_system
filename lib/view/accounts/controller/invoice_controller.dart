@@ -140,7 +140,7 @@ class InvoiceController extends GetxController {
       print("Payload: $formData");
       var response = await Api().post(
         formData,
-        "account_invoice/add",
+        "account_invoice/add", sendCompanyId: true,
         auth: true,
       );
       if (response.statusCode == 200) {
@@ -267,7 +267,7 @@ class InvoiceController extends GetxController {
           : null,
       "from_date": fromDateStr,
       "to_date": toDateStr,
-    });
+    }, sendCompanyId: true);
     if (response.statusCode == 200) {
       listOfAccountInvoice = ListOfAccountInvoiceModel.fromJson(response.data);
       totalPages.value = listOfAccountInvoice?.totalPages ?? 1;
@@ -336,7 +336,7 @@ class InvoiceController extends GetxController {
         subsDiaryModel!.subsidiaries!.isEmpty) {
       await getSubsidiary();
     }
-    var response = await Api().get("account_invoice/getid/$selectedInvoiceId");
+    var response = await Api().get("account_invoice/getid/$selectedInvoiceId",sendCompanyId: true);
     if (response.statusCode == 200) {
       updateInvoiceByIdModel = UpdateInvoiceByIdModel.fromJson(response.data);
       var data = updateInvoiceByIdModel?.accountInvoice?.accountInvoice;
