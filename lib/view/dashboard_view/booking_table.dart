@@ -303,6 +303,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                            tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK REF #: ${item.referenceNumber}");
                                 },
@@ -318,6 +319,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                                 },
@@ -346,6 +348,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK CUSTOMER: ${item.name}");
                                   },
@@ -362,6 +365,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK PICKUP: ${item.pickup}");
                                 //   showMenu(
@@ -409,6 +413,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK DROPOFF: ${item.dropoff}");
                                 },
@@ -440,7 +445,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                                 },
@@ -469,6 +474,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                   },
@@ -485,6 +491,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
                                 },
@@ -512,6 +519,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK NOTE");
                                 // },
@@ -534,6 +542,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   // onRightClick: () {
                                   //   print("RIGHT CLICK FARE: ${item.fares}");
                                   // },
@@ -550,6 +559,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK STATUS");
                                 // },
@@ -579,6 +589,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK JOURNEY TYPE");
                                   },
@@ -595,6 +606,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
 
                                   print("RIGHT CLICK PAYMENT TYPE");
@@ -656,7 +668,6 @@ double widthss = MediaQuery.of(context).size.width;
                                       icon:  Icon(Icons.more_horiz, color: Colors.green),
                                       onPressed: () async {
                                         controller.dashBoardDataBinding(id: item.id!);
-
                                         // Get.to(UpdateBooking(data: item.id,));
 
                                         //   final newTabUrl =
@@ -678,7 +689,6 @@ double widthss = MediaQuery.of(context).size.width;
                                         //   Routes.updateBooking,
                                         //   arguments: item.id,
                                         // );
-
                                       },
                                     ),
                                   ),
@@ -842,7 +852,9 @@ double widthss = MediaQuery.of(context).size.width;
   Widget rightClickTextCell({
     required Widget child,
     required dynamic item,
+    required tabIndex,
     VoidCallback? onRightClick,
+
   }) {
     return Listener(
       behavior: HitTestBehavior.opaque,
@@ -863,6 +875,7 @@ double widthss = MediaQuery.of(context).size.width;
             position: position,
             globalPosition: event.position,
             item: item,
+            tabIndex: tabIndex
           );
         }
       },
@@ -889,6 +902,7 @@ double widthss = MediaQuery.of(context).size.width;
     required RelativeRect position,
     required Offset globalPosition,
     required dynamic item,
+    required tabIndex
   }) async {
     _hideSubMenu();
 
@@ -911,14 +925,15 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      if(tabIndex != 2) {'title': 'DISPATCH', 'icon': Icons.near_me},
                       {'title': 'FOLLOW ON', 'icon': Icons.sync},
                       {'title': 'SMS', 'icon': Icons.chat_bubble},
                     ], item);
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildMenuRow(Icons.local_shipping, "DISPATCH", true),
+                    child: tabIndex != 2? _buildMenuRow(Icons.local_shipping, "DISPATCH", true):
+                    _buildMenuRow(Icons.sync, "FOLLOW ON", true),
                   ),
                 );
               }
