@@ -106,5 +106,5 @@ class AuthController extends GetxController {
       Get.offAllNamed(Routes.loginScreen);
     }
   }
-  
+
 }
