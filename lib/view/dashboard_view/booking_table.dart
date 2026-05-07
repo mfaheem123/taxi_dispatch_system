@@ -919,7 +919,7 @@ double widthss = MediaQuery.of(context).size.width;
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
-        if (tabIndex != 2 && tabIndex != 4)
+        if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
           child: Builder(
@@ -928,10 +928,20 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
-                      if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
-                      if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
-                      if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      // if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      // if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                      // if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      // if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
+
+
+                      if (tabIndex == 0) ...[
+                        {'title': 'DISPATCH', 'icon': Icons.near_me},
+                        {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                        {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      ],
+                      if (tabIndex == 1) ...[
+                        {'title': 'FUTURE', 'icon': Icons.timelapse},
+                      ],
                     ], item);
                   },
                   child: Padding(
@@ -949,7 +959,8 @@ double widthss = MediaQuery.of(context).size.width;
                 return MouseRegion(
                   onEnter: (_){
                     _showSubMenu(innerContext, [
-
+                      if (tabIndex == 4) {'title': 'ACCEPT', 'icon':Icons.thumb_up_alt_rounded},
+                      if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
                       {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
                       {'title': 'AUDIT REPORT', 'icon': Icons.description},
