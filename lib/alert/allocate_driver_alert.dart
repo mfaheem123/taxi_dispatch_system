@@ -6,29 +6,31 @@ import '../component/textStyle.dart';
 import '../controller/fob_controller.dart';
 import '../view/customer/model/restricDriver.dart';
 
-// void showCompleteBookingAlert(int id) {
-//   Get.dialog(CompleteBookingAlert(bookingId: id),
-//     barrierColor: Colors.black54,
-//   );
-// }
 
-class CompleteBookingAlert extends StatefulWidget {
-  final dynamic bookingItem;
-  final dynamic bookingId;
-  const CompleteBookingAlert({super.key, required this.bookingId, this.bookingItem});
-
-  @override
-  State<CompleteBookingAlert> createState() => _CompleteBookingAlertState();
+void showAllocateDriverAlert() {
+  Get.dialog(
+    AllocateDriverAlert(),
+    barrierColor: Colors.black54,
+  );
 }
 
-class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
+class AllocateDriverAlert extends StatefulWidget {
+  final dynamic bookingItem;
+  // final dynamic bookingId;
+  const AllocateDriverAlert({super.key, this.bookingItem});
+
+  @override
+  State<AllocateDriverAlert> createState() => _AllocateDriverAlertState();
+}
+
+class _AllocateDriverAlertState extends State<AllocateDriverAlert> {
+  List<String> drivers = ["John", "Mark", "Developer"];
+  String? selectedDriver;
   final controller = Get.put(FobController());
 
   @override
   void initState() {
     super.initState();
-    controller.selectDriverObject = null;
-    controller.getAllDrivers();
   }
 
   @override
@@ -51,7 +53,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
               child: Row(
                 children: [
                   Text(
-                    "COMPLETE BOOKING ${widget.bookingItem?.referenceNumber ?? "N/A"}",
+                    "ALLOCATE DRIVER ${widget.bookingItem?.referenceNumber ?? "N/A"}",
                     style: mozillaTextSemiBoldText(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -73,7 +75,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "SELECT DRIVER",
+                    "SELECT DRIVER TO ASSIGN",
                     style: mozillaTextSemiBoldText(
                         fontSize: 14,
                         fontWeight: FontWeight.bold
@@ -85,22 +87,22 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                     child: GetBuilder<FobController>(
-                         builder: (ctrl) {
-                           return CustomDropdownField<DriverObject>(
-                             label: "SELECT DRIVERS",
-                             width: 320,
-                             height: 35,
-                             items: controller.allDriverData?.drivers ?? [],
-                             value: controller.selectDriverObject,
-                             itemLabel: (driver) =>
-                             driver.name ?? "".toUpperCase(),
-                             onChanged: (val) {
-                               controller.selectDriverObject = val;
-                               controller.update();
-                             },
-                           );
-                         }),
+                    child: GetBuilder<FobController>(
+                        builder: (ctrl) {
+                          return CustomDropdownField<String>(
+                            label: "SELECT DRIVERS",
+                            width: 320,
+                            height: 35,
+                            items: drivers,
+                            value: selectedDriver,
+                            itemLabel:(driver) => driver.toUpperCase(),
+                            onChanged: (val) {
+                              setState(() {
+                                selectedDriver = val;
+                              });
+                            },
+                          );
+                        }),
                   ),
                 ],
               ),
@@ -116,7 +118,7 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     width: 80,
                     height: 28,
                     verticalPadding: 0.0,
-                    btnText: "BACK",
+                    btnText: "CANCEL",
                     btnColor: Colors.grey,
                     borderRadius: 4,
                     style: mozillaTextSemiBoldText(
@@ -128,14 +130,10 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                   ),
                   const SizedBox(width: 12),
                   CustomButton(
-                    width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
-                    btnText: controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                    onTap:
-                      // controller.postCompleteBooking(widget.bookingId);
-                      controller.isCompleteStatus
-                          ? null
-                          : () => controller.postCompleteBooking(widget.bookingId)
+                      width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
+                      btnText: "ASSIGN DRIVER",
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      onTap: () {}
                   ),
                 ],
               ),

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -24,9 +25,15 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
       ? Get.find<SettingController>()
       : Get.put(SettingController());
 
+  List permissions = [];
+
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SettingController>(builder: (controller) {
+    return GetBuilder<SettingController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+        },
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -329,10 +336,11 @@ class _GeneralConfigurationViewState extends State<GeneralConfigurationView> {
                       SizedBox(
                         height: 15,
                       ),
-                      Align(
+                      if(permissions.contains('read_company_configuration'))  Align(
                         alignment: Alignment.center,
                         child: CustomButton(
                           onTap: () {
+
                             showDialog(
                               context: context,
                               builder: (context) {

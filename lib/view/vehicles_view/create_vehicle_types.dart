@@ -172,6 +172,9 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                             hintText: AppText.vehicleType,
                             columnText: true,
                             height: 35,
+                            inputFormatters: [
+                              UpperCaseTextFormatter()
+                            ],
                           ),
                           CustomTextField(
                             inputFormatters:  [
@@ -220,7 +223,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                               ),
                               CustomTextField(
                                 inputFormatters:  [
-                                  FilteringTextInputFormatter.digitsOnly,
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                                 ],
                                 borderRadius: 4,
                                 controller: controller.minimumMilesController,
@@ -246,7 +249,7 @@ class _CreateVehicleTypesState extends State<CreateVehicleTypes> {
                               ),
                               CustomTextField(
                                 inputFormatters:  [
-                                  FilteringTextInputFormatter.digitsOnly,
+                                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                                 ],
                                 borderRadius: 4,
                                 controller: controller.minimumFaresController,

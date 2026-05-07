@@ -13,9 +13,13 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/cancel_booking_alert.dart';
+import '../../alert/complete_alert.dart';
 import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
+import '../../alert/edit_booking_fare.dart';
+import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
@@ -301,6 +305,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                            tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK REF #: ${item.referenceNumber}");
                                 },
@@ -316,6 +321,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                                 },
@@ -344,6 +350,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK CUSTOMER: ${item.name}");
                                   },
@@ -360,6 +367,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK PICKUP: ${item.pickup}");
                                 //   showMenu(
@@ -407,6 +415,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK DROPOFF: ${item.dropoff}");
                                 },
@@ -438,7 +447,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                                 },
@@ -467,6 +476,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                   },
@@ -483,6 +493,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
                                   print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
                                 },
@@ -510,6 +521,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK NOTE");
                                 // },
@@ -532,6 +544,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   // onRightClick: () {
                                   //   print("RIGHT CLICK FARE: ${item.fares}");
                                   // },
@@ -548,6 +561,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK STATUS");
                                 // },
@@ -577,6 +591,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
+                                  tabIndex: controller.temSelectedTab,
                                   onRightClick: () {
                                     print("RIGHT CLICK JOURNEY TYPE");
                                   },
@@ -593,6 +608,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
+                                tabIndex: controller.temSelectedTab,
                                 onRightClick: () {
 
                                   print("RIGHT CLICK PAYMENT TYPE");
@@ -643,7 +659,9 @@ double widthss = MediaQuery.of(context).size.width;
                                         context: context,
                                         builder: (_) =>
                                             DeletePermissionAlert(
-                                              deleteFunctionName: (){},
+                                              deleteFunctionName: (){
+                                                controller.deleteBooking(item.id);
+                                              },
                                             ),
                                       );
                                     },
@@ -654,7 +672,6 @@ double widthss = MediaQuery.of(context).size.width;
                                       icon:  Icon(Icons.more_horiz, color: Colors.green),
                                       onPressed: () async {
                                         controller.dashBoardDataBinding(id: item.id!);
-
                                         // Get.to(UpdateBooking(data: item.id,));
 
                                         //   final newTabUrl =
@@ -676,7 +693,6 @@ double widthss = MediaQuery.of(context).size.width;
                                         //   Routes.updateBooking,
                                         //   arguments: item.id,
                                         // );
-
                                       },
                                     ),
                                   ),
@@ -840,7 +856,9 @@ double widthss = MediaQuery.of(context).size.width;
   Widget rightClickTextCell({
     required Widget child,
     required dynamic item,
+    required tabIndex,
     VoidCallback? onRightClick,
+
   }) {
     return Listener(
       behavior: HitTestBehavior.opaque,
@@ -861,6 +879,7 @@ double widthss = MediaQuery.of(context).size.width;
             position: position,
             globalPosition: event.position,
             item: item,
+            tabIndex: tabIndex
           );
         }
       },
@@ -887,7 +906,15 @@ double widthss = MediaQuery.of(context).size.width;
     required RelativeRect position,
     required Offset globalPosition,
     required dynamic item,
+    required tabIndex
   }) async {
+    print("--- Context Menu Debug ---");
+    print("TabIndex Value: $tabIndex");
+    print("TabIndex Type: ${tabIndex.runtimeType}");
+    print("--------------------------");
+    print("DEBUG: tabIndex is $tabIndex and type is ${tabIndex.runtimeType}");
+
+
     _hideSubMenu();
 
     // Humne width fix rakhi hai taake submenu ki calculation asaan ho
@@ -896,10 +923,12 @@ double widthss = MediaQuery.of(context).size.width;
     await showMenu<String>(
       context: context,
       position: position,
+      color: Colors.white,
       constraints: const BoxConstraints(minWidth: menuWidth, maxWidth: menuWidth),
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
+        if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
           child: Builder(
@@ -908,9 +937,10 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      {'title': 'DISPATCH', 'icon': Icons.near_me},
-                      {'title': 'FOLLOW ON', 'icon': Icons.sync},
-                      {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                      if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
                     ], item);
                   },
                   child: Padding(
@@ -923,32 +953,62 @@ double widthss = MediaQuery.of(context).size.width;
         ),
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
-          child: MouseRegion(
-            onEnter: (_) => _hideSubMenu(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildMenuRow(Icons.build_circle_outlined, "ACTIONS", true),
-            ),
+          child: Builder(
+              builder: (innerContext) {
+                return MouseRegion(
+                  onEnter: (_){
+                    _showSubMenu(innerContext, [
+                      if (tabIndex == 4) {'title': 'ACCEPT', 'icon':Icons.thumb_up_alt_rounded},
+                      if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
+                      if(tabIndex != 3) {'title': 'COMPLETE', 'icon': Icons.task_alt},
+                      {'title': 'COPY', 'icon': Icons.copy},
+                      {'title': 'AUDIT REPORT', 'icon': Icons.description},
+                      {'title': 'UPDATE', 'icon': Icons.update},
+                      if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
+                      if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
+                      if(tabIndex !=3) {'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      if (tabIndex == 0 || tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
+                      {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
+                    ], item);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: _buildMenuRow(
+                        Icons.build_circle_outlined, "ACTIONS", true),
+                  ),
+                );
+              }
           ),
         ),
+          if (tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
-          child: MouseRegion(
-            onEnter: (_) => _hideSubMenu(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: _buildMenuRow(Icons.share, "SEND", true),
-            ),
+          child: Builder(
+             builder: (innerContext) {
+               return MouseRegion(
+                 onEnter: (_) {
+                   _showSubMenu(innerContext, [
+                     if (tabIndex == 2) {'title': 'RESEND DISPATCH SMS', 'icon': Icons.send},
+                     if (tabIndex != 2) {'title': 'EMAIL', 'icon': Icons.email},
+                     if (tabIndex != 2) {'title': 'SMS', 'icon': Icons.sms},
+                   ], item);
+                   },
+                 child: Padding(
+                   padding: const EdgeInsets.symmetric(horizontal: 12),
+                   child: _buildMenuRow(Icons.share, "SEND", true),
+                 ),
+               );
+             }
           ),
         ),
-        const PopupMenuDivider(),
-        PopupMenuItem<String>(
-          onTap: () => _handleSubMenuAction(context, "SMS", item),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
-          ),
-        ),
+        // const PopupMenuDivider(),
+        // PopupMenuItem<String>(
+        //   onTap: () => _handleSubMenuAction(context, "SMS", item),
+        //   child: Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 12),
+        //     child: _buildMenuRow(Icons.chat_bubble_outline, "SMS", false),
+        //   ),
+        // ),
       ],
     );
     _hideSubMenu();
@@ -973,7 +1033,7 @@ double widthss = MediaQuery.of(context).size.width;
     final Size size = renderBox.size;
 
     final screenWidth = MediaQuery.of(itemContext).size.width;
-    const double subMenuWidth = 180.0;
+    const double subMenuWidth = 200.0;
 
     // Logic: Menu ke right side par space check karein
     double xPos = offset.dx + size.width - 5; // 5px overlap for smooth feel
@@ -1048,7 +1108,34 @@ double widthss = MediaQuery.of(context).size.width;
       );
     } else if (title == "FOLLOW ON") {
       // Follow on logic
-      print("Follow on logic here");
+      showDialog(
+        context: context,
+        builder: (context) => DispatchFobAlert(bookingItem: item),
+      );
+    }
+    else if (title == "COMPLETE") {
+      showDialog(
+          context: context,
+          builder: (context) => CompleteBookingAlert(bookingId: item.id,
+              bookingItem: item),
+      );
+    }
+    else if (title == "CANCEL") {
+      showDialog(
+        context: context,
+        builder: (context) => CancelBookingRequest(bookingId: item.id,
+            bookingItem: item),
+      );
+    }
+    else if (title == "EDIT FARE") {
+      showDialog(
+        context: context,
+        builder: (context) => EditBookingFare(bookingId: item.id,
+            bookingItem: item),
+      );
+    }
+    else if(title == "RECOVER"){
+      controller.recoverBooking(item.id);
     }
   }
 
@@ -1066,7 +1153,7 @@ double widthss = MediaQuery.of(context).size.width;
           const SizedBox(width: 12),
           Expanded(
               child: Text(title,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black)
               )
           ),
           if (hasArrow) const Icon(Icons.arrow_right, size: 20, color: Colors.grey),

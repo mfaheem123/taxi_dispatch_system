@@ -13,7 +13,7 @@ class SettingController extends GetxController {
   getManageExtention()
   async{
     getManageExtentionLoader(true);
-    var response = await Api().get("employeeextension/get");
+    var response = await Api().get("employeeextension/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       getManageExtentionModel = GetManageExtentionModel.fromJson(response.data);
       // await getAllFareConfiguration();

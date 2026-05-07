@@ -3,12 +3,16 @@ import 'package:dashboard_new1/view/accounts/controller/account_controller.dart'
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../component/networks/api.dart';
+
 class DepartmentAlert {
   static void show() {
 
     AccountController controller = Get.isRegistered<AccountController>()
         ? Get.find<AccountController>()
         : Get.put(AccountController());
+    List permissions = [];
+    permissions = Api().sp.read('all_permissions') ?? [];
     int? editingIndex;
 
     Get.dialog(
@@ -62,7 +66,7 @@ class DepartmentAlert {
                         _buildField("DEPARTMENT", controller.dpartmentCtrl),
                         const SizedBox(width: 8),
 
-                        SizedBox(
+                        if(permissions.contains('create_account_department')) SizedBox(
                           width: 100,
                           height: 34,
                           child: ElevatedButton(
@@ -139,7 +143,7 @@ class DepartmentAlert {
                             Expanded(
                               child: Row(
                                 children: [
-                                  IconButton(
+                                  if(permissions.contains('update_account_department')) IconButton(
                                     icon: const Icon(Icons.edit, size: 18, color: Color(0xFF43489A)),
                                     onPressed: () {
                                       setState(() {
@@ -149,7 +153,7 @@ class DepartmentAlert {
                                       });
                                     },
                                   ),
-                                  IconButton(
+                                  if(permissions.contains('delete_account_department')) IconButton(
                                     icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                                     onPressed: () {
                                       setState(() {

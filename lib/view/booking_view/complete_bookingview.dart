@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dashboard_new1/component/customButton.dart';
+import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/component/text_field.dart';
 import 'package:dashboard_new1/view/booking_view/reusable_widget.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +40,13 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "completeBookingsScreen";
+    var permissions = Api().sp.read('authorizations');
+    var dataa = jsonDecode(permissions);
+    print(dataa);
     controller.getcompletedBookingData();
   }
+
+
 
   @override
   Widget build(BuildContext context) {

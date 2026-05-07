@@ -9,6 +9,7 @@ import 'package:number_pagination/number_pagination.dart';
 import '../../alert/customer_detail_alert.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -41,6 +42,11 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
 
   final DashboardController _controller = Get.find();
 
+  List permissions = [];
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -50,7 +56,12 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
             .instance.platformDispatcher.views.first.physicalSize.width /
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
-    return GetBuilder<VehicleController>(builder: (controller) {
+    return GetBuilder<VehicleController>(
+      initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+      },
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final listToShow = controller.filteredVehicleTypes.isNotEmpty
             ? controller.filteredVehicleTypes
@@ -167,7 +178,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                               return DataRow(cells: [
                                 DataCell(Center(
                                   child:
-                                      Text(item.name.toString() ?? 'No Data'),
+                                      Text((item.name.toString() ?? 'No Data').toUpperCase()),
                                 )),
                                 DataCell(Center(
                                     child: Text(item.passengers.toString() ??
@@ -198,29 +209,36 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             side: BorderSide.none,
                                           ),
                                           onPressed: () {
-                                            controller.vehicleDataBinding(
-                                                item: item);
 
-                                            int index = _controller
-                                                .selectedMenuItems
-                                                .indexWhere((element) =>
-                                                    element.title ==
-                                                    "CREATE VEHICLE TYPE");
-                                            if (index != -1) {
-                                              _controller
-                                                  .selectedMenuItems[index]
-                                                  .selectedItem = true;
-                                              _controller.currentPage.value =
-                                                  CreateVehicleTypes();
-                                            } else {
-                                              _controller.currentPage.value =
-                                                  CreateVehicleTypes();
-                                              _controller.menuBarRefresh(
-                                                  title: "CREATE VEHICLE TYPE",
-                                                  pageName:
-                                                      CreateVehicleTypes());
+                                            if(permissions.contains('update_vehicle_type')){
+
+                                              controller.vehicleDataBinding(
+                                                  item: item);
+
+                                              int index = _controller
+                                                  .selectedMenuItems
+                                                  .indexWhere((element) =>
+                                              element.title ==
+                                                  "CREATE VEHICLE TYPE");
+                                              if (index != -1) {
+                                                _controller
+                                                    .selectedMenuItems[index]
+                                                    .selectedItem = true;
+                                                _controller.currentPage.value =
+                                                    CreateVehicleTypes();
+                                              } else {
+                                                _controller.currentPage.value =
+                                                    CreateVehicleTypes();
+                                                _controller.menuBarRefresh(
+                                                    title: "CREATE VEHICLE TYPE",
+                                                    pageName:
+                                                    CreateVehicleTypes());
+                                              }
+                                              controller.update();
+
                                             }
-                                            controller.update();
+
+
                                           },
                                           child: Icon(Icons.edit_calendar,
                                               size: 28),
@@ -233,7 +251,10 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                                             side: BorderSide.none,
                                           ),
                                           onPressed: () {
-                                            controller.deleteVehicleType(item.id!);
+        if(permissions.contains('delete_vehicle_type')){
+          controller.deleteVehicleType(item.id!);
+
+        }
                                           },
                                           child: Icon(
                                             Icons.delete_forever,

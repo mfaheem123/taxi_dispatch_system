@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -20,9 +21,16 @@ class PaymentConfigurationView extends StatefulWidget {
 }
 
 class _PaymentConfigurationViewState extends State<PaymentConfigurationView> {
+
+
+  List permissions = [];
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<SettingController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+        },
         builder: (controller) {
 
           return LayoutBuilder(builder: (context, constraints) {
@@ -99,7 +107,7 @@ class _PaymentConfigurationViewState extends State<PaymentConfigurationView> {
                         SizedBox(
                           height: 10,
                         ),
-                        Align(
+                        if(permissions.contains('read_company_configuration'))  Align(
                           alignment: Alignment.center,
                           child: CustomButton(
                             height: 35,

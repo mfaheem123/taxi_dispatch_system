@@ -7,6 +7,7 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:dashboard_new1/view/accounts/controller/account_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../component/networks/api.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/booking_table.dart';
 import 'create_escort_screen.dart';
@@ -35,6 +36,8 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
     controller.listEscort();
   }
 
+  List permissions = [];
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -44,7 +47,9 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(
-
+      initState: (v){
+        permissions = Api().sp.read('all_permissions') ?? [];
+      },
         builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final listToShow = controller.escortFiltered.isNotEmpty
@@ -190,7 +195,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
 
                                   children: [
 
-                                    OutlinedButton(
+                                    if(permissions.contains('update_escort')) OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                           color: Colors.transparent,
@@ -226,7 +231,7 @@ class _ESCORTScreenState extends State<ESCORTScreen> {
                                         color: DynamicColors.primaryClr,
                                       ),
                                     ),
-                                    OutlinedButton(
+                                    if(permissions.contains('delete_escort'))  OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                           color: Colors.transparent,

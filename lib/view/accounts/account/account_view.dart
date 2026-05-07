@@ -14,6 +14,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../../alert/web_login_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/color_picker_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -39,6 +40,7 @@ class _AccountViewState extends State<AccountView> {
     super.initState();
     shortCutKeyValue.value = "accountView";
   }
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -49,6 +51,7 @@ class _AccountViewState extends State<AccountView> {
         WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
 
     return GetBuilder<AccountController>(initState: (v) {
+           permissions = Api().sp.read('all_permissions') ?? [];
       controller.getSubsdairyBank();
     }, builder: (controller) {
       return controller.SubsdairyBankLoader.value == true
@@ -95,7 +98,7 @@ class _AccountViewState extends State<AccountView> {
                                           Text(AppText.account,
                                               style: titleDesign()),
                                           Spacer(),
-                                          CustomButton(
+                                          if(permissions.contains('read_account_web_login')) CustomButton(
                                               verticalPadding: 0.0,
                                               width: 80,
                                               height: 30,
@@ -108,7 +111,7 @@ class _AccountViewState extends State<AccountView> {
                                               onTap: () {
                                                 WebLoginAlert.show();
                                               }),
-                                          Padding(
+                                          if(permissions.contains('read_account_department')) Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: CustomButton(
@@ -126,7 +129,7 @@ class _AccountViewState extends State<AccountView> {
                                               },
                                             ),
                                           ),
-                                          CustomButton(
+                                          if(permissions.contains('read_account_contact')) CustomButton(
                                             verticalPadding: 0.0,
                                             width: 60,
                                             height: 30,
@@ -139,7 +142,7 @@ class _AccountViewState extends State<AccountView> {
                                               ContactAlert.show();
                                             },
                                           ),
-                                          Padding(
+                                          if(permissions.contains('read_account_order_number')) Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 horizontal: 8.0),
                                             child: CustomButton(
@@ -157,7 +160,7 @@ class _AccountViewState extends State<AccountView> {
                                               },
                                             ),
                                           ),
-                                          CustomButton(
+                                          if(permissions.contains('read_account_company_address')) CustomButton(
                                             verticalPadding: 0.0,
                                             width: 125,
                                             height: 30,

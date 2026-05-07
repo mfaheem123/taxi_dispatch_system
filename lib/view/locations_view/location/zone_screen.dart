@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../component/networks/api.dart';
 import '../../../component/text_field.dart';
 
 // enum DrawMode { navigate, freehand, rectangle, points, edit }
@@ -81,9 +82,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
   //     });
   //   }
   // }
+
+  List permissions = [];
   @override
   void initState() {
     super.initState();
+    permissions = Api().sp.read('all_permissions') ?? [];
     controller.refreshMapController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -1020,6 +1024,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
       };
     });
   }
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -1115,7 +1121,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                             ),
                           ),
                         ),
-                        ElevatedButton(
+                        if(permissions.contains('update_zone')) ElevatedButton(
                           onPressed: () async {
                             await controller.postZone(context);
                             setState(() {

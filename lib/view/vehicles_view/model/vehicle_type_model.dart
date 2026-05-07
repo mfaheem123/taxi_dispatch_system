@@ -55,7 +55,7 @@ class VehicleType {
   int? luggages;
   int? handLuggages;
   double? minimumFares;
-  int? minimumMiles;
+  double? minimumMiles;
   int? waitingTime;
   int? waitingTimeDuration;
   bool? defaultVehicle;
@@ -96,7 +96,7 @@ class VehicleType {
     luggages: json["luggages"],
     handLuggages: json["hand_luggages"],
     minimumFares: json["minimum_fares"]?.toDouble(),
-    minimumMiles: json["minimum_miles"],
+    minimumMiles: json["minimum_miles"]?.toDouble(),
     waitingTime: json["waiting_time"],
     waitingTimeDuration: json["waiting_time_duration"],
     defaultVehicle: json["default_vehicle"],

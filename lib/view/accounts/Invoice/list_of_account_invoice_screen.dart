@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../alert/delete_permission_alert.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/pagination.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
@@ -44,10 +45,10 @@ class _ListOfAccountInvoiceScreenState
     super.initState();
     shortCutKeyValue.value = "ListOfAccountInvoiceScreen";
   }
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
-
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding
@@ -56,6 +57,7 @@ class _ListOfAccountInvoiceScreenState
 
     return GetBuilder<InvoiceController>(
         initState: (state) {
+          permissions = Api().sp.read('all_permissions') ?? [];
           controller.listAccountInvoice(isFirstTime: true);
         },
         builder: (controller) {
@@ -98,7 +100,7 @@ class _ListOfAccountInvoiceScreenState
                               fontWeight: FontWeight.w800, fontSize: 17),
                         ),
                         Spacer(),
-                        CustomButton(
+                        if(permissions.contains('create_account_invoice')) CustomButton(
                           verticalPadding: 0.0,
                           width: 60,
                           height: 40,
@@ -374,7 +376,7 @@ onTap: () {
                               DataCell(
                                 Row(
                                   children: [
-                                    OutlinedButton(
+                                    if(permissions.contains('update_account_invoice')) OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                           color: Colors.transparent,
@@ -408,7 +410,7 @@ onTap: () {
                                       ),
                                     ),
                                     Text("|"),
-                                    OutlinedButton(
+                                    if(permissions.contains('delete_account_invoice')) OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         side: BorderSide(
                                           color: Colors.transparent,

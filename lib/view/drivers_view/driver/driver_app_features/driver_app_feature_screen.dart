@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 
 import '../../../../alert/restrict_drivers_alert.dart';
 import '../../../../component/dropdown_button.dart';
+import '../../../../component/networks/api.dart';
 import '../../../customer/model/restricDriver.dart';
 import '../../controller/driver_controller.dart';
 import 'app_version_widget.dart';
@@ -27,6 +28,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
   DriverController controller = Get.isRegistered<DriverController>()
       ? Get.find<DriverController>()
       : Get.put(DriverController());
+  List permissions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
 
     return GetBuilder<DriverController>(
       initState: (state) {
+        permissions = Api().sp.read('all_permissions') ?? [];
         controller.getAllDrivers();
       },
       builder: (controller) {
@@ -98,7 +101,7 @@ class _DriverAppFeatureScreenState extends State<DriverAppFeatureScreen> {
                     ),
                   ),
 
-                  CustomButton(
+                  if(permissions.contains('update_app_feature')) CustomButton(
                     onTap: () {
                       controller.saveDriverFeatures();
                     },

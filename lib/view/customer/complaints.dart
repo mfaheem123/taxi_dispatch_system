@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
@@ -32,12 +33,19 @@ class _ComplaintsViewState extends State<ComplaintsView> {
   int selectedRowIndex = 0; // currently selected row
   final int totalRows = 5; // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     double width = WidgetsBinding.instance.platformDispatcher.views.first.physicalSize.width / WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-    return GetBuilder<CustomerController>(builder: (controller) {
+    return GetBuilder<CustomerController>(
+        initState: (v){
+          permissions = Api().sp.read('all_permissions') ?? [];
+        },
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -143,7 +151,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                OutlinedButton(
+                                if(permissions.contains('update_complaint')) OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
                                       color: Colors.transparent,
@@ -156,7 +164,7 @@ class _ComplaintsViewState extends State<ComplaintsView> {
                                   ),
                                 ),
                                 Text("|"),
-                                OutlinedButton(
+                                if(permissions.contains('delete_complaint'))   OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(
                                       color: Colors.transparent,

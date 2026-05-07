@@ -63,6 +63,10 @@ class FobController extends GetxController {
       var response = await Api().get("drivers/get");
       if (response.statusCode == 200) {
         allDriverData = RestricDriverModel.fromJson(response.data);
+
+        if (allDriverData?.drivers != null && allDriverData!.drivers!.isNotEmpty) {
+          selectDriverObject = allDriverData!.drivers![0];
+        }
       }
     } catch (e) {
       print("Error fetching drivers: $e");
@@ -73,25 +77,92 @@ class FobController extends GetxController {
   }
 
   bool isCompleteStatus = false;
-  postCompleteBooking(int bookingId) async {
+  postCompleteBooking(dynamic bookingId) async {
     isCompleteStatus = true;
     update();
 
     try {
       var formData = {
-        "booking_status_id": 11,
+        "driver_id": selectDriverObject?.id,
       };
       var response =
-          await Api().post(formData, "bookings/status/$bookingId", auth: true);
+          await Api().post(formData, "bookings/completed-booking/$bookingId", auth: true);
       if (response.statusCode == 200) {
-        print("BOOKING COMPLETED SUCCESSFULLY");
+        BotToast.showText(text: "BOOKING COMPLETED SUCCESSFULLY");
       } else {
-        print("Failed to update status: ${response.statusCode}");
+        BotToast.showText(text: "FAILED TO COMPLETE BOOKING");
+        print("Error: ${response.statusCode} - ${response.data}");
       }
     } catch (e) {
       print("Error updating booking status: $e");
     } finally {
       isCompleteStatus = false;
+      update();
+    }
+  }
+
+  /// CANCEL ALERT
+  bool isCancelLoading = false;
+
+  Future<void> postCancelBooking(dynamic bookingId) async {
+    isCancelLoading = true;
+    update();
+
+    try{
+      var formData = {
+        "booking_status_id": 12,
+      };
+
+      var response = await Api().post(formData,
+          "bookings/status/$bookingId",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "BOOKING CANCELLED SUCCESSFULLY");
+        Get.back();
+      } else {
+        BotToast.showText(text: "FAILED TO CANCEL BOOKING");
+      }
+    } catch (e) {
+      print("Error cancelling booking: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG");
+    } finally {
+      isCancelLoading = false;
+      update();
+    }
+  }
+
+  /// EDIT FARE
+  bool isFareLoading = false;
+
+  updateBookingFare(dynamic bookingId, String fare) async {
+    if (fare.isEmpty) {
+      BotToast.showText(text: "PLEASE ENTER FARE AMOUNT");
+      return;
+    }
+    isFareLoading = true;
+    update();
+
+    try{
+      var formData = {
+        "total_charges": fare,
+      };
+      var response = await Api().post(
+          formData,
+        "bookings/dashboard-fares/$bookingId",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "FARE UPDATED SUCCESSFULLY");
+        Get.back();
+      } else {
+        BotToast.showText(text: "FAILED TO UPDATE FARE");
+      }
+    } catch (e) {
+      print("Error updating fare: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG");
+    } finally {
+      isFareLoading = false;
       update();
     }
   }
