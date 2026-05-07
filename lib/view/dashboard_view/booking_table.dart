@@ -906,6 +906,13 @@ double widthss = MediaQuery.of(context).size.width;
     required dynamic item,
     required tabIndex
   }) async {
+    print("--- Context Menu Debug ---");
+    print("TabIndex Value: $tabIndex");
+    print("TabIndex Type: ${tabIndex.runtimeType}");
+    print("--------------------------");
+    print("DEBUG: tabIndex is $tabIndex and type is ${tabIndex.runtimeType}");
+
+
     _hideSubMenu();
 
     // Humne width fix rakhi hai taake submenu ki calculation asaan ho
