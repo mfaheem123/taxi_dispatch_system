@@ -37,6 +37,7 @@ class AuthController extends GetxController {
     var formData = {
       "username": usernameController.text,
       "password": passwordController.text,
+
     };
     var response = await Api().post(formData, 'employees/login', auth: false);
     if (response.statusCode == 200) {

@@ -1255,7 +1255,7 @@ class FareController extends GetxController {
   RxBool getFixedFareVehicleLoader = false.obs;
   getFixedFareVehicleType() async {
     getFixedFareVehicleLoader(true);
-    var response = await Api().get("combined/vehicle-location-types");
+    var response = await Api().get("combined/vehicle-location-types", sendCompanyId: true );
     if (response.statusCode == 200) {
       VehicleTypeModel =
           FixedFareVehicleLocationTypeModel.fromJson(response.data);

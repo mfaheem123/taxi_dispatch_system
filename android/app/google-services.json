@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "81697669010",
+    "project_id": "texidispetchsystem",
+    "storage_bucket": "texidispetchsystem.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81697669010:android:773475cb984d838bf60b4b",
+        "android_client_info": {
+          "package_name": "com.example.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjNWQHukk0O6vQMNOfyHiKVPK0iYXAajU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81697669010:android:e72a43b6c5e9f813f60b4b",
+        "android_client_info": {
+          "package_name": "com.example.dashboard_new1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjNWQHukk0O6vQMNOfyHiKVPK0iYXAajU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81697669010:android:5ec02d7c37b5f5d9f60b4b",
+        "android_client_info": {
+          "package_name": "com.example.driver_app_alpha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjNWQHukk0O6vQMNOfyHiKVPK0iYXAajU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

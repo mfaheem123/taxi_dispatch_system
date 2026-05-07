@@ -37,6 +37,12 @@
   <!-- 🔹 Google Maps API Key for Web -->
 <!--  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkJj3V9uCG-lfub6XB1a2M-C2LX-lTSfo"></script>-->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkJj3V9uCG-lfub6XB1a2M-C2LX-lTSfo&v=weekly&libraries=places"></script>
-
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      });
+    }
+  </script>
 </body>
 </html>
