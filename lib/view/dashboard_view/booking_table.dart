@@ -13,10 +13,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/cancel_booking_alert.dart';
 import '../../alert/complete_alert.dart';
 import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
+import '../../alert/edit_booking_fare.dart';
 import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
@@ -965,7 +967,7 @@ double widthss = MediaQuery.of(context).size.width;
                       if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
                       if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
                       if(tabIndex !=3) {'title': 'EDIT FARE', 'icon': Icons.edit_note},
-                      if (tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
+                      if (tabIndex == 0 || tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
                       {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
                     ], item);
                   },
@@ -1116,6 +1118,20 @@ double widthss = MediaQuery.of(context).size.width;
           context: context,
           builder: (context) => CompleteBookingAlert(bookingId: item.id,
               bookingItem: item),
+      );
+    }
+    else if (title == "CANCEL") {
+      showDialog(
+        context: context,
+        builder: (context) => CancelBookingRequest(bookingId: item.id,
+            bookingItem: item),
+      );
+    }
+    else if (title == "EDIT FARE") {
+      showDialog(
+        context: context,
+        builder: (context) => EditBookingFare(bookingId: item.id,
+            bookingItem: item),
       );
     }
     else if(title == "RECOVER"){
