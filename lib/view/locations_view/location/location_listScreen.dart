@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../controller/locations_controller.dart';
@@ -30,9 +31,11 @@ class _LocationListScreenState extends State<LocationListScreen> {
 
   final DashboardController _controller = Get.find();
 
+    List permissions = [];
   @override
   void initState() {
     // TODO: implement initState
+    permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "locationListScreen";
   }
@@ -197,7 +200,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        OutlinedButton(
+                                        if(permissions.contains('update_location')) OutlinedButton(
                                           style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.transparent),),
                                           onPressed: () {
 
@@ -229,7 +232,7 @@ class _LocationListScreenState extends State<LocationListScreen> {
                                               size: 28),
                                         ),
                                         Text("|"),
-                                        OutlinedButton(
+                                        if(permissions.contains('delete_location')) OutlinedButton(
                                           style: OutlinedButton.styleFrom(
                                             side: BorderSide(color: Colors.transparent),
                                           ),

@@ -9,6 +9,7 @@ import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
@@ -29,8 +30,10 @@ class _FareByVehicleState extends State<FareByVehicle> {
       ? Get.find<FareController>()
       : Get.put(FareController());
 
+  List permissions = [];
   @override
   void initState() {
+    permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "fareByVehicle";
   }

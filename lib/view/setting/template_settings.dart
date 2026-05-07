@@ -11,6 +11,7 @@ import 'package:html_editor_enhanced/html_editor.dart';
 import '../../alert/restrict_drivers_alert.dart';
 import '../../component/color.dart';
 import '../../component/dropdown_button.dart';
+import '../../component/networks/api.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
 import '../accounts/controller/account_controller.dart';
@@ -34,9 +35,11 @@ class _TemplateSettingsState extends State<TemplateSettings> {
       : Get.put(SettingController());
 
 
+  List permissions = [];
   @override
   void initState() {
     // TODO: implement initState
+    permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "templateSettings";
     controller.getTemplateTypes();
@@ -325,7 +328,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                       style: titleDesign()),
                                 ),
 
-                                CustomDropdownField<TemplateType>(
+                                if(permissions.contains('read_template_type')) CustomDropdownField<TemplateType>(
                                   text: "SELECT TEMPLATE TYPE",
                                   label: "SELECT TEMPLATE TYPE",
                                   items: controller.selectTempleteType!
@@ -398,7 +401,7 @@ class _TemplateSettingsState extends State<TemplateSettings> {
                                 // ),
 
 
-                                Padding(
+                                if(permissions.contains('update_template')) Padding(
                                   padding: const EdgeInsets.only(top: 20.0),
                                   child: CustomButton(
                                     onTap: () {

@@ -7,6 +7,7 @@ import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/pagination.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
@@ -31,8 +32,10 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
   final int totalRows =
       35; // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
   @override
   void initState() {
+    permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     shortCutKeyValue.value = "createFixedFareSetting";
   }
@@ -208,7 +211,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                         SizedBox(
                           height: 10,
                         ),
-                        Padding(
+                        Padding (
                           padding: EdgeInsets.symmetric(horizontal: 15),
                           child: Wrap(
                             verticalDirection: VerticalDirection.down,
@@ -552,7 +555,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                             verticalDirection: VerticalDirection.down,
                             spacing: fieldWidth / 2,
                             children: [
-                              CustomButton(
+                              if(permissions.contains('create_fixed_fare')) CustomButton(
                                 height: 35,
                                 width: fieldWidth,
                                 btnText: controller.fixedFareAll.any((e) => e.fares == controller.fareController.text)
@@ -592,7 +595,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                         SizedBox(
                           height: 10,
                         ),
-                        SingleChildScrollView(
+                        if(permissions.contains('read_fixed_fare')) SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
                             width: Get.width / 1.5,
@@ -646,7 +649,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
-                                            OutlinedButton(
+                                            if(permissions.contains('update_fixed_fare')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),
@@ -663,7 +666,7 @@ class _CreateFixedFareSettingState extends State<CreateFixedFareSetting> {
                                                   color:
                                                       DynamicColors.primaryClr),
                                             ),
-                                            OutlinedButton(
+                                            if(permissions.contains('delete_fixed_fare')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),

@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import '../../../alert/restrict_drivers_alert.dart';
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/networks/api.dart';
 import '../../../component/pagination.dart' show PaginationWidget;
 import '../../../component/textStyle.dart';
 import '../../../component/text_field.dart';
@@ -37,9 +38,12 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
   final int totalRows =
       50; // total rows (dynamic list ke hisaab se change hoga)
 
+      List permissions = [];
+
   @override
   void initState() {
     super.initState();
+    permissions = Api().sp.read('all_permissions') ?? [];
     shortCutKeyValue.value = "fareConfigurationDay";
   }
 
@@ -418,7 +422,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                               ),
                             ],
                           ),
-                          Padding(
+                          if(permissions.contains('create_fare_configuration')) Padding(
                             padding: const EdgeInsets.symmetric(vertical: 8.0),
                             child: CustomButton(
                               height: 30,
@@ -470,7 +474,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                       ),
                     ),
                     SizedBox(height: 20,),
-                    SizedBox(
+                    if(permissions.contains('read_fare_configuration')) SizedBox(
                       width: Get.width,
                       child: DatatableWidget(
                         columns: [
@@ -516,7 +520,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            OutlinedButton(
+                                            if(permissions.contains('update_fare_configuration')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),
@@ -535,7 +539,7 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                                   size: 20,
                                                   color: DynamicColors.primaryClr),
                                             ),
-                                            OutlinedButton(
+                                            if(permissions.contains('delete_fare_configuration')) OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),
