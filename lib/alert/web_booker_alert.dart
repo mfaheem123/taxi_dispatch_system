@@ -150,7 +150,7 @@ class WebBookerAlert extends StatelessWidget {
               ),
               Row(
                 children: [
-                  Expanded(child: buildField("Customer Name", customerName)),
+                  Expanded(child: buildField("Name", customerName)),
                   const SizedBox(width: 8),
                   Expanded(child: buildField("Mobile", mobile)),
                 ],
@@ -181,3 +181,4 @@ class WebBookerAlert extends StatelessWidget {
     );
   }
 }
+

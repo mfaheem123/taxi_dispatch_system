@@ -935,20 +935,10 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      // if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
-                      // if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
-                      // if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
-                      // if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
-
-
-                      if (tabIndex == 0) ...[
-                        {'title': 'DISPATCH', 'icon': Icons.near_me},
-                        {'title': 'FOLLOW ON', 'icon': Icons.sync},
-                        {'title': 'SMS', 'icon': Icons.chat_bubble},
-                      ],
-                      if (tabIndex == 1) ...[
-                        {'title': 'FUTURE', 'icon': Icons.timelapse},
-                      ],
+                      if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
+                      if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
+                      if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
                     ], item);
                   },
                   child: Padding(
