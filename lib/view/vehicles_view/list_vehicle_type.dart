@@ -178,7 +178,7 @@ class _ListVehicleTypeState extends State<ListVehicleType> {
                               return DataRow(cells: [
                                 DataCell(Center(
                                   child:
-                                      Text(item.name.toString() ?? 'No Data'),
+                                      Text((item.name.toString() ?? 'No Data').toUpperCase()),
                                 )),
                                 DataCell(Center(
                                     child: Text(item.passengers.toString() ??

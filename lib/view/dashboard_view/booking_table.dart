@@ -958,13 +958,13 @@ double widthss = MediaQuery.of(context).size.width;
                     _showSubMenu(innerContext, [
                       if (tabIndex == 4) {'title': 'ACCEPT', 'icon':Icons.thumb_up_alt_rounded},
                       if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
-                      {'title': 'COMPLETE', 'icon': Icons.task_alt},
+                      if(tabIndex != 3) {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
                       {'title': 'AUDIT REPORT', 'icon': Icons.description},
                       {'title': 'UPDATE', 'icon': Icons.update},
                       if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
                       if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
-                      {'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      if(tabIndex !=3) {'title': 'EDIT FARE', 'icon': Icons.edit_note},
                       if (tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
                       {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
                     ], item);
