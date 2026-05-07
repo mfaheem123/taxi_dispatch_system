@@ -181,23 +181,23 @@ class _CompanyVehiclesScreenState extends State<CompanyVehiclesScreen> {
                     return DataRow(
                       cells: [
                         DataCell(Center(
-                            child: Text(item.vehicleNumber.toString()))),
+                            child: Text((item.vehicleNumber.toString().toUpperCase())))),
                         DataCell(Center(
-                            child: Text(
+                            child: Text((
                                 item.vehicleType?.name.toString() ??
-                                    "no data"))),
+                                    "no data").toUpperCase()))),
                         DataCell(Center(
-                            child: Text(
-                                item.owner.toString() ?? "no data"))),
+                            child: Text((
+                                item.owner.toString() ?? "no data").toUpperCase()))),
                         DataCell(Center(
                             child:
-                            Text(item.make.toString() ?? "no data"))),
+                            Text((item.make.toString() ?? "no data").toUpperCase()))),
                         DataCell(Center(
-                            child: Text(
-                                item.model.toString() ?? "no data"))),
+                            child: Text((
+                                item.model.toString() ?? "no data").toUpperCase()))),
                         DataCell(Center(
-                            child: Text(
-                                item.color.toString() ?? "no data"))),
+                            child: Text((
+                                item.color.toString() ?? "no data").toUpperCase()))),
                         DataCell(
                           Center(
                             child: Row(

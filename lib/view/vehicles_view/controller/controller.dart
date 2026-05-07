@@ -141,8 +141,8 @@ class VehicleController extends GetxController {
       );
       if (response.statusCode == 200) {
         String message = singleVehicleData != null
-            ? "Company Vehicle Update Successfully"
-            : "Company Vehicle Added Successfully";
+            ? "COMPANY VEHICLE UPDATED SUCCESSFULLY"
+            : "COMPANY VEHICLE ADDED SUCCESSFULLY";
         _clearAllFields();
         singleVehicleData = null;
         BotToast.showText(text: message);
@@ -176,15 +176,15 @@ class VehicleController extends GetxController {
               (element) => element.id == data.vehicleTypeId
       );
     }
-    vehicleMakeController.text = data.make?.toString() ?? '';
-    vehicleModelController.text = data.model?.toString() ?? '';
-    colorController.text = data.color?.toString() ?? '';
-    logBookingDocController.text = data.logBookNumber?.toString() ?? '';
+    vehicleMakeController.text = (data.make?.toString() ?? '').toUpperCase();
+    vehicleModelController.text = (data.model?.toString() ?? '').toUpperCase();
+    colorController.text = (data.color?.toString() ?? '').toUpperCase();
+    logBookingDocController.text = (data.logBookNumber?.toString() ?? '').toUpperCase();
     phcVehicleNumberController.text = data.phcVehicleNumber?.toString() ?? '';
     motNumberController.text = data.motNumber?.toString() ?? '';
     mot2NumberController.text = data.mot2Number?.toString() ?? '';
     insuranceNumberController.text = data.insuranceNumber?.toString() ?? '';
-    vehicleNumberController.text = data.vehicleNumber?.toString() ?? '';
+    vehicleNumberController.text = (data.vehicleNumber?.toString() ?? '').toUpperCase();
     phcVehicleExpireTimeController.text = data.phcVehicleExpiryTime?.toString() ?? '';
     motExpiryExpireTimeController.text = data.motExpiryTime?.toString() ?? '';
     mot2ExpiryExpireTimeController.text = data.mot2ExpiryTime?.toString() ?? '';
@@ -262,7 +262,7 @@ class VehicleController extends GetxController {
     if (response.statusCode == 200) {
       getVehicleTypes();
       print(" VehicleType deleted successfully!");
-      BotToast.showText(text: "VehicleType deleted successfully!" );
+      BotToast.showText(text: "VEHICLE TYPE DELETED SUCCESSFULLY!" );
     }
   }
 
@@ -321,7 +321,7 @@ class VehicleController extends GetxController {
     var response = await Api().delete('company-vehicles/delete/$id');
     if (response.statusCode == 200) {
       companyVehicle();
-      BotToast.showText(text: "Company Vehicle deleted successfully!");
+      BotToast.showText(text: "COMPANY VEHICLE DELETED SUCCESSFULLY!");
       print(json.encode(response.data));
     }
   }
@@ -382,8 +382,8 @@ class VehicleController extends GetxController {
         multiPart: multipartFile != null ? true : false);
     if (response.statusCode == 200) {
       String message = singleVehicle != null
-          ? "Vehicle Updated Successfully"
-          : "Vehicle Created Successfully";
+          ? "VEHICLE UPDATED SUCCESSFULLY"
+          : "VEHICLE CREATED SUCCESSFULLY";
       vehicleTypeController.clear();
       passengersController.clear();
       luggagesController.clear();
@@ -411,7 +411,7 @@ class VehicleController extends GetxController {
   vehicleDataBinding({item}) async {
     singleVehicle = item;
     // Text Fields
-    vehicleTypeController.text = singleVehicle!.name ?? '';
+    vehicleTypeController.text = (singleVehicle!.name ?? '').toUpperCase();
     passengersController.text = singleVehicle!.passengers?.toString() ?? '0';
     luggagesController.text = singleVehicle!.luggages?.toString() ?? '0';
     handLuggagesController.text = singleVehicle!.handLuggages?.toString() ?? '0';

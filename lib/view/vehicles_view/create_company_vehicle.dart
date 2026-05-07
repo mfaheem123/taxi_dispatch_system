@@ -94,9 +94,12 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               borderRadius: 4,
               controller: controller.vehicleNumberController,
               width: fieldWidth,
-              hintText: "Vehicle Number",
+              hintText: "VEHICLE NUMBER",
               columnText: true,
               height: 30,
+              inputFormatters: [
+                UpperCaseTextFormatter()
+              ],
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +122,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
                     items: (controllerdesh.dashboardAllData?.vehicleTypes ?? [])
                         .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
                       value: vehicle,
-                          child: Text(vehicle.name ?? "",
+                          child: Text((vehicle.name ?? "").toUpperCase(),
                             style: mozillaTextRegularText(
                               fontSize: 12,
                               color: DynamicColors.textClr,
@@ -159,6 +162,11 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.color,
               columnText: true,
               height: 30,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                    RegExp(r'[a-zA-Z\s]')),
+                UpperCaseTextFormatter()
+              ],
             ),
             CustomTextField(
               borderRadius: 4,
@@ -167,6 +175,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.make,
               columnText: true,
               height: 30,
+              inputFormatters: [UpperCaseTextFormatter()],
             ),
             CustomTextField(
               borderRadius: 4,
@@ -175,6 +184,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.model,
               columnText: true,
               height: 30,
+              inputFormatters: [UpperCaseTextFormatter()],
             ),
             CustomTextField(
               borderRadius: 4,
@@ -183,6 +193,7 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.logBookingDoc,
               columnText: true,
               height: 30,
+              inputFormatters: [UpperCaseTextFormatter()],
             ),
             labeledField(
               context: context,
@@ -233,6 +244,9 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.phcVehicleNumber,
               columnText: true,
               height: 30,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+              ],
             ),
             labeledField(
               context: context,
@@ -281,6 +295,8 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.motNumber,
               columnText: true,
               height: 30,
+              inputFormatters: [FilteringTextInputFormatter
+                  .digitsOnly,],
             ),
             labeledField(
               context: context,
@@ -329,6 +345,8 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.mot2Number,
               columnText: true,
               height: 30,
+              inputFormatters: [FilteringTextInputFormatter
+                  .digitsOnly,],
             ),
             labeledField(
               context: context,
@@ -377,6 +395,8 @@ class _CreateCompanyVehicleState extends State<CreateCompanyVehicle> {
               hintText: AppText.insuranceNumber,
               columnText: true,
               height: 30,
+              inputFormatters: [FilteringTextInputFormatter
+                  .digitsOnly,],
             ),
           ],
         ),

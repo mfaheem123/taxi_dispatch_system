@@ -13,10 +13,12 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nested_menu_bar/nested_menu_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../alert/cancel_booking_alert.dart';
 import '../../alert/complete_alert.dart';
 import '../../alert/delete_permission_alert.dart';
 import '../../alert/dispatch_booking.dart';
 import '../../alert/dispatch_booking_alert.dart';
+import '../../alert/edit_booking_fare.dart';
 import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
 import '../../component/pagination.dart';
@@ -906,6 +908,13 @@ double widthss = MediaQuery.of(context).size.width;
     required dynamic item,
     required tabIndex
   }) async {
+    print("--- Context Menu Debug ---");
+    print("TabIndex Value: $tabIndex");
+    print("TabIndex Type: ${tabIndex.runtimeType}");
+    print("--------------------------");
+    print("DEBUG: tabIndex is $tabIndex and type is ${tabIndex.runtimeType}");
+
+
     _hideSubMenu();
 
     // Humne width fix rakhi hai taake submenu ki calculation asaan ho
@@ -919,7 +928,7 @@ double widthss = MediaQuery.of(context).size.width;
       elevation: 8,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       items: [
-        if (tabIndex != 2 && tabIndex != 4)
+        if (tabIndex != 2 && tabIndex != 3 && tabIndex != 4)
         PopupMenuItem<String>(
           padding: EdgeInsets.zero,
           child: Builder(
@@ -928,10 +937,10 @@ double widthss = MediaQuery.of(context).size.width;
                   onEnter: (_) {
                     // Yahan hum innerContext use kar rahe hain jo menu item ki location dega
                     _showSubMenu(innerContext, [
-                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
                       if (tabIndex != 1) {'title': 'DISPATCH', 'icon': Icons.near_me},
                       if (tabIndex != 1) {'title': 'FOLLOW ON', 'icon': Icons.sync},
                       if (tabIndex != 1) {'title': 'SMS', 'icon': Icons.chat_bubble},
+                      if(tabIndex == 1) {'title': 'FUTURE', 'icon': Icons.timelapse},
                     ], item);
                   },
                   child: Padding(
@@ -949,15 +958,16 @@ double widthss = MediaQuery.of(context).size.width;
                 return MouseRegion(
                   onEnter: (_){
                     _showSubMenu(innerContext, [
-
-                      {'title': 'COMPLETE', 'icon': Icons.task_alt},
+                      if (tabIndex == 4) {'title': 'ACCEPT', 'icon':Icons.thumb_up_alt_rounded},
+                      if (tabIndex == 4) {'title': 'DECLINE', 'icon':Icons.thumb_down},
+                      if(tabIndex != 3) {'title': 'COMPLETE', 'icon': Icons.task_alt},
                       {'title': 'COPY', 'icon': Icons.copy},
                       {'title': 'AUDIT REPORT', 'icon': Icons.description},
                       {'title': 'UPDATE', 'icon': Icons.update},
                       if (tabIndex != 2) {'title': 'CANCEL', 'icon': Icons.block},
                       if (tabIndex != 2) {'title': 'ALLOCATE', 'icon': Icons.manage_accounts},
-                      {'title': 'EDIT FARE', 'icon': Icons.edit_note},
-                      if (tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
+                      if(tabIndex !=3) {'title': 'EDIT FARE', 'icon': Icons.edit_note},
+                      if (tabIndex == 0 || tabIndex == 1 || tabIndex == 2) {'title': 'RECOVER', 'icon': Icons.settings_backup_restore},
                       {'title': 'CALL CUSTOMER', 'icon': Icons.phone},
                     ], item);
                   },
@@ -1108,6 +1118,20 @@ double widthss = MediaQuery.of(context).size.width;
           context: context,
           builder: (context) => CompleteBookingAlert(bookingId: item.id,
               bookingItem: item),
+      );
+    }
+    else if (title == "CANCEL") {
+      showDialog(
+        context: context,
+        builder: (context) => CancelBookingRequest(bookingId: item.id,
+            bookingItem: item),
+      );
+    }
+    else if (title == "EDIT FARE") {
+      showDialog(
+        context: context,
+        builder: (context) => EditBookingFare(bookingId: item.id,
+            bookingItem: item),
       );
     }
     else if(title == "RECOVER"){
