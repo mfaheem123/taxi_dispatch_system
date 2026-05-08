@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/networks/api.dart';
 
 class LocationForm extends StatelessWidget {
   LocationForm({super.key});
@@ -12,6 +13,7 @@ class LocationForm extends StatelessWidget {
   LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+    List permissions = [];
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,7 @@ class LocationForm extends StatelessWidget {
         bool isMobile = constraints.maxWidth < 600;
         return GetBuilder<LocationController>(
             initState: (v) {
+                  permissions = Api().sp.read('all_permissions') ?? [];
               if (_controller.updateLocationValue.value == false && _controller.locationtypezoneModel == null) {
                 _controller.getLocationTypeZone();
               }

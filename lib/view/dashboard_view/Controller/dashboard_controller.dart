@@ -1433,6 +1433,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get table data status base
   int temSelectedTab = 1;
+  int selectionIndex = 0;
   getTableDataStatus({index, value}) async {
     int selectedIndex =
         bookingTabsList!.indexWhere((test) => test.selectedClr!.value == true);

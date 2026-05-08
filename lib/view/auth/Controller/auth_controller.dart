@@ -43,6 +43,7 @@ class AuthController extends GetxController {
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
       var token = response.data['token'];
+      sp.write('userRole', employeeData['role']['name']);
       sp.write('token', token);
       sp.write('userData', employeeData);
       await getRole(id: employeeData['role_id']);
@@ -77,7 +78,6 @@ class AuthController extends GetxController {
           .where((entry) => entry.value == true).map((entry) => entry.key).toList();
       sp.write('all_permissions', permissionList);
       List permissions = sp.read('all_permissions') ?? [];
-
       print(permissions);
       update();
     }
@@ -104,7 +104,7 @@ class AuthController extends GetxController {
       sp.remove('userData');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
-      Get.offAllNamed(Routes.loginScreen);
+      Get.offNamed(Routes.loginScreen);
     }
   }
 

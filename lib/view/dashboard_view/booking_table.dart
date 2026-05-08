@@ -21,6 +21,7 @@ import '../../alert/dispatch_booking_alert.dart';
 import '../../alert/edit_booking_fare.dart';
 import '../../alert/fob_alert.dart';
 import '../../component/images.dart';
+import '../../component/networks/api.dart';
 import '../../component/pagination.dart';
 import '../../component/text_field.dart';
 import '../../routes/app_pages.dart';
@@ -41,6 +42,18 @@ class _BookingTableState extends State<BookingTable> {
   int selectedRowIndex = 0; // currently selected row
   int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
 
+  List permissions = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    permissions = Api().sp.read('all_permissions') ?? [];
+    setState(() {
+
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
 double widthss = MediaQuery.of(context).size.width;
@@ -51,6 +64,7 @@ double widthss = MediaQuery.of(context).size.width;
     // }
 
     return GetBuilder<DashboardController>(
+
         builder: (controller) {
           return SingleChildScrollView(
             child: Column(
@@ -85,6 +99,7 @@ double widthss = MediaQuery.of(context).size.width;
                               if(controller.bookingTabsList![index].deletedClr!.value == true){
                                 controller.deleteJobs();
                               }else{
+                                controller.selectionIndex = index;
                                 controller.temSelectedTab = index;
                                 controller.getTableDataStatus(index: index);
                               }
@@ -120,6 +135,7 @@ double widthss = MediaQuery.of(context).size.width;
                                   controller.dropDownShow.value = false;
                                   print(controller.bookingTabsList![index].id);
                                   print(index);
+                                  controller.selectionIndex = index;
                                   controller.getTableDataStatus(index: index, value: value);
                                   // });
                                 },
@@ -137,7 +153,9 @@ double widthss = MediaQuery.of(context).size.width;
                 const SizedBox(height: 10),
 
 
-                controller.dashboardTableModelData == null?SizedBox(): SizedBox(
+                if(permissions.contains('read_booking'))
+                  controller.dashboardTableModelData == null?SizedBox():
+                  SizedBox(
                   width: Get.width,
                   child: DataTable(
                     headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
@@ -257,7 +275,7 @@ double widthss = MediaQuery.of(context).size.width;
 
                             /// Checkbox ❌ (NO right click)
                             DataCell(
-                              Checkbox(
+                              permissions.contains('create_trash_booking')?SizedBox.shrink(): Checkbox(
                                 value: controller.selectedDeletesItems?.contains(item) ?? false,
                                 onChanged: (bool? value) { // Checkbox value is nullable bool
                                   if (value == null) return;
@@ -293,7 +311,7 @@ double widthss = MediaQuery.of(context).size.width;
 
                             /// TYPE ❌
                             DataCell(
-                              Icon(
+           Icon(
                                 item.bookingSource == "dashboard"
                                     ? Icons.laptop_chromebook_outlined
                                     : Icons.mobile_screen_share,
@@ -305,7 +323,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                            tabIndex: controller.temSelectedTab,
+                            tabIndex: controller.selectionIndex,
                                 onRightClick: () {
                                   print("RIGHT CLICK REF #: ${item.referenceNumber}");
                                 },
@@ -321,7 +339,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 onRightClick: () {
                                   print("RIGHT CLICK DATETIME: ${item.pickupDate}");
                                 },
@@ -350,7 +368,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
-                                  tabIndex: controller.temSelectedTab,
+                                  tabIndex: controller.selectionIndex,
                                   onRightClick: () {
                                     print("RIGHT CLICK CUSTOMER: ${item.name}");
                                   },
@@ -367,7 +385,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK PICKUP: ${item.pickup}");
                                 //   showMenu(
@@ -415,7 +433,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 onRightClick: () {
                                   print("RIGHT CLICK DROPOFF: ${item.dropoff}");
                                 },
@@ -447,7 +465,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 onRightClick: () {
                                   print("RIGHT CLICK ACCOUNT: ${item.account?.name}");
                                 },
@@ -476,7 +494,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
-                                  tabIndex: controller.temSelectedTab,
+                                  tabIndex: controller.selectionIndex,
                                   onRightClick: () {
                                     print("RIGHT CLICK DRIVER: ${item.driver?.name}");
                                   },
@@ -493,7 +511,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 onRightClick: () {
                                   print("RIGHT CLICK VEHICLE: ${item.vehicleType?.name}");
                                 },
@@ -521,7 +539,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK NOTE");
                                 // },
@@ -544,7 +562,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
-                                  tabIndex: controller.temSelectedTab,
+                                  tabIndex: controller.selectionIndex,
                                   // onRightClick: () {
                                   //   print("RIGHT CLICK FARE: ${item.fares}");
                                   // },
@@ -561,7 +579,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 // onRightClick: () {
                                 //   print("RIGHT CLICK STATUS");
                                 // },
@@ -591,7 +609,7 @@ double widthss = MediaQuery.of(context).size.width;
                                 width: widthss/20.5,
                                 child: rightClickTextCell(
                                   item: item,
-                                  tabIndex: controller.temSelectedTab,
+                                  tabIndex: controller.selectionIndex,
                                   onRightClick: () {
                                     print("RIGHT CLICK JOURNEY TYPE");
                                   },
@@ -608,7 +626,7 @@ double widthss = MediaQuery.of(context).size.width;
                             DataCell(
                               rightClickTextCell(
                                 item: item,
-                                tabIndex: controller.temSelectedTab,
+                                tabIndex: controller.selectionIndex,
                                 onRightClick: () {
 
                                   print("RIGHT CLICK PAYMENT TYPE");
@@ -647,7 +665,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     },
                                   ),
                                    Text("|"),
-                                  IconButton(
+                                  if(permissions.contains('delete_booking'))  IconButton(
                                     icon:  Icon(Icons.delete_forever, color: Colors.red),
                                     onPressed: () {
                                       // showShortcutDialog(
@@ -667,7 +685,7 @@ double widthss = MediaQuery.of(context).size.width;
                                     },
                                   ),
                                    Text("|"),
-                                  Expanded(
+                                  if(permissions.contains('update_booking')) Expanded(
                                     child: IconButton(
                                       icon:  Icon(Icons.more_horiz, color: Colors.green),
                                       onPressed: () async {
@@ -701,137 +719,6 @@ double widthss = MediaQuery.of(context).size.width;
                             ),
                           ],
                         );
-
-                        // return DataRow(
-                        //   selected: isSelected,
-                        //   cells: [
-                        //     /// Checkbox
-                        //     DataCell(
-                        //       Checkbox(
-                        //         value: isSelected,
-                        //         onChanged: (value) {
-                        //           setState(() {
-                        //             selectedRowIndex = value! ? index : -1;
-                        //           });
-                        //         },
-                        //       ),
-                        //     ),
-                        //
-                        //     /// TYPE
-                        //     DataCell(
-                        //       Icon(
-                        //         item.bookingSource == "dashboard"?Icons.laptop_chromebook_outlined:
-                        //             Icons.mobile_screen_share,
-                        //         color: Colors.blue,
-                        //       ),
-                        //     ),
-                        //
-                        //     /// REF #
-                        //     DataCell(Text(item.referenceNumber ?? "-")),
-                        //
-                        //     /// DATETIME
-                        //     DataCell(Text(item.pickupDate.toString())),
-                        //
-                        //     /// CUSTOMER
-                        //     DataCell(Text(item.name!)),
-                        //
-                        //     /// PICKUP
-                        //     DataCell(
-                        //       SizedBox(
-                        //         width: 160,
-                        //         child: Text(
-                        //           item.pickup ?? "-",
-                        //           overflow: TextOverflow.ellipsis,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //
-                        //     /// DROPOFF
-                        //     DataCell(
-                        //       SizedBox(
-                        //         width: 160,
-                        //         child: Text(
-                        //           item.dropoff ?? "-",
-                        //           overflow: TextOverflow.ellipsis,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //
-                        //     /// ACCOUNT
-                        //     DataCell(Text(item.account!.name??"")),
-                        //
-                        //     /// DRIVER
-                        //     DataCell(Text(item.driver!.name ?? "")),
-                        //
-                        //     /// VEHICLE
-                        //     DataCell(Text(item.vehicleType!.name ?? "-")),
-                        //
-                        //     /// NOTE
-                        //     DataCell(
-                        //       SizedBox(
-                        //         width: 180,
-                        //         child: Text(
-                        //           item.notes!.isEmpty?"": item.notes![0].note ?? "-",
-                        //           overflow: TextOverflow.ellipsis,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //
-                        //     /// FARE
-                        //     DataCell(Text("£ ${item.fares ?? "0.00"}")),
-                        //
-                        //     /// STATUS
-                        //     DataCell(
-                        //       Text(
-                        //         /*item.status ??*/ "-",
-                        //         style: TextStyle(
-                        //           color:/* item.status == "WAITING"
-                        //               ? Colors.orange
-                        //               :*/ Colors.green,
-                        //         ),
-                        //       ),
-                        //     ),
-                        //
-                        //     /// J/T
-                        //     DataCell(Text(item.journeyType!.journeyType ?? "-")),
-                        //
-                        //     /// P/T
-                        //     DataCell(Text(item.paymentType!.name ?? "-")),
-                        //
-                        //     /// ACTIONS
-                        //     DataCell(
-                        //       Row(
-                        //         children: [
-                        //           IconButton(
-                        //             icon: const Icon(Icons.arrow_forward, color: Colors.green),
-                        //             onPressed: () {
-                        //               showDialog(
-                        //                 context: context,
-                        //                 builder: (_) => DispatchBookingAlert(),
-                        //               );
-                        //             },
-                        //           ),
-                        //           const Text("|"),
-                        //           IconButton(
-                        //             icon: const Icon(Icons.delete_forever, color: Colors.red),
-                        //             onPressed: () {
-                        //               showShortcutDialog(
-                        //                 context,
-                        //                 title: "Delete",
-                        //                 contentWidget: const Text("Are you sure?"),
-                        //               );
-                        //             },
-                        //           ),
-                        //           const Text("|"),
-                        //           IconButton(
-                        //             icon: const Icon(Icons.more_horiz, color: Colors.green),
-                        //             onPressed: () {},
-                        //           ),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ],
-                        // );
                       },
                     ),
                   ),

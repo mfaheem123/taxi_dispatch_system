@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../component/color.dart';
 import '../../component/datatable_widget.dart';
+import '../../component/networks/api.dart';
 import '../../component/pagination.dart';
 import '../../component/textStyle.dart';
 import '../../component/text_widget.dart';
@@ -27,10 +28,12 @@ class _TrashBookingState extends State<TrashBooking> {
   final int totalRows =
       50; // total rows (dynamic list ke hisaab se change hoga)
 
+    List permissions = [];
   @override
   void initState() {
     super.initState();
     shortCutKeyValue.value = "TrashBooking";
+        permissions = Api().sp.read('all_permissions') ?? [];
     controller.getTrashBookingData();
   }
 
@@ -231,7 +234,7 @@ class _TrashBookingState extends State<TrashBooking> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                OutlinedButton(
+                                if(permissions.contains('update_trash_booking')) OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(color: Colors.transparent),
                                   ),
@@ -239,7 +242,7 @@ class _TrashBookingState extends State<TrashBooking> {
                                   child: Icon(Icons.edit_calendar, size: 28),
                                 ),
                                 Text("|"),
-                                OutlinedButton(
+                                if(permissions.contains('delete_trash_booking'))  OutlinedButton(
                                   style: OutlinedButton.styleFrom(
                                     side: BorderSide(color: Colors.transparent),
                                   ),

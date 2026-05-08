@@ -512,7 +512,7 @@ class _MyHomePageState extends State<MyHomePage> {
             List permissions = [];
             permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              if(permissions.contains('read_booking_route')){
+              if(permissions.contains('create_booking_route')){
                 final newTabUrl = Uri.base.origin + Routes.createBooking;
                 html.window.open(newTabUrl, '_blank');
               }
@@ -585,10 +585,15 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "TRASH BOOKINGS",
           onTap: () {
+
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = TrashBooking();
-              controller.menuBarRefresh(
-                  title: "TRASH BOOKINGS", pageName: TrashBooking());
+              if(permissions.contains('read_trash_booking')){
+                controller.currentPage.value = TrashBooking();
+                controller.menuBarRefresh(
+                    title: "TRASH BOOKINGS", pageName: TrashBooking());
+              }
             });
           },
         ),
@@ -786,21 +791,30 @@ class _MyHomePageState extends State<MyHomePage> {
         NestedMenuItem(
           title: "CREATE LOCATIONS",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = LocationForm();
-              controller.menuBarRefresh(
-                  title: "CREATE LOCATIONS", pageName: LocationForm());
+              if(permissions.contains('create_location')){
+                controller.currentPage.value = LocationForm();
+                controller.menuBarRefresh(
+                    title: "CREATE LOCATIONS", pageName: LocationForm());
+              }
             });
           },
         ),
         NestedMenuItem(
           title: "LIST OF LOCATIONS",
           onTap: () {
+            List permissions = [];
+            permissions = Api().sp.read('all_permissions') ?? [];
             setState(() {
-              controller.currentPage.value = LocationListScreen();
-              controller.menuBarRefresh(
-                  title: "LIST OF LOCATIONS", pageName: LocationListScreen());
+              if(permissions.contains('read_location')){
+                controller.currentPage.value = LocationListScreen();
+                controller.menuBarRefresh(
+                    title: "LIST OF LOCATIONS", pageName: LocationListScreen());
+              }
             });
+
           },
         ),
         NestedMenuItem(
@@ -1262,7 +1276,6 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "CREATE SUBSIDIARY",
             onTap: () {
-
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
@@ -1278,7 +1291,6 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "SUBSIDIARIES",
             onTap: () {
-
               List permissions = [];
               permissions = Api().sp.read('all_permissions') ?? [];
               setState(() {
@@ -1293,11 +1305,13 @@ class _MyHomePageState extends State<MyHomePage> {
           NestedMenuItem(
             title: "AUTHORIZATION",
             onTap: () {
-              setState(() {
-                controller.currentPage.value = AuthorizationScreen();
-                controller.menuBarRefresh(
-                    title: "AUTHORIZATION", pageName: AuthorizationScreen());
-              });
+              if(Api().sp.read('userRole') == "super admin"){
+                setState(() {
+                  controller.currentPage.value = AuthorizationScreen();
+                  controller.menuBarRefresh(
+                      title: "AUTHORIZATION", pageName: AuthorizationScreen());
+                });
+              }
             },
           ),
         ]),
@@ -1495,7 +1509,7 @@ class _MyHomePageState extends State<MyHomePage> {
             permissions = Api().sp.read('all_permissions') ?? [];
             print(permissions);
             setState(() {
-              if(permissions.contains('read_template_type')){
+              if(permissions.contains('read_template')){
                 controller.currentPage.value = TemplateSettings();
                 controller.menuBarRefresh(
                     title: "TEMPLATE SETTINGS", pageName: TemplateSettings());

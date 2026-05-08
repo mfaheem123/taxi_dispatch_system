@@ -39,8 +39,11 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
   final Dio _dio = Dio();
   bool isLoading = false;
   final String globalCompanyId = "1";
+  List permissions = [];
+
   @override
   void initState() {
+    permissions = Api().sp.read('all_permissions') ?? [];
     super.initState();
     _fetchPostcodes(); // 📌 load list from API
   }
@@ -73,7 +76,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  CustomButton(
+                  if(permissions.contains('create_localization_detail'))  CustomButton(
                     width: 30,
                     onTap: () => _showAddDialog(context),
                     height: 30,
@@ -101,7 +104,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
 
             // 📌 Table
             if (!isLoading)
-              SingleChildScrollView(
+              if(permissions.contains('read_localization_detail')) SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -181,7 +184,7 @@ class _LocalizationScreenState extends State<LocalizationScreen> {
                                   ),
                                 ),
                               ),
-                              Padding(
+                              if(permissions.contains('delete_localization_detail')) Padding(
                                 padding:
                                 const EdgeInsets.symmetric(horizontal: 30),
                                 child: Align(

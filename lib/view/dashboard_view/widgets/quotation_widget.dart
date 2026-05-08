@@ -80,7 +80,7 @@ class _DynamicSwitchState extends State<DynamicSwitch> {
             controller: widget.controller,
             activeColor: widget.activeColor,
             inactiveColor: widget.inactiveColor,
-            borderRadius: widget.borderRadius,
+            // borderRadius: widget.borderRadius,
             width: 30,
             height: 15,
             onChanged: widget.onChanged, // handled by ValueNotifier + _toggle
