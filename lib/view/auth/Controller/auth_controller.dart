@@ -104,7 +104,7 @@ class AuthController extends GetxController {
       sp.remove('userData');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
-      Get.offNamed(Routes.loginScreen);
+      Get.offAllNamed(Routes.loginScreen);
     }
   }
 
