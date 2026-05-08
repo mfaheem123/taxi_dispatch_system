@@ -76,111 +76,141 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                                   ],
                                 )),
                           )),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Multi Vehicle",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.black),
-                              ),
-                              SizedBox(
-                                width: fieldWidth,
-                                height: 35,
-                                child: DropdownButtonFormField<
-                                    DashboardVehicleTypeObject>(
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    isDense: true,
-                                  ),
-                                  value: controller.selectMultiVehicleValue,
-                                  items: controller
-                                      .dashboardAllData!.vehicleTypes!
-                                      .map((vehicle) => DropdownMenuItem<
-                                              DashboardVehicleTypeObject>(
-                                            value: vehicle,
-                                            child: Text(
-                                              vehicle.name ?? "",
-                                              style: mozillaTextRegularText(
-                                                fontSize: 12,
-                                                color: DynamicColors.textClr,
-                                              ),
-                                            ),
-                                          ))
-                                      .toList(),
-                                  onChanged: (v) {
-                                    controller.selectMultiVehicleValue = v;
-                                    controller.update();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              side: BorderSide(
-                                color: DynamicColors.primaryClr,
-                              ), // border color & thickness
-                            ),
-                            onPressed: () {
-                              controller.multiVehicleList
-                                  .add(controller.selectMultiVehicleValue!);
-                              controller.selectMultiVehicleValue = null;
-                              controller.update();
-                            },
-                            child: Text(
-                              "Add",
-                              style: TextStyle(
-                                color: DynamicColors.black,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: fieldWidth * 1.3,
-                        child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(
-                                title: "Vehicle", removeSearching: true),
-                            buildHeaderWithSearch(
-                                title: "Action", removeSearching: true),
-                          ],
-                          rows: [
-                            // Existing extensions
-                            ...controller.multiVehicleList.map((object) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(
-                                      object.name.toString().toUpperCase())),
-                                  DataCell(
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: Size.zero,
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        side: BorderSide.none,
+                      Padding(
+                        padding: const EdgeInsets.all(
+                            12.0), // Andar ki spacing ke liye
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Multi Vehicle",
+                                        style: TextStyle(
+                                            fontSize: 14, color: Colors.black),
                                       ),
-                                      onPressed: () {
-                                        controller.multiVehicleList
-                                            .remove(object);
-                                        controller.update();
-                                      },
-                                      child: Icon(
-                                        Icons.delete_forever,
-                                        color: DynamicColors.redClr,
+                                      const SizedBox(height: 5),
+                                      SizedBox(
+                                        width: fieldWidth,
+                                        height: 35,
+                                        child: DropdownButtonFormField<
+                                            DashboardVehicleTypeObject>(
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            isDense: true,
+                                          ),
+                                          value: controller
+                                              .selectMultiVehicleValue,
+                                          items: controller
+                                              .dashboardAllData!.vehicleTypes!
+                                              .map((vehicle) =>
+                                                  DropdownMenuItem<
+                                                      DashboardVehicleTypeObject>(
+                                                    value: vehicle,
+                                                    child: Text(
+                                                      vehicle.name ?? "",
+                                                      style:
+                                                          mozillaTextRegularText(
+                                                        fontSize: 12,
+                                                        color: DynamicColors
+                                                            .textClr,
+                                                      ),
+                                                    ),
+                                                  ))
+                                              .toList(),
+                                          onChanged: (v) {
+                                            controller.selectMultiVehicleValue =
+                                                v;
+                                            controller.update();
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  height: 35,
+                                  child: OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: DynamicColors.primaryClr,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      controller.multiVehicleList.add(
+                                          controller.selectMultiVehicleValue!);
+                                      controller.selectMultiVehicleValue = null;
+                                      controller.update();
+                                    },
+                                    child: Text(
+                                      "Add",
+                                      style: TextStyle(
+                                        color: DynamicColors.black,
+                                        fontSize: 12,
                                       ),
                                     ),
                                   ),
-                                ],
-                              );
-                            }).toList(),
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                                // width: fieldWidth * 1.3,
+                                width: double.infinity,
+                                child: DatatableWidget(columns: [
+                                  buildHeaderWithSearch(
+                                      title: "Vehicle", removeSearching: true),
+                                  buildHeaderWithSearch(
+                                      title: "Action", removeSearching: true),
+                                ], rows: [
+                                  // Existing extensions
+                                  ...controller.multiVehicleList.map((object) {
+                                    return DataRow(
+                                      cells: [
+                                        DataCell(Text(object.name
+                                            .toString()
+                                            .toUpperCase())),
+                                        DataCell(
+                                          // OutlinedButton(
+                                          //   style: OutlinedButton.styleFrom(
+                                          //     padding: EdgeInsets.zero,
+                                          //     minimumSize: Size.zero,
+                                          //     tapTargetSize:
+                                          //         MaterialTapTargetSize.shrinkWrap,
+                                          //     side: BorderSide.none,
+                                          //   ),
+                                          //   onPressed: () {
+                                          //     controller.multiVehicleList
+                                          //         .remove(object);
+                                          //     controller.update();
+                                          //   },
+                                          //   child: Icon(
+                                          //     Icons.delete_forever,
+                                          //     color: DynamicColors.redClr,
+                                          //   ),
+                                          // ),
+                                          IconButton(
+                                            onPressed: () {
+                                              controller.multiVehicleList
+                                                  .remove(object);
+                                              controller.update();
+                                            },
+                                            icon: Icon(Icons.delete_forever,
+                                                color: DynamicColors.redClr),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
+                                ]),
+                            ),
                           ],
                         ),
                       ),
