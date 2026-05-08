@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/networks/api.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -32,24 +33,71 @@ class AuthController extends GetxController {
   final TextEditingController passwordController = TextEditingController();
   RxBool PostAuthLoader = false.obs;
 
+  // postLoginDetails() async {
+  //   PostAuthLoader(true);
+  //   var formData = {
+  //     "username": usernameController.text,
+  //     "password": passwordController.text,
+  //     "web_device_id": passwordController.text,
+  //
+  //   };
+  //   var response = await Api().post(formData, 'employees/login', auth: false);
+  //   if (response.statusCode == 200) {
+  //     var employeeData = response.data['employee'];
+  //     var token = response.data['token'];
+  //     sp.write('userRole', employeeData['role']['name']);
+  //     sp.write('token', token);
+  //     sp.write('userData', employeeData);
+  //     await getRole(id: employeeData['role_id']);
+  //     Employee.selectedEmployee = Employee.fromJson(employeeData);
+  //     List extensions = employeeData['employee_extensions'] ?? [];
+  //     // await addData();
+  //     if (extensions.isEmpty) {
+  //       Get.offAllNamed(Routes.myHomePage);
+  //       Future.delayed(const Duration(milliseconds: 800), () {
+  //         ExtensionAlert.show();
+  //       });
+  //     } else {
+  //       String latestExtension = extensions.last['extension_number'].toString();
+  //       Employee.selectedEmployee!.extensionNumber = latestExtension;
+  //       print("Extension Found: $latestExtension");
+  //       Get.offAllNamed(Routes.myHomePage);
+  //       update();
+  //     }
+  //   } else {
+  //     BotToast.showText(text: "Login failed!");
+  //   }
+  //   PostAuthLoader(false);
+  // }
   postLoginDetails() async {
     PostAuthLoader(true);
+
+    // 1. FCM Token fetch karein
+    // String? fcmToken = await FirebaseMessaging.instance.getToken();
+    // print("FCM Token: $fcmToken");
+
     var formData = {
       "username": usernameController.text,
       "password": passwordController.text,
-
+      // 2. web_device_id mein fcmToken pass karein
+      // "web_device_id": fcmToken ?? "",
     };
+
     var response = await Api().post(formData, 'employees/login', auth: false);
+
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
       var token = response.data['token'];
+
       sp.write('userRole', employeeData['role']['name']);
       sp.write('token', token);
       sp.write('userData', employeeData);
+
       await getRole(id: employeeData['role_id']);
       Employee.selectedEmployee = Employee.fromJson(employeeData);
+
       List extensions = employeeData['employee_extensions'] ?? [];
-      // await addData();
+
       if (extensions.isEmpty) {
         Get.offAllNamed(Routes.myHomePage);
         Future.delayed(const Duration(milliseconds: 800), () {
@@ -63,11 +111,11 @@ class AuthController extends GetxController {
         update();
       }
     } else {
-      BotToast.showText(text: "Login failed!");
+      // Error handling behtar karne ke liye response message bhi dikha sakte hain
+      BotToast.showText(text: response.data['message'] ?? "Login failed!");
     }
     PostAuthLoader(false);
   }
-
   /// get role
   getRole({id}) async{
     var response = await Api().get('authorizations/role/$id');
