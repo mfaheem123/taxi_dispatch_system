@@ -39,11 +39,15 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
         // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
+        double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
                 ? maxWidth / 2
                 : maxWidth / 4;
+
+        if(!isMobile && !isTablet) {
+          fieldWidth = fieldWidth.clamp(200.0, 400.0);
+        }
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -51,7 +55,10 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                 height: 8,
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
+                // padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 80),
+                padding: EdgeInsets.symmetric(
+                    vertical: 50,
+                    horizontal: isMobile ? 10 : 40),
                 child: Container(
                   width: Get.width,
                   decoration: BoxDecoration(
@@ -103,12 +110,14 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                     child: Wrap(
                       spacing: 12,
                       runSpacing: 12,
+                      crossAxisAlignment: WrapCrossAlignment.end,
                       children: [
                         labeledField(
                           context: context,
                           isMobile: isMobile,
                           label: AppText.from,
-                          width: fieldWidth/1.4,
+                          // width: fieldWidth/1.4,
+                          width: fieldWidth/1.2,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -128,7 +137,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           context: context,
                           isMobile: isMobile,
                           label: AppText.to,
-                          width: fieldWidth/1.4,
+                          // width: fieldWidth/1.4,
+                          width: fieldWidth/1.2,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -149,7 +159,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           context: context,
                           isMobile: isMobile,
                           label: AppText.time,
-                          width: fieldWidth/2.3,
+                          // width: fieldWidth/2.3,
+                          width: fieldWidth / 2.0,
                           child: SizedBox(height: 30, child: CustomTimePicker(
                             controller: controller.multiReservationToTimeController, // optional
                             onTimeSelected: (time) {
@@ -167,7 +178,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             context: context,
                             isMobile: isMobile,
                             label: AppText.time,
-                            width: fieldWidth/2.3,
+                            // width: fieldWidth/2.3,
+                            width: fieldWidth / 2.0,
                             child: SizedBox(height: 30, child: CustomTimePicker(
                               controller: controller.returnMultiReservationToTimeController, // optional
                               onTimeSelected: (time) {
@@ -182,7 +194,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         ),
                         CustomButton(
                           height: 35,
-                          width: fieldWidth / 2,
+                          // width: fieldWidth / 2,
+                          width: 140,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -387,10 +400,13 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                       //   height: 30,
                       // ),
 
-                      SingleChildScrollView(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                          width: Get.width/2,
+                          // width: Get.width/2,
+                          width: maxWidth < 1000 ? 1000 : maxWidth - 80,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "EXCLUDE"),
@@ -416,7 +432,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   ],
                                 );
                               }).toList(),
-                            ],
+                    ]),
                           ),
                         ),
                       ),
