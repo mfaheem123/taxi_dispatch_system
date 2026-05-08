@@ -127,7 +127,8 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                               ), // border color & thickness
                             ),
                             onPressed: () {
-                              controller.multiVehicleList.add(controller.selectMultiVehicleValue!);
+                              controller.multiVehicleList
+                                  .add(controller.selectMultiVehicleValue!);
                               controller.selectMultiVehicleValue = null;
                               controller.update();
                             },
@@ -142,34 +143,38 @@ class _MultiVehiclePageState extends State<MultiVehiclePage> {
                         ],
                       ),
                       SizedBox(
-                        width: fieldWidth*1.3,
+                        width: fieldWidth * 1.3,
                         child: DatatableWidget(
                           columns: [
-                            buildHeaderWithSearch(title: "Vehicle", removeSearching: true),
-                            buildHeaderWithSearch(title: "Action", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Vehicle", removeSearching: true),
+                            buildHeaderWithSearch(
+                                title: "Action", removeSearching: true),
                           ],
                           rows: [
                             // Existing extensions
-                            ...controller
-                                .multiVehicleList
-                                .map((object) {
+                            ...controller.multiVehicleList.map((object) {
                               return DataRow(
                                 cells: [
-                                  DataCell(Text(object.name.toString().toUpperCase())),
+                                  DataCell(Text(
+                                      object.name.toString().toUpperCase())),
                                   DataCell(
                                     OutlinedButton(
                                       style: OutlinedButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         minimumSize: Size.zero,
-                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
                                         side: BorderSide.none,
                                       ),
                                       onPressed: () {
-                                        controller.multiVehicleList.remove(object);
+                                        controller.multiVehicleList
+                                            .remove(object);
                                         controller.update();
                                       },
-                                      child: Icon(Icons.delete_forever,
-                                      color: DynamicColors.redClr,
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        color: DynamicColors.redClr,
                                       ),
                                     ),
                                   ),
