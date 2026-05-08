@@ -167,20 +167,20 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
           "DELETE COMPANY VEHICLE",
         ],
       },
-      {
-        "VEHICLE": [
-          "CREATE VEHICLE",
-          "READ VEHICLE",
-          // "READ VEHICLES",
-          "UPDATE VEHICLE",
-          "DELETE VEHICLE",
-        ],
-      },
-      {
-        "END VEHICLE": [
-          "CREATE END VEHICLE",
-        ],
-      },
+      // {
+      //   "VEHICLE": [
+      //     "CREATE VEHICLE",
+      //     "READ VEHICLE",
+      //     // "READ VEHICLES",
+      //     "UPDATE VEHICLE",
+      //     "DELETE VEHICLE",
+      //   ],
+      // },
+      // {
+      //   "END VEHICLE": [
+      //     "CREATE END VEHICLE",
+      //   ],
+      // },
     ],
     "CUSTOMER": [
       {
