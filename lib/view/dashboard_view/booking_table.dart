@@ -37,7 +37,7 @@ class BookingTable extends StatefulWidget {
 
 class _BookingTableState extends State<BookingTable> {
 
-  DashboardController controller = Get.find();
+  late final DashboardController controller;
 
   int selectedRowIndex = 0; // currently selected row
   int totalRows = 10; // total rows (dynamic list ke hisaab se change hoga)
@@ -46,7 +46,10 @@ class _BookingTableState extends State<BookingTable> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    // Ensure controller is available even if widget is built before route bindings complete.
+    controller = Get.isRegistered<DashboardController>()
+        ? Get.find<DashboardController>()
+        : Get.put(DashboardController());
     permissions = Api().sp.read('all_permissions') ?? [];
     setState(() {
 
@@ -755,7 +758,12 @@ double widthss = MediaQuery.of(context).size.width;
 
           if (onRightClick != null) onRightClick();
 
-          final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+          final overlayState = Overlay.maybeOf(context);
+          final overlayObject = overlayState?.context.findRenderObject();
+          if (overlayObject is! RenderBox) {
+            return;
+          }
+          final RenderBox overlay = overlayObject;
           final RelativeRect position = RelativeRect.fromRect(
             Rect.fromPoints(event.position, event.position),
             Offset.zero & overlay.size,
@@ -915,7 +923,11 @@ double widthss = MediaQuery.of(context).size.width;
     _hideSubMenu();
 
     // Ye main menu item ki position nikaal raha hai
-    final RenderBox renderBox = itemContext.findRenderObject() as RenderBox;
+    final renderObject = itemContext.findRenderObject();
+    if (renderObject is! RenderBox) {
+      return;
+    }
+    final RenderBox renderBox = renderObject;
     final Offset offset = renderBox.localToGlobal(Offset.zero);
     final Size size = renderBox.size;
 
@@ -976,7 +988,11 @@ double widthss = MediaQuery.of(context).size.width;
       ),
     );
 
-    Overlay.of(itemContext).insert(_subMenuEntry!);
+    final overlayState = Overlay.maybeOf(itemContext);
+    if (overlayState == null) {
+      return;
+    }
+    overlayState.insert(_subMenuEntry!);
   }
 
 

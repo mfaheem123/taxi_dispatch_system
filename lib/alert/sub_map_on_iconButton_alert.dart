@@ -86,7 +86,7 @@ class _DriversMapAlertState extends State<DriversMapAlert> {
                   alignment: Alignment.center,
                   children: [
                     Icon(Icons.directions_car,
-                        size: 70,
+                        // size: 40,
                       color: objectData.bookingStatus == "Accepted"?Colors.orange:
                       objectData.bookingStatus == "Arrived"?Colors.yellow:
                       objectData.bookingStatus == "On Route"?Colors.red:

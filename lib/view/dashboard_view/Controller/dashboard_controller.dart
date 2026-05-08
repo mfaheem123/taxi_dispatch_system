@@ -478,6 +478,10 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   @override
   void onInit() {
     super.onInit();
+
+  }
+
+  inItStateOFController() async{
     mapController = MapController(); // ✅ Initialize here
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";

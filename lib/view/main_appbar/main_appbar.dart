@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
     authController.checkUserStatus();
     RawKeyboard.instance.addListener(_handleKey);
     hoverMenu = _makeMenus(context);
-
+    controller.inItStateOFController();
   }
 
   @override
@@ -168,115 +168,91 @@ class _MyHomePageState extends State<MyHomePage> {
     double itemHeight = 35; // approx height of one chip
     double runSpacing = 6;
 
-    return Scaffold(
-      backgroundColor: DynamicColors.whiteClr,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(kToolbarHeight * 2.3),
-        child: Stack(
-          alignment: Alignment.centerRight,
-          children: [
-            NestedMenuBar(
-              menuBarPadding: 0.0,
-              menus: hoverMenu,
-              popUpMenuItemBorderRadius: 8,
-              menuBarDecoration: BoxDecoration(
-                color: DynamicColors.primaryClr,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: DynamicColors.whiteClr,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight * 2.3),
+          child: Stack(
+            alignment: Alignment.centerRight,
+            children: [
+              NestedMenuBar(
+                menuBarPadding: 0.0,
+                menus: hoverMenu,
+                popUpMenuItemBorderRadius: 8,
+                menuBarDecoration: BoxDecoration(
+                  color: DynamicColors.primaryClr,
+                ),
+                menuBarItemHoverColor: Colors.white,
+                menuBarItemColor: Colors.white,
+                popUpDecoration: BoxDecoration(
+                  color: Colors.white,
+                  // border: Border.all(color: DynamicColors.gryClr,width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                popUpPadding: 3,
+                popUpMenuItemHoverForegroundColor: Colors.white,
+                popUpMenuItemForegroundColor: Colors.black,
+                popUpMenuItemBackgroundColor: Colors.white,
+                popUpMenuItemHoverBackgroundColor: Colors.black,
               ),
-              menuBarItemHoverColor: Colors.white,
-              menuBarItemColor: Colors.white,
-              popUpDecoration: BoxDecoration(
-                color: Colors.white,
-                // border: Border.all(color: DynamicColors.gryClr,width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              popUpPadding: 3,
-              popUpMenuItemHoverForegroundColor: Colors.white,
-              popUpMenuItemForegroundColor: Colors.black,
-              popUpMenuItemBackgroundColor: Colors.white,
-              popUpMenuItemHoverBackgroundColor: Colors.black,
-            ),
-            // Spacer(),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    ExtensionAlert.show();
-                  },
-                  child: Icon(
-                    Icons.headset_mic_outlined,
-                    size: 24,
-                    color: DynamicColors.whiteClr,
-                  ),
-                ),
-                SizedBox(
-                  width: 9,
-                ),
-                Icon(
-                  Icons.notifications,
-                  size: 24,
-                  color: DynamicColors.whiteClr,
-                ),
-                SizedBox(
-                  width: 9,
-                ),
-                GestureDetector(
-                onTap: () {
-                  authController.logout();
-                },
-                  child: Icon(
-                    Icons.power_settings_new,
-                    size: 24,
-                    color: DynamicColors.whiteClr,
-                  ),
-                ),
-                SizedBox(
-                  width: 9,
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-      body: GetBuilder<DashboardController>(builder: (controller) {
-        return Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            SingleChildScrollView(
-              child: Column(
+              // Spacer(),
+              Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: Get.width,
-                    padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                    color: Colors.grey.shade300,
-                    child: Wrap(spacing: 6, runSpacing: 6, children: [
-                      GestureDetector(
-                        onTap: () {
-                          int index = controller.selectedMenuItems.indexWhere(
-                              (element) => element.selectedItem == true);
-                          if (index != -1) {
-                            controller.selectedMenuItems[index].selectedItem =
-                                false;
-                          }
-                          controller.currentPage.value = ByDefaultDashboard();
-                          controller.update();
-                        },
-                        child: Container(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                          decoration: BoxDecoration(
-                            color: DynamicColors.primaryClr,
-                            border: Border.all(color: DynamicColors.textClr),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Icon(
-                            Icons.home,
-                            color: DynamicColors.whiteClr,
-                          ),
-                        ),
-                      ),
-                      ...controller.selectedMenuItems.map((item) {
-                        return GestureDetector(
+                  GestureDetector(
+                    onTap: () {
+                      ExtensionAlert.show();
+                    },
+                    child: Icon(
+                      Icons.headset_mic_outlined,
+                      size: 24,
+                      color: DynamicColors.whiteClr,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 9,
+                  ),
+                  Icon(
+                    Icons.notifications,
+                    size: 24,
+                    color: DynamicColors.whiteClr,
+                  ),
+                  SizedBox(
+                    width: 9,
+                  ),
+                  GestureDetector(
+                  onTap: () {
+                    authController.logout();
+                  },
+                    child: Icon(
+                      Icons.power_settings_new,
+                      size: 24,
+                      color: DynamicColors.whiteClr,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 9,
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+        body: GetBuilder<DashboardController>(builder: (controller) {
+          return Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      width: Get.width,
+                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                      color: Colors.grey.shade300,
+                      child: Wrap(spacing: 6, runSpacing: 6, children: [
+                        GestureDetector(
                           onTap: () {
                             int index = controller.selectedMenuItems.indexWhere(
                                 (element) => element.selectedItem == true);
@@ -284,218 +260,245 @@ class _MyHomePageState extends State<MyHomePage> {
                               controller.selectedMenuItems[index].selectedItem =
                                   false;
                             }
-                            item.selectedItem = true;
-                            if (item.category != null) {
-                              controller.currentPage.value = item.category;
-                            }
+                            controller.currentPage.value = ByDefaultDashboard();
                             controller.update();
                           },
-                          child: Chip(
-                            label: Text(
-                              item.title!,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: DynamicColors.textClr,
-                              ),
+                          child: Container(
+                            padding:
+                                EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: DynamicColors.primaryClr,
+                              border: Border.all(color: DynamicColors.textClr),
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            backgroundColor: item.selectedItem == true
-                                ? DynamicColors.whiteClr
-                                : DynamicColors.gryClr,
-                            deleteIcon: Icon(
-                              Icons.close,
-                              color: DynamicColors.textClr,
-                              size: 18,
-                            ),
-                            onDeleted: () {
-                              if (item.selectedItem == true &&
-                                  controller.selectedMenuItems.length > 1) {
-                                int index = controller.selectedMenuItems
-                                    .indexWhere(
-                                        (item) => item.selectedItem == true);
-                                if (index != -1) {
-                                  controller.selectedMenuItems[index]
-                                      .selectedItem = false;
-                                }
-                                controller.selectedMenuItems.remove(item);
-                                controller.selectedMenuItems.last.selectedItem =
-                                    true;
-                                controller.currentPage.value =
-                                    controller.selectedMenuItems.last.category;
-                              } else {
-                                controller.selectedMenuItems.remove(item);
-                                controller.currentPage.value =
-                                    ByDefaultDashboard();
-                              }
-
-                              controller.update(); // if using GetX
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                            child: Icon(
+                              Icons.home,
+                              color: DynamicColors.whiteClr,
                             ),
                           ),
-                        );
-                      }).toList(),
-                    ]),
-                  ),
-                  // controller.currentPage.value ?? CreateEscortScreen(),
-                  Obx(() =>
-                      controller.currentPage.value ?? ByDefaultDashboard())
-                ],
-              ),
-            ),
-          ],
-        );
-      }),
-
-
-      bottomNavigationBar: GetBuilder<AuthController>(
-          builder: (auth) {
-            return
-              // (controller.currentPage.value == null ||  controller.currentPage.value.runtimeType == ByDefaultDashboard) ?
-              Container(
-              width: Get.width,
-              height: 60,
-              color: DynamicColors.whiteClr,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                      //  Username
-                      Container(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE8F2EF),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                              color: const Color(0xFFC4D9D4),
-                              width: 1),
                         ),
-                        child: Row(
-                          children: [
-                            const CircleAvatar(
-                              radius: 5,
-                              backgroundColor:
-                                  Color(0xff424899), // Bright green dot
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              // username
-                              Employee.selectedEmployee?.username?.toUpperCase() ??
-                                  "GUEST",
-                              style: mozillaTextRegularText(
-                                  color: const Color(0xFF4A4A4A), // Dark grey text
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 3.0),
-                        child: SizedBox(
-                          height: kToolbarHeight,
-                          width: 165,
-                          child: Row(
-                            children: [
-                              Text(
-                                "PRESS",
-                                style: mozillaTextRegularText(
-                                    color: DynamicColors.textClr, fontSize: 14),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 9, vertical: 4),
-                                  decoration: BoxDecoration(
-                                      color: DynamicColors.textClr,
-                                      borderRadius: BorderRadius.circular(4)),
-                                  child: Text(
-                                    "/",
-                                    style: mozillaTextRegularText(
-                                        color: DynamicColors.whiteClr,
-                                        fontSize: 14),
-                                  ),
+                        ...controller.selectedMenuItems.map((item) {
+                          return GestureDetector(
+                            onTap: () {
+                              int index = controller.selectedMenuItems.indexWhere(
+                                  (element) => element.selectedItem == true);
+                              if (index != -1) {
+                                controller.selectedMenuItems[index].selectedItem =
+                                    false;
+                              }
+                              item.selectedItem = true;
+                              if (item.category != null) {
+                                controller.currentPage.value = item.category;
+                              }
+                              controller.update();
+                            },
+                            child: Chip(
+                              label: Text(
+                                item.title!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: DynamicColors.textClr,
                                 ),
                               ),
-                              Text(
-                                "SHORTCUTS",
-                                style: mozillaTextRegularText(
-                                    color: DynamicColors.textClr, fontSize: 14),
+                              backgroundColor: item.selectedItem == true
+                                  ? DynamicColors.whiteClr
+                                  : DynamicColors.gryClr,
+                              deleteIcon: Icon(
+                                Icons.close,
+                                color: DynamicColors.textClr,
+                                size: 18,
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      SizedBox(width: screenWidth * 0.31),
-                      // 4. Copyright Text
-                      Text(
-                        "NEXUS © 2026",
-                        style: mozillaTextRegularText(
-                            color: Colors.grey, fontSize: 12),
-                      ),
-                      SizedBox(width: screenWidth * 0.3),
-
-                      // 3. Date & Time
-                      Text(
-                        DateFormat("EEE, MMM dd yyyy")
-                            .format(DateTime.now())
-                            .toUpperCase(),
-                        style: mozillaTextRegularText(
-                            color: const Color(0xFF4A4A4A),
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(width: 12),
-                      const Text("|",
-                          style: TextStyle(color: Colors.grey, fontSize: 16)),
-                      // Separator
-                      const SizedBox(width: 12),
-                      Text(
-                        DateFormat("hh:mm:ss a").format(DateTime.now()),
-                        style: mozillaTextRegularText(
-                            color: const Color(0xFF4A4A4A),
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold),
-                      ),
-
-                      // 6. Extension Number
-                      GestureDetector(
-                        onTap: () {
-                          ExtensionAlert.show();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
+                              onDeleted: () {
+                                if (item.selectedItem == true &&
+                                    controller.selectedMenuItems.length > 1) {
+                                  int index = controller.selectedMenuItems
+                                      .indexWhere(
+                                          (item) => item.selectedItem == true);
+                                  if (index != -1) {
+                                    controller.selectedMenuItems[index]
+                                        .selectedItem = false;
+                                  }
+                                  controller.selectedMenuItems.remove(item);
+                                  controller.selectedMenuItems.last.selectedItem =
+                                      true;
+                                  controller.currentPage.value =
+                                      controller.selectedMenuItems.last.category;
+                                } else {
+                                  controller.selectedMenuItems.remove(item);
+                                  controller.currentPage.value =
+                                      ByDefaultDashboard();
+                                }
+      
+                                controller.update(); // if using GetX
+                              },
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ]),
+                    ),
+                    // controller.currentPage.value ?? CreateEscortScreen(),
+                    Obx(() =>
+                        controller.currentPage.value ?? ByDefaultDashboard())
+                  ],
+                ),
+              ),
+            ],
+          );
+        }),
+      
+      
+        bottomNavigationBar: GetBuilder<AuthController>(
+            builder: (auth) {
+              return
+                // (controller.currentPage.value == null ||  controller.currentPage.value.runtimeType == ByDefaultDashboard) ?
+                Container(
+                width: Get.width,
+                height: 60,
+                color: DynamicColors.whiteClr,
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Row(
+                  children: [
+                        //  Username
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey.shade300),
+                            color: const Color(0xFFE8F2EF),
                             borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color: const Color(0xFFC4D9D4),
+                                width: 1),
                           ),
                           child: Row(
                             children: [
-                              const Text(
-                                "# ",
-                                style: TextStyle(color: Colors.grey, fontSize: 14),
+                              const CircleAvatar(
+                                radius: 5,
+                                backgroundColor:
+                                    Color(0xff424899), // Bright green dot
                               ),
+                              const SizedBox(width: 10),
                               Text(
-                                Employee.selectedEmployee?.extensionNumber ?? "---",
+                                // username
+                                Employee.selectedEmployee?.username?.toUpperCase() ??
+                                    "GUEST",
                                 style: mozillaTextRegularText(
-                                    color: const Color(0xff424899),
+                                    color: const Color(0xFF4A4A4A), // Dark grey text
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold),
-                              )
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              // : const SizedBox.shrink();
-        }
+                        const SizedBox(width: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 3.0),
+                          child: SizedBox(
+                            height: kToolbarHeight,
+                            width: 165,
+                            child: Row(
+                              children: [
+                                Text(
+                                  "PRESS",
+                                  style: mozillaTextRegularText(
+                                      color: DynamicColors.textClr, fontSize: 14),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4.0),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 9, vertical: 4),
+                                    decoration: BoxDecoration(
+                                        color: DynamicColors.textClr,
+                                        borderRadius: BorderRadius.circular(4)),
+                                    child: Text(
+                                      "/",
+                                      style: mozillaTextRegularText(
+                                          color: DynamicColors.whiteClr,
+                                          fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "SHORTCUTS",
+                                  style: mozillaTextRegularText(
+                                      color: DynamicColors.textClr, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+      
+                        SizedBox(width: screenWidth * 0.31),
+                        // 4. Copyright Text
+                        Text(
+                          "NEXUS © 2026",
+                          style: mozillaTextRegularText(
+                              color: Colors.grey, fontSize: 12),
+                        ),
+                        SizedBox(width: screenWidth * 0.3),
+      
+                        // 3. Date & Time
+                        Text(
+                          DateFormat("EEE, MMM dd yyyy")
+                              .format(DateTime.now())
+                              .toUpperCase(),
+                          style: mozillaTextRegularText(
+                              color: const Color(0xFF4A4A4A),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text("|",
+                            style: TextStyle(color: Colors.grey, fontSize: 16)),
+                        // Separator
+                        const SizedBox(width: 12),
+                        Text(
+                          DateFormat("hh:mm:ss a").format(DateTime.now()),
+                          style: mozillaTextRegularText(
+                              color: const Color(0xFF4A4A4A),
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
+                        ),
+      
+                        // 6. Extension Number
+                        GestureDetector(
+                          onTap: () {
+                            ExtensionAlert.show();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                const Text(
+                                  "# ",
+                                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                                ),
+                                Text(
+                                  Employee.selectedEmployee?.extensionNumber ?? "---",
+                                  style: mozillaTextRegularText(
+                                      color: const Color(0xff424899),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                // : const SizedBox.shrink();
+          }
+        ),
       ),
     );
   }

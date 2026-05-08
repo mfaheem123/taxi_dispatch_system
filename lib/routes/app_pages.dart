@@ -26,11 +26,12 @@ class AppPages {
     GetPage(
       name: _Paths.myHomePage,
       page: () => MyHomePage(),
+      // binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.loginScreen,
       page: () => LoginScreen(),
-      binding: DashBoardBindings(),
+      // binding: DashBoardBindings(),
     ),
     // GetPage(
     //   name: _Paths.ResponsivePassengerScreen,
@@ -50,12 +51,13 @@ class AppPages {
     GetPage(
       name: _Paths.createBooking,
       page: () => CreateBooking(),
+      binding: DashBoardBindings(),
       // middlewares: [AuthMiddleware()],
     ),
     GetPage(
       name: _Paths.updateBooking,
       page: () => UpdateBooking(),
-
+      binding: DashBoardBindings(),
     ),
     GetPage(
       name: _Paths.CustomerFormScreen,

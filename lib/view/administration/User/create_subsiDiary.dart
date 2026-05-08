@@ -195,7 +195,7 @@ class _CreateSubsiDiaryState extends State<CreateSubsiDiary> {
                             height: 35,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                  RegExp(r'[a-zA-Z\s]')),
+                                  RegExp(r'[a-zA-Z\s0-9]')),
                               UpperCaseTextFormatter(),
                             ],
                           ),

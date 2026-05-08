@@ -86,8 +86,14 @@ class BankDetailsAlert {
                               const SizedBox(width: 8),
                               Expanded(
                                   flex: 2, child: _buildField("ACCOUNT #", account,const TextInputType.numberWithOptions(decimal: true) )),
-                              const SizedBox(width: 8), Expanded(
-                                  flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 2,
+                                // keyboardType ko badal kar TextInputType.text kar diya
+                                child: _buildField("IBAN", iban, TextInputType.text),
+                              ),
+                              // const SizedBox(width: 8), Expanded(
+                              //     flex: 2, child: _buildField("IBAN", iban,const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
                                   flex: 2, child: _buildField("SORT CODE", sortCode, const TextInputType.numberWithOptions(decimal: true))),
                               const SizedBox(width: 8), Expanded(
@@ -274,16 +280,17 @@ class BankDetailsAlert {
       barrierDismissible: false,
     );
   }
-
   static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
     return SizedBox(
       height: 32,
       child: TextField(
         keyboardType: keyboardType,
         controller: controller,
-        inputFormatters: keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
-            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))]
-            : [],
+        inputFormatters: label == "IBAN"
+            ? [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]'))] // IBAN ke liye Letters + Numbers
+            : (keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
+            ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))] // Normal numbers ke liye
+            : []),
         style: const TextStyle(fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
@@ -291,12 +298,33 @@ class BankDetailsAlert {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
           ),
-          contentPadding:
-          const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
         ),
       ),
     );
   }
+  // static Widget _buildField(String label, TextEditingController controller, TextInputType keyboardType) {
+  //   return SizedBox(
+  //     height: 32,
+  //     child: TextField(
+  //       keyboardType: keyboardType,
+  //       controller: controller,
+  //       inputFormatters: keyboardType == TextInputType.number || keyboardType == const TextInputType.numberWithOptions(decimal: true)
+  //           ? [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))]
+  //           : [],
+  //       style: const TextStyle(fontSize: 12),
+  //       decoration: InputDecoration(
+  //         labelText: label,
+  //         labelStyle: const TextStyle(fontSize: 11),
+  //         border: OutlineInputBorder(
+  //           borderRadius: BorderRadius.circular(6),
+  //         ),
+  //         contentPadding:
+  //         const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 

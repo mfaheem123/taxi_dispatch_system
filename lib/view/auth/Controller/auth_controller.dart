@@ -73,14 +73,14 @@ class AuthController extends GetxController {
     PostAuthLoader(true);
 
     // 1. FCM Token fetch karein
-    // String? fcmToken = await FirebaseMessaging.instance.getToken();
-    // print("FCM Token: $fcmToken");
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    print("FCM Token: $fcmToken");
 
     var formData = {
       "username": usernameController.text,
       "password": passwordController.text,
       // 2. web_device_id mein fcmToken pass karein
-      // "web_device_id": fcmToken ?? "",
+      "web_device_id": fcmToken ?? "",
     };
 
     var response = await Api().post(formData, 'employees/login', auth: false);
@@ -88,7 +88,8 @@ class AuthController extends GetxController {
     if (response.statusCode == 200) {
       var employeeData = response.data['employee'];
       var token = response.data['token'];
-
+      usernameController.clear();
+      passwordController.clear();
       sp.write('userRole', employeeData['role']['name']);
       sp.write('token', token);
       sp.write('userData', employeeData);
@@ -152,7 +153,7 @@ class AuthController extends GetxController {
       sp.remove('userData');
       Employee.selectedEmployee = null;
       currentExtension.value = "---";
-      Get.offNamed(Routes.loginScreen);
+      Get.offAllNamed(Routes.loginScreen);
     }
   }
 
