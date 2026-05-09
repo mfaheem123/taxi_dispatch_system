@@ -38,6 +38,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
         final bool isMobile = maxWidth < 600;
         final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
+        final bool isHighRes = maxWidth > 1080;
         // Instead of fixed width, we calculate flexible field widths
         double fieldWidth = isMobile
             ? maxWidth // full width
@@ -108,7 +109,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 30),
                     child: Wrap(
-                      spacing: 12,
+                      spacing: isHighRes ? 30 : 10,
                       runSpacing: 12,
                       crossAxisAlignment: WrapCrossAlignment.end,
                       children: [
@@ -117,7 +118,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           isMobile: isMobile,
                           label: AppText.from,
                           // width: fieldWidth/1.4,
-                          width: fieldWidth/1.2,
+                          // width: fieldWidth/1.2,
+                          // width: 155,
+                          width: isHighRes ? 180 : 155,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -138,7 +141,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           isMobile: isMobile,
                           label: AppText.to,
                           // width: fieldWidth/1.4,
-                          width: fieldWidth/1.2,
+                          // width: fieldWidth/1.2,
+                          // width: 155,
+                          width: isHighRes ? 180 : 155,
                           child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
@@ -160,7 +165,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                           isMobile: isMobile,
                           label: AppText.time,
                           // width: fieldWidth/2.3,
-                          width: fieldWidth / 2.0,
+                          // width: fieldWidth / 2.0,
+                          // width: 90,
+                          width: isHighRes ? 110 : 90,
                           child: SizedBox(height: 30, child: CustomTimePicker(
                             controller: controller.multiReservationToTimeController, // optional
                             onTimeSelected: (time) {
@@ -179,7 +186,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             isMobile: isMobile,
                             label: AppText.time,
                             // width: fieldWidth/2.3,
-                            width: fieldWidth / 2.0,
+                            // width: fieldWidth / 2.0,
+                            // width: 90,
+                            width: isHighRes ? 110 : 90,
                             child: SizedBox(height: 30, child: CustomTimePicker(
                               controller: controller.returnMultiReservationToTimeController, // optional
                               onTimeSelected: (time) {
@@ -195,7 +204,9 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         CustomButton(
                           height: 35,
                           // width: fieldWidth / 2,
-                          width: 140,
+                          // width: 140,
+                          // width: 135,
+                          width: isHighRes ? 140 : 135,
                           fontSize: 10,
                           borderRadius: 4,
                           verticalPadding: 0.0,
@@ -233,7 +244,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                             EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                         child: Wrap(
                           runSpacing: 10,
-                          spacing: 10,
+                          spacing: isHighRes ? 30 : 8,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             KeyboardCheckbox(
@@ -245,7 +256,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.monday,
                               value: controller.mondayValue.value,
                               focusNode: controller.mondayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -256,7 +267,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.tuesday,
                               value: controller.tuesdayValue.value,
                               focusNode: controller.tuesdayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -267,7 +278,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.wednesday,
                               value: controller.wednesdayValue.value,
                               focusNode: controller.wednesdayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -278,7 +289,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.thursday,
                               value: controller.thursdayValue.value,
                               focusNode: controller.thursdayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -289,7 +300,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.friday,
                               value: controller.fridayValue.value,
                               focusNode: controller.fridayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -300,7 +311,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.saturday,
                               value: controller.saturdayValue.value,
                               focusNode: controller.saturdayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                             KeyboardCheckbox(
                               onChanged: (v) {
@@ -311,7 +322,7 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               label: AppText.sunday,
                               value: controller.sundayValue.value,
                               focusNode: controller.sundayNode,
-                              width: 120,
+                              // width: 120,
                             ),
                           ],
                         ),
@@ -406,7 +417,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
                           // width: Get.width/2,
-                          width: maxWidth < 1000 ? 1000 : maxWidth - 80,
+                          // width: maxWidth < 1000 ? 1000 : maxWidth - 80,
+                          width: maxWidth < 1000 ? 800 : maxWidth - 100,
                           child: DatatableWidget(
                             columns: [
                               buildHeaderWithSearch(title: "EXCLUDE"),

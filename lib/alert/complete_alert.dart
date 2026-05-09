@@ -131,11 +131,20 @@ class _CompleteBookingAlertState extends State<CompleteBookingAlert> {
                     width: 180, height: 28, verticalPadding: 0.0, borderRadius: 4,
                     btnText: controller.isCompleteStatus ? "PROCESSING..." : "COMPLETE BOOKING",
                     style: const TextStyle(color: Colors.white, fontSize: 14),
-                    onTap:
-                      // controller.postCompleteBooking(widget.bookingId);
-                      controller.isCompleteStatus
-                          ? null
-                          : () => controller.postCompleteBooking(widget.bookingId)
+                    onTap: controller.isCompleteStatus
+                        ? null
+                        : () async {
+                      await controller.postCompleteBooking(widget.bookingId);
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    // onTap:
+                    //   // controller.postCompleteBooking(widget.bookingId);
+                    //   controller.isCompleteStatus
+                    //       ? null
+                    //       : () => controller.postCompleteBooking(widget.bookingId),
+
                   ),
                 ],
               ),

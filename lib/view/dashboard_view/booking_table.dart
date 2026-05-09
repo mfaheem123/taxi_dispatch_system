@@ -932,7 +932,10 @@ double widthss = MediaQuery.of(context).size.width;
     final Size size = renderBox.size;
 
     final screenWidth = MediaQuery.of(itemContext).size.width;
+    final screenHeight = MediaQuery.of(itemContext).size.height;
     const double subMenuWidth = 200.0;
+
+    final double subMenuHeight = (subItems.length * 38.0) + 12.0;
 
     // Logic: Menu ke right side par space check karein
     double xPos = offset.dx + size.width - 5; // 5px overlap for smooth feel
@@ -942,10 +945,19 @@ double widthss = MediaQuery.of(context).size.width;
       xPos = offset.dx - subMenuWidth + 5;
     }
 
+
+    double yPos = offset.dy - 5;
+
+    // Check: Agar niche jagah kam hai aur list screen se niche ja rahi hai
+    if (yPos + subMenuHeight > screenHeight) {
+      // To menu ko upar ki taraf khol do (Bottom alignment with item)
+      yPos = (offset.dy + size.height) - subMenuHeight + 5;
+    }
+
     _subMenuEntry = OverlayEntry(
       builder: (context) => Positioned(
         left: xPos,
-        top: offset.dy - 5, // Menu item ke barabar alignment
+        top: yPos, // Menu item ke barabar alignment
         child: MouseRegion(
           onExit: (_) => _hideSubMenu(),
           child: Material(
