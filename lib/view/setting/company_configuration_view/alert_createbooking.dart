@@ -475,6 +475,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                               );
                               var fareValue = jsonDecode(storedTemFare);
                               controller.fixedFare.value = fareValue['total_fare'].toString();
+                              controller.returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+                              controller.slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
                               controller.slugController.text = fareValue['fare'].toString();
                               controller.update();
                               Get.back();
