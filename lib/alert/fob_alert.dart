@@ -137,7 +137,7 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                         border: TableBorder.all(color: Colors.grey.shade300,
                             width: 1),
                         columns: [
-                          _buildDataColumn("ID"),
+                          _buildDataColumn("USERNAME"),
                           _buildDataColumn("DRIVER"),
                           _buildDataColumn("ATTRIBUTES"),
                           _buildDataColumn("STATUS"),
@@ -146,9 +146,9 @@ class _DispatchFobAlertState extends State<DispatchFobAlert> {
                         rows: controller.drivers.map((driver) {
                           return DataRow(
                             cells: [
-                              DataCell(Text("${driver.id ?? ''}",
+                              DataCell(Text("${(driver.username ?? '').toUpperCase()}",
                                   style: mozillaTextRegularText(fontSize: 14))),
-                              DataCell(Text(driver.name ?? '',
+                              DataCell(Text((driver.name ?? '').toUpperCase(),
                                   style: mozillaTextRegularText(fontSize: 14))),
                               DataCell(Center(child: Text("-",
                                   style: mozillaTextRegularText(

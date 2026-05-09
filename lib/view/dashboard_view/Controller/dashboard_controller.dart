@@ -760,6 +760,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   RxString tempStoreTotalDistance = "0".obs;
   RxString totalTimeDuration = "0 min".obs;
   RxString fixedFare = "0".obs;
+  String? returnFareValue;
   RxBool viaSelectionOneWay = true.obs;
 
   LatLngBounds calculateBounds(List<LatLng> points) {
@@ -964,6 +965,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
+      returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+      slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
       slugController.text = fareValue== null?"0": fareValue['fare'].toString();
       update();
     } else {
@@ -1665,6 +1668,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
     );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['total_fare'].toString();
+   returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
+   slugControllerReturn.text = fareValue== null?"0": fareValue['return_fare'].toString();
     slugController.text = fareValue['fare'].toString();
     print(fixedFare.value);
     update();
@@ -2019,7 +2024,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         "return_driver_id": selectDriverValueReturn!.id,
       if (selectVehicleValueReturn != null)
         "return_vehicle_type_id": selectVehicleValueReturn!.id,
-      if (pickupTwoWayController.text.isNotEmpty) "return_fare": '12345.12',
+      if (pickupTwoWayController.text.isNotEmpty) "return_fare": returnFareValue,
       if (extraFaresReturnList.isNotEmpty)
         "return_notes": jsonEncode(extraFaresReturnList),
       if(selectAirportController.text.isNotEmpty)"flight_number": selectAirportController.text,

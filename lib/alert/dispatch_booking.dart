@@ -96,7 +96,7 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       headingRowColor: WidgetStateProperty.all(Colors.grey.shade50),
                       border: TableBorder.all(color: Colors.grey.shade300, width: 1),
                       columns: [
-                        _buildDataColumn("ID"),
+                        _buildDataColumn("USERNAME"),
                         _buildDataColumn("DRIVER NAME"),
                         _buildDataColumn("SUBSIDIARY"),
                         _buildDataColumn("STATUS"),
@@ -107,9 +107,9 @@ class _DispatchBookingState extends State<DispatchBooking> {
                       rows: controller.drivers.map((driver) {
                         return DataRow(
                           cells: [
-                            DataCell(Text("${driver.id ?? ''}", style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text(driver.name ?? '', style: mozillaTextRegularText(fontSize: 14))),
-                            DataCell(Text(driver.subsidiary?.name ?? '', style: mozillaTextRegularText(fontSize: 14))),
+                            DataCell(Text("${(driver.username ?? '').toUpperCase()}", style: mozillaTextRegularText(fontSize: 14))),
+                            DataCell(Text((driver.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
+                            DataCell(Text((driver.subsidiary?.name ?? '').toUpperCase(), style: mozillaTextRegularText(fontSize: 14))),
                             DataCell(Text(driver.bookingStatus ?? '', style: mozillaTextRegularText(fontSize: 14, color: Colors.green))),
                             DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
                             DataCell(Center(child: Text("-", style: mozillaTextRegularText(fontSize: 14)))),
