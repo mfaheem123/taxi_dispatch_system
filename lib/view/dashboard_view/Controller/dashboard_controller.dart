@@ -790,6 +790,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     return LatLngBounds.fromPoints([sw, ne]);
   }
 
+  String? tempStoreMils;
+
 // your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
     markers.clear();
@@ -947,6 +949,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(60));
         mapController.fitCamera(cameraFit);
       }
+      if(tempStoreMils == null){
+        tempStoreMils = totalDistance.value;
+      }
 
       final storedTemFare = await getFares(
           // day: ,
@@ -954,7 +959,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           multiReservationList: multiReservationList,
           pickup: pickupController.text,
           dropOff: dropOffController.text,
-          miles: totalDistance.value,
+          miles: tempStoreMils,
           pickUpPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
           dropoffPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
           pickupDate: "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
@@ -962,6 +967,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
+          returnMiles:dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-(double.parse(tempStoreMils.toString()))).toString():null,
       );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
@@ -2165,6 +2171,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
             ? Get.find<LocationController>()
             : Get.put(LocationController());
     pickupController.clear();
+    tempStoreMils = null;
     pickUpNoteController.clear();
     dropOffController.clear();
     dropUpNoteController.clear();
