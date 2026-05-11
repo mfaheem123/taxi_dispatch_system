@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../component/networks/api.dart';
+import '../../customer/model/restricDriver.dart';
+
 class ReportController extends GetxController {
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> driver_login functionality
+  /// drivers get
+
+  RestricDriverModel? allDriverData;
+  DriverObject? selectDriverObject;
+  bool isLoadingDriver = false;
+  getAllDrivers() async {
+    isLoadingDriver = true;
+    update();
+    try {
+      var response = await Api().get("drivers/get");
+      if (response.statusCode == 200) {
+        allDriverData = RestricDriverModel.fromJson(response.data);
+      }
+    } catch (e) {
+      print("Error fetching drivers: $e");
+    } finally {
+      isLoadingDriver = false;
+      update();
+    }
+  }
+
   var selectedDriver = "Select Driver".obs;
   var fromDate = Rxn<DateTime>();
   var toDate = Rxn<DateTime>();

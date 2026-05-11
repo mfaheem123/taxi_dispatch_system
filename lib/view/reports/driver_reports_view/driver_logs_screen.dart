@@ -5,13 +5,17 @@ import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/dropdown_button.dart';
 import '../../../component/textStyle.dart';
+import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/Controller/dashboard_controller.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
+import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
 
 class DriverLogsScreen extends StatefulWidget {
@@ -30,8 +34,10 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
       : Get.put(ReportController());
 
   // Date controllers
-  DateTime? fromDate;
-  DateTime? toDate;
+  // DateTime? fromDate;
+  // DateTime? toDate;
+  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime toDate = DateTime.now();
   TimeOfDay? fromTime;
   TimeOfDay? toTime;
 
@@ -97,144 +103,145 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<ReportController>(builder: (controller) {
+      child: GetBuilder<ReportController>(initState: (state) {
+        controller.getAllDrivers();
+        controller.loginStartTimeController.text = "12:00";
+        controller.loginEndTimeController.text =
+            DateFormat('HH:mm').format(DateTime.now());
+      },builder: (controller) {
         return LayoutBuilder(
           builder: (context, constraints) {
-            double maxWidth = constraints.maxWidth;
+            final double maxWidth = constraints.maxWidth;
+            final bool isMobile = maxWidth < 600;
+            final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+
+            final double fieldWidth = isMobile
+                ? maxWidth // full width
+                : isTablet
+                ? maxWidth / 2
+                : maxWidth / 4;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   Wrap(
-                    spacing: 10,
+                    spacing: 12,
                     runSpacing: 10,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      SizedBox(
-                        width: maxWidth < 600 ? double.infinity : 200,
-                        child: Text(
-                          "DRIVER LOG",
-                          style: mozillaTextSemiBoldText(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 17,
+                      Text(
+                        "DRIVER LOG",
+                        style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 17,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+
+                      // From Date
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "FROM:",
+                        column: false,
+                        width: 160,
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: fromDate,
+                            onChanged: (date) =>
+                                setState(() => toDate = date),
                           ),
                         ),
                       ),
 
-                      buildFilterField(
-                        hint: fromDate == null
-                            ? "From Date"
-                            : "${fromDate!.day}/${fromDate!.month}/${fromDate!
-                            .year}",
-                        icon: Icons.calendar_today,
-                        onTap: () => _pickDate(context, true),
+                      // Start Time
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "",
+                        column: false,
+                        width: 100,
+                        child: CustomTimePicker(
+                          controller: controller.loginStartTimeController,
+                          onTimeSelected: (time) => setState(() {}),
+                        ),
+                      ),
+                      // To Date
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "TO:",
+                        column: false,
+                        width: 160,
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: toDate,
+                            onChanged: (date) =>
+                                setState(() => toDate = date),
+                          ),
+                        ),
                       ),
 
-                      CustomTimePicker(
-                        controller: controller.logStartTimeController, // optional
-                        onTimeSelected: (time) {
-                          setState(() {
-                            print(controller.logStartTimeController.text);
-                          });
+                      // End Time
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "",
+                        column: false,
+                        width: 100,
+                        child: CustomTimePicker(
+                          controller: controller.loginEndTimeController,
+                          onTimeSelected: (time) => setState(() {}),
+                        ),
+                      ),
+
+                      // Driver Dropdown
+                      CustomDropdownField<DriverObject>(
+                        label: "SELECT DRIVERS",
+                        width: 320,
+                        height: 35,
+                        items: controller.allDriverData?.drivers ?? [],
+                        value: controller.selectDriverObject,
+                        itemLabel: (driver) =>
+                        driver.name ?? "".toUpperCase(),
+                        onChanged: (val) {
+                          controller.selectDriverObject = val;
+                          controller.update();
                         },
                       ),
 
-
-
-                      // buildFilterField(
-                      //   hint: fromTime == null
-                      //       ? "--:--"
-                      //       : "${fromTime!.hour}:${fromTime!.minute.toString()
-                      //       .padLeft(2, '0')}",
-                      //   icon: Icons.access_time,
-                      //   onTap: () => _pickTime(context, true),
-                      // ),
-
-                      buildFilterField(
-                        hint: toDate == null
-                            ? "To Date"
-                            : "${toDate!.day}/${toDate!.month}/${toDate!.year}",
-                        icon: Icons.calendar_today,
-                        onTap: () => _pickDate(context, false),
+                      SizedBox(width: 50),
+                      CustomButton(
+                        verticalPadding: 0.0,
+                        width: 60,
+                        height: 30,
+                        borderRadius: 4,
+                        btnText: AppText.filter,
+                        style: mozillaTextRegularText(
+                            fontSize: 10, color: DynamicColors.whiteClr),
+                        onTap: () {},
                       ),
-                      CustomTimePicker(
-                        controller: controller.logEndTimeController, // optional
-                        onTimeSelected: (time) {
-                          setState(() {
-                            print(controller.logEndTimeController.text);
-                          });
-                        },
-                      ),
-
-                      // buildFilterField(
-                      //   hint: toTime == null
-                      //       ? "--:--"
-                      //       : "${toTime!.hour}:${toTime!.minute.toString()
-                      //       .padLeft(2, '0')}",
-                      //   icon: Icons.access_time,
-                      //   onTap: () => _pickTime(context, false),
-                      // ),
-
                       SizedBox(
-                        width: maxWidth < 400 ? double.infinity : 180,
-                        height: 40,
-                        child: DropdownButtonFormField<String>(
-                          value: "Select Driver",
-                          items: const [
-                            DropdownMenuItem(
-                                value: "Select Driver",
-                                child: Text("Select Driver")),
-                            DropdownMenuItem(
-                                value: "Nadeem", child: Text("Nadeem")),
-                            DropdownMenuItem(
-                                value: "Faheem", child: Text("Faheem")),
-                            DropdownMenuItem(
-                                value: "Shahzaib", child: Text("Shahzaib")),
-                          ],
-                          onChanged: (val) {},
-                          decoration: const InputDecoration(
-                            contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-
-                      CustomButton(
-                        height: 35,
-                        width: 80,
-                        verticalPadding: 0.0,
-                        borderRadius: 4,
-                        widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child:  Text(
-                            AppText.filter,
-                            style: mozillaTextRegularText(
-                                fontSize: 12, color: DynamicColors.whiteClr),
-                          ),
-                        ),
+                        width: 7,
                       ),
                       CustomButton(
-                        height: 35,
-                        width: 80,
                         verticalPadding: 0.0,
+                        width: 60,
+                        height: 30,
                         borderRadius: 4,
-                        widget: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15,vertical: 0.0),
-                          child:  Text(
-                            AppText.view,
-                            style: mozillaTextRegularText(
-                                fontSize: 12, color: DynamicColors.whiteClr),
-                          ),
-                        ),
+                        btnText: AppText.view,
+                        style: mozillaTextRegularText(
+                            fontSize: 10, color: DynamicColors.whiteClr),
+                        onTap: () {},
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 25),
 
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -269,29 +276,4 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
       }),
     );
   }
-}
-Widget buildFilterField({
-  required String hint,
-  required IconData icon,
-  required VoidCallback onTap,
-}) {
-  return SizedBox(
-    width: 140,
-    height: 40,
-    child: InkWell(
-      onTap: onTap,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          hintText: hint,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          border: const OutlineInputBorder(),
-          prefixIcon: Icon(icon, size: 18),
-        ),
-        child: Text(
-          hint,
-          style: const TextStyle(fontSize: 13),
-        ),
-      ),
-    ),
-  );
 }
