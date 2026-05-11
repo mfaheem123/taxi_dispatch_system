@@ -120,6 +120,11 @@ class LocationController extends GetxController {
         sendCompanyId: true,
         auth: true);
     if (response.statusCode == 200) {
+      BotToast.showText(
+          text: updateLocationValue.value
+              ? "LOCATION UPDATED SUCCESSFULLY"
+              : "LOCATION ADDED SUCCESSFULLY"
+      );
       print(formData);
       locationNameCtrl.clear();
       longitudeCtrl.clear();
@@ -233,6 +238,7 @@ class LocationController extends GetxController {
   deleteLocation(int? id) async {
     var response = await Api().delete("locations/delete/$id");
     if (response.statusCode == 200) {
+      BotToast.showText(text: "LOCATION DELETED SUCCESSFULLY");
       getLocationList();
       print("✅ Location deleted successfully!");
       print(json.encode(response.data));
