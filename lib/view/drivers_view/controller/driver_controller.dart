@@ -1015,7 +1015,7 @@ class DriverController extends GetxController {
     isCreateDriverCommission = true;
     update();
     var response = await Api()
-        .get("drivers/commission?active=true&driver_type=Commission");
+        .get("drivers/commission?active=true&driver_type=Commission", sendCompanyId: true);
     if (response.statusCode == 200) {
       // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
@@ -1416,7 +1416,7 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-        await Api().post(formData, "driver_commission/add", auth: true);
+        await Api().post(formData, "driver_commission/add", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER COMMISSION ADDED SUCCESSFULLY!");
     }
@@ -1432,7 +1432,7 @@ class DriverController extends GetxController {
 
   getDriverCommission() async {
     isLoading(true);
-    var response = await Api().get("driver_commission/distinct");
+    var response = await Api().get("driver_commission/distinct", sendCompanyId: true);
 
     if (response.statusCode == 200) {
       driverCommission = DriverCommissionModel.fromJson(response.data);
@@ -1452,6 +1452,7 @@ class DriverController extends GetxController {
     update();
     var response = await Api().get(
       "driver_commission/driverid?driver_id=$id",
+      sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
@@ -1999,7 +2000,7 @@ class DriverController extends GetxController {
     isCreateDriverRent = true;
     update();
     var response =
-    await Api().get("drivers/commission?active=true&driver_type=Rent/Week");
+    await Api().get("drivers/commission?active=true&driver_type=Rent/Week", sendCompanyId: true,);
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverRentModel = DriverRentModel.fromJson(response.data);
@@ -2274,7 +2275,7 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-    await Api().post(formData, "driver_rent/add", auth: true);
+    await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
     }
@@ -2291,7 +2292,7 @@ class DriverController extends GetxController {
     isListLoading = true;
     update();
 
-    var response = await Api().get("driver_rent/distinct");
+    var response = await Api().get("driver_rent/distinct", sendCompanyId: true,);
 
     if (response.statusCode == 200) {
       listDriverRentModel = ListDriverRentModel.fromJson(response.data);
@@ -2309,7 +2310,7 @@ class DriverController extends GetxController {
     isLoadingDriverRent = true;
     update();
     var response = await Api().get(
-      "driver_rent/driverid?driver_id=$id",
+      "driver_rent/driverid?driver_id=$id",sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
