@@ -250,7 +250,7 @@ sendCompanyId: true,
 
   getCustomerNumbers(String mobile) async {
     dataLoader = true;
-    var response = await Api().get("customers/search-data?mobile=$mobile");
+    var response = await Api().get("customers/search-data?mobile=$mobile",sendCompanyId: true,);
     if (response.statusCode == 200) {
       getPhoneNumbersModel =
           SearchCustomerByMobileModel.fromJson(response.data);
@@ -320,7 +320,7 @@ sendCompanyId: true,
           lostPropertyValue.value == false
               ? "lost-property/add"
               : "lost-property/update/${lostPropertyUpdateId.value}",
-          auth: true);
+        sendCompanyId: true,  auth: true);
       if (response.statusCode == 200) {
         BotToast.showText(
             text: lostPropertyValue.value
@@ -375,7 +375,7 @@ sendCompanyId: true,
       "lost_date": searchLostDate.value.toLowerCase(),
       "item_description": searchItemDescription.value.toLowerCase(),
       "name": searchCustomer.value.toLowerCase(),
-    });
+    }, sendCompanyId: true,);
     print("Status Code: ${response.statusCode}");
     if (response.statusCode == 200) {
       print("Raw Data: ${response.data}");
@@ -424,7 +424,7 @@ sendCompanyId: true,
       print("Calling API for ID: ${lostPropertyUpdate.id}");
 
       final response =
-          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}");
+          await Api().get("lost-property/getbyid/${lostPropertyUpdate.id}",sendCompanyId: true);
       print("API Raw Data: ${response.data}");
 
       if (response != null && response.data != null) {
