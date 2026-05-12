@@ -29,9 +29,6 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(builder: (controller) {
@@ -44,8 +41,8 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+            ? maxWidth / 2
+            : maxWidth / 4;
 
         return Column(
           children: [
@@ -64,128 +61,120 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                 ),
               ),
             ),
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.from,
-                    column: true,
-                    width: 160,
-                    child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                          initialDate: fromDate,
-                          onChanged: (date) => setState(() => fromDate = date),
-                        )),
-                  ),
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.to,
-                    column: true,
-                    width: 160,
-                    child: SizedBox(height: 30, child: KeyboardDatePicker(
-                      initialDate: fromDate,
-                      onChanged: (date) => setState(() => fromDate = date),
-                    )),
-                  ),
-                  CustomButton(
-                    height: 30,
-                    width: 120,
-                    borderRadius: 4,
-                    fontSize: 12,
-                    verticalPadding: 0.0,
-                    btnText: AppText.allDrivers,
-                  ),
-                  CustomButton(
-                    height: 30,
-                    width: 120,
-                    borderRadius: 4,
-                    fontSize: 12,
-                    verticalPadding: 0.0,
-                    btnText: AppText.loginDrivers,
-                  ),
-                  CustomButton(
-                    height: 30,
-                    width: 120,
-                    borderRadius: 4,
-                    fontSize: 12,
-                    verticalPadding: 0.0,
-                    btnText: AppText.logoutDrivers,
-                  ),
-                  SizedBox(
-                    width: 50,
-                  ),
-                  CustomButton(
-                    height: 30,
-                    width: 120,
-                    borderRadius: 4,
-                    fontSize: 12,
-                    verticalPadding: 0.0,
-                    btnText: AppText.view,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(AppText.driver,
-                          style: mozillaTextSemiBoldText(
-                              context: context, fontSize: 13)),
-                      RestrictedDrivers(
-                        width: fieldWidth / 2.5,
-                        // height: 35,
-                        padding: 0.0,
-                        border: Border.all(
-                          color: DynamicColors.gryClr,
+            Wrap(
+              runSpacing: 16,
+              spacing: 10,
+              crossAxisAlignment: WrapCrossAlignment.end,
+              children: [
+                labeledField(
+                  context: context,
+                  isMobile: isMobile,
+                  label: AppText.from,
+                  column: true,
+                  width: fieldWidth / 1.5,
+                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                ),
+                labeledField(
+                  context: context,
+                  isMobile: isMobile,
+                  label: AppText.to,
+                  column: true,
+                  width: fieldWidth / 1.5,
+                  child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                ),
+                CustomButton(
+                  height: 30,
+                  width: 120,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  verticalPadding: 0.0,
+                  btnText: AppText.allDrivers,
+                ),
+                CustomButton(
+                  height: 30,
+                  width: 120,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  verticalPadding: 0.0,
+                  btnText: AppText.loginDrivers,
+                ),
+                CustomButton(
+                  height: 30,
+                  width: 120,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  verticalPadding: 0.0,
+                  btnText: AppText.logoutDrivers,
+                ),
+                SizedBox(
+                  width: 50,
+                ),
+                CustomButton(
+                  height: 30,
+                  width: 120,
+                  borderRadius: 4,
+                  fontSize: 12,
+                  verticalPadding: 0.0,
+                  btnText: AppText.view,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(AppText.driver,
+                        style: mozillaTextSemiBoldText(
+                            context: context, fontSize: 13)),
+                    RestrictedDrivers(
+                      width: fieldWidth / 2.5,
+                      // height: 35,
+                      padding: 0.0,
+                      border: Border.all(
+                        color: DynamicColors.gryClr,
+                      ),
+                      titleText: AppText.selectDriver,
+                      driversList: [
+                        "Driver 01",
+                        "Driver 02",
+                        "Driver 03",
+                        "Driver 04",
+                      ],
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(AppText.driverStatus,
+                        style: mozillaTextSemiBoldText(
+                            context: context, fontSize: 13)),
+                    Wrap(
+                      children: [
+                        CustomButton(
+                          width: 120,
+                          height: 30,
+                          btnText: "ACTIVE",
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          fontSize: 15,
+                          btnColor: DynamicColors.primaryClr,
+                          onTap: () {},
                         ),
-                        titleText: AppText.selectDriver,
-                        driversList: [
-                          "Driver 01",
-                          "Driver 02",
-                          "Driver 03",
-                          "Driver 04",
-                        ],
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Text(AppText.driverStatus,
-                          style: mozillaTextSemiBoldText(
-                              context: context, fontSize: 13)),
-                      Wrap(
-                        children: [
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            btnText: "ACTIVE",
-                            verticalPadding: 0.0,
-                            borderRadius: 4,
-                            fontSize: 15,
-                            btnColor: DynamicColors.primaryClr,
-                            onTap: () {},
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            btnText: "IN ACTIVE",
-                            verticalPadding: 0.0,
-                            borderRadius: 4,
-                            fontSize: 15,
-                            btnColor: DynamicColors.secondaryClr,
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        CustomButton(
+                          width: 120,
+                          height: 30,
+                          btnText: "IN ACTIVE",
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          fontSize: 15,
+                          btnColor: DynamicColors.secondaryClr,
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
             SizedBox(
               height: 5,
@@ -218,43 +207,43 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
 
                 final rightWidget = vehicelInfo
                     ? SfCartesianChart(
-                        primaryXAxis: CategoryAxis(),
-                        legend: Legend(isVisible: true),
-                        tooltipBehavior: TooltipBehavior(enable: true),
-                        series: [
-                          BarSeries<SalesData, String>(
-                            dataSource: [
-                              SalesData('Jan', 35),
-                              SalesData('Feb', 28),
-                              SalesData('Mar', 34),
-                              SalesData('Apr', 32),
-                              SalesData('May', 40),
-                            ],
-                            xValueMapper: (sales, _) => sales.month,
-                            yValueMapper: (sales, _) => sales.sales,
-                            color: DynamicColors.primaryClr,
-                            dataLabelSettings:
-                                const DataLabelSettings(isVisible: true),
-                          ),
-                        ],
-                      )
+                  primaryXAxis: CategoryAxis(),
+                  legend: Legend(isVisible: true),
+                  tooltipBehavior: TooltipBehavior(enable: true),
+                  series: [
+                    BarSeries<SalesData, String>(
+                      dataSource: [
+                        SalesData('Jan', 35),
+                        SalesData('Feb', 28),
+                        SalesData('Mar', 34),
+                        SalesData('Apr', 32),
+                        SalesData('May', 40),
+                      ],
+                      xValueMapper: (sales, _) => sales.month,
+                      yValueMapper: (sales, _) => sales.sales,
+                      color: DynamicColors.primaryClr,
+                      dataLabelSettings:
+                      const DataLabelSettings(isVisible: true),
+                    ),
+                  ],
+                )
                     : const VehicelsScreen();
 
                 return isTabletMini
                     ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          tableWidget,
-                          const SizedBox(height: 20),
-                          rightWidget,
-                        ],
-                      )
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    tableWidget,
+                    const SizedBox(height: 20),
+                    rightWidget,
+                  ],
+                )
                     : Row(
-                        children: [
-                          Expanded(child: tableWidget),
-                          Expanded(child: rightWidget),
-                        ],
-                      );
+                  children: [
+                    Expanded(child: tableWidget),
+                    Expanded(child: rightWidget),
+                  ],
+                );
               },
             ),
           ],
