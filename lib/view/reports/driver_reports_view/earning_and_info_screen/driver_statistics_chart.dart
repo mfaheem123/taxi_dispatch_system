@@ -2,7 +2,6 @@ import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-// Model class for Chart Data
 class DriverChartData {
   DriverChartData(this.username, this.bookings);
   final String username;
@@ -12,16 +11,15 @@ class DriverChartData {
 class DriverBookingChart extends StatelessWidget {
   final List<DriverChartData> chartData;
 
-  const DriverBookingChart({super.key, required this.chartData, required List<DriverChartData> data});
+  const DriverBookingChart({super.key, required this.chartData});
 
   @override
   Widget build(BuildContext context) {
     return SfCartesianChart(
-      // Isse chart rotate ho jata hai (Horizontal bars ke liye)
-      isTransposed: true,
+      isTransposed: false,
 
       primaryXAxis: CategoryAxis(
-        title: AxisTitle(text: 'DRIVERS', textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        title: AxisTitle(text: '', textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
       ),
 
       primaryYAxis: NumericAxis(
@@ -40,7 +38,7 @@ class DriverBookingChart extends StatelessWidget {
           color: DynamicColors.primaryClr,
           borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)),
           dataLabelSettings: const DataLabelSettings(
-            isVisible: true,
+            isVisible: false,
             labelPosition: ChartDataLabelPosition.outside,
           ),
         )

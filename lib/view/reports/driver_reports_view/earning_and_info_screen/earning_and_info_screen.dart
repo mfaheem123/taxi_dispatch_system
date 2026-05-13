@@ -357,7 +357,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               const SizedBox(height: 10),
                                               // Chart Container
                                               Container(
-                                                height: 400, // Aap height adjust kar sakte hain
+                                                height: 400,
                                                 padding: const EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
@@ -365,13 +365,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                   border: Border.all(color: Colors.grey.shade200),
                                                 ),
                                                 child: DriverBookingChart(
-                                                  data: [
+                                                  chartData: [
                                                     DriverChartData("user_01", 45),
                                                     DriverChartData("user_02", 32),
                                                     DriverChartData("user_03", 58),
                                                     DriverChartData("user_04", 20),
                                                     DriverChartData("user_05", 38),
-                                                  ], chartData: [],
+                                                  ],
                                                 ),
                                               ),
                                             ],
