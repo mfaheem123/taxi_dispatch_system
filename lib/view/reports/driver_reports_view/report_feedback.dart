@@ -9,7 +9,9 @@ import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
+import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
+import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
@@ -31,10 +33,15 @@ class _ReportFeedbackState extends State<ReportFeedback> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
+  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  DateTime toDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(builder: (controller) {
+    return GetBuilder<ReportController>(initState: (state) {
+      controller.selectDriverObject = null;
+      controller.getAllDrivers();
+    }, builder: (controller) {
 
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
@@ -48,73 +55,88 @@ class _ReportFeedbackState extends State<ReportFeedback> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return Column(
+            return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 10,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      "FEEDBACK",
+                      style: mozillaTextSemiBoldText(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                      ),
+                    ),
+                    const SizedBox(width: 30),
 
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  // height: screenHeight / 20,
-                  width: Get.width,
-                  color: DynamicColors.secondaryClr,
-                  child: Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 10,
-                    runSpacing: 16,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12),
-                        child: Text(
-                          AppText.feedBack,
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    // From Date
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: "FROM:",
+                      column: false,
+                      width: 160,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: fromDate,
+                          onChanged: (date) =>
+                              setState(() => fromDate = date),
                         ),
                       ),
-                      labeledField(
-                        context: context,
-                        isMobile: isMobile,
-                        label: AppText.from,
-                        width: fieldWidth/1.5,
-                        child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                      ),
-                      labeledField(
-                        context: context,
-                        isMobile: isMobile,
-                        label: AppText.to,
-                        width: fieldWidth/1.5,
-                        child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                      ),
-                      CustomDropdownField<String>(
-                        // text: AppText.selectDriver,
-                        width: fieldWidth/1.5,
-                        label: AppText.selectDriver,
-                        items:[
-                          "25 GEORGE HAMPTON1",
-                          "25 GEORGE HAMPTON2",
-                          "25 GEORGE HAMPTON3",
-                          "25 GEORGE HAMPTON4",
-                          "25 GEORGE HAMPTON5",
-                          "25 GEORGE HAMPTON6",],
-                        value: controller.selectDriver,
-                        itemLabel: (val) => val, // just show the string
-                        onChanged: (val) {
-                          controller.selectDriver = val!;
-                          controller.update();
-                        },
-                      ),
-                      SizedBox(
-                        width: 25,
-                      ),
-                      CustomButton(
+                    ),
+
+                    // To Date
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: "TO:",
+                      column: false,
+                      width: 160,
+                      child: SizedBox(
                         height: 30,
-                        width: 80,
-                        borderRadius: 4,
-                        fontSize: 12,
-                        verticalPadding: 0.0,
-                        btnText: AppText.filter,
+                        child: KeyboardDatePicker(
+                          initialDate: toDate,
+                          onChanged: (date) =>
+                              setState(() => toDate = date),
+                        ),
                       ),
-                    ],
-                  ),
+                    ),
+
+                    // Driver Dropdown
+                    CustomDropdownField<DriverObject>(
+                      label: "SELECT DRIVERS",
+                      width: 320,
+                      height: 30,
+                      items: controller.allDriverData?.drivers ?? [],
+                      // value: controller.selectDriverObject,
+                      value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                          ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                          : null,
+                      itemLabel: (driver) =>
+                      driver.name ?? "".toUpperCase(),
+                      onChanged: (val) {
+                        controller.selectDriverObject = val;
+                        controller.update();
+                      },
+                    ),
+                    SizedBox(width: 100),
+                    CustomButton(
+                      verticalPadding: 0.0,
+                      width: 60,
+                      height: 30,
+                      borderRadius: 4,
+                      btnText: AppText.filter,
+                      style: mozillaTextRegularText(
+                          fontSize: 12, color: DynamicColors.whiteClr),
+                      onTap: () {},
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 8,
@@ -147,7 +169,7 @@ class _ReportFeedbackState extends State<ReportFeedback> {
                   ),
                 ),
               ],
-            );
+            ));
           }
         );
       }

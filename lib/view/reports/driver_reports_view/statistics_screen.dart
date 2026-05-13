@@ -119,3 +119,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 }
+class SalesData {
+  SalesData(this.month, this.sales);
+  final String month;
+  final double sales;
+}
