@@ -569,7 +569,7 @@ double widthss = MediaQuery.of(context).size.width;
                                   // onRightClick: () {
                                   //   print("RIGHT CLICK FARE: ${item.fares}");
                                   // },
-                                  child: Text("£ ${item.totalCharges ?? "0.00"}",
+                                  child: Text("£ ${item.fares ?? "0.00"}",
                                     style: TextStyle(
                                       fontSize: widthss/140,
                                     ),

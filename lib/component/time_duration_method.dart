@@ -72,6 +72,7 @@ Future<String> getFares({
   String? returnExtraDropCharges,
   String? returnCreditCardCharges,
   String? returnCompanyPrice,
+  String? returnMiles,
 }) async {
   // 1. Validation: Return "0" instead of null to match Future<String>
   if (pickup == null || dropOff == null) {
@@ -143,7 +144,7 @@ Future<String> getFares({
     if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_date": returnPickupDate,
     if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
     if(withReturnPickUp != null && withReturnDropOff != null) "return_pickup_time": returnPickupTime,
-    if(withReturnPickUp != null && withReturnDropOff != null) "return_miles": "10",
+    if(withReturnPickUp != null && withReturnDropOff != null) "return_miles": returnMiles,
     if(withReturnPickUp != null && withReturnDropOff != null && returnParkingCharges != null) "return_parking_charges": returnParkingCharges,
     if(withReturnPickUp != null && withReturnDropOff != null && returnWaitingCharges != null) "return_waiting_charges": returnWaitingCharges,
     if(withReturnPickUp != null && withReturnDropOff != null && returnMeetAndGreet != null) "return_meet_and_greet": returnMeetAndGreet,

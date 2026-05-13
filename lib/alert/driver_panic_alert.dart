@@ -108,7 +108,17 @@ import '../component/textStyle.dart';
 
 class DriverPanicAlert extends StatefulWidget {
   final String driverName;
-  const DriverPanicAlert({super.key, required this.driverName});
+  final String driverUsername; // Naya Field
+  final String driverMobile;   // Naya Field
+  final String driverID;   // Naya Field
+
+  const DriverPanicAlert({
+    super.key,
+    required this.driverName,
+    required this.driverUsername,
+    required this.driverMobile,
+    required this.driverID,
+  });
 
   @override
   State<DriverPanicAlert> createState() => _DriverPanicAlertState();
@@ -132,22 +142,11 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
   void _playPanicSound() {
     try {
       _audioElement = html.AudioElement();
-
-      // IMAGE KE MUTABIQ PATH: assets/sound/alarm_sound.mp3.mpeg
-      // Web build ke liye hum base path use karte hain
       _audioElement!.src = 'assets/sound/alarm_sound.mp3.mpeg';
-
       _audioElement!.loop = true;
       _audioElement!.volume = 1.0;
-
-      // Forcefully telling browser it's an audio file
       _audioElement!.setAttribute('type', 'audio/mpeg');
-
-      _audioElement!.play().catchError((e) {
-        print("Autoplay Blocked! Admin must click on the page first.");
-      });
-
-      print("Current Audio Source: ${_audioElement!.src}");
+      _audioElement!.play().catchError((e) => print("Autoplay Blocked"));
     } catch (e) {
       print("Audio Logic Error: $e");
     }
@@ -159,7 +158,6 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
     if (_audioElement != null) {
       _audioElement!.pause();
       _audioElement!.remove();
-      _audioElement = null;
     }
     super.dispose();
   }
@@ -192,6 +190,7 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
             child: child,
           );
         },
+
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -208,17 +207,55 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
                 style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
               ),
             ),
-            const SizedBox(height: 30),
-            const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 100),
             const SizedBox(height: 20),
+            const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 80),
+
+            const SizedBox(height: 10),
             Text(
               widget.driverName.toUpperCase(),
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
             ),
-            const Text("IS IN DANGER!", style: TextStyle(color: Colors.red, fontSize: 18, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 30),
+            const Text("IS IN DANGER!", style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w600)),
+
+            const SizedBox(height: 20),
+
+            // --- Naya Data Display Section ---
             Padding(
-              padding: const EdgeInsets.all(25.0),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.person, size: 20, color: Colors.blueGrey),
+                        const SizedBox(width: 10),
+                        Text("Username: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                        Text(widget.driverUsername, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Icon(Icons.phone, size: 20, color: Colors.green),
+                        const SizedBox(width: 10),
+                        Text("Mobile: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                        Text(widget.driverMobile, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
               child: CustomButton(
                 height: 55,
                 width: double.infinity,

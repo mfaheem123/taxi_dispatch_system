@@ -520,7 +520,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                         child: Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
-                                            if(permissions.contains('update_fare_configuration')) OutlinedButton(
+                                            // if(permissions.contains('update_fare_configuration'))
+                                              OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),
@@ -539,7 +540,8 @@ class _FareConfigurationDayState extends State<FareConfigurationDay> {
                                                   size: 20,
                                                   color: DynamicColors.primaryClr),
                                             ),
-                                            if(permissions.contains('delete_fare_configuration')) OutlinedButton(
+                                            // if(permissions.contains('delete_fare_configuration'))
+                                              OutlinedButton(
                                               style: OutlinedButton.styleFrom(
                                                 padding: EdgeInsets.zero,
                                                 minimumSize: const Size(32, 32),

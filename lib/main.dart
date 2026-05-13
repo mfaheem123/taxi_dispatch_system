@@ -387,6 +387,7 @@
 //     }
 //   });
 // }
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/routes/app_pages.dart';
 import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
@@ -399,8 +400,8 @@ import 'package:get/get.dart';
 import 'dart:html' as html;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:get_storage/get_storage.dart';
-
 // Imports for your components and Panic Alert
+import 'alert/driver_break_alert.dart';
 import 'alert/driver_panic_alert.dart';
 import 'component/networks/Url.dart';
 import 'view/auth/Controller/auth_controller.dart';
@@ -443,7 +444,7 @@ void main() async {
   } catch (e) {
     print("Firebase/Notification Initialization Error: $e");
   }
-
+  disableInspect();
   // Debugging ke liye isay comment rakhein, production pe on kar dein
   // disableInspect();
 
@@ -475,51 +476,156 @@ Future<void> setupWebNotifications() async {
     print("FCM Token: $token");
 
     // --- Foreground Messages ---
+    // FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    //   print('Got a message in foreground: ${message.data}');
+    //
+    //   // Panic Driver Alert Logic
+    //   if (message.data['type'] == 'PANIC_DRIVER') {
+    //     // Driver ka naam body se nikalna (Example: "Driver: Mark" -> "Mark")
+    //     String driverName = message.notification?.body?.replaceAll('Driver: ', '') ?? "Driver";
+    //
+    //     // Panic Dialog open karein
+    //     Get.dialog(
+    //       DriverPanicAlert(driverName: driverName),
+    //       barrierColor: Colors.black54,
+    //       barrierDismissible: false, // User ko "Close" click karna parega
+    //     );
+    //
+    //     // Sound ya Visual Alert
+    //     BotToast.showSimpleNotification(
+    //       title: "🚨 PANIC ALERT",
+    //       subTitle: message.notification?.body,
+    //       backgroundColor: Colors.red,
+    //       titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    //       duration: const Duration(seconds: 15),
+    //     );
+    //   } else {
+    //     // Baki aam notifications
+    //     if (message.notification != null) {
+    //       BotToast.showSimpleNotification(
+    //         title: message.notification!.title ?? "Notification",
+    //         subTitle: message.notification!.body,
+    //       );
+    //     }
+    //   }
+    // }
+// Foreground Messages logic inside setupWebNotifications
+    // Foreground Messages logic
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message in foreground: ${message.data}');
 
-      // Panic Driver Alert Logic
-      if (message.data['type'] == 'PANIC_DRIVER') {
-        // Driver ka naam body se nikalna (Example: "Driver: Mark" -> "Mark")
-        String driverName = message.notification?.body?.replaceAll('Driver: ', '') ?? "Driver";
+      String type = message.data['type'] ?? "";
+      String dName = message.data['driver_name'] ?? "Unknown";
+      String dUser = message.data['driver_username'] ?? "N/A";
+      String dMobile = message.data['driver_mobile'] ?? "N/A";
+      String dID = message.data['driver_id'] ?? "N/A";
 
-        // Panic Dialog open karein
+      // 1. Check for PANIC_DRIVER
+      if (type == 'PANIC_DRIVER') {
         Get.dialog(
-          DriverPanicAlert(driverName: driverName),
+          DriverPanicAlert(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+          ),
           barrierColor: Colors.black54,
-          barrierDismissible: false, // User ko "Close" click karna parega
+          barrierDismissible: false,
         );
+      }
+      // 2. Check for DRIVER_BREAK_WEB
+      else if (type == 'DRIVER_BREAK_WEB') {
+        Get.dialog(
+          DriverActionAlert( // Aapka naya alert class
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
+      }
 
-        // Sound ya Visual Alert
-        BotToast.showSimpleNotification(
-          title: "🚨 PANIC ALERT",
-          subTitle: message.notification?.body,
-          backgroundColor: Colors.red,
-          titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          duration: const Duration(seconds: 15),
+      // Toast Notification (Dono ke liye dikha sakte hain)
+      BotToast.showSimpleNotification(
+        title: type == 'PANIC_DRIVER' ? "🚨 PANIC ALERT" : "☕ BREAK ALERT",
+        subTitle: "Driver: $dName",
+        backgroundColor: type == 'PANIC_DRIVER' ? Colors.red : Colors.orange,
+        titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        duration: const Duration(seconds: 15),
+      );
+    });
+
+// --- Notification Clicked (Background) ---
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      String type = message.data['type'] ?? "";
+      String dName = message.data['driver_name'] ?? "Driver";
+      String dUser = message.data['driver_username'] ?? "N/A";
+      String dMobile = message.data['driver_mobile'] ?? "N/A";
+      String dID = message.data['driver_id'] ?? "N/A";
+
+      if (type == 'PANIC_DRIVER') {
+        Get.dialog(
+          DriverPanicAlert(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
         );
-      } else {
-        // Baki aam notifications
-        if (message.notification != null) {
-          BotToast.showSimpleNotification(
-            title: message.notification!.title ?? "Notification",
-            subTitle: message.notification!.body,
-          );
-        }
+      }
+      else if (type == 'DRIVER_BREAK_WEB') {
+        Get.dialog(
+          DriverActionAlert(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+          ),
+          barrierColor: Colors.black54,
+          barrierDismissible: false,
+        );
       }
     });
+
+
+
+
 
     // --- Notification Clicked (App Background/Terminated) ---
+    // FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+    //   if (message.data['type'] == 'PANIC_DRIVER') {
+    //     String driverName = message.notification?.body?.replaceAll('Driver: ', '') ?? "Driver";
+    //     Get.dialog(
+    //       DriverPanicAlert(driverName: driverName),
+    //       barrierColor: Colors.black54,
+    //     );
+    //   }
+    // });
+// --- Notification Clicked (App Background/Terminated) ---
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.data['type'] == 'PANIC_DRIVER') {
-        String driverName = message.notification?.body?.replaceAll('Driver: ', '') ?? "Driver";
+        // Data map se sari values nikalna zaroori hai
+        String dName = message.data['driver_name'] ?? "Driver";
+        String dUser = message.data['driver_username'] ?? "N/A";
+        String dMobile = message.data['driver_mobile'] ?? "N/A";
+        String dID = message.data['driver_id'] ?? "N/A";
+
         Get.dialog(
-          DriverPanicAlert(driverName: driverName),
+          DriverPanicAlert(
+            driverName: dName,
+            driverUsername: dUser,
+            driverMobile: dMobile,
+            driverID: dID,
+          ),
           barrierColor: Colors.black54,
+          barrierDismissible: false,
         );
       }
     });
-
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 }
@@ -556,13 +662,49 @@ class MyBehavior extends ScrollBehavior {
   }
 }
 
+// void disableInspect() {
+//   html.document.onContextMenu.listen((event) => event.preventDefault());
+//   html.document.onKeyDown.listen((event) {
+//     if (event.keyCode == 123) event.preventDefault();
+//     if (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) {
+//       event.preventDefault();
+//     }
+//     if (event.ctrlKey && event.keyCode == 85) event.preventDefault();
+//   });
+// }
 void disableInspect() {
-  html.document.onContextMenu.listen((event) => event.preventDefault());
-  html.document.onKeyDown.listen((event) {
-    if (event.keyCode == 123) event.preventDefault();
-    if (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) {
-      event.preventDefault();
-    }
-    if (event.ctrlKey && event.keyCode == 85) event.preventDefault();
-  });
+  try {
+    // 1. Right Click band karne ke liye
+    html.document.onContextMenu.listen((event) => event.preventDefault());
+
+    // 2. Keyboard Shortcuts block karne ke liye
+    html.document.onKeyDown.listen((event) {
+      // F12 key
+      if (event.keyCode == 123) {
+        event.preventDefault();
+      }
+
+      // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+      if (event.ctrlKey && event.shiftKey &&
+          (event.keyCode == 73 || event.keyCode == 74 || event.keyCode == 67)) {
+        event.preventDefault();
+      }
+
+      // Ctrl+U (View Source)
+      if (event.ctrlKey && event.keyCode == 85) {
+        event.preventDefault();
+      }
+
+      // Mac Users ke liye (Command + Option + I/J)
+      if (event.metaKey && event.altKey &&
+          (event.keyCode == 73 || event.keyCode == 74)) {
+        event.preventDefault();
+      }
+    });
+
+    print("Security: Inspect Element features disabled.");
+  } catch (e) {
+    // Agar kisi wajah se error aaye toh app crash nahi hogi
+    print("Error disabling inspect: $e");
+  }
 }

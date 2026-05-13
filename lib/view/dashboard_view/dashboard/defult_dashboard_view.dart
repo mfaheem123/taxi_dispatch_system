@@ -1088,6 +1088,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     controller: controller.pickupTwoWayController,
                                                                     focusNode: controller.pickupTwoTextFieldFocusNode,
                                                                     hintText: 'PICKUP LOCATION',
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
                                                                     borderRadius: 4,
                                                                     prefixIcon: const Icon(
                                                                       Icons.location_pin,
@@ -1245,6 +1248,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     controller: controller.dropOffTwoWayController,
                                                                     focusNode: controller.dropOffTwoWayTextFieldFocusNode,
                                                                     hintText: 'DROP LOCATION',
+                                                                    inputFormatters: [
+                                                                      UpperCaseTextFormatter(),
+                                                                    ],
                                                                     onTap: () {
                                                                       shortCutKeyValue.value = "DROP TWO WAY LOCATION";
                                                                       controller.dropDownShow.value = true;
@@ -2368,6 +2374,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
+                                                  // Spacer(),
                                                   // SizedBox(
                                                   //     width:
                                                   //         350),
