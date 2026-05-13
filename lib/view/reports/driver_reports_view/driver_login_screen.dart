@@ -103,6 +103,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
         onKey: _handleKey,
         child: GetBuilder<ReportController>(
           initState: (state) {
+            controller.selectDriverObject = null;
             controller.getAllDrivers();
             controller.loginStartTimeController.text = "12:00";
             controller.loginEndTimeController.text =
@@ -204,7 +205,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           width: 320,
                           height: 35,
                           items: controller.allDriverData?.drivers ?? [],
-                          value: controller.selectDriverObject,
+                          value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                              ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                              : null,
                           itemLabel: (driver) =>
                               driver.name ?? "".toUpperCase(),
                           onChanged: (val) {
