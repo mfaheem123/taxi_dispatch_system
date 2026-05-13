@@ -151,7 +151,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                             child: KeyboardDatePicker(
                               initialDate: fromDate,
                               onChanged: (date) =>
-                                  setState(() => toDate = date),
+                                  setState(() => fromDate = date),
                             ),
                           ),
                         ),
