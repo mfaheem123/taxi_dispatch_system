@@ -180,7 +180,7 @@ AuthController controller = Get.put(AuthController());
                         height: 55,
                         btnText: "dashboard from",
                         onTap: () {
-                          Get.to(BookingForm());
+                          Get.to(BookingScreen());
                         },
                       ),
                     ],
