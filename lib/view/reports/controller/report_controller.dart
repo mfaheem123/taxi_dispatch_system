@@ -1,12 +1,15 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/restricDriver.dart';
+import '../driver_reports_view/models/list_driver_report_login_model.dart';
 
 class ReportController extends GetxController {
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> driver_login functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
+
   /// drivers get
 
   RestricDriverModel? allDriverData;
@@ -27,6 +30,44 @@ class ReportController extends GetxController {
       update();
     }
   }
+  /// DRIVER LOGIN LIST
+  final loginStartTimeController = TextEditingController();
+  final loginEndTimeController = TextEditingController();
+
+  DriverLoginReportListModel? driverLoginReportListModel;
+  bool isLoadingShift = false;
+
+  getDriverShiftHistory() async {
+    if(selectDriverObject == null) {
+      BotToast.showText(text: "PLEASE SELECT A DRIVER");
+      return;
+    }
+    isLoadingShift = true;
+    update();
+
+    try{
+      var response = await Api().get("driver_shift_history/login",
+        queryParameters: {
+        "driver_id": selectDriverObject?.id.toString(),
+        "from_date": fromDate,
+        // "to_date": toDate,
+        // "from_time": loginStartTimeController.text,
+        // "to_time": loginEndTimeController.text,
+        }
+      );
+      if (response.statusCode == 200) {
+        driverLoginReportListModel = DriverLoginReportListModel.fromJson(response.data);
+        print("Shift History Data: ${response.data}");
+      }
+    } catch (e) {
+      print("Error fetching shift history: $e");
+    } finally {
+      isLoadingShift = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
 
   var selectedDriver = "Select Driver".obs;
   var fromDate = Rxn<DateTime>();
@@ -44,8 +85,7 @@ class ReportController extends GetxController {
   }
   final logStartTimeController = TextEditingController();
   final logEndTimeController = TextEditingController();
-  final loginStartTimeController = TextEditingController();
-  final loginEndTimeController = TextEditingController();
+
   void applyFilters() {
     if (selectedDriver.value != "Select Driver") {
       filteredRows.add({
