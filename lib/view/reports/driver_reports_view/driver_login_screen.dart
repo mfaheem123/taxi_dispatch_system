@@ -1,3 +1,4 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'driver_login_view_screen.dart';
 
 class DriverLoginScreen extends StatefulWidget {
   const DriverLoginScreen({super.key});
@@ -215,7 +217,31 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                             controller.update();
                           },
                         ),
-
+                        SizedBox(width: 80),
+                        CustomButton(
+                          height: 30,
+                          width: 60,
+                          verticalPadding: 0.0,
+                          borderRadius: 4,
+                          onTap: () {
+                            setState(() {
+                              fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+                              toDate = DateTime.now();
+                              controller.selectDriverObject = null;
+                              controller.driverLoginReportListModel = null;
+                            });
+                            controller.update();
+                          },
+                          widget: Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 0.0),
+                            child: Icon(
+                              Icons.refresh,
+                              color: DynamicColors.whiteClr,
+                              size: 25,
+                            ),
+                          ),
+                        ),
                         CustomButton(
                           verticalPadding: 0.0,
                           width: 60,
@@ -224,7 +250,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           btnText: AppText.filter,
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
-                          onTap: () {},
+                          onTap: () {
+                            controller.getDriverShiftHistory();
+                          },
                         ),
                         SizedBox(
                           width: 7,
@@ -237,7 +265,13 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           btnText: AppText.view,
                           style: mozillaTextRegularText(
                               fontSize: 10, color: DynamicColors.whiteClr),
-                          onTap: () {},
+                          onTap: () {
+                            if (controller.driverLoginReportListModel != null &&
+                                controller.driverLoginReportListModel!
+                                    .driverShiftHistories != null) {
+                              Get.dialog(DriverLoginViewWindow());
+                            }
+                          }
                         ),
                       ],
                     ),
@@ -247,6 +281,7 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                     // Table Section
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
+                      child: SingleChildScrollView(
                       child: DatatableWidget(
                         columns: [
                           buildHeaderWithSearch(title: "DRIVER"),
@@ -256,16 +291,33 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           buildHeaderWithSearch(title: "LOGOUT DATE"),
                           buildHeaderWithSearch(title: "LOGOUT TIME"),
                         ],
-                        totalRow: 15,
-                        cells: const [
-                          DataCell(Center(child: Text("driver"))),
-                          DataCell(Center(child: Text("bookings"))),
-                          DataCell(Center(child: Text("loginDate"))),
-                          DataCell(Center(child: Text("loginTime"))),
-                          DataCell(Center(child: Text("logoutDate"))),
-                          DataCell(Center(child: Text("logoutTime"))),
-                        ],
+                        totalRow: controller.driverLoginReportListModel?.driverShiftHistories?.length ?? 0,
+                        rows: (controller.driverLoginReportListModel?.driverShiftHistories ?? []).map((item) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Center(
+                                  child: Text((item.driver?.username ?? "").toUpperCase()))),
+                              DataCell(Center(
+                                  child: Text(item.booking == null || item.booking!.isEmpty
+                                      ? "0"
+                                      : item.booking!.length.toString()))),
+                              DataCell(Center(
+                                  child: Text(item.loginDate != null
+                                      ? DateFormat('dd-MM-yyyy').format(item.loginDate!)
+                                      : "-"))),
+                              DataCell(Center(
+                                  child: Text(item.loginTime ?? "-"))),
+                              DataCell(Center(
+                                  child: Text(item.logoutDate != null
+                                      ? DateFormat('dd-MM-yyyy').format(item.logoutDate!)
+                                      : "-"))),
+                              DataCell(Center(
+                                  child: Text(item.logoutTime ?? "-"))),
+                            ],
+                          );
+                        }).toList(),
                       ),
+                    ),
                     ),
                   ],
                 ),
