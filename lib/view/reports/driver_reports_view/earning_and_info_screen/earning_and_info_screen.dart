@@ -11,6 +11,7 @@ import '../../../customer/model/restricDriver.dart';
 import '../../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../../dashboard_view/widgets/user_info_widget.dart';
 import '../../controller/report_controller.dart';
+import 'driver_statistics_chart.dart';
 
 class EarningAndInfoScreen extends StatefulWidget {
   const EarningAndInfoScreen({super.key});
@@ -307,44 +308,73 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                         if (isDataLoaded) ...[
                                           Row(
                                             children: [
-                                              Expanded(
-                                                child: CustomButton(
+                                              CustomButton(
                                                   btnText: "STATISTICS",
+                                                  borderRadius: 4,
                                                   verticalPadding: 0.0,
+                                                  width: 130,
+                                                  height: 30,
+                                                  fontSize: 14,
                                                   btnColor: rightSideTab == 0
                                                       ? DynamicColors.primaryClr
-                                                      : Colors.grey.shade300,
+                                                      : Colors.grey.shade500,
                                                   onTap: () => setState(
                                                       () => rightSideTab = 0),
-                                                  height: 35,
+
                                                 ),
-                                              ),
                                               const SizedBox(width: 10),
-                                              Expanded(
-                                                child: CustomButton(
+                                               CustomButton(
                                                   btnText: "DRIVER INFORMATION",
+                                                  borderRadius: 4,
                                                   verticalPadding: 0.0,
+                                                  width: 250,
+                                                  height: 30,
+                                                  fontSize: 14,
                                                   btnColor: rightSideTab == 1
                                                       ? DynamicColors.primaryClr
-                                                      : Colors.grey.shade300,
+                                                      : Colors.grey.shade500,
                                                   onTap: () => setState(
                                                       () => rightSideTab = 1),
-                                                  height: 35,
                                                 ),
-                                              ),
                                             ],
                                           ),
                                           const SizedBox(height: 20),
                                         ],
 
                                         // --- CONTENT AREA ---
+                                        // if (isDataLoaded && rightSideTab == 0)
+                                        //   Center(
+                                        //     child: Container(
+                                        //       height: 300,
+                                        //       width: double.infinity,
+                                        //       color: Colors.grey.shade100,
+                                        //     ),
+                                        //   )
+                                        // else
                                         if (isDataLoaded && rightSideTab == 0)
-                                          Center(
-                                            child: Container(
-                                              height: 300,
-                                              width: double.infinity,
-                                              color: Colors.grey.shade100,
-                                            ),
+                                          Column(
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              // Chart Container
+                                              Container(
+                                                height: 400, // Aap height adjust kar sakte hain
+                                                padding: const EdgeInsets.all(10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(color: Colors.grey.shade200),
+                                                ),
+                                                child: DriverBookingChart(
+                                                  data: [
+                                                    DriverChartData("user_01", 45),
+                                                    DriverChartData("user_02", 32),
+                                                    DriverChartData("user_03", 58),
+                                                    DriverChartData("user_04", 20),
+                                                    DriverChartData("user_05", 38),
+                                                  ], chartData: [],
+                                                ),
+                                              ),
+                                            ],
                                           )
                                         else
                                           Column(
@@ -426,16 +456,24 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                         mainAxisSize:
                                                             MainAxisSize.min,
                                                         children: [
-                                                          _buildStatusBtn(
-                                                              "ACTIVE",
-                                                              DynamicColors
-                                                                  .primaryClr),
+                                                          CustomButton(
+                                                            verticalPadding: 0.0,
+                                                            width: 90,
+                                                            height: 32,
+                                                            borderRadius: 4,
+                                                            fontSize: 12,
+                                                            btnText: AppText.active,
+                                                          ),
                                                           const SizedBox(
                                                               width: 8),
-                                                          _buildStatusBtn(
-                                                              "IN ACTIVE",
-                                                              DynamicColors
-                                                                  .redClr),
+                                                          CustomButton(
+                                                            verticalPadding: 0.0,
+                                                            width: 90,
+                                                            height: 32,
+                                                            borderRadius: 4,
+                                                            fontSize: 12,
+                                                            btnText: "IN ACTIVE",
+                                                          ),
                                                         ],
                                                       ),
                                                     ],
@@ -483,20 +521,6 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       },
     );
   }
-
-  Widget _buildStatusBtn(String text, Color color) {
-    return CustomButton(
-      width: 90,
-      height: 30,
-      btnText: text,
-      verticalPadding: 0.0,
-      borderRadius: 4,
-      fontSize: 11,
-      btnColor: color,
-      onTap: () {},
-    );
-  }
-
   Widget _tableHeader(String label) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -532,8 +556,4 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
   }
 }
 
-class SalesData {
-  SalesData(this.month, this.sales);
-  final String month;
-  final double sales;
-}
+
