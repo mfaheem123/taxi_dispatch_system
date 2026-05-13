@@ -62,6 +62,7 @@ import '../../component/textStyle.dart';
 import '../../component/text_field.dart';
 import '../../component/text_widget.dart';
 import '../../routes/app_pages.dart';
+import 'dashboard_form_widget.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -174,6 +175,14 @@ AuthController controller = Get.put(AuthController());
 
                       const SizedBox(height: 20),
 
+
+                      CustomButton(
+                        height: 55,
+                        btnText: "dashboard from",
+                        onTap: () {
+                          Get.to(BookingForm());
+                        },
+                      ),
                     ],
                   ),
                 );
