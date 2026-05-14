@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/restricDriver.dart';
+import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
 
 class ReportController extends GetxController {
@@ -68,6 +69,31 @@ class ReportController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
+
+  // DriverLogsReportListModel? driverLogsData;
+  // bool isLoadingLogs = false;
+  //
+  // getDriverLogs() async {
+  //   if(selectDriverObject == null) {
+  //     BotToast.showText(text: "PLEASE SELECT A DRIVER");
+  //     return;
+  //   }
+  //   isLoadingLogs = true;
+  //   update();
+  //
+  //   try{
+  //     var response = await Api().get("bookings/driver-logs",
+  //       queryParameters: {
+  //       "driver_id": selectDriverObject?.id.toString(),
+  //       "from_date": fromDate,
+  //       "to_date": toDate,
+  //       }
+  //     );
+  //   }
+  // }
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
+
 
   var selectedDriver = "Select Driver".obs;
   var fromDate = Rxn<DateTime>();
@@ -127,6 +153,12 @@ class ReportController extends GetxController {
 
   final bookingStartTimeController = TextEditingController();
   final bookingEndTimeController = TextEditingController();
+  // Controller ke andar
+  var totalBookings = 0.obs;
+  var totalEarnings = 0.0.obs;
+  var totalAccountEarnings = 0.0.obs;
+  RxBool isFiltered = false.obs;
+
   int selectedValue = 0; // 👈 groupValue
   RxBool ptValue = false.obs;
   RxBool cashValue = false.obs;
