@@ -36,8 +36,8 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
   // Date controllers
   // DateTime? fromDate;
   // DateTime? toDate;
-  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime toDate = DateTime.now();
+  // DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  // DateTime toDate = DateTime.now();
   TimeOfDay? fromTime;
   TimeOfDay? toTime;
 
@@ -63,23 +63,23 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
     }
   }
 
-  Future<void> _pickDate(BuildContext context, bool isFrom) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromDate = picked;
-        } else {
-          toDate = picked;
-        }
-      });
-    }
-  }
+  // Future<void> _pickDate(BuildContext context, bool isFrom) async {
+  //   DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(2020),
+  //     lastDate: DateTime(2030),
+  //   );
+  //   if (picked != null) {
+  //     setState(() {
+  //       if (isFrom) {
+  //         fromDate = picked;
+  //       } else {
+  //         toDate = picked;
+  //       }
+  //     });
+  //   }
+  // }
 
   Future<void> _pickTime(BuildContext context, bool isFrom) async {
     TimeOfDay? picked = await showTimePicker(
@@ -151,9 +151,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: fromDate,
-                            onChanged: (date) =>
-                                setState(() => fromDate = date),
+                            initialDate: controller.fromDate.value ?? DateTime.now(),
+                            onChanged: (date) {
+                              controller.fromDate.value = date;
+                              controller.update();
+                            },
                           ),
                         ),
                       ),
@@ -166,7 +168,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         column: false,
                         width: 100,
                         child: CustomTimePicker(
-                          controller: controller.loginStartTimeController,
+                          controller: controller.logStartTimeController,
                           onTimeSelected: (time) => setState(() {}),
                         ),
                       ),
@@ -180,9 +182,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: toDate,
-                            onChanged: (date) =>
-                                setState(() => toDate = date),
+                            initialDate: controller.toDate.value ?? DateTime.now(),
+                            onChanged: (date) {
+                              controller.toDate.value = date;
+                              controller.update();
+                            },
                           ),
                         ),
                       ),
@@ -195,7 +199,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         column: false,
                         width: 100,
                         child: CustomTimePicker(
-                          controller: controller.loginEndTimeController,
+                          controller: controller.logEndTimeController,
                           onTimeSelected: (time) => setState(() {}),
                         ),
                       ),
@@ -226,7 +230,9 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         btnText: AppText.filter,
                         style: mozillaTextRegularText(
                             fontSize: 10, color: DynamicColors.whiteClr),
-                        onTap: () {},
+                        onTap: () {
+                          controller.getDriverLogs();
+                        },
                       ),
                       SizedBox(
                         width: 7,
@@ -246,28 +252,60 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
 
                   const SizedBox(height: 25),
 
+                  // SingleChildScrollView(
+                  //   scrollDirection: Axis.horizontal,
+                  //   child: SizedBox(
+                  //     width: MediaQuery.of(context).size.width,
+                  //     child: DatatableWidget(
+                  //       columns: [
+                  //         buildHeaderWithSearch(title: "REF #"),
+                  //         buildHeaderWithSearch(title: "DATETIME"),
+                  //         buildHeaderWithSearch(title: "VEHICLE"),
+                  //         buildHeaderWithSearch(title: "PICKUP"),
+                  //         buildHeaderWithSearch(title: "DROPOFF"),
+                  //         buildHeaderWithSearch(title: "FARES"),
+                  //       ],
+                  //       totalRow: totalRows,
+                  //       cells: [
+                  //         const DataCell(Center(child: Text("driver"))),
+                  //         const DataCell(Center(child: Text("bookings"))),
+                  //         const DataCell(Center(child: Text("loginDate"))),
+                  //         const DataCell(Center(child: Text("loginTime"))),
+                  //         const DataCell(Center(child: Text("logoutDate"))),
+                  //         const DataCell(Center(child: Text("logoutTime"))),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  // Driver Logs Table Section
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
-                      child: DatatableWidget(
+                      child: controller.isLoadingLogs
+                          ? const Center(child: CircularProgressIndicator())
+                          : DatatableWidget(
                         columns: [
-                          buildHeaderWithSearch(title: "REF #"),
+                          buildHeaderWithSearch(title: "REF #", controller: controller.refSearch),
                           buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "VEHICLE"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "FARES"),
+                          buildHeaderWithSearch(title: "VEHICLE", controller: controller.vehicleSearch),
+                          buildHeaderWithSearch(title: "PICKUP", controller: controller.pickupSearch),
+                          buildHeaderWithSearch(title: "DROPOFF", controller: controller.dropoffSearch),
+                          buildHeaderWithSearch(title: "FARES", controller: controller.faresSearch),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("driver"))),
-                          const DataCell(Center(child: Text("bookings"))),
-                          const DataCell(Center(child: Text("loginDate"))),
-                          const DataCell(Center(child: Text("loginTime"))),
-                          const DataCell(Center(child: Text("logoutDate"))),
-                          const DataCell(Center(child: Text("logoutTime"))),
-                        ],
+                        totalRow: controller.driverLogsData?.bookings?.length ?? 0,
+                        rows: (controller.driverLogsData?.bookings ?? []).map((booking) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Center(child: Text(booking.referenceNumber ?? ""))),
+                              DataCell(Center(child: Text("${booking.pickupDate}\n${booking.pickupTime}"))),
+                              DataCell(Center(child: Text(booking.vehicleType?.name?.toUpperCase() ?? ""))),
+                              DataCell(Text(booking.pickup ?? "")),
+                              DataCell(Text(booking.dropoff ?? "")),
+                              DataCell(Center(child: Text("£${booking.fares ?? "0.00"}"))),
+                            ],
+                          );
+                        }).toList(),
                       ),
                     ),
                   ),
