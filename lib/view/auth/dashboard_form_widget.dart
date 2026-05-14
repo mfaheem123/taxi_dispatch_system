@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-
+import 'package:flutter/services.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -26,6 +25,29 @@ class _BookingScreenState extends State<BookingScreen> {
   String? vehicleType = 'Saloon';
   bool quotation = true, sms = true, email = false;
   int luggage = 0; // 0 = none, 1 = luggage, 2 = extra
+
+  // ────────── address suggestion sources
+  static const _pickupSuggestions = [
+    'Hill House, Wild Hill, Hatfield AL9 6EB',
+    'Heathrow Airport Terminal 5, TW6',
+    'Gatwick Airport South Terminal, RH6 0NP',
+    'Luton Airport, LU2 9LY',
+    'London Bridge Station, SE1 9SP',
+    'Kings Cross St Pancras, N1C 4QP',
+    'Stansted Airport, CM24 1QW',
+    'Paddington Station, London W2 1HQ',
+  ];
+
+  static const _dropSuggestions = [
+    'Flat, TN30, Ashford Road, St. Michaels, Tenter',
+    '10 Downing Street, London SW1A 2AA',
+    'Canary Wharf, London E14 5AB',
+    'Westfield Stratford, London E20 1EJ',
+    'O2 Arena, Peninsula Square, London SE10 0DX',
+    'Wembley Stadium, London HA9 0WS',
+    'Tower Bridge, London SE1 2UP',
+    'British Museum, Great Russell St, London WC1B 3DG',
+  ];
 
   // ────────── controllers (created once)
   late final _pickup = TextEditingController(text: 'Hill House, Wild Hill, Hatfield AL9 6EB');
@@ -57,7 +79,6 @@ class _BookingScreenState extends State<BookingScreen> {
     final isDesktop = w >= 1024;
     final cols = isMobile ? 1 : (isTablet ? 2 : 4);
 
-    // Desktop -> half screen; mobile/iPad -> full screen.
     final formWidth = isDesktop ? w * 0.5 : double.infinity;
 
     return Scaffold(
@@ -89,10 +110,12 @@ class _BookingScreenState extends State<BookingScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _locationRow('PICKUP', _green, _pickup, pickupZone,
+                            _locationRow('PICKUP', _green, _pickup,
+                                _pickupSuggestions, pickupZone,
                                     (v) => setState(() => pickupZone = v), isMobile, 0),
                             const SizedBox(height: 10),
-                            _locationRow('DROP', _red, _drop, dropZone,
+                            _locationRow('DROP', _red, _drop,
+                                _dropSuggestions, dropZone,
                                     (v) => setState(() => dropZone = v), isMobile, 10),
                             const Divider(height: 32),
                             _sectionHeader(Icons.person, 'PASSENGER & BOOKING DETAILS'),
@@ -202,11 +225,12 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-  // ────────── location row
+  // ────────── location row (web-style autocomplete)
   Widget _locationRow(
       String label,
       Color dot,
       TextEditingController controller,
+      List<String> suggestions,
       String? zone,
       ValueChanged<String?> onZone,
       bool isMobile,
@@ -219,8 +243,9 @@ class _BookingScreenState extends State<BookingScreen> {
 
     final address = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 1).toDouble()),
-      child: TextField(
+      child: _AddressAutocomplete(
         controller: controller,
+        suggestions: suggestions,
         decoration: _inputDecoration().copyWith(
           suffixIcon: Row(mainAxisSize: MainAxisSize.min, children: [
             IconButton(
@@ -567,4 +592,261 @@ class _BookingScreenState extends State<BookingScreen> {
         borderRadius: BorderRadius.circular(6),
         borderSide: const BorderSide(color: _purple)),
   );
+}
+
+// ────────── Web-style autocomplete (overlay panel under the field)
+// ────────── Web-style autocomplete (overlay panel + keyboard nav)
+class _AddressAutocomplete extends StatefulWidget {
+  const _AddressAutocomplete({
+    required this.controller,
+    required this.suggestions,
+    required this.decoration,
+  });
+
+  final TextEditingController controller;
+  final List<String> suggestions;
+  final InputDecoration decoration;
+
+  @override
+  State<_AddressAutocomplete> createState() => _AddressAutocompleteState();
+}
+
+class _AddressAutocompleteState extends State<_AddressAutocomplete> {
+  final _layerLink = LayerLink();
+  final _focusNode = FocusNode();
+  final _fieldKey = GlobalKey();
+  OverlayEntry? _entry;
+  List<String> _filtered = const [];
+  int _highlighted = -1;
+
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _focusNode.addListener(_onFocus);
+    widget.controller.addListener(_onText);
+    _filtered = widget.suggestions;
+  }
+
+  @override
+  void dispose() {
+    _hide();
+    _focusNode.removeListener(_onFocus);
+    widget.controller.removeListener(_onText);
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onFocus() {
+    if (_focusNode.hasFocus) {
+      _filter(widget.controller.text);
+      _show();
+    } else {
+      _hide();
+    }
+  }
+
+  void _onText() {
+    _filter(widget.controller.text);
+    if (_focusNode.hasFocus) _show();
+  }
+
+  void _filter(String q) {
+    final query = q.trim().toLowerCase();
+    _filtered = query.isEmpty
+        ? widget.suggestions
+        : widget.suggestions
+        .where((s) => s.toLowerCase().contains(query))
+        .toList();
+    _highlighted = _filtered.isEmpty ? -1 : 0;
+    _entry?.markNeedsBuild();
+  }
+
+  void _show() {
+    if (_entry != null) return;
+    _entry = OverlayEntry(builder: _buildPanel);
+    Overlay.of(context).insert(_entry!);
+  }
+
+  void _hide() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _pick(String value) {
+    widget.controller.text = value;
+    widget.controller.selection =
+        TextSelection.collapsed(offset: value.length);
+    _focusNode.unfocus();
+  }
+
+  void _moveHighlight(int delta) {
+    if (_filtered.isEmpty) return;
+    final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
+    if (next == _highlighted) return;
+    _highlighted = next;
+    _entry?.markNeedsBuild();
+    _scrollHighlightedIntoView();
+  }
+
+  void _scrollHighlightedIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final c = _scrollController;
+      if (!c.hasClients || _highlighted < 0) return;
+
+      const itemHeight = 38.0;
+      const panelHeight = 240.0;
+      final itemTop = _highlighted * itemHeight;
+      final itemBottom = itemTop + itemHeight;
+      final viewTop = c.offset;
+      final viewBottom = viewTop + panelHeight;
+      final maxScroll = c.position.maxScrollExtent;
+
+      if (itemTop < viewTop) {
+        c.jumpTo(itemTop.clamp(0.0, maxScroll));
+      } else if (itemBottom > viewBottom) {
+        c.jumpTo((itemBottom - panelHeight).clamp(0.0, maxScroll));
+      }
+    });
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.arrowDown) {
+      if (_entry == null) _show();
+      _moveHighlight(1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp) {
+      if (_entry == null) _show();
+      _moveHighlight(-1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      if (_entry != null &&
+          _highlighted >= 0 &&
+          _highlighted < _filtered.length) {
+        _pick(_filtered[_highlighted]);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+    if (key == LogicalKeyboardKey.escape) {
+      if (_entry != null) {
+        _hide();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final width = box?.size.width ?? 280;
+    final height = box?.size.height ?? 48;
+    return Positioned(
+      width: width,
+      child: CompositedTransformFollower(
+        link: _layerLink,
+        showWhenUnlinked: false,
+        offset: Offset(0, height + 4),
+        child: TapRegion(
+          onTapOutside: (_) => _focusNode.unfocus(),
+          child: Material(
+            elevation: 6,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 240),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: _filtered.isEmpty
+                  ? const Padding(
+                padding: EdgeInsets.all(12),
+                child: Text('No matches',
+                    style: TextStyle(color: Colors.black54)),
+              )
+                  : ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final s = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    onEnter: (_) {
+                      if (_highlighted != i) {
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      }
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(s),
+                      child: Container(
+                        width: double.infinity,
+                        height: 38,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.place_outlined,
+                              size: 16,
+                              color: active
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(s,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: active
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                )),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Focus(
+        onKeyEvent: _handleKey,
+        child: TextField(
+          key: _fieldKey,
+          controller: widget.controller,
+          focusNode: _focusNode,
+          decoration: widget.decoration,
+        ),
+      ),
+    );
+  }
 }
