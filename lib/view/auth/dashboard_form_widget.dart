@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+
+import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/models/account_darshboard_model.dart';
+import '../dashboard_view/models/dashboard_model.dart';
+import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
+import '../locations_view/controller/locations_controller.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -18,10 +25,12 @@ class _BookingScreenState extends State<BookingScreen> {
   static const _green = Color(0xFF22C55E);
 
   // ────────── state
-  String? pickupZone, dropZone, department, driver;
-  String? journeyType = 'One Way';
+  String? department, driver;
+  ZoneObject? dashboardZoneValue, dropZone;
+
+
+  String? journeyType = 'o/w';
   String? account = 'DEMO';
-  String? payBy = 'Cash';
   String? vehicleType = 'Saloon';
   bool quotation = true, sms = true, email = false;
   int luggage = 0; // 0 = none, 1 = luggage, 2 = extra
@@ -50,8 +59,10 @@ class _BookingScreenState extends State<BookingScreen> {
   ];
 
   // ────────── controllers (created once)
-  late final _pickup = TextEditingController(text: 'Hill House, Wild Hill, Hatfield AL9 6EB');
-  late final _drop = TextEditingController(text: 'Flat, TN30, Ashford Road, St. Michaels, Tenter');
+  late final _pickup = TextEditingController(
+      text: 'Hill House, Wild Hill, Hatfield AL9 6EB');
+  late final _drop = TextEditingController(
+      text: 'Flat, TN30, Ashford Road, St. Michaels, Tenter');
   late final _name = TextEditingController(text: 'Test Passenger');
   late final _email = TextEditingController(text: 't12410@gmail.com');
   late final _mobile = TextEditingController(text: '0123213133213');
@@ -62,13 +73,32 @@ class _BookingScreenState extends State<BookingScreen> {
   late final _pax = TextEditingController(text: '1');
   late final _fare = TextEditingController(text: '226.00');
 
+  final DashboardController controller = Get.isRegistered<DashboardController>()
+      ? Get.find<DashboardController>()
+      : Get.put(DashboardController());
+
+  final LocationController _controller = Get.isRegistered<LocationController>()
+      ? Get.find<LocationController>()
+      : Get.put(LocationController());
+
   @override
   void dispose() {
-    for (final c in [_pickup, _drop, _name, _email, _mobile, _tel,
-      _date, _time, _lead, _pax, _fare]) {
+    for (final c in [
+      _pickup, _drop, _name, _email, _mobile, _tel,
+      _date, _time, _lead, _pax, _fare,
+    ]) {
       c.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (controller.dashboardAllData == null) {
+      controller.dashboardData();
+    }
   }
 
   @override
@@ -83,94 +113,167 @@ class _BookingScreenState extends State<BookingScreen> {
 
     return Scaffold(
       backgroundColor: _surface,
-      body: SafeArea(
-        child: Center(
-          child: SizedBox(
-            width: formWidth,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 0 : 12,
-                vertical: isMobile ? 0 : 12,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(isMobile ? 0 : 10),
-                  border: Border.all(color: _border),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: FocusTraversalGroup(
-                  policy: OrderedTraversalPolicy(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _topTabs(isMobile),
-                      Padding(
-                        padding: EdgeInsets.all(isMobile ? 12 : 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _locationRow('PICKUP', _green, _pickup,
-                                _pickupSuggestions, pickupZone,
-                                    (v) => setState(() => pickupZone = v), isMobile, 0),
-                            const SizedBox(height: 10),
-                            _locationRow('DROP', _red, _drop,
-                                _dropSuggestions, dropZone,
-                                    (v) => setState(() => dropZone = v), isMobile, 10),
-                            const Divider(height: 32),
-                            _sectionHeader(Icons.person, 'PASSENGER & BOOKING DETAILS'),
-                            const SizedBox(height: 12),
-                            _grid(cols, [
-                              _field('Name', tab: 21, controller: _name),
-                              _field('Email', tab: 22, controller: _email),
-                              _field('Mobile', tab: 23, controller: _mobile),
-                              _field('Tel.', tab: 24, controller: _tel),
-                            ]),
-                            const SizedBox(height: 12),
-                            _grid(cols, [
-                              _field('Date', tab: 25, prefix: Icons.calendar_today, controller: _date),
-                              _field('Time', tab: 26, prefix: Icons.access_time, controller: _time),
-                              _dropdown('Journey Type', journeyType, ['One Way', 'Return', 'Hourly'],
-                                      (v) => setState(() => journeyType = v), 27),
-                              _field('Lead Time', tab: 28, controller: _lead),
-                            ]),
-                            const SizedBox(height: 12),
-                            _grid(isMobile ? 1 : 3, [
-                              _field('No. of Passengers', tab: 29,
-                                  prefix: Icons.person_outline, controller: _pax),
-                              _field('Fare', tab: 30,
-                                  prefix: Icons.currency_pound, controller: _fare),
-                              _dropdown('Account', account, ['DEMO', 'Account A', 'Account B'],
-                                      (v) => setState(() => account = v), 31),
-                            ]),
-                            const Divider(height: 32),
-                            _sectionHeader(Icons.directions_car, 'VEHICLE & PAYMENT'),
-                            const SizedBox(height: 12),
-                            _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                              _dropdown('Pay By', payBy, ['Cash', 'Card', 'Invoice'],
-                                      (v) => setState(() => payBy = v), 41),
-                              _dropdown('Vehicle Type', vehicleType, ['Saloon', 'Estate', 'MPV'],
-                                      (v) => setState(() => vehicleType = v), 42),
-                              _dropdown('Department', department, ['- Select -', 'Sales', 'Ops'],
-                                      (v) => setState(() => department = v), 43),
-                              _quotationToggle(),
-                            ]),
-                            const SizedBox(height: 14),
-                            _commsAndLuggageRow(isMobile),
-                            const SizedBox(height: 16),
-                            _statusCards(isMobile),
-                            const SizedBox(height: 14),
-                            _driverRow(isMobile),
-                          ],
-                        ),
+      body: GetBuilder<DashboardController>(
+        initState: (_) {
+          controller.seeZoneOnMapp();
+          if (_controller.locationtypezoneModel == null) {
+            _controller.getLocationTypeZone();
+          }
+        },
+        builder: (controller) {
+          return SafeArea(
+            child: Center(
+              child: SizedBox(
+                width: formWidth,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 0 : 12,
+                    vertical: isMobile ? 0 : 12,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                      BorderRadius.circular(isMobile ? 0 : 10),
+                      border: Border.all(color: _border),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: FocusTraversalGroup(
+                      policy: OrderedTraversalPolicy(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _topTabs(isMobile),
+                          Padding(
+                            padding: EdgeInsets.all(isMobile ? 12 : 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _locationRow<ZoneObject>(
+                                  'PICKUP',
+                                  _green,
+                                  _pickup,
+                                  _pickupSuggestions,
+                                  controller.dashboardZoneValue,
+                                  _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                      (v) => setState(() => controller.dashboardZoneValue = v),
+                                  isMobile,
+                                  0,
+                                  zoneLabel: (z) => z.name!,
+                                ),
+                                const SizedBox(height: 10),
+                                _locationRow<ZoneObject>(
+                                  'DROP',
+                                  _red,
+                                  _drop,
+                                  _dropSuggestions,
+                                  controller.dashboardDZoneValue,
+                                    _controller.updateLocationValue.value == true ? [] : _controller.locationtypezoneModel!.zonesList!,
+                                      (v) => setState(() => controller.dashboardDZoneValue = v),
+                                  isMobile,
+                                  10,
+                                  zoneLabel: (z) => z.name!,
+                                ),
+                                const Divider(height: 32),
+                                _sectionHeader(Icons.person,
+                                    'PASSENGER & BOOKING DETAILS'),
+                                const SizedBox(height: 12),
+                                _grid(cols, [
+                                  _field('Name',
+                                      tab: 21, controller: _name),
+                                  _field('Email',
+                                      tab: 22, controller: _email),
+                                  _field('Mobile',
+                                      tab: 23, controller: _mobile),
+                                  _field('Tel.',
+                                      tab: 24, controller: _tel),
+                                ]),
+                                const SizedBox(height: 12),
+                                _grid(cols, [
+                                  _field('Date',
+                                      tab: 25,
+                                      prefix: Icons.calendar_today,
+                                      controller: _date),
+                                  _field('Time',
+                                      tab: 26,
+                                      prefix: Icons.access_time,
+                                      controller: _time),
+                                  _dropdown<String>(
+                                    'Journey Type',
+                                    journeyType,
+                                    const ['o/w', 'w/r', 'r/n'],
+                                        (v) => setState(() => journeyType = v),
+                                    27,
+                                  ),
+                                  _field('Lead Time',
+                                      tab: 28, controller: _lead),
+                                ]),
+                                const SizedBox(height: 12),
+                                _grid(isMobile ? 1 : 3, [
+                                  _field('No. of Passengers',
+                                      tab: 29,
+                                      prefix: Icons.person_outline,
+                                      controller: _pax),
+                                  _field('Fare',
+                                      tab: 30,
+                                      prefix: Icons.currency_pound,
+                                      controller: _fare),
+                                  _dropdown<DashboardAccountObject>(
+                                    'Account',
+                                    controller.selectAccountValue,
+                                    controller.dashboardAccountData?.accounts ?? const [],
+                                        (v) => setState(() => controller.selectAccountValue = v),
+                                    41,
+                                    itemLabel: (p) => p.name!,
+                                  ),
+                                ]),
+                                const Divider(height: 32),
+                                _sectionHeader(Icons.directions_car,
+                                    'VEHICLE & PAYMENT'),
+                                const SizedBox(height: 12),
+                                _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                  _dropdown<PaymentTypeObject>(
+                                    'Pay By',
+                                    controller.selectPaymentTypeValue,
+                                    controller.dashboardAllData!.paymentTypes ?? const [],
+                                        (v) => setState(() => controller.selectPaymentTypeValue = v),
+                                    41,
+                                    itemLabel: (p) => p.name!,
+                                  ),
+                                  _dropdown<String>(
+                                    'Vehicle Type',
+                                    vehicleType,
+                                    const ['Saloon', 'Estate', 'MPV'],
+                                        (v) => setState(() => vehicleType = v),
+                                    42,
+                                  ),
+                                  _dropdown<String>(
+                                    'Department',
+                                    department,
+                                    const ['- Select -', 'Sales', 'Ops'],
+                                        (v) => setState(() => department = v),
+                                    43,
+                                  ),
+                                  _quotationToggle(),
+                                ]),
+                                const SizedBox(height: 14),
+                                _commsAndLuggageRow(isMobile),
+                                const SizedBox(height: 16),
+                                _statusCards(isMobile),
+                                const SizedBox(height: 14),
+                                _driverRow(isMobile),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -194,7 +297,8 @@ class _BookingScreenState extends State<BookingScreen> {
     );
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 10),
+      padding:
+      EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 10),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: _border)),
       ),
@@ -208,14 +312,16 @@ class _BookingScreenState extends State<BookingScreen> {
           tab('Sub'),
           const SizedBox(width: 6),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
               border: Border.all(color: _border),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Row(mainAxisSize: MainAxisSize.min, children: [
               Text('Sea Cars Private Hire Ltd.',
-                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                  style:
+                  TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
               SizedBox(width: 4),
               Icon(Icons.keyboard_arrow_down, size: 18),
             ]),
@@ -226,19 +332,23 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   // ────────── location row (web-style autocomplete)
-  Widget _locationRow(
+  Widget _locationRow<T>(
       String label,
       Color dot,
       TextEditingController controller,
       List<String> suggestions,
-      String? zone,
-      ValueChanged<String?> onZone,
+      T? zone,
+      List<T> zoneItems,
+      ValueChanged<T?> onZone,
       bool isMobile,
-      int tabBase) {
+      int tabBase, {
+        String Function(T)? zoneLabel,
+      }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 10, color: dot),
       const SizedBox(width: 6),
-      Text(label, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+      Text(label,
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
     ]);
 
     final address = FocusTraversalOrder(
@@ -260,17 +370,14 @@ class _BookingScreenState extends State<BookingScreen> {
       ),
     );
 
-    final zoneDd = FocusTraversalOrder(
-      order: NumericFocusOrder((tabBase + 2).toDouble()),
-      child: DropdownButtonFormField<String>(
-        value: zone,
-        hint: const Text('New Zone'),
-        decoration: _inputDecoration(),
-        items: ['Zone A', 'Zone B']
-            .map((z) => DropdownMenuItem(value: z, child: Text(z)))
-            .toList(),
-        onChanged: onZone,
-      ),
+    final zoneDd = _dropdown<T>(
+      null,
+      zone,
+      zoneItems,
+      onZone,
+      tabBase + 2,
+      itemLabel: zoneLabel,
+      hint: 'New Zone',
     );
 
     final notes = FocusTraversalOrder(
@@ -281,7 +388,8 @@ class _BookingScreenState extends State<BookingScreen> {
           foregroundColor: _purple,
           side: const BorderSide(color: _purple),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
         child: Text('${label[0]}${label.substring(1).toLowerCase()} Notes'),
       ),
@@ -293,7 +401,11 @@ class _BookingScreenState extends State<BookingScreen> {
         const SizedBox(height: 6),
         address,
         const SizedBox(height: 8),
-        Row(children: [Expanded(child: zoneDd), const SizedBox(width: 8), notes]),
+        Row(children: [
+          Expanded(child: zoneDd),
+          const SizedBox(width: 8),
+          notes,
+        ]),
       ]);
     }
 
@@ -310,10 +422,12 @@ class _BookingScreenState extends State<BookingScreen> {
 
   // ────────── SMS / Email / luggage / action icons row
   Widget _commsAndLuggageRow(bool isMobile) {
-    Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged) =>
+    Widget checkbox(
+        String label, bool value, ValueChanged<bool?> onChanged) =>
         Row(mainAxisSize: MainAxisSize.min, children: [
           SizedBox(
-            width: 22, height: 22,
+            width: 22,
+            height: 22,
             child: Checkbox(
               value: value,
               onChanged: onChanged,
@@ -336,7 +450,8 @@ class _BookingScreenState extends State<BookingScreen> {
           backgroundColor: active ? _purple : Colors.white,
           side: const BorderSide(color: _border),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
       );
     }
@@ -395,9 +510,7 @@ class _BookingScreenState extends State<BookingScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(children: [
-          Icon(icon,
-              size: 22,
-              color: emphasized ? Colors.white : _purple),
+          Icon(icon, size: 22, color: emphasized ? Colors.white : _purple),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -427,8 +540,11 @@ class _BookingScreenState extends State<BookingScreen> {
       card(icon: Icons.schedule, label: 'ETA', value: '1 h 37 mins'),
       card(icon: Icons.timer_outlined, label: 'JOURNEY', value: '0.0 mins'),
       card(icon: Icons.place_outlined, label: 'DISTANCE', value: '78.21 miles'),
-      card(icon: Icons.payments_outlined, label: 'FARE',
-          value: '£ 226.00', emphasized: true),
+      card(
+          icon: Icons.payments_outlined,
+          label: 'FARE',
+          value: '£ 226.00',
+          emphasized: true),
     ];
 
     if (isMobile) {
@@ -467,9 +583,11 @@ class _BookingScreenState extends State<BookingScreen> {
         backgroundColor: _red,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        shape:
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       ),
-      child: const Text('Clear (F7)', style: TextStyle(fontWeight: FontWeight.w700)),
+      child: const Text('Clear (F7)',
+          style: TextStyle(fontWeight: FontWeight.w700)),
     );
 
     if (isMobile) {
@@ -526,7 +644,9 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   Widget _field(String label,
-      {required int tab, IconData? prefix, TextEditingController? controller}) {
+      {required int tab,
+        IconData? prefix,
+        TextEditingController? controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
       const SizedBox(height: 4),
@@ -544,23 +664,48 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
-  Widget _dropdown(String label, String? value, List<String> items,
-      ValueChanged<String?> onChanged, int tab) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
-      const SizedBox(height: 4),
-      FocusTraversalOrder(
-        order: NumericFocusOrder(tab.toDouble()),
-        child: DropdownButtonFormField<String>(
-          value: value,
-          decoration: _inputDecoration(),
-          items: items
-              .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-              .toList(),
-          onChanged: onChanged,
+  Widget _dropdown<T>(
+      String? label,
+      T? value,
+      List<T> items,
+      ValueChanged<T?> onChanged,
+      int tab, {
+        String Function(T item)? itemLabel,
+        String? hint,
+        bool isExpanded = true,
+      }) {
+    String labelOf(T item) => itemLabel?.call(item) ?? item.toString();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (label != null) ...[
+          Text(label,
+              style: const TextStyle(fontSize: 12, color: Colors.black54)),
+          const SizedBox(height: 4),
+        ],
+        FocusTraversalOrder(
+          order: NumericFocusOrder(tab.toDouble()),
+          child: DropdownButtonFormField<T>(
+            value: value,
+            isExpanded: isExpanded,
+            hint: hint != null ? Text(hint) : null,
+            decoration: _inputDecoration(),
+            items: items
+                .map((e) => DropdownMenuItem<T>(
+              value: e,
+              child: Text(
+                labelOf(e),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ))
+                .toList(),
+            onChanged: onChanged,
+          ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 
   Widget _quotationToggle() {
@@ -573,7 +718,8 @@ class _BookingScreenState extends State<BookingScreen> {
           activeColor: _purple,
         ),
         const SizedBox(width: 4),
-        const Text('Quotation', style: TextStyle(fontWeight: FontWeight.w500)),
+        const Text('Quotation',
+            style: TextStyle(fontWeight: FontWeight.w500)),
       ]),
     ]);
   }
@@ -594,7 +740,6 @@ class _BookingScreenState extends State<BookingScreen> {
   );
 }
 
-// ────────── Web-style autocomplete (overlay panel under the field)
 // ────────── Web-style autocomplete (overlay panel + keyboard nav)
 class _AddressAutocomplete extends StatefulWidget {
   const _AddressAutocomplete({
