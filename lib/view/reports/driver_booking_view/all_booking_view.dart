@@ -17,6 +17,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'booking_view_screen.dart';
 
 class AllBookingView extends StatefulWidget {
   const AllBookingView({super.key});
@@ -384,6 +385,12 @@ class _AllBookingViewState extends State<AllBookingView> {
                             verticalPadding: 0.0,
                             btnText: AppText.filter,
                             fontSize: 12,
+                            onTap: (){
+                              controller.isFiltered.value = true;
+                              controller.totalBookings.value;
+                              controller.totalEarnings.value;
+                              controller.totalAccountEarnings.value;
+                            },
                           ),
                           CustomButton(
                             width: 120,
@@ -392,6 +399,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                             verticalPadding: 0.0,
                             btnText: AppText.view,
                             fontSize: 12,
+                            onTap: () {
+                              Get.dialog(AllBookingViewWindow());
+                            },
                           ),
                           CustomButton(
                             width: 120,
@@ -409,6 +419,45 @@ class _AllBookingViewState extends State<AllBookingView> {
                 SizedBox(
                   height: 20,
                 ),
+
+
+                Obx(() => Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Total Bookings
+                      _buildSummaryItem(
+                        label: "TOTAL BOOKINGS",
+                        value: controller.isFiltered.value
+                            ? "£ ${controller.totalBookings.value}"
+                            : "",
+                      ),
+                      // Total Earning
+                      _buildSummaryItem(
+                        label: "TOTAL EARNINGS",
+                        value: controller.isFiltered.value
+                            ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
+                            : "",
+                      ),
+                      // Total Account Earning
+                      _buildSummaryItem(
+                        label: "TOTAL ACCOUNT EARNINGS",
+                        value: controller.isFiltered.value
+                            ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
+                            : "",
+                      ),
+                    ],
+                  ),
+                )),
+
+                const SizedBox(height: 10),
 
                 SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -501,5 +550,19 @@ class _AllBookingViewState extends State<AllBookingView> {
             ));
       });
     });
+  }
+  Widget _buildSummaryItem({required String label, required String value}) {
+    return Row(
+      children: [
+        Text(
+          "$label: ",
+          style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          value,
+          style: mozillaTextRegularText(fontSize: 13, color: Colors.blue.shade800),
+        ),
+      ],
+    );
   }
 }

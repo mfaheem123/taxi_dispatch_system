@@ -127,6 +127,12 @@ class ReportController extends GetxController {
 
   final bookingStartTimeController = TextEditingController();
   final bookingEndTimeController = TextEditingController();
+  // Controller ke andar
+  var totalBookings = 0.obs;
+  var totalEarnings = 0.0.obs;
+  var totalAccountEarnings = 0.0.obs;
+  RxBool isFiltered = false.obs;
+
   int selectedValue = 0; // 👈 groupValue
   RxBool ptValue = false.obs;
   RxBool cashValue = false.obs;
