@@ -215,7 +215,7 @@ class BookingController extends GetxController{
 
   final int completedBookId = 4;
   getcompletedBookingData() async {
-    webBookingLoad(true);
+    completedBookingLoad(true);
     var response = await Api().get("bookings/getbytabs/${completedBookId}",
         queryParameters: {
           "page": completedBookingCurrentPage.value,
