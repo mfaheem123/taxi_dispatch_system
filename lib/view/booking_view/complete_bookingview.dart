@@ -40,10 +40,10 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
   void initState() {
     super.initState();
     shortCutKeyValue.value = "completeBookingsScreen";
-    var permissions = Api().sp.read('authorizations');
-    var dataa = jsonDecode(permissions);
-    print(dataa);
-    controller.getcompletedBookingData();
+    // var permissions = Api().sp.read('authorizations');
+    // var dataa = jsonDecode(permissions);
+    // print(dataa);
+
   }
 
 
@@ -53,7 +53,12 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
     final listToShow = controller.completedBookingFiltered.isNotEmpty
         ? controller.completedBookingFiltered
         : controller.completedBookingAll;
-    return GetBuilder<BookingController>(builder: (controller) {
+    return GetBuilder<BookingController>(
+        initState: (state) {
+          controller.getcompletedBookingData();
+        },
+
+        builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -67,7 +72,7 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                 : maxWidth / 4;
 
         return
-          controller.completedBookingLoad == true? Center(child: CircularProgressIndicator()):
+          controller.completedBookingLoad.value == true? Center(child: CircularProgressIndicator()):
           SingleChildScrollView(
           child: Container(
             color: const Color(0xFFF7F9FC),
@@ -350,7 +355,10 @@ class _CompleteBookingsScreenState extends State<CompleteBookingsScreen> {
                           cells: [
                             DataCell(Center(child: Text((item.bookingSource ?? '').toUpperCase()))),
                             DataCell(Center(child: Text(item.referenceNumber ?? ''))),
-                            DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+                        DataCell(Center(child: Text( item.pickupDate != null
+                                ? "${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime ?? ''}"
+                                : ''))),
+                            // DataCell(Center(child: Text("${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
                             DataCell(Center(child: Text((item.name ?? '').toUpperCase()))),
                             DataCell(Center(child: Text((item.pickup ?? '').toUpperCase()))),
                             DataCell(Center(child: Text((item.dropoff ?? '').toUpperCase()))),

@@ -1296,7 +1296,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   RxBool dashboardDataLoader = false.obs;
   dashboardData() async {
     dashboardDataLoader(true);
-    var response = await Api().get("enumerations/get");
+    var response = await Api().get("enumerations/get", sendCompanyId: true);
     if (response.statusCode == 200) {
       dashboardAllData = DashboardDataModel.fromJson(response.data);
       selectSubsidiariesValue = dashboardAllData!.subsidiaries![0];
