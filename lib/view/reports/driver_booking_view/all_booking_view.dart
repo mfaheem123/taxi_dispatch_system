@@ -235,17 +235,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                             width: fieldWidth / 2,
                             // height: 35,
                             items: controller.allDriverData?.drivers ?? [],
-                            value: controller.allDriverData?.drivers?.any((d) =>
-                                        d.id ==
-                                        controller.selectDriverObject?.id) ??
-                                    false
-                                ? controller.allDriverData!.drivers!.firstWhere(
-                                    (d) =>
-                                        d.id ==
-                                        controller.selectDriverObject?.id)
+                            value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                                ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
                                 : null,
                             itemLabel: (driver) =>
-                                driver.name ?? "".toUpperCase(),
+                            driver.name ?? "".toUpperCase(),
                             onChanged: (val) {
                               controller.selectDriverObject = val;
                               controller.update();
@@ -413,127 +407,97 @@ class _AllBookingViewState extends State<AllBookingView> {
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
+
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    width: MediaQuery.of(context)
-                        .size
-                        .width, // Screen ki poori width
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: DatatableWidget(
-                          columns: [
-                            buildHeaderWithSearch(title: "REF #"),
-                            buildHeaderWithSearch(title: "INVOICE #"),
-                            buildHeaderWithSearch(title: "DATETIME"),
-                            buildHeaderWithSearch(title: "CUSTOMER"),
-                            buildHeaderWithSearch(title: "PICKUP"),
-                            buildHeaderWithSearch(title: "DROPOFF"),
-                            buildHeaderWithSearch(title: "FARE"),
-                            buildHeaderWithSearch(title: "ACC FARE"),
-                            buildHeaderWithSearch(title: "ACC"),
-                            buildHeaderWithSearch(title: "ORDER #"),
-                            buildHeaderWithSearch(title: "P/T"),
-                            buildHeaderWithSearch(title: "J/T"),
-                            buildHeaderWithSearch(title: "DRV"),
-                            buildHeaderWithSearch(title: "VEH"),
-                            buildHeaderWithSearch(title: "SUBS"),
-                            buildHeaderWithSearch(title: "STATUS"),
-                            buildHeaderWithSearch(
-                                title: "ACTION",
-                                customWidget: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.search,
-                                        size: 28,
-                                      ),
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                width: MediaQuery.of(context)
+                    .size
+                    .width,
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: FittedBox(
+                fit: BoxFit.contain,
+
+                child: DatatableWidget(
+                        columns: [
+                          buildHeaderWithSearch(title: "REF #"),
+                          buildHeaderWithSearch(title: "INVOICE #"),
+                          buildHeaderWithSearch(title: "DATETIME"),
+                          buildHeaderWithSearch(title: "CUSTOMER"),
+                          buildHeaderWithSearch(title: "PICKUP"),
+                          buildHeaderWithSearch(title: "DROPOFF"),
+                          buildHeaderWithSearch(title: "FARE"),
+                          buildHeaderWithSearch(title: "ACC FARE"),
+                          buildHeaderWithSearch(title: "ACC"),
+                          buildHeaderWithSearch(title: "ORDER #"),
+                          buildHeaderWithSearch(title: "P/T"),
+                          buildHeaderWithSearch(title: "J/T"),
+                          buildHeaderWithSearch(title: "DRV"),
+                          buildHeaderWithSearch(title: "VEH"),
+                          buildHeaderWithSearch(title: "SUBS"),
+                          buildHeaderWithSearch(title: "STATUS"),
+                          buildHeaderWithSearch(
+                              title: "ACTION",removeSearching: true),
+                        ],
+                        totalRow: totalRows,
+                        cells: [
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          DataCell(
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ), // border color & thickness
                                     ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.close,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
+                                    onPressed: () {},
+                                    child: Icon(
+                                      Icons.edit_calendar,
+                                      size: 28,
                                     ),
-                                  ],
-                                )),
-                          ],
-                          totalRow: totalRows,
-                          cells: [
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            DataCell(
-                              Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.edit_calendar,
-                                        size: 28,
-                                      ),
+                                  ),
+                                  Text("|"),
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      side: BorderSide(
+                                        color: Colors.transparent,
+                                      ), // border color & thickness
                                     ),
-                                    Text("|"),
-                                    OutlinedButton(
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: Colors.transparent,
-                                        ), // border color & thickness
-                                      ),
-                                      onPressed: () {},
-                                      child: Icon(
-                                        Icons.delete_forever,
-                                        size: 28,
-                                        color: DynamicColors.redClr,
-                                      ),
+                                    onPressed: () {},
+                                    child: Icon(
+                                      Icons.delete_forever,
+                                      size: 28,
+                                      color: DynamicColors.redClr,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ]),
-                    ),
+                          ),
+                        ]),
                   ),
-                )
-              ],
+                ),
+                )],
             ));
       });
     });
