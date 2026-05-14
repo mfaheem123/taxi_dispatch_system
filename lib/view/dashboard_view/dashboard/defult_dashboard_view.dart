@@ -364,6 +364,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                       controller.markers.clear();
+                                                                      controller. refreshPostAllFields();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
@@ -630,6 +631,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.dropOffController.clear();
+                                                                      controller. refreshPostAllFields();
                                                                       controller.markers.clear();
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
@@ -1118,6 +1120,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
                                                                             controller.markers.clear();
+                                                                            controller. refreshPostAllFields();
                                                                             controller.polyLineMarkerInfo.clear();
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
@@ -1276,6 +1279,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             : KbdActivatable(
                                                                           focusNode: clearDrop,
                                                                           onActivate: () {
+                                                                            controller. refreshPostAllFields();
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
                                                                             controller.pickupController.clear();
                                                                             controller.dropOffController.clear();
@@ -1306,6 +1310,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             controller.pickupTwoWayController.text = tempDrop;
                                                                             controller.dropOffTwoWayController.text = tempPic;
                                                                             controller.dropDownShow.value = false;
+
                                                                             controller.update();
                                                                           },
                                                                           child: const Icon(Icons.swap_vert, color: Color(0xFF575797), size: 20),

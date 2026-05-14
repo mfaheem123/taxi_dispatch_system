@@ -2717,9 +2717,6 @@ Get.back();
    breakReject(driveID,ONBreak) async {
 
 
-
-
-
      var formData = {
        "driver_id": driveID,
        "on_break": ONBreak,
