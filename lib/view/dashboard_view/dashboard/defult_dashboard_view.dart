@@ -1480,7 +1480,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 child: SizedBox(
                                                                   height: 30,
                                                                   child: CustomTextField(
-                                                                    hintText: "Slugg",
+                                                                    hintText: "R/FARE",
                                                                     controller: controller.slugControllerReturn,
                                                                     readOnly: true,
                                                                     borderRadius: 6,
