@@ -125,10 +125,13 @@ class ReportController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
+  final bookingStartTimeController = TextEditingController();
+  final bookingEndTimeController = TextEditingController();
   int selectedValue = 0; // 👈 groupValue
   RxBool ptValue = false.obs;
   RxBool cashValue = false.obs;
   RxBool accountValue = false.obs;
+  RxBool creditCardValue = false.obs;
   RxBool creditCardPaidValue = false.obs;
 
   ///focusNode value of checkBox
@@ -137,13 +140,14 @@ class ReportController extends GetxController {
   final FocusNode cashNode = FocusNode();
   final FocusNode accountNode = FocusNode();
   final FocusNode creditCardPaidNode = FocusNode();
+  final FocusNode creditCardNode = FocusNode();
 
   /// text editing controller
   final customerController = TextEditingController();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final pickUpController = TextEditingController();
-  final dropUpController = TextEditingController();
+  final dropOffController = TextEditingController();
   final orderNumberController = TextEditingController();
   final bookedByController = TextEditingController();
 
