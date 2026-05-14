@@ -180,25 +180,30 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       runSpacing: 8, // vertical gap when wrapped
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Stack(
+                          alignment: Alignment.centerRight,
                           children: [
-                            ShortcutKeyWidget(),
-                            ShortcutKeyWidget(
-                                keyss: "F2",
-                                valuess: "BOOKING FORM"),
-                            ShortcutKeyWidget(
-                                keyss: "F3",
-                                valuess: "DRIVER VEHICLE"),
-                            ShortcutKeyWidget(
-                                keyss: "F4",
-                                valuess: "DRIVER EARNING"),
-                            ShortcutKeyWidget(
-                                keyss: "F6", valuess: "QUOTATION"),
-                            // width >= 1900
-                            //     ? Spacer()
-                            //     : SizedBox.shrink(),
-                            const Spacer(),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ShortcutKeyWidget(),
+                                ShortcutKeyWidget(
+                                    keyss: "F2",
+                                    valuess: "BOOKING FORM"),
+                                ShortcutKeyWidget(
+                                    keyss: "F3",
+                                    valuess: "DRIVER VEHICLE"),
+                                ShortcutKeyWidget(
+                                    keyss: "F4",
+                                    valuess: "DRIVER EARNING"),
+                                ShortcutKeyWidget(
+                                    keyss: "F6", valuess: "QUOTATION"),
+                                // width >= 1900
+                                //     ? Spacer()
+                                //     : SizedBox.shrink(),
+
+                              ],
+                            ),
                             Padding(
                               padding:
                               const EdgeInsets.only(right: 6.0),
@@ -364,7 +369,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                       controller.markers.clear();
-                                                                      controller. refreshPostAllFields();
+                                                                      controller.fixedFare.value = "0";
+                                                                      controller.returnFareValue = "";
+                                                                      controller.slugControllerReturn.clear();
+                                                                      controller.slugController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
@@ -631,7 +639,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.dropOffController.clear();
-                                                                      controller. refreshPostAllFields();
+                                                                      controller.fixedFare.value = "0";
+                                                                      controller.returnFareValue = "";
+                                                                      controller.slugControllerReturn.clear();
+                                                                      controller.slugController.clear();
                                                                       controller.markers.clear();
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
@@ -1120,7 +1131,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
                                                                             controller.markers.clear();
-                                                                            controller. refreshPostAllFields();
+                                                                            controller.fixedFare.value = "0";
+                                                                            controller.returnFareValue = "";
+                                                                            controller.slugControllerReturn.clear();
+                                                                            controller.slugController.clear();
                                                                             controller.polyLineMarkerInfo.clear();
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
@@ -1279,7 +1293,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             : KbdActivatable(
                                                                           focusNode: clearDrop,
                                                                           onActivate: () {
-                                                                            controller. refreshPostAllFields();
+                                                                            controller.tempStoreMils = null;
+                                                                            controller.fixedFare.value = "0";
+                                                                            controller.returnFareValue = "";
+                                                                            controller.slugControllerReturn.clear();
+                                                                            controller.slugController.clear();
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
                                                                             controller.pickupController.clear();
                                                                             controller.dropOffController.clear();
