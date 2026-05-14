@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/restricDriver.dart';
@@ -70,34 +71,70 @@ class ReportController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver login functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
+  var fromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  var toDate = Rxn<DateTime>(DateTime.now());
+  final logStartTimeController = TextEditingController();
+  final logEndTimeController = TextEditingController();
 
-  // DriverLogsReportListModel? driverLogsData;
-  // bool isLoadingLogs = false;
-  //
-  // getDriverLogs() async {
-  //   if(selectDriverObject == null) {
-  //     BotToast.showText(text: "PLEASE SELECT A DRIVER");
-  //     return;
-  //   }
-  //   isLoadingLogs = true;
-  //   update();
-  //
-  //   try{
-  //     var response = await Api().get("bookings/driver-logs",
-  //       queryParameters: {
-  //       "driver_id": selectDriverObject?.id.toString(),
-  //       "from_date": fromDate,
-  //       "to_date": toDate,
-  //       }
-  //     );
-  //   }
-  // }
+  DriverLogsReportListModel? driverLogsData;
+  bool isLoadingLogs = false;
+
+  // Search controllers (agar headers mein search use karna ho)
+  final refSearch = TextEditingController();
+  final vehicleSearch = TextEditingController();
+  final pickupSearch = TextEditingController();
+  final dropoffSearch = TextEditingController();
+  final faresSearch = TextEditingController();
+
+  getDriverLogs() async {
+    if(selectDriverObject == null) {
+      BotToast.showText(text: "PLEASE SELECT A DRIVER");
+      return;
+    }
+    isLoadingLogs = true;
+    update();
+
+    try{
+      String formattedFromDate = fromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
+          : "";
+
+      String formattedToDate = toDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(toDate.value!)
+          : "";
+      var response = await Api().get("bookings/driver-logs",
+        queryParameters: {
+        "driver_id": selectDriverObject?.id.toString(),
+        "from_date": formattedFromDate,
+        "to_date": formattedToDate,
+        "from_time": logStartTimeController.text,
+        "to_time": logEndTimeController.text,
+
+          "ref": refSearch.text,
+          "vehicle": vehicleSearch.text,
+          "pickup": pickupSearch.text,
+          "dropoff": dropoffSearch.text,
+          "fares": faresSearch.text,
+        }
+      );
+      if (response.statusCode == 200) {
+        driverLogsData = DriverLogsReportListModel.fromJson(response.data);
+        // print("Driver Logs Data Fetched: ${driverLogsData?.count}");
+        print("Driver Logs Data: ${response.data}");
+      }
+    } catch (e) {
+      debugPrint("Error fetching driver logs: $e");
+    } finally {
+      isLoadingLogs = false;
+      update();
+    }
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
 
 
   var selectedDriver = "Select Driver".obs;
-  var fromDate = Rxn<DateTime>();
-  var toDate = Rxn<DateTime>();
+  // var fromDate = Rxn<DateTime>();
+  // var toDate = Rxn<DateTime>();
   var fromTime = Rxn<TimeOfDay>();
   var toTime = Rxn<TimeOfDay>();
 
@@ -109,8 +146,7 @@ class ReportController extends GetxController {
     selectedDriver.value = driver;
     update();
   }
-  final logStartTimeController = TextEditingController();
-  final logEndTimeController = TextEditingController();
+
 
   void applyFilters() {
     if (selectedDriver.value != "Select Driver") {
