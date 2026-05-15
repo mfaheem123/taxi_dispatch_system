@@ -791,6 +791,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   String? tempStoreMils;
+  String? tempStoreReturnMils;
 
 // your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
@@ -827,6 +828,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
         if (item.markerType == "PICKUP LOCATION" ||
             item.markerType == "Create Booking PICKUP") {
+          tempStoreMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -840,6 +842,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           );
         } else if (item.markerType == "DROP LOCATION" ||
             item.markerType == "Create Booking DROP LOCATION") {
+          tempStoreMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -852,6 +855,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             ),
           );
         } else if (item.markerType == "PICKUP TWO WAY LOCATION") {
+          tempStoreReturnMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -864,6 +868,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             ),
           );
         } else if (item.markerType == "DROP TWO WAY LOCATION") {
+          tempStoreReturnMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -950,7 +955,11 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
         mapController.fitCamera(cameraFit);
       }
       if(tempStoreMils == null){
-        tempStoreMils = totalDistance.value;
+        if(tempStoreReturnMils == null){
+          tempStoreMils = totalDistance.value;
+        }else{
+          tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
+        }
       }
 
       final storedTemFare = await getFares(
@@ -967,7 +976,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-          returnMiles:dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-(double.parse(tempStoreMils.toString()))).toString():null,
+          returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
       );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
@@ -1889,8 +1898,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         markers.indexWhere((test) => test.type == "pickup two way");
     int pickUpIndex = markers.indexWhere((test) => test.type == "pickup");
     int dropOffIndex = markers.indexWhere((test) => test.type == "dropOff");
-    int dropOffTwoIndex =
-        markers.indexWhere((test) => test.type == "dropOff two way");
+    int dropOffTwoIndex = markers.indexWhere((test) => test.type == "dropOff two way");
     double? pickUpLatLat;
     double? pickUpLngLat;
     double? dropOffLatLat;
@@ -1905,6 +1913,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       // Assuming 'lat' is a property or constant available in your scope
       pickUpLatLat = markers[pickUpIndex].point.latitude;
       pickUpLngLat = markers[pickUpIndex].point.longitude;
+
     }
 
     // Check if the marker was actually found to avoid errors
@@ -1912,6 +1921,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       // Assuming 'lat' is a property or constant available in your scope
       dropOffLatLat = markers[dropOffIndex].point.latitude;
       dropOffLngLat = markers[dropOffIndex].point.longitude;
+
     }
 
 // Check if the marker was actually found to avoid errors
@@ -1947,11 +1957,9 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
 
       if (mobileController.text.isNotEmpty) 'mobile': mobileController.text,
       if (telController.text.isNotEmpty) 'telephone': telController.text,
-      'customer':
-          // '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
+      'customer': // '[{name: "${nameController.text}", email: "${emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
           '[{name: "${nameController.text==""?"Passenger":nameController.text}", email: "${emailController.text==''?"Dumy@gmail.com":emailController.text}", mobile: "${mobileController.text}", telephone: "${telController.text}", blacklist: false}]',
-      'pickup_date':
-          "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
+      'pickup_date': "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
       if (pickUpTimeController.text.isNotEmpty)
         'pickup_time': pickUpTimeController.text.trim(),
       if (minController.text.isNotEmpty) 'lead_time': minController.text,
@@ -2104,6 +2112,7 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         }
       }
     }
+
     if (multiReservationList.isNotEmpty) {
       for (var element in multiReservationList) {
         DateTime parsedDate = DateFormat('yyyy-M-d').parse(element.startDate!);
@@ -2692,6 +2701,41 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
      if (response.statusCode == 200) {
        BotToast.showText(text: "BOOKING DELETED SUCCESSFULLY!");
        print(json.encode(response.data));
+     }
+   }
+
+   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>todo break ACCEPT or REJECT
+   breakACCEPT(driveID,ONBreak) async {
+
+
+
+
+
+     var formData = {
+       "driver_id": driveID,
+       "on_break": ONBreak,
+     };
+
+     var response = await Api().post(formData, 'drivers/break-request', auth: false);
+
+     if (response.statusCode == 200) {
+
+Get.back();
+     }
+   }
+   breakReject(driveID,ONBreak) async {
+
+
+     var formData = {
+       "driver_id": driveID,
+       "on_break": ONBreak,
+     };
+
+     var response = await Api().post(formData, 'drivers/break-request', auth: false);
+
+     if (response.statusCode == 200) {
+       Get.back();
+
      }
    }
 }
