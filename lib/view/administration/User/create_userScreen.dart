@@ -278,8 +278,7 @@ class CreateUserScreen extends StatelessWidget {
               child:
                   CustomButton(
                 onTap: () {
-                  String email =
-                  controller.userEmailController.text.trim();
+                  String email = controller.userEmailController.text.trim();
 
                   if (email.isEmpty) {
                     BotToast.showText(text: "Email is required");
