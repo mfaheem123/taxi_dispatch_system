@@ -1287,6 +1287,18 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get dashboard data
+
+
+
+
+
+
+
+
+
+
+
+
    FocusNode driverDropdownFocusNode = FocusNode();
 
   DashboardDataModel? dashboardAllData;
@@ -1303,6 +1315,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   int selectedTabId = 1;
 
   RxBool dashboardDataLoader = false.obs;
+
   dashboardData() async {
     dashboardDataLoader(true);
     var response = await Api().get("enumerations/get");
@@ -1335,8 +1348,31 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
             deletedClr: true.obs,
             dropDownList: []),
       );
+
       selectPaymentTypeValue = dashboardAllData!.paymentTypes![0];
       selectJourneyTypeValue = dashboardAllData!.journeyTypes![0];
+
+      if (dashboardAllData!.vehicleTypes != null && dashboardAllData!.vehicleTypes!.isNotEmpty) {
+        try {
+          // List me se 'saloon' naam ka vehicle object filter karein
+          DashboardVehicleTypeObject saloonVehicle = dashboardAllData!.vehicleTypes!.firstWhere(
+                (vehicle) => vehicle.name?.toLowerCase().trim() == 'saloon',
+            orElse: () => dashboardAllData!.vehicleTypes!.first, // Agar saloon na mile to pehla item select ho jaye
+          );
+
+          // Dono Outward aur Return fields ko page load par Saloon assign kar diya
+          selectVehicleValue = saloonVehicle;
+          selectVehicleValueReturn = saloonVehicle;
+        } catch (e) {
+          // Kisi unexpected crash se bachne k lye fallback safe index [0]
+          selectVehicleValue = dashboardAllData!.vehicleTypes![0];
+          selectVehicleValueReturn = dashboardAllData!.vehicleTypes![0];
+        }
+      }
+
+
+
+
       selectVehicleValue = dashboardAllData!.vehicleTypes![0];
       getAccountData(subsidiariesId: dashboardAllData!.subsidiaries![0].id);
       getDashboardTableData(tableId: bookingTabsList!.first.id);
@@ -2736,6 +2772,20 @@ Get.back();
      if (response.statusCode == 200) {
        Get.back();
 
+     }
+   }
+   DisablePanic(driveID) async {
+
+
+
+
+
+
+     var response = await Api().get( 'drivers/panic-disable/$driveID', auth: false);
+
+     if (response.statusCode == 200) {
+
+       Get.back();
      }
    }
 }

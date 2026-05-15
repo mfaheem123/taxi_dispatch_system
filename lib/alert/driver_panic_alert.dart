@@ -99,6 +99,7 @@
 //     );
 //   }
 // }
+import 'package:dashboard_new1/view/dashboard_view/Controller/dashboard_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:html' as html;
@@ -127,7 +128,7 @@ class DriverPanicAlert extends StatefulWidget {
 class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   html.AudioElement? _audioElement;
-
+  DashboardController controller =Get.put(DashboardController());
   @override
   void initState() {
     super.initState();
@@ -164,111 +165,120 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          return Container(
-            width: 450,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: Color.lerp(Colors.red, Colors.transparent, _controller.value)!,
-                width: 5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withOpacity(_controller.value * 0.7),
-                  blurRadius: 20,
-                  spreadRadius: 10,
-                ),
-              ],
-            ),
-            child: child,
-          );
-        },
-
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(15),
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-              ),
-              child: const Text(
-                "🚨 EMERGENCY - PANIC ALERT 🚨",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 80),
-
-            const SizedBox(height: 10),
-            Text(
-              widget.driverName.toUpperCase(),
-              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-            ),
-            const Text("IS IN DANGER!", style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w600)),
-
-            const SizedBox(height: 20),
-
-            // --- Naya Data Display Section ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              child: Container(
-                padding: const EdgeInsets.all(15),
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              return Container(
+                width: 450,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.person, size: 20, color: Colors.blueGrey),
-                        const SizedBox(width: 10),
-                        Text("Username: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                        Text(widget.driverUsername, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        const Icon(Icons.phone, size: 20, color: Colors.green),
-                        const SizedBox(width: 10),
-                        Text("Mobile: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
-                        Text(widget.driverMobile, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
-                      ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: Color.lerp(Colors.red, Colors.transparent, _controller.value)!,
+                    width: 5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(_controller.value * 0.7),
+                      blurRadius: 20,
+                      spreadRadius: 10,
                     ),
                   ],
                 ),
-              ),
-            ),
+                child: child,
+              );
+            },
 
-            const SizedBox(height: 25),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: CustomButton(
-                height: 55,
-                width: double.infinity,
-                btnText: "STOP SIREN & CLOSE",
-                btnColor: Colors.black,
-                borderRadius: 10,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                onTap: () => Get.back(),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
+                  decoration: const BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                  ),
+                  child: const Text(
+                    "🚨 EMERGENCY - PANIC ALERT 🚨",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Icon(Icons.warning_amber_rounded, color: Colors.red, size: 80),
+
+                const SizedBox(height: 10),
+                Text(
+                  widget.driverName.toUpperCase(),
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                const Text("IS IN DANGER!", style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.w600)),
+
+                const SizedBox(height: 20),
+
+                // --- Naya Data Display Section ---
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                  child: Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.person, size: 20, color: Colors.blueGrey),
+                            const SizedBox(width: 10),
+                            Text("Username: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                            Text(widget.driverUsername, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            const Icon(Icons.phone, size: 20, color: Colors.green),
+                            const SizedBox(width: 10),
+                            Text("Mobile: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey.shade700)),
+                            Text(widget.driverMobile, style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: CustomButton(
+                    height: 55,
+                    width: double.infinity,
+                    btnText: "STOP SIREN & CLOSE",
+                    btnColor: Colors.black,
+                    borderRadius: 10,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    onTap: () {
+
+
+                        controller.DisablePanic(widget.driverID);
+
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }
