@@ -142,7 +142,7 @@ class _DriverPanicAlertState extends State<DriverPanicAlert> with SingleTickerPr
   void _playPanicSound() {
     try {
       _audioElement = html.AudioElement();
-      _audioElement!.src = 'assets/sound/alarm_sound.mp3.mpeg';
+      _audioElement!.src = 'assets/sound/alarm_sound.mp3';
       _audioElement!.loop = true;
       _audioElement!.volume = 1.0;
       _audioElement!.setAttribute('type', 'audio/mpeg');
