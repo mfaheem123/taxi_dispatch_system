@@ -341,8 +341,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 if(v.isEmpty) {
                                                                   controller
                                                                       .dropDownShow
-                                                                      .value =
-                                                                  false;
+                                                                      .value = false;
                                                                 }else{
                                                                   controller.dropDownShow.value = true;
                                                                 }

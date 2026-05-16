@@ -213,6 +213,7 @@ import 'package:dashboard_new1/view/notificationServices.dart';
 import 'package:dashboard_new1/view/setting/controller/setting_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart'; // Add kiya
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -234,20 +235,22 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
 
-  // --- Firebase Web Initialization ---
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
-      authDomain: "texidispetchsystem.firebaseapp.com",
-      projectId: "texidispetchsystem",
-      storageBucket: "texidispetchsystem.firebasestorage.app",
-      messagingSenderId: "81697669010",
-      appId:"1:81697669010:web:388758b1deabeb4af60b4b",
-    ),
-  );
+  if (!kIsWeb) {
+    // --- Firebase Web Initialization ---
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyDDxZ8lPfTJ1XcUn_7HpyvExygoWxgQR-A",
+        authDomain: "texidispetchsystem.firebaseapp.com",
+        projectId: "texidispetchsystem",
+        storageBucket: "texidispetchsystem.firebasestorage.app",
+        messagingSenderId: "81697669010",
+        appId:"1:81697669010:web:388758b1deabeb4af60b4b",
+      ),
+    );
 
-  // --- Notification Setup ---
-  await setupWebNotifications();
+    // --- Notification Setup ---
+    await setupWebNotifications();
+  }
 
   disableInspect();
 
@@ -316,11 +319,10 @@ class MyApp extends StatelessWidget {
       initialRoute: AppPages.initial,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
-        child = ScrollConfiguration(
-          behavior: MyBehavior(),
-          child: EasyLoading.init(builder: BotToastInit())(context, child),
-        );
-        return child;
+        if (child == null) return const SizedBox.shrink();
+        child = BotToastInit()(context, child);     // bot_toast overlay
+        child = EasyLoading.init()(context, child); // easy_loading overlay
+        return ScrollConfiguration(behavior: MyBehavior(), child: child);
       },
       navigatorObservers: [BotToastNavigatorObserver()],
       getPages: AppPages.routes,

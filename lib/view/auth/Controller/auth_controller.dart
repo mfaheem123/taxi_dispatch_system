@@ -73,14 +73,14 @@ class AuthController extends GetxController {
     PostAuthLoader(true);
 
     // 1. FCM Token fetch karein
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    print("FCM Token: $fcmToken");
+    // String? fcmToken = await FirebaseMessaging.instance.getToken();
+    // print("FCM Token: $fcmToken");
 
     var formData = {
       "username": usernameController.text,
       "password": passwordController.text,
       // 2. web_device_id mein fcmToken pass karein
-      "web_device_id": fcmToken ?? "",
+      "web_device_id": /*fcmToken ?? */"",
     };
 
     var response = await Api().post(formData, 'employees/login', auth: false);
