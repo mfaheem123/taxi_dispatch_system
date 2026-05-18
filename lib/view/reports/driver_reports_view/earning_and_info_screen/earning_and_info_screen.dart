@@ -35,6 +35,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
   int rightSideTab = 1;
 
   void handleView() {
+    controller.getAllDriverEarnings();
     setState(() {
       isDataLoaded = true;
       rightSideTab = 0;
@@ -145,8 +146,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               height: 30,
                                               child: KeyboardDatePicker(
                                                 initialDate: fromDate,
-                                                onChanged: (date) => setState(
-                                                    () => fromDate = date),
+                                                onChanged: (date) {
+                                                  setState(() => fromDate = date);
+                                                  controller.fromDate.value = date;
+                                                },
                                               )),
                                         ),
                                         labeledField(
@@ -159,8 +162,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               height: 30,
                                               child: KeyboardDatePicker(
                                                 initialDate: toDate,
-                                                onChanged: (date) => setState(
-                                                    () => toDate = date),
+                                                onChanged: (date) {
+                                                  setState(() => toDate = date);
+                                                  controller.toDate.value = date;
+                                                },
                                               )),
                                         ),
                                         CustomButton(
@@ -170,6 +175,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: AppText.all,
+                                          onTap: () {
+                                            controller.getAllDriverEarnings(driverType: "all");
+                                          },
                                         ),
                                         CustomButton(
                                           verticalPadding: 0.0,
@@ -178,6 +186,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: AppText.login,
+                                          onTap: () {
+                                            controller.getAllDriverEarnings(driverType: "login");
+                                          },
                                         ),
                                         CustomButton(
                                           verticalPadding: 0.0,
@@ -186,6 +197,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: "LOGOUT",
+                                          onTap: () {
+                                            controller.getAllDriverEarnings(driverType: "logout");
+                                          },
                                         ),
                                         SizedBox(width: 10),
                                         CustomButton(
@@ -195,7 +209,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: AppText.view,
-                                          onTap: handleView,
+                                          onTap: () {
+                                            handleView();
+                                          },
                                         ),
                                         const SizedBox(height: 20),
                                         if (isDataLoaded) ...[
@@ -214,81 +230,84 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                   color: Colors.blue
                                                       .withOpacity(0.2)),
                                             ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceAround,
-                                              children: [
-                                                _summaryItem(
-                                                    "TOTAL BOOKINGS", "0"),
-                                                _summaryItem(
-                                                    "TOTAL AMOUNT", "£ 0.00"),
-                                              ],
-                                            ),
+                                            child: controller.isLoadingEarning
+                                                ? const Center(
+                                                    child:
+                                                        CircularProgressIndicator())
+                                                : Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      _summaryItem(
+                                                          "TOTAL BOOKINGS",
+                                                          "${controller.earningInfoListModel?.data?.totalBookings ?? 0}"),
+                                                      _summaryItem(
+                                                          "TOTAL AMOUNT",
+                                                          "£ ${controller.earningInfoListModel?.data?.totalAmount?.toStringAsFixed(2) ?? '0.00'}"),
+                                                    ],
+                                                  ),
                                           ),
                                         ],
                                       ],
                                     ),
                                     const SizedBox(height: 20),
-                                    Container(
+                                    (controller.earningInfoListModel?.data?.drivers != null &&
+                                        controller.earningInfoListModel!.data!.drivers!.isNotEmpty &&
+                                        !controller.isLoadingEarning)
+                                        ? Container(
                                       decoration: BoxDecoration(
-                                        border: Border.all(
-                                            color: Colors.grey.shade300),
+                                        border: Border.all(color: Colors.grey.shade300),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Table(
-                                        border: TableBorder.symmetric(
-                                            inside: BorderSide(
-                                                color: Colors.grey.shade300,
-                                                width: 0.5)),
-                                        columnWidths: const {
-                                          0: FlexColumnWidth(1), // Username
-                                          1: FlexColumnWidth(1.5), // Driver
-                                          2: FlexColumnWidth(1), // Bookings
-                                          3: FlexColumnWidth(1), // Earnings
-                                        },
-                                        children: [
-                                          // Table Header
-                                          TableRow(
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey.shade100),
+                                            border: TableBorder.symmetric(
+                                                inside: BorderSide(color: Colors.grey.shade300, width: 0.5)),
+                                            columnWidths: const {
+                                              0: FlexColumnWidth(1),   // Username
+                                              1: FlexColumnWidth(1.5), // Driver Name
+                                              2: FlexColumnWidth(1),   // Total Bookings
+                                              3: FlexColumnWidth(1),   // Total Earnings
+                                            },
                                             children: [
-                                              _tableHeader("USERNAME"),
-                                              _tableHeader("DRIVER"),
-                                              _tableHeader("TOTAL BOOKINGS"),
-                                              _tableHeader("TOTAL EARNINGS"),
+                                              // Table Header
+                                              TableRow(
+                                                decoration: BoxDecoration(color: Colors.grey.shade100),
+                                                children: [
+                                                  _tableHeader("USERNAME"),
+                                                  _tableHeader("DRIVER"),
+                                                  _tableHeader("TOTAL BOOKINGS"),
+                                                  _tableHeader("TOTAL EARNINGS"),
+                                                ],
+                                              ),
+                                              // if (!controller.isLoadingEarning && controller.earningInfoListModel?.data?.drivers != null)
+                                                ...controller.earningInfoListModel!.data!.drivers!.map((driver) {
+                                                  return TableRow(
+                                                    children: [
+                                                      _tableCell(driver.username ?? "-"),
+                                                      _tableCell(driver.name ?? "-"),
+                                                      _tableCell(driver.totalBookings ?? "0"),
+                                                      _tableCell("£ ${driver.totalEarnings ?? "0.00"}"),
+                                                    ],
+                                                  );
+                                                }).toList(),
                                             ],
                                           ),
-
-                                          // TableRow(
-                                          //   children: [
-                                          //     _tableCell("user_01"),
-                                          //     _tableCell("John Doe"),
-                                          //     _tableCell("45"),
-                                          //     _tableCell("\$1,200"),
-                                          //   ],
-                                          // ),
-                                          // // Sample Row 2
-                                          // TableRow(
-                                          //   children: [
-                                          //     _tableCell("user_02"),
-                                          //     _tableCell("Alex Smith"),
-                                          //     _tableCell("32"),
-                                          //     _tableCell("\$850"),
-                                          //   ],
-                                          // ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 30),
-                                    Center(
-                                      child: Column(
-                                        children: [
-                                          Icon(
-                                            Icons.block,
-                                            size: 120,
-                                            color: Colors.grey.withOpacity(0.3),
-                                          ),
-                                        ],
+                                    )
+                                        : Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 50.0),
+                                        child: Column(
+                                          children: [
+                                            controller.isLoadingEarning
+                                                ? const CircularProgressIndicator()
+                                                : Icon(
+                                              Icons.block,
+                                              size: 120,
+                                              color: Colors.grey.withOpacity(0.3),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -310,48 +329,36 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           Row(
                                             children: [
                                               CustomButton(
-                                                  btnText: "STATISTICS",
-                                                  borderRadius: 4,
-                                                  verticalPadding: 0.0,
-                                                  width: 130,
-                                                  height: 30,
-                                                  fontSize: 14,
-                                                  btnColor: rightSideTab == 0
-                                                      ? DynamicColors.primaryClr
-                                                      : Colors.grey.shade500,
-                                                  onTap: () => setState(
-                                                      () => rightSideTab = 0),
-
-                                                ),
+                                                btnText: "STATISTICS",
+                                                borderRadius: 4,
+                                                verticalPadding: 0.0,
+                                                width: 130,
+                                                height: 30,
+                                                fontSize: 14,
+                                                btnColor: rightSideTab == 0
+                                                    ? DynamicColors.primaryClr
+                                                    : Colors.grey.shade500,
+                                                onTap: () => setState(
+                                                    () => rightSideTab = 0),
+                                              ),
                                               const SizedBox(width: 10),
-                                               CustomButton(
-                                                  btnText: "DRIVER INFORMATION",
-                                                  borderRadius: 4,
-                                                  verticalPadding: 0.0,
-                                                  width: 250,
-                                                  height: 30,
-                                                  fontSize: 14,
-                                                  btnColor: rightSideTab == 1
-                                                      ? DynamicColors.primaryClr
-                                                      : Colors.grey.shade500,
-                                                  onTap: () => setState(
-                                                      () => rightSideTab = 1),
-                                                ),
+                                              CustomButton(
+                                                btnText: "DRIVER INFORMATION",
+                                                borderRadius: 4,
+                                                verticalPadding: 0.0,
+                                                width: 250,
+                                                height: 30,
+                                                fontSize: 14,
+                                                btnColor: rightSideTab == 1
+                                                    ? DynamicColors.primaryClr
+                                                    : Colors.grey.shade500,
+                                                onTap: () => setState(
+                                                    () => rightSideTab = 1),
+                                              ),
                                             ],
                                           ),
                                           const SizedBox(height: 20),
                                         ],
-
-                                        // --- CONTENT AREA ---
-                                        // if (isDataLoaded && rightSideTab == 0)
-                                        //   Center(
-                                        //     child: Container(
-                                        //       height: 300,
-                                        //       width: double.infinity,
-                                        //       color: Colors.grey.shade100,
-                                        //     ),
-                                        //   )
-                                        // else
                                         if (isDataLoaded && rightSideTab == 0)
                                           Column(
                                             children: [
@@ -359,21 +366,38 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                               // Chart Container
                                               Container(
                                                 height: 400,
-                                                padding: const EdgeInsets.all(10),
+                                                padding:
+                                                    const EdgeInsets.all(10),
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
-                                                  borderRadius: BorderRadius.circular(8),
-                                                  border: Border.all(color: Colors.grey.shade200),
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                      color:
+                                                          Colors.grey.shade200),
                                                 ),
                                                 child: DriverBookingChart(
-                                                  chartData: [
-                                                    DriverChartData("user_01", 45),
-                                                    DriverChartData("user_02", 32),
-                                                    DriverChartData("user_03", 58),
-                                                    DriverChartData("user_04", 20),
-                                                    DriverChartData("user_05", 38),
-                                                  ],
+                                                  chartData: controller.earningInfoListModel?.data?.drivers?.map((d) =>
+                                                      DriverChartData(
+                                                          d.username ?? "N/A",
+                                                          int.tryParse(d.totalBookings ?? "0") ?? 0
+                                                      )
+                                                  ).toList() ?? [],
                                                 ),
+                                                // child: DriverBookingChart(
+                                                //   chartData: [
+                                                //     DriverChartData(
+                                                //         "user_01", 45),
+                                                //     DriverChartData(
+                                                //         "user_02", 32),
+                                                //     DriverChartData(
+                                                //         "user_03", 58),
+                                                //     DriverChartData(
+                                                //         "user_04", 20),
+                                                //     DriverChartData(
+                                                //         "user_05", 38),
+                                                //   ],
+                                                // ),
                                               ),
                                             ],
                                           )
@@ -458,22 +482,26 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                             MainAxisSize.min,
                                                         children: [
                                                           CustomButton(
-                                                            verticalPadding: 0.0,
+                                                            verticalPadding:
+                                                                0.0,
                                                             width: 90,
                                                             height: 32,
                                                             borderRadius: 4,
                                                             fontSize: 12,
-                                                            btnText: AppText.active,
+                                                            btnText:
+                                                                AppText.active,
                                                           ),
                                                           const SizedBox(
                                                               width: 8),
                                                           CustomButton(
-                                                            verticalPadding: 0.0,
+                                                            verticalPadding:
+                                                                0.0,
                                                             width: 90,
                                                             height: 32,
                                                             borderRadius: 4,
                                                             fontSize: 12,
-                                                            btnText: "IN ACTIVE",
+                                                            btnText:
+                                                                "IN ACTIVE",
                                                           ),
                                                         ],
                                                       ),
@@ -522,12 +550,13 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       },
     );
   }
+
   Widget _tableHeader(String label) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Text(
         label,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         textAlign: TextAlign.center,
       ),
     );
@@ -538,7 +567,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Text(
         value,
-        style: const TextStyle(fontSize: 12),
+        style: const TextStyle(fontSize: 14),
         textAlign: TextAlign.center,
       ),
     );
@@ -556,5 +585,3 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     );
   }
 }
-
-

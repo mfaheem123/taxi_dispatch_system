@@ -1342,7 +1342,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   DepartmentObject? selectDepartmentData;
 
   getAccountData({subsidiariesId}) async {
-    var response = await Api().get("accounts/subsidiary/$subsidiariesId");
+    var response = await Api().get("accounts/subsidiary/$subsidiariesId", sendCompanyId: true);
     if (response.statusCode == 200) {
       selectDepartmentData = null;
       selectAccountValue = null;
@@ -1425,7 +1425,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       "payment_type": paymentType.text,
       "vehicle_type_name": vehicleTypeName.text,
       "job_due=": selectJobDue
-    });
+    },sendCompanyId: true,);
     if (response.statusCode == 200) {
       selectedTabId = tableId;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
@@ -1622,8 +1622,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
      required String searchingText,
    }) async {
      dashboardDataLoader(true);
-     final response = await Api().get("customers/search?mobile=$searchingText");
 
+     var response = await Api().get("customers/search?mobile=$searchingText",sendCompanyId: true,);
      if (response.statusCode == 200) {
        final list = response.data['customer'];
        if (list != null && list.isNotEmpty) {
@@ -2062,7 +2062,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     };
     print(markers);
     print(formData);
-    var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id");
+    var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id", sendCompanyId: true);
     if (response.statusCode == 200) {
 
       if(id != null){

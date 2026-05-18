@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/restricDriver.dart';
+import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
 
@@ -130,6 +131,46 @@ class ReportController extends GetxController {
     }
   }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
+
+
+  EarningInfoListModel? earningInfoListModel;
+  bool isLoadingEarning = false;
+
+  getAllDriverEarnings({String driverType = "all"}) async {
+    isLoadingEarning = true;
+    update();
+
+    try{
+        String formattedFromDate = fromDate.value != null
+            ? DateFormat('yyyy-MM-dd').format(fromDate.value!)
+            : "";
+
+        String formattedToDate = toDate.value != null
+            ? DateFormat('yyyy-MM-dd').format(toDate.value!)
+            : "";
+
+    var response = await Api().get("bookings/booking-driver-statistics",
+      queryParameters: {
+        "from_date": formattedFromDate,
+        "to_date": formattedToDate,
+        "driver_type": driverType,
+        if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
+      },
+    );
+    if (response.statusCode == 200) {
+      earningInfoListModel = EarningInfoListModel.fromJson(response.data);
+      print("Driver Earning Data: ${response.data}");
+    }
+  } catch (e) {
+      print("Error: $e");
+    } finally {
+      isLoadingEarning = false;
+      update();
+    }
+  }
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
 
 
   var selectedDriver = "Select Driver".obs;

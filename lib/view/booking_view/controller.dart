@@ -90,7 +90,7 @@ class BookingController extends GetxController{
           "subsidiary" : subsidiary.text,
 
 
-        }
+        }, sendCompanyId: true,
     );
     if(response.statusCode == 200){
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
@@ -163,6 +163,7 @@ class BookingController extends GetxController{
           "journey_type": webjourneyType.text,
           "subsidiary" : websubsidiary.text,
         }
+        ,sendCompanyId: true,
     );
     if(response.statusCode == 200){
       webBookingModelData = DashboardTableModel.fromJson(response.data);
@@ -236,7 +237,7 @@ class BookingController extends GetxController{
           "booking_status": completedbookingStatus.text,
           "journey_type": completedjourneyType.text,
           "subsidiary" : completedsubsidiary.text,
-        }
+        },sendCompanyId: true,
     );
     if(response.statusCode == 200){
       completedBookingModelData = DashboardTableModel.fromJson(response.data);
@@ -289,7 +290,7 @@ class BookingController extends GetxController{
           "pickup": multipickup.text,
           "dropoff": multidropOff.text,
           "mobile": multiMobile.text,
-        }
+        },sendCompanyId: true,
     );
     if(response.statusCode == 200){
       multiBookingModelData = DashboardTableModel.fromJson(response.data);
@@ -360,7 +361,7 @@ class BookingController extends GetxController{
           "booking_status": appbookingStatus.text,
           "journey_type": appjourneyType.text,
           "subsidiary" : appsubsidiary.text,
-        }
+        },sendCompanyId: true,
     );
     if(response.statusCode == 200){
       appBookingModelData = DashboardTableModel.fromJson(response.data);
@@ -432,7 +433,7 @@ class BookingController extends GetxController{
           "booking_status": trashbookingStatus.text,
           "journey_type": trashjourneyType.text,
           "subsidiary" : trashsubsidiary.text,
-        }
+        },sendCompanyId: true,
     );
     if(response.statusCode == 200){
       trashBookingModelData = DashboardTableModel.fromJson(response.data);
@@ -507,6 +508,7 @@ class BookingController extends GetxController{
           "journey_type": pendingjourneyType.text,
           "subsidiary" : pendingsubsidiary.text,
         }, auth: true,
+      sendCompanyId: true,
     );
     if(response.statusCode == 200){
       pendingBookingModelData = DashboardTableModel.fromJson(response.data);
