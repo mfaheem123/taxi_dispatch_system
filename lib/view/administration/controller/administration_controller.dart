@@ -208,8 +208,10 @@ class AdministrationController extends GetxController {
       );
     }
     userNameController.text = (userUpdate.username ?? "").toUpperCase();
-    passwordController.text = userUpdate.password ?? "";
-    confirmController.text = userUpdate.confirmpassword ?? "";
+    // passwordController.text = userUpdate.password ?? "";
+    // confirmController.text = userUpdate.confirmpassword ?? "";
+    passwordController.clear();
+    confirmController.clear();
     userEmailController.text = (userUpdate.email ?? "").toUpperCase();
     phoneController.text = userUpdate.phone ?? "";
     faxUserController.text = userUpdate.fax ?? "";
@@ -385,24 +387,27 @@ class AdministrationController extends GetxController {
     update();
   }
   RxBool isLoadUser = false.obs;
+
   createUser() async {
     isLoadUser(true);
+
     var multipartFile;
+
     if (userProfileImg != null) {
       multipartFile = dio.MultipartFile.fromBytes(
         userProfileImg!.bytes,
         filename: userProfileImg!.name,
       );
     }
-    final formData = dio.FormData.fromMap({
-      'subsidiary_id': selectedSubsidiary!.id,
-      'role_id': selectedRole!.id,
-      'username': userNameController.text,
-      'password': passwordController.text,
-      'confirmpassword': confirmController.text,
-      'email': userEmailController.text,
-      'phone': phoneController.text,
-      'fax': faxUserController.text,
+
+    // ✅ STEP 1: NORMAL MAP BANAO (NOT FormData YET)
+    Map<String, dynamic> data = {
+      'subsidiary_id': selectedSubsidiary?.id,
+      'role_id': selectedRole?.id,
+      'username': userNameController.text.trim(),
+      'email': userEmailController.text.trim(),
+      'phone': phoneController.text.trim(),
+      'fax': faxUserController.text.trim(),
       'release_note_viewed': 'true',
       'active': activeValue.value,
       'alldrivers': alldriversValue.value,
@@ -410,38 +415,128 @@ class AdministrationController extends GetxController {
       'allaccounts': accuntValue.value,
       'callreceiver': receviverValue.value,
       'allowtransferbookings': transferValue.value,
-      if (multipartFile != null) "image": multipartFile,
-    });
+    };
+
+    if (multipartFile != null) {
+      data["image"] = multipartFile;
+    }
+
+    // ✅ PASSWORD LOGIC FIXED
+    if (passwordController.text.trim().isNotEmpty) {
+
+      if (passwordController.text.trim() != confirmController.text.trim()) {
+        BotToast.showText(text: "Passwords do not match");
+        isLoadUser(false);
+        return;
+      }
+
+      data['password'] = passwordController.text.trim();
+      data['confirmpassword'] = confirmController.text.trim();
+    }
+
+    // ✅ STEP 2: NOW CREATE FORMDATA
+    final formData = dio.FormData.fromMap(data);
+
     var response = await Api().post(
       formData,
-      employee != null ? "employees/update/${employee!.id}" : "employees/add",
+      employee != null
+          ? "employees/update/${employee!.id}"
+          : "employees/add",
       auth: true,
-      multiPart: multipartFile != null ? true : false,
+      multiPart: multipartFile != null,
       sendCompanyId: true,
     );
+
     if (response.statusCode == 200) {
+
       String message = employee != null
           ? "USER UPDATED SUCCESSFULLY"
           : "USER ADDED SUCCESSFULLY";
-      print(response);
+
       userNameController.clear();
       passwordController.clear();
       confirmController.clear();
       userEmailController.clear();
       phoneController.clear();
       faxUserController.clear();
+
       activeValue.value = false;
       alldriversValue.value = false;
       allbookingValue.value = false;
       accuntValue.value = false;
       receviverValue.value = false;
       transferValue.value = false;
+
       userProfileImg = null;
       employee = null;
-      isLoadUser(false);
+
       BotToast.showText(text: message);
+
       update();
-      isLoadUser(false);
     }
+
+    isLoadUser(false);
   }
+
+  // createUser() async {
+  //   isLoadUser(true);
+  //   var multipartFile;
+  //   if (userProfileImg != null) {
+  //     multipartFile = dio.MultipartFile.fromBytes(
+  //       userProfileImg!.bytes,
+  //       filename: userProfileImg!.name,
+  //     );
+  //   }
+  //   final formData = dio.FormData.fromMap({
+  //     'subsidiary_id': selectedSubsidiary!.id,
+  //     'role_id': selectedRole!.id,
+  //     'username': userNameController.text,
+  //     'password': passwordController.text,
+  //     'confirmpassword': confirmController.text,
+  //     'email': userEmailController.text,
+  //     'phone': phoneController.text,
+  //     'fax': faxUserController.text,
+  //     'release_note_viewed': 'true',
+  //     'active': activeValue.value,
+  //     'alldrivers': alldriversValue.value,
+  //     'allbookings': allbookingValue.value,
+  //     'allaccounts': accuntValue.value,
+  //     'callreceiver': receviverValue.value,
+  //     'allowtransferbookings': transferValue.value,
+  //     if (multipartFile != null) "image": multipartFile,
+  //   });
+  //
+  //
+  //   var response = await Api().post(
+  //     formData,
+  //     employee != null ? "employees/update/${employee!.id}" : "employees/add",
+  //     auth: true,
+  //     multiPart: multipartFile != null ? true : false,
+  //     sendCompanyId: true,
+  //   );
+  //   if (response.statusCode == 200) {
+  //     String message = employee != null
+  //         ? "USER UPDATED SUCCESSFULLY"
+  //         : "USER ADDED SUCCESSFULLY";
+  //     print(response);
+  //     userNameController.clear();
+  //     passwordController.clear();
+  //     confirmController.clear();
+  //     userEmailController.clear();
+  //     phoneController.clear();
+  //     faxUserController.clear();
+  //     activeValue.value = false;
+  //     alldriversValue.value = false;
+  //     allbookingValue.value = false;
+  //     accuntValue.value = false;
+  //     receviverValue.value = false;
+  //     transferValue.value = false;
+  //     userProfileImg = null;
+  //     employee = null;
+  //     isLoadUser(false);
+  //     BotToast.showText(text: message);
+  //     update();
+  //     isLoadUser(false);
+  //   }
+  // }
 }

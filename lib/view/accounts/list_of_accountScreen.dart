@@ -253,6 +253,9 @@ class _ListOfAccountScreenState extends State<ListOfAccountScreen> {
                                               ),
                                               onPressed: () {
                                                 controller.bindAccountUpdateValue(data: item);
+
+                                                // 🔥 SAFE: clear sensitive fields before navigation
+                                                controller.accountPasswordController.clear();
                                                 int index = _controller.selectedMenuItems.indexWhere(
                                                         (element) => element.title == "CREATE ACCOUNT");
                                                 if (index != -1) {

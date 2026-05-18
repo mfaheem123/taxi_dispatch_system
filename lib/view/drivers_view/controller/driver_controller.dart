@@ -283,7 +283,8 @@ class DriverController extends GetxController {
         "active": isActive.value,
         if (companyType != null) "subsidiary_id": companyType!.id,
         "username": driverUserNameController.text.trim(),
-        "password": driverPasswordController.text.trim(),
+        // "password": driverPasswordController.text.trim(),
+
         "name": driverFullNameController.text.trim(),
         "dob": dobDate,
         "email": driverEmailController.text.trim(),
@@ -315,6 +316,11 @@ class DriverController extends GetxController {
           },
         if (vehicleInformation.value) "company_vehicle_id": vehicleType!.id,
       };
+
+      // ✅ PASSWORD SAFE FIX
+      if (driverPasswordController.text.trim().isNotEmpty) {
+        baseData["password"] = driverPasswordController.text.trim();
+      }
 
       // 🧠 Step 3: Convert each row into JSON string (to preserve structure)
       if (vehicleInformation.value == false) {
@@ -393,6 +399,8 @@ class DriverController extends GetxController {
       print(stack);
     }
   }
+
+
 
   clearAddDriverData() async {
     driverRendLimitController.clear();
@@ -605,8 +613,8 @@ class DriverController extends GetxController {
             singleDriverData!.driver!.username.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.password != null) {
-        driverPasswordController.text =
-            singleDriverData!.driver!.password.toString().toUpperCase();
+
+        driverPasswordController.clear();
       }
       if (singleDriverData!.driver!.name != null) {
         driverFullNameController.text =

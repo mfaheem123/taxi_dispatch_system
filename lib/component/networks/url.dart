@@ -11,8 +11,8 @@ abstract class BaseConfig {
 class DevConfig implements BaseConfig {
   @override
   // String get baseUrl => "http://192.168.110.5:5000/api/";
-  // String get baseUrl => "https://www.nexustechnologys.com/api/";
-  String get baseUrl => "http://158.220.92.206:5000/api/";
+  String get baseUrl => "https://www.nexustechnologys.com/api/";
+  // String get baseUrl => "http://158.220.92.206:5000/api/";
 
 
   @override
@@ -27,7 +27,8 @@ class DevConfig implements BaseConfig {
   // String get apiUrl => "http://158.220.92.206:5000/api/";
 
   @override
-  String get socketUrl => "ws://192.168.5.251:8086/com";
+  // String get socketUrl => "ws://192.168.5.251:8086/com";
+String get socketUrl => "wss://www.nexustechnologys.com/websocket";
 
 }
 

@@ -160,7 +160,8 @@ class DriverPersonalInfo extends StatelessWidget {
                      child: labeledTextField(context, isMobile, "PASSWORD", controller.driverPasswordController,
                          width: fieldWidth/1.4,
                          textInputAction: TextInputAction.next,
-                         column: true
+                         column: true,
+
                      ),
                    ),
 
@@ -262,7 +263,7 @@ class DriverPersonalInfo extends StatelessWidget {
                              label: "DRIVER TYPE",
                              width: Get.width / 5,
                              height: 35,
-                             items: ['Commission', "Rent/Week"],
+                             items: ['COMMISSION', "RENT/WEEK"],
                              value: controller.driverType,
                              itemLabel: (templateList) =>
                              templateList,
@@ -339,7 +340,7 @@ class DriverPersonalInfo extends StatelessWidget {
                           height: 35,
                         onTap: (){
                             if(controller.driverUserNameController.text.isEmpty
-                                || controller.driverPasswordController.text.isEmpty || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty
+                                || controller.driverFullNameController.text.isEmpty || controller.driverMobileController.text.isEmpty
                             ){
                               BotToast.showText(text: "Please enter below fields is required\n user name, driver full name, driver mobile number,");
                             }else if (!controller.driverEmailController.text.contains('@')) {

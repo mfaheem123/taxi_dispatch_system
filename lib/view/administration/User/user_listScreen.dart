@@ -72,12 +72,9 @@ class _UserListscreenState extends State<UserListscreen> {
       autofocus: true,
       focusNode: FocusNode(),
       onKey: _handleKey,
-      child: GetBuilder<AdministrationController>(
-          initState: (state) {
-            controller.userData();
-          },
-
-          builder: (controller) {
+      child: GetBuilder<AdministrationController>(initState: (state) {
+        controller.userData();
+      }, builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
           final double maxWidth = constraints.maxWidth;
           final bool isMobile = maxWidth < 600;
@@ -104,14 +101,15 @@ class _UserListscreenState extends State<UserListscreen> {
                     SizedBox(
                       width: 20,
                     ),
-                    Obx(() => Checkbox(
-                      value: controller.inActive.value,
-                      onChanged: (v) {
-                        controller.inActive.value = v!;
-                        // controller.userCurrentPage.value = 1;
-                        controller.userSearch();
-                      },
-                    ),
+                    Obx(
+                      () => Checkbox(
+                        value: controller.inActive.value,
+                        onChanged: (v) {
+                          controller.inActive.value = v!;
+                          // controller.userCurrentPage.value = 1;
+                          controller.userSearch();
+                        },
+                      ),
                     ),
                     Text(
                       AppText.active,
@@ -151,9 +149,9 @@ class _UserListscreenState extends State<UserListscreen> {
                     : SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: SizedBox(
-                       width: isMobile || isTablet
-                                  ? Get.width + 700
-                                  : Get.width,
+                          width: isMobile || isTablet
+                              ? Get.width + 700
+                              : Get.width,
                           child: DatatableWidget(
                             columns: [
                               // DataColumn(
@@ -220,50 +218,60 @@ class _UserListscreenState extends State<UserListscreen> {
                                 //   ),
                                 // ),
                                 DataCell(Center(
-                                    child: Text((item.username ?? 'no data').toUpperCase()))),
+                                    child: Text((item.username ?? 'no data')
+                                        .toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text((item.email ?? 'no data').toUpperCase()))),
+                                    child: Text((item.email ?? 'no data')
+                                        .toUpperCase()))),
                                 DataCell(Center(
                                     child: Text(item.phone ?? 'no data'))),
-                                DataCell(
-                                    Center(child: Text((item.fax ?? 'no data').toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text((item.role?.name ?? 'no data').toUpperCase()))),
+                                    child: Text((item.fax ?? 'no data')
+                                        .toUpperCase()))),
                                 DataCell(Center(
-                                    child: Text((
-                                        item.subsidiary?.name ?? 'no data').toUpperCase()))),
+                                    child: Text((item.role?.name ?? 'no data')
+                                        .toUpperCase()))),
+                                DataCell(Center(
+                                    child: Text(
+                                        (item.subsidiary?.name ?? 'no data')
+                                            .toUpperCase()))),
                                 DataCell(Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    if(permissions.contains('read_company_information')) IconButton(
-                                      icon: Icon(
-                                        Icons.edit_calendar,
-                                        color: DynamicColors.primaryClr,
+                                    if (permissions
+                                        .contains('read_company_information'))
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.edit_calendar,
+                                          color: DynamicColors.primaryClr,
+                                        ),
+                                        onPressed: () {
+                                          controller.isUpdating.value = true;
+                                          controller.userUpdate(
+                                              userUpdate: item);
+
+                                          int index = _controller
+                                              .selectedMenuItems
+                                              .indexWhere((element) =>
+                                                  element.title ==
+                                                  "CREATE USER");
+
+                                          if (index != -1) {
+                                            _controller.selectedMenuItems[index]
+                                                .selectedItem = true;
+                                          } else {
+                                            _controller.menuBarRefresh(
+                                                title: "CREATE USER",
+                                                pageName: CreateUserScreen());
+                                          }
+
+                                          // Page switch karein
+                                          _controller.currentPage.value =
+                                              CreateUserScreen();
+                                          controller.update();
+                                        },
                                       ),
-                                      onPressed: () {
-            controller.isUpdating.value = true;
-            controller.userUpdate(userUpdate: item);
-
-            int index = _controller.selectedMenuItems
-                .indexWhere((element) => element.title == "CREATE USER");
-
-            if (index != -1) {
-              _controller.selectedMenuItems[index].selectedItem = true;
-            } else {
-              _controller.menuBarRefresh(
-                  title: "CREATE USER",
-                  pageName: CreateUserScreen());
-            }
-
-            // Page switch karein
-            _controller.currentPage.value = CreateUserScreen();
-            controller.update();
-
-
-
-                                      },
-                                    ),
                                     const Text("|"),
                                     IconButton(
                                       icon: Icon(
@@ -271,8 +279,7 @@ class _UserListscreenState extends State<UserListscreen> {
                                         color: DynamicColors.redClr,
                                       ),
                                       onPressed: () {
-
-                                       controller.userDelete(item.id);
+                                        controller.userDelete(item.id);
                                       },
                                     ),
                                   ],
@@ -282,10 +289,10 @@ class _UserListscreenState extends State<UserListscreen> {
                           ),
                         ),
                       ),
-                        PaginationWidget(
-                currentPage: controller.userCurrentPage.value,
-                totalPages: controller.userTotalPage.value,
-                onPageChange: controller.userPage),
+                PaginationWidget(
+                    currentPage: controller.userCurrentPage.value,
+                    totalPages: controller.userTotalPage.value,
+                    onPageChange: controller.userPage),
               ],
             ),
           );
