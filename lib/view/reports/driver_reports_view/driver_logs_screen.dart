@@ -17,6 +17,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'driver_logs_view_screen.dart';
 
 class DriverLogsScreen extends StatefulWidget {
   const DriverLogsScreen({super.key});
@@ -110,6 +111,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
         controller.loginEndTimeController.text =
             DateFormat('HH:mm').format(DateTime.now());
       },builder: (controller) {
+        final int totalBookings = controller.driverLogsData?.bookings?.length ?? 0;
+
+        final double totalEarnings = (controller.driverLogsData?.bookings ?? []).fold(0.0, (sum, item) {
+          return sum + (double.tryParse(item.fares.toString()) ?? 0.0);
+        });
         return LayoutBuilder(
           builder: (context, constraints) {
             final double maxWidth = constraints.maxWidth;
@@ -245,39 +251,78 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         btnText: AppText.view,
                         style: mozillaTextRegularText(
                             fontSize: 10, color: DynamicColors.whiteClr),
-                        onTap: () {},
+                        onTap: () {
+                          if (controller.selectDriverObject != null) {
+                            Get.dialog(
+                              const DriverLogsViewWindow(),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 25),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: const EdgeInsets.only(bottom: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.grey.shade300),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Text(
+                                "TOTAL BOOKINGS: ",
+                                style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.black87),
+                              ),
+                              Text(
+                                (controller.driverLogsData == null || controller.isLoadingLogs)
+                                    ? ""
+                                    : "$totalBookings",
+                                style: mozillaTextRegularText(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "TOTAL EARNINGS: ",
+                                style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.black87),
+                              ),
+                              Text(
+                                (controller.driverLogsData == null || controller.isLoadingLogs)
+                                    ? ""
+                                    : "£${totalEarnings.toStringAsFixed(2)}",
+                                style: mozillaTextRegularText(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                  // SingleChildScrollView(
-                  //   scrollDirection: Axis.horizontal,
-                  //   child: SizedBox(
-                  //     width: MediaQuery.of(context).size.width,
-                  //     child: DatatableWidget(
-                  //       columns: [
-                  //         buildHeaderWithSearch(title: "REF #"),
-                  //         buildHeaderWithSearch(title: "DATETIME"),
-                  //         buildHeaderWithSearch(title: "VEHICLE"),
-                  //         buildHeaderWithSearch(title: "PICKUP"),
-                  //         buildHeaderWithSearch(title: "DROPOFF"),
-                  //         buildHeaderWithSearch(title: "FARES"),
-                  //       ],
-                  //       totalRow: totalRows,
-                  //       cells: [
-                  //         const DataCell(Center(child: Text("driver"))),
-                  //         const DataCell(Center(child: Text("bookings"))),
-                  //         const DataCell(Center(child: Text("loginDate"))),
-                  //         const DataCell(Center(child: Text("loginTime"))),
-                  //         const DataCell(Center(child: Text("logoutDate"))),
-                  //         const DataCell(Center(child: Text("logoutTime"))),
-                  //       ],
-                  //     ),
-                  //   ),
-                  // ),
-                  // Driver Logs Table Section
+                        // Right side balance placeholder
+                        const Spacer(),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+                  
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
