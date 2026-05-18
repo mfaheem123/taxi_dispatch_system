@@ -711,14 +711,11 @@ class _BookingScreenState extends State<BookingScreen> {
 
 // ────────── driver row
   Widget _driverRow(bool isMobile) {
-    final dd = DropdownButtonFormField<String>(
-      value: driver,
-      hint: const Text('Select Driver'),
-      decoration: _inputDecoration(),
-      items: ['Driver 1', 'Driver 2']
-          .map((d) => DropdownMenuItem(value: d, child: Text(d)))
-          .toList(),
-      onChanged: (v) => setState(() => driver = v),
+    final dd = _driverDropdown<DashboardDriverObject>(
+      'Select Driver'.toUpperCase(),
+      controller.selectDriverValue,
+      controller.dashboardAllData!.drivers ?? const [],
+          (v) => setState(() => controller.selectDriverValue = v),
     );
 
     final clear = ElevatedButton(
@@ -729,7 +726,7 @@ class _BookingScreenState extends State<BookingScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       ),
-      child: const Text('Clear (F7)',
+      child: Text('Clear (F7)'.toUpperCase(),
           style: TextStyle(fontWeight: FontWeight.w700)),
     );
 
@@ -778,7 +775,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _sectionHeader(IconData icon, String title) => Row(children: [
         Icon(icon, size: 18, color: _purple),
         const SizedBox(width: 6),
-        Text(title,
+        Text(title.toUpperCase(),
             style: const TextStyle(
                 color: _purple, fontWeight: FontWeight.w700, fontSize: 13)),
       ]);
@@ -837,7 +834,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget _field(String label,
       {required int tab, IconData? prefix, TextEditingController? controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+      Text(label.toUpperCase(), style: const TextStyle(fontSize: 12, color: Colors.black54)),
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
@@ -859,6 +856,26 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
+  Widget _driverDropdown<T>(
+      String hint,
+      T? value,
+      List<T> items,
+      ValueChanged<T?> onChanged,
+      ) {
+    return DropdownButtonFormField<T>(
+      value: value,
+      hint: Text(hint),
+      decoration: _inputDecoration(),
+      items: items
+          .map((e) => DropdownMenuItem<T>(
+        value: e,
+        child: Text(e.toString()), // replace with e.name / e.title
+      ))
+          .toList(),
+      onChanged: onChanged,
+    );
+  }
+
   Widget _dropdown<T>(
     String? label,
     T? value,
@@ -875,7 +892,7 @@ class _BookingScreenState extends State<BookingScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(label,
+          Text(label.toUpperCase(),
               style: const TextStyle(fontSize: 12, color: Colors.black54)),
           const SizedBox(height: 4),
         ],
