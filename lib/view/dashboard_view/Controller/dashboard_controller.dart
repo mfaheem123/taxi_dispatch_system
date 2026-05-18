@@ -791,6 +791,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
   }
 
   String? tempStoreMils;
+  String? tempStoreReturnMils;
 
 // your updated fetchRouteFromOSRM
   Future<void> fetchRouteFromOSRM() async {
@@ -827,6 +828,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
         if (item.markerType == "PICKUP LOCATION" ||
             item.markerType == "Create Booking PICKUP") {
+          tempStoreMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -840,6 +842,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           );
         } else if (item.markerType == "DROP LOCATION" ||
             item.markerType == "Create Booking DROP LOCATION") {
+          tempStoreMils = null;
           tempPoints.add(p);
           markers.add(
             CustomMarker(
@@ -951,7 +954,13 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       }
       if(tempStoreMils == null){
         tempStoreMils = totalDistance.value;
+        if(tempStoreReturnMils == null){
+          tempStoreMils = totalDistance.value;
+        }else{
+          tempStoreMils = (double.parse(totalDistance.value)-double.parse(tempStoreReturnMils.toString())).toString();
+        }
       }
+
 
       final storedTemFare = await getFares(
           // day: ,
@@ -967,8 +976,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
           vehicleTypeId: selectVehicleValue!.id,
           withReturnPickUp: pickupTwoWayController.text.isEmpty?null: pickupTwoWayController.text,
           withReturnDropOff: dropOffTwoWayController.text.isEmpty?null: dropOffTwoWayController.text,
-          returnMiles:dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-(double.parse(tempStoreMils.toString()))).toString():null,
-      );
+          returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,      );
       var fareValue = jsonDecode(storedTemFare);
       fixedFare.value = fareValue== null?"0": fareValue['total_fare'].toString();
       returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
