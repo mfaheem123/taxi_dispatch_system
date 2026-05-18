@@ -180,24 +180,30 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                       runSpacing: 8, // vertical gap when wrapped
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Stack(
+                          alignment: Alignment.centerRight,
                           children: [
-                            ShortcutKeyWidget(),
-                            ShortcutKeyWidget(
-                                keyss: "F2",
-                                valuess: "BOOKING FORM"),
-                            ShortcutKeyWidget(
-                                keyss: "F3",
-                                valuess: "DRIVER VEHICLE"),
-                            ShortcutKeyWidget(
-                                keyss: "F4",
-                                valuess: "DRIVER EARNING"),
-                            ShortcutKeyWidget(
-                                keyss: "F6", valuess: "QUOTATION"),
-                            width >= 1900
-                                ? Spacer()
-                                : SizedBox.shrink(),
+                            Row(
+                              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ShortcutKeyWidget(),
+                                ShortcutKeyWidget(
+                                    keyss: "F2",
+                                    valuess: "BOOKING FORM"),
+                                ShortcutKeyWidget(
+                                    keyss: "F3",
+                                    valuess: "DRIVER VEHICLE"),
+                                ShortcutKeyWidget(
+                                    keyss: "F4",
+                                    valuess: "DRIVER EARNING"),
+                                ShortcutKeyWidget(
+                                    keyss: "F6", valuess: "QUOTATION"),
+                                // width >= 1900
+                                //     ? Spacer()
+                                //     : SizedBox.shrink(),
+
+                              ],
+                            ),
                             Padding(
                               padding:
                               const EdgeInsets.only(right: 6.0),
@@ -363,11 +369,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.pickupTextFieldFocusNode);
                                                                       controller.markers.clear();
+                                                                      controller.fixedFare.value = "0";
+                                                                      controller.returnFareValue = "";
+                                                                      controller.slugControllerReturn.clear();
+                                                                      controller.slugController.clear();
                                                                       controller.dropDownShow.value = false;
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.dropOffController.clear();
                                                                       controller.polylinePoints.clear();
+                                                                      controller.tempStoreMils = null;
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.fixedFare.value = "0";
                                                                       controller.totalDistance.value = "0";
@@ -629,10 +640,15 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       // controller.markers.remove(controller.markers[index]);
                                                                       FocusScope.of(Get.context!).requestFocus(controller.dropOffTextFieldFocusNode);
                                                                       controller.dropOffController.clear();
+                                                                      controller.fixedFare.value = "0";
+                                                                      controller.returnFareValue = "";
+                                                                      controller.slugControllerReturn.clear();
+                                                                      controller.slugController.clear();
                                                                       controller.markers.clear();
                                                                       controller.polyLineMarkerInfo.clear();
                                                                       controller.pickupController.clear();
                                                                       controller.polylinePoints.clear();
+                                                                      controller.tempStoreMils = null;
                                                                       controller.dropDownShow.value = false;
                                                                       controller.fetchRouteFromOSRM();
                                                                       controller.fixedFare.value = "0";
@@ -859,24 +875,62 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           ),
                                                         ),
                                                         // Tel fileds
+                                                        // Expanded(
+                                                        //   child: Padding(
+                                                        //     padding:
+                                                        //     const EdgeInsets.only(left: 4),
+                                                        //     child:
+                                                        //     FocusTraversalOrder(
+                                                        //       order: const NumericFocusOrder(12),
+                                                        //       child: labeledTextField
+                                                        //         (context, isMobile, AppText.tel, controller.telController,
+                                                        //         width: fieldWidthh / 12,
+                                                        //         // width: fieldWidth / 3,
+                                                        //         textInputAction: TextInputAction.next,
+                                                        //         keyboardType: TextInputType.phone,
+                                                        //         formatDigitsOnly: false,
+                                                        //         onChanged: (v){
+                                                        //           controller.dropDownShow.value = false;
+                                                        //         },
+                                                        //         onTap: (){
+                                                        //           controller.dropDownShow.value = false;
+                                                        //         },
+                                                        //       ),
+                                                        //     ),
+                                                        //   ),
+                                                        // ),
                                                         Expanded(
                                                           child: Padding(
-                                                            padding:
-                                                            const EdgeInsets.only(left: 4),
-                                                            child:
-                                                            FocusTraversalOrder(
+                                                            padding: const EdgeInsets.only(left: 4),
+                                                            child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(12),
-                                                              child: labeledTextField
-                                                                (context, isMobile, AppText.tel, controller.telController,
+                                                              child: labeledTextField(
+                                                                context,
+                                                                isMobile,
+                                                                AppText.tel,
+                                                                // Agar controller me text 'null' ya null hai, to usse empty '' kar do
+                                                                (controller.telController.text == 'null' || controller.telController.text.isEmpty)
+                                                                    ? (controller.telController..text = '')
+                                                                    : controller.telController,
                                                                 width: fieldWidthh / 12,
-                                                                // width: fieldWidth / 3,
                                                                 textInputAction: TextInputAction.next,
                                                                 keyboardType: TextInputType.phone,
                                                                 formatDigitsOnly: false,
-                                                                onChanged: (v){
+                                                                onChanged: (v) {
+                                                                  // Agar user type karte waqt shuruat me 'null' text aa jaye to clear karein (Safe check)
+                                                                  if (v.startsWith('null')) {
+                                                                    controller.telController.text = v.replaceAll('null', '');
+                                                                    controller.telController.selection = TextSelection.fromPosition(
+                                                                      TextPosition(offset: controller.telController.text.length),
+                                                                    );
+                                                                  }
                                                                   controller.dropDownShow.value = false;
                                                                 },
-                                                                onTap: (){
+                                                                onTap: () {
+                                                                  // Tap karne par bhi agar 'null' likha hua ho to text field khali ho jaye
+                                                                  if (controller.telController.text == 'null') {
+                                                                    controller.telController.clear();
+                                                                  }
                                                                   controller.dropDownShow.value = false;
                                                                 },
                                                               ),
@@ -1117,6 +1171,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                           onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
                                                                             controller.markers.clear();
+                                                                            controller.fixedFare.value = "0";
+                                                                            controller.returnFareValue = "";
+                                                                            controller.slugControllerReturn.clear();
+                                                                            controller.slugController.clear();
                                                                             controller.polyLineMarkerInfo.clear();
                                                                             controller.pickupTwoWayController.clear();
                                                                             controller.dropOffTwoWayController.clear();
@@ -1275,6 +1333,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             : KbdActivatable(
                                                                           focusNode: clearDrop,
                                                                           onActivate: () {
+                                                                            controller.tempStoreMils = null;
+                                                                            controller.fixedFare.value = "0";
+                                                                            controller.returnFareValue = "";
+                                                                            controller.slugControllerReturn.clear();
+                                                                            controller.slugController.clear();
                                                                             FocusScope.of(Get.context!).requestFocus(controller.dropOffTwoWayTextFieldFocusNode);
                                                                             controller.pickupController.clear();
                                                                             controller.dropOffController.clear();
@@ -1346,11 +1409,16 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   width: fieldWidthh / 13,
                                                                   height: 30,
                                                                   child: CustomTextField(
+
                                                                     controller: controller.dropUpNoteController,
                                                                     hintText: "DROP NOTES",
+
                                                                     borderRadius: 6,
+
                                                                     onTap: (){
+
                                                                       controller.dropDownShow.value = false;
+
                                                                     },
                                                                     textInputAction: TextInputAction.next,
                                                                     onSubmitted: (_) => FocusScope.of(context).nextFocus(),
@@ -1456,7 +1524,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 child: SizedBox(
                                                                   height: 30,
                                                                   child: CustomTextField(
-                                                                    hintText: "Slugg",
+                                                                    hintText: "R/FARE",
                                                                     controller: controller.slugControllerReturn,
                                                                     readOnly: true,
                                                                     borderRadius: 6,
@@ -1523,6 +1591,64 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
 
+                                                          // Expanded(
+                                                          //   child: FocusTraversalOrder(
+                                                          //     order: const NumericFocusOrder(28),
+                                                          //     child: labeledField(
+                                                          //       context: context,
+                                                          //       isMobile: isMobile,
+                                                          //       label: "Return/${AppText.veh} ",
+                                                          //       width: fieldWidth / 3,
+                                                          //       heights: 32,
+                                                          //       child: Container(
+                                                          //         // height: 35,
+                                                          //         decoration: BoxDecoration(
+                                                          //           borderRadius: BorderRadius.circular(6),
+                                                          //           border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                          //         ),
+                                                          //         child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                          //           decoration: const InputDecoration(
+                                                          //             border: OutlineInputBorder(),
+                                                          //             isDense: true,
+                                                          //           ),
+                                                          //           value: controller.selectVehicleValueReturn,
+                                                          //           items: controller.dashboardAllData!.vehicleTypes!
+                                                          //               .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                          //             value: vehicle,
+                                                          //             child: Text(
+                                                          //               vehicle.name ?? "",
+                                                          //               style: mozillaTextRegularText(
+                                                          //                 fontSize: 10,
+                                                          //                 color: DynamicColors.textClr,
+                                                          //               ),
+                                                          //             ),
+                                                          //           ))
+                                                          //               .toList(),
+                                                          //           onChanged: (v) async {
+                                                          //             controller.selectVehicleValueReturn = v;
+                                                          //             controller.dropDownShow.value = false;
+                                                          //             final fare = await getActiveFareForVehicle(
+                                                          //               controller.dashboardAllData!.fareConfigurations!,
+                                                          //               controller.selectVehicleValue!.id!,
+                                                          //             );
+                                                          //             if (fare != null) {
+                                                          //               print(
+                                                          //                 'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                          //               );
+                                                          //
+                                                          //               double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                          //
+                                                          //               controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                          //             } else {
+                                                          //               print('No active fare found for this vehicle');
+                                                          //             }
+                                                          //             controller.update();
+                                                          //           },
+                                                          //         ),
+                                                          //       ),
+                                                          //     ),
+                                                          //   ),
+                                                          // ),
                                                           Expanded(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(28),
@@ -1533,24 +1659,33 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 width: fieldWidth / 3,
                                                                 heights: 32,
                                                                 child: Container(
-                                                                  // height: 35,
                                                                   decoration: BoxDecoration(
                                                                     borderRadius: BorderRadius.circular(6),
                                                                     border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                   ),
                                                                   child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                                    // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
+                                                                    isExpanded: true,
                                                                     decoration: const InputDecoration(
-                                                                      border: OutlineInputBorder(),
+                                                                      // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
+                                                                      border: InputBorder.none,
                                                                       isDense: true,
+                                                                      // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
+                                                                      contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
                                                                     ),
+                                                                    // 4. Dropdown icon ki padding aur size adjust ki
+                                                                    icon: const Icon(Icons.arrow_drop_down, size: 20),
                                                                     value: controller.selectVehicleValueReturn,
                                                                     items: controller.dashboardAllData!.vehicleTypes!
                                                                         .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
                                                                       value: vehicle,
                                                                       child: Text(
                                                                         vehicle.name ?? "",
+                                                                        // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
+                                                                        maxLines: 1,
+                                                                        overflow: TextOverflow.ellipsis,
                                                                         style: mozillaTextRegularText(
-                                                                          fontSize: 12,
+                                                                          fontSize: 12, // Font size 12 standard hai, aap 10 bhi rakh sakte hain
                                                                           color: DynamicColors.textClr,
                                                                         ),
                                                                       ),
@@ -1559,10 +1694,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     onChanged: (v) async {
                                                                       controller.selectVehicleValueReturn = v;
                                                                       controller.dropDownShow.value = false;
+
+                                                                      // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
+                                                                      // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
                                                                       final fare = await getActiveFareForVehicle(
                                                                         controller.dashboardAllData!.fareConfigurations!,
-                                                                        controller.selectVehicleValue!.id!,
+                                                                        v?.id ?? controller.selectVehicleValue!.id!,
                                                                       );
+
                                                                       if (fare != null) {
                                                                         print(
                                                                           'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
@@ -1581,7 +1720,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
-
                                                           Expanded(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(29),
@@ -2374,9 +2512,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                       ),
                                                     ),
                                                   ),
-                                                  // SizedBox(
-                                                  //     width:
-                                                  //         350),
+                                                  // Spacer(),
+                                                  SizedBox(
+                                                      width:
+                                                          250),
                                                   FocusTraversalOrder(
                                                     order: NumericFocusOrder(controller.jourValue == 'W/R'
                                                         ? 51

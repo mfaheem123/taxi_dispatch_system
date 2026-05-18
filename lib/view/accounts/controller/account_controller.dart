@@ -150,7 +150,7 @@ class AccountController extends GetxController {
       "name": accountNameController.text,
       "code": accountCodeController.text,
       "email": accountEmailController.text,
-      "password": accountPasswordController.text,
+      // "password": accountPasswordController.text,
       "mobile": accountMobileController.text,
       "telephone": accountTelController.text,
       "fax": accountFaxController.text,
@@ -190,6 +190,9 @@ class AccountController extends GetxController {
         "company_addresses": companyAddressesList
     };
 
+    if (accountPasswordController.text.trim().isNotEmpty) {
+      formData["password"] = accountPasswordController.text.trim();
+    }
     var response = await Api().post(
       formData,
       accountObjectData != null
@@ -478,7 +481,8 @@ class AccountController extends GetxController {
     accountNameController.text = data.name.toString().toUpperCase();
     accountCodeController.text = data.code.toString();
     accountEmailController.text = data.email.toString().toUpperCase();
-    accountPasswordController.text = data.password.toString();
+    // accountPasswordController.text = data.password.toString();
+    accountPasswordController.clear();
     accountMobileController.text = data.mobile.toString();
     accountTelController.text = data.telephone.toString();
     accountFaxController.text = data.fax.toString().toUpperCase();

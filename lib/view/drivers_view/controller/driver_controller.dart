@@ -283,7 +283,8 @@ class DriverController extends GetxController {
         "active": isActive.value,
         if (companyType != null) "subsidiary_id": companyType!.id,
         "username": driverUserNameController.text.trim(),
-        "password": driverPasswordController.text.trim(),
+        // "password": driverPasswordController.text.trim(),
+
         "name": driverFullNameController.text.trim(),
         "dob": dobDate,
         "email": driverEmailController.text.trim(),
@@ -315,6 +316,11 @@ class DriverController extends GetxController {
           },
         if (vehicleInformation.value) "company_vehicle_id": vehicleType!.id,
       };
+
+      // ✅ PASSWORD SAFE FIX
+      if (driverPasswordController.text.trim().isNotEmpty) {
+        baseData["password"] = driverPasswordController.text.trim();
+      }
 
       // 🧠 Step 3: Convert each row into JSON string (to preserve structure)
       if (vehicleInformation.value == false) {
@@ -393,6 +399,8 @@ class DriverController extends GetxController {
       print(stack);
     }
   }
+
+
 
   clearAddDriverData() async {
     driverRendLimitController.clear();
@@ -605,8 +613,8 @@ class DriverController extends GetxController {
             singleDriverData!.driver!.username.toString().toUpperCase();
       }
       if (singleDriverData!.driver!.password != null) {
-        driverPasswordController.text =
-            singleDriverData!.driver!.password.toString().toUpperCase();
+
+        driverPasswordController.clear();
       }
       if (singleDriverData!.driver!.name != null) {
         driverFullNameController.text =
@@ -1015,7 +1023,7 @@ class DriverController extends GetxController {
     isCreateDriverCommission = true;
     update();
     var response = await Api()
-        .get("drivers/commission?active=true&driver_type=Commission");
+        .get("drivers/commission?active=true&driver_type=Commission", sendCompanyId: true);
     if (response.statusCode == 200) {
       // print("API Response: ${response.data}");
       listDriverCommission = ListDriverCommissionModel.fromJson(response.data);
@@ -1416,7 +1424,7 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-        await Api().post(formData, "driver_commission/add", auth: true);
+        await Api().post(formData, "driver_commission/add", sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER COMMISSION ADDED SUCCESSFULLY!");
     }
@@ -1432,7 +1440,7 @@ class DriverController extends GetxController {
 
   getDriverCommission() async {
     isLoading(true);
-    var response = await Api().get("driver_commission/distinct");
+    var response = await Api().get("driver_commission/distinct", sendCompanyId: true);
 
     if (response.statusCode == 200) {
       driverCommission = DriverCommissionModel.fromJson(response.data);
@@ -1452,6 +1460,7 @@ class DriverController extends GetxController {
     update();
     var response = await Api().get(
       "driver_commission/driverid?driver_id=$id",
+      sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {
@@ -1999,7 +2008,7 @@ class DriverController extends GetxController {
     isCreateDriverRent = true;
     update();
     var response =
-    await Api().get("drivers/commission?active=true&driver_type=Rent/Week");
+    await Api().get("drivers/commission?active=true&driver_type=Rent/Week", sendCompanyId: true,);
     if (response.statusCode == 200) {
       print("API Response: ${response.data}");
       driverRentModel = DriverRentModel.fromJson(response.data);
@@ -2274,7 +2283,7 @@ class DriverController extends GetxController {
     };
     print("Submitting Payload: $formData");
     var response =
-    await Api().post(formData, "driver_rent/add", auth: true);
+    await Api().post(formData, "driver_rent/add",sendCompanyId: true, auth: true);
     if (response.statusCode == 200) {
       BotToast.showText(text: "DRIVER RENT ADDED SUCCESSFULLY!");
     }
@@ -2291,7 +2300,7 @@ class DriverController extends GetxController {
     isListLoading = true;
     update();
 
-    var response = await Api().get("driver_rent/distinct");
+    var response = await Api().get("driver_rent/distinct", sendCompanyId: true,);
 
     if (response.statusCode == 200) {
       listDriverRentModel = ListDriverRentModel.fromJson(response.data);
@@ -2309,7 +2318,7 @@ class DriverController extends GetxController {
     isLoadingDriverRent = true;
     update();
     var response = await Api().get(
-      "driver_rent/driverid?driver_id=$id",
+      "driver_rent/driverid?driver_id=$id",sendCompanyId: true,
     );
 
     if (response.statusCode == 200) {

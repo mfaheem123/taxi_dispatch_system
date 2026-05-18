@@ -120,7 +120,8 @@ class _DispatchBookingState extends State<DispatchBooking> {
                                   btnText: "DISPATCH",
                                   style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.white),
                                   onTap: () {
-                                   controller.assignDriverToBooking(_controller.dashboardTableModelData?.data!.first.id, driver.id);
+                                    print(widget.bookingItem.id);
+                                   controller.assignDriverToBooking(widget.bookingItem.id, driver.id);
                                   },
                                 ),
                               ),

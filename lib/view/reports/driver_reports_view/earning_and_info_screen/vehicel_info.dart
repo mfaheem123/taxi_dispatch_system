@@ -3,8 +3,9 @@ import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
 
-class VehicelsScreen extends StatelessWidget {
-  const VehicelsScreen({super.key});
+class VehiclesScreen extends StatelessWidget {
+  final String driverName;
+  const VehiclesScreen({super.key, required this.driverName});
 
   @override
   Widget build(BuildContext context) {
