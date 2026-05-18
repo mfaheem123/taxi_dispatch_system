@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-
+import '../../../alert/restrict_drivers_alert.dart';
+import '../../alert/child_seats_alert.dart';
+import '../../alert/extra_fares_alert.dart';
+import '../../alert/extra_info_alert.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
+import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
@@ -16,7 +22,7 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-// ────────── palette
+  // ────────── palette
   static const _purple = Color(0xFF4F46E5);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
@@ -25,7 +31,13 @@ class _BookingScreenState extends State<BookingScreen> {
   static const _red = Color(0xFFEF4444);
   static const _green = Color(0xFF22C55E);
 
-// ────────── state
+  // ────────── font sizes (compact)
+  static const _fsLabel = 11.0;
+  static const _fsField = 12.0;
+  static const _fsSection = 12.0;
+  static const _fsTab = 12.0;
+
+  // ────────── state
   String? driver;
   ZoneObject? dashboardZoneValue, dropZone;
 
@@ -33,7 +45,6 @@ class _BookingScreenState extends State<BookingScreen> {
   String? vehicleType = 'Saloon';
   bool quotation = true, sms = true, email = false;
 
-// selected address models (give you access to lat/lon)
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
 
@@ -45,46 +56,17 @@ class _BookingScreenState extends State<BookingScreen> {
     '02071 234567',
   ];
 
-// ────────── controllers (created once)
-  late final _pickup =
-      TextEditingController(text: 'Hill House, Wild Hill, Hatfield, AL9 6EB');
-  late final _drop = TextEditingController(
-      text: 'Flat, Ashford Road, St. Michaels, Tenter, TN30 6EJ');
-  late final _name = TextEditingController(text: 'Test Passenger');
-  late final _email = TextEditingController(text: 't12410@gmail.com');
-  late final _mobile = TextEditingController(text: '0123213133213');
-  late final _tel = TextEditingController(text: '232132131');
   late final _date = TextEditingController(text: '25 / 04 / 2026');
-  late final _time = TextEditingController(text: '01:42');
-  late final _lead = TextEditingController(text: 'MINS');
-  late final _pax = TextEditingController(text: '1');
   late final _fare = TextEditingController(text: '226.00');
   late final _pass = TextEditingController(text: '0');
   late final _lugg = TextEditingController(text: '0');
   late final _slugg = TextEditingController(text: '0');
 
-  void _onMultiReservation() {
-// TODO: open multi-reservation flow
-    debugPrint('F8 / Multi Reservation tapped');
-  }
-
-  void _onAddVehicles() {
-// TODO: open add-vehicles flow
-    debugPrint('F9 / Vehicles tapped');
-  }
-
-  void _onVia() {
-    debugPrint('Via tapped');
-  }
-
-  void _onSub() {
-    debugPrint('Sub tapped');
-  }
-
-  void _onClear() {
-// wire up to your existing Clear (F7) button
-    debugPrint('F7 / Clear tapped');
-  }
+  void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
+  void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
+  void _onVia() => debugPrint('Via tapped');
+  void _onSub() => debugPrint('Sub tapped');
+  void _onClear() => debugPrint('F7 / Clear tapped');
 
   final DashboardController controller = Get.isRegistered<DashboardController>()
       ? Get.find<DashboardController>()
@@ -97,16 +79,16 @@ class _BookingScreenState extends State<BookingScreen> {
   @override
   void dispose() {
     for (final c in [
-      _pickup,
-      _drop,
-      _name,
-      _email,
-      _mobile,
-      _tel,
+      controller.pickupController,
+      controller.dropOffController,
+      controller.nameController,
+      controller.emailController,
+      controller.mobileController,
+      controller.telController,
       _date,
-      _time,
-      _lead,
-      _pax,
+      controller.pickUpTimeController,
+      controller.minController,
+      controller.passController,
       _fare,
       _pass,
       _lugg,
@@ -123,7 +105,6 @@ class _BookingScreenState extends State<BookingScreen> {
     if (controller.dashboardAllData == null) {
       controller.dashboardData();
     }
-// _selectedPickup / _selectedDrop start as null — populated when user picks
   }
 
   @override
@@ -138,244 +119,255 @@ class _BookingScreenState extends State<BookingScreen> {
 
     return Scaffold(
       backgroundColor: _surface,
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CallbackShortcuts(
-            bindings: <ShortcutActivator, VoidCallback>{
-              const SingleActivator(LogicalKeyboardKey.f7): _onClear,
-              const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
-              const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
+      body: CallbackShortcuts(
+        bindings: <ShortcutActivator, VoidCallback>{
+          const SingleActivator(LogicalKeyboardKey.f7): _onClear,
+          const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
+          const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
+        },
+        child: Focus(
+          autofocus: true,
+          child: GetBuilder<DashboardController>(
+            initState: (_) {
+              controller.seeZoneOnMapp();
+              if (_controller.locationtypezoneModel == null) {
+                _controller.getLocationTypeZone();
+              }
             },
-            child: Focus(
-              autofocus: true,
-              child: GetBuilder<DashboardController>(
-                initState: (_) {
-                  controller.seeZoneOnMapp();
-                  if (_controller.locationtypezoneModel == null) {
-                    _controller.getLocationTypeZone();
-                  }
-                },
-                builder: (controller) {
-                  return SafeArea(
-                    child: Center(
-                      child: SizedBox(
-                        width: formWidth,
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile ? 0 : 12,
-                            vertical: isMobile ? 0 : 12,
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.circular(isMobile ? 0 : 10),
-                              border: Border.all(color: _border),
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: FocusTraversalGroup(
-                              policy: OrderedTraversalPolicy(),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _topTabs(isMobile),
-                                  Padding(
-                                    padding: EdgeInsets.all(isMobile ? 12 : 16),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      children: [
-                                        _locationRow<ZoneObject>(
-                                          'PICKUP',
-                                          _green,
-                                          _pickup,
-                                          controller.allAddressesData,
-                                          controller.dashboardZoneValue,
-                                          _controller.updateLocationValue.value ==
-                                                  true
-                                              ? []
-                                              : _controller.locationtypezoneModel!
-                                                  .zonesList!,
+            builder: (controller) {
+              return SafeArea(
+                child: Center(
+                  child: SizedBox(
+                    width: formWidth,
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isMobile ? 0 : 12,
+                        vertical: isMobile ? 0 : 12,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                          BorderRadius.circular(isMobile ? 0 : 10),
+                          border: Border.all(color: _border),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: FocusTraversalGroup(
+                          policy: OrderedTraversalPolicy(),
+                          child: Column(
+                            // crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _topTabs(isMobile),
+                              Padding(
+                                padding: EdgeInsets.all(isMobile ? 12 : 16),
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.stretch,
+                                  children: [
+                                    // PICKUP → tabs 2,3,4
+                                    _locationRow<ZoneObject>(
+                                      'PICKUP',
+                                      _green,
+                                      controller.pickupController,
+                                      controller.allAddressesData,
+                                      controller.dashboardZoneValue,
+                                      _controller.updateLocationValue.value == true
+                                          ? []
+                                          : _controller.locationtypezoneModel!.zonesList!,
                                           (v) => setState(() =>
-                                              controller.dashboardZoneValue = v),
-                                          isMobile,
+                                      controller.dashboardZoneValue = v),
+                                      isMobile,
                                           (value) {
-                                            WidgetsBinding.instance
-                                                .addPostFrameCallback((_) {
-                                              controller.onChangeHandler(
-                                                  fieldName: "PICKUP LOCATION",
-                                                  searchingText: value);
-                                            });
-                                          },
-                                          (addr) {
-                                            setState(() => _selectedPickup = addr);
-                                          },
-                                          0,
-                                          zoneLabel: (z) => z.name!,
-                                        ),
-                                        const SizedBox(height: 4),
-                                        _locationRow<ZoneObject>(
-                                          'DROP  ',
-                                          _red,
-                                          _drop,
-                                          controller.allAddressesData,
-                                          controller.dashboardDZoneValue,
-                                          _controller.updateLocationValue.value ==
-                                                  true
-                                              ? []
-                                              : _controller.locationtypezoneModel!
-                                                  .zonesList!,
-                                          (v) => setState(() =>
-                                              controller.dashboardDZoneValue = v),
-                                          isMobile,
-                                          (value) {
-                                            controller.onChangeHandler(
-                                                fieldName: "DROP LOCATION",
-                                                searchingText: value);
-                                          },
-                                          (addr) {
-                                            setState(() => _selectedDrop = addr);
-                                          },
-                                          10,
-                                          zoneLabel: (z) => z.name!,
-                                        ),
-                                        const Divider(height: 20),
-                                        _sectionHeader(Icons.person,
-                                            'PASSENGER & BOOKING DETAILS'),
-          // const SizedBox(height: 4),
-                                        _grid(cols, [
-                                          _field('Name',
-                                              tab: 21, controller: _name),
-                                          _field('Email',
-                                              tab: 22, controller: _email),
-                                          _autocompleteField(
-                                            'Mobile',
-                                            tab: 23,
-                                            controller: _mobile,
-                                            suggestions: _mobileSuggestions,
-                                          ),
-                                          _field('Tel.', tab: 24, controller: _tel),
-                                        ]),
-          // const SizedBox(height: 4),
-                                        _grid(cols, [
-                                          _field('Date',
-                                              tab: 25,
-                                              prefix: Icons.calendar_today,
-                                              controller: _date),
-                                          _field('Time',
-                                              tab: 26,
-                                              prefix: Icons.access_time,
-                                              controller: _time),
-                                          _dropdown<JourneyTypeObject>(
-                                            'Journey Type'.toUpperCase(),
-                                            controller.selectJourneyTypeValue,
-                                            controller.dashboardAllData!.journeyTypes ??
-                                                const [],
-                                                (v) => setState(() =>
-                                            controller.selectJourneyTypeValue = v),
-                                            27,
-                                            itemLabel: (p) => p.journeyType!,
-                                          ),
-                                          _field('Lead Time',
-                                              tab: 28, controller: _lead),
-                                        ]),
-          // const SizedBox(height: 4),
-                                        _grid(isMobile ? 1 : 3, [
-                                          _field('No. of Passengers',
-                                              tab: 29,
-                                              prefix: Icons.person_outline,
-                                              controller: _pax),
-                                          _field('Fare',
-                                              tab: 30,
-                                              prefix: Icons.currency_pound,
-                                              controller: _fare),
-                                          _dropdown<DashboardAccountObject>(
-                                            'Account',
-                                            controller.selectAccountValue,
-                                            controller.dashboardAccountData
-                                                    ?.accounts ??
-                                                const [],
-                                            (v) => setState(() =>
-                                                controller.selectAccountValue = v),
-                                            41,
-                                            itemLabel: (p) => p.name!,
-                                          ),
-                                        ]),
-                                        const Divider(height: 20),
-                                        _sectionHeader(Icons.directions_car,
-                                            'VEHICLE & PAYMENT'),
-                                        const SizedBox(height: 4),
-                                        _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                                          _dropdown<PaymentTypeObject>(
-                                            'Pay By',
-                                            controller.selectPaymentTypeValue,
-                                            controller.dashboardAllData!
-                                                    .paymentTypes ??
-                                                const [],
-                                            (v) => setState(() => controller
-                                                .selectPaymentTypeValue = v),
-                                            41,
-                                            itemLabel: (p) => p.name!,
-                                          ),
-                                          _dropdown<DashboardVehicleTypeObject>(
-                                            'Vehicle Type',
-                                            controller.selectVehicleValue,
-                                            controller
-                                                .dashboardAllData!.vehicleTypes!,
-                                            (v) => setState(() {
-                                              controller.selectVehicleValue = v;
-                                              controller.getFaresCalculation();
-                                            }),
-                                            41,
-                                            itemLabel: (p) => p.name!,
-                                          ),
-                                          _dropdown<DepartmentObject>(
-                                            'Department',
-                                            controller.selectDepartmentData,
-                                            controller.selectAccountValue == null
-                                                ? []
-                                                : controller.selectAccountValue!
-                                                    .departments!,
-                                            (v) => setState(() {
-                                              controller.selectDepartmentData = v;
-                                              controller.update();
-                                            }),
-                                            41,
-                                            itemLabel: (p) => p.name!,
-                                          ),
-                                          _quotationToggle(),
-                                        ]),
-                                        const SizedBox(height: 4),
-                                        _commsAndLuggageRow(isMobile),
-                                        const SizedBox(height: 4),
-                                        _statusCards(isMobile),
-                                        const SizedBox(height: 4),
-                                        _driverRow(isMobile),
-                                      ],
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          controller.onChangeHandler(
+                                              fieldName: "PICKUP LOCATION",
+                                              searchingText: value);
+                                        });
+                                      },
+                                          (addr) => setState(() => _selectedPickup = addr),
+                                      1,
+                                      zoneLabel: (z) => z.name!,
+                                      onPickIndex: (index) => controller.tapSelect(index),
+                                      onCurrentLocation: () {
+                                        // TODO: replace with your GPS / "use my location" handler
+                                        debugPrint('Use current location → PICKUP');
+                                      },
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 4),
+                                    // DROP → tabs 5,6,7
+                                    _locationRow<ZoneObject>(
+                                      'DROP   ',
+                                      _red,
+                                      controller.dropOffController,
+                                      controller.allAddressesData,
+                                      controller.dashboardDZoneValue,
+                                      _controller.updateLocationValue.value == true
+                                          ? []
+                                          : _controller.locationtypezoneModel!.zonesList!,
+                                          (v) => setState(() =>
+                                      controller.dashboardDZoneValue = v),
+                                      isMobile,
+                                          (value) {
+                                        controller.onChangeHandler(
+                                            fieldName: "DROP LOCATION",
+                                            searchingText: value);
+                                      },
+                                          (addr) => setState(() => _selectedDrop = addr),
+                                      4,
+                                      zoneLabel: (z) => z.name!,
+                                      onPickIndex: (index) => controller.tapSelect(index),
+                                      onCurrentLocation: () {
+                                        debugPrint('Use current location → DROP');
+                                      },
+                                    ),
+                                    const Divider(height: 20),
+                                    _sectionHeader(Icons.person,
+                                        'PASSENGER & BOOKING DETAILS'),
+                                    _grid(cols, [
+                                      _field('Name',
+                                          tab: 8, controller: controller.nameController),
+                                      _field('Email',
+                                          tab: 9, controller: controller.emailController),
+                                      // _autocompleteField(
+                                      //   'Mobile',
+                                      //   tab: 10,
+                                      //   controller: controller.mobileController,
+                                      //   suggestions: _mobileSuggestions,
+                                      // ),
+                                      _customerAutocompleteField(
+                                        'Mobile',
+                                        tab: 10,
+                                        controller: controller.mobileController,
+                                        customers: controller.customerPhoneNumber?.customerInfo ?? const [],
+                                        onChanged: (q) {
+                                          if (q.trim().isEmpty) return;
+                                          controller.onPhoneNoChangeHandler(
+                                            fieldName: "Phone Number",
+                                            searchingText: q,
+                                          );
+                                        },
+                                        onPicked: (c) {
+                                          setState(() {
+                                            controller.mobileController.text = c.mobile    ?? '';
+                                            controller.nameController.text   = c.name      ?? '';
+                                            controller.emailController.text  = c.email     ?? '';
+                                            controller.telController.text    = c.telephone ?? '';
+                                          });
+                                        },
+                                      ),
+                                      _field('Tel.',
+                                          tab: 11, controller: controller.telController),
+                                    ]),
+                                    _grid(cols, [
+                                      _field('Date',
+                                          tab: 12,
+                                          prefix: Icons.calendar_today,
+                                          controller: _date),
+                                      _field('Time',
+                                          tab: 13,
+                                          prefix: Icons.access_time,
+                                          controller: controller.pickUpTimeController),
+                                      _dropdown<JourneyTypeObject>(
+                                        'Journey Type'.toUpperCase(),
+                                        controller.selectJourneyTypeValue,
+                                        controller.dashboardAllData!.journeyTypes ?? const [],
+                                            (v) => setState(() =>
+                                        controller.selectJourneyTypeValue = v),
+                                        14,
+                                        itemLabel: (p) => p.journeyType!,
+                                      ),
+                                      _field('Lead Time',
+                                          tab: 15, controller: controller.minController),
+                                    ]),
+                                    _grid(isMobile ? 1 : 3, [
+                                      _field('No. of Passengers',
+                                          tab: 16,
+                                          prefix: Icons.person_outline,
+                                          controller: controller.passController),
+                                      _field('Fare',
+                                          tab: 17,
+                                          prefix: Icons.currency_pound,
+                                          controller: _fare),
+                                      _dropdown<DashboardAccountObject>(
+                                        'Account',
+                                        controller.selectAccountValue,
+                                        controller.dashboardAccountData?.accounts ?? const [],
+                                            (v) {
+                                          setState(() {
+                                            controller.selectAccountValue = v;
+                                            controller.selectDepartmentData = null;
+                                          });
+                                        },
+                                        18,
+                                        itemLabel: (p) => p.name!,
+                                      ),
+                                    ]),
+                                    const Divider(height: 20),
+                                    _sectionHeader(Icons.directions_car,
+                                        'VEHICLE & PAYMENT'),
+                                    const SizedBox(height: 4),
+                                    _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                      _dropdown<PaymentTypeObject>(
+                                        'Pay By',
+                                        controller.selectPaymentTypeValue,
+                                        controller.dashboardAllData!.paymentTypes ?? const [],
+                                            (v) => setState(() =>
+                                        controller.selectPaymentTypeValue = v),
+                                        19,
+                                        itemLabel: (p) => p.name!,
+                                      ),
+                                      _dropdown<DashboardVehicleTypeObject>(
+                                        'Vehicle Type',
+                                        controller.selectVehicleValue,
+                                        controller.dashboardAllData!.vehicleTypes!,
+                                            (v) => setState(() {
+                                          controller.selectVehicleValue = v;
+                                          controller.getFaresCalculation();
+                                        }),
+                                        20,
+                                        itemLabel: (p) => p.name!,
+                                      ),
+                                      _dropdown<DepartmentObject>(
+                                        'Department',
+                                        controller.selectDepartmentData,
+                                        controller.selectAccountValue == null
+                                            ? []
+                                            : controller.selectAccountValue!.departments!,
+                                            (v) => setState(() {
+                                          controller.selectDepartmentData = v;
+                                          controller.update();
+                                        }),
+                                        21,
+                                        itemLabel: (p) => p.name ?? "",
+                                      ),
+                                      _quotationToggle(),
+                                    ]),
+                                    const SizedBox(height: 4),
+                                    _commsAndLuggageRow(isMobile),
+                                    const SizedBox(height: 4),
+                                    _statusCards(isMobile),
+                                    const SizedBox(height: 4),
+                                    _driverRow(isMobile),
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
+                ),
+              );
+            },
           ),
-          Container(color: Colors.red,
-            width: formWidth,
-          )
-        ],
+        ),
       ),
     );
   }
 
-// ────────── top tabs
+  // ────────── top tabs (Subsidiary dd → tab 1)
   Widget _topTabs(bool isMobile) {
     Widget tab(String label, {bool active = false, VoidCallback? onTap}) =>
         Padding(
@@ -388,7 +380,7 @@ class _BookingScreenState extends State<BookingScreen> {
               mouseCursor: SystemMouseCursors.click,
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                 decoration: BoxDecoration(
                   color: active ? _purple : Colors.white,
                   border: Border.all(color: active ? _purple : _border),
@@ -399,7 +391,7 @@ class _BookingScreenState extends State<BookingScreen> {
                   style: TextStyle(
                     color: active ? Colors.white : Colors.black87,
                     fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontSize: _fsTab,
                   ),
                 ),
               ),
@@ -408,8 +400,7 @@ class _BookingScreenState extends State<BookingScreen> {
         );
 
     return Container(
-      padding:
-          EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 8),
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: _border)),
       ),
@@ -428,14 +419,14 @@ class _BookingScreenState extends State<BookingScreen> {
               null,
               controller.selectSubsidiariesValue,
               controller.dashboardAllData?.subsidiaries ?? const [],
-              (v) {
+                  (v) {
                 if (v == null) return;
                 setState(() {
                   controller.selectSubsidiariesValue = v;
                   controller.getAccountData(subsidiariesId: v.id);
                 });
               },
-              41,
+              1,
               itemLabel: (p) => p.name ?? '',
             ),
           ),
@@ -444,26 +435,29 @@ class _BookingScreenState extends State<BookingScreen> {
     );
   }
 
-// ────────── location row (backed by AllAddressesModel)
+  // ────────── location row
   Widget _locationRow<T>(
-    String label,
-    Color dot,
-    TextEditingController controller,
-    List<AllAddressesModel> addresses,
-    T? zone,
-    List<T> zoneItems,
-    ValueChanged<T?> onZone,
-    bool isMobile,
-    ValueChanged<String>? onChanged,
-    ValueChanged<AllAddressesModel>? onAddressSelected,
-    int tabBase, {
-    String Function(T)? zoneLabel,
-  }) {
+      String label,
+      Color dot,
+      TextEditingController controller,
+      List<AllAddressesModel> addresses,
+      T? zone,
+      List<T> zoneItems,
+      ValueChanged<T?> onZone,
+      bool isMobile,
+      ValueChanged<String>? onChanged,
+      ValueChanged<AllAddressesModel>? onAddressSelected,
+      int tabBase, {
+        String Function(T)? zoneLabel,
+        VoidCallback? onCurrentLocation,   // ← add this
+        ValueChanged<int>? onPickIndex,
+      }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
-      Icon(Icons.circle, size: 10, color: dot),
+      Icon(Icons.circle, size: 9, color: dot),
       const SizedBox(width: 6),
       Text(label,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
+          style: const TextStyle(
+              fontWeight: FontWeight.w700, fontSize: _fsLabel)),
     ]);
 
     final address = FocusTraversalOrder(
@@ -473,6 +467,7 @@ class _BookingScreenState extends State<BookingScreen> {
         items: addresses,
         onChanged: onChanged,
         onSelected: onAddressSelected,
+        onPickIndex: onPickIndex,
         decoration: _inputDecoration().copyWith(
           contentPadding:
           const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
@@ -481,17 +476,27 @@ class _BookingScreenState extends State<BookingScreen> {
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              InkWell(
-                onTap: controller.clear,
-                borderRadius: BorderRadius.circular(20),
-                child: const Padding(
-                  padding: EdgeInsets.all(4),
-                  child: Icon(Icons.close, size: 16, color: Colors.grey),
+              if (controller.text.isNotEmpty)
+                IconButton(
+                  tooltip: 'Clear',
+                  onPressed: () {
+                    controller.clear();
+                    onChanged?.call('');
+                  },
+                  icon: const Icon(Icons.close, size: 16, color: Colors.grey),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                  splashRadius: 16,
                 ),
+              IconButton(
+                tooltip: 'Use current location',
+                onPressed: onCurrentLocation,
+                icon: const Icon(Icons.my_location, size: 16, color: Colors.grey),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                splashRadius: 16,
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.my_location, size: 16, color: Colors.grey),
-              const SizedBox(width: 8),
             ],
           ),
         ),
@@ -515,9 +520,11 @@ class _BookingScreenState extends State<BookingScreen> {
         style: OutlinedButton.styleFrom(
           foregroundColor: _purple,
           side: const BorderSide(color: _purple),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6), // ← was 14
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          textStyle:
+          const TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600),
         ),
         child: Text('${label[0]}${label.substring(1).toLowerCase()} Notes'),
       ),
@@ -548,13 +555,13 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
-// ────────── SMS / Email / luggage / action icons row
+  // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged) =>
         Row(mainAxisSize: MainAxisSize.min, children: [
           SizedBox(
-            width: 22,
-            height: 22,
+            width: 20,
+            height: 20,
             child: Checkbox(
               value: value,
               onChanged: onChanged,
@@ -563,31 +570,35 @@ class _BookingScreenState extends State<BookingScreen> {
             ),
           ),
           const SizedBox(width: 6),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w500, fontSize: _fsField)),
         ]);
 
     Widget luggageField(String label, IconData icon,
         TextEditingController controller, int tab) =>
         SizedBox(
           width: 80,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,
-                style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                style: const TextStyle(
+                    fontSize: _fsLabel, color: Colors.black54)),
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
               child: TextField(
                 controller: controller,
-                style: const TextStyle(fontSize: 13),
+                style: const TextStyle(fontSize: _fsField),
                 keyboardType:
                 const TextInputType.numberWithOptions(decimal: false),
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: _inputDecoration().copyWith(
                   prefixIconConstraints:
-                  const BoxConstraints(minWidth: 28, minHeight: 0),
+                  const BoxConstraints(minWidth: 26, minHeight: 0),
                   prefixIcon: Padding(
                     padding: const EdgeInsets.only(left: 6, right: 2),
-                    child: Icon(icon, size: 14, color: Colors.grey),
+                    child: Icon(icon, size: 13, color: Colors.grey),
                   ),
                 ),
               ),
@@ -595,19 +606,19 @@ class _BookingScreenState extends State<BookingScreen> {
           ]),
         );
 
-    Widget iconBtn(IconData icon) => Container(
-          margin: const EdgeInsets.only(left: 6),
-          decoration: BoxDecoration(
-            color: _surface,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: _border),
-          ),
-          child: IconButton(
-            onPressed: () {},
-            icon: Icon(icon, size: 18, color: Colors.black87),
-            splashRadius: 20,
-          ),
-        );
+    Widget iconBtn(IconData icon,{VoidCallback? onPressed}) => Container(
+      margin: const EdgeInsets.only(left: 6),
+      decoration: BoxDecoration(
+        color: _surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: _border),
+      ),
+      child: IconButton(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 17, color: Colors.black87),
+        splashRadius: 18,
+      ),
+    );
 
     final left = Wrap(
       spacing: 12,
@@ -616,17 +627,42 @@ class _BookingScreenState extends State<BookingScreen> {
       children: [
         checkbox('SMS', sms, (v) => setState(() => sms = v ?? false)),
         checkbox('EMAIL', email, (v) => setState(() => email = v ?? false)),
-        luggageField('PASS', Icons.work_outline, _pass, 31),
-        luggageField('LUGG', Icons.luggage, _lugg, 32),
-        luggageField('SLUGG', Icons.luggage, _slugg, 33),
+        luggageField('PASS', Icons.work_outline, _pass, 22),
+        luggageField('LUGG', Icons.luggage, _lugg, 23),
+        luggageField('SLUGG', Icons.luggage, _slugg, 24),
       ],
     );
 
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person_outline),
-      iconBtn(Icons.attach_money),
-      iconBtn(Icons.note_add_outlined),
-      iconBtn(Icons.calculate_outlined),
+      iconBtn(Icons.person_outline,
+      onPressed: () {
+        showDialog(context: context, builder: (_) => RestrictDriversAlert());
+      }
+      ),
+      iconBtn(Icons.attach_money,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (_) => ChildSeatsAlert(),
+            );
+      }),
+      iconBtn(Icons.note_add_outlined,
+      onPressed: (){
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => ExtraFaresAlert(),
+        );
+      }
+      ),
+      iconBtn(Icons.calculate_outlined,
+      onPressed: (){
+        showDialog(
+          context: context,
+          builder: (_) => ExtraInfoAlert(),
+        );
+      }
+      ),
     ]);
 
     if (isMobile) {
@@ -639,7 +675,7 @@ class _BookingScreenState extends State<BookingScreen> {
     return Row(children: [Expanded(child: left), right]);
   }
 
-// ────────── status cards
+  // ────────── status cards
   Widget _statusCards(bool isMobile) {
     Widget card({
       required IconData icon,
@@ -654,7 +690,7 @@ class _BookingScreenState extends State<BookingScreen> {
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(children: [
-          Icon(icon, size: 22, color: emphasized ? Colors.white : _purple),
+          Icon(icon, size: 20, color: emphasized ? Colors.white : _purple),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -662,14 +698,14 @@ class _BookingScreenState extends State<BookingScreen> {
               children: [
                 Text(label,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: emphasized ? Colors.white70 : _purpleDark,
                     )),
                 const SizedBox(height: 2),
                 Text(value,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: emphasized ? Colors.white : Colors.black87,
                     )),
@@ -709,13 +745,16 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
-// ────────── driver row
+  // ────────── driver row (Driver dd → tab 25)
   Widget _driverRow(bool isMobile) {
-    final dd = _driverDropdown<DashboardDriverObject>(
-      'Select Driver'.toUpperCase(),
+    final dd = _dropdown<DashboardDriverObject>(
+      null,
       controller.selectDriverValue,
       controller.dashboardAllData!.drivers ?? const [],
           (v) => setState(() => controller.selectDriverValue = v),
+      25,
+      itemLabel: (p) => p.name ?? '',
+      hint: 'Select Driver',
     );
 
     final clear = ElevatedButton(
@@ -723,29 +762,32 @@ class _BookingScreenState extends State<BookingScreen> {
       style: ElevatedButton.styleFrom(
         backgroundColor: _red,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textStyle:
+        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
       ),
-      child: Text('Clear (F7)'.toUpperCase(),
-          style: TextStyle(fontWeight: FontWeight.w700)),
+      child: Text('CLEAR[F7]'.toUpperCase()),
     );
 
     final home = ElevatedButton.icon(
       onPressed: () {},
-      icon: const Icon(Icons.home_outlined, size: 18),
-      label: const Text('Home', style: TextStyle(fontWeight: FontWeight.w700)),
+      icon: const Icon(Icons.home_outlined, size: 16),
+      label: const Text('SAVE[HOME]'),
       style: ElevatedButton.styleFrom(
         backgroundColor: _purple,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        textStyle:
+        const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
       ),
     );
 
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Driver',
-            style: TextStyle(fontSize: 12, color: Colors.black54)),
+            style: TextStyle(fontSize: _fsLabel, color: Colors.black54)),
         const SizedBox(height: 4),
         dd,
         const SizedBox(height: 10),
@@ -761,7 +803,8 @@ class _BookingScreenState extends State<BookingScreen> {
       const SizedBox(
         width: 70,
         child: Text('Driver',
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            style:
+            TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600)),
       ),
       Expanded(child: dd),
       const SizedBox(width: 10),
@@ -771,14 +814,16 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
-// ────────── shared primitives
+  // ────────── shared primitives
   Widget _sectionHeader(IconData icon, String title) => Row(children: [
-        Icon(icon, size: 18, color: _purple),
-        const SizedBox(width: 6),
-        Text(title.toUpperCase(),
-            style: const TextStyle(
-                color: _purple, fontWeight: FontWeight.w700, fontSize: 13)),
-      ]);
+    Icon(icon, size: 16, color: _purple),
+    const SizedBox(width: 6),
+    Text(title.toUpperCase(),
+        style: const TextStyle(
+            color: _purple,
+            fontWeight: FontWeight.w700,
+            fontSize: _fsSection)),
+  ]);
 
   Widget _grid(int cols, List<Widget> children) {
     final rows = <Widget>[];
@@ -801,28 +846,33 @@ class _BookingScreenState extends State<BookingScreen> {
     return Column(children: rows);
   }
 
-  Widget _autocompleteField(
+  Widget _customerAutocompleteField(
       String label, {
         required int tab,
         required TextEditingController controller,
-        required List<String> suggestions,
+        required List<CustomerObject> customers,
+        required ValueChanged<CustomerObject> onPicked,
+        ValueChanged<String>? onChanged,        // ← add
         IconData? prefix,
       }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+      Text(label.toUpperCase(),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _StringAutocomplete(
+        child: _CustomerModelAutocomplete(
           controller: controller,
-          suggestions: suggestions,
+          items: customers,
+          onSelected: onPicked,
+          onChanged: onChanged,             // ← add
           decoration: _inputDecoration().copyWith(
             prefixIconConstraints:
-            const BoxConstraints(minWidth: 30, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
                 ? Padding(
               padding: const EdgeInsets.only(left: 8, right: 4),
-              child: Icon(prefix, size: 16, color: Colors.grey),
+              child: Icon(prefix, size: 15, color: Colors.grey),
             )
                 : null,
           ),
@@ -831,23 +881,57 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
+  // Widget _autocompleteField(
+  //     String label, {
+  //       required int tab,
+  //       required TextEditingController controller,
+  //       required List<String> suggestions,
+  //       IconData? prefix,
+  //     }) {
+  //   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+  //     Text(label.toUpperCase(),
+  //         style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+  //     const SizedBox(height: 2),
+  //     FocusTraversalOrder(
+  //       order: NumericFocusOrder(tab.toDouble()),
+  //       child: _StringAutocomplete(
+  //         controller: controller,
+  //         suggestions: suggestions,
+  //         decoration: _inputDecoration().copyWith(
+  //           prefixIconConstraints:
+  //           const BoxConstraints(minWidth: 28, minHeight: 0),
+  //           prefixIcon: prefix != null
+  //               ? Padding(
+  //             padding: const EdgeInsets.only(left: 8, right: 4),
+  //             child: Icon(prefix, size: 15, color: Colors.grey),
+  //           )
+  //               : null,
+  //         ),
+  //       ),
+  //     ),
+  //   ]);
+  // }
+
   Widget _field(String label,
-      {required int tab, IconData? prefix, TextEditingController? controller}) {
+      {required int tab,
+        IconData? prefix,
+        TextEditingController? controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text(label.toUpperCase(), style: const TextStyle(fontSize: 12, color: Colors.black54)),
+      Text(label.toUpperCase(),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
         child: TextField(
           controller: controller,
-          style: const TextStyle(fontSize: 13),
+          style: const TextStyle(fontSize: _fsField),
           decoration: _inputDecoration().copyWith(
             prefixIconConstraints:
-            const BoxConstraints(minWidth: 30, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: prefix != null
                 ? Padding(
               padding: const EdgeInsets.only(left: 8, right: 4),
-              child: Icon(prefix, size: 16, color: Colors.grey),
+              child: Icon(prefix, size: 15, color: Colors.grey),
             )
                 : null,
           ),
@@ -856,36 +940,16 @@ class _BookingScreenState extends State<BookingScreen> {
     ]);
   }
 
-  Widget _driverDropdown<T>(
-      String hint,
+  Widget _dropdown<T>(
+      String? label,
       T? value,
       List<T> items,
       ValueChanged<T?> onChanged,
-      ) {
-    return DropdownButtonFormField<T>(
-      value: value,
-      hint: Text(hint),
-      decoration: _inputDecoration(),
-      items: items
-          .map((e) => DropdownMenuItem<T>(
-        value: e,
-        child: Text(e.toString()), // replace with e.name / e.title
-      ))
-          .toList(),
-      onChanged: onChanged,
-    );
-  }
-
-  Widget _dropdown<T>(
-    String? label,
-    T? value,
-    List<T> items,
-    ValueChanged<T?> onChanged,
-    int tab, {
-    String Function(T item)? itemLabel,
-    String? hint,
-    bool isExpanded = true,
-  }) {
+      int tab, {
+        String Function(T item)? itemLabel,
+        String? hint,
+        bool isExpanded = true,
+      }) {
     String labelOf(T item) => itemLabel?.call(item) ?? item.toString();
 
     return Column(
@@ -893,25 +957,32 @@ class _BookingScreenState extends State<BookingScreen> {
       children: [
         if (label != null) ...[
           Text(label.toUpperCase(),
-              style: const TextStyle(fontSize: 12, color: Colors.black54)),
-          const SizedBox(height: 4),
+              style:
+              const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+          const SizedBox(height: 2),
         ],
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
           child: DropdownButtonFormField<T>(
             value: value,
             isExpanded: isExpanded,
-            hint: hint != null ? Text(hint) : null,
+            style: const TextStyle(fontSize: _fsField, color: Colors.black87),
+            hint: hint != null
+                ? Text(hint,
+                style: const TextStyle(
+                    fontSize: _fsField, color: Colors.black54))
+                : null,
             decoration: _inputDecoration(),
             items: items
                 .map((e) => DropdownMenuItem<T>(
-                      value: e,
-                      child: Text(
-                        labelOf(e),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ))
+              value: e,
+              child: Text(
+                labelOf(e),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: _fsField),
+              ),
+            ))
                 .toList(),
             onChanged: onChanged,
           ),
@@ -922,7 +993,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _quotationToggle() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(height: 18),
+      const SizedBox(height: 16),
       Row(children: [
         Switch(
           value: controller.dropDownShow.value,
@@ -930,25 +1001,27 @@ class _BookingScreenState extends State<BookingScreen> {
           activeColor: _purple,
         ),
         const SizedBox(width: 4),
-        const Text('Quotation', style: TextStyle(fontWeight: FontWeight.w500)),
+        const Text('Quotation',
+            style:
+            TextStyle(fontWeight: FontWeight.w500, fontSize: _fsField)),
       ]),
     ]);
   }
 
   InputDecoration _inputDecoration() => InputDecoration(
-        isDense: true,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _border)),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _border)),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: _purple)),
-      );
+    isDense: true,
+    contentPadding:
+    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _border)),
+    enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _border)),
+    focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+        borderSide: const BorderSide(color: _purple)),
+  );
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -961,6 +1034,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
     required this.decoration,
     this.onChanged,
     this.onSelected,
+    this.onPickIndex,
   });
 
   final TextEditingController controller;
@@ -968,6 +1042,7 @@ class _AddressModelAutocomplete extends StatefulWidget {
   final InputDecoration decoration;
   final ValueChanged<String>? onChanged;
   final ValueChanged<AllAddressesModel>? onSelected;
+  final ValueChanged<int>? onPickIndex;
 
   @override
   State<_AddressModelAutocomplete> createState() =>
@@ -1024,7 +1099,6 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
 
   void _onFocus() {
     if (!_focusNode.hasFocus) _hide();
-// intentionally do NOT auto-open on focus
   }
 
   void _onText() {
@@ -1071,6 +1145,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _userTyped = false;
     widget.controller.text = text;
     widget.controller.selection = TextSelection.collapsed(offset: text.length);
+    final idx = widget.items.indexOf(a);   // ← index in the ORIGINAL list
+    if (idx >= 0) widget.onPickIndex?.call(idx);
+
     widget.onSelected?.call(a);
     _focusNode.unfocus();
   }
@@ -1090,8 +1167,8 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
       final c = _scrollController;
       if (!c.hasClients || _highlighted < 0) return;
 
-      const itemHeight = 52.0;
-      const panelHeight = 280.0;
+      const itemHeight = 48.0;
+      const panelHeight = 260.0;
       final itemTop = _highlighted * itemHeight;
       final itemBottom = itemTop + itemHeight;
       final viewTop = c.offset;
@@ -1155,7 +1232,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 280),
+              constraints: const BoxConstraints(maxHeight: 260),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xFFE5E7EB)),
@@ -1163,83 +1240,87 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No data',
-                          style: TextStyle(color: Colors.black54)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(
+                        color: Colors.black54, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final a = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            onTap: () => _pick(a),
-                            child: Container(
-                              width: double.infinity,
-                              height: 52,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final a = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(a),
+                      child: Container(
+                        width: double.infinity,
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child:
+                        Text(
+                          "${a.name} ${a.postcode}",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: active
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        )
+                        /*Row(children: [
+                          Icon(Icons.place_outlined,
+                              size: 16,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.place_outlined,
-                                    size: 18,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        a.name ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: active
-                                              ? FontWeight.w600
-                                              : FontWeight.w500,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        a.postcode ?? '',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.black54,
-                                        ),
-                                      ),
-                                    ],
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: [
+
+                                const SizedBox(height: 2),
+                                Text(
+                                  a.postcode ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black54,
                                   ),
                                 ),
-                              ]),
+                              ],
                             ),
                           ),
-                        );
-                      },
+                        ])*/,
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -1258,6 +1339,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
           onChanged: widget.onChanged,
           controller: widget.controller,
           focusNode: _focusNode,
+          style: const TextStyle(fontSize: 12),
           decoration: widget.decoration,
         ),
       ),
@@ -1332,8 +1414,8 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
     _filtered = query.isEmpty
         ? widget.suggestions
         : widget.suggestions
-            .where((s) => s.toLowerCase().contains(query))
-            .toList();
+        .where((s) => s.toLowerCase().contains(query))
+        .toList();
     _highlighted = _filtered.isEmpty ? -1 : 0;
     _entry?.markNeedsBuild();
   }
@@ -1414,7 +1496,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
             elevation: 6,
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              constraints: const BoxConstraints(maxHeight: 240),
+              constraints: const BoxConstraints(maxHeight: 220),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: const Color(0xFFE5E7EB)),
@@ -1422,63 +1504,64 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
               ),
               child: _filtered.isEmpty
                   ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: Text('No matches',
-                          style: TextStyle(color: Colors.black54)),
-                    )
+                padding: EdgeInsets.all(12),
+                child: Text('No matches',
+                    style: TextStyle(
+                        color: Colors.black54, fontSize: 12)),
+              )
                   : ListView.builder(
-                      controller: _scrollController,
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      itemCount: _filtered.length,
-                      itemBuilder: (_, i) {
-                        final s = _filtered[i];
-                        final active = _highlighted == i;
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          onEnter: (_) {
-                            if (_highlighted == i) return;
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (!mounted) return;
-                              _highlighted = i;
-                              _entry?.markNeedsBuild();
-                            });
-                          },
-                          child: InkWell(
-                            onTap: () => _pick(s),
-                            child: Container(
-                              width: double.infinity,
-                              height: 38,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final s = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(s),
+                      child: Container(
+                        width: double.infinity,
+                        height: 34,
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 12),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.place_outlined,
+                              size: 14,
                               color: active
-                                  ? const Color(0xFFEEF2FF)
-                                  : Colors.white,
-                              alignment: Alignment.centerLeft,
-                              child: Row(children: [
-                                Icon(Icons.place_outlined,
-                                    size: 16,
-                                    color: active
-                                        ? const Color(0xFF4F46E5)
-                                        : Colors.grey),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(s,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: active
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
-                                      )),
-                                ),
-                              ]),
-                            ),
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(s,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: active
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                )),
                           ),
-                        );
-                      },
+                        ]),
+                      ),
                     ),
+                  );
+                },
+              ),
             ),
           ),
         ),
@@ -1497,6 +1580,320 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
           onChanged: widget.onChanged,
           controller: widget.controller,
           focusNode: _focusNode,
+          style: const TextStyle(fontSize: 12),
+          decoration: widget.decoration,
+        ),
+      ),
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Autocomplete: backed by CustomerObject (mobile + name + email)
+// Mirrors _AddressModelAutocomplete behaviour exactly.
+// ════════════════════════════════════════════════════════════════════
+class _CustomerModelAutocomplete extends StatefulWidget {
+  const _CustomerModelAutocomplete({
+    required this.controller,
+    required this.items,
+    required this.decoration,
+    this.onChanged,
+    this.onSelected,
+  });
+
+  final TextEditingController controller;
+  final List<CustomerObject> items;
+  final InputDecoration decoration;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<CustomerObject>? onSelected;
+
+  @override
+  State<_CustomerModelAutocomplete> createState() =>
+      _CustomerModelAutocompleteState();
+}
+
+class _CustomerModelAutocompleteState
+    extends State<_CustomerModelAutocomplete> {
+  final _layerLink = LayerLink();
+  final _focusNode = FocusNode();
+  final _fieldKey = GlobalKey();
+  OverlayEntry? _entry;
+  List<CustomerObject> _filtered = const [];
+  int _highlighted = -1;
+  bool _userTyped = false;
+
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _focusNode.addListener(_onFocus);
+    widget.controller.addListener(_onText);
+  }
+
+  @override
+  void didUpdateWidget(covariant _CustomerModelAutocomplete oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.items != widget.items && _userTyped) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_focusNode.hasFocus) return;
+        _filter(widget.controller.text);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _hide();
+    _focusNode.removeListener(_onFocus);
+    widget.controller.removeListener(_onText);
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onFocus() {
+    if (!_focusNode.hasFocus) _hide();
+  }
+
+  void _onText() {
+    if (!_focusNode.hasFocus) return;
+    final text = widget.controller.text.trim();
+    if (text.isEmpty) {
+      _userTyped = false;
+      _hide();
+      return;
+    }
+    _userTyped = true;
+    _filter(widget.controller.text);
+    _show();
+  }
+
+  void _filter(String q) {
+    final query = q.trim().toLowerCase();
+    if (query.isEmpty) {
+      _filtered = const [];
+    } else {
+      _filtered = widget.items.where((c) {
+        final n = (c.name ?? '').toLowerCase();
+        final m = (c.mobile ?? '').toLowerCase();
+        final e = (c.email ?? '').toLowerCase();
+        return n.contains(query) || m.contains(query) || e.contains(query);
+      }).toList();
+    }
+    _highlighted = _filtered.isEmpty ? -1 : 0;
+    _entry?.markNeedsBuild();
+  }
+
+  void _show() {
+    if (_entry != null) return;
+    _entry = OverlayEntry(builder: _buildPanel);
+    Overlay.of(context).insert(_entry!);
+  }
+
+  void _hide() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _pick(CustomerObject c) {
+    final text = c.mobile ?? '';
+    _userTyped = false;
+    widget.controller.text = text;
+    widget.controller.selection =
+        TextSelection.collapsed(offset: text.length);
+    widget.onSelected?.call(c);
+    _focusNode.unfocus();
+  }
+
+  void _moveHighlight(int delta) {
+    if (_filtered.isEmpty) return;
+    final next = (_highlighted + delta).clamp(0, _filtered.length - 1);
+    if (next == _highlighted) return;
+    _highlighted = next;
+    _entry?.markNeedsBuild();
+    _scrollHighlightedIntoView();
+  }
+
+  void _scrollHighlightedIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final c = _scrollController;
+      if (!c.hasClients || _highlighted < 0) return;
+
+      const itemHeight = 48.0;
+      const panelHeight = 260.0;
+      final itemTop = _highlighted * itemHeight;
+      final itemBottom = itemTop + itemHeight;
+      final viewTop = c.offset;
+      final viewBottom = viewTop + panelHeight;
+      final maxScroll = c.position.maxScrollExtent;
+
+      if (itemTop < viewTop) {
+        c.jumpTo(itemTop.clamp(0.0, maxScroll));
+      } else if (itemBottom > viewBottom) {
+        c.jumpTo((itemBottom - panelHeight).clamp(0.0, maxScroll));
+      }
+    });
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.arrowDown) {
+      if (_entry != null) _moveHighlight(1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp) {
+      if (_entry != null) _moveHighlight(-1);
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      if (_entry != null &&
+          _highlighted >= 0 &&
+          _highlighted < _filtered.length) {
+        _pick(_filtered[_highlighted]);
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+    if (key == LogicalKeyboardKey.escape) {
+      if (_entry != null) {
+        _hide();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final width = box?.size.width ?? 280;
+    final height = box?.size.height ?? 48;
+    return Positioned(
+      width: width,
+      child: CompositedTransformFollower(
+        link: _layerLink,
+        showWhenUnlinked: false,
+        offset: Offset(0, height + 4),
+        child: TapRegion(
+          onTapOutside: (_) => _focusNode.unfocus(),
+          child: Material(
+            elevation: 6,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 260),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: const Color(0xFFE5E7EB)),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: _filtered.isEmpty
+                  ? const Padding(
+                padding: EdgeInsets.all(12),
+                child: Text('No data',
+                    style: TextStyle(
+                        color: Colors.black54, fontSize: 12)),
+              )
+                  : ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: _filtered.length,
+                itemBuilder: (_, i) {
+                  final c = _filtered[i];
+                  final active = _highlighted == i;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (!mounted) return;
+                        _highlighted = i;
+                        _entry?.markNeedsBuild();
+                      });
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(c),
+                      child: Container(
+                        width: double.infinity,
+                        height: 48,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        alignment: Alignment.centerLeft,
+                        child: Row(children: [
+                          Icon(Icons.person_outline,
+                              size: 16,
+                              color: active
+                                  ? const Color(0xFF4F46E5)
+                                  : Colors.grey),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              mainAxisAlignment:
+                              MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  c.mobile ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: active
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  c.name ?? '',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Focus(
+        onKeyEvent: _handleKey,
+        child: TextField(
+          key: _fieldKey,
+          onChanged: widget.onChanged,
+          controller: widget.controller,
+          focusNode: _focusNode,
+          style: const TextStyle(fontSize: 12),
+          keyboardType: TextInputType.phone,
           decoration: widget.decoration,
         ),
       ),

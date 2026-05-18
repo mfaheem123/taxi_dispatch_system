@@ -1431,9 +1431,9 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       dashboardTableModelData = DashboardTableModel.fromJson(response.data);
       dashboardTableTotalPages.value = dashboardTableModelData!.total!;
       _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-         getDashboardTableData(tableId: selectedTabId);
-      });
+      // _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //    getDashboardTableData(tableId: selectedTabId);
+      // });
 
       update();
     }
@@ -1613,31 +1613,52 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 // 👇 Yahan API call ya search function call karna hai
      getPhoneNumberOfUSers(fieldsName: fieldName, searchingText: searchingText);
    }
+
  GetPhoneNumbersModel? customerPhoneNumber;
  final Rx<FocusNode> suggestionPhoneFocusNode = FocusNode().obs;
-getPhoneNumberOfUSers({fieldsName, searchingText}) async {
+
+   Future<void> getPhoneNumberOfUSers({
+     required String fieldsName,
+     required String searchingText,
+   }) async {
      dashboardDataLoader(true);
-     var response = await Api().get("customers/search?mobile=$searchingText");
+     final response = await Api().get("customers/search?mobile=$searchingText");
+
      if (response.statusCode == 200) {
-       if (response.data['customer'].isNotEmpty) {
-         dropDownShow.value = true;
+       final list = response.data['customer'];
+       if (list != null && list.isNotEmpty) {
          customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
-         SuggestionController suggestion_controller =
-         Get.isRegistered<SuggestionController>()
-             ? Get.find<SuggestionController>()
-             : Get.put(SuggestionController());
-         suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
-         FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
-// FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
-         selectedTextFieldsValue.value = fieldsName;
-       }else{
-         dropDownShow.value = false;
+       } else {
+         customerPhoneNumber = null;   // empty → dropdown shows "No data"
        }
        dashboardDataLoader(false);
-       update();
+       update();                       // rebuild GetBuilder → autocomplete refilters
      }
-
    }
+
+// getPhoneNumberOfUSers({fieldsName, searchingText}) async {
+//      dashboardDataLoader(true);
+//      var response = await Api().get("customers/search?mobile=$searchingText");
+//      if (response.statusCode == 200) {
+//        if (response.data['customer'].isNotEmpty) {
+//          dropDownShow.value = true;
+//          customerPhoneNumber = GetPhoneNumbersModel.fromJson(response.data);
+//          SuggestionController suggestion_controller =
+//          Get.isRegistered<SuggestionController>()
+//              ? Get.find<SuggestionController>()
+//              : Get.put(SuggestionController());
+//          suggestion_controller.allListData = customerPhoneNumber!.customerInfo!;
+//          FocusScope.of(Get.context!).requestFocus(phoneNumberFieldKey);
+// // FocusScope.of(Get.context!).requestFocus(phoneKeyboardFocusNode);
+//          selectedTextFieldsValue.value = fieldsName;
+//        }else{
+//          dropDownShow.value = false;
+//        }
+//        dashboardDataLoader(false);
+//        update();
+//      }
+//
+//    }
 
   /// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get Fare API
   getFaresCalculation() async{

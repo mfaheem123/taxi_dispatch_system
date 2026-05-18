@@ -2106,7 +2106,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             child: buildFocusableIcon(
                                                               icon: Icons.person,
                                                               focusNode: _focusNodes[0],
-                                                              onPressed: () {    controller.dropDownShow.value = false;
+                                                              onPressed: () {
+                                                                controller.dropDownShow.value = false;
                                                               showDialog(context: context, builder: (_) => RestrictDriversAlert());
                                                               },
                                                             ),
@@ -2670,9 +2671,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                             "${item.name} ${item.postcode}"),
                                       ),
                                       onTap: () =>
-                                          controller
-                                              .tapSelect(
-                                              index),
+                                          controller.tapSelect(index),
                                     ),
                                   );
                                 });
