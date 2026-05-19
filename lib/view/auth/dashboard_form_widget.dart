@@ -15,13 +15,13 @@ import '../dashboard_view/models/users_phone_numbers_model.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
-class BookingScreen extends StatefulWidget {
-  const BookingScreen({super.key});
+class BookingFormScreen extends StatefulWidget {
+  const BookingFormScreen({super.key});
   @override
-  State<BookingScreen> createState() => _BookingScreenState();
+  State<BookingFormScreen> createState() => _BookingFormScreenState();
 }
 
-class _BookingScreenState extends State<BookingScreen> {
+class _BookingFormScreenState extends State<BookingFormScreen> {
   // ────────── palette
   static const _purple = Color(0xFF4F46E5);
   static const _purpleDark = Color(0xFF312E81);
@@ -48,13 +48,27 @@ class _BookingScreenState extends State<BookingScreen> {
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
 
-  static const _mobileSuggestions = [
-    '0123213133213',
-    '07123 456789',
-    '07700 900123',
-    '07911 123456',
-    '02071 234567',
-  ];
+  // ────────── return-journey state
+  bool addReturnFare = false;
+  ZoneObject? returnPickupZone;
+  ZoneObject? returnDropZone;
+  DashboardVehicleTypeObject? returnVehicleValue;
+  DashboardDriverObject? returnDriverValue;
+
+  late final _rPickup = TextEditingController();
+  late final _rDropoff = TextEditingController();
+  late final _rDate = TextEditingController(text: '19 / 05 / 2026');
+  late final _rTime = TextEditingController(text: '15:03');
+  late final _rLead = TextEditingController();
+  late final _rFare = TextEditingController(text: '4.9');
+
+  bool get _isReturnJourney {
+    final j = controller.selectJourneyTypeValue?.journeyType
+        ?.toUpperCase()
+        .trim();
+    return j == 'R/N' || j == 'RETURN';
+  }
+
 
   late final _date = TextEditingController(text: '25 / 04 / 2026');
   late final _fare = TextEditingController(text: '226.00');
@@ -93,6 +107,12 @@ class _BookingScreenState extends State<BookingScreen> {
       _pass,
       _lugg,
       _slugg,
+      _rPickup,
+      _rDropoff,
+      _rDate,
+      _rTime,
+      _rLead,
+      _rFare,
     ]) {
       c.dispose();
     }
@@ -117,255 +137,374 @@ class _BookingScreenState extends State<BookingScreen> {
 
     final formWidth = isDesktop ? w * 0.5 : double.infinity;
 
-    return Scaffold(
-      backgroundColor: _surface,
-      body: CallbackShortcuts(
-        bindings: <ShortcutActivator, VoidCallback>{
-          const SingleActivator(LogicalKeyboardKey.f7): _onClear,
-          const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
-          const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
-        },
-        child: Focus(
-          autofocus: true,
-          child: GetBuilder<DashboardController>(
-            initState: (_) {
-              controller.seeZoneOnMapp();
-              if (_controller.locationtypezoneModel == null) {
-                _controller.getLocationTypeZone();
-              }
-            },
-            builder: (controller) {
-              return SafeArea(
-                child: Center(
-                  child: SizedBox(
-                    width: formWidth,
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isMobile ? 0 : 12,
-                        vertical: isMobile ? 0 : 12,
+    return CallbackShortcuts(
+      bindings: <ShortcutActivator, VoidCallback>{
+        const SingleActivator(LogicalKeyboardKey.f7): _onClear,
+        const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
+        const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
+      },
+      child: Focus(
+        autofocus: true,
+        child: GetBuilder<DashboardController>(
+          initState: (_) {
+            controller.seeZoneOnMapp();
+            if (_controller.locationtypezoneModel == null) {
+              _controller.getLocationTypeZone();
+            }
+          },
+          builder: (controller) {
+            return SafeArea(
+              child: Center(
+                child: SizedBox(
+                  width: formWidth,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 0 : 12,
+                      vertical: isMobile ? 0 : 12,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                        BorderRadius.circular(isMobile ? 0 : 10),
+                        border: Border.all(color: _border),
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                          BorderRadius.circular(isMobile ? 0 : 10),
-                          border: Border.all(color: _border),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: FocusTraversalGroup(
-                          policy: OrderedTraversalPolicy(),
-                          child: Column(
-                            // crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _topTabs(isMobile),
-                              Padding(
-                                padding: EdgeInsets.all(isMobile ? 12 : 16),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.stretch,
-                                  children: [
-                                    // PICKUP → tabs 2,3,4
-                                    _locationRow<ZoneObject>(
-                                      'PICKUP',
-                                      _green,
-                                      controller.pickupController,
-                                      controller.allAddressesData,
-                                      controller.dashboardZoneValue,
-                                      _controller.updateLocationValue.value == true
-                                          ? []
-                                          : _controller.locationtypezoneModel!.zonesList!,
-                                          (v) => setState(() =>
-                                      controller.dashboardZoneValue = v),
-                                      isMobile,
-                                          (value) {
-                                        WidgetsBinding.instance
-                                            .addPostFrameCallback((_) {
-                                          controller.onChangeHandler(
-                                              fieldName: "PICKUP LOCATION",
-                                              searchingText: value);
+                      clipBehavior: Clip.antiAlias,
+                      child: FocusTraversalGroup(
+                        policy: OrderedTraversalPolicy(),
+                        child: Column(
+                          children: [
+                            _topTabs(isMobile),
+                            Padding(
+                              padding: EdgeInsets.all(isMobile ? 12 : 16),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.stretch,
+                                children: [
+                                  _locationRow<ZoneObject>(
+                                    'PICKUP',
+                                    _green,
+                                    controller.pickupController,
+                                    controller.allAddressesData,
+                                    controller.dashboardZoneValue,
+                                    _controller.updateLocationValue.value == true
+                                        ? []
+                                        : _controller.locationtypezoneModel!.zonesList!,
+                                        (v) => setState(() =>
+                                    controller.dashboardZoneValue = v),
+                                    isMobile,
+                                        (value) {
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        controller.onChangeHandler(
+                                            fieldName: "PICKUP LOCATION",
+                                            searchingText: value);
+                                      });
+                                    },
+                                        (addr) => setState(() => _selectedPickup = addr),
+                                    1,
+                                    zoneLabel: (z) => z.name!,
+                                    onPickIndex: (index) => controller.tapSelect(index),
+                                    onCurrentLocation: () {
+                                      debugPrint('Use current location → PICKUP');
+                                    },
+                                  ),
+                                  const SizedBox(height: 4),
+                                  _locationRow<ZoneObject>(
+                                    'DROP   ',
+                                    _red,
+                                    controller.dropOffController,
+                                    controller.allAddressesData,
+                                    controller.dashboardDZoneValue,
+                                    _controller.updateLocationValue.value == true
+                                        ? []
+                                        : _controller.locationtypezoneModel!.zonesList!,
+                                        (v) => setState(() =>
+                                    controller.dashboardDZoneValue = v),
+                                    isMobile,
+                                        (value) {
+                                      controller.onChangeHandler(
+                                          fieldName: "DROP LOCATION",
+                                          searchingText: value);
+                                    },
+                                        (addr) => setState(() => _selectedDrop = addr),
+                                    4,
+                                    zoneLabel: (z) => z.name!,
+                                    onPickIndex: (index) => controller.tapSelect(index),
+                                    onCurrentLocation: () {
+                                      debugPrint('Use current location → DROP');
+                                    },
+                                  ),
+                                  const Divider(height: 20),
+                                  _sectionHeader(Icons.person,
+                                      'PASSENGER & BOOKING DETAILS'),
+                                  _grid(cols, [
+                                    _field('Name',
+                                        tab: 8, controller: controller.nameController),
+                                    _field('Email',
+                                        tab: 9, controller: controller.emailController),
+                                    _customerAutocompleteField(
+                                      'Mobile',
+                                      tab: 10,
+                                      controller: controller.mobileController,
+                                      customers: controller.customerPhoneNumber?.customerInfo ?? const [],
+                                      onChanged: (q) {
+                                        if (q.trim().isEmpty) return;
+                                        controller.onPhoneNoChangeHandler(
+                                          fieldName: "Phone Number",
+                                          searchingText: q,
+                                        );
+                                      },
+                                      onPicked: (c) {
+                                        setState(() {
+                                          controller.mobileController.text = c.mobile    ?? '';
+                                          controller.nameController.text   = c.name      ?? '';
+                                          controller.emailController.text  = c.email     ?? '';
+                                          controller.telController.text    = c.telephone ?? '';
                                         });
                                       },
-                                          (addr) => setState(() => _selectedPickup = addr),
-                                      1,
-                                      zoneLabel: (z) => z.name!,
-                                      onPickIndex: (index) => controller.tapSelect(index),
-                                      onCurrentLocation: () {
-                                        // TODO: replace with your GPS / "use my location" handler
-                                        debugPrint('Use current location → PICKUP');
-                                      },
                                     ),
-                                    const SizedBox(height: 4),
-                                    // DROP → tabs 5,6,7
-                                    _locationRow<ZoneObject>(
-                                      'DROP   ',
-                                      _red,
-                                      controller.dropOffController,
-                                      controller.allAddressesData,
-                                      controller.dashboardDZoneValue,
-                                      _controller.updateLocationValue.value == true
-                                          ? []
-                                          : _controller.locationtypezoneModel!.zonesList!,
+                                    _field('Tel.',
+                                        tab: 11, controller: controller.telController),
+                                  ]),
+                                  _grid(cols, [
+                                    _field('Date',
+                                        tab: 12,
+                                        prefix: Icons.calendar_today,
+                                        controller: _date),
+                                    _field('Time',
+                                        tab: 13,
+                                        prefix: Icons.access_time,
+                                        controller: controller.pickUpTimeController),
+                                    _dropdown<JourneyTypeObject>(
+                                      'Journey Type'.toUpperCase(),
+                                      controller.selectJourneyTypeValue,
+                                      controller.dashboardAllData!.journeyTypes ?? const [],
                                           (v) => setState(() =>
-                                      controller.dashboardDZoneValue = v),
-                                      isMobile,
-                                          (value) {
-                                        controller.onChangeHandler(
-                                            fieldName: "DROP LOCATION",
-                                            searchingText: value);
-                                      },
-                                          (addr) => setState(() => _selectedDrop = addr),
-                                      4,
-                                      zoneLabel: (z) => z.name!,
-                                      onPickIndex: (index) => controller.tapSelect(index),
-                                      onCurrentLocation: () {
-                                        debugPrint('Use current location → DROP');
-                                      },
+                                      controller.selectJourneyTypeValue = v),
+                                      14,
+                                      itemLabel: (p) => p.journeyType!,
                                     ),
-                                    const Divider(height: 20),
-                                    _sectionHeader(Icons.person,
-                                        'PASSENGER & BOOKING DETAILS'),
-                                    _grid(cols, [
-                                      _field('Name',
-                                          tab: 8, controller: controller.nameController),
-                                      _field('Email',
-                                          tab: 9, controller: controller.emailController),
-                                      // _autocompleteField(
-                                      //   'Mobile',
-                                      //   tab: 10,
-                                      //   controller: controller.mobileController,
-                                      //   suggestions: _mobileSuggestions,
-                                      // ),
-                                      _customerAutocompleteField(
-                                        'Mobile',
-                                        tab: 10,
-                                        controller: controller.mobileController,
-                                        customers: controller.customerPhoneNumber?.customerInfo ?? const [],
-                                        onChanged: (q) {
-                                          if (q.trim().isEmpty) return;
-                                          controller.onPhoneNoChangeHandler(
-                                            fieldName: "Phone Number",
-                                            searchingText: q,
-                                          );
-                                        },
-                                        onPicked: (c) {
-                                          setState(() {
-                                            controller.mobileController.text = c.mobile    ?? '';
-                                            controller.nameController.text   = c.name      ?? '';
-                                            controller.emailController.text  = c.email     ?? '';
-                                            controller.telController.text    = c.telephone ?? '';
-                                          });
-                                        },
-                                      ),
-                                      _field('Tel.',
-                                          tab: 11, controller: controller.telController),
-                                    ]),
-                                    _grid(cols, [
-                                      _field('Date',
-                                          tab: 12,
-                                          prefix: Icons.calendar_today,
-                                          controller: _date),
-                                      _field('Time',
-                                          tab: 13,
-                                          prefix: Icons.access_time,
-                                          controller: controller.pickUpTimeController),
-                                      _dropdown<JourneyTypeObject>(
-                                        'Journey Type'.toUpperCase(),
-                                        controller.selectJourneyTypeValue,
-                                        controller.dashboardAllData!.journeyTypes ?? const [],
-                                            (v) => setState(() =>
-                                        controller.selectJourneyTypeValue = v),
-                                        14,
-                                        itemLabel: (p) => p.journeyType!,
-                                      ),
-                                      _field('Lead Time',
-                                          tab: 15, controller: controller.minController),
-                                    ]),
-                                    _grid(isMobile ? 1 : 3, [
-                                      _field('No. of Passengers',
-                                          tab: 16,
-                                          prefix: Icons.person_outline,
-                                          controller: controller.passController),
-                                      _field('Fare',
-                                          tab: 17,
-                                          prefix: Icons.currency_pound,
-                                          controller: _fare),
-                                      _dropdown<DashboardAccountObject>(
-                                        'Account',
-                                        controller.selectAccountValue,
-                                        controller.dashboardAccountData?.accounts ?? const [],
-                                            (v) {
-                                          setState(() {
-                                            controller.selectAccountValue = v;
-                                            controller.selectDepartmentData = null;
-                                          });
-                                        },
-                                        18,
-                                        itemLabel: (p) => p.name!,
-                                      ),
-                                    ]),
-                                    const Divider(height: 20),
-                                    _sectionHeader(Icons.directions_car,
-                                        'VEHICLE & PAYMENT'),
-                                    const SizedBox(height: 4),
-                                    _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
-                                      _dropdown<PaymentTypeObject>(
-                                        'Pay By',
-                                        controller.selectPaymentTypeValue,
-                                        controller.dashboardAllData!.paymentTypes ?? const [],
-                                            (v) => setState(() =>
-                                        controller.selectPaymentTypeValue = v),
-                                        19,
-                                        itemLabel: (p) => p.name!,
-                                      ),
-                                      _dropdown<DashboardVehicleTypeObject>(
-                                        'Vehicle Type',
-                                        controller.selectVehicleValue,
-                                        controller.dashboardAllData!.vehicleTypes!,
-                                            (v) => setState(() {
-                                          controller.selectVehicleValue = v;
-                                          controller.getFaresCalculation();
-                                        }),
-                                        20,
-                                        itemLabel: (p) => p.name!,
-                                      ),
-                                      _dropdown<DepartmentObject>(
-                                        'Department',
-                                        controller.selectDepartmentData,
-                                        controller.selectAccountValue == null
-                                            ? []
-                                            : controller.selectAccountValue!.departments!,
-                                            (v) => setState(() {
-                                          controller.selectDepartmentData = v;
-                                          controller.update();
-                                        }),
-                                        21,
-                                        itemLabel: (p) => p.name ?? "",
-                                      ),
-                                      _quotationToggle(),
-                                    ]),
-                                    const SizedBox(height: 4),
-                                    _commsAndLuggageRow(isMobile),
-                                    const SizedBox(height: 4),
-                                    _statusCards(isMobile),
-                                    const SizedBox(height: 4),
-                                    _driverRow(isMobile),
-                                  ],
-                                ),
+                                    _field('Lead Time',
+                                        tab: 15, controller: controller.minController),
+                                  ]),
+                                  _grid(isMobile ? 1 : 3, [
+                                    _field('No. of Passengers',
+                                        tab: 16,
+                                        prefix: Icons.person_outline,
+                                        controller: controller.passController),
+                                    _field('Fare',
+                                        tab: 17,
+                                        prefix: Icons.currency_pound,
+                                        controller: _fare),
+                                    _dropdown<DashboardAccountObject>(
+                                      'Account',
+                                      controller.selectAccountValue,
+                                      controller.dashboardAccountData?.accounts ?? const [],
+                                          (v) {
+                                        setState(() {
+                                          controller.selectAccountValue = v;
+                                          controller.selectDepartmentData = null;
+                                        });
+                                      },
+                                      18,
+                                      itemLabel: (p) => p.name!,
+                                    ),
+                                  ]),
+                                  if (_isReturnJourney) _returnJourneySection(isMobile, cols),
+                                  const Divider(height: 20),
+                                  _sectionHeader(Icons.directions_car,
+                                      'VEHICLE & PAYMENT'),
+                                  const SizedBox(height: 4),
+                                  _grid(isMobile ? 1 : (isTablet ? 2 : 4), [
+                                    _dropdown<PaymentTypeObject>(
+                                      'Pay By',
+                                      controller.selectPaymentTypeValue,
+                                      controller.dashboardAllData!.paymentTypes ?? const [],
+                                          (v) => setState(() =>
+                                      controller.selectPaymentTypeValue = v),
+                                      19,
+                                      itemLabel: (p) => p.name!,
+                                    ),
+                                    _dropdown<DashboardVehicleTypeObject>(
+                                      'Vehicle Type',
+                                      controller.selectVehicleValue,
+                                      controller.dashboardAllData!.vehicleTypes!,
+                                          (v) => setState(() {
+                                        controller.selectVehicleValue = v;
+                                        controller.getFaresCalculation();
+                                      }),
+                                      20,
+                                      itemLabel: (p) => p.name!,
+                                    ),
+                                    _dropdown<DepartmentObject>(
+                                      'Department',
+                                      controller.selectDepartmentData,
+                                      controller.selectAccountValue == null
+                                          ? []
+                                          : controller.selectAccountValue!.departments!,
+                                          (v) => setState(() {
+                                        controller.selectDepartmentData = v;
+                                        controller.update();
+                                      }),
+                                      21,
+                                      itemLabel: (p) => p.name ?? "",
+                                    ),
+                                    _quotationToggle(),
+                                  ]),
+                                  const SizedBox(height: 4),
+                                  _commsAndLuggageRow(isMobile),
+                                  const SizedBox(height: 4),
+                                  _statusCards(isMobile),
+                                  const SizedBox(height: 4),
+                                  _driverRow(isMobile),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
+
+  // ────────── RETURN JOURNEY SECTION
+  Widget _returnJourneySection(bool isMobile, int cols) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Divider(height: 20),
+        _sectionHeader(Icons.swap_horiz, 'RETURN JOURNEY'),
+        const SizedBox(height: 8),
+        _locationRow<ZoneObject>(
+          'PICK',
+          _green,
+          _rPickup,
+          controller.allAddressesData,
+          returnPickupZone,
+          _controller.updateLocationValue.value == true
+              ? []
+              : _controller.locationtypezoneModel!.zonesList!,
+              (v) => setState(() => returnPickupZone = v),
+          isMobile,
+              (value) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              controller.onChangeHandler(
+                  fieldName: "PICKUP LOCATION", searchingText: value);
+            });
+          },
+              (addr) {},
+          30,
+          zoneLabel: (z) => z.name!,
+          onPickIndex: (index) => controller.tapSelect(index),
+          onCurrentLocation: () => debugPrint('Use current location → R/PICK'),
+        ),
+        const SizedBox(height: 4),
+        _locationRow<ZoneObject>(
+          'DROP',
+          _red,
+          _rDropoff,
+          controller.allAddressesData,
+          returnDropZone,
+          _controller.updateLocationValue.value == true
+              ? []
+              : _controller.locationtypezoneModel!.zonesList!,
+              (v) => setState(() => returnDropZone = v),
+          isMobile,
+              (value) {
+            controller.onChangeHandler(
+                fieldName: "DROP LOCATION", searchingText: value);
+          },
+              (addr) {},
+          33,
+          zoneLabel: (z) => z.name!,
+          onPickIndex: (index) => controller.tapSelect(index),
+          onCurrentLocation: () => debugPrint('Use current location → R/DROP'),
+        ),
+        const SizedBox(height: 8),
+        _grid(cols, [
+          _field('R/Date',
+              tab: 36, prefix: Icons.calendar_today, controller: _rDate),
+          _field('R/Time',
+              tab: 37, prefix: Icons.access_time, controller: _rTime),
+          _field('R/Lead', tab: 38, controller: _rLead),
+          _field('R/Fare',
+              tab: 39, prefix: Icons.currency_pound, controller: _rFare),
+        ]),
+        const SizedBox(height: 6),
+        isMobile
+            ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          _addReturnFareCheckbox(),
+          const SizedBox(height: 8),
+          _dropdown<DashboardVehicleTypeObject>(
+            'Return/VEH',
+            returnVehicleValue,
+            controller.dashboardAllData!.vehicleTypes!,
+                (v) => setState(() => returnVehicleValue = v),
+            40,
+            itemLabel: (p) => p.name!,
+          ),
+          const SizedBox(height: 8),
+          _dropdown<DashboardDriverObject>(
+            'Return/DRV',
+            returnDriverValue,
+            controller.dashboardAllData!.drivers ?? const [],
+                (v) => setState(() => returnDriverValue = v),
+            41,
+            itemLabel: (p) => p.name ?? '',
+          ),
+        ])
+            : Row(children: [
+          _addReturnFareCheckbox(),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _dropdown<DashboardVehicleTypeObject>(
+              'Return/VEH',
+              returnVehicleValue,
+              controller.dashboardAllData!.vehicleTypes!,
+                  (v) => setState(() => returnVehicleValue = v),
+              40,
+              itemLabel: (p) => p.name!,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _dropdown<DashboardDriverObject>(
+              'Return/DRV',
+              returnDriverValue,
+              controller.dashboardAllData!.drivers ?? const [],
+                  (v) => setState(() => returnDriverValue = v),
+              41,
+              itemLabel: (p) => p.name ?? '',
+            ),
+          ),
+        ]),
+      ],
+    );
+  }
+
+  Widget _addReturnFareCheckbox() => Row(mainAxisSize: MainAxisSize.min, children: [
+    SizedBox(
+      width: 20,
+      height: 20,
+      child: Checkbox(
+        value: addReturnFare,
+        onChanged: (v) => setState(() => addReturnFare = v ?? false),
+        activeColor: _purple,
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+    ),
+    const SizedBox(width: 6),
+    const Text('ADD RETURN FARE',
+        style: TextStyle(fontWeight: FontWeight.w600, fontSize: _fsField)),
+  ]);
 
   // ────────── top tabs (Subsidiary dd → tab 1)
   Widget _topTabs(bool isMobile) {
@@ -449,7 +588,7 @@ class _BookingScreenState extends State<BookingScreen> {
       ValueChanged<AllAddressesModel>? onAddressSelected,
       int tabBase, {
         String Function(T)? zoneLabel,
-        VoidCallback? onCurrentLocation,   // ← add this
+        VoidCallback? onCurrentLocation,
         ValueChanged<int>? onPickIndex,
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
@@ -476,24 +615,41 @@ class _BookingScreenState extends State<BookingScreen> {
           suffixIcon: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (controller.text.isNotEmpty)
-                IconButton(
-                  tooltip: 'Clear',
-                  onPressed: () {
-                    controller.clear();
-                    onChanged?.call('');
-                  },
-                  icon: const Icon(Icons.close, size: 16, color: Colors.grey),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                  splashRadius: 16,
-                ),
+              controller.text.isNotEmpty
+                  ? IconButton(
+                tooltip: 'Clear',
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call('');
+                },
+                icon: const Icon(Icons.close,
+                    size: 16, color: Colors.grey),
+                padding: EdgeInsets.zero,
+                constraints:
+                const BoxConstraints(minWidth: 28, minHeight: 28),
+                splashRadius: 16,
+              )
+                  : IconButton(
+                tooltip: '',
+                onPressed: () {
+                  controller.clear();
+                  onChanged?.call('');
+                },
+                icon: const Icon(Icons.close,
+                    size: 16, color: Colors.transparent),
+                padding: EdgeInsets.zero,
+                constraints:
+                const BoxConstraints(minWidth: 28, minHeight: 28),
+                splashRadius: 16,
+              ),
               IconButton(
                 tooltip: 'Use current location',
                 onPressed: onCurrentLocation,
-                icon: const Icon(Icons.my_location, size: 16, color: Colors.grey),
+                icon: const Icon(Icons.my_location,
+                    size: 16, color: Colors.grey),
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                constraints:
+                const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
               ),
               const SizedBox(width: 4),
@@ -545,7 +701,7 @@ class _BookingScreenState extends State<BookingScreen> {
     }
 
     return Row(children: [
-      SizedBox(width: 90, child: tag),
+      SizedBox(width: 80, child: tag),
       const SizedBox(width: 8),
       Expanded(flex: 4, child: address),
       const SizedBox(width: 8),
@@ -606,7 +762,7 @@ class _BookingScreenState extends State<BookingScreen> {
           ]),
         );
 
-    Widget iconBtn(IconData icon,{VoidCallback? onPressed}) => Container(
+    Widget iconBtn(IconData icon, {VoidCallback? onPressed}) => Container(
       margin: const EdgeInsets.only(left: 6),
       decoration: BoxDecoration(
         color: _surface,
@@ -634,35 +790,28 @@ class _BookingScreenState extends State<BookingScreen> {
     );
 
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person_outline,
-      onPressed: () {
+      iconBtn(Icons.person_outline, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
-      }
-      ),
-      iconBtn(Icons.attach_money,
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (_) => ChildSeatsAlert(),
-            );
       }),
-      iconBtn(Icons.note_add_outlined,
-      onPressed: (){
+      iconBtn(Icons.attach_money, onPressed: () {
+        showDialog(
+          context: context,
+          builder: (_) => ChildSeatsAlert(),
+        );
+      }),
+      iconBtn(Icons.note_add_outlined, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
-      }
-      ),
-      iconBtn(Icons.calculate_outlined,
-      onPressed: (){
+      }),
+      iconBtn(Icons.calculate_outlined, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
         );
-      }
-      ),
+      }),
     ]);
 
     if (isMobile) {
@@ -852,7 +1001,7 @@ class _BookingScreenState extends State<BookingScreen> {
         required TextEditingController controller,
         required List<CustomerObject> customers,
         required ValueChanged<CustomerObject> onPicked,
-        ValueChanged<String>? onChanged,        // ← add
+        ValueChanged<String>? onChanged,
         IconData? prefix,
       }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -865,7 +1014,7 @@ class _BookingScreenState extends State<BookingScreen> {
           controller: controller,
           items: customers,
           onSelected: onPicked,
-          onChanged: onChanged,             // ← add
+          onChanged: onChanged,
           decoration: _inputDecoration().copyWith(
             prefixIconConstraints:
             const BoxConstraints(minWidth: 28, minHeight: 0),
@@ -880,37 +1029,6 @@ class _BookingScreenState extends State<BookingScreen> {
       ),
     ]);
   }
-
-  // Widget _autocompleteField(
-  //     String label, {
-  //       required int tab,
-  //       required TextEditingController controller,
-  //       required List<String> suggestions,
-  //       IconData? prefix,
-  //     }) {
-  //   return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-  //     Text(label.toUpperCase(),
-  //         style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
-  //     const SizedBox(height: 2),
-  //     FocusTraversalOrder(
-  //       order: NumericFocusOrder(tab.toDouble()),
-  //       child: _StringAutocomplete(
-  //         controller: controller,
-  //         suggestions: suggestions,
-  //         decoration: _inputDecoration().copyWith(
-  //           prefixIconConstraints:
-  //           const BoxConstraints(minWidth: 28, minHeight: 0),
-  //           prefixIcon: prefix != null
-  //               ? Padding(
-  //             padding: const EdgeInsets.only(left: 8, right: 4),
-  //             child: Icon(prefix, size: 15, color: Colors.grey),
-  //           )
-  //               : null,
-  //         ),
-  //       ),
-  //     ),
-  //   ]);
-  // }
 
   Widget _field(String label,
       {required int tab,
@@ -1145,7 +1263,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _userTyped = false;
     widget.controller.text = text;
     widget.controller.selection = TextSelection.collapsed(offset: text.length);
-    final idx = widget.items.indexOf(a);   // ← index in the ORIGINAL list
+    final idx = widget.items.indexOf(a);
     if (idx >= 0) widget.onPickIndex?.call(idx);
 
     widget.onSelected?.call(a);
@@ -1274,8 +1392,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                             ? const Color(0xFFEEF2FF)
                             : Colors.white,
                         alignment: Alignment.centerLeft,
-                        child:
-                        Text(
+                        child: Text(
                           "${a.name} ${a.postcode}",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1286,36 +1403,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                                 : FontWeight.w500,
                             color: Colors.black87,
                           ),
-                        )
-                        /*Row(children: [
-                          Icon(Icons.place_outlined,
-                              size: 16,
-                              color: active
-                                  ? const Color(0xFF4F46E5)
-                                  : Colors.grey),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              mainAxisAlignment:
-                              MainAxisAlignment.center,
-                              children: [
-
-                                const SizedBox(height: 2),
-                                Text(
-                                  a.postcode ?? '',
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ])*/,
+                        ),
                       ),
                     ),
                   );
@@ -1590,7 +1678,6 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
 
 // ════════════════════════════════════════════════════════════════════
 // Autocomplete: backed by CustomerObject (mobile + name + email)
-// Mirrors _AddressModelAutocomplete behaviour exactly.
 // ════════════════════════════════════════════════════════════════════
 class _CustomerModelAutocomplete extends StatefulWidget {
   const _CustomerModelAutocomplete({

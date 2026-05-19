@@ -119,7 +119,6 @@ class _DriversViewState extends State<DriversView> {
           child: SizedBox(
             width: screenWidth >= 1270 ? screenWidth/6.8 : screenWidth / 4.8,
             height: containerFormHeight,
-            // height: screenHeight >=940? screenHeight * 0.51: screenHeight * 0.80,
             child: Card(
               elevation: 4,
               // shape: RoundedRectangleBorder(
