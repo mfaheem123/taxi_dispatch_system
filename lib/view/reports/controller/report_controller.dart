@@ -80,7 +80,6 @@ class ReportController extends GetxController {
   DriverLogsReportListModel? driverLogsData;
   bool isLoadingLogs = false;
 
-  // Search controllers (agar headers mein search use karna ho)
   final refSearch = TextEditingController();
   final vehicleSearch = TextEditingController();
   final pickupSearch = TextEditingController();
@@ -133,11 +132,40 @@ class ReportController extends GetxController {
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver logs functionality
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
 
+  List<DriverObject> filteredDriverList = [];
+  String selectedStatus = "all";
+  getFilteredDrivers({String status = "all"}) async {
+    isLoadingDriver = true;
+    selectedStatus = status;
+    selectDriverObject = null;
+    update();
+
+    try{
+      String url = "drivers/get";
+      if (status == "active") {
+        url = "drivers/get?active=true";
+      } else if (status == "inactive"){
+        url = "drivers/get?active=false";
+      }
+      var response = await Api().get(url);
+      if (response.statusCode == 200) {
+        var data = RestricDriverModel.fromJson(response.data);
+        filteredDriverList = data.drivers ?? [];
+      }
+    } catch (e) {
+      print("Error fetching filtered drivers: $e");
+    } finally {
+      isLoadingDriver = false;
+      update();
+    }
+  }
+
+  String selectedDriverType = "all";
 
   EarningInfoListModel? earningInfoListModel;
   bool isLoadingEarning = false;
 
-  getAllDriverEarnings({String driverType = "all"}) async {
+  getAllDriverEarnings() async {
     isLoadingEarning = true;
     update();
 
@@ -154,7 +182,7 @@ class ReportController extends GetxController {
       queryParameters: {
         "from_date": formattedFromDate,
         "to_date": formattedToDate,
-        "driver_type": driverType,
+        "driver_type": selectedDriverType,
         if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
       },
     );

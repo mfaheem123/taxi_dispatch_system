@@ -47,7 +47,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
     return GetBuilder<ReportController>(
       initState: (state) {
         controller.selectDriverObject = null;
-        controller.getAllDrivers();
+        controller.getFilteredDrivers(status: "all");
       },
       builder: (controller) {
         return LayoutBuilder(builder: (context, constraints) {
@@ -175,8 +175,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: AppText.all,
+                                          btnColor: controller.selectedDriverType == "all" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                           onTap: () {
-                                            controller.getAllDriverEarnings(driverType: "all");
+                                            controller.selectedDriverType = "all";
+                                            controller.update();
                                           },
                                         ),
                                         CustomButton(
@@ -186,8 +188,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: AppText.login,
+                                          btnColor: controller.selectedDriverType == "login" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                           onTap: () {
-                                            controller.getAllDriverEarnings(driverType: "login");
+                                            controller.selectedDriverType = "login";
+                                            controller.update();
                                           },
                                         ),
                                         CustomButton(
@@ -197,8 +201,10 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           borderRadius: 4,
                                           fontSize: 12,
                                           btnText: "LOGOUT",
+                                          btnColor: controller.selectedDriverType == "logout" ? DynamicColors.primaryClr : Colors.grey.shade500,
                                           onTap: () {
-                                            controller.getAllDriverEarnings(driverType: "logout");
+                                            controller.selectedDriverType = "logout";
+                                            controller.update();
                                           },
                                         ),
                                         SizedBox(width: 10),
@@ -432,18 +438,9 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                         label: "SELECT DRIVERS",
                                                         width: 200,
                                                         height: 35,
-                                                        items: controller
-                                                                .allDriverData
-                                                                ?.drivers ??
-                                                            [],
-                                                        value: (controller
-                                                                        .allDriverData
-                                                                        ?.drivers ??
-                                                                    [])
-                                                                .contains(controller
-                                                                    .selectDriverObject)
-                                                            ? controller
-                                                                .selectDriverObject
+                                                        items: controller.filteredDriverList,
+                                                        value: controller.filteredDriverList.contains(controller.selectDriverObject)
+                                                            ? controller.selectDriverObject
                                                             : null,
                                                         itemLabel: (driver) =>
                                                             driver.name ??
@@ -490,6 +487,12 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                             fontSize: 12,
                                                             btnText:
                                                                 AppText.active,
+                                                            btnColor: controller.selectedStatus == "active"
+                                                                ? DynamicColors.primaryClr
+                                                                : Colors.grey.shade500,
+                                                            onTap: () {
+                                                              controller.getFilteredDrivers(status: "active");
+                                                              },
                                                           ),
                                                           const SizedBox(
                                                               width: 8),
@@ -502,6 +505,12 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                             fontSize: 12,
                                                             btnText:
                                                                 "IN ACTIVE",
+                                                            btnColor: controller.selectedStatus == "inactive"
+                                                                ? DynamicColors.primaryClr
+                                                                : Colors.grey.shade500,
+                                                            onTap: () {
+                                                              controller.getFilteredDrivers(status: "inactive");
+                                                            },
                                                           ),
                                                         ],
                                                       ),
