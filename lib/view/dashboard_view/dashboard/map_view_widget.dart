@@ -268,7 +268,7 @@ import 'defult_dashboard_view.dart';
 
 class MapViewWidget extends StatefulWidget {
   MapViewWidget({super.key, this.createBooking = false});
-  bool createBooking = false;
+  final bool createBooking;
 
   @override
   State<MapViewWidget> createState() => _MapViewWidgetState();
@@ -276,35 +276,27 @@ class MapViewWidget extends StatefulWidget {
 
 class _MapViewWidgetState extends State<MapViewWidget> {
   final controller = Get.find<DashboardController>();
-
   final List<Polygon> zonePolygons = [];
-
 
   @override
   void initState() {
     super.initState();
     poligonFun();
+    if (controller.seeZoneOnMapModel == null) {
+      methodHit();
+    }
   }
 
-  methodHit() async{
+  Future<void> methodHit() async {
     await controller.seeZoneOnMapp();
     poligonFun();
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //
-    // });
-
   }
 
-  /// ✅ FIXED — now loops through all zones, not just [0]
   Future<void> poligonFun() async {
-
     zonePolygons.clear();
-
     final zones = controller.seeZoneOnMapModel?.zones ?? [];
-
     for (var zone in zones) {
       if (zone.vertices != null && zone.vertices!.isNotEmpty) {
-
         zonePolygons.add(
           Polygon(
             points: zone.vertices!
@@ -318,228 +310,178 @@ class _MapViewWidgetState extends State<MapViewWidget> {
         );
       }
     }
-
-    print('✅ Total polygons added: ${zonePolygons.length}');
-
-    setState(() {}); // redraw map
+    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-    if(controller.seeZoneOnMapModel == null){
-      methodHit();
-    }
+    return GetBuilder<DashboardController>(
+      builder: (controller) {
+        final List<LatLng> polylinePoints = controller.polylinePoints.isNotEmpty
+            ? controller.polylinePointsCoordinate
+            : [LatLng(51.2709722, 0.1893883)];
 
-    final List<LatLng> polylinePoints =
-    controller.polylinePoints.isNotEmpty
-        ? controller.polylinePointsCoordinate
-        : [LatLng(51.2709722, 0.1893883)];
-
-    double width = WidgetsBinding.instance.platformDispatcher.views.first
-        .physicalSize.width /
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
-
-    return SizedBox(
-      width: widget.createBooking == true
-          ? Get.width
-          : width >= 1270
-          ? screenWidth / 2.95
-          : screenWidth / 1.2,
-      height: containerFormHeight/*widget.createBooking == true
-          ? Get.height / 1.4
-          : screenHeight >= 940
-          ? screenHeight * 0.51
-          : screenHeight * 0.80*/,
-      child: GetBuilder<DashboardController>(
-        builder: (controller) {
-          return Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
-              ],
-            ),
-
-            child: Stack(
-              children: [
-                /// MAP VIEW
-                Positioned.fill(
-                  child: ClipRRect(
-                    child: FlutterMap(
-                      mapController: controller.mapController,
-                      options: MapOptions(
-                        initialCenter: polylinePoints.isEmpty
-                            ? LatLng(50.5, 30.51)
-                            : polylinePoints.first,
-                        initialZoom: 13.0,
-                        interactionOptions: const InteractionOptions(
-                          flags: InteractiveFlag.all,
-                          enableMultiFingerGestureRace: true,
-                        ),
-                        onMapReady: () {
-                          if (polylinePoints.length >= 2) {
-                            final bounds =
-                            LatLngBounds.fromPoints(polylinePoints);
-                            controller.mapController.fitCamera(
-                              CameraFit.bounds(
-                                  bounds: bounds,
-                                  padding: const EdgeInsets.all(60)),
-                            );
-                          }
-                        },
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // ── MAP ──
+              Positioned.fill(
+                child: ClipRRect(
+                  child: FlutterMap(
+                    mapController: controller.mapController,
+                    options: MapOptions(
+                      initialCenter: polylinePoints.first,
+                      initialZoom: 13.0,
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.all,
+                        enableMultiFingerGestureRace: true,
                       ),
+                      onMapReady: () {
+                        if (polylinePoints.length >= 2) {
+                          final bounds =
+                          LatLngBounds.fromPoints(polylinePoints);
+                          controller.mapController.fitCamera(
+                            CameraFit.bounds(
+                              bounds: bounds,
+                              padding: const EdgeInsets.all(60),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: const ['a', 'b', 'c'],
+                      ),
+                      if (polylinePoints.length > 1)
+                        PolylineLayer(
+                          polylines: [
+                            Polyline(
+                              points: polylinePoints,
+                              color: Colors.blue,
+                              strokeWidth: 4.0,
+                            ),
+                          ],
+                        ),
+                      PolygonLayer(polygons: zonePolygons),
+                      MarkerLayer(markers: controller.markers),
+                    ],
+                  ),
+                ),
+              ),
 
+              // ── TAB TOGGLE (MAPS / PLOT) ──
+              if (!widget.createBooking)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: DynamicColors.secondaryClr),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        /// 🗺️ Base map
-                        TileLayer(
-                          urlTemplate:
-                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: const ['a', 'b', 'c'],
-                        ),
-
-                        /// 📍 Route polyline
-                        if (polylinePoints.length > 1)
-                          PolylineLayer(
-                            polylines: [
-                              Polyline(
-                                points: polylinePoints,
-                                color: Colors.blue,
-                                strokeWidth: 4.0,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                onTap: () {
+                                  controller.selectedTab.value = "MAPS";
+                                  controller.update();
+                                },
+                                color: controller.selectedTab.value == "MAPS"
+                                    ? DynamicColors.primaryClr
+                                    : DynamicColors.secondaryClr,
+                                textClr: controller.selectedTab.value == "MAPS"
+                                    ? DynamicColors.secondaryClr
+                                    : DynamicColors.primaryClr,
                               ),
-                            ],
-                          ),
-
-
-                        /// 🟩 Zones polygons (multiple)
-                        PolygonLayer(
-                          polygons: zonePolygons,
+                            ),
+                            Expanded(
+                              child: RowButtonWidgetMap(
+                                onTap: () {
+                                  controller.selectedTab.value = "PLOT";
+                                  controller.update();
+                                },
+                                color: controller.selectedTab.value != "MAPS"
+                                    ? DynamicColors.primaryClr
+                                    : DynamicColors.secondaryClr,
+                                text: "PLOT",
+                                textClr: controller.selectedTab.value != "MAPS"
+                                    ? DynamicColors.secondaryClr
+                                    : DynamicColors.primaryClr,
+                              ),
+                            ),
+                          ],
                         ),
-
-                        /// 📌 Markers
-                        MarkerLayer(markers: controller.markers),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              color: DynamicColors.whiteClr,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 18.0,
+                                horizontal: 10,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                      "${controller.totalDistance.value} miles"),
+                                  Text(controller.totalTimeDuration.value),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ),
 
-                /// TAB TOGGLE
-                if (widget.createBooking != true)
-                  Positioned(
-                    child: Container(
-                      width: Get.width,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: DynamicColors.secondaryClr),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: RowButtonWidgetMap(
-                                  onTap: () {
-                                    controller.selectedTab.value = "MAPS";
-                                    controller.update();
-                                  },
-                                  color:
-                                  controller.selectedTab.value == "MAPS"
-                                      ? DynamicColors.primaryClr
-                                      : DynamicColors.secondaryClr,
-                                  textClr:
-                                  controller.selectedTab.value == "MAPS"
-                                      ? DynamicColors.secondaryClr
-                                      : DynamicColors.primaryClr,
-                                ),
-                              ),
-
-                              Expanded(
-                                child: RowButtonWidgetMap(
-                                  onTap: () {
-                                    controller.selectedTab.value = "PLOT";
-                                    controller.update();
-                                  },
-                                  color:
-                                  controller.selectedTab.value != "MAPS"
-                                      ? DynamicColors.primaryClr
-                                      : DynamicColors.secondaryClr,
-                                  text: "PLOT",
-                                  textClr:
-                                  controller.selectedTab.value != "MAPS"
-                                      ? DynamicColors.secondaryClr
-                                      : DynamicColors.primaryClr,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                color: DynamicColors.whiteClr,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 18.0, horizontal: 10),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                        "${controller.totalDistance.value} miles"),
-                                    Text(controller.totalTimeDuration.value),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
+              // ── OPEN-IN-DIALOG BUTTON ──
+              Positioned(
+                bottom: 7,
+                left: 7,
+                child: Container(
+                  height: 20,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    color: DynamicColors.secondaryClr,
                   ),
-
-                /// OPEN IN NEW TAB BUTTON
-                Positioned(
-                  bottom: 0,
-                  child: Padding(
-                    padding: const EdgeInsets.all(7.0),
-                    child: Container(
-                      height: 20,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: DynamicColors.secondaryClr,
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.crop_square_outlined),
-                        onPressed: () {
-                          showDialog(
-                              context: context,
-                              builder: (_) => DriversMapAlert(),);
-                          print("Map Alert Open");
-                          // final newTabUrl = Uri.base.origin +
-                          //     '/#' +
-                          //     Routes.viewDriversMap;
-                          // html.window.open(
-                          //   newTabUrl,
-                          //   '_blank',
-                          //   'width=1200,height=800,noopener,noreferrer',
-                          // );
-                        },
-                      ),
-                    ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: const Icon(Icons.crop_square_outlined),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => DriversMapAlert(),
+                      );
+                    },
                   ),
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
