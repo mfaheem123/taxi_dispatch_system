@@ -265,6 +265,8 @@ class ReportController extends GetxController {
 
   final bookingStartTimeController = TextEditingController();
   final bookingEndTimeController = TextEditingController();
+  Rx<DateTime> bookingFromDate = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
+  Rx<DateTime> bookingToDate = DateTime.now().obs;
   // Controller ke andar
   var totalBookings = 0.obs;
   var totalEarnings = 0.0.obs;
@@ -288,7 +290,7 @@ class ReportController extends GetxController {
 
   /// text editing controller
   final customerController = TextEditingController();
-  final nameController = TextEditingController();
+  final mobileController = TextEditingController();
   final phoneController = TextEditingController();
   final pickUpController = TextEditingController();
   final dropOffController = TextEditingController();
