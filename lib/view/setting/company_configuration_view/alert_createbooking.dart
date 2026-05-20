@@ -471,7 +471,8 @@ class _MultiReservationAlertState extends State<MultiReservationAlert> {
                                   dropoffPlotId: controller.dashboardZoneValue != null? controller.dashboardZoneValue!.id:null,
                                   pickupDate: "${controller.pickUpDate!.year}-${controller.pickUpDate!.month}-${controller.pickUpDate!.day}",
                                   pickupTime: controller.pickUpTimeController.text,
-                                  vehicleTypeId: controller.selectVehicleValue!.id
+                                  vehicleTypeId: controller.selectVehicleValue!.id,
+
                               );
                               var fareValue = jsonDecode(storedTemFare);
                               controller.fixedFare.value = fareValue['total_fare'].toString();

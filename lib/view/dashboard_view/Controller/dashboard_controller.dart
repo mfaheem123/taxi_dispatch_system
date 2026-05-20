@@ -1693,9 +1693,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
       multiReservationList: multiReservationList.isEmpty?null: multiReservationList,
       dropOff: pickupController.text,
       pickup: dropOffController.text,
-      miles: totalDistance.value,
-      
-      dropoffPlotId:    dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
+      miles: tempStoreMils,
+      dropoffPlotId: dashboardDZoneValue != null ? dashboardDZoneValue!.id : null,
       pickUpPlotId: dashboardZoneValue != null ? dashboardZoneValue!.id : null,
       pickupDate:
       "${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}",
@@ -1716,7 +1715,8 @@ getPhoneNumberOfUSers({fieldsName, searchingText}) async {
         // selectVehicleValueReturn
         returnCompanyPrice: companyPriceController.text.isEmpty?null: companyPriceController.text,
       returnParkingCharges: returnCompanyPriceController.text.isEmpty?null: returnCompanyPriceController.text,
-    );
+     returnMiles: dropOffTwoWayController.text.isNotEmpty && dropOffTwoWayController.text.isNotEmpty? (double.parse(totalDistance.value)-double.parse(tempStoreMils.toString())).toString() : null,
+   );
     var fareValue = jsonDecode(storedTemFare);
     fixedFare.value = fareValue['total_fare'].toString();
    returnFareValue = fareValue== null?"0": fareValue['return_fare'].toString();
