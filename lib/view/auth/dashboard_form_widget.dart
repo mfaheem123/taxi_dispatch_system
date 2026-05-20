@@ -55,7 +55,6 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   DashboardVehicleTypeObject? returnVehicleValue;
   DashboardDriverObject? returnDriverValue;
 
-  late final _rPickup = TextEditingController();
   late final _rDropoff = TextEditingController();
   late final _rDate = TextEditingController(text: '19 / 05 / 2026');
   late final _rTime = TextEditingController(text: '15:03');
@@ -107,7 +106,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       _pass,
       _lugg,
       _slugg,
-      _rPickup,
+      controller.pickupTwoWayController,
       _rDropoff,
       _rDate,
       _rTime,
@@ -195,15 +194,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                       (value) {
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
-                                      controller.onChangeHandler(
-                                          fieldName: "PICKUP LOCATION",
-                                          searchingText: value);
+                                      if(value.isEmpty) {
+                                        controller
+                                            .dropDownShow
+                                            .value = false;
+                                      }else{
+                                        controller.dropDownShow.value = true;
+                                      }
+                                      controller.onChangeHandler(fieldName: "PICKUP LOCATION", searchingText: value);
                                     });
                                   },
                                       (addr) => setState(() => _selectedPickup = addr),
                                   1,
                                   zoneLabel: (z) => z.name!,
-                                  onPickIndex: (index) => controller.tapSelect(index),
+                                  onPickIndex: (index) {
+                                    controller.tapSelect(index);
+                                  },
                                   onCurrentLocation: () {
                                     debugPrint('Use current location → PICKUP');
                                   },
@@ -222,9 +228,15 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   controller.dashboardDZoneValue = v),
                                   isMobile,
                                       (value) {
-                                    controller.onChangeHandler(
-                                        fieldName: "DROP LOCATION",
-                                        searchingText: value);
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          if(value.isEmpty){
+                                            controller.dropDownShow.value = false;
+                                          }else{
+                                            controller.dropDownShow.value = true;
+                                          }
+                                          controller.onChangeHandler(fieldName: "DROP LOCATION", searchingText: value);
+                                        });
                                   },
                                       (addr) => setState(() => _selectedDrop = addr),
                                   4,
@@ -270,11 +282,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _field('Date',
                                       tab: 12,
                                       prefix: Icons.calendar_today,
-                                      controller: _date),
-                                  _field('Time',
+                                      controller: _date,
+                                      onPrefixTap: () => _pickDate(_date)),
+                                  _timeField('Time',
                                       tab: 13,
-                                      prefix: Icons.access_time,
-                                      controller: controller.pickUpTimeController),
+                                      controller:
+                                          controller.pickUpTimeController),
                                   _dropdown<JourneyTypeObject>(
                                     'Journey Type'.toUpperCase(),
                                     controller.selectJourneyTypeValue,
@@ -384,7 +397,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         _locationRow<ZoneObject>(
           'PICK',
           _green,
-          _rPickup,
+          controller.pickupTwoWayController,
           controller.allAddressesData,
           returnPickupZone,
           _controller.updateLocationValue.value == true
@@ -429,9 +442,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         const SizedBox(height: 8),
         _grid(cols, [
           _field('R/Date',
-              tab: 36, prefix: Icons.calendar_today, controller: _rDate),
-          _field('R/Time',
-              tab: 37, prefix: Icons.access_time, controller: _rTime),
+              tab: 36,
+              prefix: Icons.calendar_today,
+              controller: _rDate,
+              onPrefixTap: () => _pickDate(_rDate)),
+          _timeField('R/Time', tab: 37, controller: _rTime),
           _field('R/Lead', tab: 38, controller: _rLead),
           _field('R/Fare',
               tab: 39, prefix: Icons.currency_pound, controller: _rFare),
@@ -617,6 +632,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   ? IconButton(
                 tooltip: 'Clear',
                 onPressed: () {
+                  DashboardController _controller = Get.find();
+                  int index = _controller.markers.indexWhere((test) => test.type == "pickup");
+                  FocusScope.of(Get.context!).requestFocus(_controller.pickupTextFieldFocusNode);
+                  _controller.markers.clear();
+                  _controller.dropDownShow.value = false;
+                  _controller.polyLineMarkerInfo.clear();
+                  _controller.pickupController.clear();
+                  _controller.dropOffController.clear();
+                  _controller.polylinePoints.clear();
+                  _controller.fetchRouteFromOSRM();
+                  _controller.fixedFare.value = "0";
+                  _controller.totalDistance.value = "0";
+                  _controller.totalTimeDuration.value = "0";
+                  _controller.update();
                   controller.clear();
                   onChanged?.call('');
                 },
@@ -1028,10 +1057,70 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     ]);
   }
 
+  // ────────── date / time pickers (calendar + clock)
+  Future<void> _pickDate(TextEditingController controller) async {
+    final now = DateTime.now();
+    final first = DateTime(now.year - 5);
+    final last = DateTime(now.year + 5);
+    var initial = now;
+    final parts = controller.text.split('/').map((e) => e.trim()).toList();
+    if (parts.length == 3) {
+      final d = int.tryParse(parts[0]);
+      final m = int.tryParse(parts[1]);
+      final y = int.tryParse(parts[2]);
+      if (d != null && m != null && y != null) {
+        final parsed = DateTime(y, m, d);
+        if (!parsed.isBefore(first) && !parsed.isAfter(last)) initial = parsed;
+      }
+    }
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initial,
+      firstDate: first,
+      lastDate: last,
+    );
+    if (picked != null) {
+      final d = picked.day.toString().padLeft(2, '0');
+      final m = picked.month.toString().padLeft(2, '0');
+      controller.text = '$d / $m / ${picked.year}';
+    }
+  }
+
+  Widget _timeField(String label,
+      {required int tab, required TextEditingController controller}) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(label.toUpperCase(),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
+      const SizedBox(height: 2),
+      FocusTraversalOrder(
+        order: NumericFocusOrder(tab.toDouble()),
+        child: _TimePickerField(
+          controller: controller,
+          decoration: _inputDecoration(),
+        ),
+      ),
+    ]);
+  }
+
   Widget _field(String label,
       {required int tab,
         IconData? prefix,
+        VoidCallback? onPrefixTap,
         TextEditingController? controller}) {
+    Widget? prefixWidget;
+    if (prefix != null) {
+      final iconPadding = Padding(
+        padding: const EdgeInsets.only(left: 8, right: 4),
+        child: Icon(prefix, size: 15, color: Colors.grey),
+      );
+      prefixWidget = onPrefixTap != null
+          ? InkWell(
+        onTap: onPrefixTap,
+        borderRadius: BorderRadius.circular(4),
+        child: iconPadding,
+      )
+          : iconPadding;
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label.toUpperCase(),
           style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
@@ -1044,12 +1133,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           decoration: _inputDecoration().copyWith(
             prefixIconConstraints:
             const BoxConstraints(minWidth: 28, minHeight: 0),
-            prefixIcon: prefix != null
-                ? Padding(
-              padding: const EdgeInsets.only(left: 8, right: 4),
-              child: Icon(prefix, size: 15, color: Colors.grey),
-            )
-                : null,
+            prefixIcon: prefixWidget,
           ),
         ),
       ),
@@ -1980,6 +2064,203 @@ class _CustomerModelAutocompleteState
           style: const TextStyle(fontSize: 12),
           keyboardType: TextInputType.phone,
           decoration: widget.decoration,
+        ),
+      ),
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Time field — inline dropdown panel (HOURS + MINUTES + OK) below field
+// ════════════════════════════════════════════════════════════════════
+class _TimePickerField extends StatefulWidget {
+  const _TimePickerField({
+    required this.controller,
+    required this.decoration,
+  });
+
+  final TextEditingController controller;
+  final InputDecoration decoration;
+
+  @override
+  State<_TimePickerField> createState() => _TimePickerFieldState();
+}
+
+class _TimePickerFieldState extends State<_TimePickerField> {
+  final _layerLink = LayerLink();
+  final _fieldKey = GlobalKey();
+  OverlayEntry? _entry;
+
+  int _hour = 0;
+  int _minute = 0;
+
+  static const _accent = Color(0xFF4F46E5);
+  static const _border = Color(0xFFE5E7EB);
+
+  @override
+  void dispose() {
+    _hide();
+    super.dispose();
+  }
+
+  void _seedFromText() {
+    final now = TimeOfDay.now();
+    _hour = now.hour;
+    _minute = now.minute;
+    final parts = widget.controller.text.split(':');
+    if (parts.length == 2) {
+      final h = int.tryParse(parts[0].trim());
+      final m = int.tryParse(parts[1].trim());
+      if (h != null && h >= 0 && h < 24) _hour = h;
+      if (m != null && m >= 0 && m < 60) _minute = m;
+    }
+  }
+
+  void _toggle() {
+    if (_entry != null) {
+      _hide();
+      return;
+    }
+    _seedFromText();
+    _entry = OverlayEntry(builder: _buildPanel);
+    Overlay.of(context).insert(_entry!);
+  }
+
+  void _hide() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _apply() {
+    final hh = _hour.toString().padLeft(2, '0');
+    final mm = _minute.toString().padLeft(2, '0');
+    widget.controller.text = '$hh:$mm';
+    _hide();
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final fieldWidth = box?.size.width ?? 240.0;
+    final fieldHeight = box?.size.height ?? 40.0;
+    final panelWidth = fieldWidth < 250.0 ? 250.0 : fieldWidth;
+
+    return Positioned(
+      width: panelWidth,
+      child: CompositedTransformFollower(
+        link: _layerLink,
+        showWhenUnlinked: false,
+        offset: Offset(0, fieldHeight + 4),
+        child: Material(
+          elevation: 6,
+          borderRadius: BorderRadius.circular(8),
+          child: StatefulBuilder(
+            builder: (context, setPanel) {
+              Widget dd(String title, int value, int count,
+                  ValueChanged<int> onPicked) {
+                return Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(title,
+                          style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black)),
+                      const SizedBox(height: 4),
+                      DropdownButtonFormField<int>(
+                        value: value,
+                        isExpanded: true,
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black),
+                        decoration: const InputDecoration(
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 8),
+                          border: OutlineInputBorder(),
+                          enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: _border)),
+                        ),
+                        items: [
+                          for (int i = 0; i < count; i++)
+                            DropdownMenuItem(
+                              value: i,
+                              child: Text(i.toString().padLeft(2, '0')),
+                            ),
+                        ],
+                        onChanged: (v) {
+                          if (v != null) setPanel(() => onPicked(v));
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              return Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: _border),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        dd('HOURS', _hour, 24, (v) => _hour = v),
+                        const SizedBox(width: 12),
+                        dd('MINUTES', _minute, 60, (v) => _minute = v),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: _hide,
+                          child: const Text('CANCEL'),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _accent,
+                            foregroundColor: Colors.white,
+                          ),
+                          onPressed: _apply,
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: TextField(
+        key: _fieldKey,
+        controller: widget.controller,
+        readOnly: true,
+        style: const TextStyle(fontSize: 12),
+        onTap: _toggle,
+        decoration: widget.decoration.copyWith(
+          prefixIconConstraints:
+              const BoxConstraints(minWidth: 28, minHeight: 0),
+          prefixIcon: const Padding(
+            padding: EdgeInsets.only(left: 8, right: 4),
+            child: Icon(Icons.access_time, size: 15, color: Colors.grey),
+          ),
         ),
       ),
     );

@@ -202,8 +202,61 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
       );
 
       // The stacked layout is taller than the screen, so make it scrollable.
-      return SafeArea(
-        child: isDesktop ? body : SingleChildScrollView(child: body),
+      return Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                color: DynamicColors.secondaryClr),
+
+            child: Row(
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ShortcutKeyWidget(),
+                ShortcutKeyWidget(
+                    keyss: "F2",
+                    valuess: "BOOKING FORM"),
+                ShortcutKeyWidget(
+                    keyss: "F3",
+                    valuess: "DRIVER VEHICLE"),
+                ShortcutKeyWidget(
+                    keyss: "F4",
+                    valuess: "DRIVER EARNING"),
+                ShortcutKeyWidget(
+                    keyss: "F6", valuess: "QUOTATION"),
+                // width >= 1900
+                //     ? Spacer()
+                //     : SizedBox.shrink(),
+                const Spacer(),
+                Padding(
+                  padding:
+                  const EdgeInsets.only(right: 6.0),
+                  child: CustomButton(
+                    width: 120,
+                    height: 35,
+                    borderRadius: 6,
+                    verticalPadding: 0,
+                    style: mozillaTextSemiBoldText(
+                        fontSize: 11,
+                        color: DynamicColors.whiteClr),
+                    onTap: () {
+                      controller.hideDashBoard.value =
+                      !controller
+                          .hideDashBoard.value;
+                      controller.update();
+                    },
+                    btnText:
+                    controller.hideDashBoard.value
+                        ? "HIDE DASHBOARD"
+                        : "SHOW DASHBOARD",
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SafeArea(
+            child: isDesktop ? body : SingleChildScrollView(child: body),
+          ),
+        ],
       );
     });
   }
