@@ -26,7 +26,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   static const _purple = Color(0xFF4F46E5);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
-  static const _border = Color(0xFFE5E7EB);
+  static const _border = Colors.black;
   static const _surface = Color(0xFFF5F6FA);
   static const _red = Color(0xFFEF4444);
   static const _green = Color(0xFF22C55E);
@@ -737,7 +737,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,
                 style: const TextStyle(
-                    fontSize: _fsLabel, color: Colors.black54)),
+                    fontSize: _fsLabel, color: Colors.black)),
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
@@ -934,7 +934,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     if (isMobile) {
       return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         const Text('Driver',
-            style: TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+            style: TextStyle(fontSize: _fsLabel, color: Colors.black)),
         const SizedBox(height: 4),
         dd,
         const SizedBox(height: 10),
@@ -1004,7 +1004,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       }) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
@@ -1034,7 +1034,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         TextEditingController? controller}) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(label.toUpperCase(),
-          style: const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+          style: const TextStyle(fontSize: _fsLabel, color: Colors.black)),
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
@@ -1074,7 +1074,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         if (label != null) ...[
           Text(label.toUpperCase(),
               style:
-              const TextStyle(fontSize: _fsLabel, color: Colors.black54)),
+              const TextStyle(fontSize: _fsLabel, color: Colors.black)),
           const SizedBox(height: 2),
         ],
         FocusTraversalOrder(
@@ -1086,7 +1086,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             hint: hint != null
                 ? Text(hint,
                 style: const TextStyle(
-                    fontSize: _fsField, color: Colors.black54))
+                    fontSize: _fsField, color: Colors.black))
                 : null,
             decoration: _inputDecoration(),
             items: items
@@ -1127,7 +1127,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   InputDecoration _inputDecoration() => InputDecoration(
     isDense: true,
     contentPadding:
-    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
     border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
         borderSide: const BorderSide(color: _border)),
@@ -1359,7 +1359,7 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
                 padding: EdgeInsets.all(12),
                 child: Text('No data',
                     style: TextStyle(
-                        color: Colors.black54, fontSize: 12)),
+                        color: Colors.black, fontSize: 12)),
               )
                   : ListView.builder(
                 controller: _scrollController,
@@ -1593,7 +1593,7 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
                 padding: EdgeInsets.all(12),
                 child: Text('No matches',
                     style: TextStyle(
-                        color: Colors.black54, fontSize: 12)),
+                        color: Colors.black, fontSize: 12)),
               )
                   : ListView.builder(
                 controller: _scrollController,
@@ -1883,7 +1883,7 @@ class _CustomerModelAutocompleteState
                 padding: EdgeInsets.all(12),
                 child: Text('No data',
                     style: TextStyle(
-                        color: Colors.black54, fontSize: 12)),
+                        color: Colors.black, fontSize: 12)),
               )
                   : ListView.builder(
                 controller: _scrollController,
@@ -1947,7 +1947,7 @@ class _CustomerModelAutocompleteState
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 10,
-                                    color: Colors.black54,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ],

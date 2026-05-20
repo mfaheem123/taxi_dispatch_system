@@ -132,21 +132,22 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         _controller.getLocationTypeZone();
       }
     }, builder: (controller) {
-      return controller.dashboardAllData == null
-          ? material.Center(child: CircularProgressIndicator())
-          : SafeArea(
-        child: Column(
-          children: [
-            Row(
+      if (controller.dashboardAllData == null) {
+        return material.Center(child: CircularProgressIndicator());
+      }
+
+      final bookingForm = KeyedSubtree(
+        key: _bookingFormKey,
+        child: BookingFormScreen(),
+      );
+
+      // On iPad / mobile (anything narrower than a desktop) the three
+      // panels stack vertically instead of sitting side-by-side.
+      final topSection = isDesktop
+          ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  flex: 5,
-                  child: KeyedSubtree(
-                    key: _bookingFormKey,
-                    child: BookingFormScreen(),
-                  ),
-                ),
+                Expanded(flex: 5, child: bookingForm),
                 Expanded(
                   flex: 2,
                   child: SizedBox(
@@ -162,61 +163,48 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                   ),
                 ),
               ],
-            ),
-            Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  // color: Colors.white,
-                  borderRadius:
-                  BorderRadius.circular(16),
-                  border: Border.all(
-                      color:
-                      Colors.grey.shade300),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                bookingForm,
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: screenHeight * 0.6,
+                  child: DriversView(),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: BookingTable(),
-                )),
-          ],
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: screenHeight * 0.6,
+                  child: MapViewWidget(),
+                ),
+              ],
+            );
+
+      final bookingTable = Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade300),
         ),
-
-
-        // child: isDesktop
-        // // ── DESKTOP: booking 50% | drivers 20% | map 30% ──
-        //     ? Row(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     Expanded(flex: 5, child: BookingFormScreen()),
-        //     Expanded(flex: 2, child: DriversView()),
-        //     Expanded(flex: 3, child: MapViewWidget()),
-        //   ],
-        // )
-        // // ── TABLET / iPAD: booking full width, others stacked below ──
-        //     : isTablet
-        //     ? SingleChildScrollView(
-        //   child: Column(
-        //     children: [
-        //       const SizedBox(
-        //         width: double.infinity,
-        //         child: BookingFormScreen(),
-        //       ),
-        //       SizedBox(height: 320, child: DriversView()),
-        //       SizedBox(height: 420, child: MapViewWidget()),
-        //     ],
-        //   ),
-        // )
-        // // ── MOBILE: everything stacked in a column ──
-        //     : SingleChildScrollView(
-        //   child: Column(
-        //     children: [
-        //       const BookingFormScreen(),
-        //       SizedBox(height: 300, child: DriversView()),
-        //       SizedBox(height: 380, child: MapViewWidget()),
-        //     ],
-        //   ),
-        // ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: BookingTable(),
+        ),
       );
 
+      final body = Column(
+        children: [
+          topSection,
+          // Booking table is hidden in the stacked (iPad / mobile) layout.
+          if (isDesktop) bookingTable,
+        ],
+      );
+
+      // The stacked layout is taller than the screen, so make it scrollable.
+      return SafeArea(
+        child: isDesktop ? body : SingleChildScrollView(child: body),
+      );
     });
   }
 

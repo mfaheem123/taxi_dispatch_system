@@ -105,7 +105,17 @@ class _DriversViewState extends State<DriversView> {
           },
           child: Card(
             elevation: 4,
-            child: Column(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                // The driver list uses an Expanded child, which needs a
+                // bounded height. Fill the available height when it is
+                // bounded; fall back to a fixed height in an unbounded
+                // (scrollable) parent so the layout never breaks.
+                return SizedBox(
+                  height: constraints.maxHeight.isFinite
+                      ? constraints.maxHeight
+                      : 400,
+                  child: Column(
               children: [
                 // ----- Header -----
                 Container(
@@ -353,6 +363,9 @@ class _DriversViewState extends State<DriversView> {
                   ),
                 ),
               ],
+                  ),
+                );
+              },
             ),
           ),
         );
