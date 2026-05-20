@@ -141,13 +141,20 @@ class ReportController extends GetxController {
     update();
 
     try{
-      String url = "drivers/get";
-      if (status == "active") {
-        url = "drivers/get?active=true";
-      } else if (status == "inactive"){
-        url = "drivers/get?active=false";
-      }
-      var response = await Api().get(url);
+      // String url = "drivers/get";
+      // if (status == "active") {
+      //   url = "drivers/get?active=true";
+      // } else if (status == "inactive"){
+      //   url = "drivers/get?active=false";
+      // }
+      // var response = await Api().get(url);
+      var response = await Api().get(
+        "drivers/get",
+        queryParameters: {
+          if (status == "active") "active": "true",
+          if (status == "inactive") "active": "false",
+        },
+      );
       if (response.statusCode == 200) {
         var data = RestricDriverModel.fromJson(response.data);
         filteredDriverList = data.drivers ?? [];
