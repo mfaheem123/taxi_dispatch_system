@@ -17,6 +17,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'booking_statistics.dart';
 import 'booking_view_screen.dart';
 
 class AllBookingView extends StatefulWidget {
@@ -34,8 +35,8 @@ class _AllBookingViewState extends State<AllBookingView> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
-  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime toDate = DateTime.now();
+  // DateTime bookingFromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
+  // DateTime bookingToDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -166,9 +167,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                             child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
-                                initialDate: fromDate,
-                                onChanged: (date) =>
-                                    setState(() => fromDate = date),
+                                initialDate: controller.bookingFromDate.value,
+                                onChanged: (date) {
+                                  controller.bookingFromDate.value = date;
+                                  controller.update();
+                                },
                               ),
                             ),
                           ),
@@ -193,9 +196,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                             child: SizedBox(
                               height: 30,
                               child: KeyboardDatePicker(
-                                initialDate: toDate,
-                                onChanged: (date) =>
-                                    setState(() => toDate = date),
+                                initialDate: controller.bookingToDate.value,
+                                onChanged: (date) {
+                                  controller.bookingToDate.value = date;
+                                  controller.update();
+                                },
                               ),
                             ),
                           ),
@@ -221,9 +226,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                           ),
                           CustomTextField(
                             borderRadius: 4,
-                            controller: controller.nameController,
+                            controller: controller.mobileController,
                             width: fieldWidth / 2.2,
-                            hintText: AppText.name,
+                            hintText: "MOBILE",
                           ),
                           CustomTextField(
                             borderRadius: 4,
@@ -410,6 +415,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                             verticalPadding: 0.0,
                             btnText: AppText.statistics,
                             fontSize: 12,
+                            onTap: () {
+                              Get.dialog(BookingStatisticsWindow());
+                            },
                           ),
                         ],
                       ),
