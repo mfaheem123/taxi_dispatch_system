@@ -267,6 +267,50 @@ class ReportController extends GetxController {
   final bookingEndTimeController = TextEditingController();
   Rx<DateTime> bookingFromDate = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
   Rx<DateTime> bookingToDate = DateTime.now().obs;
+
+
+  bool isLoadingPostcodes = false;
+
+  Future<List<String>> getSearchPostcodes(String query) async {
+    if (query.isEmpty || query.length < 3) return [];
+
+    try {
+      var response = await Api().get(
+        "services/search",
+        queryParameters: {
+          "search": query,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var responseData = response.data;
+        if (responseData is Map && responseData.containsKey('result')) {
+          List<dynamic> list = responseData['result'];
+
+          return list.map((item) {
+            String name = item['name'] ?? '';
+            String postcode = item['postcode'] ?? '';
+            return "$name - $postcode";
+          }).toList();
+        }
+      }
+      return [];
+    } catch (e) {
+      print("Error Searching Postcode: $e");
+      return [];
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
   // Controller ke andar
   var totalBookings = 0.obs;
   var totalEarnings = 0.0.obs;
