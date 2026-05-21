@@ -1,12 +1,10 @@
-
-
-
 import 'package:dashboard_new1/component/textStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
+import '../../../component/dropdown_button.dart';
 import '../../../component/text_field.dart';
 import '../../../component/text_widget.dart';
 import '../../dashboard_view/booking_table.dart';
@@ -22,10 +20,15 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-
-
   int selectedRowIndex = 0;
+  bool showTotalRow = false;
   final int totalRows = 5;
+
+  final String totalBookingsCreated = "150";
+  final String totalBookingsDispatched = "120";
+  final String totalBookingsCancelled = "10";
+  final String totalCallsAnswered = "250";
+  final String totalWorkingHours = "45 hrs";
 
   ReportController controller = Get.isRegistered<ReportController>()
       ? Get.find<ReportController>()
@@ -34,7 +37,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(builder: (controller) {
-
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -44,9 +46,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
-            return Column(
+                ? maxWidth / 2
+                : maxWidth / 4;
+
+        return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
               children: [
                 SizedBox(
                   height: 10,
@@ -57,44 +62,93 @@ class _ActivityScreenState extends State<ActivityScreen> {
                   spacing: 10,
                   runSpacing: 16,
                   children: [
-                    Text(AppText.employeeActivity,
+                    Text(
+                      AppText.employeeActivity,
                       style: mozillaTextSemiBoldText(
                         fontWeight: FontWeight.w800,
                         fontSize: 17,
                       ),
                     ),
+                    SizedBox(width: 10),
+                    CustomDropdownField<String>(
+                      width: fieldWidth / 1.5,
+                      label: AppText.selectEmployee,
+                      items: [
+                        "Employee 1",
+                        "Employee 2",
+                        "Employee 3",
+                        "Employee 4",
+                        "Employee 5",
+                      ],
+                      value: controller.selectEmployee,
+                      itemLabel: (val) => val,
+                      onChanged: (val) {
+                        controller.selectEmployee = val!;
+                        controller.update();
+                      },
+                    ),
                     labeledField(
                       context: context,
                       isMobile: isMobile,
-                      label: AppText.from,
-                      width: fieldWidth/1.5,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                      label: "FROM:",
+                      column: false,
+                      width: fieldWidth / 2.2,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.bookingFromDate.value,
+                          onChanged: (date) {
+                            controller.bookingFromDate.value = date;
+                            controller.update();
+                          },
+                        ),
+                      ),
                     ),
                     labeledField(
                       context: context,
                       isMobile: isMobile,
                       label: "",
-                      width: fieldWidth/1.5,
-                      child: SizedBox(height: 30, child: CustomTimePicker()),
+                      column: false,
+                      width: fieldWidth / 2.9,
+                      child: CustomTimePicker(
+                        controller: controller.bookingStartTimeController,
+                        onTimeSelected: (time) => setState(() {}),
+                      ),
+                    ),
+                    // To Date
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: "TO:",
+                      column: false,
+                      width: fieldWidth / 2.2,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.bookingToDate.value,
+                          onChanged: (date) {
+                            controller.bookingToDate.value = date;
+                            controller.update();
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // End Time
+                    labeledField(
+                      context: context,
+                      isMobile: isMobile,
+                      label: "",
+                      column: false,
+                      width: fieldWidth / 2.9,
+                      child: CustomTimePicker(
+                        controller: controller.bookingEndTimeController,
+                        onTimeSelected: (time) => setState(() {}),
+                      ),
                     ),
                     SizedBox(
-                      width: 8,
+                      width: 20,
                     ),
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: AppText.to,
-                      width: fieldWidth/1.5,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                    ),
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: "",
-                      width: fieldWidth/1.5,
-                      child: SizedBox(height: 30, child: CustomTimePicker()),
-                    ),
-                    SizedBox(width: 20,),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -102,6 +156,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       verticalPadding: 0.0,
                       btnText: AppText.filter,
                       fontSize: 12,
+                        onTap: () {
+                          setState(() {
+                            showTotalRow = true;
+                          });
+                        }
                     ),
                     CustomButton(
                       width: 120,
@@ -111,32 +170,24 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       btnText: AppText.view,
                       fontSize: 12,
                     ),
-                    CustomButton(
-                      width: 120,
-                      height: 30,
-                      borderRadius: 4,
-                      verticalPadding: 0.0,
-                      btnText: AppText.statistics,
-                      fontSize: 12,
-                    ),
                   ],
                 ),
-                Container(
-                  height: 15,
-              width: 15,
-              alignment: Alignment(15, 20),
-              clipBehavior: Clip.hardEdge,
-              constraints: BoxConstraints(),
-              color: Colors.grey,
-              decoration: BoxDecoration(),
-              foregroundDecoration: BoxDecoration(),
-              margin: EdgeInsets.only(left: 10
-        ),
-
-              child: Text(""),
-            ),
-            SizedBox(
-                  height: 10,
+                //         Container(
+                //           height: 15,
+                //       width: 15,
+                //       alignment: Alignment(15, 20),
+                //       clipBehavior: Clip.hardEdge,
+                //       constraints: BoxConstraints(),
+                //       color: Colors.grey,
+                //       decoration: BoxDecoration(),
+                //       foregroundDecoration: BoxDecoration(),
+                //       margin: EdgeInsets.only(left: 10
+                // ),
+                //
+                //       child: Text(""),
+                //     ),
+                SizedBox(
+                  height: 50,
                 ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -150,26 +201,37 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           buildHeaderWithSearch(title: "BOOKINGS DISPATCHED"),
                           buildHeaderWithSearch(title: "BOOKINGS CANCELLED"),
                           buildHeaderWithSearch(title: "CALLS ANSWERED"),
-                          buildHeaderWithSearch(title: "WORKING HOURS"),
+                          buildHeaderWithSearch(title: "WORKING HOURS", removeSearching: true),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                        ]
-                    ),
+                        rows: [
+                          // 1. Pehli Row (Normal Data Row)
+                          DataRow(cells: [
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                          ]),
+                          if (showTotalRow)
+                            DataRow(
+                              cells: [
+                                const DataCell(Center(child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold)))),
+                                const DataCell(Center(child: Text(""))),
+                                DataCell(Center(child: Text(totalBookingsCreated, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                DataCell(Center(child: Text(totalBookingsDispatched, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                DataCell(Center(child: Text(totalBookingsCancelled, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                DataCell(Center(child: Text(totalCallsAnswered, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                DataCell(Center(child: Text(totalWorkingHours, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                              ],
+                            ),
+                        ]),
                   ),
                 ),
               ],
-            );
-          }
-        );
-      }
-    );
+            ));
+      });
+    });
   }
 }

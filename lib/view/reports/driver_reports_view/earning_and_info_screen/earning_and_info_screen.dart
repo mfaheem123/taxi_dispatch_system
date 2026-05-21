@@ -28,13 +28,18 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
-  DateTime fromDate = DateTime.now();
-  DateTime toDate = DateTime.now();
+  // DateTime fromDate = DateTime.now();
+  // DateTime toDate = DateTime.now();
+  DateTime? fromDate;
+  DateTime? toDate;
 
   bool isDataLoaded = false;
   int rightSideTab = 1;
 
   void handleView() {
+    if (fromDate == null || toDate == null) {
+      return;
+    }
     controller.getAllDriverEarnings();
     setState(() {
       isDataLoaded = true;
@@ -145,7 +150,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           child: SizedBox(
                                               height: 30,
                                               child: KeyboardDatePicker(
-                                                initialDate: fromDate,
+                                                initialDate: fromDate ?? DateTime.now(),
                                                 onChanged: (date) {
                                                   setState(() => fromDate = date);
                                                   controller.fromDate.value = date;
@@ -161,7 +166,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                           child: SizedBox(
                                               height: 30,
                                               child: KeyboardDatePicker(
-                                                initialDate: toDate,
+                                                initialDate: toDate ?? DateTime.now(),
                                                 onChanged: (date) {
                                                   setState(() => toDate = date);
                                                   controller.toDate.value = date;

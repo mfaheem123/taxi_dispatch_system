@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../component/color.dart';
 import '../../../component/customButton.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
@@ -118,7 +119,7 @@ class _ReportTransferedBookingState extends State<ReportTransferedBooking> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 margin: const EdgeInsets.only(bottom: 15),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: DynamicColors.secondaryClr,
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(color: Colors.grey.shade300),
                   boxShadow: [

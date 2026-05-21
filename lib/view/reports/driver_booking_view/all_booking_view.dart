@@ -428,12 +428,11 @@ class _AllBookingViewState extends State<AllBookingView> {
                   height: 20,
                 ),
 
-
                 Obx(() => Container(
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: DynamicColors.secondaryClr,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
                   ),
