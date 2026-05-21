@@ -23,7 +23,7 @@ class BookingFormScreen extends StatefulWidget {
 
 class _BookingFormScreenState extends State<BookingFormScreen> {
   // ────────── palette
-  static const _purple = Color(0xFF4F46E5);
+  static const _purple = Color(0xFF312E81);
   static const _purpleDark = Color(0xFF312E81);
   static const _purpleSoft = Color(0xFFEEF2FF);
   static const _border = Colors.black;
@@ -553,36 +553,44 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 12, vertical: 8),
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: _border)),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: [
-          tab('Booking', active: true, onTap: () {}),
-          tab('+ Multi Reservation (F8)', onTap: _onMultiReservation),
-          tab('+ Vehicles (F9)', onTap: _onAddVehicles),
-          tab('Via (0)', onTap: _onVia),
-          tab('Sub', onTap: _onSub),
-          const SizedBox(width: 6),
-          SizedBox(
-            width: 220,
-            child: _dropdown<DashboardSubsidiaryObject>(
-              null,
-              controller.selectSubsidiariesValue,
-              controller.dashboardAllData?.subsidiaries ?? const [],
-                  (v) {
-                if (v == null) return;
-                setState(() {
-                  controller.selectSubsidiariesValue = v;
-                  controller.getAccountData(subsidiariesId: v.id);
-                });
-              },
-              1,
-              itemLabel: (p) => p.name ?? '',
-            ),
+      // decoration: const BoxDecoration(
+      //   border: Border(bottom: BorderSide(color: _border)),
+      // ),
+      child: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [
+              tab('Booking', active: true, onTap: () {}),
+              tab('+ Multi Reservation (F8)', onTap: _onMultiReservation),
+              tab('+ Vehicles (F9)', onTap: _onAddVehicles),
+              tab('Via (0)', onTap: _onVia),
+              tab('Sub', onTap: _onSub),
+              const SizedBox(width: 6),
+              SizedBox(
+                width: 220,
+                child: _dropdown<DashboardSubsidiaryObject>(
+                  null,
+                  controller.selectSubsidiariesValue,
+                  controller.dashboardAllData?.subsidiaries ?? const [],
+                      (v) {
+                    if (v == null) return;
+                    setState(() {
+                      controller.selectSubsidiariesValue = v;
+                      controller.getAccountData(subsidiariesId: v.id);
+                    });
+                  },
+                  1,
+                  itemLabel: (p) => p.name ?? '',
+                ),
+              ),
+            ]),
           ),
-        ]),
+          Divider(
+            color: _border,
+            height: 10,
+          )
+        ],
       ),
     );
   }
