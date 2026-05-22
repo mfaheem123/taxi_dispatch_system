@@ -129,8 +129,8 @@ class Booking {
   String? updatedAt;
   String? eta;
   bool? fob;
-  BookingStatus? bookingStatus;
-  BookingType? bookingType;
+  LogsBookingStatus? bookingStatus;
+  LogBookingType? bookingType;
   JourneyType? journeyType;
   Subsidiary? subsidiary;
   VehicleType? vehicleType;
@@ -348,8 +348,8 @@ class Booking {
     updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
-    bookingStatus: json["booking_status"] == null ? null : BookingStatus.fromJson(json["booking_status"]),
-    bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
+    bookingStatus: json["booking_status"] == null ? null : LogsBookingStatus.fromJson(json["booking_status"]),
+    bookingType: json["booking_type"] == null ? null : LogBookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
@@ -596,14 +596,14 @@ class LocationType {
   };
 }
 
-class BookingStatus {
+class LogsBookingStatus {
   String? bookingStatus;
 
-  BookingStatus({
+  LogsBookingStatus({
     this.bookingStatus,
   });
 
-  factory BookingStatus.fromJson(Map<String, dynamic> json) => BookingStatus(
+  factory LogsBookingStatus.fromJson(Map<String, dynamic> json) => LogsBookingStatus(
     bookingStatus: json["booking_status"],
   );
 
@@ -612,14 +612,14 @@ class BookingStatus {
   };
 }
 
-class BookingType {
+class LogBookingType {
   String? bookingType;
 
-  BookingType({
+  LogBookingType({
     this.bookingType,
   });
 
-  factory BookingType.fromJson(Map<String, dynamic> json) => BookingType(
+  factory LogBookingType.fromJson(Map<String, dynamic> json) => LogBookingType(
     bookingType: json["booking_type"],
   );
 

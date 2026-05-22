@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
 import '../../customer/model/restricDriver.dart';
+import '../../dashboard_view/models/dashboard_model.dart';
 import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
@@ -263,6 +264,24 @@ class ReportController extends GetxController {
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
+  /// text editing controller
+  final customerController = TextEditingController();
+  final mobileController = TextEditingController();
+  final phoneController = TextEditingController();
+  final pickUpController = TextEditingController();
+  final dropOffController = TextEditingController();
+  final orderNumberController = TextEditingController();
+  final bookedByController = TextEditingController();
+
+  ///focusNode value of checkBox
+
+  // final FocusNode ptNode = FocusNode();
+  // final FocusNode cashNode = FocusNode();
+  // final FocusNode accountNode = FocusNode();
+  final FocusNode creditCardPaidNode = FocusNode();
+  // final FocusNode creditCardNode = FocusNode();
+
+
   final bookingStartTimeController = TextEditingController();
   final bookingEndTimeController = TextEditingController();
   Rx<DateTime> bookingFromDate = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
@@ -301,21 +320,77 @@ class ReportController extends GetxController {
     }
   }
 
+  DashboardDataModel? apiDashboardData;
+  bool isLoadingData = false;
+  String apiErrorMessage = '';
+
+  BookingStatus? apiSelectedBookingStatus;
+  PaymentStatus? apiSelectedPaymentStatus;
+  PaymentTypeObject? apiSelectedPaymentType;
+  DashboardSubsidiaryObject? apiSelectedSubsidiary;
+
+  List<int> apiSelectedPaymentTypeIds = [];
+
+  RxBool isFiltered = false.obs;
+  RxString totalBookings = "0".obs;
+  RxDouble totalEarnings = 0.0.obs;
+  RxDouble totalAccountEarnings = 0.0.obs;
+
+  getData() async {
+    isLoadingData = true;
+    apiErrorMessage = '';
+    update();
+    
+    try{
+      var response = await Api().get("enumerations/get",
+        queryParameters: {
+          "company_id": "1",
+        },
+      );
+      if (response.statusCode == 200) {
+        apiDashboardData = DashboardDataModel.fromJson(response.data);
+      } else {
+        apiErrorMessage = "Server Error: ${response.statusCode}";
+      }
+    } catch (e) {
+      apiErrorMessage = "Error Fetching Dashboard Data: $e";
+      print("Error Dashboard API: $e");
+    } finally {
+      isLoadingData = false;
+      update();
+    }
+  }
+  void setSelectedStatusByName(String name) {
+    if (name == "ALL") {
+      apiSelectedBookingStatus = null;
+    } else {
+      String backendQuery = (name == "INCOMPLETE") ? "PENDING" : name;
+
+      apiSelectedBookingStatus = apiDashboardData?.bookingStatuses?.firstWhereOrNull(
+            (e) => e.bookingStatus?.toUpperCase() == backendQuery,
+      );
+    }
+    update();
+  }
 
 
+  void toggleApiPaymentType(int id) {
+    if (apiSelectedPaymentTypeIds.contains(id)) {
+      apiSelectedPaymentTypeIds.remove(id);
+    } else {
+      apiSelectedPaymentTypeIds.add(id);
+    }
+    update();
+  }
 
 
-
-
-
-
-
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
   // Controller ke andar
-  var totalBookings = 0.obs;
-  var totalEarnings = 0.0.obs;
-  var totalAccountEarnings = 0.0.obs;
-  RxBool isFiltered = false.obs;
+  // var totalBookings = 0.obs;
+  // var totalEarnings = 0.0.obs;
+  // var totalAccountEarnings = 0.0.obs;
+  // RxBool isFiltered = false.obs;
 
   int selectedValue = 0; // 👈 groupValue
   RxBool ptValue = false.obs;
@@ -324,22 +399,6 @@ class ReportController extends GetxController {
   RxBool creditCardValue = false.obs;
   RxBool creditCardPaidValue = false.obs;
 
-  ///focusNode value of checkBox
-
-  final FocusNode ptNode = FocusNode();
-  final FocusNode cashNode = FocusNode();
-  final FocusNode accountNode = FocusNode();
-  final FocusNode creditCardPaidNode = FocusNode();
-  final FocusNode creditCardNode = FocusNode();
-
-  /// text editing controller
-  final customerController = TextEditingController();
-  final mobileController = TextEditingController();
-  final phoneController = TextEditingController();
-  final pickUpController = TextEditingController();
-  final dropOffController = TextEditingController();
-  final orderNumberController = TextEditingController();
-  final bookedByController = TextEditingController();
 
   /// booking in reports
   String? selectBookingDriver;
@@ -350,5 +409,5 @@ class ReportController extends GetxController {
   String? selectAccount;
   String? selectDepartment;
 
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
+
 }

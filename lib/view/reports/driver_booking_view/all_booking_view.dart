@@ -43,6 +43,7 @@ class _AllBookingViewState extends State<AllBookingView> {
     return GetBuilder<ReportController>(initState: (state) {
       controller.selectDriverObject = null;
       controller.getAllDrivers();
+      controller.getData();
       controller.bookingStartTimeController.text = "12:00";
       controller.bookingEndTimeController.text =
           DateFormat('HH:mm').format(DateTime.now());
@@ -71,692 +72,791 @@ class _AllBookingViewState extends State<AllBookingView> {
                     border: Border.all(color: DynamicColors.gryClr),
                   ),
                   child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            AppText.status,
-                            style: mozillaTextRegularText(fontSize: 12),
-                          ),
-                          StatusRadioGroup(
-                            options: [
-                              "ALL",
-                              "COMPLETED",
-                              "INCOMPLETE",
-                              "MISSED",
-                              "DECLINED",
-                              "CANCELLED",
-                            ],
-                            onChanged: (index, value) {
-                              debugPrint(
-                                  "Selected index: $index, value: $value");
-                              // controller.selectedValue = index;
-                            },
-                          ),
-                          const Spacer(),
-                          Wrap(
-                            spacing: 12,
-                            children: [
-                              KeyboardCheckbox(
-                                focusNode: controller.ptNode,
-                                value: controller.ptValue.value,
-                                label: AppText.pt,
-                                width: 60,
-                                onChanged: (val) {
-                                  controller.ptValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.cashNode,
-                                value: controller.cashValue.value,
-                                label: AppText.cash,
-                                width: 70,
-                                onChanged: (val) {
-                                  controller.cashValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.creditCardNode,
-                                value: controller.creditCardValue.value,
-                                label: AppText.creditCard,
-                                width: 120,
-                                onChanged: (val) {
-                                  controller.creditCardValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.accountNode,
-                                value: controller.accountValue.value,
-                                label: AppText.account,
-                                width: 100,
-                                onChanged: (val) {
-                                  controller.accountValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.creditCardPaidNode,
-                                value: controller.creditCardPaidValue.value,
-                                label: AppText.creditCardPaid,
-                                width: 160,
-                                onChanged: (val) {
-                                  controller.creditCardPaidValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 16,
-                        children: [
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "FROM:",
-                            column: false,
-                            width: fieldWidth / 2.2,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.bookingFromDate.value,
-                                onChanged: (date) {
-                                  controller.bookingFromDate.value = date;
-                                  controller.update();
-                                },
-                              ),
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  AppText.status,
+                                  style: mozillaTextRegularText(fontSize: 12),
+                                ),
+                                StatusRadioGroup(
+                                  options: const ["ALL", "COMPLETED", "INCOMPLETE", "MISSED", "DECLINED", "CANCELLED"],
+                                  onChanged: (index, value) {
+                                    controller.setSelectedStatusByName(value);
+                                  },
+                                ),
+                                const Spacer(),
+                                Wrap(
+                                  spacing: 12,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      AppText.pt,
+                                      style: mozillaTextRegularText(fontSize: 14, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    if (controller.apiDashboardData?.paymentTypes?.isNotEmpty ?? false)
+                                      ...controller.apiDashboardData!.paymentTypes!.map((paymentType) {
+                                        final int typeId = paymentType.id ?? 0;
+                                        String typeLabel = "";
+                                        try {
+                                          typeLabel = (paymentType.name ?? "").toUpperCase();
+                                        } catch (_) {
+                                          typeLabel = paymentType.toString().toUpperCase();
+                                        }
+
+                                        return KeyboardCheckbox(
+                                          focusNode: FocusNode(),
+                                          value: controller.apiSelectedPaymentTypeIds.contains(typeId),
+                                          label: typeLabel,
+                                          width: typeLabel.length > 10 ? 140 : 90,
+                                          onChanged: (val) {
+                                            controller.toggleApiPaymentType(typeId);
+                                          },
+                                        );
+                                      }).toList(),
+                                  ],
+                                ),
+
+                              ],
                             ),
-                          ),
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "",
-                            column: false,
-                            width: fieldWidth / 2.9,
-                            child: CustomTimePicker(
-                              controller: controller.bookingStartTimeController,
-                              onTimeSelected: (time) => setState(() {}),
+                            const SizedBox(
+                              height: 8,
                             ),
-                          ),
-                          // To Date
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "TO:",
-                            column: false,
-                            width: fieldWidth / 2.2,
-                            child: SizedBox(
-                              height: 30,
-                              child: KeyboardDatePicker(
-                                initialDate: controller.bookingToDate.value,
-                                onChanged: (date) {
-                                  controller.bookingToDate.value = date;
-                                  controller.update();
-                                },
-                              ),
-                            ),
-                          ),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 16,
+                              children: [
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: "FROM:",
+                                  column: false,
+                                  width: fieldWidth / 2.2,
+                                  child: SizedBox(
+                                    height: 30,
+                                    child: KeyboardDatePicker(
+                                      initialDate:
+                                          controller.bookingFromDate.value,
+                                      onChanged: (date) {
+                                        controller.bookingFromDate.value = date;
+                                        controller.update();
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: "",
+                                  column: false,
+                                  width: fieldWidth / 2.9,
+                                  child: CustomTimePicker(
+                                    controller:
+                                        controller.bookingStartTimeController,
+                                    onTimeSelected: (time) => setState(() {}),
+                                  ),
+                                ),
+                                // To Date
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: "TO:",
+                                  column: false,
+                                  width: fieldWidth / 2.2,
+                                  child: SizedBox(
+                                    height: 30,
+                                    child: KeyboardDatePicker(
+                                      initialDate:
+                                          controller.bookingToDate.value,
+                                      onChanged: (date) {
+                                        controller.bookingToDate.value = date;
+                                        controller.update();
+                                      },
+                                    ),
+                                  ),
+                                ),
 
-                          // End Time
-                          labeledField(
-                            context: context,
-                            isMobile: isMobile,
-                            label: "",
-                            column: false,
-                            width: fieldWidth / 2.9,
-                            child: CustomTimePicker(
-                              controller: controller.bookingEndTimeController,
-                              onTimeSelected: (time) => setState(() {}),
-                            ),
-                          ),
+                                // End Time
+                                labeledField(
+                                  context: context,
+                                  isMobile: isMobile,
+                                  label: "",
+                                  column: false,
+                                  width: fieldWidth / 2.9,
+                                  child: CustomTimePicker(
+                                    controller:
+                                        controller.bookingEndTimeController,
+                                    onTimeSelected: (time) => setState(() {}),
+                                  ),
+                                ),
 
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.customerController,
-                            width: fieldWidth / 2.2,
-                            hintText: AppText.customer,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.mobileController,
-                            width: fieldWidth / 2.2,
-                            hintText: "MOBILE",
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.phoneController,
-                            width: fieldWidth / 2.2,
-                            hintText: AppText.tel,
-                          ),
-                          CustomDropdownField<DriverObject>(
-                            label: "SELECT DRIVERS",
-                            width: fieldWidth / 2,
-                            // height: 35,
-                            items: controller.allDriverData?.drivers ?? [],
-                            value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
-                                ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
-                                : null,
-                            itemLabel: (driver) =>
-                            driver.name ?? "".toUpperCase(),
-                            onChanged: (val) {
-                              controller.selectDriverObject = val;
-                              controller.update();
-                            },
-                          ),
-                          // CustomTextField(
-                          //   borderRadius: 4,
-                          //   controller: controller.pickUpController,
-                          //   width: fieldWidth / 1.7,
-                          //   hintText: "PICKUP",
-                          // ),
-                          // CustomTextField(
-                          //   borderRadius: 4,
-                          //   controller: controller.dropOffController,
-                          //   width: fieldWidth / 1.7,
-                          //   hintText: "DROPOFF",
-                          // ),
-                          // ----------------- PICKUP FIELD WITH AUTOCOMPLETE -----------------
-                          (() {
-                            final ScrollController pickupScrollController = ScrollController();
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.customerController,
+                                  width: fieldWidth / 2.2,
+                                  hintText: AppText.customer,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.mobileController,
+                                  width: fieldWidth / 2.2,
+                                  hintText: "MOBILE",
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.phoneController,
+                                  width: fieldWidth / 2.2,
+                                  hintText: AppText.tel,
+                                ),
+                                CustomDropdownField<DriverObject>(
+                                  label: "SELECT DRIVERS",
+                                  width: fieldWidth / 2,
+                                  // height: 35,
+                                  items:
+                                      controller.allDriverData?.drivers ?? [],
+                                  value: controller.allDriverData?.drivers?.any(
+                                              (d) =>
+                                                  d.id ==
+                                                  controller.selectDriverObject
+                                                      ?.id) ??
+                                          false
+                                      ? controller.allDriverData!.drivers!
+                                          .firstWhere((d) =>
+                                              d.id ==
+                                              controller.selectDriverObject?.id)
+                                      : null,
+                                  itemLabel: (driver) =>
+                                      driver.name ?? "".toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.selectDriverObject = val;
+                                    controller.update();
+                                  },
+                                ),
+                                // CustomTextField(
+                                //   borderRadius: 4,
+                                //   controller: controller.pickUpController,
+                                //   width: fieldWidth / 1.7,
+                                //   hintText: "PICKUP",
+                                // ),
+                                // CustomTextField(
+                                //   borderRadius: 4,
+                                //   controller: controller.dropOffController,
+                                //   width: fieldWidth / 1.7,
+                                //   hintText: "DROPOFF",
+                                // ),
+                                // ----------------- PICKUP FIELD WITH AUTOCOMPLETE -----------------
+                                (() {
+                                  final ScrollController
+                                      pickupScrollController =
+                                      ScrollController();
 
-                            return SizedBox(
-                              width: fieldWidth / 1.2,
-                              height: 30,
-                              child: Autocomplete<String>(
-                                optionsBuilder: (TextEditingValue textEditingValue) async {
-                                  if (textEditingValue.text.isEmpty) {
-                                    return const Iterable<String>.empty();
-                                  }
-                                  return await controller.getSearchPostcodes(textEditingValue.text);
-                                },
-                                onSelected: (String selection) {
-                                  controller.pickUpController.text = selection;
-                                  controller.update();
-                                },
-                                optionsViewBuilder: (context, onSelected, options) {
-                                  final int highlightedIndex = AutocompleteHighlightedOption.of(context);
+                                  return SizedBox(
+                                    width: fieldWidth / 1.2,
+                                    height: 30,
+                                    child: Autocomplete<String>(
+                                      optionsBuilder: (TextEditingValue
+                                          textEditingValue) async {
+                                        if (textEditingValue.text.isEmpty) {
+                                          return const Iterable<String>.empty();
+                                        }
+                                        return await controller
+                                            .getSearchPostcodes(
+                                                textEditingValue.text);
+                                      },
+                                      onSelected: (String selection) {
+                                        controller.pickUpController.text =
+                                            selection;
+                                        controller.update();
+                                      },
+                                      optionsViewBuilder:
+                                          (context, onSelected, options) {
+                                        final int highlightedIndex =
+                                            AutocompleteHighlightedOption.of(
+                                                context);
 
-                                  if (pickupScrollController.hasClients && highlightedIndex >= 0) {
-                                    final double itemHeight = 32.0;
-                                    final double currentScroll = pickupScrollController.offset;
-                                    final double viewportHeight = 200.0;
-                                    final double targetOffset = highlightedIndex * itemHeight;
+                                        if (pickupScrollController.hasClients &&
+                                            highlightedIndex >= 0) {
+                                          final double itemHeight = 32.0;
+                                          final double currentScroll =
+                                              pickupScrollController.offset;
+                                          final double viewportHeight = 200.0;
+                                          final double targetOffset =
+                                              highlightedIndex * itemHeight;
 
-                                    if (targetOffset + itemHeight > currentScroll + viewportHeight) {
-                                      pickupScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
-                                    } else if (targetOffset < currentScroll) {
-                                      pickupScrollController.jumpTo(targetOffset);
-                                    }
-                                  }
+                                          if (targetOffset + itemHeight >
+                                              currentScroll + viewportHeight) {
+                                            pickupScrollController.jumpTo(
+                                                targetOffset +
+                                                    itemHeight -
+                                                    viewportHeight);
+                                          } else if (targetOffset <
+                                              currentScroll) {
+                                            pickupScrollController
+                                                .jumpTo(targetOffset);
+                                          }
+                                        }
 
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Material(
-                                      elevation: 4.0,
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(maxHeight: 200),
-                                        child: SizedBox(
-                                          width: fieldWidth / 1.2,
-                                          child: ListView.builder(
-                                            controller: pickupScrollController,
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: options.length,
-                                            itemBuilder: (BuildContext context, int index) {
-                                              final String option = options.elementAt(index);
-                                              final bool highlight = highlightedIndex == index;
+                                        return Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Material(
+                                            elevation: 4.0,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            child: ConstrainedBox(
+                                              constraints: const BoxConstraints(
+                                                  maxHeight: 200),
+                                              child: SizedBox(
+                                                width: fieldWidth / 1.2,
+                                                child: ListView.builder(
+                                                  controller:
+                                                      pickupScrollController,
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: options.length,
+                                                  itemBuilder:
+                                                      (BuildContext context,
+                                                          int index) {
+                                                    final String option =
+                                                        options
+                                                            .elementAt(index);
+                                                    final bool highlight =
+                                                        highlightedIndex ==
+                                                            index;
 
-                                              return InkWell(
-                                                onTap: () => onSelected(option),
-                                                child: Container(
-                                                  color: highlight ? Colors.blue.withOpacity(0.1) : null,
-                                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                  child: Text(
-                                                    option,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(fontSize: 12),
-                                                  ),
+                                                    return InkWell(
+                                                      onTap: () =>
+                                                          onSelected(option),
+                                                      child: Container(
+                                                        color: highlight
+                                                            ? Colors.blue
+                                                                .withOpacity(
+                                                                    0.1)
+                                                            : null,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    16.0,
+                                                                vertical: 8.0),
+                                                        child: Text(
+                                                          option,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 12),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                                 ),
-                                              );
-                                            },
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
+                                        );
+                                      },
+                                      fieldViewBuilder: (context,
+                                          textEditingController,
+                                          focusNode,
+                                          onFieldSubmitted) {
+                                        if (textEditingController.text !=
+                                            controller.pickUpController.text) {
+                                          textEditingController.text =
+                                              controller.pickUpController.text;
+                                        }
+                                        return TextField(
+                                          controller: textEditingController,
+                                          focusNode: focusNode,
+                                          onSubmitted: (String value) =>
+                                              onFieldSubmitted(),
+                                          style: const TextStyle(fontSize: 13),
+                                          decoration: InputDecoration(
+                                            hintText: "PICKUP",
+                                            hintStyle:
+                                                const TextStyle(fontSize: 12),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 12),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4)),
+                                          ),
+                                          onChanged: (val) {
+                                            controller.pickUpController.text =
+                                                val;
+                                          },
+                                        );
+                                      },
                                     ),
                                   );
-                                },
-                                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                                  if (textEditingController.text != controller.pickUpController.text) {
-                                    textEditingController.text = controller.pickUpController.text;
-                                  }
-                                  return TextField(
-                                    controller: textEditingController,
-                                    focusNode: focusNode,
-                                    onSubmitted: (String value) => onFieldSubmitted(),
-                                    style: const TextStyle(fontSize: 13),
-                                    decoration: InputDecoration(
-                                      hintText: "PICKUP",
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-                                    ),
-                                    onChanged: (val) {
-                                      controller.pickUpController.text = val;
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          })(),
-                          (() {
-                            final ScrollController dropoffScrollController = ScrollController();
+                                })(),
+                                (() {
+                                  final ScrollController
+                                      dropoffScrollController =
+                                      ScrollController();
 
-                            return SizedBox(
-                              width: fieldWidth / 1.2,
-                              height: 30,
-                              child: Autocomplete<String>(
-                                optionsBuilder: (TextEditingValue textEditingValue) async {
-                                  if (textEditingValue.text.isEmpty) {
-                                    return const Iterable<String>.empty();
-                                  }
-                                  return await controller.getSearchPostcodes(textEditingValue.text);
-                                },
-                                onSelected: (String selection) {
-                                  controller.dropOffController.text = selection;
-                                  controller.update();
-                                },
-                                optionsViewBuilder: (context, onSelected, options) {
-                                  final int highlightedIndex = AutocompleteHighlightedOption.of(context);
+                                  return SizedBox(
+                                    width: fieldWidth / 1.2,
+                                    height: 30,
+                                    child: Autocomplete<String>(
+                                      optionsBuilder: (TextEditingValue
+                                          textEditingValue) async {
+                                        if (textEditingValue.text.isEmpty) {
+                                          return const Iterable<String>.empty();
+                                        }
+                                        return await controller
+                                            .getSearchPostcodes(
+                                                textEditingValue.text);
+                                      },
+                                      onSelected: (String selection) {
+                                        controller.dropOffController.text =
+                                            selection;
+                                        controller.update();
+                                      },
+                                      optionsViewBuilder:
+                                          (context, onSelected, options) {
+                                        final int highlightedIndex =
+                                            AutocompleteHighlightedOption.of(
+                                                context);
 
-                                  if (dropoffScrollController.hasClients && highlightedIndex >= 0) {
-                                    final double itemHeight = 32.0;
-                                    final double currentScroll = dropoffScrollController.offset;
-                                    final double viewportHeight = 200.0;
-                                    final double targetOffset = highlightedIndex * itemHeight;
+                                        if (dropoffScrollController
+                                                .hasClients &&
+                                            highlightedIndex >= 0) {
+                                          final double itemHeight = 32.0;
+                                          final double currentScroll =
+                                              dropoffScrollController.offset;
+                                          final double viewportHeight = 200.0;
+                                          final double targetOffset =
+                                              highlightedIndex * itemHeight;
 
-                                    if (targetOffset + itemHeight > currentScroll + viewportHeight) {
-                                      dropoffScrollController.jumpTo(targetOffset + itemHeight - viewportHeight);
-                                    } else if (targetOffset < currentScroll) {
-                                      dropoffScrollController.jumpTo(targetOffset);
-                                    }
-                                  }
+                                          if (targetOffset + itemHeight >
+                                              currentScroll + viewportHeight) {
+                                            dropoffScrollController.jumpTo(
+                                                targetOffset +
+                                                    itemHeight -
+                                                    viewportHeight);
+                                          } else if (targetOffset <
+                                              currentScroll) {
+                                            dropoffScrollController
+                                                .jumpTo(targetOffset);
+                                          }
+                                        }
 
-                                  return Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Material(
-                                      elevation: 4.0,
-                                      borderRadius: BorderRadius.circular(4),
-                                      child: ConstrainedBox(
-                                        constraints: const BoxConstraints(maxHeight: 200),
-                                        child: SizedBox(
-                                          width: fieldWidth / 1.2,
-                                          child: ListView.builder(
-                                            controller: dropoffScrollController,
-                                            padding: EdgeInsets.zero,
-                                            shrinkWrap: true,
-                                            itemCount: options.length,
-                                            itemBuilder: (BuildContext context, int index) {
-                                              final String option = options.elementAt(index);
-                                              final bool highlight = highlightedIndex == index;
+                                        return Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Material(
+                                            elevation: 4.0,
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            child: ConstrainedBox(
+                                              constraints: const BoxConstraints(
+                                                  maxHeight: 200),
+                                              child: SizedBox(
+                                                width: fieldWidth / 1.2,
+                                                child: ListView.builder(
+                                                  controller:
+                                                      dropoffScrollController,
+                                                  padding: EdgeInsets.zero,
+                                                  shrinkWrap: true,
+                                                  itemCount: options.length,
+                                                  itemBuilder:
+                                                      (BuildContext context,
+                                                          int index) {
+                                                    final String option =
+                                                        options
+                                                            .elementAt(index);
+                                                    final bool highlight =
+                                                        highlightedIndex ==
+                                                            index;
 
-                                              return InkWell(
-                                                onTap: () => onSelected(option),
-                                                child: Container(
-                                                  color: highlight ? Colors.blue.withOpacity(0.1) : null,
-                                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                  child: Text(
-                                                    option,
-                                                    maxLines: 1,
-                                                    overflow: TextOverflow.ellipsis,
-                                                    style: const TextStyle(fontSize: 12),
-                                                  ),
+                                                    return InkWell(
+                                                      onTap: () =>
+                                                          onSelected(option),
+                                                      child: Container(
+                                                        color: highlight
+                                                            ? Colors.blue
+                                                                .withOpacity(
+                                                                    0.1)
+                                                            : null,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                horizontal:
+                                                                    16.0,
+                                                                vertical: 8.0),
+                                                        child: Text(
+                                                          option,
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 12),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
                                                 ),
-                                              );
-                                            },
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
+                                        );
+                                      },
+                                      fieldViewBuilder: (context,
+                                          textEditingController,
+                                          focusNode,
+                                          onFieldSubmitted) {
+                                        if (textEditingController.text !=
+                                            controller.dropOffController.text) {
+                                          textEditingController.text =
+                                              controller.dropOffController.text;
+                                        }
+                                        return TextField(
+                                          controller: textEditingController,
+                                          focusNode: focusNode,
+                                          onSubmitted: (String value) =>
+                                              onFieldSubmitted(),
+                                          style: const TextStyle(fontSize: 13),
+                                          decoration: InputDecoration(
+                                            hintText: "DROPOFF",
+                                            hintStyle:
+                                                const TextStyle(fontSize: 12),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 10,
+                                                    vertical: 12),
+                                            border: OutlineInputBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(4)),
+                                          ),
+                                          onChanged: (val) {
+                                            controller.dropOffController.text =
+                                                val;
+                                          },
+                                        );
+                                      },
                                     ),
                                   );
-                                },
-                                fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                                  if (textEditingController.text != controller.dropOffController.text) {
-                                    textEditingController.text = controller.dropOffController.text;
-                                  }
-                                  return TextField(
-                                    controller: textEditingController,
-                                    focusNode: focusNode,
-                                    onSubmitted: (String value) => onFieldSubmitted(),
-                                    style: const TextStyle(fontSize: 13),
-                                    decoration: InputDecoration(
-                                      hintText: "DROPOFF",
-                                      hintStyle: const TextStyle(fontSize: 12),
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-                                    ),
-                                    onChanged: (val) {
-                                      controller.dropOffController.text = val;
-                                    },
-                                  );
-                                },
-                              ),
-                            );
-                          })(),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 1.9,
-                            label: AppText.selectAccount,
-                            items: [
-                              "ACCOUNT 1",
-                              "ACCOUNT 2",
-                              "ACCOUNT 3",
-                              "ACCOUNT 4",
-                              "ACCOUNT 5",
-                            ],
-                            value: controller.selectAccount,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectAccount = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 1.9,
-                            label: AppText.selectDepartment,
-                            items: [
-                              "Department 1",
-                              "Department 2",
-                              "Department 3",
-                              "Department 4",
-                              "Department 5",
-                            ],
-                            value: controller.selectDepartment,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectDepartment = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.orderNumberController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.orderNumber,
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.bookedByController,
-                            width: fieldWidth / 2,
-                            hintText: AppText.bookedBy,
-                          ),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectEmployee,
-                            items: [
-                              "Employee 1",
-                              "Employee 2",
-                              "Employee 3",
-                              "Employee 4",
-                              "Employee 5",
-                            ],
-                            value: controller.selectEmployee,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectEmployee = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectSubsidiary,
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectSubsidiary,
-                            items: [
-                              "SUBSIDIARY 1",
-                              "SUBSIDIARY 2",
-                              "SUBSIDIARY 3",
-                              "SUBSIDIARY 4",
-                              "SUBSIDIARY 5",
-                            ],
-                            value: controller.selectSubsidiary,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectSubsidiary = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectRefNumber,
-                            width: fieldWidth / 1.5,
-                            label: AppText.selectRefNumber,
-                            items: [
-                              "REFERENCE NUMBER 1",
-                              "REFERENCE NUMBER 2",
-                              "REFERENCE NUMBER 3",
-                              "REFERENCE NUMBER 4",
-                              "REFERENCE NUMBER 5",
-                            ],
-                            value: controller.selectRefNumber,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectRefNumber = val!;
-                              controller.update();
-                            },
-                          ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectRefNumber,
-                            width: fieldWidth / 1.5,
-                            label: AppText.ascending,
-                            items: [
-                              "ASCENDING 1",
-                              "ASCENDING 2",
-                              "ASCENDING 3",
-                              "ASCENDING 4",
-                              "ASCENDING 5",
-                            ],
-                            value: controller.selectAscending,
-                            itemLabel: (val) => val,
-                            onChanged: (val) {
-                              controller.selectAscending = val!;
-                              controller.update();
-                            },
-                          ),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.filter,
-                            fontSize: 12,
-                            onTap: (){
-                              controller.isFiltered.value = true;
-                              controller.totalBookings.value;
-                              controller.totalEarnings.value;
-                              controller.totalAccountEarnings.value;
-                            },
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.view,
-                            fontSize: 12,
-                            onTap: () {
-                              Get.dialog(AllBookingViewWindow());
-                            },
-                          ),
-                          CustomButton(
-                            width: 120,
-                            height: 30,
-                            borderRadius: 4,
-                            verticalPadding: 0.0,
-                            btnText: AppText.statistics,
-                            fontSize: 12,
-                            onTap: () {
-                              Get.dialog(BookingStatisticsWindow());
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                                })(),
+                                CustomDropdownField<String>(
+                                  width: fieldWidth / 1.9,
+                                  label: AppText.selectAccount,
+                                  items: [
+                                    "ACCOUNT 1",
+                                    "ACCOUNT 2",
+                                    "ACCOUNT 3",
+                                    "ACCOUNT 4",
+                                    "ACCOUNT 5",
+                                  ],
+                                  value: controller.selectAccount,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectAccount = val!;
+                                    controller.update();
+                                  },
+                                ),
+                                CustomDropdownField<String>(
+                                  width: fieldWidth / 1.9,
+                                  label: AppText.selectDepartment,
+                                  items: [
+                                    "Department 1",
+                                    "Department 2",
+                                    "Department 3",
+                                    "Department 4",
+                                    "Department 5",
+                                  ],
+                                  value: controller.selectDepartment,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectDepartment = val!;
+                                    controller.update();
+                                  },
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.orderNumberController,
+                                  width: fieldWidth / 2,
+                                  hintText: AppText.orderNumber,
+                                ),
+                                CustomTextField(
+                                  borderRadius: 4,
+                                  controller: controller.bookedByController,
+                                  width: fieldWidth / 2,
+                                  hintText: AppText.bookedBy,
+                                ),
+                                CustomDropdownField<String>(
+                                  width: fieldWidth / 1.5,
+                                  label: AppText.selectEmployee,
+                                  items: [
+                                    "Employee 1",
+                                    "Employee 2",
+                                    "Employee 3",
+                                    "Employee 4",
+                                    "Employee 5",
+                                  ],
+                                  value: controller.selectEmployee,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectEmployee = val!;
+                                    controller.update();
+                                  },
+                                ),
+                                // CustomDropdownField<String>(
+                                //   // text: AppText.selectSubsidiary,
+                                //   width: fieldWidth / 1.5,
+                                //   label: AppText.selectSubsidiary,
+                                //   items: [
+                                //     "SUBSIDIARY 1",
+                                //     "SUBSIDIARY 2",
+                                //     "SUBSIDIARY 3",
+                                //     "SUBSIDIARY 4",
+                                //     "SUBSIDIARY 5",
+                                //   ],
+                                //   value: controller.selectSubsidiary,
+                                //   itemLabel: (val) => val,
+                                //   onChanged: (val) {
+                                //     controller.selectSubsidiary = val!;
+                                //     controller.update();
+                                //   },
+                                // ),
+                                CustomDropdownField<dynamic>(
+                                  width: fieldWidth / 1.5,
+                                  label: AppText.selectSubsidiary,
+                                  items: controller.apiDashboardData?.subsidiaries ?? [],
+                                  value: controller.apiSelectedSubsidiary,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                                  onChanged: (val) {
+                                    controller.apiSelectedSubsidiary = val;
+                                    controller.update();
+                                  },
+                                ),
+                                CustomDropdownField<String>(
+                                  // text: AppText.selectRefNumber,
+                                  width: fieldWidth / 1.5,
+                                  label: AppText.selectRefNumber,
+                                  items: [
+                                    "REFERENCE NUMBER 1",
+                                    "REFERENCE NUMBER 2",
+                                    "REFERENCE NUMBER 3",
+                                    "REFERENCE NUMBER 4",
+                                    "REFERENCE NUMBER 5",
+                                  ],
+                                  value: controller.selectRefNumber,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectRefNumber = val!;
+                                    controller.update();
+                                  },
+                                ),
+                                CustomDropdownField<String>(
+                                  // text: AppText.selectRefNumber,
+                                  width: fieldWidth / 1.5,
+                                  label: AppText.ascending,
+                                  items: [
+                                    "ASCENDING 1",
+                                    "ASCENDING 2",
+                                    "ASCENDING 3",
+                                    "ASCENDING 4",
+                                    "ASCENDING 5",
+                                  ],
+                                  value: controller.selectAscending,
+                                  itemLabel: (val) => val,
+                                  onChanged: (val) {
+                                    controller.selectAscending = val!;
+                                    controller.update();
+                                  },
+                                ),
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                CustomButton(
+                                  width: 120,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  verticalPadding: 0.0,
+                                  btnText: AppText.filter,
+                                  fontSize: 12,
+                                  onTap: () {
+                                    controller.isFiltered.value = true;
+                                    controller.totalBookings.value;
+                                    controller.totalEarnings.value;
+                                    controller.totalAccountEarnings.value;
+                                  },
+                                ),
+                                CustomButton(
+                                  width: 120,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  verticalPadding: 0.0,
+                                  btnText: AppText.view,
+                                  fontSize: 12,
+                                  onTap: () {
+                                    Get.dialog(AllBookingViewWindow());
+                                  },
+                                ),
+                                CustomButton(
+                                  width: 120,
+                                  height: 30,
+                                  borderRadius: 4,
+                                  verticalPadding: 0.0,
+                                  btnText: AppText.statistics,
+                                  fontSize: 12,
+                                  onTap: () {
+                                    Get.dialog(BookingStatisticsWindow());
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                 ),
                 SizedBox(
                   height: 20,
                 ),
-
                 Obx(() => Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: DynamicColors.secondaryClr,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Total Bookings
-                      _buildSummaryItem(
-                        label: "TOTAL BOOKINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalBookings.value}"
-                            : "",
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: DynamicColors.secondaryClr,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: DynamicColors.gryClr.withOpacity(0.5)),
                       ),
-                      // Total Earning
-                      _buildSummaryItem(
-                        label: "TOTAL EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                      // Total Account Earning
-                      _buildSummaryItem(
-                        label: "TOTAL ACCOUNT EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                    ],
-                  ),
-                )),
-
-                const SizedBox(height: 10),
-
-                SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                width: MediaQuery.of(context)
-                    .size
-                    .width,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: FittedBox(
-                fit: BoxFit.contain,
-
-                child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "INVOICE #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "CUSTOMER"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "FARE"),
-                          buildHeaderWithSearch(title: "ACC FARE"),
-                          buildHeaderWithSearch(title: "ACC"),
-                          buildHeaderWithSearch(title: "ORDER #"),
-                          buildHeaderWithSearch(title: "P/T"),
-                          buildHeaderWithSearch(title: "J/T"),
-                          buildHeaderWithSearch(title: "DRV"),
-                          buildHeaderWithSearch(title: "VEH"),
-                          buildHeaderWithSearch(title: "SUBS"),
-                          buildHeaderWithSearch(title: "STATUS"),
-                          buildHeaderWithSearch(
-                              title: "ACTION",removeSearching: true),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Total Bookings
+                          _buildSummaryItem(
+                            label: "TOTAL BOOKINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalBookings.value}"
+                                : "",
+                          ),
+                          // Total Earning
+                          _buildSummaryItem(
+                            label: "TOTAL EARNINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
+                                : "",
+                          ),
+                          // Total Account Earning
+                          _buildSummaryItem(
+                            label: "TOTAL ACCOUNT EARNINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
+                                : "",
+                          ),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
+                      ),
+                    )),
+                const SizedBox(height: 10),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "REF #"),
+                            buildHeaderWithSearch(title: "INVOICE #"),
+                            buildHeaderWithSearch(title: "DATETIME"),
+                            buildHeaderWithSearch(title: "CUSTOMER"),
+                            buildHeaderWithSearch(title: "PICKUP"),
+                            buildHeaderWithSearch(title: "DROPOFF"),
+                            buildHeaderWithSearch(title: "FARE"),
+                            buildHeaderWithSearch(title: "ACC FARE"),
+                            buildHeaderWithSearch(title: "ACC"),
+                            buildHeaderWithSearch(title: "ORDER #"),
+                            buildHeaderWithSearch(title: "P/T"),
+                            buildHeaderWithSearch(title: "J/T"),
+                            buildHeaderWithSearch(title: "DRV"),
+                            buildHeaderWithSearch(title: "VEH"),
+                            buildHeaderWithSearch(title: "SUBS"),
+                            buildHeaderWithSearch(title: "STATUS"),
+                            buildHeaderWithSearch(
+                                title: "ACTION", removeSearching: true),
+                          ],
+                          totalRow: totalRows,
+                          cells: [
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            DataCell(
+                              Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.edit_calendar,
+                                        size: 28,
+                                      ),
                                     ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.edit_calendar,
-                                      size: 28,
+                                    Text("|"),
+                                    OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.transparent,
+                                        ), // border color & thickness
+                                      ),
+                                      onPressed: () {},
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        size: 28,
+                                        color: DynamicColors.redClr,
+                                      ),
                                     ),
-                                  ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      size: 28,
-                                      color: DynamicColors.redClr,
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ]),
+                          ]),
+                    ),
                   ),
-                ),
-                )],
+                )
+              ],
             ));
       });
     });
   }
+
   Widget _buildSummaryItem({required String label, required String value}) {
     return Row(
       children: [
         Text(
           "$label: ",
-          style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+          style:
+              mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
         ),
         Text(
           value,
-          style: mozillaTextRegularText(fontSize: 13, color: Colors.blue.shade800),
+          style:
+              mozillaTextRegularText(fontSize: 13, color: Colors.blue.shade800),
         ),
       ],
     );
