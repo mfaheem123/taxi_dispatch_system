@@ -44,6 +44,7 @@ class _AllBookingViewState extends State<AllBookingView> {
       controller.selectDriverObject = null;
       controller.getAllDrivers();
       controller.getData();
+      controller.getEmployeeData();
       controller.bookingStartTimeController.text = "12:00";
       controller.bookingEndTimeController.text =
           DateFormat('HH:mm').format(DateTime.now());
@@ -233,19 +234,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     controller.update();
                                   },
                                 ),
-                                // CustomTextField(
-                                //   borderRadius: 4,
-                                //   controller: controller.pickUpController,
-                                //   width: fieldWidth / 1.7,
-                                //   hintText: "PICKUP",
-                                // ),
-                                // CustomTextField(
-                                //   borderRadius: 4,
-                                //   controller: controller.dropOffController,
-                                //   width: fieldWidth / 1.7,
-                                //   hintText: "DROPOFF",
-                                // ),
-                                // ----------------- PICKUP FIELD WITH AUTOCOMPLETE -----------------
                                 (() {
                                   final ScrollController
                                       pickupScrollController =
@@ -541,37 +529,32 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     ),
                                   );
                                 })(),
-                                CustomDropdownField<String>(
+                                CustomDropdownField<dynamic>(
                                   width: fieldWidth / 1.9,
                                   label: AppText.selectAccount,
-                                  items: [
-                                    "ACCOUNT 1",
-                                    "ACCOUNT 2",
-                                    "ACCOUNT 3",
-                                    "ACCOUNT 4",
-                                    "ACCOUNT 5",
-                                  ],
-                                  value: controller.selectAccount,
-                                  itemLabel: (val) => val,
+                                  items: controller.dashboardAccountModel?.accounts ?? [],
+                                  value: controller.apiSelectedAccount,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                   onChanged: (val) {
-                                    controller.selectAccount = val!;
+                                    controller.apiSelectedAccount = val;
+
+                                    controller.apiSelectedDepartment = null;
+                                    controller.accountDepartmentsList.clear();
+
+                                    if (val != null && val.departments != null) {
+                                      controller.accountDepartmentsList.addAll(val.departments);
+                                    }
                                     controller.update();
                                   },
                                 ),
-                                CustomDropdownField<String>(
+                                CustomDropdownField<dynamic>(
                                   width: fieldWidth / 1.9,
                                   label: AppText.selectDepartment,
-                                  items: [
-                                    "Department 1",
-                                    "Department 2",
-                                    "Department 3",
-                                    "Department 4",
-                                    "Department 5",
-                                  ],
-                                  value: controller.selectDepartment,
-                                  itemLabel: (val) => val,
+                                  items: controller.accountDepartmentsList,
+                                  value: controller.apiSelectedDepartment,
+                                  itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                   onChanged: (val) {
-                                    controller.selectDepartment = val!;
+                                    controller.apiSelectedDepartment = val;
                                     controller.update();
                                   },
                                 ),
@@ -587,41 +570,17 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   width: fieldWidth / 2,
                                   hintText: AppText.bookedBy,
                                 ),
-                                CustomDropdownField<String>(
+                                CustomDropdownField<dynamic>(
                                   width: fieldWidth / 1.5,
                                   label: AppText.selectEmployee,
-                                  items: [
-                                    "Employee 1",
-                                    "Employee 2",
-                                    "Employee 3",
-                                    "Employee 4",
-                                    "Employee 5",
-                                  ],
-                                  value: controller.selectEmployee,
-                                  itemLabel: (val) => val,
+                                  items: controller.userModel?.employees ?? [],
+                                  value: controller.apiSelectedEmployee,
+                                  itemLabel: (val) => (val.username ?? "").toUpperCase(),
                                   onChanged: (val) {
-                                    controller.selectEmployee = val!;
+                                    controller.apiSelectedEmployee = val;
                                     controller.update();
                                   },
                                 ),
-                                // CustomDropdownField<String>(
-                                //   // text: AppText.selectSubsidiary,
-                                //   width: fieldWidth / 1.5,
-                                //   label: AppText.selectSubsidiary,
-                                //   items: [
-                                //     "SUBSIDIARY 1",
-                                //     "SUBSIDIARY 2",
-                                //     "SUBSIDIARY 3",
-                                //     "SUBSIDIARY 4",
-                                //     "SUBSIDIARY 5",
-                                //   ],
-                                //   value: controller.selectSubsidiary,
-                                //   itemLabel: (val) => val,
-                                //   onChanged: (val) {
-                                //     controller.selectSubsidiary = val!;
-                                //     controller.update();
-                                //   },
-                                // ),
                                 CustomDropdownField<dynamic>(
                                   width: fieldWidth / 1.5,
                                   label: AppText.selectSubsidiary,
@@ -630,6 +589,12 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   itemLabel: (val) => (val.name ?? "").toUpperCase(),
                                   onChanged: (val) {
                                     controller.apiSelectedSubsidiary = val;
+                                    controller.apiSelectedAccount = null;
+                                    controller.apiSelectedDepartment = null;
+
+                                    if (val != null && val.id != null) {
+                                      controller.getAccountData(val.id);
+                                    }
                                     controller.update();
                                   },
                                 ),
@@ -638,11 +603,20 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   width: fieldWidth / 1.5,
                                   label: AppText.selectRefNumber,
                                   items: [
-                                    "REFERENCE NUMBER 1",
-                                    "REFERENCE NUMBER 2",
-                                    "REFERENCE NUMBER 3",
-                                    "REFERENCE NUMBER 4",
-                                    "REFERENCE NUMBER 5",
+                                    "REFERENCE NUMBER",
+                                    "DATETIME",
+                                    "CUSTOMER",
+                                    "MOBILE",
+                                    "TELEPHONE",
+                                    "PICKUP",
+                                    "DROPOFF",
+                                    "FARE",
+                                    "ACCOUNT",
+                                    "ORDER NUMBER",
+                                    "PAYMENT TYPE",
+                                    "DRIVER",
+                                    "VEHICLE TYPE",
+                                    "STATUS",
                                   ],
                                   value: controller.selectRefNumber,
                                   itemLabel: (val) => val,
@@ -656,11 +630,8 @@ class _AllBookingViewState extends State<AllBookingView> {
                                   width: fieldWidth / 1.5,
                                   label: AppText.ascending,
                                   items: [
-                                    "ASCENDING 1",
-                                    "ASCENDING 2",
-                                    "ASCENDING 3",
-                                    "ASCENDING 4",
-                                    "ASCENDING 5",
+                                    "ASCENDING",
+                                    "DESCENDING"
                                   ],
                                   value: controller.selectAscending,
                                   itemLabel: (val) => val,

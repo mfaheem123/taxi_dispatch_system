@@ -4,7 +4,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
+import '../../administration/model/user_model.dart';
 import '../../customer/model/restricDriver.dart';
+import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
 import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
@@ -322,7 +324,6 @@ class ReportController extends GetxController {
 
   DashboardDataModel? apiDashboardData;
   bool isLoadingData = false;
-  String apiErrorMessage = '';
 
   BookingStatus? apiSelectedBookingStatus;
   PaymentStatus? apiSelectedPaymentStatus;
@@ -338,22 +339,17 @@ class ReportController extends GetxController {
 
   getData() async {
     isLoadingData = true;
-    apiErrorMessage = '';
     update();
     
     try{
-      var response = await Api().get("enumerations/get",
-        queryParameters: {
-          "company_id": "1",
-        },
+      var response = await Api().get("enumerations/get"
       );
       if (response.statusCode == 200) {
         apiDashboardData = DashboardDataModel.fromJson(response.data);
       } else {
-        apiErrorMessage = "Server Error: ${response.statusCode}";
+        print("Server Error: ${response.statusCode}");
       }
     } catch (e) {
-      apiErrorMessage = "Error Fetching Dashboard Data: $e";
       print("Error Dashboard API: $e");
     } finally {
       isLoadingData = false;
@@ -382,6 +378,50 @@ class ReportController extends GetxController {
     }
     update();
   }
+
+  UserModel? userModel;
+  Employee? apiSelectedEmployee;
+
+  getEmployeeData() async {
+    try{
+      var response = await Api().get("employees/get");
+      if (response.statusCode == 200) {
+        userModel = UserModel.fromJson(response.data);
+
+        if(userModel?.employees?.isNotEmpty ?? false) {
+          apiSelectedEmployee = null;
+        }
+      }
+    } catch(e) {
+      print("Error Fetching Employee Data: $e");
+    }
+    update();
+  }
+
+  DashboardAccountModel? dashboardAccountModel;
+  DashboardAccountObject? apiSelectedAccount;
+   List<DepartmentObject> accountDepartmentsList = [];
+   DepartmentObject? apiSelectedDepartment;
+
+   getAccountData(int subsidiaryId) async {
+     try{
+       dashboardAccountModel = null;
+       update();
+       
+       var response = await Api().get("accounts/subsidiary/$subsidiaryId", sendCompanyId: true,
+       // queryParameters: {
+       //   "company_id": "1"
+       // }
+       );
+       if (response.statusCode == 200) {
+         dashboardAccountModel = DashboardAccountModel.fromJson(response.data);
+       }
+     }catch(e) {
+       print("Error Fetching accounts: $e");
+     } finally {
+       update();
+     }
+   }
 
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality

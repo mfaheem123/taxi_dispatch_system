@@ -138,7 +138,7 @@ class Booking {
   Account? account;
   Driver? driver;
   Customer? customer;
-  Employee? employee;
+  LogsEmployee? employee;
   Airport? airport;
 
   Booking({
@@ -357,7 +357,7 @@ class Booking {
     account: json["account"] == null ? null : Account.fromJson(json["account"]),
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
-    employee: json["employee"] == null ? null : Employee.fromJson(json["employee"]),
+    employee: json["employee"] == null ? null : LogsEmployee.fromJson(json["employee"]),
     airport: json["airport"] == null ? null : Airport.fromJson(json["airport"]),
   );
 
@@ -736,16 +736,16 @@ class Vehicle {
   };
 }
 
-class Employee {
+class LogsEmployee {
   String? username;
   int? roleId;
 
-  Employee({
+  LogsEmployee({
     this.username,
     this.roleId,
   });
 
-  factory Employee.fromJson(Map<String, dynamic> json) => Employee(
+  factory LogsEmployee.fromJson(Map<String, dynamic> json) => LogsEmployee(
     username: json["username"],
     roleId: json["role_id"],
   );
