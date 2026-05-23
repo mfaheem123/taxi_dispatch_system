@@ -8,6 +8,7 @@ import '../../administration/model/user_model.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
+import '../driver_booking_view/model/booking_list_model.dart';
 import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
@@ -333,9 +334,9 @@ class ReportController extends GetxController {
   List<int> apiSelectedPaymentTypeIds = [];
 
   RxBool isFiltered = false.obs;
-  RxString totalBookings = "0".obs;
-  RxDouble totalEarnings = 0.0.obs;
-  RxDouble totalAccountEarnings = 0.0.obs;
+  var totalBookings = 0.obs;
+  var totalEarnings = 0.0.obs;
+  var totalAccountEarnings = 0.0.obs;
 
   getData() async {
     isLoadingData = true;
@@ -378,7 +379,7 @@ class ReportController extends GetxController {
     }
     update();
   }
-
+// employee drop down Api
   UserModel? userModel;
   Employee? apiSelectedEmployee;
 
@@ -397,7 +398,7 @@ class ReportController extends GetxController {
     }
     update();
   }
-
+// account api
   DashboardAccountModel? dashboardAccountModel;
   DashboardAccountObject? apiSelectedAccount;
    List<DepartmentObject> accountDepartmentsList = [];
@@ -423,7 +424,121 @@ class ReportController extends GetxController {
      }
    }
 
+   // filter api
+  String? selectRefNumber = "REFERENCE NUMBER";
+  String? selectAscending = "ASCENDING";
 
+  BookingStatisticsModel? bookingStatisticsModel;
+  bool isLoadingStatistics = false;
+
+  RxString searchReferenceNo = ''.obs;
+  RxString searchInvoiceNo = ''.obs;
+  RxString searchDateTime = ''.obs;
+  RxString searchCustomer = ''.obs;
+  RxString searchPickup = ''.obs;
+  RxString searchDropOff = ''.obs;
+  RxString searchFare = ''.obs;
+  RxString searchAccFare = ''.obs;
+  RxString searchAcc = ''.obs;
+  RxString searchOrderNO = ''.obs;
+  RxString searchPaymentType = ''.obs;
+  RxString searchJourneyType = ''.obs;
+  RxString searchDriver = ''.obs;
+  RxString searchVehicle = ''.obs;
+  RxString searchSubsidiary = ''.obs;
+  RxString searchStatus = ''.obs;
+
+  var currentPage = 1.obs;
+  var totalPages = 1.obs;
+  final int limit = 20;
+
+  getBookingStatistics() async {
+    try {
+      isLoadingStatistics = true;
+      update();
+
+      String formattedFromDate = "";
+      String formattedToDate = "";
+
+      formattedFromDate = DateFormat('dd-MM-yyyy').format(bookingFromDate.value);
+          formattedToDate = DateFormat('dd-MM-yyyy').format(bookingToDate.value);
+
+      String startTime = bookingStartTimeController.text.isNotEmpty ? bookingStartTimeController.text.trim() : "";
+      String endTime = bookingEndTimeController.text.isNotEmpty ? bookingEndTimeController.text.trim() : "";
+      String paymentTypeIdsString = apiSelectedPaymentTypeIds.isNotEmpty ? apiSelectedPaymentTypeIds.join(",") : "";
+      String apiSortOrder = (selectAscending == "ASCENDING") ? "ASC" : "DESC";
+      String apiSortBy = "";
+      if (selectRefNumber != null) {
+        apiSortBy = selectRefNumber!.toLowerCase().replaceAll(" ", "_");
+      }
+
+      var response = await Api().get(
+        "bookings/booking-statistics",
+        queryParameters: {
+          "page": currentPage,
+          "limit": limit,
+          "from_date": formattedFromDate,
+          "to_date": formattedToDate,
+          "from_time": startTime,
+          "to_time": endTime,
+
+          "reference_number": searchReferenceNo.value,
+          "invoice_number": searchInvoiceNo.value,
+          "pickup": searchPickup.value,
+          "dropoff": searchDropOff.value,
+          "customer": searchCustomer.value,
+          "mobile": mobileController.text,
+          "telephone": phoneController.text,
+          "order_number": searchOrderNO.value,
+          "fares": searchFare.value,
+          "company_price": searchAccFare.value,
+          "booked_by": bookedByController.text,
+          "account_id": apiSelectedAccount?.id?.toString() ?? "",
+          "employee_id": apiSelectedEmployee?.id?.toString() ?? "",
+          "subsidiary_id": apiSelectedSubsidiary?.id?.toString() ?? "",
+          "driver": searchDriver.value,
+          "driver_id": selectDriverObject?.id?.toString() ?? "",
+          "payment_type_id": paymentTypeIdsString,
+          "booking_status_id": apiSelectedBookingStatus?.id?.toString() ?? "",
+          "sort_order": apiSortOrder,
+          "sort_by": apiSortBy
+        },
+      );
+
+      if (response.statusCode == 200) {
+        bookingStatisticsModel = BookingStatisticsModel.fromJson(response.data);
+        print("Total Statistics Bookings Found: ${bookingStatisticsModel?.totals?.totalBookings}");
+
+        totalPages.value = bookingStatisticsModel?.totalPages ?? 1;
+
+        totalBookings.value = bookingStatisticsModel?.totals?.totalBookings ?? 0;
+        totalEarnings.value = bookingStatisticsModel?.totals?.totalEarnings ?? 0.0;
+        totalAccountEarnings.value = bookingStatisticsModel?.totals?.totalAccountEarnings ?? 0.0;
+      }
+    } catch (e, stackTrace) {
+      print("=================== API ERROR LOG ===================");
+      print("Error fetching booking statistics: $e");
+      print("Detailed StackTrace: $stackTrace");
+      print("=====================================================");
+    }
+    finally {
+      isLoadingStatistics = false;
+      update();
+    }
+  }
+
+  void onBookingSearchChanged() {
+    currentPage.value = 1;
+    getBookingStatistics();
+  }
+
+  void onBookingPageChange(int page) {
+    currentPage.value = page;
+    getBookingStatistics();
+  }
+
+  final RxnInt editingRowIndex = RxnInt();
+  final TextEditingController fareController = TextEditingController();
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
   // Controller ke andar
@@ -444,8 +559,8 @@ class ReportController extends GetxController {
   String? selectBookingDriver;
   String? selectEmployee;
   String? selectSubsidiary;
-  String? selectRefNumber;
-  String? selectAscending;
+  // String? selectRefNumber;
+  // String? selectAscending;
   String? selectAccount;
   String? selectDepartment;
 
