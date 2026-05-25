@@ -472,7 +472,7 @@ class ReportController extends GetxController {
       var response = await Api().get(
         "bookings/booking-statistics",
         queryParameters: {
-          "page": currentPage,
+          "page": currentPage.value,
           "limit": limit,
           "from_date": formattedFromDate,
           "to_date": formattedToDate,
@@ -532,6 +532,45 @@ class ReportController extends GetxController {
   void onBookingPageChange(int page) {
     currentPage.value = page;
     getBookingStatistics();
+  }
+
+  /// EDIT FARE
+  bool isFareLoading = false;
+
+  updateBookingFare(dynamic bookingId, String fare, int index) async {
+    if (fare.isEmpty) {
+      BotToast.showText(text: "PLEASE ENTER FARE AMOUNT");
+      return;
+    }
+    isFareLoading = true;
+    update();
+
+    try {
+      var formData = {
+        "total_charges": fare,
+      };
+      var response = await Api().post(
+        formData,
+        "bookings/dashboard-fares/$bookingId",
+        auth: true,
+      );
+      if (response.statusCode == 200) {
+        BotToast.showText(text: "FARE UPDATED SUCCESSFULLY");
+
+        if (bookingStatisticsModel?.data != null) {
+          bookingStatisticsModel!.data![index].fares = fare;
+        }
+        editingRowIndex.value = null;
+      } else {
+        BotToast.showText(text: "FAILED TO UPDATE FARE");
+      }
+    } catch (e) {
+      print("Error updating fare: $e");
+      BotToast.showText(text: "SOMETHING WENT WRONG");
+    } finally {
+      isFareLoading = false;
+      update();
+    }
   }
 
   final RxnInt editingRowIndex = RxnInt();

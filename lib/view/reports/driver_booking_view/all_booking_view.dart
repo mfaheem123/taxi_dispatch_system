@@ -1327,7 +1327,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                                         .black),
                                                             decoration:
                                                                 const InputDecoration(
-                                                              prefixText: "£ ",
+                                                              prefixText: "£",
                                                               isDense: true,
                                                               contentPadding:
                                                                   EdgeInsets.symmetric(
@@ -1341,8 +1341,16 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                           ),
                                                         )
                                                       : Text(
-                                                          "£ ${item.fares ?? '0.00'}",
-                                                          maxLines: 1);
+                                                    (item.fares == null || item.fares!.trim().isEmpty)
+                                                        ? "£0.00"
+                                                        : "£${item.fares}",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(fontSize: 13),
+                                                  );
+                                                  // Text(
+                                                  //         "£ ${item.fares ?? '0.00'}",
+                                                  //         maxLines: 1);
                                                 })),
 
                                                 _buildCustomDataCell(
@@ -1427,6 +1435,7 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                           .editingRowIndex
                                                           .value ==
                                                       index;
+                                                  bool isLoading = controller.isFareLoading && isEditing;
                                                   return SizedBox(
                                                     height: 28,
                                                     width: 55,
@@ -1435,9 +1444,8 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                           .styleFrom(
                                                         backgroundColor:
                                                             isEditing
-                                                                ? Colors.green
-                                                                : Colors
-                                                                    .grey[700],
+                                                                ? Colors.grey
+                                                                : DynamicColors.primaryClr,
                                                         foregroundColor:
                                                             Colors.white,
                                                         padding:
@@ -1450,36 +1458,70 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                                             6)),
                                                       ),
                                                       onPressed: () {
+                                                        // Loading ke dauran click kaam nahi karega
+                                                        if (controller.isFareLoading) return;
+
                                                         if (isEditing) {
-                                                          item.fares = controller
-                                                              .fareController
-                                                              .text;
-                                                          controller
-                                                              .editingRowIndex
-                                                              .value = null;
+                                                          // SAVE dabaane par controller ki API call hogi
+                                                          // item.id aapki URL me dynamic 1234 ki jagah pass hoga
+                                                          controller.updateBookingFare(
+                                                            item.id,
+                                                            controller.fareController.text,
+                                                            index,
+                                                          );
                                                         } else {
-                                                          controller
-                                                              .fareController
-                                                              .text = item
-                                                                  .fares ??
-                                                              '0.00';
-                                                          controller
-                                                              .editingRowIndex
-                                                              .value = index;
+                                                          // EDIT dabaane par normal textfield khulegi
+                                                          controller.fareController.text = item.fares ?? '0.00';
+                                                          controller.editingRowIndex.value = index;
                                                         }
                                                       },
-                                                      child: Text(
-                                                          isEditing
-                                                              ? "SAVE"
-                                                              : "EDIT",
-                                                          style: const TextStyle(
-                                                              fontSize: 11,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
+                                                      child: isLoading
+                                                          ? const SizedBox(
+                                                        height: 14,
+                                                        width: 14,
+                                                        child: CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2,
+                                                        ),
+                                                      )
+                                                          : Text(
+                                                        isEditing ? "SAVE" : "EDIT",
+                                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                                      ),
                                                     ),
                                                   );
                                                 })),
+                                                //       onPressed: () {
+                                                //         if (isEditing) {
+                                                //           item.fares = controller
+                                                //               .fareController
+                                                //               .text;
+                                                //           controller
+                                                //               .editingRowIndex
+                                                //               .value = null;
+                                                //         } else {
+                                                //           controller
+                                                //               .fareController
+                                                //               .text = item
+                                                //                   .fares ??
+                                                //               '0.00';
+                                                //           controller
+                                                //               .editingRowIndex
+                                                //               .value = index;
+                                                //         }
+                                                //       },
+                                                //       child: Text(
+                                                //           isEditing
+                                                //               ? "SAVE"
+                                                //               : "EDIT",
+                                                //           style: const TextStyle(
+                                                //               fontSize: 11,
+                                                //               fontWeight:
+                                                //                   FontWeight
+                                                //                       .bold)),
+                                                //     ),
+                                                //   );
+                                                // })),
                                               ],
                                             ),
                                           ));
