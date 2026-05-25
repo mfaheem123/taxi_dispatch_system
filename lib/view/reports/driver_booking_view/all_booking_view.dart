@@ -1001,9 +1001,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                 Obx(() {
                   var dataList = controller.bookingStatisticsModel?.data ?? [];
                   final List<double> colWidths = [
-                    100, // 0. REF #
+                    90, // 0. REF #
                     90, // 1. INVOICE #
-                    100, // 2. DATETIME
+                    90, // 2. DATETIME
                     80, // 3. CUSTOMER
                     170, // 4. PICKUP
                     170, // 5. DROPOFF
