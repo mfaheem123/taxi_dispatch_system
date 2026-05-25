@@ -343,7 +343,7 @@ class ReportController extends GetxController {
     update();
     
     try{
-      var response = await Api().get("enumerations/get"
+      var response = await Api().get("enumerations/get", sendCompanyId: true,
       );
       if (response.statusCode == 200) {
         apiDashboardData = DashboardDataModel.fromJson(response.data);
@@ -385,7 +385,7 @@ class ReportController extends GetxController {
 
   getEmployeeData() async {
     try{
-      var response = await Api().get("employees/get");
+      var response = await Api().get("employees/get", sendCompanyId: true);
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
 
@@ -410,9 +410,6 @@ class ReportController extends GetxController {
        update();
        
        var response = await Api().get("accounts/subsidiary/$subsidiaryId", sendCompanyId: true,
-       // queryParameters: {
-       //   "company_id": "1"
-       // }
        );
        if (response.statusCode == 200) {
          dashboardAccountModel = DashboardAccountModel.fromJson(response.data);

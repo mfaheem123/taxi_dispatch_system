@@ -1000,29 +1000,26 @@ class _AllBookingViewState extends State<AllBookingView> {
 
                 Obx(() {
                   var dataList = controller.bookingStatisticsModel?.data ?? [];
-
-                  // 17 Columns ki customized fixed widths (Pixels mein)
                   final List<double> colWidths = [
-                    90, // 0. REF #
-                    80, // 1. INVOICE #
-                    60, // 2. DATETIME
-                    60, // 3. CUSTOMER
-                    70, // 4. PICKUP
-                    70, // 5. DROPOFF
-                    50, // 6. FARE
-                    50, // 7. ACC FARE
-                    50, // 8. ACC
-                    50, // 9. ORDER #
-                    50, // 10. P/T
-                    50, // 11. J/T
-                    60, // 12. DRV
-                    50, // 13. VEH
-                    50, // 14. SUBS
-                    50, // 15. STATUS
-                    50, // 16. ACTION
+                    100, // 0. REF #
+                    90, // 1. INVOICE #
+                    100, // 2. DATETIME
+                    80, // 3. CUSTOMER
+                    180, // 4. PICKUP
+                    180, // 5. DROPOFF
+                    80, // 6. FARE
+                    80, // 7. ACC FARE
+                    80, // 8. ACC
+                    80, // 9. ORDER #
+                    80, // 10. P/T
+                    80, // 11. J/T
+                    80, // 12. DRV
+                    80, // 13. VEH
+                    80, // 14. SUBS
+                    90, // 15. STATUS
+                    90, // 16. ACTION
                   ];
 
-                  // Total width saari columns ka sum hai
                   double totalTableWidth = colWidths.reduce((a, b) => a + b);
 
                   return Container(
@@ -1031,9 +1028,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // ==========================================
-                        // 1. SCROLLABLE CUSTOM TABLE AREA
-                        // ==========================================
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
@@ -1041,177 +1035,182 @@ class _AllBookingViewState extends State<AllBookingView> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // --- A. CUSTOM HEADER ROW ---
                                 Container(
                                   color: Colors.grey[200],
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8),
-                                  child: Row(
-                                    children: [
-                                      _buildCustomHeaderCell(
-                                          colWidths[0],
-                                          buildHeaderWithSearch(
-                                              title: "REF #",
-                                              onChanged: (v) {
-                                                controller.searchReferenceNo
-                                                    .value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[1],
-                                          buildHeaderWithSearch(
-                                              title: "INVOICE #",
-                                              onChanged: (v) {
-                                                controller
-                                                    .searchInvoiceNo.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[2],
-                                          buildHeaderWithSearch(
-                                              title: "DATETIME",
-                                              onChanged: (v) {
-                                                controller
-                                                    .searchDateTime.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[3],
-                                          buildHeaderWithSearch(
-                                              title: "CUSTOMER",
-                                              onChanged: (v) {
-                                                controller
-                                                    .searchCustomer.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[4],
-                                          buildHeaderWithSearch(
-                                              title: "PICKUP",
-                                              onChanged: (v) {
-                                                controller.searchPickup.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[5],
-                                          buildHeaderWithSearch(
-                                              title: "DROPOFF",
-                                              onChanged: (v) {
-                                                controller.searchDropOff.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[6],
-                                          buildHeaderWithSearch(
-                                              title: "FARE",
-                                              onChanged: (v) {
-                                                controller.searchFare.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[7],
-                                          buildHeaderWithSearch(
-                                              title: "ACC FARE",
-                                              onChanged: (v) {
-                                                controller.searchAccFare.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[8],
-                                          buildHeaderWithSearch(
-                                              title: "ACC",
-                                              onChanged: (v) {
-                                                controller.searchAcc.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[9],
-                                          buildHeaderWithSearch(
-                                              title: "ORDER #",
-                                              onChanged: (v) {
-                                                controller.searchOrderNO.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[10],
-                                          buildHeaderWithSearch(
-                                              title: "P/T",
-                                              onChanged: (v) {
-                                                controller.searchPaymentType
-                                                    .value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[11],
-                                          buildHeaderWithSearch(
-                                              title: "J/T",
-                                              onChanged: (v) {
-                                                controller.searchJourneyType
-                                                    .value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[12],
-                                          buildHeaderWithSearch(
-                                              title: "DRV",
-                                              onChanged: (v) {
-                                                controller.searchDriver.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[13],
-                                          buildHeaderWithSearch(
-                                              title: "VEH",
-                                              onChanged: (v) {
-                                                controller.searchVehicle.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[14],
-                                          buildHeaderWithSearch(
-                                              title: "SUBS",
-                                              onChanged: (v) {
-                                                controller
-                                                    .searchSubsidiary.value = v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[15],
-                                          buildHeaderWithSearch(
-                                              title: "STATUS",
-                                              onChanged: (v) {
-                                                controller.searchStatus.value =
-                                                    v;
-                                                controller
-                                                    .onBookingSearchChanged();
-                                              }).label),
-                                      _buildCustomHeaderCell(
-                                          colWidths[16],
-                                          buildHeaderWithSearch(
-                                              title: "ACTION",
-                                              removeSearching: true).label),
-                                    ],
+                                  child: IntrinsicHeight(
+                                    //
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        _buildCustomHeaderCell(
+                                            colWidths[0],
+                                            buildHeaderWithSearch(
+                                                title: "REF #",
+                                                onChanged: (v) {
+                                                  controller.searchReferenceNo
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[1],
+                                            buildHeaderWithSearch(
+                                                title: "INVOICE #",
+                                                onChanged: (v) {
+                                                  controller.searchInvoiceNo
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[2],
+                                            buildHeaderWithSearch(
+                                                title: "DATETIME",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDateTime.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[3],
+                                            buildHeaderWithSearch(
+                                                title: "CUSTOMER",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchCustomer.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[4],
+                                            buildHeaderWithSearch(
+                                                title: "PICKUP",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchPickup.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[5],
+                                            buildHeaderWithSearch(
+                                                title: "DROPOFF",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDropOff.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[6],
+                                            buildHeaderWithSearch(
+                                                title: "FARE",
+                                                onChanged: (v) {
+                                                  controller.searchFare.value =
+                                                      v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[7],
+                                            buildHeaderWithSearch(
+                                                title: "ACC FARE",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchAccFare.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[8],
+                                            buildHeaderWithSearch(
+                                                title: "ACC",
+                                                onChanged: (v) {
+                                                  controller.searchAcc.value =
+                                                      v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[9],
+                                            buildHeaderWithSearch(
+                                                title: "ORDER #",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchOrderNO.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[10],
+                                            buildHeaderWithSearch(
+                                                title: "P/T",
+                                                onChanged: (v) {
+                                                  controller.searchPaymentType
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[11],
+                                            buildHeaderWithSearch(
+                                                title: "J/T",
+                                                onChanged: (v) {
+                                                  controller.searchJourneyType
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[12],
+                                            buildHeaderWithSearch(
+                                                title: "DRV",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDriver.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[13],
+                                            buildHeaderWithSearch(
+                                                title: "VEH",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchVehicle.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[14],
+                                            buildHeaderWithSearch(
+                                                title: "SUBS",
+                                                onChanged: (v) {
+                                                  controller.searchSubsidiary
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[15],
+                                            buildHeaderWithSearch(
+                                                title: "STATUS",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchStatus.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[16],
+                                            buildHeaderWithSearch(
+                                                    title: "ACTION",
+                                                    removeSearching: true)
+                                                .label),
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 const Divider(
@@ -1219,12 +1218,12 @@ class _AllBookingViewState extends State<AllBookingView> {
                                     thickness: 1,
                                     color: Colors.grey),
 
-                                // --- B. DATA ROWS LIST ---
+                                //  DATA ROWS LIST ---
                                 if (dataList.isEmpty)
                                   const Padding(
                                     padding: EdgeInsets.all(30.0),
                                     child: Center(
-                                        child: Text("No Data Found",
+                                        child: Text("",
                                             style: TextStyle(fontSize: 16))),
                                   )
                                 else
@@ -1246,239 +1245,249 @@ class _AllBookingViewState extends State<AllBookingView> {
                                       }
 
                                       return Container(
-                                        decoration: const BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                                  color: Colors.grey,
-                                                  width: 0.5)),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8),
-                                        child: Row(
-                                          children: [
-                                            _buildCustomDataCell(
-                                                colWidths[0],
-                                                Text(
-                                                    item.referenceNumber ?? "-",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[1],
-                                                Text(
-                                                    item.invoiceNumber
-                                                            ?.toString() ??
-                                                        "-",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[2],
-                                                Text(formattedDateTime,
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[3],
-                                                Text(
-                                                    (item.name ?? "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[4],
-                                                Text(item.pickup ?? "-",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis),
-                                                alignment:
-                                                    Alignment.centerLeft),
-                                            _buildCustomDataCell(
-                                                colWidths[5],
-                                                Text(item.dropoff ?? "-",
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis),
-                                                alignment:
-                                                    Alignment.centerLeft),
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    color: Colors.grey,
+                                                    width: 0.5)),
+                                          ),
+                                          child: IntrinsicHeight(
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                _buildCustomDataCell(
+                                                    colWidths[0],
+                                                    Text(
+                                                        item.referenceNumber ??
+                                                            "-",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[1],
+                                                    Text(
+                                                        item.invoiceNumber
+                                                                ?.toString() ??
+                                                            "-",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[2],
+                                                    Text(formattedDateTime)),
+                                                _buildCustomDataCell(
+                                                    colWidths[3],
+                                                    Text(
+                                                        (item.name ?? "-")
+                                                            .toUpperCase())),
+                                                _buildCustomDataCell(
+                                                    colWidths[4],
+                                                    Text((item.pickup ?? "-").toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                    alignment:
+                                                        Alignment.centerLeft),
+                                                _buildCustomDataCell(
+                                                    colWidths[5],
+                                                    Text((item.dropoff ?? "-").toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                    alignment:
+                                                        Alignment.centerLeft),
 
-                                            // 6. FARE (EDITABLE)
-                                            _buildCustomDataCell(colWidths[6],
-                                                Obx(() {
-                                              bool isEditing = controller
-                                                      .editingRowIndex.value ==
-                                                  index;
-                                              return isEditing
-                                                  ? SizedBox(
-                                                      width: 85,
-                                                      height: 32,
-                                                      child: TextField(
-                                                        controller: controller
-                                                            .fareController,
-                                                        keyboardType:
-                                                            const TextInputType
-                                                                .numberWithOptions(
-                                                                decimal: true),
-                                                        autofocus: true,
-                                                        style: const TextStyle(
-                                                            fontSize: 13,
-                                                            color:
-                                                                Colors.black),
-                                                        decoration:
-                                                            const InputDecoration(
-                                                          prefixText: "£ ",
-                                                          isDense: true,
-                                                          contentPadding:
-                                                              EdgeInsets
-                                                                  .symmetric(
+                                                // 6. FARE (EDITABLE)
+                                                _buildCustomDataCell(
+                                                    colWidths[6], Obx(() {
+                                                  bool isEditing = controller
+                                                          .editingRowIndex
+                                                          .value ==
+                                                      index;
+                                                  return isEditing
+                                                      ? SizedBox(
+                                                          width: 85,
+                                                          height: 32,
+                                                          child: TextField(
+                                                            controller: controller
+                                                                .fareController,
+                                                            keyboardType:
+                                                                const TextInputType
+                                                                    .numberWithOptions(
+                                                                    decimal:
+                                                                        true),
+                                                            autofocus: true,
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .black),
+                                                            decoration:
+                                                                const InputDecoration(
+                                                              prefixText: "£ ",
+                                                              isDense: true,
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
                                                                       horizontal:
                                                                           4,
                                                                       vertical:
                                                                           6),
-                                                          border:
-                                                              OutlineInputBorder(),
-                                                        ),
+                                                              border:
+                                                                  OutlineInputBorder(),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : Text(
+                                                          "£ ${item.fares ?? '0.00'}",
+                                                          maxLines: 1);
+                                                })),
+
+                                                _buildCustomDataCell(
+                                                    colWidths[7],
+                                                    Text(
+                                                        "£ ${item.companyPrice ?? '0.00'}",
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[8],
+                                                    Text(
+                                                        (item.account?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[9],
+                                                    Text(
+                                                        item.orderNumber
+                                                                ?.toString() ??
+                                                            "-",
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[10],
+                                                    Text(
+                                                        (item.paymentType
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[11],
+                                                    Text(
+                                                        (item.journeyType
+                                                                    ?.journeyType ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[12],
+                                                    Text(
+                                                        (item.driver?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[13],
+                                                    Text(
+                                                        (item.vehicleType
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[14],
+                                                    Text(
+                                                        (item.subsidiary
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[15],
+                                                    Text(
+                                                        (item.bookingStatus
+                                                                    ?.bookingStatus ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+
+                                                // 16. ACTION
+                                                _buildCustomDataCell(
+                                                    colWidths[16], Obx(() {
+                                                  bool isEditing = controller
+                                                          .editingRowIndex
+                                                          .value ==
+                                                      index;
+                                                  return SizedBox(
+                                                    height: 28,
+                                                    width: 55,
+                                                    child: ElevatedButton(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            isEditing
+                                                                ? Colors.green
+                                                                : Colors
+                                                                    .grey[700],
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            6)),
                                                       ),
-                                                    )
-                                                  : Text(
-                                                      "£ ${item.fares ?? '0.00'}",
-                                                      maxLines: 1);
-                                            })),
-
-                                            _buildCustomDataCell(
-                                                colWidths[7],
-                                                Text(
-                                                    "£ ${item.companyPrice ?? '0.00'}",
-                                                    maxLines: 1)),
-                                            _buildCustomDataCell(
-                                                colWidths[8],
-                                                Text(
-                                                    (item.account?.name ?? "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[9],
-                                                Text(
-                                                    item.orderNumber
-                                                            ?.toString() ??
-                                                        "-",
-                                                    maxLines: 1)),
-                                            _buildCustomDataCell(
-                                                colWidths[10],
-                                                Text(
-                                                    (item.paymentType?.name ??
-                                                            "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1)),
-                                            _buildCustomDataCell(
-                                                colWidths[11],
-                                                Text(
-                                                    (item.journeyType
-                                                                ?.journeyType ??
-                                                            "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1)),
-                                            _buildCustomDataCell(
-                                                colWidths[12],
-                                                Text(
-                                                    (item.driver?.name ?? "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[13],
-                                                Text(
-                                                    (item.vehicleType?.name ??
-                                                            "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[14],
-                                                Text(
-                                                    (item.subsidiary?.name ??
-                                                            "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1,
-                                                    overflow:
-                                                        TextOverflow.ellipsis)),
-                                            _buildCustomDataCell(
-                                                colWidths[15],
-                                                Text(
-                                                    (item.bookingStatus
-                                                                ?.bookingStatus ??
-                                                            "-")
-                                                        .toUpperCase(),
-                                                    maxLines: 1)),
-
-                                            // 16. ACTION
-                                            _buildCustomDataCell(colWidths[16],
-                                                Obx(() {
-                                              bool isEditing = controller
-                                                      .editingRowIndex.value ==
-                                                  index;
-                                              return SizedBox(
-                                                height: 28,
-                                                width: 75,
-                                                child: ElevatedButton(
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    backgroundColor: isEditing
-                                                        ? Colors.green
-                                                        : Colors.grey[700],
-                                                    foregroundColor:
-                                                        Colors.white,
-                                                    padding: EdgeInsets.zero,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        4)),
-                                                  ),
-                                                  onPressed: () {
-                                                    if (isEditing) {
-                                                      item.fares = controller
-                                                          .fareController.text;
-                                                      controller.editingRowIndex
-                                                          .value = null;
-                                                    } else {
-                                                      controller.fareController
-                                                              .text =
-                                                          item.fares ?? '0.00';
-                                                      controller.editingRowIndex
-                                                          .value = index;
-                                                    }
-                                                  },
-                                                  child: Text(
-                                                      isEditing
-                                                          ? "SAVE"
-                                                          : "EDIT",
-                                                      style: const TextStyle(
-                                                          fontSize: 11,
-                                                          fontWeight:
-                                                              FontWeight.bold)),
-                                                ),
-                                              );
-                                            })),
-                                          ],
-                                        ),
-                                      );
+                                                      onPressed: () {
+                                                        if (isEditing) {
+                                                          item.fares = controller
+                                                              .fareController
+                                                              .text;
+                                                          controller
+                                                              .editingRowIndex
+                                                              .value = null;
+                                                        } else {
+                                                          controller
+                                                              .fareController
+                                                              .text = item
+                                                                  .fares ??
+                                                              '0.00';
+                                                          controller
+                                                              .editingRowIndex
+                                                              .value = index;
+                                                        }
+                                                      },
+                                                      child: Text(
+                                                          isEditing
+                                                              ? "SAVE"
+                                                              : "EDIT",
+                                                          style: const TextStyle(
+                                                              fontSize: 11,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                    ),
+                                                  );
+                                                })),
+                                              ],
+                                            ),
+                                          ));
                                     },
                                   ),
                               ],
                             ),
                           ),
                         ),
-
-                        // ==========================================
-                        // 2. FIXED BOTTOM PAGINATION WIDGET
-                        // ==========================================
                         Container(
                           color: Colors.white,
                           padding: const EdgeInsets.symmetric(
@@ -1614,25 +1623,80 @@ class _AllBookingViewState extends State<AllBookingView> {
     );
   }
 
+  // Widget _buildCustomHeaderCell(double width, Widget child) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 4),
+  //       child: child,
+  //     ),
+  //   );
+  // }
   Widget _buildCustomHeaderCell(double width, Widget child) {
-    return SizedBox(
+    return Container(
       width: width,
+      padding: const EdgeInsets.symmetric(
+          vertical: 8), // 👈 Padding yahan shift kar di
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Colors.grey[400]!,
+            width: 1,
+          ),
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: child,
+        child: Row(
+          children: [
+            child,
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildCustomDataCell(double width, Widget child,
       {Alignment alignment = Alignment.center}) {
-    return SizedBox(
+    return Container(
       width: width,
-      child: Container(
-        alignment: alignment,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: child,
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(
+          horizontal: 6, vertical: 8), // 👈 Padding yahan shift kar di
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Colors.grey[300]!,
+            width: 0.5,
+          ),
+        ),
       ),
+      child: child,
     );
   }
+  // Widget _buildCustomHeaderCell(double width, Widget child) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 4),
+  //       child: Row(
+  //         children: [
+  //           child,
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildCustomDataCell(double width, Widget child,
+  //     {Alignment alignment = Alignment.center}) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Container(
+  //       alignment: alignment,
+  //       padding: const EdgeInsets.symmetric(horizontal: 6),
+  //       child: child,
+  //     ),
+  //   );
+  // }
 }
