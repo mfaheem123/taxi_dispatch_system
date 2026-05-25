@@ -87,7 +87,6 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                       },
                     ),
                    const Spacer(),
-
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -119,11 +118,9 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                           buildHeaderWithSearch(title: "REF #"),
                           buildHeaderWithSearch(title: "STRIPE PAYMENT ID"),
                           buildHeaderWithSearch(title: "DATETIME"),
-
                           buildHeaderWithSearch(title: "PICKUP"),
                           buildHeaderWithSearch(title: "DROPOFF"),
                           buildHeaderWithSearch(title: "FARE"),
-
                           buildHeaderWithSearch(title: "J/T"),
                           buildHeaderWithSearch(title: "STATUS"),
                           buildHeaderWithSearch(title: "PAYMENT TYPE"),
@@ -133,11 +130,9 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
