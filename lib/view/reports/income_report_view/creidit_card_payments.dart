@@ -45,29 +45,21 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return Column(
-              children: [
-
+            return SingleChildScrollView(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                 SizedBox(
                   height: 10,
                 ),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.end,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 10,
-                  runSpacing: 16,
+                Row(
                   children: [
-                    Text(AppText.creditCardPayment,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 17,
-                      ),
-                    ),
                     labeledField(
                       context: context,
                       isMobile: isMobile,
                       label: AppText.from,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       column: true,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
@@ -79,12 +71,11 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                       isMobile: isMobile,
                       column: true,
                       label: AppText.to,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
+                    const Spacer(),
 
-
-                    SizedBox(width: 20,),
                     KeyboardCheckbox(
                       focusNode: controller.creditCardPaidNode,
                       value: controller.creditCardPaidValue.value,
@@ -95,7 +86,8 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                         controller.update();
                       },
                     ),
-                    SizedBox(width: 20,),
+                   const Spacer(),
+
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -104,6 +96,7 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                       btnText: AppText.filter,
                       fontSize: 12,
                     ),
+                    SizedBox(width: 10),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -153,6 +146,7 @@ class _CreiditCardPaymentsState extends State<CreiditCardPayments> {
                   ),
                 ),
               ],
+                )
             );
           }
         );
