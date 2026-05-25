@@ -1005,12 +1005,12 @@ class _AllBookingViewState extends State<AllBookingView> {
                     90, // 1. INVOICE #
                     100, // 2. DATETIME
                     80, // 3. CUSTOMER
-                    180, // 4. PICKUP
-                    180, // 5. DROPOFF
+                    170, // 4. PICKUP
+                    170, // 5. DROPOFF
                     80, // 6. FARE
                     80, // 7. ACC FARE
-                    80, // 8. ACC
-                    80, // 9. ORDER #
+                    60, // 8. ACC
+                    70, // 9. ORDER #
                     80, // 10. P/T
                     80, // 11. J/T
                     80, // 12. DRV
@@ -1280,7 +1280,8 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                     colWidths[3],
                                                     Text(
                                                         (item.name ?? "-")
-                                                            .toUpperCase())),
+                                                            .toUpperCase()),
+                                                  alignment: Alignment.centerLeft),
                                                 _buildCustomDataCell(
                                                     colWidths[4],
                                                     Text((item.pickup ?? "-").toUpperCase(),
