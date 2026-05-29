@@ -8,6 +8,7 @@ import '../../administration/model/user_model.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
 import '../../dashboard_view/models/dashboard_model.dart';
+import '../driver_booking_view/model/booking_graph_model.dart';
 import '../driver_booking_view/model/booking_list_model.dart';
 import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
@@ -575,6 +576,65 @@ class ReportController extends GetxController {
 
   final RxnInt editingRowIndex = RxnInt();
   final TextEditingController fareController = TextEditingController();
+
+  //booking graph
+  bool isLoadingGraph = false;
+  int totalGraphBookings = 0;
+  double totalGraphFares = 0.0;
+
+  BookingGraph? bookingGraphModel;
+  getBookingStatisticsGraph({String? statusId}) async {
+    try{
+      isLoadingGraph = true;
+      update();
+
+      String formattedFromDate = DateFormat('yyyy-MM-dd').format(bookingFromDate.value);
+      String formattedToDate = DateFormat('yyyy-MM-dd').format(bookingToDate.value);
+      
+      var response = await Api().get("bookings/booking-statistics-graph",
+      queryParameters: {
+        "booking_status_id": statusId ?? "",
+        "from_date": formattedFromDate,
+        "to_date": formattedToDate,
+      });
+
+      if (response.statusCode == 200) {
+        bookingGraphModel = BookingGraph.fromJson(response.data);
+
+        int tempBookings = 0;
+        double tempFares = 0.0;
+
+        if (bookingGraphModel?.data != null) {
+          for (var datum in bookingGraphModel!.data!) {
+            if (datum.payments != null) {
+              for (var payment in datum.payments!) {
+                tempBookings += payment.totalBookings ?? 0;
+                tempFares += (payment.totalFares ?? 0).toDouble();
+              }
+            }
+          }
+        }
+
+        totalGraphBookings = tempBookings;
+        totalGraphFares = tempFares;
+      } else {
+        print("Server Error Graph API: ${response.statusCode}");
+      }
+    }catch (e, stackTrace) {
+      print("=================== GRAPH API ERROR LOG ===================");
+      print("Error fetching booking statistics graph: $e");
+      print("Detailed StackTrace: $stackTrace");
+      print("=====================================================");
+    } finally {
+      isLoadingGraph = false;
+      update();
+    }
+  }
+
+
+
+
+
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
   // Controller ke andar
