@@ -24,214 +24,244 @@ class _ActivityScreenState extends State<ActivityScreen> {
   bool showTotalRow = false;
   final int totalRows = 5;
 
-  final String totalBookingsCreated = "150";
-  final String totalBookingsDispatched = "120";
-  final String totalBookingsCancelled = "10";
-  final String totalCallsAnswered = "250";
-  final String totalWorkingHours = "45 hrs";
-
   ReportController controller = Get.isRegistered<ReportController>()
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(builder: (controller) {
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+    return GetBuilder<ReportController>(initState: (state) {
+      controller.clearDropdowns();
+      controller.getEmployeeData();
+    }, builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
 
-        return SingleChildScrollView(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  alignment: WrapAlignment.start,
-                  spacing: 10,
-                  runSpacing: 16,
-                  children: [
-                    Text(
-                      AppText.employeeActivity,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 17,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    CustomDropdownField<String>(
-                      width: fieldWidth / 1.5,
-                      label: AppText.selectEmployee,
-                      items: [
-                        "Employee 1",
-                        "Employee 2",
-                        "Employee 3",
-                        "Employee 4",
-                        "Employee 5",
-                      ],
-                      value: controller.selectEmployee,
-                      itemLabel: (val) => val,
-                      onChanged: (val) {
-                        controller.selectEmployee = val!;
-                        controller.update();
-                      },
-                    ),
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: "FROM:",
-                      column: false,
-                      width: fieldWidth / 2.2,
-                      child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                          initialDate: controller.bookingFromDate.value,
-                          onChanged: (date) {
-                            controller.bookingFromDate.value = date;
-                            controller.update();
-                          },
-                        ),
-                      ),
-                    ),
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: "",
-                      column: false,
-                      width: fieldWidth / 2.9,
-                      child: CustomTimePicker(
-                        controller: controller.bookingStartTimeController,
-                        onTimeSelected: (time) => setState(() {}),
-                      ),
-                    ),
-                    // To Date
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: "TO:",
-                      column: false,
-                      width: fieldWidth / 2.2,
-                      child: SizedBox(
-                        height: 30,
-                        child: KeyboardDatePicker(
-                          initialDate: controller.bookingToDate.value,
-                          onChanged: (date) {
-                            controller.bookingToDate.value = date;
-                            controller.update();
-                          },
-                        ),
-                      ),
-                    ),
-
-                    // End Time
-                    labeledField(
-                      context: context,
-                      isMobile: isMobile,
-                      label: "",
-                      column: false,
-                      width: fieldWidth / 2.9,
-                      child: CustomTimePicker(
-                        controller: controller.bookingEndTimeController,
-                        onTimeSelected: (time) => setState(() {}),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    CustomButton(
-                      width: 120,
-                      height: 30,
-                      borderRadius: 4,
-                      verticalPadding: 0.0,
-                      btnText: AppText.filter,
-                      fontSize: 12,
-                        onTap: () {
-                          setState(() {
-                            showTotalRow = true;
-                          });
-                        }
-                    ),
-                    CustomButton(
-                      width: 120,
-                      height: 30,
-                      borderRadius: 4,
-                      verticalPadding: 0.0,
-                      btnText: AppText.view,
-                      fontSize: 12,
-                    ),
-                  ],
-                ),
-                //         Container(
-                //           height: 15,
-                //       width: 15,
-                //       alignment: Alignment(15, 20),
-                //       clipBehavior: Clip.hardEdge,
-                //       constraints: BoxConstraints(),
-                //       color: Colors.grey,
-                //       decoration: BoxDecoration(),
-                //       foregroundDecoration: BoxDecoration(),
-                //       margin: EdgeInsets.only(left: 10
-                // ),
-                //
-                //       child: Text(""),
-                //     ),
-                SizedBox(
-                  height: 50,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "LOGIN DATETIME"),
-                          buildHeaderWithSearch(title: "LOGOUT DATETIME"),
-                          buildHeaderWithSearch(title: "BOOKINGS CREATED"),
-                          buildHeaderWithSearch(title: "BOOKINGS DISPATCHED"),
-                          buildHeaderWithSearch(title: "BOOKINGS CANCELLED"),
-                          buildHeaderWithSearch(title: "CALLS ANSWERED"),
-                          buildHeaderWithSearch(title: "WORKING HOURS", removeSearching: true),
-                        ],
-                        rows: [
-                          // 1. Pehli Row (Normal Data Row)
-                          DataRow(cells: [
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                            const DataCell(Center(child: Text("20/10/2025"))),
-                          ]),
-                          if (showTotalRow)
-                            DataRow(
-                              cells: [
-                                const DataCell(Center(child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold)))),
-                                const DataCell(Center(child: Text(""))),
-                                DataCell(Center(child: Text(totalBookingsCreated, style: const TextStyle(fontWeight: FontWeight.bold)))),
-                                DataCell(Center(child: Text(totalBookingsDispatched, style: const TextStyle(fontWeight: FontWeight.bold)))),
-                                DataCell(Center(child: Text(totalBookingsCancelled, style: const TextStyle(fontWeight: FontWeight.bold)))),
-                                DataCell(Center(child: Text(totalCallsAnswered, style: const TextStyle(fontWeight: FontWeight.bold)))),
-                                DataCell(Center(child: Text(totalWorkingHours, style: const TextStyle(fontWeight: FontWeight.bold)))),
-                              ],
-                            ),
-                        ]),
+          return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 10,
                   ),
-                ),
-              ],
-            ));
-      });
-    });
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    alignment: WrapAlignment.start,
+                    spacing: 10,
+                    runSpacing: 16,
+                    children: [
+                      Text(
+                        AppText.employeeActivity,
+                        style: mozillaTextSemiBoldText(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 17,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      CustomDropdownField<dynamic>(
+                        width: fieldWidth / 1.5,
+                        label: AppText.selectEmployee,
+                        items: controller.userModel?.employees ?? [],
+                        value: controller.apiSelectedEmployee,
+                        itemLabel: (val) =>
+                            (val.username ?? "").toUpperCase(),
+                        onChanged: (val) {
+                          controller.apiSelectedEmployee = val;
+                          controller.update();
+                        },
+                      ),
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "FROM:",
+                        column: false,
+                        width: fieldWidth / 2.2,
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: controller.activityFromDate.value,
+                            onChanged: (date) {
+                              controller.activityFromDate.value = date;
+                              controller.update();
+                            },
+                          ),
+                        ),
+                      ),
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "",
+                        column: false,
+                        width: fieldWidth / 2.9,
+                        child: CustomTimePicker(
+                          controller: controller.activityStartTimeController,
+                          onTimeSelected: (time) => setState(() {}),
+                        ),
+                      ),
+                      // To Date
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "TO:",
+                        column: false,
+                        width: fieldWidth / 2.2,
+                        child: SizedBox(
+                          height: 30,
+                          child: KeyboardDatePicker(
+                            initialDate: controller.activityToDate.value,
+                            onChanged: (date) {
+                              controller.activityToDate.value = date;
+                              controller.update();
+                            },
+                          ),
+                        ),
+                      ),
+
+                      // End Time
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: "",
+                        column: false,
+                        width: fieldWidth / 2.9,
+                        child: CustomTimePicker(
+                          controller: controller.activityEndTimeController,
+                          onTimeSelected: (time) => setState(() {}),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      CustomButton(
+                          width: 120,
+                          height: 30,
+                          borderRadius: 4,
+                          verticalPadding: 0.0,
+                          btnText: AppText.filter,
+                          fontSize: 12,
+                          onTap: () async {
+                            await controller.getEmployeeActivity();
+                            setState(() {
+                              showTotalRow = controller.employeeActivityList.isNotEmpty;
+                            });
+                          }
+                      ),
+                      CustomButton(
+                        width: 120,
+                        height: 30,
+                        borderRadius: 4,
+                        verticalPadding: 0.0,
+                        btnText: AppText.view,
+                        fontSize: 12,
+                      ),
+                    ],
+                  ),
+                  //         Container(
+                  //           height: 15,
+                  //       width: 15,
+                  //       alignment: Alignment(15, 20),
+                  //       clipBehavior: Clip.hardEdge,
+                  //       constraints: BoxConstraints(),
+                  //       color: Colors.grey,
+                  //       decoration: BoxDecoration(),
+                  //       foregroundDecoration: BoxDecoration(),
+                  //       margin: EdgeInsets.only(left: 10
+                  // ),
+                  //
+                  //       child: Text(""),
+                  //     ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  controller.isLoadingActivity
+                      ? const Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "LOGIN DATETIME"),
+                            buildHeaderWithSearch(title: "LOGOUT DATETIME"),
+                            buildHeaderWithSearch(title: "BOOKINGS CREATED"),
+                            buildHeaderWithSearch(title: "BOOKINGS DISPATCHED"),
+                            buildHeaderWithSearch(title: "BOOKINGS CANCELLED"),
+                            buildHeaderWithSearch(title: "CALLS ANSWERED"),
+                            buildHeaderWithSearch(title: "WORKING HOURS", removeSearching: true),
+                          ],
+                          rows: [
+                          ...controller.employeeActivityList.map((item) {
+
+                            String formatDateTime(String? dateTimeStr) {
+                              if (dateTimeStr == null || dateTimeStr.isEmpty) return "-";
+
+                              DateTime? parsed = DateTime.tryParse(dateTimeStr);
+                              if (parsed == null) return "-";
+
+                              String date =
+                                  "${parsed.day.toString().padLeft(2, '0')}-${parsed.month.toString().padLeft(2, '0')}-${parsed.year.toString().substring(2)}";
+
+                              String time =
+                                  "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}";
+
+                              return "$date $time";
+                            }
+
+                            String rowWorkingHours = "-";
+
+                            if (item.workingHours != null && item.workingHours!.isNotEmpty) {
+                              double seconds = double.tryParse(item.workingHours!) ?? 0;
+
+                              int hours = seconds ~/ 3600;
+                              int minutes = ((seconds % 3600) ~/ 60).toInt();
+
+                              if (hours > 0 && minutes > 0) {
+                                rowWorkingHours = "$hours hours $minutes minutes";
+                              } else if (hours > 0) {
+                                rowWorkingHours = "$hours hours";
+                              } else {
+                                rowWorkingHours = "$minutes minutes";
+                              }
+                            }
+                            return DataRow(cells: [
+                              DataCell(Center(child: Text(formatDateTime(item.loginDatetime)))),
+                              DataCell(Center(child: Text(formatDateTime(item.logoutDatetime)))),
+                            DataCell(Center(child: Text((item.bookingsCreated ?? 0).toString()))),
+                            DataCell(Center(child: Text((item.bookingsDispatched ?? 0).toString()))),
+                            DataCell(Center(child: Text((item.bookingsCancelled ?? 0).toString()))),
+                            DataCell(Center(child: Text((item.callsAnswered ?? 0).toString()))),
+                            DataCell(Center(child: Text(rowWorkingHours))),
+                            ]);
+                          }).toList(),
+
+                            if (showTotalRow)
+                              DataRow(
+                                cells: [
+                                  const DataCell(Center(child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold)))),
+                                  const DataCell(Center(child: Text(""))),
+                                  DataCell(Center(child: Text(controller.totalCreated.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                  DataCell(Center(child: Text(controller.totalDispatched.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                  DataCell(Center(child: Text(controller.totalCancelled.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                  DataCell(Center(child: Text(controller.totalCalls.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                  DataCell(Center(child: Text(controller.totalWorkingHours, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                ],
+                              ),
+                          ]),
+                    ),
+                  ),
+                ],
+              ));
+        });
+      }
+    );
   }
 }

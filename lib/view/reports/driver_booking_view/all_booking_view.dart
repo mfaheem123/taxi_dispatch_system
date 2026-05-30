@@ -42,6 +42,7 @@ class _AllBookingViewState extends State<AllBookingView> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearDropdowns();
       controller.selectDriverObject = null;
       controller.getAllDrivers();
       controller.getData();

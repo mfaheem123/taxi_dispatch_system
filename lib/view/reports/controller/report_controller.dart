@@ -13,6 +13,7 @@ import '../driver_booking_view/model/booking_list_model.dart';
 import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
+import '../employee_reports_view/activity_model.dart';
 
 class ReportController extends GetxController {
 
@@ -630,12 +631,105 @@ class ReportController extends GetxController {
       update();
     }
   }
-
-
-
-
-
+  void clearDropdowns() {
+    apiSelectedSubsidiary = null;
+    apiSelectedAccount = null;
+    apiSelectedDepartment = null;
+    apiSelectedEmployee = null;
+    dashboardAccountModel = null;
+    accountDepartmentsList.clear();
+    update();
+  }
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
+
+  bool isLoadingActivity = false;
+  EmployeeReportModel? employeeReportModel;
+  List<EmployeeShiftHistory> employeeActivityList = [];
+
+  int totalCreated = 0;
+  int totalDispatched = 0;
+  int totalCancelled = 0;
+  int totalCalls = 0;
+  String totalWorkingHours = "";
+
+  final activityStartTimeController = TextEditingController();
+  final activityEndTimeController = TextEditingController();
+  var activityFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  var activityToDate = Rxn<DateTime>(DateTime.now().add(const Duration(days: 1)));
+
+  getEmployeeActivity() async {
+    if (apiSelectedEmployee == null) {
+      BotToast.showText(text: "PLEASE SELECT AN EMPLOYEE");
+      return;
+    }
+    isLoadingActivity = true;
+    update();
+
+    try {
+      String formattedFromDate = activityFromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(activityFromDate.value!)
+          : "";
+      String formattedToDate = activityToDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(activityToDate.value!)
+          : "";
+
+      var response = await Api().get(
+        "employee_shift_history/activity",
+        queryParameters: {
+          "employee_id": apiSelectedEmployee?.id.toString(),
+          "from_date": formattedFromDate,
+          "to_date": formattedToDate,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        employeeReportModel = EmployeeReportModel.fromJson(response.data);
+        employeeActivityList = employeeReportModel?.employeeShiftHistory ?? [];
+        totalCreated = 0;
+        totalDispatched = 0;
+        totalCancelled = 0;
+        totalCalls = 0;
+
+        int totalSeconds = 0;
+
+        for (var item in employeeActivityList) {
+          totalCreated += item.bookingsCreated ?? 0;
+          totalDispatched += item.bookingsDispatched ?? 0;
+          totalCancelled += item.bookingsCancelled ?? 0;
+          totalCalls += item.callsAnswered ?? 0;
+
+          if (item.workingHours != null && item.workingHours!.isNotEmpty) {
+            totalSeconds += (double.tryParse(item.workingHours!) ?? 0).toInt();
+          }
+        }
+
+        int totalHours = totalSeconds ~/ 3600;
+        int totalMinutes = ((totalSeconds % 3600) ~/ 60).toInt();
+
+        if (totalHours > 0 && totalMinutes > 0) {
+          totalWorkingHours = "$totalHours hours $totalMinutes minutes";
+        } else if (totalHours > 0) {
+          totalWorkingHours = "$totalHours hours";
+        } else {
+          totalWorkingHours = "$totalMinutes minutes";
+        }
+      }
+    } catch (e) {
+      print("Error fetching employee activity: $e");
+    } finally {
+      isLoadingActivity = false;
+      update();
+    }
+  }
+
+
+
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
 
   // Controller ke andar
   // var totalBookings = 0.obs;
