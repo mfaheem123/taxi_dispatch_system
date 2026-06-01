@@ -160,6 +160,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
               }
             }
           },
+
           child: _controller.getLocationTypeZoneLoader.value == true
               ? SizedBox.shrink()
               : SingleChildScrollView(
@@ -204,6 +205,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
 
                               ],
                             ),
+
                             Padding(
                               padding:
                               const EdgeInsets.only(right: 6.0),
@@ -233,6 +235,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                     ),
                   ),
                 ),
+
                 width <= 1024
                     ? CustomIpadWidget()
                     : Stack(
@@ -323,6 +326,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 // }
                                                               }
                                                             },
+
                                                             child: CustomTextField(
                                                               key: controller.pickupFieldKey,
                                                               controller: controller.pickupController,
@@ -428,6 +432,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 controller.dropDownShow.value = false;
                                                                 _controller.zoneValue = val;
                                                                 controller.dashboardZoneValue = val;
+                                                                controller.getFaresCalculation();
                                                                 controller.update();
                                                               },
                                                             ),
@@ -522,6 +527,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                             ),
                                                           ),
                                                         ),
+
                                                         Padding(
                                                           padding: EdgeInsets.only(left: 0),
                                                           child: FocusTraversalOrder(
@@ -597,6 +603,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 }
                                                               }
                                                             },
+
                                                             child: CustomTextField(
                                                               key: controller.dropOffFieldKey,
                                                               controller: controller.dropOffController,
@@ -697,6 +704,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                 controller.dropDownShow.value = false;
                                                                 _controller.zoneDValue = val;
                                                                 controller.dashboardDZoneValue = val;
+                                                                controller.getFaresCalculation();
                                                                 controller.update();
                                                               },
                                                             ),
@@ -926,6 +934,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                   }
                                                                   controller.dropDownShow.value = false;
                                                                 },
+
                                                                 onTap: () {
                                                                   // Tap karne par bhi agar 'null' likha hua ho to text field khali ho jaye
                                                                   if (controller.telController.text == 'null') {
@@ -939,6 +948,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ],
                                                     ),
+
                                                     Row(
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       crossAxisAlignment: CrossAxisAlignment.start, // Aligns items at the top
@@ -1081,7 +1091,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                     controller.dropDownShow.value = false;
                                                                     controller.jourValue = (v!.journeyType == "r/n") ? 'W/R' : null;
                                                                     controller.selectJourneyTypeValue = v;
-                                                                    controller.getFaresCalculation();
+                                                                    // controller.getFaresCalculation();
                                                                   },
                                                                 ),
                                                               ),
@@ -1168,7 +1178,8 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                             ? SizedBox.shrink()
                                                                             : KbdActivatable(
                                                                           focusNode: clearPicTwo,
-                                                                          onActivate: () {
+
+                                                                            onActivate: () {
                                                                             FocusScope.of(Get.context!).requestFocus(controller.pickupTwoTextFieldFocusNode);
                                                                             controller.markers.clear();
                                                                             controller.fixedFare.value = "0";
@@ -1231,12 +1242,14 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.RNzoneValue = val;
                                                                       controller.dashboardRNZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
                                                                 ),
                                                               ),
                                                             ),
+
                                                             SizedBox(width: 12),
                                                             // (3) Pickup notes
                                                             Expanded(
@@ -1394,6 +1407,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                                       controller.dropDownShow.value = false;
                                                                       _controller.RN1zoneValue = val;
                                                                       controller.dashboardRN1ZoneValue = val;
+                                                                      controller.getFaresCalculation();
                                                                       controller.update();
                                                                     },
                                                                   ),
@@ -1482,6 +1496,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                               ),
                                                             ),
                                                           ),
+
                                                           // (7) Lead (mins)
                                                           Expanded(
                                                             child: FocusTraversalOrder(
@@ -1546,6 +1561,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
 
                                                       ),
+
 
                                                       Row(
                                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1649,78 +1665,161 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                           //     ),
                                                           //   ),
                                                           // ),
-
                                                           Expanded(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(28),
-                                                              child: labeledField(
-                                                                context: context,
-                                                                isMobile: isMobile,
-                                                                label: "Return/${AppText.veh} ",
-                                                                width: fieldWidth / 3,
-                                                                heights: 32,
-                                                                child: Container(
-                                                                  decoration: BoxDecoration(
-                                                                    borderRadius: BorderRadius.circular(6),
-                                                                    border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
-                                                                  ),
-                                                                  child: DropdownButtonFormField<DashboardVehicleTypeObject>(
-                                                                    // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
-                                                                    isExpanded: true,
-                                                                    decoration: const InputDecoration(
-                                                                      // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
-                                                                      border: InputBorder.none,
-                                                                      isDense: true,
-                                                                      // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
-                                                                      contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                                                                    ),
-                                                                    // 4. Dropdown icon ki padding aur size adjust ki
-                                                                    icon: const Icon(Icons.arrow_drop_down, size: 20),
-                                                                    value: controller.selectVehicleValueReturn,
-                                                                    items: controller.dashboardAllData!.vehicleTypes!
-                                                                        .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
-                                                                      value: vehicle,
-                                                                      child: Text(
-                                                                        vehicle.name ?? "",
-                                                                        // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
-                                                                        maxLines: 1,
-                                                                        overflow: TextOverflow.ellipsis,
-                                                                        style: mozillaTextRegularText(
-                                                                          fontSize: 12, // Font size 12 standard hai, aap 10 bhi rakh sakte hain
-                                                                          color: DynamicColors.textClr,
-                                                                        ),
+                                                              child: Builder( // Builder lagaya taake context safe rahe
+                                                                builder: (context) {
+                                                                  // --- JUGAD / DEFAULT ID LOGIC ---
+                                                                  // Agar page load hote hi selectVehicleValueReturn null hai, lekin list me data hai
+                                                                  if (controller.selectVehicleValueReturn == null &&
+                                                                      (controller.dashboardAllData?.vehicleTypes?.isNotEmpty ?? false)) {
+
+                                                                    // Hum background me chupke se pehli gari (Saloon) assign kar dete hain
+                                                                    controller.selectVehicleValueReturn = controller.dashboardAllData!.vehicleTypes!.first;
+
+                                                                    // Aur bina tap kiye hi fare calculation ka function fire kar dete hain taake ID chali jaye
+                                                                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                                                                      controller.getFaresCalculation();
+                                                                    });
+                                                                  }
+
+                                                                  // ---------------------------------
+
+                                                                  return labeledField(
+                                                                    context: context,
+                                                                    isMobile: isMobile,
+                                                                    label: "Return/${AppText.veh} ",
+                                                                    width: fieldWidth / 3,
+                                                                    heights: 32,
+                                                                    child: Container(
+                                                                      decoration: BoxDecoration(
+                                                                        borderRadius: BorderRadius.circular(6),
+                                                                        border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
                                                                       ),
-                                                                    ))
-                                                                        .toList(),
-                                                                    onChanged: (v) async {
-                                                                      controller.selectVehicleValueReturn = v;
-                                                                      controller.dropDownShow.value = false;
+                                                                      child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                                        isExpanded: true,
+                                                                        decoration: const InputDecoration(
+                                                                          border: InputBorder.none,
+                                                                          isDense: true,
+                                                                          contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                                        ),
+                                                                        icon: const Icon(Icons.arrow_drop_down, size: 20),
+                                                                        // Ab yahan har haal me default value show hogi
+                                                                        value: controller.selectVehicleValueReturn,
+                                                                        items: controller.dashboardAllData!.vehicleTypes!
+                                                                            .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                                          value: vehicle,
+                                                                          child: Text(
+                                                                            vehicle.name ?? "",
+                                                                            maxLines: 1,
+                                                                            overflow: TextOverflow.ellipsis,
+                                                                            style: mozillaTextRegularText(
+                                                                              fontSize: 12,
+                                                                              color: DynamicColors.textClr,
+                                                                            ),
+                                                                          ),
+                                                                        )).toList(),
+                                                                        onChanged: (v) async {
+                                                                          if (v == null) return;
+                                                                          controller.selectVehicleValueReturn = v;
+                                                                          controller.dropDownShow.value = false;
 
-                                                                      // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
-                                                                      // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
-                                                                      final fare = await getActiveFareForVehicle(
-                                                                        controller.dashboardAllData!.fareConfigurations!,
-                                                                        v?.id ?? controller.selectVehicleValue!.id!,
-                                                                      );
+                                                                          // Jab user khud badlega tab naye wale ki ID direct jayegi
+                                                                          final fare = await getActiveFareForVehicle(
+                                                                            controller.dashboardAllData!.fareConfigurations!,
+                                                                            v.id!,
+                                                                          );
 
-                                                                      if (fare != null) {
-                                                                        print(
-                                                                          'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
-                                                                        );
-
-                                                                        double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
-
-                                                                        controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
-                                                                      } else {
-                                                                        print('No active fare found for this vehicle');
-                                                                      }
-                                                                      controller.update();
-                                                                    },
-                                                                  ),
-                                                                ),
+                                                                          if (fare != null) {
+                                                                            print('Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}');
+                                                                            controller.getFaresCalculation();
+                                                                            double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                                            controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                                          } else {
+                                                                            print('No active fare found for this vehicle');
+                                                                          }
+                                                                          controller.update();
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                },
                                                               ),
                                                             ),
                                                           ),
+                                                          // Expanded(
+                                                          //   child: FocusTraversalOrder(
+                                                          //     order: const NumericFocusOrder(28),
+                                                          //     child: labeledField(
+                                                          //       context: context,
+                                                          //       isMobile: isMobile,
+                                                          //       label: "Return/${AppText.veh} ",
+                                                          //       width: fieldWidth / 3,
+                                                          //       heights: 32,
+                                                          //       child: Container(
+                                                          //         decoration: BoxDecoration(
+                                                          //           borderRadius: BorderRadius.circular(6),
+                                                          //           border: Border.all(color: DynamicColors.primaryClr, width: 1.2),
+                                                          //         ),
+                                                          //         child: DropdownButtonFormField<DashboardVehicleTypeObject>(
+                                                          //           // 1. isExpanded true karne se text katega nahi aur icon aakhir me chala jayega
+                                                          //           isExpanded: true,
+                                                          //           decoration: const InputDecoration(
+                                                          //             // 2. Internal border ko none kiya taake double border issue na ho aur text ko jagah mile
+                                                          //             border: InputBorder.none,
+                                                          //             isDense: true,
+                                                          //             // 3. Padding thodi kam ki taake text vertical ya horizontal kooch na kate
+                                                          //             contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                                                          //           ),
+                                                          //           // 4. Dropdown icon ki padding aur size adjust ki
+                                                          //           icon: const Icon(Icons.arrow_drop_down, size: 20),
+                                                          //           value: controller.selectVehicleValueReturn,
+                                                          //           items: controller.dashboardAllData!.vehicleTypes!
+                                                          //               .map((vehicle) => DropdownMenuItem<DashboardVehicleTypeObject>(
+                                                          //             value: vehicle,
+                                                          //             child: Text(
+                                                          //               vehicle.name ?? "",
+                                                          //               // Agar ab bhi text bada ho, to maxLines aur overflow handle karein
+                                                          //               maxLines: 1,
+                                                          //               overflow: TextOverflow.ellipsis,
+                                                          //               style: mozillaTextRegularText(
+                                                          //                 fontSize: 12, // Font size 12 standard hai, aap 10 bhi rakh sakte hain
+                                                          //                 color: DynamicColors.textClr,
+                                                          //               ),
+                                                          //             ),
+                                                          //           ))
+                                                          //               .toList(),
+                                                          //           onChanged: (v) async {
+                                                          //             controller.selectVehicleValueReturn = v;
+                                                          //             controller.dropDownShow.value = false;
+                                                          //
+                                                          //             // Note: Yahan aapne 'controller.selectVehicleValue!.id!' likha tha,
+                                                          //             // agar ye Return vehicle ke liye hai to shayad yahan 'v!.id!' ya 'controller.selectVehicleValueReturn!.id!' hona chahiye.
+                                                          //             final fare = await getActiveFareForVehicle(
+                                                          //               controller.dashboardAllData!.fareConfigurations!,
+                                                          //               v?.id ?? controller.selectVehicleValue!.id!,
+                                                          //             );
+                                                          //
+                                                          //             if (fare != null) {
+                                                          //               print(
+                                                          //                 'Vehicle: ${fare.vehicleTypeName} → Fare: ${fare.minimumFares}',
+                                                          //               );
+                                                          //               controller.getFaresCalculation();
+                                                          //               double inttt = (double.parse(controller.totalDistance.value) - double.parse(fare.minimumMiles.toString()));
+                                                          //
+                                                          //               controller.fixedFare.value = (inttt * double.parse(fare.minimumFares.toString())).toString();
+                                                          //             } else {
+                                                          //               print('No active fare found for this vehicle');
+                                                          //             }
+                                                          //             controller.update();
+                                                          //           },
+                                                          //         ),
+                                                          //       ),
+                                                          //     ),
+                                                          //   ),
+                                                          // ),
+
                                                           Expanded(
                                                             child: FocusTraversalOrder(
                                                               order: const NumericFocusOrder(29),
@@ -1782,9 +1881,11 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ],
                                                       )
                                                     ],
+
                                                     // (10) Fare (Slugg)
                                                     // SizedBox(
                                                     //     width: 8),
+
                                                     Row(
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
@@ -1993,6 +2094,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                                                         ),
                                                       ],
                                                     ),
+
                                                     controller.selectAccountValue == null
                                                         ? SizedBox.shrink()
                                                         : FocusTraversalOrder(
