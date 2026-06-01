@@ -2402,7 +2402,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                     child:
                                                     CustomButton(
                                                       onTap:
-                                                          () {    controller.dropDownShow.value = false;
+                                                          () {
+                                                        controller.dropDownShow.value = false;
                                                       controller.refreshPostAllFields();
                                                       },
                                                       btnText:

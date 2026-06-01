@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -8,10 +9,13 @@ import '../../alert/child_seats_alert.dart';
 import '../../alert/extra_fares_alert.dart';
 import '../../alert/extra_info_alert.dart';
 import '../dashboard_view/Controller/dashboard_controller.dart';
+import '../dashboard_view/dashboard/F8_widget_alert.dart';
+import '../dashboard_view/dashboard/F9_widget_alert.dart';
 import '../dashboard_view/models/account_darshboard_model.dart';
 import '../dashboard_view/models/all_addresses_model.dart';
 import '../dashboard_view/models/dashboard_model.dart';
 import '../dashboard_view/models/users_phone_numbers_model.dart';
+import '../dashboard_view/widgets/via_location.dart';
 import '../locations_view/Model/location_types_zoneModel.dart' show ZoneObject;
 import '../locations_view/controller/locations_controller.dart';
 
@@ -41,25 +45,23 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   String? driver;
   ZoneObject? dashboardZoneValue, dropZone;
 
-  String? account = 'DEMO';
-  String? vehicleType = 'Saloon';
-  bool quotation = true, sms = true, email = false;
+  // String? account = 'DEMO';
+  // String? vehicleType = 'Saloon';
+  // bool quotation = true;
 
   AllAddressesModel? _selectedPickup;
   AllAddressesModel? _selectedDrop;
 
   // ────────── return-journey state
-  bool addReturnFare = false;
-  ZoneObject? returnPickupZone;
   ZoneObject? returnDropZone;
   DashboardVehicleTypeObject? returnVehicleValue;
   DashboardDriverObject? returnDriverValue;
 
-  late final _rDropoff = TextEditingController();
+  // late final _rDropoff = TextEditingController();
   late final _rDate = TextEditingController(text: '19 / 05 / 2026');
-  late final _rTime = TextEditingController(text: '15:03');
-  late final _rLead = TextEditingController();
-  late final _rFare = TextEditingController(text: '4.9');
+  // late final _rTime = TextEditingController(text: '15:03');
+  // late final _rLead = TextEditingController();
+  // late final _rFare = TextEditingController(text: '4.9');
 
   bool get _isReturnJourney {
     final j = controller.selectJourneyTypeValue?.journeyType
@@ -70,10 +72,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
 
   late final _date = TextEditingController(text: '25 / 04 / 2026');
-  late final _fare = TextEditingController(text: '226.00');
-  late final _pass = TextEditingController(text: '0');
-  late final _lugg = TextEditingController(text: '0');
-  late final _slugg = TextEditingController(text: '0');
+  // late final _pass = TextEditingController(text: '0');
+  // late final _lugg = TextEditingController(text: '0');
+  // late final _slugg = TextEditingController(text: '0');
 
   void _onMultiReservation() => debugPrint('F8 / Multi Reservation tapped');
   void _onAddVehicles() => debugPrint('F9 / Vehicles tapped');
@@ -102,16 +103,16 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       controller.pickUpTimeController,
       controller.minController,
       controller.passController,
-      _fare,
-      _pass,
-      _lugg,
-      _slugg,
+      controller.slugController,
+      controller.passController,
+      controller.luggController,
+      controller.sluggController,
       controller.pickupTwoWayController,
-      _rDropoff,
+      controller.dropOffTwoWayController,
       _rDate,
-      _rTime,
-      _rLead,
-      _rFare,
+      controller.pickUpTimeControllerReturn,
+      controller.minControllerReturn,
+      controller.slugControllerReturn,
     ]) {
       c.dispose();
     }
@@ -138,9 +139,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
 
     return CallbackShortcuts(
       bindings: <ShortcutActivator, VoidCallback>{
-        const SingleActivator(LogicalKeyboardKey.f7): _onClear,
-        const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
-        const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
+        const SingleActivator(LogicalKeyboardKey.f7): (){
+          controller.refreshPostAllFields();
+        },
+        const SingleActivator(LogicalKeyboardKey.f8): (){
+          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+            DashboardF8Alert.show();
+          }
+        },
+        // const SingleActivator(LogicalKeyboardKey.f8): _onMultiReservation,
+        const SingleActivator(LogicalKeyboardKey.f9): (){
+          if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
+          {
+            DashboardF9Alert.show();
+          }
+        },
+        // const SingleActivator(LogicalKeyboardKey.f9): _onAddVehicles,
       },
       child: Focus(
         autofocus: true,
@@ -308,7 +322,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                   _field('Fare',
                                       tab: 17,
                                       prefix: Icons.currency_pound,
-                                      controller: _fare),
+                                      controller: controller.slugController),
                                   _dropdown<DashboardAccountObject>(
                                     'Account',
                                     controller.selectAccountValue,
@@ -399,11 +413,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           _green,
           controller.pickupTwoWayController,
           controller.allAddressesData,
-          returnPickupZone,
+          _controller.RNzoneValue,
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => returnPickupZone = v),
+              (v) => setState(() => _controller.RNzoneValue = v),
           isMobile,
               (value) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -421,13 +435,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         _locationRow<ZoneObject>(
           'DROP',
           _red,
-          _rDropoff,
+          controller.dropOffTwoWayController,
           controller.allAddressesData,
-          returnDropZone,
+          _controller.RN1zoneValue,
           _controller.updateLocationValue.value == true
               ? []
               : _controller.locationtypezoneModel!.zonesList!,
-              (v) => setState(() => returnDropZone = v),
+              (v) => setState(() => _controller.RN1zoneValue = v),
           isMobile,
               (value) {
             controller.onChangeHandler(
@@ -446,10 +460,10 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               prefix: Icons.calendar_today,
               controller: _rDate,
               onPrefixTap: () => _pickDate(_rDate)),
-          _timeField('R/Time', tab: 37, controller: _rTime),
-          _field('R/Lead', tab: 38, controller: _rLead),
+          _timeField('R/Time', tab: 37, controller: controller.pickUpTimeControllerReturn),
+          _field('R/Lead', tab: 38, controller: controller.minControllerReturn),
           _field('R/Fare',
-              tab: 39, prefix: Icons.currency_pound, controller: _rFare),
+              tab: 39, prefix: Icons.currency_pound, controller: controller.slugControllerReturn),
         ]),
         const SizedBox(height: 6),
         isMobile
@@ -508,8 +522,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       width: 20,
       height: 20,
       child: Checkbox(
-        value: addReturnFare,
-        onChanged: (v) => setState(() => addReturnFare = v ?? false),
+        value: controller.addReturnFare.value,
+        onChanged: (v) => setState(() => controller.addReturnFare.value = v ?? false),
         activeColor: _purple,
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
@@ -562,9 +576,23 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             scrollDirection: Axis.horizontal,
             child: Row(children: [
               tab('Booking', active: true, onTap: () {}),
-              tab('+ Multi Reservation (F8)', onTap: _onMultiReservation),
-              tab('+ Vehicles (F9)', onTap: _onAddVehicles),
-              tab('Via (0)', onTap: _onVia),
+              tab('+ Multi Reservation (F8)', onTap: (){
+                if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty){
+                  DashboardF8Alert.show();
+                }
+              }),
+              tab('+ Vehicles (F9)', onTap: (){
+                if(controller.pickupController.text.isNotEmpty && controller.dropOffController.text.isNotEmpty)
+                {
+                  DashboardF9Alert.show();
+                }
+              }),
+              tab('Via (${controller.viaPoints.length})', onTap: (){
+                showDialog(
+                    context: context,
+                    builder: (_) =>
+                        ViaLocation());
+              }),
               tab('Sub', onTap: _onSub),
               const SizedBox(width: 6),
               SizedBox(
@@ -634,6 +662,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           suffixIconConstraints:
           const BoxConstraints(minWidth: 60, minHeight: 32),
           suffixIcon: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
               controller.text.isNotEmpty
@@ -664,7 +693,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
               )
-                  : IconButton(
+                  : SizedBox.shrink()
+              /*IconButton(
                 tooltip: '',
                 onPressed: () {
                   controller.clear();
@@ -676,7 +706,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 constraints:
                 const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
-              ),
+              )*/,
               IconButton(
                 tooltip: 'Use current location',
                 onPressed: onCurrentLocation,
@@ -709,13 +739,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       child: OutlinedButton(
         onPressed: () {},
         style: OutlinedButton.styleFrom(
-          foregroundColor: _purple,
+          // foregroundColor: _purple,
+
           side: const BorderSide(color: _purple),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           textStyle:
-          const TextStyle(fontSize: _fsField, fontWeight: FontWeight.w600),
+          const TextStyle(fontSize: _fsField,color: Colors.black, fontWeight: FontWeight.w600),
         ),
         child: Text('${label[0]}${label.substring(1).toLowerCase()} Notes'),
       ),
@@ -818,11 +849,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       runSpacing: 8,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        checkbox('SMS', sms, (v) => setState(() => sms = v ?? false)),
-        checkbox('EMAIL', email, (v) => setState(() => email = v ?? false)),
-        luggageField('PASS', Icons.work_outline, _pass, 22),
-        luggageField('LUGG', Icons.luggage, _lugg, 23),
-        luggageField('SLUGG', Icons.luggage, _slugg, 24),
+        checkbox('SMS', controller.smsCheckbox.value, (v) => setState(() => controller.smsCheckbox.value = v ?? false)),
+        checkbox('EMAIL', controller.emailCheckbox.value, (v) => setState(() => controller.emailCheckbox.value = v ?? false)),
+        luggageField('PASS', Icons.work, controller.passController, 22),
+        luggageField('LUGG', Icons.luggage, controller.luggController, 23),
+        luggageField('SLUGG', Icons.luggage, controller.sluggController, 24),
       ],
     );
 
@@ -903,13 +934,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     }
 
     final cards = [
-      card(icon: Icons.schedule, label: 'ETA', value: '1 h 37 mins'),
+      card(icon: Icons.schedule, label: 'ETA', value: '${controller.totalTimeDuration}'),
       card(icon: Icons.timer_outlined, label: 'JOURNEY', value: '0.0 mins'),
-      card(icon: Icons.place_outlined, label: 'DISTANCE', value: '78.21 miles'),
+      card(icon: Icons.place_outlined, label: 'DISTANCE', value: '${controller.totalDistance}'),
       card(
           icon: Icons.payments_outlined,
           label: 'FARE',
-          value: '£ 226.00',
+          value: '£ ${double.parse(controller.fixedFare.value).toStringAsFixed(1)}',
           emphasized: true),
     ];
 
@@ -944,7 +975,9 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
 
     final clear = ElevatedButton(
-      onPressed: _onClear,
+      onPressed: (){
+        controller.refreshPostAllFields();
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: _red,
         foregroundColor: Colors.white,
@@ -953,11 +986,18 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         textStyle:
         const TextStyle(fontWeight: FontWeight.w700, fontSize: _fsField),
       ),
-      child: Text('CLEAR[F7]'.toUpperCase()),
+      child: Text('CLEAR [F7]'.toUpperCase()),
     );
 
     final home = ElevatedButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        if (controller.jourValue == 'W/R' && controller.pickupTwoWayController.text.isEmpty && controller.dropOffTwoWayController.text.isEmpty) {
+          BotToast.showText(text: "Please chose waiting return");
+          return;
+        }
+        controller.dashBoardApiValidation(id: controller.jobDetails == null?null: controller.cliJobHit == true?null: int.parse(controller.jobDetails!.id!));
+
+      },
       icon: const Icon(Icons.home_outlined, size: 16),
       label: const Text('SAVE[HOME]'),
       style: ElevatedButton.styleFrom(
@@ -1214,13 +1254,22 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       const SizedBox(height: 16),
       Row(children: [
-        Switch(
-          value: controller.dropDownShow.value,
-          onChanged: (v) => setState(() => controller.dropDownShow.value = v),
-          activeColor: _purple,
+        CallbackShortcuts(
+          bindings: {
+            const SingleActivator(LogicalKeyboardKey.enter): () {
+              controller.dropDownShow.value = !controller.dropDownShow.value;
+            },
+          },
+          child: Focus(
+            child: Obx(() => Switch(
+              value: controller.dropDownShow.value,
+              onChanged: (v) => controller.dropDownShow.value = v,
+              activeColor: _purple,
+            )),
+          ),
         ),
         const SizedBox(width: 4),
-        const Text('Quotation',
+        Text('Quotation'.toUpperCase(),
             style:
             TextStyle(fontWeight: FontWeight.w500, fontSize: _fsField)),
       ]),

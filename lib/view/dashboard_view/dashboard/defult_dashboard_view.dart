@@ -136,6 +136,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         return material.Center(child: CircularProgressIndicator());
       }
 
+
       final bookingForm = KeyedSubtree(
         key: _bookingFormKey,
         child: BookingFormScreen(),
@@ -239,10 +240,10 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
                         fontSize: 11,
                         color: DynamicColors.whiteClr),
                     onTap: () {
+                    setState(() {
                       controller.hideDashBoard.value =
-                      !controller
-                          .hideDashBoard.value;
-                      controller.update();
+                      !controller.hideDashBoard.value;
+                    });
                     },
                     btnText:
                     controller.hideDashBoard.value
@@ -254,7 +255,7 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
             ),
           ),
           SafeArea(
-            child: isDesktop ? body : SingleChildScrollView(child: body),
+            child: controller.hideDashBoard.value == false?bookingTable: isDesktop ? body : SingleChildScrollView(child: body),
           ),
         ],
       );
