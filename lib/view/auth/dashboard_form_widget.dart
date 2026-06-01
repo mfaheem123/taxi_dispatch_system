@@ -778,18 +778,20 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             const SizedBox(height: 2),
             FocusTraversalOrder(
               order: NumericFocusOrder(tab.toDouble()),
-              child: TextField(
-                controller: controller,
-                style: const TextStyle(fontSize: _fsField),
-                keyboardType:
-                const TextInputType.numberWithOptions(decimal: false),
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                decoration: _inputDecoration().copyWith(
-                  prefixIconConstraints:
-                  const BoxConstraints(minWidth: 26, minHeight: 0),
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 6, right: 2),
-                    child: Icon(icon, size: 13, color: Colors.grey),
+              child: _GlowFocus(
+                child: TextField(
+                  controller: controller,
+                  style: const TextStyle(fontSize: _fsField),
+                  keyboardType:
+                  const TextInputType.numberWithOptions(decimal: false),
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: _inputDecoration().copyWith(
+                    prefixIconConstraints:
+                    const BoxConstraints(minWidth: 26, minHeight: 0),
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 6, right: 2),
+                      child: Icon(icon, size: 13, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
@@ -1102,9 +1104,11 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: _TimePickerField(
-          controller: controller,
-          decoration: _inputDecoration(),
+        child: _GlowFocus(
+          child: _TimePickerField(
+            controller: controller,
+            decoration: _inputDecoration(),
+          ),
         ),
       ),
     ]);
@@ -1135,13 +1139,17 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       const SizedBox(height: 2),
       FocusTraversalOrder(
         order: NumericFocusOrder(tab.toDouble()),
-        child: TextField(
-          controller: controller,
-          style: const TextStyle(fontSize: _fsField),
-          decoration: _inputDecoration().copyWith(
-            prefixIconConstraints:
-            const BoxConstraints(minWidth: 28, minHeight: 0),
-            prefixIcon: prefixWidget,
+        child: _GlowFocus(
+          child: TextField(
+            controller: controller,
+            style: const TextStyle(fontSize: _fsField),
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => onPrefixTap?.call(),
+            decoration: _inputDecoration().copyWith(
+              prefixIconConstraints:
+              const BoxConstraints(minWidth: 28, minHeight: 0),
+              prefixIcon: prefixWidget,
+            ),
           ),
         ),
       ),
@@ -1171,28 +1179,31 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         ],
         FocusTraversalOrder(
           order: NumericFocusOrder(tab.toDouble()),
-          child: DropdownButtonFormField<T>(
-            value: value,
-            isExpanded: isExpanded,
-            style: const TextStyle(fontSize: _fsField, color: Colors.black87),
-            hint: hint != null
-                ? Text(hint,
-                style: const TextStyle(
-                    fontSize: _fsField, color: Colors.black))
-                : null,
-            decoration: _inputDecoration(),
-            items: items
-                .map((e) => DropdownMenuItem<T>(
-              value: e,
-              child: Text(
-                labelOf(e),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: _fsField),
-              ),
-            ))
-                .toList(),
-            onChanged: onChanged,
+          child: _GlowFocus(
+            child: DropdownButtonFormField<T>(
+              value: value,
+              isExpanded: isExpanded,
+              style: const TextStyle(
+                  fontSize: _fsField, color: Colors.black87),
+              hint: hint != null
+                  ? Text(hint,
+                  style: const TextStyle(
+                      fontSize: _fsField, color: Colors.black))
+                  : null,
+              decoration: _inputDecoration(),
+              items: items
+                  .map((e) => DropdownMenuItem<T>(
+                value: e,
+                child: Text(
+                  labelOf(e),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: _fsField),
+                ),
+              ))
+                  .toList(),
+              onChanged: onChanged,
+            ),
           ),
         ),
       ],
@@ -1228,7 +1239,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         borderSide: const BorderSide(color: _border)),
     focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(6),
-        borderSide: const BorderSide(color: _purple)),
+        borderSide: const BorderSide(color: _purple, width: 1.8)),
   );
 }
 
@@ -1510,15 +1521,17 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: Focus(
-        onKeyEvent: _handleKey,
-        child: TextField(
-          key: _fieldKey,
-          onChanged: widget.onChanged,
-          controller: widget.controller,
-          focusNode: _focusNode,
-          style: const TextStyle(fontSize: 12),
-          decoration: widget.decoration,
+      child: _GlowFocus(
+        child: Focus(
+          onKeyEvent: _handleKey,
+          child: TextField(
+            key: _fieldKey,
+            onChanged: widget.onChanged,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            style: const TextStyle(fontSize: 12),
+            decoration: widget.decoration,
+          ),
         ),
       ),
     );
@@ -1751,15 +1764,17 @@ class _StringAutocompleteState extends State<_StringAutocomplete> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: Focus(
-        onKeyEvent: _handleKey,
-        child: TextField(
-          key: _fieldKey,
-          onChanged: widget.onChanged,
-          controller: widget.controller,
-          focusNode: _focusNode,
-          style: const TextStyle(fontSize: 12),
-          decoration: widget.decoration,
+      child: _GlowFocus(
+        child: Focus(
+          onKeyEvent: _handleKey,
+          child: TextField(
+            key: _fieldKey,
+            onChanged: widget.onChanged,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            style: const TextStyle(fontSize: 12),
+            decoration: widget.decoration,
+          ),
         ),
       ),
     );
@@ -2062,16 +2077,18 @@ class _CustomerModelAutocompleteState
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: Focus(
-        onKeyEvent: _handleKey,
-        child: TextField(
-          key: _fieldKey,
-          onChanged: widget.onChanged,
-          controller: widget.controller,
-          focusNode: _focusNode,
-          style: const TextStyle(fontSize: 12),
-          keyboardType: TextInputType.phone,
-          decoration: widget.decoration,
+      child: _GlowFocus(
+        child: Focus(
+          onKeyEvent: _handleKey,
+          child: TextField(
+            key: _fieldKey,
+            onChanged: widget.onChanged,
+            controller: widget.controller,
+            focusNode: _focusNode,
+            style: const TextStyle(fontSize: 12),
+            keyboardType: TextInputType.phone,
+            decoration: widget.decoration,
+          ),
         ),
       ),
     );
@@ -2146,6 +2163,26 @@ class _TimePickerFieldState extends State<_TimePickerField> {
     _hide();
   }
 
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+    if (key == LogicalKeyboardKey.escape) {
+      if (_entry != null) {
+        _hide();
+        return KeyEventResult.handled;
+      }
+      return KeyEventResult.ignored;
+    }
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter) {
+      if (_entry == null) _toggle();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
   Widget _buildPanel(BuildContext context) {
     final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
     final fieldWidth = box?.size.width ?? 240.0;
@@ -2176,29 +2213,10 @@ class _TimePickerFieldState extends State<_TimePickerField> {
                               fontWeight: FontWeight.w600,
                               color: Colors.black)),
                       const SizedBox(height: 4),
-                      DropdownButtonFormField<int>(
+                      _TimeNumberDropdown(
                         value: value,
-                        isExpanded: true,
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.black),
-                        decoration: const InputDecoration(
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 8),
-                          border: OutlineInputBorder(),
-                          enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: _border)),
-                        ),
-                        items: [
-                          for (int i = 0; i < count; i++)
-                            DropdownMenuItem(
-                              value: i,
-                              child: Text(i.toString().padLeft(2, '0')),
-                            ),
-                        ],
-                        onChanged: (v) {
-                          if (v != null) setPanel(() => onPicked(v));
-                        },
+                        count: count,
+                        onChanged: (v) => setPanel(() => onPicked(v)),
                       ),
                     ],
                   ),
@@ -2256,20 +2274,358 @@ class _TimePickerFieldState extends State<_TimePickerField> {
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: TextField(
-        key: _fieldKey,
-        controller: widget.controller,
-        readOnly: true,
-        style: const TextStyle(fontSize: 12),
-        onTap: _toggle,
-        decoration: widget.decoration.copyWith(
-          prefixIconConstraints:
-              const BoxConstraints(minWidth: 28, minHeight: 0),
-          prefixIcon: const Padding(
-            padding: EdgeInsets.only(left: 8, right: 4),
-            child: Icon(Icons.access_time, size: 15, color: Colors.grey),
+      child: Focus(
+        canRequestFocus: false,
+        skipTraversal: true,
+        onKeyEvent: _handleKey,
+        child: TextField(
+          key: _fieldKey,
+          controller: widget.controller,
+          readOnly: true,
+          style: const TextStyle(fontSize: 12),
+          onTap: _toggle,
+          decoration: widget.decoration.copyWith(
+            prefixIconConstraints:
+                const BoxConstraints(minWidth: 28, minHeight: 0),
+            prefixIcon: const Padding(
+              padding: EdgeInsets.only(left: 8, right: 4),
+              child: Icon(Icons.access_time, size: 15, color: Colors.grey),
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Web-style number dropdown — custom overlay list (no native Material
+// menu). Used for HOURS / MINUTES inside the time picker panel.
+// ════════════════════════════════════════════════════════════════════
+class _TimeNumberDropdown extends StatefulWidget {
+  const _TimeNumberDropdown({
+    required this.value,
+    required this.count,
+    required this.onChanged,
+  });
+
+  final int value;
+  final int count;
+  final ValueChanged<int> onChanged;
+
+  @override
+  State<_TimeNumberDropdown> createState() => _TimeNumberDropdownState();
+}
+
+class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
+  final _layerLink = LayerLink();
+  final _fieldKey = GlobalKey();
+  final _focusNode = FocusNode();
+  OverlayEntry? _entry;
+  late final ScrollController _scrollController;
+  int _highlighted = 0;
+  bool _focused = false;
+
+  static const _accent = Color(0xFF4F46E5);
+  static const _purple = Color(0xFF312E81);
+  static const _border = Color(0xFFE5E7EB);
+  static const _itemHeight = 36.0;
+  static const _panelHeight = 220.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _focusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _hide();
+    _focusNode.removeListener(_onFocusChange);
+    _focusNode.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    if (mounted && _focused != _focusNode.hasFocus) {
+      setState(() => _focused = _focusNode.hasFocus);
+    }
+  }
+
+  void _toggle() {
+    if (_entry != null) {
+      _hide();
+    } else {
+      _open();
+    }
+  }
+
+  void _open() {
+    if (_entry != null) return;
+    _highlighted = widget.value;
+    _entry = OverlayEntry(builder: _buildPanel);
+    Overlay.of(context).insert(_entry!);
+    _focusNode.requestFocus();
+    _scrollToSelected();
+  }
+
+  void _hide() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _scrollToSelected() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final target = (widget.value * _itemHeight) -
+          (_panelHeight / 2) +
+          (_itemHeight / 2);
+      _scrollController.jumpTo(
+        target.clamp(0.0, _scrollController.position.maxScrollExtent),
+      );
+    });
+  }
+
+  void _moveHighlight(int delta) {
+    final next = (_highlighted + delta).clamp(0, widget.count - 1);
+    if (next == _highlighted) return;
+    _highlighted = next;
+    _entry?.markNeedsBuild();
+    _scrollHighlightedIntoView();
+  }
+
+  void _scrollHighlightedIntoView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final c = _scrollController;
+      final itemTop = _highlighted * _itemHeight;
+      final itemBottom = itemTop + _itemHeight;
+      final viewTop = c.offset;
+      final viewBottom = viewTop + _panelHeight;
+      final maxScroll = c.position.maxScrollExtent;
+      if (itemTop < viewTop) {
+        c.jumpTo(itemTop.clamp(0.0, maxScroll));
+      } else if (itemBottom > viewBottom) {
+        c.jumpTo((itemBottom - _panelHeight).clamp(0.0, maxScroll));
+      }
+    });
+  }
+
+  KeyEventResult _handleKey(FocusNode node, KeyEvent event) {
+    if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
+      return KeyEventResult.ignored;
+    }
+    final key = event.logicalKey;
+
+    if (key == LogicalKeyboardKey.arrowDown) {
+      if (_entry == null) {
+        _open();
+      } else {
+        _moveHighlight(1);
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.arrowUp) {
+      if (_entry == null) {
+        _open();
+      } else {
+        _moveHighlight(-1);
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.enter ||
+        key == LogicalKeyboardKey.numpadEnter ||
+        key == LogicalKeyboardKey.space) {
+      if (_entry == null) {
+        _open();
+      } else {
+        _pick(_highlighted);
+      }
+      return KeyEventResult.handled;
+    }
+    if (key == LogicalKeyboardKey.escape && _entry != null) {
+      _hide();
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
+
+  void _pick(int v) {
+    _hide();
+    widget.onChanged(v);
+  }
+
+  Widget _buildPanel(BuildContext context) {
+    final box = _fieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final width = box?.size.width ?? 110.0;
+    final height = box?.size.height ?? 36.0;
+    return Positioned(
+      width: width,
+      child: CompositedTransformFollower(
+        link: _layerLink,
+        showWhenUnlinked: false,
+        offset: Offset(0, height + 4),
+        child: TapRegion(
+          onTapOutside: (_) => _hide(),
+          child: Material(
+            elevation: 8,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: _panelHeight),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: _border),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: widget.count,
+                itemBuilder: (_, i) {
+                  final active = i == _highlighted;
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    onEnter: (_) {
+                      if (_highlighted == i) return;
+                      _highlighted = i;
+                      _entry?.markNeedsBuild();
+                    },
+                    child: InkWell(
+                      onTap: () => _pick(i),
+                      child: Container(
+                        height: _itemHeight,
+                        width: double.infinity,
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 12),
+                        alignment: Alignment.centerLeft,
+                        color: active
+                            ? const Color(0xFFEEF2FF)
+                            : Colors.white,
+                        child: Text(
+                          i.toString().padLeft(2, '0'),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: active
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: active ? _accent : Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Focus(
+        focusNode: _focusNode,
+        onKeyEvent: _handleKey,
+        child: InkWell(
+          key: _fieldKey,
+          canRequestFocus: false,
+          onTap: () {
+            _focusNode.requestFocus();
+            _toggle();
+          },
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: _focused ? _purple : _border,
+                width: _focused ? 1.8 : 1,
+              ),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: _focused
+                  ? [
+                      BoxShadow(
+                        color: _purple.withValues(alpha: 0.30),
+                        blurRadius: 7,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.value.toString().padLeft(2, '0'),
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                ),
+                const Icon(Icons.keyboard_arrow_down,
+                    size: 18, color: Colors.grey),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Focus glow — soft animated "shining" purple halo shown around whichever
+// field currently holds keyboard focus (reached via Tab / Shift+Tab).
+// ════════════════════════════════════════════════════════════════════
+class _GlowFocus extends StatefulWidget {
+  const _GlowFocus({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_GlowFocus> createState() => _GlowFocusState();
+}
+
+class _GlowFocusState extends State<_GlowFocus> {
+  static const _purple = Color(0xFF312E81);
+  bool _focused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (hasFocus) {
+        if (mounted && _focused != hasFocus) {
+          setState(() => _focused = hasFocus);
+        }
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: _focused
+              ? [
+                  BoxShadow(
+                    color: _purple.withValues(alpha: 0.32),
+                    blurRadius: 7,
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: _purple.withValues(alpha: 0.15),
+                    blurRadius: 16,
+                    spreadRadius: 3,
+                  ),
+                ]
+              : const [],
+        ),
+        child: widget.child,
       ),
     );
   }
