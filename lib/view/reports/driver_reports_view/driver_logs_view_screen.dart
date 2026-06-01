@@ -108,11 +108,11 @@ class DriverLogsReportContent extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _infoRow("Email: ", driverEmail),
+                    _infoRow("EMAIL: ", driverEmail),
                     const SizedBox(height: 8),
-                    _infoRow("Mobile: ", driverMobile),
+                    _infoRow("MOBILE: ", driverMobile),
                     const SizedBox(height: 8),
-                    _infoRow("Telephone: ", driverPhone),
+                    _infoRow("TELEPHONE: ", driverPhone),
                   ],
                 ),
 
@@ -120,7 +120,7 @@ class DriverLogsReportContent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "Driver ($driverName)",
+                      "DRIVER ($driverName)",
                       style: mozillaTextSemiBoldText(fontSize: 15, color: Colors.black87),
                     ),
                     const SizedBox(height: 15),
@@ -149,7 +149,7 @@ class DriverLogsReportContent extends StatelessWidget {
               children: [
                 // Table Header
                 TableRow(
-                  decoration: BoxDecoration(color: Colors.grey.shade100),
+                  decoration: BoxDecoration(color: DynamicColors.primaryClr),
                   children: [
                     _buildTableCell("REF #", isHeader: true),
                     _buildTableCell("DATETIME", isHeader: true),
@@ -166,9 +166,9 @@ class DriverLogsReportContent extends StatelessWidget {
                       _buildTableCell(booking.referenceNumber ?? "-"),
                       _buildTableCell("${booking.pickupDate}\n${booking.pickupTime}"),
                       _buildTableCell(booking.vehicleType?.name?.toUpperCase() ?? "-"),
-                      _buildTableCell(booking.pickup ?? "-", textAlign: TextAlign.left),
-                      _buildTableCell(booking.dropoff ?? "-", textAlign: TextAlign.left),
-                      _buildTableCell("£${booking.fares ?? "0.00"}", fontWeight: FontWeight.bold),
+                      _buildTableCell((booking.pickup ?? "-").toUpperCase(), textAlign: TextAlign.left),
+                      _buildTableCell((booking.dropoff ?? "-").toUpperCase(), textAlign: TextAlign.left),
+                      _buildTableCell("£${booking.fares ?? "0.00"}"),
                     ],
                   );
                 }).toList(),
@@ -213,7 +213,7 @@ class DriverLogsReportContent extends StatelessWidget {
         style: TextStyle(
           fontSize: isHeader ? 14 : 12,
           fontWeight: isHeader ? FontWeight.bold : (fontWeight ?? FontWeight.normal),
-          color: isHeader ? Colors.black87 : Colors.black,
+          color: isHeader ? Colors.white : Colors.black,
         ),
       ),
     );

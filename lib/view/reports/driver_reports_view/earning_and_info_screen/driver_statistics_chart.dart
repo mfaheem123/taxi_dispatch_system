@@ -32,7 +32,7 @@ class DriverBookingChart extends StatelessWidget {
       series: <CartesianSeries<DriverChartData, String>>[
         BarSeries<DriverChartData, String>(
           dataSource: chartData,
-          xValueMapper: (DriverChartData data, _) => data.username,
+          xValueMapper: (DriverChartData data, _) => data.username.toUpperCase(),
           yValueMapper: (DriverChartData data, _) => data.bookings,
           name: 'Bookings',
           color: DynamicColors.primaryClr,

@@ -243,12 +243,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             DataCell(Center(child: Text((item.bookingsDispatched ?? 0).toString()))),
                             DataCell(Center(child: Text((item.bookingsCancelled ?? 0).toString()))),
                             DataCell(Center(child: Text((item.callsAnswered ?? 0).toString()))),
-                            DataCell(Center(child: Text(rowWorkingHours))),
+                            DataCell(Center(child: Text((rowWorkingHours).toUpperCase()))),
                             ]);
                           }).toList(),
 
                             if (showTotalRow)
                               DataRow(
+                                color: WidgetStateProperty.all(Colors.grey.shade100),
                                 cells: [
                                   const DataCell(Center(child: Text("TOTAL", style: TextStyle(fontWeight: FontWeight.bold)))),
                                   const DataCell(Center(child: Text(""))),
@@ -256,7 +257,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                   DataCell(Center(child: Text(controller.totalDispatched.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
                                   DataCell(Center(child: Text(controller.totalCancelled.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
                                   DataCell(Center(child: Text(controller.totalCalls.toString(), style: const TextStyle(fontWeight: FontWeight.bold)))),
-                                  DataCell(Center(child: Text(controller.totalWorkingHours, style: const TextStyle(fontWeight: FontWeight.bold)))),
+                                  DataCell(Center(child: Text((controller.totalWorkingHours).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)))),
                                 ],
                               ),
                           ]),

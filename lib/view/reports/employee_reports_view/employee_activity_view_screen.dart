@@ -174,7 +174,7 @@ class EmployeeActivityReportContent extends StatelessWidget {
                           (item.bookingsDispatched ?? 0).toString()),
                       _buildTableCell((item.bookingsCancelled ?? 0).toString()),
                       _buildTableCell((item.callsAnswered ?? 0).toString()),
-                      _buildTableCell(_formatWorkingHours(item.workingHours)),
+                      _buildTableCell((_formatWorkingHours(item.workingHours).toUpperCase())),
                     ],
                   );
                 }).toList(),
@@ -193,7 +193,7 @@ class EmployeeActivityReportContent extends StatelessWidget {
                           isHeader: true, customColor: Colors.black),
                       _buildTableCell(controller.totalCalls.toString(),
                           isHeader: true, customColor: Colors.black),
-                      _buildTableCell(controller.totalWorkingHours,
+                      _buildTableCell((controller.totalWorkingHours).toUpperCase(),
                           isHeader: true, customColor: Colors.black),
                     ],
                   ),

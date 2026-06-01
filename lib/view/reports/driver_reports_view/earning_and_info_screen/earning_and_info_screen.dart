@@ -295,8 +295,8 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                 ...controller.earningInfoListModel!.data!.drivers!.map((driver) {
                                                   return TableRow(
                                                     children: [
-                                                      _tableCell(driver.username ?? "-"),
-                                                      _tableCell(driver.name ?? "-"),
+                                                      _tableCell((driver.username ?? "-").toUpperCase()),
+                                                      _tableCell((driver.name ?? "-").toUpperCase()),
                                                       _tableCell(driver.totalBookings ?? "0"),
                                                       _tableCell("£ ${driver.totalEarnings ?? "0.00"}"),
                                                     ],
@@ -448,8 +448,7 @@ class _EarningAndInfoScreenState extends State<EarningAndInfoScreen> {
                                                             ? controller.selectDriverObject
                                                             : null,
                                                         itemLabel: (driver) =>
-                                                            driver.name ??
-                                                            "".toUpperCase(),
+                                                            (driver.name ?? "").toUpperCase(),
                                                         onChanged: (val) {
                                                           controller
                                                                   .selectDriverObject =

@@ -1,5 +1,3 @@
-
-
 import 'package:dashboard_new1/component/customButton.dart';
 import 'package:dashboard_new1/component/text_widget.dart';
 import 'package:flutter/material.dart';
@@ -107,13 +105,18 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
       child: GetBuilder<ReportController>(initState: (state) {
         controller.selectDriverObject = null;
         controller.getAllDrivers();
-        controller.loginStartTimeController.text = "12:00";
-        controller.loginEndTimeController.text =
-            DateFormat('HH:mm').format(DateTime.now());
-      },builder: (controller) {
-        final int totalBookings = controller.driverLogsData?.bookings?.length ?? 0;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.loginStartTimeController.text = "12:00";
+          controller.loginEndTimeController.text =
+              DateFormat('HH:mm').format(DateTime.now());
+          controller.update();
+        });
+      }, builder: (controller) {
+        final int totalBookings =
+            controller.driverLogsData?.bookings?.length ?? 0;
 
-        final double totalEarnings = (controller.driverLogsData?.bookings ?? []).fold(0.0, (sum, item) {
+        final double totalEarnings =
+            (controller.driverLogsData?.bookings ?? []).fold(0.0, (sum, item) {
           return sum + (double.tryParse(item.fares.toString()) ?? 0.0);
         });
         return LayoutBuilder(
@@ -125,8 +128,8 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
             final double fieldWidth = isMobile
                 ? maxWidth // full width
                 : isTablet
-                ? maxWidth / 2
-                : maxWidth / 4;
+                    ? maxWidth / 2
+                    : maxWidth / 4;
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(12),
@@ -157,7 +160,8 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: controller.fromDate.value ?? DateTime.now(),
+                            initialDate:
+                                controller.fromDate.value ?? DateTime.now(),
                             onChanged: (date) {
                               controller.fromDate.value = date;
                               controller.update();
@@ -188,7 +192,8 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         child: SizedBox(
                           height: 30,
                           child: KeyboardDatePicker(
-                            initialDate: controller.toDate.value ?? DateTime.now(),
+                            initialDate:
+                                controller.toDate.value ?? DateTime.now(),
                             onChanged: (date) {
                               controller.toDate.value = date;
                               controller.update();
@@ -216,11 +221,16 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                         width: 320,
                         height: 35,
                         items: controller.allDriverData?.drivers ?? [],
-                        value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
-                            ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                        value: controller.allDriverData?.drivers?.any((d) =>
+                                    d.id ==
+                                    controller.selectDriverObject?.id) ??
+                                false
+                            ? controller.allDriverData!.drivers!.firstWhere(
+                                (d) =>
+                                    d.id == controller.selectDriverObject?.id)
                             : null,
                         itemLabel: (driver) =>
-                        driver.name ?? "".toUpperCase(),
+                            (driver.name ?? "").toUpperCase(),
                         onChanged: (val) {
                           controller.selectDriverObject = val;
                           controller.update();
@@ -261,11 +271,11 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 25),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     margin: const EdgeInsets.only(bottom: 15),
                     decoration: BoxDecoration(
                       color: DynamicColors.secondaryClr,
@@ -286,10 +296,12 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                             children: [
                               Text(
                                 "TOTAL BOOKINGS: ",
-                                style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.black87),
+                                style: mozillaTextSemiBoldText(
+                                    fontSize: 14, color: Colors.black87),
                               ),
                               Text(
-                                (controller.driverLogsData == null || controller.isLoadingLogs)
+                                (controller.driverLogsData == null ||
+                                        controller.isLoadingLogs)
                                     ? ""
                                     : "$totalBookings",
                                 style: mozillaTextRegularText(fontSize: 14),
@@ -303,10 +315,12 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                             children: [
                               Text(
                                 "TOTAL EARNINGS: ",
-                                style: mozillaTextSemiBoldText(fontSize: 14, color: Colors.black87),
+                                style: mozillaTextSemiBoldText(
+                                    fontSize: 14, color: Colors.black87),
                               ),
                               Text(
-                                (controller.driverLogsData == null || controller.isLoadingLogs)
+                                (controller.driverLogsData == null ||
+                                        controller.isLoadingLogs)
                                     ? ""
                                     : "£${totalEarnings.toStringAsFixed(2)}",
                                 style: mozillaTextRegularText(fontSize: 14),
@@ -320,9 +334,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 10),
-                  
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: SizedBox(
@@ -330,28 +342,52 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                       child: controller.isLoadingLogs
                           ? const Center(child: CircularProgressIndicator())
                           : DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "REF #", controller: controller.refSearch),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "VEHICLE", controller: controller.vehicleSearch),
-                          buildHeaderWithSearch(title: "PICKUP", controller: controller.pickupSearch),
-                          buildHeaderWithSearch(title: "DROPOFF", controller: controller.dropoffSearch),
-                          buildHeaderWithSearch(title: "FARES", controller: controller.faresSearch),
-                        ],
-                        totalRow: controller.driverLogsData?.bookings?.length ?? 0,
-                        rows: (controller.driverLogsData?.bookings ?? []).map((booking) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Center(child: Text(booking.referenceNumber ?? ""))),
-                              DataCell(Center(child: Text("${booking.pickupDate}\n${booking.pickupTime}"))),
-                              DataCell(Center(child: Text(booking.vehicleType?.name?.toUpperCase() ?? ""))),
-                              DataCell(Text(booking.pickup ?? "")),
-                              DataCell(Text(booking.dropoff ?? "")),
-                              DataCell(Center(child: Text("£${booking.fares ?? "0.00"}"))),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                              columns: [
+                                buildHeaderWithSearch(
+                                    title: "REF #",
+                                    controller: controller.refSearch),
+                                buildHeaderWithSearch(title: "DATETIME"),
+                                buildHeaderWithSearch(
+                                    title: "VEHICLE",
+                                    controller: controller.vehicleSearch),
+                                buildHeaderWithSearch(
+                                    title: "PICKUP",
+                                    controller: controller.pickupSearch),
+                                buildHeaderWithSearch(
+                                    title: "DROPOFF",
+                                    controller: controller.dropoffSearch),
+                                buildHeaderWithSearch(
+                                    title: "FARES",
+                                    controller: controller.faresSearch),
+                              ],
+                              totalRow:
+                                  controller.driverLogsData?.bookings?.length ??
+                                      0,
+                              rows: (controller.driverLogsData?.bookings ?? [])
+                                  .map((booking) {
+                                return DataRow(
+                                  cells: [
+                                    DataCell(Center(
+                                        child: Text(
+                                            booking.referenceNumber ?? ""))),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "${booking.pickupDate}\n${booking.pickupTime}"))),
+                                    DataCell(Center(
+                                        child: Text(booking.vehicleType?.name
+                                                ?.toUpperCase() ??
+                                            ""))),
+                                    DataCell(Text(
+                                        (booking.pickup ?? "").toUpperCase())),
+                                    DataCell(Text(
+                                        (booking.dropoff ?? "").toUpperCase())),
+                                    DataCell(Center(
+                                        child: Text(
+                                            "£${booking.fares ?? "0.00"}"))),
+                                  ],
+                                );
+                              }).toList(),
+                            ),
                     ),
                   ),
                 ],
