@@ -268,7 +268,7 @@ class _DriverLogsScreenState extends State<DriverLogsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     margin: const EdgeInsets.only(bottom: 15),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: DynamicColors.secondaryClr,
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: Colors.grey.shade300),
                       boxShadow: [

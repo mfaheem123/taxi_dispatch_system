@@ -1,5 +1,3 @@
-
-
 import 'package:dashboard_new1/component/color.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,6 +8,7 @@ import '../../../component/dropdown_button.dart';
 import '../../../component/radio_button_widget.dart';
 import '../../../component/textStyle.dart';
 import '../../../component/text_widget.dart';
+import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
@@ -23,7 +22,6 @@ class IncomeScreen extends StatefulWidget {
 }
 
 class _IncomeScreenState extends State<IncomeScreen> {
-
   int selectedRowIndex = 0;
   final int totalRows = 50;
 
@@ -33,222 +31,260 @@ class _IncomeScreenState extends State<IncomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(builder: (controller) {
+    return GetBuilder<ReportController>(initState: (state) {
+      controller.clearDropdowns();
+      controller.selectDriverObject = null;
+      controller.getAllDrivers();
+      controller.getData();
+    }, builder: (controller) {
+        return LayoutBuilder(builder: (context, constraints) {
+          final double maxWidth = constraints.maxWidth;
+          final bool isMobile = maxWidth < 600;
+          final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
 
-      return LayoutBuilder(builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-        final bool isMobile = maxWidth < 600;
-        final bool isTablet = maxWidth >= 600 && maxWidth < 1024;
+          // Instead of fixed width, we calculate flexible field widths
+          final double fieldWidth = isMobile
+              ? maxWidth // full width
+              : isTablet
+              ? maxWidth / 2
+              : maxWidth / 4;
 
-        // Instead of fixed width, we calculate flexible field widths
-        final double fieldWidth = isMobile
-            ? maxWidth // full width
-            : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
-
-          return Column(
-            children: [
-              SizedBox(
-                height: 10,
-              ),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.end,
-                alignment: WrapAlignment.start,
-                spacing: 10,
-                runSpacing: 16,
+          return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
                 children: [
-                  Text(AppText.income,
-                    style: mozillaTextSemiBoldText(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 17,
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.end,
+                    alignment: WrapAlignment.start,
+                    spacing: 10,
+                    runSpacing: 16,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Report Type",
+                            style: mozillaTextSemiBoldText(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 25,
+                          ),
+                          StatusRadioGroup(
+                            options: [
+                              "ALL",
+                              "CASH",
+                              "ACCOUNT",
+                            ],
+                            onChanged: (index, value) {
+                              debugPrint("Selected index: $index, value: $value");
+                              // controller.selectedValue = index;
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 15),
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: AppText.from,
+                        column: true,
+                        width: fieldWidth / 2.2,
+                        child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                      ),
+                      labeledField(
+                        context: context,
+                        isMobile: isMobile,
+                        label: AppText.to,
+                        column: true,
+                        width: fieldWidth / 2.2,
+                        child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                      ),
+                      SizedBox(width: 15),
+                      CustomDropdownField<DriverObject>(
+                        label: "SELECT DRIVERS",
+                        width: fieldWidth / 2,
+                        // height: 35,
+                        items: controller.allDriverData?.drivers ?? [],
+                        value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
+                            ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                            : null,
+                        itemLabel: (driver) =>
+                        driver.name ?? "".toUpperCase(),
+                        onChanged: (val) {
+                          controller.selectDriverObject = val;
+                          controller.update();
+                        },
+                      ),
+                      SizedBox(width: 15),
+
+                      // CustomDropdownField<String>(
+                      //   text: AppText.account,
+                      //   width: fieldWidth / 1.5,
+                      //   label: AppText.selectAccount,
+                      //   items: [
+                      //     "ACCOUNT 1",
+                      //     "ACCOUNT 2",
+                      //     "ACCOUNT 3",
+                      //     "ACCOUNT 4",
+                      //     "ACCOUNT 5",
+                      //   ],
+                      //   value: controller.selectAccount,
+                      //   itemLabel: (val) => val,
+                      //   onChanged: (val) {
+                      //     controller.selectAccount = val!;
+                      //     controller.update();
+                      //   },
+                      // ),
+                      // SizedBox(width: 15),
+                      //
+                      // CustomDropdownField<String>(
+                      //   text: AppText.subsidiary,
+                      //   width: fieldWidth / 1.5,
+                      //   label: AppText.selectSubsidiary,
+                      //   items: [
+                      //     "SUBSIDIARY 1",
+                      //     "SUBSIDIARY 2",
+                      //     "SUBSIDIARY 3",
+                      //     "SUBSIDIARY 4",
+                      //     "SUBSIDIARY 5",
+                      //   ],
+                      //   value: controller.selectSubsidiary,
+                      //   itemLabel: (val) => val, // just show the string
+                      //   onChanged: (val) {
+                      //     controller.selectSubsidiary = val!;
+                      //     controller.update();
+                      //   },
+                      // ),
+                      CustomDropdownField<dynamic>(
+                        width: fieldWidth / 1.5,
+                        label: AppText.selectSubsidiary,
+                        items: controller.apiDashboardData?.subsidiaries ?? [],
+                        value: controller.apiSelectedSubsidiary,
+                        itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                        onChanged: (val) {
+                          controller.apiSelectedSubsidiary = val;
+                          controller.apiSelectedAccount = null;
+
+                          if (val != null && val.id != null) {
+                            controller.getAccountData(val.id);
+                          }
+                          controller.update();
+                        },
+                      ),
+                      CustomDropdownField<dynamic>(
+                        width: fieldWidth / 1.9,
+                        label: AppText.selectAccount,
+                        items: controller.dashboardAccountModel?.accounts ?? [],
+                        value: controller.apiSelectedAccount,
+                        itemLabel: (val) => (val.name ?? "").toUpperCase(),
+                        onChanged: (val) {
+                          controller.apiSelectedAccount = val;
+                          controller.update();
+                        },
+                      ),
+                      // SizedBox(
+                      //   width: 20,
+                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CustomButton(
+                            width: 150,
+                            height: 30,
+                            borderRadius: 4,
+                            verticalPadding: 0.0,
+                            btnText: AppText.filter,
+                            fontSize: 14,
+                          ),
+                          SizedBox(width: 20),
+                          CustomButton(
+                            width: 150,
+                            height: 30,
+                            borderRadius: 4,
+                            verticalPadding: 0.0,
+                            btnText: AppText.view,
+                            fontSize: 14,
+                          ),
+                          SizedBox(width: 20),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    color: DynamicColors.secondaryClr,
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text(
+                          AppText.totalBookings,
+                          style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          AppText.totalEarnings,
+                          style: mozillaTextSemiBoldText(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(
-                    width: 25,
+                    height: 10,
                   ),
-                  StatusRadioGroup(
-                    options: [
-                      "ALL",
-                      "CASH",
-                      "ACCOUNT",
-                    ],
-                    onChanged: (index, value) {
-                      debugPrint("Selected index: $index, value: $value");
-                      // controller.selectedValue = index;  // 👈 yahan apne controller me update karlo
-                    },
-                  ),
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.from,
-                    column: true,
-                    width: fieldWidth/1.5,
-                    child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                  ),
-                  labeledField(
-                    context: context,
-                    isMobile: isMobile,
-                    label: AppText.to,
-                    column: true,
-                    width: fieldWidth/1.5,
-                    child: SizedBox(height: 30, child: KeyboardDatePicker()),
-                  ),
-                  CustomDropdownField<String>(
-                    text: AppText.selectDriver,
-                    width: fieldWidth/1.5,
-                    label: AppText.selectDriver,
-                    items:[
-                      "25 GEORGE HAMPTON1",
-                      "25 GEORGE HAMPTON2",
-                      "25 GEORGE HAMPTON3",
-                      "25 GEORGE HAMPTON4",
-                      "25 GEORGE HAMPTON5",
-                      "25 GEORGE HAMPTON6",],
-                    value: controller.selectBookingDriver,
-                    itemLabel: (val) => val, // just show the string
-                    onChanged: (val) {
-                      controller.selectBookingDriver = val!;
-                      controller.update();
-                    },
-                  ),
-                  CustomDropdownField<String>(
-                    text: AppText.selectAccount,
-                    width: fieldWidth/1.5,
-                    label: AppText.selectAccount,
-                    items:[
-                      "ACCOUNT 1",
-                      "ACCOUNT 2",
-                      "ACCOUNT 3",
-                      "ACCOUNT 4",
-                      "ACCOUNT 5",
-                    ],
-                    value: controller.selectAccount,
-                    itemLabel: (val) => val, // just show the string
-                    onChanged: (val) {
-                      controller.selectAccount = val!;
-                      controller.update();
-                    },
-                  ),
-                  CustomDropdownField<String>(
-                    text: AppText.selectSubsidiary,
-                    width: fieldWidth/1.5,
-                    label: AppText.selectSubsidiary,
-                    items:[
-                      "SUBSIDIARY 1",
-                      "SUBSIDIARY 2",
-                      "SUBSIDIARY 3",
-                      "SUBSIDIARY 4",
-                      "SUBSIDIARY 5",
-                    ],
-                    value: controller.selectSubsidiary,
-                    itemLabel: (val) => val, // just show the string
-                    onChanged: (val) {
-                      controller.selectSubsidiary = val!;
-                      controller.update();
-                    },
-                  ),
-                  SizedBox(width: 20,),
-                  CustomButton(
-                    width: 120,
-                    height: 30,
-                    borderRadius: 4,
-                    verticalPadding: 0.0,
-                    btnText: AppText.filter,
-                    fontSize: 12,
-                  ),
-                  CustomButton(
-                    width: 120,
-                    height: 30,
-                    borderRadius: 4,
-                    verticalPadding: 0.0,
-                    btnText: AppText.view,
-                    fontSize: 12,
-                  ),
-                  CustomButton(
-                    width: 120,
-                    height: 30,
-                    borderRadius: 4,
-                    verticalPadding: 0.0,
-                    btnText: AppText.statistics,
-                    fontSize: 12,
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: DatatableWidget(
+                          columns: [
+                            buildHeaderWithSearch(title: "REF #"),
+                            buildHeaderWithSearch(title: "DATETIME"),
+                            buildHeaderWithSearch(title: "PICKUP"),
+                            buildHeaderWithSearch(title: "DROPOFF"),
+                            buildHeaderWithSearch(title: "VEHICLE"),
+                            buildHeaderWithSearch(title: "DRIVER"),
+                            buildHeaderWithSearch(title: "ACCOUNT"),
+                            buildHeaderWithSearch(title: "FARES"),
+                            buildHeaderWithSearch(title: "PARKING"),
+                            buildHeaderWithSearch(title: "WAITING"),
+                            buildHeaderWithSearch(title: "EXTRA DROP"),
+                            buildHeaderWithSearch(title: "TOTAL"),
+                          ],
+                          totalRow: totalRows,
+                          cells: [
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                            const DataCell(Center(child: Text("20/10/2025"))),
+                            const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          ]),
+                    ),
                   ),
                 ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                color: DynamicColors.secondaryClr,
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(AppText.totalBookings,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                      ),
-                    ),
-                    Text(AppText.totalEarnings,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: DatatableWidget(
-                      columns: [
-                        buildHeaderWithSearch(title: "REF #"),
-                        buildHeaderWithSearch(title: "DATETIME"),
-                        buildHeaderWithSearch(title: "PICKUP"),
-
-                        buildHeaderWithSearch(title: "DROPOFF"),
-                        buildHeaderWithSearch(title: "VEHICLE"),
-                        buildHeaderWithSearch(title: "DRIVER"),
-
-                        buildHeaderWithSearch(title: "ACCOUNT"),
-                        buildHeaderWithSearch(title: "FARES"),
-                        buildHeaderWithSearch(title: "PARKING"),
-
-                        buildHeaderWithSearch(title: "WAITING"),
-                        buildHeaderWithSearch(title: "EXTRA DROP"),
-                        buildHeaderWithSearch(title: "TOTAL"),
-                      ],
-                      totalRow: totalRows,
-                      cells: [
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        const DataCell(Center(child: Text("20/10/2025"))),
-                        const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                      ]
-                  ),
-                ),
-              ),
-            ],
-          );
-        }
-      );
+              ));
+        });
       }
     );
   }

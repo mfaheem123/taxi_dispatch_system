@@ -808,7 +808,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ),
       child: IconButton(
         onPressed: onPressed,
-        icon: Icon(icon, size: 17, color: Colors.black87),
+        icon: Icon(icon, size: 17, color: Colors.black),
         splashRadius: 18,
       ),
     );
@@ -827,7 +827,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     );
 
     final right = Row(mainAxisSize: MainAxisSize.min, children: [
-      iconBtn(Icons.person_outline, onPressed: () {
+      iconBtn(Icons.person, onPressed: () {
         showDialog(context: context, builder: (_) => RestrictDriversAlert());
       }),
       iconBtn(Icons.attach_money, onPressed: () {
@@ -836,14 +836,14 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
           builder: (_) => ChildSeatsAlert(),
         );
       }),
-      iconBtn(Icons.note_add_outlined, onPressed: () {
+      iconBtn(Icons.note_add, onPressed: () {
         showDialog(
           context: context,
           barrierDismissible: false,
           builder: (_) => ExtraFaresAlert(),
         );
       }),
-      iconBtn(Icons.calculate_outlined, onPressed: () {
+      iconBtn(Icons.calculate, onPressed: () {
         showDialog(
           context: context,
           builder: (_) => ExtraInfoAlert(),
@@ -2098,6 +2098,9 @@ class _CustomerModelAutocompleteState
 // ════════════════════════════════════════════════════════════════════
 // Time field — inline dropdown panel (HOURS + MINUTES + OK) below field
 // ════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════
+// Time field — inline dropdown panel (HOURS + MINUTES + OK) below field
+// ════════════════════════════════════════════════════════════════════
 class _TimePickerField extends StatefulWidget {
   const _TimePickerField({
     required this.controller,
@@ -2116,6 +2119,11 @@ class _TimePickerFieldState extends State<_TimePickerField> {
   final _fieldKey = GlobalKey();
   OverlayEntry? _entry;
 
+  // Focus handling for the open panel so Tab can move between HOURS/MINUTES.
+  final _panelScope = FocusScopeNode();
+  final _hoursFocus = FocusNode();
+  final _minutesFocus = FocusNode();
+
   int _hour = 0;
   int _minute = 0;
 
@@ -2125,6 +2133,9 @@ class _TimePickerFieldState extends State<_TimePickerField> {
   @override
   void dispose() {
     _hide();
+    _panelScope.dispose();
+    _hoursFocus.dispose();
+    _minutesFocus.dispose();
     super.dispose();
   }
 
@@ -2149,6 +2160,10 @@ class _TimePickerFieldState extends State<_TimePickerField> {
     _seedFromText();
     _entry = OverlayEntry(builder: _buildPanel);
     Overlay.of(context).insert(_entry!);
+    // Move focus into the panel so Tab works between the dropdowns.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_entry != null) _hoursFocus.requestFocus();
+    });
   }
 
   void _hide() {
@@ -2198,72 +2213,81 @@ class _TimePickerFieldState extends State<_TimePickerField> {
         child: Material(
           elevation: 6,
           borderRadius: BorderRadius.circular(8),
-          child: StatefulBuilder(
-            builder: (context, setPanel) {
-              Widget dd(String title, int value, int count,
-                  ValueChanged<int> onPicked) {
-                return Expanded(
+          // FocusScope keeps Tab traversal inside the open panel.
+          child: FocusScope(
+            node: _panelScope,
+            child: StatefulBuilder(
+              builder: (context, setPanel) {
+                Widget dd(String title, int value, int count,
+                    ValueChanged<int> onPicked,
+                    {required FocusNode focusNode, bool autofocus = false}) {
+                  return Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(title,
+                            style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black)),
+                        const SizedBox(height: 4),
+                        _TimeNumberDropdown(
+                          value: value,
+                          count: count,
+                          focusNode: focusNode,
+                          autofocus: autofocus,
+                          onChanged: (v) => setPanel(() => onPicked(v)),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: _border),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(title,
-                          style: const TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black)),
-                      const SizedBox(height: 4),
-                      _TimeNumberDropdown(
-                        value: value,
-                        count: count,
-                        onChanged: (v) => setPanel(() => onPicked(v)),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          dd('HOURS', _hour, 24, (v) => _hour = v,
+                              focusNode: _hoursFocus, autofocus: true),
+                          const SizedBox(width: 12),
+                          dd('MINUTES', _minute, 60, (v) => _minute = v,
+                              focusNode: _minutesFocus),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: _hide,
+                            child: const Text('CANCEL'),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _accent,
+                              foregroundColor: Colors.white,
+                            ),
+                            onPressed: _apply,
+                            child: const Text('OK'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 );
-              }
-
-              return Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: _border),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        dd('HOURS', _hour, 24, (v) => _hour = v),
-                        const SizedBox(width: 12),
-                        dd('MINUTES', _minute, 60, (v) => _minute = v),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: _hide,
-                          child: const Text('CANCEL'),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _accent,
-                            foregroundColor: Colors.white,
-                          ),
-                          onPressed: _apply,
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),
@@ -2286,7 +2310,7 @@ class _TimePickerFieldState extends State<_TimePickerField> {
           onTap: _toggle,
           decoration: widget.decoration.copyWith(
             prefixIconConstraints:
-                const BoxConstraints(minWidth: 28, minHeight: 0),
+            const BoxConstraints(minWidth: 28, minHeight: 0),
             prefixIcon: const Padding(
               padding: EdgeInsets.only(left: 8, right: 4),
               child: Icon(Icons.access_time, size: 15, color: Colors.grey),
@@ -2307,11 +2331,15 @@ class _TimeNumberDropdown extends StatefulWidget {
     required this.value,
     required this.count,
     required this.onChanged,
+    this.focusNode,
+    this.autofocus = false,
   });
 
   final int value;
   final int count;
   final ValueChanged<int> onChanged;
+  final FocusNode? focusNode;
+  final bool autofocus;
 
   @override
   State<_TimeNumberDropdown> createState() => _TimeNumberDropdownState();
@@ -2320,7 +2348,11 @@ class _TimeNumberDropdown extends StatefulWidget {
 class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
   final _layerLink = LayerLink();
   final _fieldKey = GlobalKey();
-  final _focusNode = FocusNode();
+
+  // Use the focus node passed by the parent if provided, otherwise own one.
+  late final FocusNode _focusNode = widget.focusNode ?? FocusNode();
+  late final bool _ownsFocusNode = widget.focusNode == null;
+
   OverlayEntry? _entry;
   late final ScrollController _scrollController;
   int _highlighted = 0;
@@ -2343,7 +2375,7 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
   void dispose() {
     _hide();
     _focusNode.removeListener(_onFocusChange);
-    _focusNode.dispose();
+    if (_ownsFocusNode) _focusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -2499,7 +2531,7 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
                         height: _itemHeight,
                         width: double.infinity,
                         padding:
-                            const EdgeInsets.symmetric(horizontal: 12),
+                        const EdgeInsets.symmetric(horizontal: 12),
                         alignment: Alignment.centerLeft,
                         color: active
                             ? const Color(0xFFEEF2FF)
@@ -2532,6 +2564,7 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
       link: _layerLink,
       child: Focus(
         focusNode: _focusNode,
+        autofocus: widget.autofocus,
         onKeyEvent: _handleKey,
         child: InkWell(
           key: _fieldKey,
@@ -2549,15 +2582,6 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
                 width: _focused ? 1.8 : 1,
               ),
               borderRadius: BorderRadius.circular(6),
-              boxShadow: _focused
-                  ? [
-                      BoxShadow(
-                        color: _purple.withValues(alpha: 0.30),
-                        blurRadius: 7,
-                        spreadRadius: 1,
-                      ),
-                    ]
-                  : null,
             ),
             child: Row(
               children: [
@@ -2582,51 +2606,15 @@ class _TimeNumberDropdownState extends State<_TimeNumberDropdown> {
 // Focus glow — soft animated "shining" purple halo shown around whichever
 // field currently holds keyboard focus (reached via Tab / Shift+Tab).
 // ════════════════════════════════════════════════════════════════════
-class _GlowFocus extends StatefulWidget {
+// ════════════════════════════════════════════════════════════════════
+// Focus wrapper — no glow/blur. Active fields change only their border
+// color (handled by InputDecoration.focusedBorder).
+// ════════════════════════════════════════════════════════════════════
+class _GlowFocus extends StatelessWidget {
   const _GlowFocus({required this.child});
 
   final Widget child;
 
   @override
-  State<_GlowFocus> createState() => _GlowFocusState();
-}
-
-class _GlowFocusState extends State<_GlowFocus> {
-  static const _purple = Color(0xFF312E81);
-  bool _focused = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Focus(
-      canRequestFocus: false,
-      skipTraversal: true,
-      onFocusChange: (hasFocus) {
-        if (mounted && _focused != hasFocus) {
-          setState(() => _focused = hasFocus);
-        }
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          boxShadow: _focused
-              ? [
-                  BoxShadow(
-                    color: _purple.withValues(alpha: 0.32),
-                    blurRadius: 7,
-                    spreadRadius: 1,
-                  ),
-                  BoxShadow(
-                    color: _purple.withValues(alpha: 0.15),
-                    blurRadius: 16,
-                    spreadRadius: 3,
-                  ),
-                ]
-              : const [],
-        ),
-        child: widget.child,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => child;
 }

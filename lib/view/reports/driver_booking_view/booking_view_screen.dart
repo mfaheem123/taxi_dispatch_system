@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:intl/intl.dart';
 
 import '../../../component/color.dart';
+import '../controller/report_controller.dart';
 class AllBookingViewWindow extends StatefulWidget {
   const AllBookingViewWindow({super.key});
 
@@ -28,7 +31,6 @@ class _AllBookingViewWindow extends State<AllBookingViewWindow> {
           ),
           child: Column(
             children: [
-              // Blue Title Bar
               Container(
                 height: 40,
                 decoration: BoxDecoration(
@@ -64,6 +66,22 @@ class AllBookingReportContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ReportController controller = Get.isRegistered<ReportController>()
+        ? Get.find<ReportController>()
+        : Get.put(ReportController());
+
+    var dataList = controller.bookingStatisticsModel?.data ?? [];
+    var totalsData = controller.bookingStatisticsModel?.totals;
+
+    String topMobile = dataList.isNotEmpty ? (dataList.first.mobile ?? "-") : "-";
+    String topEmail = dataList.isNotEmpty ? (dataList.first.email ?? "-").toUpperCase() : "-";
+    String topTelephone = dataList.isNotEmpty ? (dataList.first.telephone ?? "-") : "-";
+
+    String totalBookingsCount = totalsData?.totalBookings?.toString() ?? "${dataList.length}";
+    String totalFaresSum = totalsData?.totalEarnings != null
+        ? totalsData!.totalEarnings!.toStringAsFixed(2)
+        : "0.00";
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -93,10 +111,10 @@ class AllBookingReportContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _infoText("MOBILE", "07400000000"),
+                      _infoText("MOBILE", topMobile),
                       const SizedBox(height: 5),
                       const Divider(thickness: 1, color: Colors.black26),
-                      _infoText("TOTAL BOOKINGS", "5"),
+                      _infoText("TOTAL BOOKINGS", totalBookingsCount),
                     ],
                   ),
                 ),
@@ -105,11 +123,11 @@ class AllBookingReportContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _infoText("EMAIL", "DRIVER@EXAMPLE.COM"),
-                      _infoText("TELEPHONE", "0208000000"),
+                      _infoText("EMAIL", topEmail),
+                      _infoText("TELEPHONE", topTelephone),
                       const SizedBox(height: 5),
                       const Divider(thickness: 1, color: Colors.black26),
-                      _infoText("TOTAL FARES", "£ 250.00"),
+                      _infoText("TOTAL FARES", "£ $totalFaresSum"),
                     ],
                   ),
                 ),
@@ -123,8 +141,8 @@ class AllBookingReportContent extends StatelessWidget {
               columnWidths: const {
                 0: FlexColumnWidth(1.2), // REF #
                 1: FlexColumnWidth(1.2), // INVOICE #
-                2: FlexColumnWidth(1.8), // DATETIME
-                3: FlexColumnWidth(1.5), // CUSTOMER
+                2: FlexColumnWidth(1.5), // DATETIME
+                3: FlexColumnWidth(1), // CUSTOMER
                 4: FlexColumnWidth(2.5), // PICKUP
                 5: FlexColumnWidth(2.5), // DROPOFF
                 6: FlexColumnWidth(1),   // FARE
@@ -149,9 +167,9 @@ class AllBookingReportContent extends StatelessWidget {
                     _tableCell("PICKUP", isHeader: true),
                     _tableCell("DROPOFF", isHeader: true),
                     _tableCell("FARE", isHeader: true),
-                    _tableCell("ACC F", isHeader: true),
+                    _tableCell("ACC FARE", isHeader: true),
                     _tableCell("ACC", isHeader: true),
-                    _tableCell("ORD #", isHeader: true),
+                    _tableCell("ORDER #", isHeader: true),
                     _tableCell("P/T", isHeader: true),
                     _tableCell("J/T", isHeader: true),
                     _tableCell("DRV", isHeader: true),
@@ -161,26 +179,41 @@ class AllBookingReportContent extends StatelessWidget {
                   ],
                 ),
                 // Data Rows
-                ...List.generate(5, (index) => TableRow(
-                  children: [
-                    _tableCell("PHC-100$index"),
-                    _tableCell("INV-99$index"),
-                    _tableCell("20/10/2025\n12:00"),
-                    _tableCell("JOHN DOE"),
-                    _tableCell("HEATHROW TERMINAL 2"),
-                    _tableCell("CENTRAL LONDON"),
-                    _tableCell("£50.00"),
-                    _tableCell("£0.00"),
-                    _tableCell("CASH"),
-                    _tableCell("ORD-55"),
-                    _tableCell("PT"),
-                    _tableCell("JT"),
-                    _tableCell("DRV1"),
-                    _tableCell("SALOON"),
-                    _tableCell("SUB1"),
-                    _tableCell("COMPLETED"),
-                  ],
-                )),
+                ...dataList.map((item) {
+                  // Date Time format handle
+                  String formattedDateTime = "-";
+                  if (item.pickupDate != null) {
+                    String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
+                    String time = item.pickupTime ?? "";
+                    formattedDateTime = "$date\n$time".trim();
+                  }
+
+                  // Fare String empty checks
+                  String currentFare = (item.fares == null || item.fares!.trim().isEmpty)
+                      ? "£0.00"
+                      : "£${item.fares}";
+
+                  return TableRow(
+                    children: [
+                      _tableCell(item.referenceNumber ?? "-"),
+                      _tableCell(item.invoiceNumber?.toString() ?? "-"),
+                      _tableCell(formattedDateTime),
+                      _tableCell((item.name ?? "-").toUpperCase()),
+                      _tableCell((item.pickup ?? "-").toUpperCase()),
+                      _tableCell((item.dropoff ?? "-").toUpperCase()),
+                      _tableCell(currentFare),
+                      _tableCell("£ ${item.companyPrice ?? '0.00'}"),
+                      _tableCell((item.account?.name ?? "-").toUpperCase()),
+                      _tableCell(item.orderNumber?.toString() ?? "-"),
+                      _tableCell((item.paymentType?.name ?? "-").toUpperCase()),
+                      _tableCell((item.journeyType?.journeyType ?? "-").toUpperCase()),
+                      _tableCell((item.driver?.name ?? "-").toUpperCase()),
+                      _tableCell((item.vehicleType?.name ?? "-").toUpperCase()),
+                      _tableCell((item.subsidiary?.name ?? "-").toUpperCase()),
+                      _tableCell((item.bookingStatus?.bookingStatus ?? "-").toUpperCase()),
+                    ],
+                  );
+                }),
               ],
             ),
           ],
@@ -207,6 +240,8 @@ class AllBookingReportContent extends StatelessWidget {
       child: Text(
         text,
         textAlign: TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: isHeader ? 14 : 13,
           fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,

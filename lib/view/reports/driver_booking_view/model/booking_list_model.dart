@@ -1,41 +1,63 @@
 // To parse this JSON data, do
 //
-//     final driverLogsReportListModel = driverLogsReportListModelFromJson(jsonString);
+//     final bookingStatisticsModel = bookingStatisticsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-DriverLogsReportListModel driverLogsReportListModelFromJson(String str) => DriverLogsReportListModel.fromJson(json.decode(str));
+import 'package:intl/intl.dart';
 
-String driverLogsReportListModelToJson(DriverLogsReportListModel data) => json.encode(data.toJson());
+BookingStatisticsModel bookingStatisticsModelFromJson(String str) => BookingStatisticsModel.fromJson(json.decode(str));
 
-class DriverLogsReportListModel {
+String bookingStatisticsModelToJson(BookingStatisticsModel data) => json.encode(data.toJson());
+
+class BookingStatisticsModel {
   bool? success;
+  int? page;
+  int? limit;
+  int? total;
+  int? totalPages;
   int? count;
-  List<Booking>? bookings;
+  Totals? totals;
+  List<Datum>? data;
 
-  DriverLogsReportListModel({
+  BookingStatisticsModel({
     this.success,
+    this.page,
+    this.limit,
+    this.total,
+    this.totalPages,
     this.count,
-    this.bookings,
+    this.totals,
+    this.data,
   });
 
-  factory DriverLogsReportListModel.fromJson(Map<String, dynamic> json) => DriverLogsReportListModel(
+  factory BookingStatisticsModel.fromJson(Map<String, dynamic> json) => BookingStatisticsModel(
     success: json["success"],
+    page: json["page"],
+    limit: json["limit"],
+    total: json["total"],
+    totalPages: json["total_pages"],
     count: json["count"],
-    bookings: json["bookings"] == null ? [] : List<Booking>.from(json["bookings"]!.map((x) => Booking.fromJson(x))),
+    totals: json["totals"] == null ? null : Totals.fromJson(json["totals"]),
+    data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "success": success,
+    "page": page,
+    "limit": limit,
+    "total": total,
+    "total_pages": totalPages,
     "count": count,
-    "bookings": bookings == null ? [] : List<dynamic>.from(bookings!.map((x) => x.toJson())),
+    "totals": totals?.toJson(),
+    "data": data == null ? [] : List<dynamic>.from(data!.map((x) => x.toJson())),
   };
 }
 
-class Booking {
+class Datum {
   String? id;
   String? referenceNumber;
-  int? subsidiaryId;
+  dynamic subsidiaryId;
   int? bookingTypeId;
   int? bookingStatusId;
   int? journeyTypeId;
@@ -44,12 +66,12 @@ class Booking {
   int? employeeId;
   String? pickup;
   String? dropoff;
-  String? pickupDate;
+  DateTime? pickupDate;
   String? pickupTime;
   dynamic dropoffDate;
   dynamic dropoffTime;
   String? pickupDoorNumber;
-  String? dropoffDoorNumber;
+  dynamic dropoffDoorNumber;
   dynamic pickupPlot;
   dynamic dropoffPlot;
   dynamic pickupLocationTypeId;
@@ -58,16 +80,16 @@ class Booking {
   String? pickupLongitude;
   String? dropoffLatitude;
   String? dropoffLongitude;
-  List<dynamic>? viapoints;
+  List<Viapoint>? viapoints;
   List<dynamic>? restrictedDrivers;
-  dynamic flightNumber;
-  dynamic arrivingFrom;
+  String? flightNumber;
+  String? arrivingFrom;
   int? vehicleTypeId;
   dynamic vehicleId;
-  int? driverId;
-  dynamic passengers;
-  dynamic luggages;
-  dynamic handLuggages;
+  dynamic driverId;
+  int? passengers;
+  int? luggages;
+  int? handLuggages;
   List<dynamic>? childSeat;
   String? name;
   String? email;
@@ -129,8 +151,8 @@ class Booking {
   String? updatedAt;
   String? eta;
   bool? fob;
-  LogsBookingStatus? bookingStatus;
-  LogBookingType? bookingType;
+  BookingStatusReport? bookingStatus;
+  BookingType? bookingType;
   JourneyType? journeyType;
   Subsidiary? subsidiary;
   VehicleType? vehicleType;
@@ -138,10 +160,10 @@ class Booking {
   Account? account;
   Driver? driver;
   Customer? customer;
-  LogsEmployee? employee;
+  EmployeeReport? employee;
   Airport? airport;
 
-  Booking({
+  Datum({
     this.id,
     this.referenceNumber,
     this.subsidiaryId,
@@ -251,7 +273,7 @@ class Booking {
     this.airport,
   });
 
-  factory Booking.fromJson(Map<String, dynamic> json) => Booking(
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
     id: json["id"],
     referenceNumber: json["reference_number"],
     subsidiaryId: json["subsidiary_id"],
@@ -263,7 +285,10 @@ class Booking {
     employeeId: json["employee_id"],
     pickup: json["pickup"],
     dropoff: json["dropoff"],
-    pickupDate: json["pickup_date"],
+    // pickupDate: json["pickup_date"] == null ? null : DateTime.parse(json["pickup_date"]),
+    pickupDate: json["pickup_date"] != null
+        ? DateFormat("yyyy-M-d").tryParse(json["pickup_date"].toString())
+        : null,
     pickupTime: json["pickup_time"],
     dropoffDate: json["dropoff_date"],
     dropoffTime: json["dropoff_time"],
@@ -277,7 +302,7 @@ class Booking {
     pickupLongitude: json["pickup_longitude"],
     dropoffLatitude: json["dropoff_latitude"],
     dropoffLongitude: json["dropoff_longitude"],
-    viapoints: json["viapoints"] == null ? [] : List<dynamic>.from(json["viapoints"]!.map((x) => x)),
+    viapoints: json["viapoints"] == null ? [] : List<Viapoint>.from(json["viapoints"]!.map((x) => Viapoint.fromJson(x))),
     restrictedDrivers: json["restricted_drivers"] == null ? [] : List<dynamic>.from(json["restricted_drivers"]!.map((x) => x)),
     flightNumber: json["flight_number"],
     arrivingFrom: json["arriving_from"],
@@ -348,8 +373,8 @@ class Booking {
     updatedAt: json["updated_at"],
     eta: json["eta"],
     fob: json["fob"],
-    bookingStatus: json["booking_status"] == null ? null : LogsBookingStatus.fromJson(json["booking_status"]),
-    bookingType: json["booking_type"] == null ? null : LogBookingType.fromJson(json["booking_type"]),
+    bookingStatus: json["booking_status"] == null ? null : BookingStatusReport.fromJson(json["booking_status"]),
+    bookingType: json["booking_type"] == null ? null : BookingType.fromJson(json["booking_type"]),
     journeyType: json["journey_type"] == null ? null : JourneyType.fromJson(json["journey_type"]),
     subsidiary: json["subsidiary"] == null ? null : Subsidiary.fromJson(json["subsidiary"]),
     vehicleType: json["vehicle_type"] == null ? null : VehicleType.fromJson(json["vehicle_type"]),
@@ -357,7 +382,7 @@ class Booking {
     account: json["account"] == null ? null : Account.fromJson(json["account"]),
     driver: json["driver"] == null ? null : Driver.fromJson(json["driver"]),
     customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
-    employee: json["employee"] == null ? null : LogsEmployee.fromJson(json["employee"]),
+    employee: json["employee"] == null ? null : EmployeeReport.fromJson(json["employee"]),
     airport: json["airport"] == null ? null : Airport.fromJson(json["airport"]),
   );
 
@@ -373,7 +398,7 @@ class Booking {
     "employee_id": employeeId,
     "pickup": pickup,
     "dropoff": dropoff,
-    "pickup_date": pickupDate,
+    "pickup_date": "${pickupDate!.year.toString().padLeft(4, '0')}-${pickupDate!.month.toString().padLeft(2, '0')}-${pickupDate!.day.toString().padLeft(2, '0')}",
     "pickup_time": pickupTime,
     "dropoff_date": dropoffDate,
     "dropoff_time": dropoffTime,
@@ -387,7 +412,7 @@ class Booking {
     "pickup_longitude": pickupLongitude,
     "dropoff_latitude": dropoffLatitude,
     "dropoff_longitude": dropoffLongitude,
-    "viapoints": viapoints == null ? [] : List<dynamic>.from(viapoints!.map((x) => x)),
+    "viapoints": viapoints == null ? [] : List<dynamic>.from(viapoints!.map((x) => x.toJson())),
     "restricted_drivers": restrictedDrivers == null ? [] : List<dynamic>.from(restrictedDrivers!.map((x) => x)),
     "flight_number": flightNumber,
     "arriving_from": arrivingFrom,
@@ -596,14 +621,14 @@ class LocationType {
   };
 }
 
-class LogsBookingStatus {
+class BookingStatusReport {
   String? bookingStatus;
 
-  LogsBookingStatus({
+  BookingStatusReport({
     this.bookingStatus,
   });
 
-  factory LogsBookingStatus.fromJson(Map<String, dynamic> json) => LogsBookingStatus(
+  factory BookingStatusReport.fromJson(Map<String, dynamic> json) => BookingStatusReport(
     bookingStatus: json["booking_status"],
   );
 
@@ -612,14 +637,14 @@ class LogsBookingStatus {
   };
 }
 
-class LogBookingType {
+class BookingType {
   String? bookingType;
 
-  LogBookingType({
+  BookingType({
     this.bookingType,
   });
 
-  factory LogBookingType.fromJson(Map<String, dynamic> json) => LogBookingType(
+  factory BookingType.fromJson(Map<String, dynamic> json) => BookingType(
     bookingType: json["booking_type"],
   );
 
@@ -630,9 +655,9 @@ class LogBookingType {
 
 class Customer {
   dynamic doorNumber;
-  dynamic address1;
-  dynamic address2;
-  dynamic blacklist;
+  String? address1;
+  String? address2;
+  bool? blacklist;
 
   Customer({
     this.doorNumber,
@@ -657,15 +682,15 @@ class Customer {
 }
 
 class Driver {
-  int? id;
-  String? username;
-  String? name;
+  dynamic id;
+  dynamic username;
+  dynamic name;
   dynamic mobileDeviceId;
   dynamic phcVehicleNumber;
   dynamic phcDriverNumber;
-  int? vehicleId;
-  int? driverCommission;
-  String? sessionStatus;
+  dynamic vehicleId;
+  dynamic driverCommission;
+  dynamic sessionStatus;
   Vehicle? vehicle;
 
   Driver({
@@ -709,10 +734,10 @@ class Driver {
 }
 
 class Vehicle {
-  String? make;
-  String? model;
-  String? color;
-  String? vehicleNumber;
+  dynamic make;
+  dynamic model;
+  dynamic color;
+  dynamic vehicleNumber;
 
   Vehicle({
     this.make,
@@ -736,16 +761,16 @@ class Vehicle {
   };
 }
 
-class LogsEmployee {
-  String? username;
-  int? roleId;
+class EmployeeReport {
+  dynamic username;
+  dynamic roleId;
 
-  LogsEmployee({
+  EmployeeReport({
     this.username,
     this.roleId,
   });
 
-  factory LogsEmployee.fromJson(Map<String, dynamic> json) => LogsEmployee(
+  factory EmployeeReport.fromJson(Map<String, dynamic> json) => EmployeeReport(
     username: json["username"],
     roleId: json["role_id"],
   );
@@ -801,9 +826,9 @@ class PaymentType {
 }
 
 class Subsidiary {
-  int? id;
-  String? name;
-  String? telephoneNumber;
+  dynamic id;
+  dynamic name;
+  dynamic telephoneNumber;
 
   Subsidiary({
     this.id,
@@ -845,5 +870,73 @@ class VehicleType {
     "name": name,
     "background_color": backgroundColor,
     "foreground_color": foregroundColor,
+  };
+}
+
+class Viapoint {
+  String? viapoint;
+  String? name;
+  String? mobile;
+  dynamic arrived;
+  dynamic passengerOnBoard;
+  bool? active;
+  double? latitude;
+  double? longitude;
+
+  Viapoint({
+    this.viapoint,
+    this.name,
+    this.mobile,
+    this.arrived,
+    this.passengerOnBoard,
+    this.active,
+    this.latitude,
+    this.longitude,
+  });
+
+  factory Viapoint.fromJson(Map<String, dynamic> json) => Viapoint(
+    viapoint: json["viapoint"],
+    name: json["name"],
+    mobile: json["mobile"],
+    arrived: json["arrived"],
+    passengerOnBoard: json["passenger_on_board"],
+    active: json["active"],
+    latitude: json["latitude"]?.toDouble(),
+    longitude: json["longitude"]?.toDouble(),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "viapoint": viapoint,
+    "name": name,
+    "mobile": mobile,
+    "arrived": arrived,
+    "passenger_on_board": passengerOnBoard,
+    "active": active,
+    "latitude": latitude,
+    "longitude": longitude,
+  };
+}
+
+class Totals {
+  int? totalBookings;
+  double? totalEarnings;
+  double? totalAccountEarnings;
+
+  Totals({
+    this.totalBookings,
+    this.totalEarnings,
+    this.totalAccountEarnings,
+  });
+
+  factory Totals.fromJson(Map<String, dynamic> json) => Totals(
+    totalBookings: json["total_bookings"],
+    totalEarnings: json["total_earnings"]?.toDouble(),
+    totalAccountEarnings: json["total_account_earnings"]?.toDouble(),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "total_bookings": totalBookings,
+    "total_earnings": totalEarnings,
+    "total_account_earnings": totalAccountEarnings,
   };
 }

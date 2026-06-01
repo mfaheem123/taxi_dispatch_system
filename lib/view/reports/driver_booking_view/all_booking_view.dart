@@ -10,6 +10,7 @@ import '../../../component/color.dart';
 import '../../../component/datatable_widget.dart';
 import '../../../component/dropdown_button.dart';
 import '../../../component/keyboard_checkBox_widget.dart';
+import '../../../component/pagination.dart';
 import '../../../component/radio_button_widget.dart';
 import '../../../component/text_field.dart';
 import '../../customer/model/restricDriver.dart';
@@ -41,8 +42,11 @@ class _AllBookingViewState extends State<AllBookingView> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ReportController>(initState: (state) {
+      controller.clearDropdowns();
       controller.selectDriverObject = null;
       controller.getAllDrivers();
+      controller.getData();
+      controller.getEmployeeData();
       controller.bookingStartTimeController.text = "12:00";
       controller.bookingEndTimeController.text =
           DateFormat('HH:mm').format(DateTime.now());
@@ -79,79 +83,60 @@ class _AllBookingViewState extends State<AllBookingView> {
                             style: mozillaTextRegularText(fontSize: 12),
                           ),
                           StatusRadioGroup(
-                            options: [
+                            options: const [
                               "ALL",
                               "COMPLETED",
                               "INCOMPLETE",
                               "MISSED",
                               "DECLINED",
-                              "CANCELLED",
+                              "CANCELLED"
                             ],
                             onChanged: (index, value) {
-                              debugPrint(
-                                  "Selected index: $index, value: $value");
-                              // controller.selectedValue = index;
+                              controller.setSelectedStatusByName(value);
                             },
                           ),
                           const Spacer(),
                           Wrap(
                             spacing: 12,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
-                              KeyboardCheckbox(
-                                focusNode: controller.ptNode,
-                                value: controller.ptValue.value,
-                                label: AppText.pt,
-                                width: 60,
-                                onChanged: (val) {
-                                  controller.ptValue.value = val;
-                                  controller.update();
-                                },
+                              Text(
+                                AppText.pt,
+                                style: mozillaTextRegularText(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
                               ),
-                              KeyboardCheckbox(
-                                focusNode: controller.cashNode,
-                                value: controller.cashValue.value,
-                                label: AppText.cash,
-                                width: 70,
-                                onChanged: (val) {
-                                  controller.cashValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.creditCardNode,
-                                value: controller.creditCardValue.value,
-                                label: AppText.creditCard,
-                                width: 120,
-                                onChanged: (val) {
-                                  controller.creditCardValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.accountNode,
-                                value: controller.accountValue.value,
-                                label: AppText.account,
-                                width: 100,
-                                onChanged: (val) {
-                                  controller.accountValue.value = val;
-                                  controller.update();
-                                },
-                              ),
-                              KeyboardCheckbox(
-                                focusNode: controller.creditCardPaidNode,
-                                value: controller.creditCardPaidValue.value,
-                                label: AppText.creditCardPaid,
-                                width: 160,
-                                onChanged: (val) {
-                                  controller.creditCardPaidValue.value = val;
-                                  controller.update();
-                                },
-                              ),
+                              const SizedBox(width: 4),
+                              if (controller.apiDashboardData?.paymentTypes
+                                      ?.isNotEmpty ??
+                                  false)
+                                ...controller.apiDashboardData!.paymentTypes!
+                                    .map((paymentType) {
+                                  final int typeId = paymentType.id ?? 0;
+                                  String typeLabel = "";
+                                  try {
+                                    typeLabel =
+                                        (paymentType.name ?? "").toUpperCase();
+                                  } catch (_) {
+                                    typeLabel =
+                                        paymentType.toString().toUpperCase();
+                                  }
+
+                                  return KeyboardCheckbox(
+                                    focusNode: FocusNode(),
+                                    value: controller.apiSelectedPaymentTypeIds
+                                        .contains(typeId),
+                                    label: typeLabel,
+                                    width: typeLabel.length > 10 ? 140 : 90,
+                                    onChanged: (val) {
+                                      controller.toggleApiPaymentType(typeId);
+                                    },
+                                  );
+                                }).toList(),
                             ],
                           ),
                         ],
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 8,
                       ),
                       Wrap(
@@ -241,106 +226,350 @@ class _AllBookingViewState extends State<AllBookingView> {
                             width: fieldWidth / 2,
                             // height: 35,
                             items: controller.allDriverData?.drivers ?? [],
-                            value: controller.allDriverData?.drivers?.any((d) => d.id == controller.selectDriverObject?.id) ?? false
-                                ? controller.allDriverData!.drivers!.firstWhere((d) => d.id == controller.selectDriverObject?.id)
+                            value: controller.allDriverData?.drivers?.any((d) =>
+                                        d.id ==
+                                        controller.selectDriverObject?.id) ??
+                                    false
+                                ? controller.allDriverData!.drivers!.firstWhere(
+                                    (d) =>
+                                        d.id ==
+                                        controller.selectDriverObject?.id)
                                 : null,
                             itemLabel: (driver) =>
-                            driver.name ?? "".toUpperCase(),
+                                driver.name ?? "".toUpperCase(),
                             onChanged: (val) {
                               controller.selectDriverObject = val;
                               controller.update();
                             },
                           ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.pickUpController,
-                            width: fieldWidth / 1.7,
-                            hintText: "PICKUP",
-                          ),
-                          CustomTextField(
-                            borderRadius: 4,
-                            controller: controller.dropOffController,
-                            width: fieldWidth / 1.7,
-                            hintText: "DROPOFF",
-                          ),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 1.6,
+                          (() {
+                            final ScrollController pickupScrollController =
+                                ScrollController();
+
+                            return SizedBox(
+                              width: fieldWidth / 1.2,
+                              height: 30,
+                              child: Autocomplete<String>(
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) async {
+                                  if (textEditingValue.text.isEmpty) {
+                                    return const Iterable<String>.empty();
+                                  }
+                                  return await controller.getSearchPostcodes(
+                                      textEditingValue.text);
+                                },
+                                onSelected: (String selection) {
+                                  controller.pickUpController.text = selection;
+                                  controller.update();
+                                },
+                                optionsViewBuilder:
+                                    (context, onSelected, options) {
+                                  final int highlightedIndex =
+                                      AutocompleteHighlightedOption.of(context);
+
+                                  if (pickupScrollController.hasClients &&
+                                      highlightedIndex >= 0) {
+                                    final double itemHeight = 32.0;
+                                    final double currentScroll =
+                                        pickupScrollController.offset;
+                                    final double viewportHeight = 200.0;
+                                    final double targetOffset =
+                                        highlightedIndex * itemHeight;
+
+                                    if (targetOffset + itemHeight >
+                                        currentScroll + viewportHeight) {
+                                      pickupScrollController.jumpTo(
+                                          targetOffset +
+                                              itemHeight -
+                                              viewportHeight);
+                                    } else if (targetOffset < currentScroll) {
+                                      pickupScrollController
+                                          .jumpTo(targetOffset);
+                                    }
+                                  }
+
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      elevation: 4.0,
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                            maxHeight: 200),
+                                        child: SizedBox(
+                                          width: fieldWidth / 1.2,
+                                          child: ListView.builder(
+                                            controller: pickupScrollController,
+                                            padding: EdgeInsets.zero,
+                                            shrinkWrap: true,
+                                            itemCount: options.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              final String option =
+                                                  options.elementAt(index);
+                                              final bool highlight =
+                                                  highlightedIndex == index;
+
+                                              return InkWell(
+                                                onTap: () => onSelected(option),
+                                                child: Container(
+                                                  color: highlight
+                                                      ? Colors.blue
+                                                          .withOpacity(0.1)
+                                                      : null,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16.0,
+                                                      vertical: 8.0),
+                                                  child: Text(
+                                                    option,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                fieldViewBuilder: (context,
+                                    textEditingController,
+                                    focusNode,
+                                    onFieldSubmitted) {
+                                  if (textEditingController.text !=
+                                      controller.pickUpController.text) {
+                                    textEditingController.text =
+                                        controller.pickUpController.text;
+                                  }
+                                  return TextField(
+                                    controller: textEditingController,
+                                    focusNode: focusNode,
+                                    onSubmitted: (String value) =>
+                                        onFieldSubmitted(),
+                                    style: const TextStyle(fontSize: 13),
+                                    decoration: InputDecoration(
+                                      hintText: "PICKUP",
+                                      hintStyle: const TextStyle(fontSize: 12),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 12),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                    ),
+                                    onChanged: (val) {
+                                      controller.pickUpController.text = val;
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          })(),
+                          (() {
+                            final ScrollController dropoffScrollController =
+                                ScrollController();
+
+                            return SizedBox(
+                              width: fieldWidth / 1.2,
+                              height: 30,
+                              child: Autocomplete<String>(
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) async {
+                                  if (textEditingValue.text.isEmpty) {
+                                    return const Iterable<String>.empty();
+                                  }
+                                  return await controller.getSearchPostcodes(
+                                      textEditingValue.text);
+                                },
+                                onSelected: (String selection) {
+                                  controller.dropOffController.text = selection;
+                                  controller.update();
+                                },
+                                optionsViewBuilder:
+                                    (context, onSelected, options) {
+                                  final int highlightedIndex =
+                                      AutocompleteHighlightedOption.of(context);
+
+                                  if (dropoffScrollController.hasClients &&
+                                      highlightedIndex >= 0) {
+                                    final double itemHeight = 32.0;
+                                    final double currentScroll =
+                                        dropoffScrollController.offset;
+                                    final double viewportHeight = 200.0;
+                                    final double targetOffset =
+                                        highlightedIndex * itemHeight;
+
+                                    if (targetOffset + itemHeight >
+                                        currentScroll + viewportHeight) {
+                                      dropoffScrollController.jumpTo(
+                                          targetOffset +
+                                              itemHeight -
+                                              viewportHeight);
+                                    } else if (targetOffset < currentScroll) {
+                                      dropoffScrollController
+                                          .jumpTo(targetOffset);
+                                    }
+                                  }
+
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Material(
+                                      elevation: 4.0,
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                            maxHeight: 200),
+                                        child: SizedBox(
+                                          width: fieldWidth / 1.2,
+                                          child: ListView.builder(
+                                            controller: dropoffScrollController,
+                                            padding: EdgeInsets.zero,
+                                            shrinkWrap: true,
+                                            itemCount: options.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              final String option =
+                                                  options.elementAt(index);
+                                              final bool highlight =
+                                                  highlightedIndex == index;
+
+                                              return InkWell(
+                                                onTap: () => onSelected(option),
+                                                child: Container(
+                                                  color: highlight
+                                                      ? Colors.blue
+                                                          .withOpacity(0.1)
+                                                      : null,
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 16.0,
+                                                      vertical: 8.0),
+                                                  child: Text(
+                                                    option,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: const TextStyle(
+                                                        fontSize: 12),
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                fieldViewBuilder: (context,
+                                    textEditingController,
+                                    focusNode,
+                                    onFieldSubmitted) {
+                                  if (textEditingController.text !=
+                                      controller.dropOffController.text) {
+                                    textEditingController.text =
+                                        controller.dropOffController.text;
+                                  }
+                                  return TextField(
+                                    controller: textEditingController,
+                                    focusNode: focusNode,
+                                    onSubmitted: (String value) =>
+                                        onFieldSubmitted(),
+                                    style: const TextStyle(fontSize: 13),
+                                    decoration: InputDecoration(
+                                      hintText: "DROPOFF",
+                                      hintStyle: const TextStyle(fontSize: 12),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 12),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                    ),
+                                    onChanged: (val) {
+                                      controller.dropOffController.text = val;
+                                    },
+                                  );
+                                },
+                              ),
+                            );
+                          })(),
+                          CustomDropdownField<dynamic>(
+                            width: fieldWidth / 1.9,
                             label: AppText.selectAccount,
-                            items: [
-                              "ACCOUNT 1",
-                              "ACCOUNT 2",
-                              "ACCOUNT 3",
-                              "ACCOUNT 4",
-                              "ACCOUNT 5",
-                            ],
-                            value: controller.selectAccount,
-                            itemLabel: (val) => val,
+                            items: controller.dashboardAccountModel?.accounts ??
+                                [],
+                            value: controller.apiSelectedAccount,
+                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
                             onChanged: (val) {
-                              controller.selectAccount = val!;
+                              controller.apiSelectedAccount = val;
+
+                              controller.apiSelectedDepartment = null;
+                              controller.accountDepartmentsList.clear();
+
+                              if (val != null && val.departments != null) {
+                                controller.accountDepartmentsList
+                                    .addAll(val.departments);
+                              }
                               controller.update();
                             },
                           ),
-                          CustomDropdownField<String>(
-                            width: fieldWidth / 1.6,
+                          CustomDropdownField<dynamic>(
+                            width: fieldWidth / 1.9,
                             label: AppText.selectDepartment,
-                            items: [
-                              "Department 1",
-                              "Department 2",
-                              "Department 3",
-                              "Department 4",
-                              "Department 5",
-                            ],
-                            value: controller.selectDepartment,
-                            itemLabel: (val) => val,
+                            items: controller.accountDepartmentsList,
+                            value: controller.apiSelectedDepartment,
+                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
                             onChanged: (val) {
-                              controller.selectDepartment = val!;
+                              controller.apiSelectedDepartment = val;
                               controller.update();
                             },
                           ),
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.orderNumberController,
-                            width: fieldWidth / 1.7,
+                            width: fieldWidth / 2,
                             hintText: AppText.orderNumber,
                           ),
                           CustomTextField(
                             borderRadius: 4,
                             controller: controller.bookedByController,
-                            width: fieldWidth / 1.7,
+                            width: fieldWidth / 2,
                             hintText: AppText.bookedBy,
                           ),
-                          CustomDropdownField<String>(
+                          CustomDropdownField<dynamic>(
                             width: fieldWidth / 1.5,
                             label: AppText.selectEmployee,
-                            items: [
-                              "Employee 1",
-                              "Employee 2",
-                              "Employee 3",
-                              "Employee 4",
-                              "Employee 5",
-                            ],
-                            value: controller.selectEmployee,
-                            itemLabel: (val) => val, // just show the string
+                            items: controller.userModel?.employees ?? [],
+                            value: controller.apiSelectedEmployee,
+                            itemLabel: (val) =>
+                                (val.username ?? "").toUpperCase(),
                             onChanged: (val) {
-                              controller.selectEmployee = val!;
+                              controller.apiSelectedEmployee = val;
                               controller.update();
                             },
                           ),
-                          CustomDropdownField<String>(
-                            // text: AppText.selectSubsidiary,
+                          CustomDropdownField<dynamic>(
                             width: fieldWidth / 1.5,
                             label: AppText.selectSubsidiary,
-                            items: [
-                              "SUBSIDIARY 1",
-                              "SUBSIDIARY 2",
-                              "SUBSIDIARY 3",
-                              "SUBSIDIARY 4",
-                              "SUBSIDIARY 5",
-                            ],
-                            value: controller.selectSubsidiary,
-                            itemLabel: (val) => val, // just show the string
+                            items:
+                                controller.apiDashboardData?.subsidiaries ?? [],
+                            value: controller.apiSelectedSubsidiary,
+                            itemLabel: (val) => (val.name ?? "").toUpperCase(),
                             onChanged: (val) {
-                              controller.selectSubsidiary = val!;
+                              controller.apiSelectedSubsidiary = val;
+                              controller.apiSelectedAccount = null;
+                              controller.apiSelectedDepartment = null;
+
+                              if (val != null && val.id != null) {
+                                controller.getAccountData(val.id);
+                              }
                               controller.update();
                             },
                           ),
@@ -349,14 +578,23 @@ class _AllBookingViewState extends State<AllBookingView> {
                             width: fieldWidth / 1.5,
                             label: AppText.selectRefNumber,
                             items: [
-                              "REFERENCE NUMBER 1",
-                              "REFERENCE NUMBER 2",
-                              "REFERENCE NUMBER 3",
-                              "REFERENCE NUMBER 4",
-                              "REFERENCE NUMBER 5",
+                              "REFERENCE NUMBER",
+                              "DATETIME",
+                              "CUSTOMER",
+                              "MOBILE",
+                              "TELEPHONE",
+                              "PICKUP",
+                              "DROPOFF",
+                              "FARE",
+                              "ACCOUNT",
+                              "ORDER NUMBER",
+                              "PAYMENT TYPE",
+                              "DRIVER",
+                              "VEHICLE TYPE",
+                              "STATUS",
                             ],
                             value: controller.selectRefNumber,
-                            itemLabel: (val) => val, // just show the string
+                            itemLabel: (val) => val,
                             onChanged: (val) {
                               controller.selectRefNumber = val!;
                               controller.update();
@@ -366,15 +604,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                             // text: AppText.selectRefNumber,
                             width: fieldWidth / 1.5,
                             label: AppText.ascending,
-                            items: [
-                              "ASCENDING 1",
-                              "ASCENDING 2",
-                              "ASCENDING 3",
-                              "ASCENDING 4",
-                              "ASCENDING 5",
-                            ],
+                            items: ["ASCENDING", "DESCENDING"],
                             value: controller.selectAscending,
-                            itemLabel: (val) => val, // just show the string
+                            itemLabel: (val) => val,
                             onChanged: (val) {
                               controller.selectAscending = val!;
                               controller.update();
@@ -390,11 +622,9 @@ class _AllBookingViewState extends State<AllBookingView> {
                             verticalPadding: 0.0,
                             btnText: AppText.filter,
                             fontSize: 12,
-                            onTap: (){
+                            onTap: () async {
                               controller.isFiltered.value = true;
-                              controller.totalBookings.value;
-                              controller.totalEarnings.value;
-                              controller.totalAccountEarnings.value;
+                              await controller.getBookingStatistics();
                             },
                           ),
                           CustomButton(
@@ -427,150 +657,1090 @@ class _AllBookingViewState extends State<AllBookingView> {
                 SizedBox(
                   height: 20,
                 ),
-
-
                 Obx(() => Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: DynamicColors.gryClr.withOpacity(0.5)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Total Bookings
-                      _buildSummaryItem(
-                        label: "TOTAL BOOKINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalBookings.value}"
-                            : "",
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: DynamicColors.secondaryClr,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: DynamicColors.gryClr.withOpacity(0.5)),
                       ),
-                      // Total Earning
-                      _buildSummaryItem(
-                        label: "TOTAL EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                      // Total Account Earning
-                      _buildSummaryItem(
-                        label: "TOTAL ACCOUNT EARNINGS",
-                        value: controller.isFiltered.value
-                            ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
-                            : "",
-                      ),
-                    ],
-                  ),
-                )),
-
-                const SizedBox(height: 10),
-
-                SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                width: MediaQuery.of(context)
-                    .size
-                    .width,
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: FittedBox(
-                fit: BoxFit.contain,
-
-                child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "INVOICE #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "CUSTOMER"),
-                          buildHeaderWithSearch(title: "PICKUP"),
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "FARE"),
-                          buildHeaderWithSearch(title: "ACC FARE"),
-                          buildHeaderWithSearch(title: "ACC"),
-                          buildHeaderWithSearch(title: "ORDER #"),
-                          buildHeaderWithSearch(title: "P/T"),
-                          buildHeaderWithSearch(title: "J/T"),
-                          buildHeaderWithSearch(title: "DRV"),
-                          buildHeaderWithSearch(title: "VEH"),
-                          buildHeaderWithSearch(title: "SUBS"),
-                          buildHeaderWithSearch(title: "STATUS"),
-                          buildHeaderWithSearch(
-                              title: "ACTION",removeSearching: true),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Total Bookings
+                          _buildSummaryItem(
+                            label: "TOTAL BOOKINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalBookings.value}"
+                                : "",
+                          ),
+                          // Total Earning
+                          _buildSummaryItem(
+                            label: "TOTAL EARNINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalEarnings.value.toStringAsFixed(2)}"
+                                : "",
+                          ),
+                          // Total Account Earning
+                          _buildSummaryItem(
+                            label: "TOTAL ACCOUNT EARNINGS",
+                            value: controller.isFiltered.value
+                                ? "£ ${controller.totalAccountEarnings.value.toStringAsFixed(2)}"
+                                : "",
+                          ),
                         ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          DataCell(
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.edit_calendar,
-                                      size: 28,
+                      ),
+                    )),
+                const SizedBox(height: 10),
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: Container(
+                //     width: MediaQuery.of(context).size.width,
+                //     padding: const EdgeInsets.symmetric(horizontal: 4),
+                //       child: DatatableWidget(
+                //           columns: [
+                //             buildHeaderWithSearch(title: "REF #"),
+                //             buildHeaderWithSearch(title: "INVOICE #"),
+                //             buildHeaderWithSearch(title: "DATETIME"),
+                //             buildHeaderWithSearch(title: "CUSTOMER"),
+                //             buildHeaderWithSearch(title: "PICKUP"),
+                //             buildHeaderWithSearch(title: "DROPOFF"),
+                //             buildHeaderWithSearch(title: "FARE"),
+                //             buildHeaderWithSearch(title: "ACC FARE"),
+                //             buildHeaderWithSearch(title: "ACC"),
+                //             buildHeaderWithSearch(title: "ORDER #"),
+                //             buildHeaderWithSearch(title: "P/T"),
+                //             buildHeaderWithSearch(title: "J/T"),
+                //             buildHeaderWithSearch(title: "DRV"),
+                //             buildHeaderWithSearch(title: "VEH"),
+                //             buildHeaderWithSearch(title: "SUBS"),
+                //             buildHeaderWithSearch(title: "STATUS"),
+                //             buildHeaderWithSearch(
+                //                 title: "ACTION", removeSearching: true),
+                //           ],
+                //           totalRow: controller.bookingStatisticsModel?.data?.length ?? 0,
+                //           rows: (controller.bookingStatisticsModel?.data ?? []).map((item) {
+                //
+                //             String formattedDateTime = "-";
+                //             if (item.pickupDate != null) {
+                //               String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
+                //               String time = item.pickupTime ?? "";
+                //               formattedDateTime = "$date $time".trim();
+                //             }
+                //             return DataRow(
+                //               cells: [
+                //                 DataCell(Center(child: Text(item.referenceNumber ?? "-"))),
+                //                 DataCell(Center(child: Text(item.invoiceNumber?.toString() ?? "-"))),
+                //                 DataCell(Center(child: Text(formattedDateTime))),
+                //                 DataCell(Center(child: Text((item.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text(item.pickup ?? "-"))),
+                //                 DataCell(Center(child: Text(item.dropoff ?? "-"))),
+                //                 DataCell(Center(child: Text("£ ${item.fares ?? '0.00'}"))),
+                //                 DataCell(Center(child: Text("£ ${item.companyPrice ?? '0.00'}"))),
+                //                 DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text(item.orderNumber?.toString() ?? "-"))),
+                //                 DataCell(Center(child: Text((item.paymentType?.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text((item.journeyType?.journeyType ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text((item.driver?.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text((item.vehicleType?.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text((item.subsidiary?.name ?? "-").toUpperCase()))),
+                //                 DataCell(Center(child: Text((item.bookingStatus?.bookingStatus ?? "-").toUpperCase()))),
+                //                 DataCell(
+                //                   Center(
+                //                     child: Row(
+                //                       mainAxisAlignment: MainAxisAlignment.center,
+                //                       children: [
+                //                         OutlinedButton(
+                //                           style: OutlinedButton.styleFrom(
+                //                             side: const BorderSide(
+                //                               color: Colors.transparent,
+                //                             ),
+                //                           ),
+                //                           onPressed: () {
+                //                           },
+                //                           child: const Icon(
+                //                             Icons.edit_calendar,
+                //                             size: 28,
+                //                           ),
+                //                         ),
+                //                         const Text("|"),
+                //                         OutlinedButton(
+                //                           style: OutlinedButton.styleFrom(
+                //                             side: const BorderSide(
+                //                               color: Colors.transparent,
+                //                             ),
+                //                           ),
+                //                           onPressed: () {
+                //                           },
+                //                           child: Icon(
+                //                             Icons.delete_forever,
+                //                             size: 28,
+                //                             color: DynamicColors.redClr,
+                //                           ),
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             );
+                //           }).toList()),
+                //     ),
+                //   ),
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: SingleChildScrollView(
+                //     scrollDirection: Axis.vertical,
+                //     child: IntrinsicWidth(
+                //       child: Container(
+                //         padding: const EdgeInsets.symmetric(horizontal: 4),
+                //         child: DatatableWidget(
+                //           columns: [
+                //             buildHeaderWithSearch(title: "REF #",
+                //             onChanged: (v) {
+                //               controller.searchReferenceNo.value = v;
+                //               controller.onBookingSearchChanged();
+                //             }),
+                //             buildHeaderWithSearch(title: "INVOICE #",
+                //                 onChanged: (v) {
+                //                   controller.searchInvoiceNo.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "DATETIME",
+                //                 onChanged: (v) {
+                //                   controller.searchDateTime.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "CUSTOMER",
+                //                 onChanged: (v) {
+                //                   controller.searchCustomer.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "PICKUP",
+                //                 onChanged: (v) {
+                //                   controller.searchPickup.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "DROPOFF",
+                //                 onChanged: (v) {
+                //                   controller.searchDropOff.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "FARE",
+                //                 onChanged: (v) {
+                //                   controller.searchFare.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "ACC FARE",
+                //                 onChanged: (v) {
+                //                   controller.searchAccFare.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "ACC",
+                //                 onChanged: (v) {
+                //                   controller.searchAcc.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "ORDER #",
+                //                 onChanged: (v) {
+                //                   controller.searchOrderNO.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "P/T",
+                //                 onChanged: (v) {
+                //                   controller.searchPaymentType.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "J/T",
+                //                 onChanged: (v) {
+                //                   controller.searchJourneyType.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "DRV",
+                //                 onChanged: (v) {
+                //                   controller.searchDriver.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "VEH",
+                //                 onChanged: (v) {
+                //                   controller.searchVehicle.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "SUBS",
+                //                 onChanged: (v) {
+                //                   controller.searchSubsidiary.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "STATUS",
+                //                 onChanged: (v) {
+                //                   controller.searchStatus.value = v;
+                //                   controller.onBookingSearchChanged();
+                //                 }),
+                //             buildHeaderWithSearch(title: "ACTION", removeSearching: true),
+                //           ],
+                //           totalRow: controller.bookingStatisticsModel?.data?.length ?? 0,
+                //           rows: List<DataRow>.generate(
+                //             (controller.bookingStatisticsModel?.data ?? []).length,
+                //                 (index) {
+                //               var item = controller.bookingStatisticsModel!.data![index];
+                //
+                //               String formattedDateTime = "-";
+                //               if (item.pickupDate != null) {
+                //                 String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
+                //                 String time = item.pickupTime ?? "";
+                //                 formattedDateTime = "$date $time".trim();
+                //               }
+                //
+                //               return DataRow(
+                //                 cells: [
+                //                   DataCell(Center(child: Text(item.referenceNumber ?? "-", maxLines: 1))),
+                //                   DataCell(Center(child: Text(item.invoiceNumber?.toString() ?? "-", maxLines: 1))),
+                //                   DataCell(Center(child: Text(formattedDateTime, maxLines: 1))),
+                //                   DataCell(Center(child: Text((item.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //
+                //                   // PICKUP
+                //                   DataCell(
+                //                     SizedBox(
+                //                       width: 150,
+                //                       child: Text(
+                //                         item.pickup ?? "-",
+                //                         maxLines: 1,
+                //                         overflow: TextOverflow.ellipsis,
+                //                       ),
+                //                     ),
+                //                   ),
+                //
+                //                   // DROPOFF
+                //                   DataCell(
+                //                     SizedBox(
+                //                       width: 150,
+                //                       child: Text(
+                //                         item.dropoff ?? "-",
+                //                         maxLines: 1,
+                //                         overflow: TextOverflow.ellipsis,
+                //                       ),
+                //                     ),
+                //                   ),
+                //                   DataCell(
+                //                     Center(
+                //                       child: Obx(() {
+                //                         bool isEditing = controller.editingRowIndex.value == index;
+                //                         return isEditing
+                //                             ? SizedBox(
+                //                           width: 90,
+                //                           child: TextField(
+                //                             controller: controller.fareController,
+                //                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                //                             autofocus: true,
+                //                             style: const TextStyle(fontSize: 14, color: Colors.black),
+                //                             decoration: const InputDecoration(
+                //                               prefixText: "£ ",
+                //                               isDense: true,
+                //                               contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                //                               border: OutlineInputBorder(),
+                //                             ),
+                //                           ),
+                //                         )
+                //                             : Text("£ ${item.fares ?? '0.00'}", maxLines: 1);
+                //                       }),
+                //                     ),
+                //                   ),
+                //
+                //                   DataCell(Center(child: Text("£ ${item.companyPrice ?? '0.00'}", maxLines: 1))),
+                //                   DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                   DataCell(Center(child: Text(item.orderNumber?.toString() ?? "-", maxLines: 1))),
+                //                   DataCell(Center(child: Text((item.paymentType?.name ?? "-").toUpperCase(), maxLines: 1))),
+                //                   DataCell(Center(child: Text((item.journeyType?.journeyType ?? "-").toUpperCase(), maxLines: 1))),
+                //                   DataCell(Center(child: Text((item.driver?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                   DataCell(Center(child: Text((item.vehicleType?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                   DataCell(Center(child: Text((item.subsidiary?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                   DataCell(Center(child: Text((item.bookingStatus?.bookingStatus ?? "-").toUpperCase(), maxLines: 1))),
+                //                   DataCell(
+                //                     Center(
+                //                       child: Obx(() {
+                //                         bool isEditing = controller.editingRowIndex.value == index;
+                //                         return ElevatedButton(
+                //                           style: ElevatedButton.styleFrom(
+                //                             backgroundColor: isEditing ? Colors.green : DynamicColors.gryClr,
+                //                             foregroundColor: Colors.white,
+                //                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                //                             shape: RoundedRectangleBorder(
+                //                               borderRadius: BorderRadius.circular(8),
+                //                             ),
+                //                           ),
+                //                           onPressed: () {
+                //                             if (isEditing) {
+                //                               item.fares = controller.fareController.text;
+                //                               controller.editingRowIndex.value = null;
+                //                             } else {
+                //                               controller.fareController.text = item.fares ?? '0.00';
+                //                               controller.editingRowIndex.value = index;
+                //                             }
+                //                           },
+                //                           child: Text(isEditing ? "SAVE" : "EDIT"),
+                //                         );
+                //                       }),
+                //                     ),
+                //                   ),
+                //                 ],
+                //               );
+                //             },
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                // PaginationWidget(
+                //     currentPage: controller.currentPage.value,
+                //     totalPages: controller.totalPages.value,
+                //     onPageChange: controller.onBookingPageChange)
+
+                Obx(() {
+                  var dataList = controller.bookingStatisticsModel?.data ?? [];
+                  final List<double> colWidths = [
+                    90, // 0. REF #
+                    90, // 1. INVOICE #
+                    90, // 2. DATETIME
+                    80, // 3. CUSTOMER
+                    170, // 4. PICKUP
+                    170, // 5. DROPOFF
+                    80, // 6. FARE
+                    80, // 7. ACC FARE
+                    60, // 8. ACC
+                    70, // 9. ORDER #
+                    80, // 10. P/T
+                    80, // 11. J/T
+                    80, // 12. DRV
+                    80, // 13. VEH
+                    80, // 14. SUBS
+                    90, // 15. STATUS
+                    90, // 16. ACTION
+                  ];
+
+                  double totalTableWidth = colWidths.reduce((a, b) => a + b);
+
+                  return Container(
+                    color: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: totalTableWidth,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  color: Colors.grey[200],
+                                  child: IntrinsicHeight(
+                                    //
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: [
+                                        _buildCustomHeaderCell(
+                                            colWidths[0],
+                                            buildHeaderWithSearch(
+                                                title: "REF #",
+                                                onChanged: (v) {
+                                                  controller.searchReferenceNo
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[1],
+                                            buildHeaderWithSearch(
+                                                title: "INVOICE #",
+                                                onChanged: (v) {
+                                                  controller.searchInvoiceNo
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[2],
+                                            buildHeaderWithSearch(
+                                                title: "DATETIME",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDateTime.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[3],
+                                            buildHeaderWithSearch(
+                                                title: "CUSTOMER",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchCustomer.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[4],
+                                            buildHeaderWithSearch(
+                                                title: "PICKUP",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchPickup.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[5],
+                                            buildHeaderWithSearch(
+                                                title: "DROPOFF",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDropOff.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[6],
+                                            buildHeaderWithSearch(
+                                                title: "FARE",
+                                                onChanged: (v) {
+                                                  controller.searchFare.value =
+                                                      v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[7],
+                                            buildHeaderWithSearch(
+                                                title: "ACC FARE",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchAccFare.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[8],
+                                            buildHeaderWithSearch(
+                                                title: "ACC",
+                                                onChanged: (v) {
+                                                  controller.searchAcc.value =
+                                                      v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[9],
+                                            buildHeaderWithSearch(
+                                                title: "ORDER #",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchOrderNO.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[10],
+                                            buildHeaderWithSearch(
+                                                title: "P/T",
+                                                onChanged: (v) {
+                                                  controller.searchPaymentType
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[11],
+                                            buildHeaderWithSearch(
+                                                title: "J/T",
+                                                onChanged: (v) {
+                                                  controller.searchJourneyType
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[12],
+                                            buildHeaderWithSearch(
+                                                title: "DRV",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchDriver.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[13],
+                                            buildHeaderWithSearch(
+                                                title: "VEH",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchVehicle.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[14],
+                                            buildHeaderWithSearch(
+                                                title: "SUBS",
+                                                onChanged: (v) {
+                                                  controller.searchSubsidiary
+                                                      .value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[15],
+                                            buildHeaderWithSearch(
+                                                title: "STATUS",
+                                                onChanged: (v) {
+                                                  controller
+                                                      .searchStatus.value = v;
+                                                  controller
+                                                      .onBookingSearchChanged();
+                                                }).label),
+                                        _buildCustomHeaderCell(
+                                            colWidths[16],
+                                            buildHeaderWithSearch(
+                                                    title: "ACTION",
+                                                    removeSearching: true)
+                                                .label),
+                                      ],
                                     ),
                                   ),
-                                  Text("|"),
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.transparent,
-                                      ), // border color & thickness
-                                    ),
-                                    onPressed: () {},
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      size: 28,
-                                      color: DynamicColors.redClr,
-                                    ),
+                                ),
+                                const Divider(
+                                    height: 1,
+                                    thickness: 1,
+                                    color: Colors.grey),
+
+                                //  DATA ROWS LIST ---
+                                if (dataList.isEmpty)
+                                  const Padding(
+                                    padding: EdgeInsets.all(30.0),
+                                    child: Center(
+                                        child: Text("",
+                                            style: TextStyle(fontSize: 16))),
+                                  )
+                                else
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: dataList.length,
+                                    itemBuilder: (context, index) {
+                                      var item = dataList[index];
+
+                                      String formattedDateTime = "-";
+                                      if (item.pickupDate != null) {
+                                        String date = DateFormat('dd-MM-yyyy')
+                                            .format(item.pickupDate!);
+                                        String time = item.pickupTime ?? "";
+                                        formattedDateTime =
+                                            "$date $time".trim();
+                                      }
+
+                                      return Container(
+                                          decoration: const BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    color: Colors.grey,
+                                                    width: 0.5)),
+                                          ),
+                                          child: IntrinsicHeight(
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
+                                              children: [
+                                                _buildCustomDataCell(
+                                                    colWidths[0],
+                                                    Text(
+                                                        item.referenceNumber ??
+                                                            "-",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[1],
+                                                    Text(
+                                                        item.invoiceNumber
+                                                                ?.toString() ??
+                                                            "-",
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[2],
+                                                    Text(formattedDateTime)),
+                                                _buildCustomDataCell(
+                                                    colWidths[3],
+                                                    Text(
+                                                        (item.name ?? "-")
+                                                            .toUpperCase()),
+                                                  alignment: Alignment.centerLeft),
+                                                _buildCustomDataCell(
+                                                    colWidths[4],
+                                                    Text((item.pickup ?? "-").toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                    alignment:
+                                                        Alignment.centerLeft),
+                                                _buildCustomDataCell(
+                                                    colWidths[5],
+                                                    Text((item.dropoff ?? "-").toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis),
+                                                    alignment:
+                                                        Alignment.centerLeft),
+
+                                                // 6. FARE (EDITABLE)
+                                                _buildCustomDataCell(
+                                                    colWidths[6], Obx(() {
+                                                  bool isEditing = controller
+                                                          .editingRowIndex
+                                                          .value ==
+                                                      index;
+                                                  return isEditing
+                                                      ? SizedBox(
+                                                          width: 85,
+                                                          height: 32,
+                                                          child: TextField(
+                                                            controller: controller
+                                                                .fareController,
+                                                            keyboardType:
+                                                                const TextInputType
+                                                                    .numberWithOptions(
+                                                                    decimal:
+                                                                        true),
+                                                            autofocus: true,
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        13,
+                                                                    color: Colors
+                                                                        .black),
+                                                            decoration:
+                                                                const InputDecoration(
+                                                              prefixText: "£",
+                                                              isDense: true,
+                                                              contentPadding:
+                                                                  EdgeInsets.symmetric(
+                                                                      horizontal:
+                                                                          4,
+                                                                      vertical:
+                                                                          6),
+                                                              border:
+                                                                  OutlineInputBorder(),
+                                                            ),
+                                                          ),
+                                                        )
+                                                      : Text(
+                                                    (item.fares == null || item.fares!.trim().isEmpty)
+                                                        ? "£0.00"
+                                                        : "£${item.fares}",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: const TextStyle(fontSize: 13),
+                                                  );
+                                                  // Text(
+                                                  //         "£ ${item.fares ?? '0.00'}",
+                                                  //         maxLines: 1);
+                                                })),
+
+                                                _buildCustomDataCell(
+                                                    colWidths[7],
+                                                    Text(
+                                                        "£ ${item.companyPrice ?? '0.00'}",
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[8],
+                                                    Text(
+                                                        (item.account?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[9],
+                                                    Text(
+                                                        item.orderNumber
+                                                                ?.toString() ??
+                                                            "-",
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[10],
+                                                    Text(
+                                                        (item.paymentType
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[11],
+                                                    Text(
+                                                        (item.journeyType
+                                                                    ?.journeyType ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+                                                _buildCustomDataCell(
+                                                    colWidths[12],
+                                                    Text(
+                                                        (item.driver?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[13],
+                                                    Text(
+                                                        (item.vehicleType
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[14],
+                                                    Text(
+                                                        (item.subsidiary
+                                                                    ?.name ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis)),
+                                                _buildCustomDataCell(
+                                                    colWidths[15],
+                                                    Text(
+                                                        (item.bookingStatus
+                                                                    ?.bookingStatus ??
+                                                                "-")
+                                                            .toUpperCase(),
+                                                        maxLines: 1)),
+
+                                                // 16. ACTION
+                                                _buildCustomDataCell(
+                                                    colWidths[16], Obx(() {
+                                                  bool isEditing = controller
+                                                          .editingRowIndex
+                                                          .value ==
+                                                      index;
+                                                  bool isLoading = controller.isFareLoading && isEditing;
+                                                  return SizedBox(
+                                                    height: 28,
+                                                    width: 55,
+                                                    child: ElevatedButton(
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        backgroundColor:
+                                                            isEditing
+                                                                ? Colors.grey
+                                                                : DynamicColors.primaryClr,
+                                                        foregroundColor:
+                                                            Colors.white,
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            6)),
+                                                      ),
+                                                      onPressed: () {
+                                                        // Loading ke dauran click kaam nahi karega
+                                                        if (controller.isFareLoading) return;
+
+                                                        if (isEditing) {
+                                                          // SAVE dabaane par controller ki API call hogi
+                                                          // item.id aapki URL me dynamic 1234 ki jagah pass hoga
+                                                          controller.updateBookingFare(
+                                                            item.id,
+                                                            controller.fareController.text,
+                                                            index,
+                                                          );
+                                                        } else {
+                                                          // EDIT dabaane par normal textfield khulegi
+                                                          controller.fareController.text = item.fares ?? '0.00';
+                                                          controller.editingRowIndex.value = index;
+                                                        }
+                                                      },
+                                                      child: isLoading
+                                                          ? const SizedBox(
+                                                        height: 14,
+                                                        width: 14,
+                                                        child: CircularProgressIndicator(
+                                                          color: Colors.white,
+                                                          strokeWidth: 2,
+                                                        ),
+                                                      )
+                                                          : Text(
+                                                        isEditing ? "SAVE" : "EDIT",
+                                                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ),
+                                                  );
+                                                })),
+                                                //       onPressed: () {
+                                                //         if (isEditing) {
+                                                //           item.fares = controller
+                                                //               .fareController
+                                                //               .text;
+                                                //           controller
+                                                //               .editingRowIndex
+                                                //               .value = null;
+                                                //         } else {
+                                                //           controller
+                                                //               .fareController
+                                                //               .text = item
+                                                //                   .fares ??
+                                                //               '0.00';
+                                                //           controller
+                                                //               .editingRowIndex
+                                                //               .value = index;
+                                                //         }
+                                                //       },
+                                                //       child: Text(
+                                                //           isEditing
+                                                //               ? "SAVE"
+                                                //               : "EDIT",
+                                                //           style: const TextStyle(
+                                                //               fontSize: 11,
+                                                //               fontWeight:
+                                                //                   FontWeight
+                                                //                       .bold)),
+                                                //     ),
+                                                //   );
+                                                // })),
+                                              ],
+                                            ),
+                                          ));
+                                    },
                                   ),
-                                ],
-                              ),
+                              ],
                             ),
                           ),
-                        ]),
-                  ),
-                ),
-                )],
+                        ),
+                        Container(
+                          color: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 8),
+                          child: PaginationWidget(
+                            currentPage: controller.currentPage.value,
+                            totalPages: controller.totalPages.value,
+                            onPageChange: controller.onBookingPageChange,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                })
+                // SingleChildScrollView(
+                //   scrollDirection: Axis.horizontal,
+                //   child: SingleChildScrollView(
+                //     scrollDirection: Axis.vertical,
+                //     child: IntrinsicWidth(
+                //       child: Container(
+                //         padding: const EdgeInsets.symmetric(horizontal: 4),
+                //         child: DatatableWidget(
+                //           columns: [
+                //             buildHeaderWithSearch(title: "REF #"),
+                //             buildHeaderWithSearch(title: "INVOICE #"),
+                //             buildHeaderWithSearch(title: "DATETIME"),
+                //             buildHeaderWithSearch(title: "CUSTOMER"),
+                //             buildHeaderWithSearch(title: "PICKUP"),
+                //             buildHeaderWithSearch(title: "DROPOFF"),
+                //             buildHeaderWithSearch(title: "FARE"),
+                //             buildHeaderWithSearch(title: "ACC FARE"),
+                //             buildHeaderWithSearch(title: "ACC"),
+                //             buildHeaderWithSearch(title: "ORDER #"),
+                //             buildHeaderWithSearch(title: "P/T"),
+                //             buildHeaderWithSearch(title: "J/T"),
+                //             buildHeaderWithSearch(title: "DRV"),
+                //             buildHeaderWithSearch(title: "VEH"),
+                //             buildHeaderWithSearch(title: "SUBS"),
+                //             buildHeaderWithSearch(title: "STATUS"),
+                //             buildHeaderWithSearch(title: "ACTION", removeSearching: true),
+                //           ],
+                //           totalRow: controller.bookingStatisticsModel?.data?.length ?? 0,
+                //           rows: (controller.bookingStatisticsModel?.data ?? []).map((item) {
+                //             String formattedDateTime = "-";
+                //             if (item.pickupDate != null) {
+                //               String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
+                //               String time = item.pickupTime ?? "";
+                //               formattedDateTime = "$date $time".trim();
+                //             }
+                //             return DataRow(
+                //               cells: [
+                //                 DataCell(Center(child: Text(item.referenceNumber ?? "-", maxLines: 1))),
+                //                 DataCell(Center(child: Text(item.invoiceNumber?.toString() ?? "-", maxLines: 1))),
+                //                 DataCell(Center(child: Text(formattedDateTime, maxLines: 1))),
+                //                 DataCell(Center(child: Text((item.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                 DataCell(
+                //                   SizedBox(
+                //                     width: 150,
+                //                     child: Text(
+                //                       item.pickup ?? "-",
+                //                       maxLines: 1,
+                //                       overflow: TextOverflow.ellipsis,
+                //                     ),
+                //                   ),
+                //                 ),
+                //                 DataCell(
+                //                   SizedBox(
+                //                     width: 150,
+                //                     child: Text(
+                //                       item.dropoff ?? "-",
+                //                       maxLines: 1,
+                //                       overflow: TextOverflow.ellipsis,
+                //                     ),
+                //                   ),
+                //                 ),
+                //
+                //                 DataCell(Center(child: Text("£ ${item.fares ?? '0.00'}", maxLines: 1))),
+                //                 DataCell(Center(child: Text("£ ${item.companyPrice ?? '0.00'}", maxLines: 1))),
+                //                 DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                 DataCell(Center(child: Text(item.orderNumber?.toString() ?? "-", maxLines: 1))),
+                //                 DataCell(Center(child: Text((item.paymentType?.name ?? "-").toUpperCase(), maxLines: 1))),
+                //                 DataCell(Center(child: Text((item.journeyType?.journeyType ?? "-").toUpperCase(), maxLines: 1))),
+                //                 DataCell(Center(child: Text((item.driver?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                 DataCell(Center(child: Text((item.vehicleType?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                 DataCell(Center(child: Text((item.subsidiary?.name ?? "-").toUpperCase(), maxLines: 1, overflow: TextOverflow.ellipsis))),
+                //                 DataCell(Center(child: Text((item.bookingStatus?.bookingStatus ?? "-").toUpperCase(), maxLines: 1))),
+                //                 DataCell(
+                //                   Center(
+                //                     child: ElevatedButton(
+                //                       style: ElevatedButton.styleFrom(
+                //                         backgroundColor: DynamicColors.gryClr,
+                //                         foregroundColor: Colors.white,
+                //                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                //                         shape: RoundedRectangleBorder(
+                //                           borderRadius: BorderRadius.circular(8),
+                //                         ),
+                //                       ),
+                //                       onPressed: () {
+                //
+                //                       },
+                //                       child: const Text("EDIT"),
+                //                     ),
+                //                   ),
+                //                 ),
+                //               ],
+                //             );
+                //           }).toList(),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // )
+              ],
             ));
       });
     });
   }
+
   Widget _buildSummaryItem({required String label, required String value}) {
     return Row(
       children: [
         Text(
           "$label: ",
-          style: mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
+          style:
+              mozillaTextRegularText(fontSize: 13, fontWeight: FontWeight.bold),
         ),
         Text(
           value,
-          style: mozillaTextRegularText(fontSize: 13, color: Colors.blue.shade800),
+          style:
+              mozillaTextRegularText(fontSize: 13, color: Colors.blue.shade800),
         ),
       ],
     );
   }
+
+  // Widget _buildCustomHeaderCell(double width, Widget child) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 4),
+  //       child: child,
+  //     ),
+  //   );
+  // }
+  Widget _buildCustomHeaderCell(double width, Widget child) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(
+          vertical: 8), // 👈 Padding yahan shift kar di
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Colors.grey[400]!,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomDataCell(double width, Widget child,
+      {Alignment alignment = Alignment.center}) {
+    return Container(
+      width: width,
+      alignment: alignment,
+      padding: const EdgeInsets.symmetric(
+          horizontal: 6, vertical: 8), // 👈 Padding yahan shift kar di
+      decoration: BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Colors.grey[300]!,
+            width: 0.5,
+          ),
+        ),
+      ),
+      child: child,
+    );
+  }
+  // Widget _buildCustomHeaderCell(double width, Widget child) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 4),
+  //       child: Row(
+  //         children: [
+  //           child,
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Widget _buildCustomDataCell(double width, Widget child,
+  //     {Alignment alignment = Alignment.center}) {
+  //   return SizedBox(
+  //     width: width,
+  //     child: Container(
+  //       alignment: alignment,
+  //       padding: const EdgeInsets.symmetric(horizontal: 6),
+  //       child: child,
+  //     ),
+  //   );
+  // }
 }

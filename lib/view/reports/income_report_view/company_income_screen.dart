@@ -46,28 +46,21 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
             ? maxWidth / 2
             : maxWidth / 4;
 
-            return Column(
-              children: [
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
               SizedBox(
                 height: 10,
               ),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.end,
-                  runAlignment: WrapAlignment.start,
-                  spacing: 10,
-                  runSpacing: 16,
+               Row(
                   children: [
-                    Text(AppText.companyIncome,
-                      style: mozillaTextSemiBoldText(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 17,
-                      ),
-                    ),
                     labeledField(
                       context: context,
                       isMobile: isMobile,
                       label: AppText.from,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       column: true,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
@@ -79,12 +72,11 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       isMobile: isMobile,
                       column: true,
                       label: AppText.to,
-                      width: fieldWidth/1.5,
+                      width: fieldWidth/1.9,
                       child: SizedBox(height: 30, child: KeyboardDatePicker()),
                     ),
 
-
-                    SizedBox(width: 20,),
+                    const Spacer(),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -93,6 +85,7 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       btnText: AppText.filter,
                       fontSize: 12,
                     ),
+                    SizedBox(width: 10),
                     CustomButton(
                       width: 120,
                       height: 30,
@@ -146,10 +139,11 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
 
                           buildHeaderWithSearch(title: "ACCOUNT"),
                           buildHeaderWithSearch(title: "FARES"),
-                          buildHeaderWithSearch(title: "PARKING"),
-
-                          buildHeaderWithSearch(title: "WAITING"),
-                          buildHeaderWithSearch(title: "EXTRA DROP"),
+                          buildHeaderWithSearch(title: "PC"),
+                          buildHeaderWithSearch(title: "WC"),
+                          buildHeaderWithSearch(title: "EDC"),
+                          buildHeaderWithSearch(title: "M&G"),
+                          buildHeaderWithSearch(title: "CC"),
                           buildHeaderWithSearch(title: "TOTAL"),
                         ],
                         totalRow: totalRows,
@@ -157,15 +151,14 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
-
+                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
+                          const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
                           const DataCell(Center(child: Text("20/10/2025"))),
                           const DataCell(Center(child: Text("#PHC VEHICLE"))),
@@ -174,6 +167,7 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                   ),
                 ),
               ],
+              )
             );
           }
         );
