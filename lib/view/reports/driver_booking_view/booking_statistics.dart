@@ -40,7 +40,6 @@ class _BookingStatisticsWindow extends State<BookingStatisticsWindow> {
           ),
           child: Column(
             children: [
-              // Blue Header Bar
               Container(
                 height: 45,
                 decoration: BoxDecoration(

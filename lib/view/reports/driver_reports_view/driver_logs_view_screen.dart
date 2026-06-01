@@ -31,7 +31,6 @@ class _DriverLogsViewWindow extends State<DriverLogsViewWindow> {
           ),
           child: Column(
             children: [
-              // Blue Header Bar (Top Controls)
               Container(
                 height: 40,
                 decoration: BoxDecoration(
@@ -53,7 +52,6 @@ class _DriverLogsViewWindow extends State<DriverLogsViewWindow> {
                   ],
                 ),
               ),
-              // Content Area
               Expanded(child: DriverLogsReportContent()),
             ],
           ),
@@ -67,7 +65,7 @@ class DriverLogsReportContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<ReportController>();
-    // Data from your controller
+    // Controller Data
     final bookings = controller.driverLogsData?.bookings ?? [];
     final String driverName = controller.selectDriverObject?.name ?? "N/A";
     final String driverEmail = controller.selectDriverObject?.email ?? "N/A";
