@@ -1,4 +1,5 @@
 import 'package:dashboard_new1/component/textStyle.dart';
+import 'package:dashboard_new1/view/reports/employee_reports_view/employee_activity_view_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -162,6 +163,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                         verticalPadding: 0.0,
                         btnText: AppText.view,
                         fontSize: 12,
+                        onTap: () {
+                          Get.dialog(EmployeeActivityReportWindow());
+                        },
                       ),
                     ],
                   ),

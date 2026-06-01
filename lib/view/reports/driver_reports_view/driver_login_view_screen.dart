@@ -29,7 +29,6 @@ class _DriverLoginViewWindow extends State<DriverLoginViewWindow> {
           ),
           child: Column(
             children: [
-              // Blue Header Bar
               Container(
                 height: 45,
                 decoration: BoxDecoration(
@@ -56,7 +55,6 @@ class _DriverLoginViewWindow extends State<DriverLoginViewWindow> {
                   ],
                 ),
               ),
-              // Content Area
               Expanded(child: DriverLoginReportContent()),
             ],
           ),
@@ -77,7 +75,6 @@ class DriverLoginReportContent extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
         child: Column(
           children: [
-            // 1. Logo Section
             Center(
               child: Image.asset(
                 "assets/logo.jpeg",
@@ -87,8 +84,6 @@ class DriverLoginReportContent extends StatelessWidget {
             ),
 
             const SizedBox(height: 40),
-
-            // 2. Heading Section
             Center(
               child: Text(
                 "DRIVER LOGIN",
@@ -102,8 +97,6 @@ class DriverLoginReportContent extends StatelessWidget {
             ),
 
             const SizedBox(height: 30),
-
-            // 3. Table Section
             Table(
               border: TableBorder.all(
                 color: Colors.black.withOpacity(0.2),
