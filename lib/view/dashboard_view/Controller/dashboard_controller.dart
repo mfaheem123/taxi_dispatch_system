@@ -483,6 +483,7 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
 
   inItStateOFController() async{
     mapController = MapController(); // ✅ Initialize here
+    pickUpTimeController.text = getCurrentTime24();
     Future.delayed(Duration(seconds: 1), () {
       String myExtension = Employee.selectedEmployee?.extensionNumber ?? "200";
       print("Connecting to CLI with Extension: $myExtension");
@@ -2014,8 +2015,8 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
       if (extraFaresList.isNotEmpty) 'notes': jsonEncode(extraFaresList),
       if (selectDriverValue != null) 'driver_id': selectDriverValue!.id,
       if (slugController.text.isNotEmpty) 'fares': slugController.text,
-      'eta': totalTimeDuration,
-      'miles': totalDistance,
+      'eta': totalTimeDuration.value,
+      'miles': totalDistance.value,
       if (selectSubsidiariesValue != null)
         'subsidiary_id': selectSubsidiariesValue!.id,
       'booking_status_id': '1',
@@ -2062,28 +2063,28 @@ RxString shortCutKeyValue = 'shortCutKey'.obs;
     };
     print(markers);
     print(formData);
-    var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id", sendCompanyId: true);
-    if (response.statusCode == 200) {
-
-      if(id != null){
-        refreshPostAllFields();
-      }else{
-        if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
-            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-            selectedTabId == 1) {
-          dashboardTableModelData!.data!.insert(
-              0, BookingObjectData.fromJson(response.data['bookings'][0]));
-        } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
-            "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
-            selectedTabId == 2) {
-          dashboardTableModelData!.data!.insert(
-              0, BookingObjectData.fromJson(response.data['bookings'][0]));
-        }
-
-        refreshPostAllFields();
-      }
-      print(response.data);
-    }
+    // var response = await Api().post(formData, id == null? "bookings/add" : "bookings/update/$id", sendCompanyId: true);
+    // if (response.statusCode == 200) {
+    //
+    //   if(id != null){
+    //     refreshPostAllFields();
+    //   }else{
+    //     if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" ==
+    //         "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+    //         selectedTabId == 1) {
+    //       dashboardTableModelData!.data!.insert(
+    //           0, BookingObjectData.fromJson(response.data['bookings'][0]));
+    //     } else if ("${pickUpDate!.year}-${pickUpDate!.month}-${pickUpDate!.day}" !=
+    //         "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}" &&
+    //         selectedTabId == 2) {
+    //       dashboardTableModelData!.data!.insert(
+    //           0, BookingObjectData.fromJson(response.data['bookings'][0]));
+    //     }
+    //
+    //     refreshPostAllFields();
+    //   }
+    //   print(response.data);
+    // }
   }
 
   restrictedDriversListConfig() async {

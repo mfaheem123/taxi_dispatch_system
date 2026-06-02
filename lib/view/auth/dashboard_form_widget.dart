@@ -755,12 +755,12 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(width: 80, child: tag),
-        const SizedBox(width: 8),
-        Expanded(flex: 4, child: address),
+        const SizedBox(width: 2),
+        Expanded(flex: 5, child: address),
         const SizedBox(width: 8),
         SizedBox(width: 150, child: zoneDd),
         const SizedBox(width: 8),
-        SizedBox(width: 180, child: notes), // gave the field a bounded width
+        SizedBox(width: 160, child: notes), // gave the field a bounded width
       ],
     );
   }
@@ -820,7 +820,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
     Widget iconBtn(IconData icon, {VoidCallback? onPressed}) => Container(
       margin: const EdgeInsets.only(left: 6),
       decoration: BoxDecoration(
-        color: _surface,
+        color: _purpleSoft,
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: _border),
       ),
@@ -1210,6 +1210,8 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
             child: DropdownButtonFormField<T>(
               value: value,
               isExpanded: isExpanded,
+              // isDense: true,
+              // itemHeight: 40, // default is around 48
               style: const TextStyle(
                   fontSize: _fsField, color: Colors.black87),
               hint: hint != null
@@ -1217,7 +1219,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                   style: const TextStyle(
                       fontSize: _fsField, color: Colors.black))
                   : null,
-              decoration: _inputDecoration(),
+              decoration: _inputDecoration().copyWith(
+                isDense: true,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8, // reduce vertical padding
+                ),
+              ),
               items: items
                   .map((e) => DropdownMenuItem<T>(
                 value: e,

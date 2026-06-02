@@ -29,6 +29,13 @@ String formatCreatedAt(DateTime dateTime) {
 }
 
 
+String getCurrentTime24() {
+  final now = DateTime.now();
+  final formattedTime = DateFormat('HH:mm').format(now); // 24-hour format
+  return formattedTime;
+}
+
+
 String formatDurationss(Duration duration) {
   int hours = duration.inHours;
   int minutes = duration.inMinutes % 60;
