@@ -90,34 +90,34 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       ? Get.find<LocationController>()
       : Get.put(LocationController());
 
-  @override
-  void dispose() {
-    for (final c in [
-      controller.pickupController,
-      controller.dropOffController,
-      controller.nameController,
-      controller.emailController,
-      controller.mobileController,
-      controller.telController,
-      _date,
-      controller.pickUpTimeController,
-      controller.minController,
-      controller.passController,
-      controller.slugController,
-      controller.passController,
-      controller.luggController,
-      controller.sluggController,
-      controller.pickupTwoWayController,
-      controller.dropOffTwoWayController,
-      _rDate,
-      controller.pickUpTimeControllerReturn,
-      controller.minControllerReturn,
-      controller.slugControllerReturn,
-    ]) {
-      c.dispose();
-    }
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   for (final c in [
+  //     controller.pickupController,
+  //     controller.dropOffController,
+  //     controller.nameController,
+  //     controller.emailController,
+  //     controller.mobileController,
+  //     controller.telController,
+  //     _date,
+  //     controller.pickUpTimeController,
+  //     controller.minController,
+  //     controller.passController,
+  //     controller.slugController,
+  //     controller.passController,
+  //     controller.luggController,
+  //     controller.sluggController,
+  //     controller.pickupTwoWayController,
+  //     controller.dropOffTwoWayController,
+  //     _rDate,
+  //     controller.pickUpTimeControllerReturn,
+  //     controller.minControllerReturn,
+  //     controller.slugControllerReturn,
+  //   ]) {
+  //     c.dispose();
+  //   }
+  //   super.dispose();
+  // }
 
   @override
   void initState() {
@@ -614,16 +614,13 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
               ),
             ]),
           ),
-          Divider(
-            color: _border,
-            height: 10,
-          )
+          Divider(height: 20),
         ],
       ),
     );
   }
 
-  // ────────── location row
+// ────────── location row
   Widget _locationRow<T>(
       String label,
       Color dot,
@@ -639,6 +636,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         String Function(T)? zoneLabel,
         VoidCallback? onCurrentLocation,
         ValueChanged<int>? onPickIndex,
+        TextEditingController? notesController, // ← notes field controller
       }) {
     final tag = Row(mainAxisSize: MainAxisSize.min, children: [
       Icon(Icons.circle, size: 9, color: dot),
@@ -693,20 +691,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                 const BoxConstraints(minWidth: 28, minHeight: 28),
                 splashRadius: 16,
               )
-                  : SizedBox.shrink()
-              /*IconButton(
-                tooltip: '',
-                onPressed: () {
-                  controller.clear();
-                  onChanged?.call('');
-                },
-                icon: const Icon(Icons.close,
-                    size: 16, color: Colors.transparent),
-                padding: EdgeInsets.zero,
-                constraints:
-                const BoxConstraints(minWidth: 28, minHeight: 28),
-                splashRadius: 16,
-              )*/,
+                  : const SizedBox.shrink(),
               IconButton(
                 tooltip: 'Use current location',
                 onPressed: onCurrentLocation,
@@ -734,21 +719,21 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
       hint: 'New Zone',
     );
 
+    // Notes is now an editable text field instead of a button.
+    final noteHint =
+        '${label[0]}${label.substring(1).toLowerCase().trim()} Notes';
     final notes = FocusTraversalOrder(
       order: NumericFocusOrder((tabBase + 3).toDouble()),
-      child: OutlinedButton(
-        onPressed: () {},
-        style: OutlinedButton.styleFrom(
-          // foregroundColor: _purple,
-
-          side: const BorderSide(color: _purple),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-          textStyle:
-          const TextStyle(fontSize: _fsField,color: Colors.black, fontWeight: FontWeight.w600),
+      child: _GlowFocus(
+        child: TextField(
+          controller: notesController,
+          style: const TextStyle(fontSize: _fsField),
+          textInputAction: TextInputAction.next,
+          decoration: _inputDecoration().copyWith(
+            hintText: noteHint,
+            hintStyle: const TextStyle(fontSize: _fsField, color: Colors.black45),
+          ),
         ),
-        child: Text('${label[0]}${label.substring(1).toLowerCase()} Notes'),
       ),
     );
 
@@ -761,22 +746,24 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
         Row(children: [
           Expanded(child: zoneDd),
           const SizedBox(width: 8),
-          notes,
+          Expanded(child: notes),
         ]),
       ]);
     }
 
-    return Row(children: [
-      SizedBox(width: 80, child: tag),
-      const SizedBox(width: 8),
-      Expanded(flex: 4, child: address),
-      const SizedBox(width: 8),
-      SizedBox(width: 150, child: zoneDd),
-      const SizedBox(width: 8),
-      notes,
-    ]);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(width: 80, child: tag),
+        const SizedBox(width: 8),
+        Expanded(flex: 4, child: address),
+        const SizedBox(width: 8),
+        SizedBox(width: 150, child: zoneDd),
+        const SizedBox(width: 8),
+        SizedBox(width: 180, child: notes), // gave the field a bounded width
+      ],
+    );
   }
-
   // ────────── comms + luggage (PASS=22, LUGG=23, SLUGG=24)
   Widget _commsAndLuggageRow(bool isMobile) {
     Widget checkbox(String label, bool value, ValueChanged<bool?> onChanged) =>

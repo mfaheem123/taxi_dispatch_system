@@ -99,17 +99,22 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
   final GlobalKey _bookingFormKey = GlobalKey();
   double? _bookingFormHeight;
 
-   void _measureBookingForm() {
-     WidgetsBinding.instance.addPostFrameCallback((_) {
+  void _measureBookingForm() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final ctx = _bookingFormKey.currentContext;
-      if (ctx == null) return;
+      // Element may be null (not built) or inactive (built earlier, now
+      // removed from the tree — e.g. while bookingTable is shown). Either
+      // way it has no render object, so bail before findRenderObject().
+      if (ctx == null || !ctx.mounted) return;
       final box = ctx.findRenderObject() as RenderBox?;
-      final h = box?.size.height;
-      if (h != null && h > 0 && h != _bookingFormHeight && mounted) {
+      if (box == null || !box.hasSize) return;
+      final h = box.size.height;
+      if (h > 0 && h != _bookingFormHeight) {
         setState(() => _bookingFormHeight = h);
       }
     });
-   }
+  }
 
 
   @override
@@ -136,51 +141,56 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
         return material.Center(child: CircularProgressIndicator());
       }
 
-
       final bookingForm = KeyedSubtree(
         key: _bookingFormKey,
         child: BookingFormScreen(),
       );
 
-      // On iPad / mobile (anything narrower than a desktop) the three
-      // panels stack vertically instead of sitting side-by-side.
+// Height used by the side panels. On the very first frame the booking
+// form hasn't been measured yet (_bookingFormHeight == null), so fall
+// back to a sensible height — otherwise the SizedBox imposes no vertical
+// constraint and MapViewWidget's inner Stack crashes with "size: MISSING".
+      final sidePanelHeight = _bookingFormHeight ?? screenHeight * 0.6;
+
+// On iPad / mobile (anything narrower than a desktop) the three
+// panels stack vertically instead of sitting side-by-side.
       final topSection = isDesktop
           ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(flex: 5, child: bookingForm),
-                Expanded(
-                  flex: 2,
-                  child: SizedBox(
-                    height: _bookingFormHeight,
-                    child: DriversView(),
-                  ),
-                ),
-                Expanded(
-                  flex: 3,
-                  child: SizedBox(
-                    height: _bookingFormHeight,
-                    child: MapViewWidget(),
-                  ),
-                ),
-              ],
-            )
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(flex: 5, child: bookingForm),
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              height: sidePanelHeight,
+              child: DriversView(),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: SizedBox(
+              height: sidePanelHeight,
+              child: MapViewWidget(),
+            ),
+          ),
+        ],
+      )
           : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                bookingForm,
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: screenHeight * 0.6,
-                  child: DriversView(),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: screenHeight * 0.6,
-                  child: MapViewWidget(),
-                ),
-              ],
-            );
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          bookingForm,
+          const SizedBox(height: 12),
+          SizedBox(
+            height: screenHeight * 0.6,
+            child: DriversView(),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: screenHeight * 0.6,
+            child: MapViewWidget(),
+          ),
+        ],
+      );
 
       final bookingTable = Container(
         width: double.infinity,
@@ -201,7 +211,6 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
           if (isDesktop) bookingTable,
         ],
       );
-
       // The stacked layout is taller than the screen, so make it scrollable.
       return Column(
         children: [
@@ -255,7 +264,9 @@ class _ByDefaultDashboardState extends State<ByDefaultDashboard> {
             ),
           ),
           SafeArea(
-            child: controller.hideDashBoard.value == false?bookingTable: isDesktop ? body : SingleChildScrollView(child: body),
+            child: controller.hideDashBoard.value
+                ? (isDesktop ? body : SingleChildScrollView(child: body))
+                : bookingTable,
           ),
         ],
       );
