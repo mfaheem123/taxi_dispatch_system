@@ -223,8 +223,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             String rowWorkingHours = "-";
 
                             if (item.workingHours != null && item.workingHours!.isNotEmpty) {
-                              double seconds = double.tryParse(item.workingHours!) ?? 0;
+                              double milliSeconds = double.tryParse(item.workingHours!) ?? 0;
 
+                              double seconds = milliSeconds / 1000;
                               int hours = seconds ~/ 3600;
                               int minutes = ((seconds % 3600) ~/ 60).toInt();
 

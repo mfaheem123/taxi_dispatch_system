@@ -99,8 +99,9 @@ class EmployeeActivityReportContent extends StatelessWidget {
 
   String _formatWorkingHours(String? workingHoursStr) {
     if (workingHoursStr == null || workingHoursStr.isEmpty) return "-";
-    double seconds = double.tryParse(workingHoursStr) ?? 0;
+    double milliSeconds = double.tryParse(workingHoursStr) ?? 0;
 
+    double seconds = milliSeconds / 1000;
     int hours = seconds ~/ 3600;
     int minutes = ((seconds % 3600) ~/ 60).toInt();
 

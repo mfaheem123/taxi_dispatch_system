@@ -33,14 +33,6 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
       ? Get.find<ReportController>()
       : Get.put(ReportController());
 
-  // Date controllers
-  // DateTime? fromDate;
-  // DateTime? toDate;
-  DateTime fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-  DateTime toDate = DateTime.now();
-  TimeOfDay? fromTime;
-  TimeOfDay? toTime;
-
   @override
   void initState() {
     super.initState();
@@ -60,40 +52,6 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
       } else if (event.logicalKey == LogicalKeyboardKey.enter) {
         debugPrint("Row $selectedRowIndex Enter Pressed (Filter/View)");
       }
-    }
-  }
-
-  Future<void> _pickDate(BuildContext context, bool isFrom) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromDate = picked;
-        } else {
-          toDate = picked;
-        }
-      });
-    }
-  }
-
-  Future<void> _pickTime(BuildContext context, bool isFrom) async {
-    TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isFrom) {
-          fromTime = picked;
-        } else {
-          toTime = picked;
-        }
-      });
     }
   }
 
@@ -152,9 +110,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
-                              initialDate: fromDate,
+                              initialDate: controller.loginFromDate.value,
                               onChanged: (date) =>
-                                  setState(() => fromDate = date),
+                                  setState(() => controller.loginFromDate.value = date),
                             ),
                           ),
                         ),
@@ -181,9 +139,9 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           child: SizedBox(
                             height: 30,
                             child: KeyboardDatePicker(
-                              initialDate: toDate,
+                              initialDate: controller.loginToDate.value,
                               onChanged: (date) =>
-                                  setState(() => toDate = date),
+                                  setState(() => controller.loginToDate.value = date),
                             ),
                           ),
                         ),
@@ -225,8 +183,8 @@ class _DriverLoginScreenState extends State<DriverLoginScreen> {
                           borderRadius: 4,
                           onTap: () {
                             setState(() {
-                              fromDate = DateTime(DateTime.now().year, DateTime.now().month, 1);
-                              toDate = DateTime.now();
+                              controller.loginFromDate.value = DateTime(DateTime.now().year, DateTime.now().month, 1);
+                              controller.loginToDate.value = DateTime.now();
                               controller.selectDriverObject = null;
                               controller.driverLoginReportListModel = null;
                             });

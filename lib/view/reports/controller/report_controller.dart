@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
+import '../../administration/model/list_subsDiary.dart';
 import '../../administration/model/user_model.dart';
 import '../../customer/model/restricDriver.dart';
 import '../../dashboard_view/models/account_darshboard_model.dart';
@@ -14,6 +15,7 @@ import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
 import '../employee_reports_view/activity_model.dart';
+import '../income_report_view/model/income_model.dart';
 
 class ReportController extends GetxController {
 
@@ -40,6 +42,8 @@ class ReportController extends GetxController {
     }
   }
   /// DRIVER LOGIN LIST
+  var loginFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  var loginToDate = Rxn<DateTime>(DateTime.now());
   final loginStartTimeController = TextEditingController();
   final loginEndTimeController = TextEditingController();
 
@@ -55,13 +59,13 @@ class ReportController extends GetxController {
     update();
 
     try{
+      String formattedFromDate = loginFromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(loginFromDate.value!)
+          : "";
       var response = await Api().get("driver_shift_history/login",
         queryParameters: {
         "driver_id": selectDriverObject?.id.toString(),
-        "from_date": fromDate,
-        // "to_date": toDate,
-        // "from_time": loginStartTimeController.text,
-        // "to_time": loginEndTimeController.text,
+        "from_date": formattedFromDate,
         }
       );
       if (response.statusCode == 200) {
@@ -331,7 +335,7 @@ class ReportController extends GetxController {
   BookingStatus? apiSelectedBookingStatus;
   PaymentStatus? apiSelectedPaymentStatus;
   PaymentTypeObject? apiSelectedPaymentType;
-  DashboardSubsidiaryObject? apiSelectedSubsidiary;
+  dynamic apiSelectedSubsidiary;
 
   List<int> apiSelectedPaymentTypeIds = [];
 
@@ -340,7 +344,7 @@ class ReportController extends GetxController {
   var totalEarnings = 0.0.obs;
   var totalAccountEarnings = 0.0.obs;
 
-  getData() async {
+  Future getData() async {
     isLoadingData = true;
     update();
     
@@ -459,8 +463,8 @@ class ReportController extends GetxController {
       String formattedFromDate = "";
       String formattedToDate = "";
 
-      formattedFromDate = DateFormat('dd-MM-yyyy').format(bookingFromDate.value);
-          formattedToDate = DateFormat('dd-MM-yyyy').format(bookingToDate.value);
+      formattedFromDate = DateFormat('yyyy-MM-dd').format(bookingFromDate.value);
+          formattedToDate = DateFormat('yyyy-MM-dd').format(bookingToDate.value);
 
       String startTime = bookingStartTimeController.text.isNotEmpty ? bookingStartTimeController.text.trim() : "";
       String endTime = bookingEndTimeController.text.isNotEmpty ? bookingEndTimeController.text.trim() : "";
@@ -691,7 +695,7 @@ class ReportController extends GetxController {
         totalCancelled = 0;
         totalCalls = 0;
 
-        int totalSeconds = 0;
+        double calculatedTotalSeconds = 0;
 
         for (var item in employeeActivityList) {
           totalCreated += item.bookingsCreated ?? 0;
@@ -700,12 +704,13 @@ class ReportController extends GetxController {
           totalCalls += item.callsAnswered ?? 0;
 
           if (item.workingHours != null && item.workingHours!.isNotEmpty) {
-            totalSeconds += (double.tryParse(item.workingHours!) ?? 0).toInt();
+            double milliSeconds = double.tryParse(item.workingHours!) ?? 0;
+            calculatedTotalSeconds += (milliSeconds / 1000);
           }
         }
 
-        int totalHours = totalSeconds ~/ 3600;
-        int totalMinutes = ((totalSeconds % 3600) ~/ 60).toInt();
+        int totalHours = calculatedTotalSeconds ~/ 3600;
+        int totalMinutes = ((calculatedTotalSeconds % 3600) ~/ 60).toInt();
 
         if (totalHours > 0 && totalMinutes > 0) {
           totalWorkingHours = "$totalHours hours $totalMinutes minutes";
@@ -723,15 +728,90 @@ class ReportController extends GetxController {
     }
   }
 
-
-
-
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report employee functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
 
-  // Controller ke andar
+  // subsidiary
+  SubsDiaryModel? subsDiaryModel;
+  bool isLoadingSubsidiary = false;
+
+  getSubsidiary() async {
+    isLoadingSubsidiary = true;
+    update();
+
+    try {
+    var response = await Api().get('subsidiaries/get', sendCompanyId: true);
+    if (response.statusCode == 200) {
+      subsDiaryModel = SubsDiaryModel.fromJson(response.data);
+      if (subsDiaryModel?.subsidiaries?.isNotEmpty ?? false) {
+        var defaultSubsidiary = subsDiaryModel!.subsidiaries!.first;
+        apiSelectedSubsidiary = defaultSubsidiary;
+        if (defaultSubsidiary.id != null) {
+          getAccountData(defaultSubsidiary.id!);
+        }
+      }
+    }
+    } catch (e) {
+      print("Error fetching subsidiary: $e");
+    } finally {
+      isLoadingSubsidiary = false;
+      update();
+    }
+  }
+
+  // filter
+  var incomeFromDate = Rxn<DateTime>(DateTime(DateTime.now().year, DateTime.now().month, 1));
+  var incomeToDate = Rxn<DateTime>(DateTime.now());
+  IncomeModel? incomeModel;
+  bool isLoadingIncome = false;
+  String selectedIncomePaymentType = "ALL";
+
+  getIncome() async{
+    isLoadingIncome = true;
+    update();
+
+    try {
+      String formattedFromDate = incomeFromDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(incomeFromDate.value!)
+          : "";
+
+      String formattedToDate = incomeToDate.value != null
+          ? DateFormat('yyyy-MM-dd').format(incomeToDate.value!)
+          : "";
+
+      String paymentTypeIdParam = "";
+      if (selectedIncomePaymentType == "CASH") {
+        paymentTypeIdParam = "1";
+      } else if (selectedIncomePaymentType == "ACCOUNT") {
+        paymentTypeIdParam = "3";
+      }
+
+      print("Selected Payment Type Text: $selectedIncomePaymentType");
+      print("Sent payment_type_id to API: ${paymentTypeIdParam.isEmpty ? 'ALL (No ID Sent)' : paymentTypeIdParam}");
+
+    var response = await Api().get("bookings/income-report",
+        queryParameters: {
+          "from_date": formattedFromDate,
+          "to_date": formattedToDate,
+          if (selectDriverObject != null) "driver_id": selectDriverObject?.id.toString(),
+        },
+    );
+    if (response.statusCode == 200) {
+      incomeModel = IncomeModel.fromJson(response.data);
+    }
+    } catch (e) {
+      debugPrint("Error fetching income report: $e");
+    } finally {
+      isLoadingIncome = false;
+      update();
+    }
+  }
+
+
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
+
   // var totalBookings = 0.obs;
   // var totalEarnings = 0.0.obs;
   // var totalAccountEarnings = 0.0.obs;
