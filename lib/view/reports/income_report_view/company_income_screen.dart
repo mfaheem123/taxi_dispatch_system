@@ -12,6 +12,7 @@ import '../../dashboard_view/booking_table.dart';
 import '../../dashboard_view/widgets/time_picker_widget.dart';
 import '../../dashboard_view/widgets/user_info_widget.dart';
 import '../controller/report_controller.dart';
+import 'company_income_view.dart';
 
 class CompanyIncomeScreen extends StatefulWidget {
   const CompanyIncomeScreen({super.key});
@@ -116,35 +117,16 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       verticalPadding: 0.0,
                       btnText: AppText.view,
                       fontSize: 12,
+                      onTap: () {
+                        Get.dialog(CompanyIncomeViewWindow(),
+                        );
+                      },
                     ),
                   ],
                 ),
                 SizedBox(
                   height: 10,
                 ),
-                // Container(
-                //   color: DynamicColors.secondaryClr,
-                //   padding: EdgeInsets.symmetric(vertical: 15),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                //     children: [
-                //       Text(
-                //         AppText.totalBookings,
-                //         style: mozillaTextSemiBoldText(
-                //           fontWeight: FontWeight.w800,
-                //           fontSize: 15,
-                //         ),
-                //       ),
-                //       Text(
-                //         AppText.totalEarnings,
-                //         style: mozillaTextSemiBoldText(
-                //           fontWeight: FontWeight.w800,
-                //           fontSize: 15,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 Container(
                   color: DynamicColors.secondaryClr,
                   padding: const EdgeInsets.symmetric(vertical: 15),

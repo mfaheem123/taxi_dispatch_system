@@ -67,8 +67,8 @@ class DriverLogsReportContent extends StatelessWidget {
     final controller = Get.find<ReportController>();
     // Controller Data
     final bookings = controller.driverLogsData?.bookings ?? [];
-    final String driverName = controller.selectDriverObject?.name ?? "N/A";
-    final String driverEmail = controller.selectDriverObject?.email ?? "N/A";
+    final String driverName = (controller.selectDriverObject?.name)?.toUpperCase() ?? "N/A";
+    final String driverEmail = (controller.selectDriverObject?.email)?.toUpperCase() ?? "N/A";
     final String driverMobile = controller.selectDriverObject?.mobile ?? "N/A";
     final String driverPhone = controller.selectDriverObject?.telephone ?? "N/A";
     final int totalBookings = bookings.length;

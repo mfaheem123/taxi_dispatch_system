@@ -856,8 +856,8 @@ class ReportController extends GetxController {
         queryParameters: {
           "page": comCurrentPage.value,
           "limit": comLimit,
-          // "from_date": formattedFromDate,
-          // "to_date": formattedToDate,
+          "from_date": formattedFromDate,
+          "to_date": formattedToDate,
           "reference_number": searchReferenceNo.value,
           "pickup_date": searchPickupDate.value,
           "pickup_time": searchPickupTime.value,
