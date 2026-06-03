@@ -646,6 +646,10 @@ class _AllBookingViewState extends State<AllBookingView> {
                             btnText: AppText.statistics,
                             fontSize: 12,
                             onTap: () {
+                              String? statusId = controller.apiSelectedBookingStatus?.id?.toString();
+                              controller.getBookingStatisticsGraph(statusId: statusId);
+
+                              // Get.dialog(BookingStatisticsWindow());
                               Get.dialog(BookingStatisticsWindow());
                             },
                           ),
@@ -695,101 +699,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                       ),
                     )),
                 const SizedBox(height: 10),
-                // SingleChildScrollView(
-                //   scrollDirection: Axis.horizontal,
-                //   child: Container(
-                //     width: MediaQuery.of(context).size.width,
-                //     padding: const EdgeInsets.symmetric(horizontal: 4),
-                //       child: DatatableWidget(
-                //           columns: [
-                //             buildHeaderWithSearch(title: "REF #"),
-                //             buildHeaderWithSearch(title: "INVOICE #"),
-                //             buildHeaderWithSearch(title: "DATETIME"),
-                //             buildHeaderWithSearch(title: "CUSTOMER"),
-                //             buildHeaderWithSearch(title: "PICKUP"),
-                //             buildHeaderWithSearch(title: "DROPOFF"),
-                //             buildHeaderWithSearch(title: "FARE"),
-                //             buildHeaderWithSearch(title: "ACC FARE"),
-                //             buildHeaderWithSearch(title: "ACC"),
-                //             buildHeaderWithSearch(title: "ORDER #"),
-                //             buildHeaderWithSearch(title: "P/T"),
-                //             buildHeaderWithSearch(title: "J/T"),
-                //             buildHeaderWithSearch(title: "DRV"),
-                //             buildHeaderWithSearch(title: "VEH"),
-                //             buildHeaderWithSearch(title: "SUBS"),
-                //             buildHeaderWithSearch(title: "STATUS"),
-                //             buildHeaderWithSearch(
-                //                 title: "ACTION", removeSearching: true),
-                //           ],
-                //           totalRow: controller.bookingStatisticsModel?.data?.length ?? 0,
-                //           rows: (controller.bookingStatisticsModel?.data ?? []).map((item) {
-                //
-                //             String formattedDateTime = "-";
-                //             if (item.pickupDate != null) {
-                //               String date = DateFormat('dd-MM-yyyy').format(item.pickupDate!);
-                //               String time = item.pickupTime ?? "";
-                //               formattedDateTime = "$date $time".trim();
-                //             }
-                //             return DataRow(
-                //               cells: [
-                //                 DataCell(Center(child: Text(item.referenceNumber ?? "-"))),
-                //                 DataCell(Center(child: Text(item.invoiceNumber?.toString() ?? "-"))),
-                //                 DataCell(Center(child: Text(formattedDateTime))),
-                //                 DataCell(Center(child: Text((item.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text(item.pickup ?? "-"))),
-                //                 DataCell(Center(child: Text(item.dropoff ?? "-"))),
-                //                 DataCell(Center(child: Text("£ ${item.fares ?? '0.00'}"))),
-                //                 DataCell(Center(child: Text("£ ${item.companyPrice ?? '0.00'}"))),
-                //                 DataCell(Center(child: Text((item.account?.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text(item.orderNumber?.toString() ?? "-"))),
-                //                 DataCell(Center(child: Text((item.paymentType?.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text((item.journeyType?.journeyType ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text((item.driver?.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text((item.vehicleType?.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text((item.subsidiary?.name ?? "-").toUpperCase()))),
-                //                 DataCell(Center(child: Text((item.bookingStatus?.bookingStatus ?? "-").toUpperCase()))),
-                //                 DataCell(
-                //                   Center(
-                //                     child: Row(
-                //                       mainAxisAlignment: MainAxisAlignment.center,
-                //                       children: [
-                //                         OutlinedButton(
-                //                           style: OutlinedButton.styleFrom(
-                //                             side: const BorderSide(
-                //                               color: Colors.transparent,
-                //                             ),
-                //                           ),
-                //                           onPressed: () {
-                //                           },
-                //                           child: const Icon(
-                //                             Icons.edit_calendar,
-                //                             size: 28,
-                //                           ),
-                //                         ),
-                //                         const Text("|"),
-                //                         OutlinedButton(
-                //                           style: OutlinedButton.styleFrom(
-                //                             side: const BorderSide(
-                //                               color: Colors.transparent,
-                //                             ),
-                //                           ),
-                //                           onPressed: () {
-                //                           },
-                //                           child: Icon(
-                //                             Icons.delete_forever,
-                //                             size: 28,
-                //                             color: DynamicColors.redClr,
-                //                           ),
-                //                         ),
-                //                       ],
-                //                     ),
-                //                   ),
-                //                 ),
-                //               ],
-                //             );
-                //           }).toList()),
-                //     ),
-                //   ),
                 // SingleChildScrollView(
                 //   scrollDirection: Axis.horizontal,
                 //   child: SingleChildScrollView(
@@ -1459,19 +1368,15 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                                             6)),
                                                       ),
                                                       onPressed: () {
-                                                        // Loading ke dauran click kaam nahi karega
                                                         if (controller.isFareLoading) return;
 
                                                         if (isEditing) {
-                                                          // SAVE dabaane par controller ki API call hogi
-                                                          // item.id aapki URL me dynamic 1234 ki jagah pass hoga
                                                           controller.updateBookingFare(
                                                             item.id,
                                                             controller.fareController.text,
                                                             index,
                                                           );
                                                         } else {
-                                                          // EDIT dabaane par normal textfield khulegi
                                                           controller.fareController.text = item.fares ?? '0.00';
                                                           controller.editingRowIndex.value = index;
                                                         }
@@ -1492,37 +1397,6 @@ class _AllBookingViewState extends State<AllBookingView> {
                                                     ),
                                                   );
                                                 })),
-                                                //       onPressed: () {
-                                                //         if (isEditing) {
-                                                //           item.fares = controller
-                                                //               .fareController
-                                                //               .text;
-                                                //           controller
-                                                //               .editingRowIndex
-                                                //               .value = null;
-                                                //         } else {
-                                                //           controller
-                                                //               .fareController
-                                                //               .text = item
-                                                //                   .fares ??
-                                                //               '0.00';
-                                                //           controller
-                                                //               .editingRowIndex
-                                                //               .value = index;
-                                                //         }
-                                                //       },
-                                                //       child: Text(
-                                                //           isEditing
-                                                //               ? "SAVE"
-                                                //               : "EDIT",
-                                                //           style: const TextStyle(
-                                                //               fontSize: 11,
-                                                //               fontWeight:
-                                                //                   FontWeight
-                                                //                       .bold)),
-                                                //     ),
-                                                //   );
-                                                // })),
                                               ],
                                             ),
                                           ));

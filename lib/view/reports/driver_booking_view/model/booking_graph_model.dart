@@ -51,7 +51,7 @@ class Datum {
 class Payment {
   String? paymentType;
   int? totalBookings;
-  int? totalFares;
+  double? totalFares;
 
   Payment({
     this.paymentType,
@@ -62,7 +62,7 @@ class Payment {
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
     paymentType: json["payment_type"],
     totalBookings: json["total_bookings"],
-    totalFares: json["total_fares"],
+    totalFares: json["total_fares"].toDouble(),
   );
 
   Map<String, dynamic> toJson() => {

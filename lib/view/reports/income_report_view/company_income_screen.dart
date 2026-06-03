@@ -1,8 +1,7 @@
-
-
-
+import 'package:dashboard_new1/component/pagination.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../component/color.dart';
 import '../../../component/customButton.dart';
@@ -22,7 +21,6 @@ class CompanyIncomeScreen extends StatefulWidget {
 }
 
 class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
-
   int selectedRowIndex = 0;
   final int totalRows = 50;
 
@@ -32,8 +30,13 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ReportController>(builder: (controller) {
-
+    final listToShow = controller.filteredCompany;
+    // final listToShow = controller.filteredCompany.isNotEmpty
+    //     ? controller.filteredCompany
+    //     : controller.companyListAll;
+    return GetBuilder<ReportController>(initState: (state) {
+      // controller.getCompanyIncome();
+    }, builder: (controller) {
       return LayoutBuilder(builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
         final bool isMobile = maxWidth < 600;
@@ -43,26 +46,35 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
         final double fieldWidth = isMobile
             ? maxWidth // full width
             : isTablet
-            ? maxWidth / 2
-            : maxWidth / 4;
+                ? maxWidth / 2
+                : maxWidth / 4;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-              SizedBox(
-                height: 10,
-              ),
-               Row(
+        return SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
                   children: [
                     labeledField(
                       context: context,
                       isMobile: isMobile,
                       label: AppText.from,
-                      width: fieldWidth/1.9,
+                      width: fieldWidth / 1.9,
                       column: true,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.companyFromDate.value,
+                          onChanged: (date) {
+                            controller.companyFromDate.value = date;
+                            controller.update();
+                          },
+                        ),
+                      ),
                     ),
                     SizedBox(
                       width: 8,
@@ -72,10 +84,18 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       isMobile: isMobile,
                       column: true,
                       label: AppText.to,
-                      width: fieldWidth/1.9,
-                      child: SizedBox(height: 30, child: KeyboardDatePicker()),
+                      width: fieldWidth / 1.9,
+                      child: SizedBox(
+                        height: 30,
+                        child: KeyboardDatePicker(
+                          initialDate: controller.companyToDate.value,
+                          onChanged: (date) {
+                            controller.companyToDate.value = date;
+                            controller.update();
+                          },
+                        ),
+                      ),
                     ),
-
                     const Spacer(),
                     CustomButton(
                       width: 120,
@@ -84,6 +104,9 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                       verticalPadding: 0.0,
                       btnText: AppText.filter,
                       fontSize: 12,
+                      onTap: () {
+                        controller.getCompanyIncome();
+                      },
                     ),
                     SizedBox(width: 10),
                     CustomButton(
@@ -99,20 +122,49 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                 SizedBox(
                   height: 10,
                 ),
+                // Container(
+                //   color: DynamicColors.secondaryClr,
+                //   padding: EdgeInsets.symmetric(vertical: 15),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //     children: [
+                //       Text(
+                //         AppText.totalBookings,
+                //         style: mozillaTextSemiBoldText(
+                //           fontWeight: FontWeight.w800,
+                //           fontSize: 15,
+                //         ),
+                //       ),
+                //       Text(
+                //         AppText.totalEarnings,
+                //         style: mozillaTextSemiBoldText(
+                //           fontWeight: FontWeight.w800,
+                //           fontSize: 15,
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 Container(
                   color: DynamicColors.secondaryClr,
-                  padding: EdgeInsets.symmetric(vertical: 15),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(AppText.totalBookings,
-                        style: mozillaTextSemiBoldText(
+                      Text(
+                        controller.companyIncomeModel == null
+                            ? AppText.totalBookings
+                            : "${AppText.totalBookings} ${controller.comTotalBookings.value}",
+                        style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
                         ),
                       ),
-                      Text(AppText.totalEarnings,
-                        style: mozillaTextSemiBoldText(
+                      Text(
+                        controller.companyIncomeModel == null
+                            ? AppText.totalEarnings
+                            : "${AppText.totalEarnings} £${controller.comTotalEarnings.value.toStringAsFixed(2)}",
+                        style: mozillaTextRegularText(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
                         ),
@@ -128,50 +180,154 @@ class _CompanyIncomeScreenState extends State<CompanyIncomeScreen> {
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: DatatableWidget(
-                        columns: [
-                          buildHeaderWithSearch(title: "REF #"),
-                          buildHeaderWithSearch(title: "DATETIME"),
-                          buildHeaderWithSearch(title: "PICKUP"),
+                      columns: [
+                        buildHeaderWithSearch(
+                          title: "REF #",
+                          onChanged: (v) {
+                            controller.searchReferenceNo.value = v;
+                            controller.onSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "DATETIME",
+                          onChanged: (v) {
+                            controller.searchDateTime.value = v;
+                            controller.onSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "PICKUP",
+                          onChanged: (v) {
+                            controller.searchPickup.value = v;
+                            controller.onSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "DROPOFF",
+                          onChanged: (v) {
+                            controller.searchDropOff.value = v;
+                            controller.onSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "VEHICLE",
+                          onChanged: (v) {
+                            controller.searchVehicle.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "DRIVER",
+                          onChanged: (v) {
+                            controller.searchDriver.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "ACCOUNT",
+                          onChanged: (v) {
+                            controller.searchAcc.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "FARES",
+                          onChanged: (v) {
+                            controller.searchFare.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "PC",
+                          onChanged: (v) {
+                            controller.searchPc.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "WC",
+                          onChanged: (v) {
+                            controller.searchWc.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "EDC",
+                          onChanged: (v) {
+                            controller.searchEdc.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "M&G",
+                          onChanged: (v) {
+                            controller.searchMg.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "CC",
+                          onChanged: (v) {
+                            controller.searchCc.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                        buildHeaderWithSearch(
+                          title: "TOTAL",
+                          onChanged: (v) {
+                            controller.searchTotal.value = v;
+                            controller.onLocalSearchCompany();
+                          },
+                        ),
+                      ],
+                      totalRow: listToShow.length,
+                      rows: listToShow.map((item) {
+                        return DataRow(
+                            cells: [
+                              DataCell(Center(
+                                  child: Text(item.referenceNumber ?? '—'))),
+                              DataCell(Center(
+                                  child: Text(
+                                      "${DateFormat('dd-MM-yyyy').format(item.pickupDate!)} ${item.pickupTime}"))),
+                              DataCell(Center(
+                                child: Text((item.pickup ?? '').toUpperCase()))),
+                              DataCell(Center(
+                                  child: Text((item.dropoff ?? '').toUpperCase()))),
+                              DataCell(Center(
+                                  child:
+                                  Text((item.vehicleType?.name ?? '').toUpperCase()))),
+                              DataCell(Center(
+                                  child: Text((item.driver?.name ?? '').toUpperCase()))),
+                              DataCell(Center(
+                                  child: Text((item.account?.name ?? '').toUpperCase()))),
+                              DataCell(Center(
+                                  child: Text("£${item.fares?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.parkingCharges?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.waitingCharges?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.extraDropCharges?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.meetAndGreet?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.congestionCharges?.toString() ?? ''}"))),
+                              DataCell(Center(
+                                  child: Text("£${item.totalCharges?.toString() ?? ''}"))),
 
-                          buildHeaderWithSearch(title: "DROPOFF"),
-                          buildHeaderWithSearch(title: "VEHICLE"),
-                          buildHeaderWithSearch(title: "DRIVER"),
-
-                          buildHeaderWithSearch(title: "ACCOUNT"),
-                          buildHeaderWithSearch(title: "FARES"),
-                          buildHeaderWithSearch(title: "PC"),
-                          buildHeaderWithSearch(title: "WC"),
-                          buildHeaderWithSearch(title: "EDC"),
-                          buildHeaderWithSearch(title: "M&G"),
-                          buildHeaderWithSearch(title: "CC"),
-                          buildHeaderWithSearch(title: "TOTAL"),
-                        ],
-                        totalRow: totalRows,
-                        cells: [
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                          const DataCell(Center(child: Text("20/10/2025"))),
-                          const DataCell(Center(child: Text("#PHC VEHICLE"))),
-                        ]
+                            ]);
+                      }).toList(),
                     ),
                   ),
                 ),
+                PaginationWidget(
+                  currentPage: controller.comCurrentPage.value,
+                  totalPages: controller.comTotalPages.value,
+                  onPageChange: controller.onPageCompany,
+                )
               ],
-              )
-            );
-          }
-        );
-      }
-    );
+            ));
+      });
+    });
   }
 }

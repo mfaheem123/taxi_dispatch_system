@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
 import '../../../component/networks/api.dart';
@@ -15,6 +18,7 @@ import '../driver_reports_view/models/earning_and_info_model.dart';
 import '../driver_reports_view/models/list_driver_logs_model.dart';
 import '../driver_reports_view/models/list_driver_report_login_model.dart';
 import '../employee_reports_view/activity_model.dart';
+import '../income_report_view/model/company_income_model.dart';
 import '../income_report_view/model/income_model.dart';
 
 class ReportController extends GetxController {
@@ -151,13 +155,6 @@ class ReportController extends GetxController {
     update();
 
     try{
-      // String url = "drivers/get";
-      // if (status == "active") {
-      //   url = "drivers/get?active=true";
-      // } else if (status == "inactive"){
-      //   url = "drivers/get?active=false";
-      // }
-      // var response = await Api().get(url);
       var response = await Api().get(
         "drivers/get",
         queryParameters: {
@@ -216,61 +213,6 @@ class ReportController extends GetxController {
   }
 
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo driver earning and info functionality
-
-
-  var selectedDriver = "Select Driver".obs;
-  // var fromDate = Rxn<DateTime>();
-  // var toDate = Rxn<DateTime>();
-  var fromTime = Rxn<TimeOfDay>();
-  var toTime = Rxn<TimeOfDay>();
-
-  var selectedRowIndex = 0.obs;
-
-  var filteredRows = <Map<String, dynamic>>[].obs;
-
-  void setSelectedDriver(String driver) {
-    selectedDriver.value = driver;
-    update();
-  }
-
-
-  void applyFilters() {
-    if (selectedDriver.value != "Select Driver") {
-      filteredRows.add({
-        "driver": selectedDriver.value,
-        "bookings": 5,
-        "loginDate": "11-09-2025",
-        "loginTime": "09:08:00",
-        "logoutDate": "11-09-2025",
-        "logoutTime": "21:43:00",
-      });
-    }
-
-    filteredRows.add({
-      "driver": "Ali",
-      "bookings": 3,
-      "loginDate": "10-09-2025",
-      "loginTime": "10:15:00",
-      "logoutDate": "10-09-2025",
-      "logoutTime": "18:45:00",
-    });
-
-    selectedDriver.value = "Select Driver";
-    fromDate.value = null;
-    toDate.value = null;
-    fromTime.value = null;
-    toTime.value = null;
-
-    update();
-  }
-
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report feedback functionality
-
-  String? selectDriver;
-
-  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report feedback functionality
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report booking functionality
 
   /// text editing controller
@@ -283,13 +225,7 @@ class ReportController extends GetxController {
   final bookedByController = TextEditingController();
 
   ///focusNode value of checkBox
-
-  // final FocusNode ptNode = FocusNode();
-  // final FocusNode cashNode = FocusNode();
-  // final FocusNode accountNode = FocusNode();
   final FocusNode creditCardPaidNode = FocusNode();
-  // final FocusNode creditCardNode = FocusNode();
-
 
   final bookingStartTimeController = TextEditingController();
   final bookingEndTimeController = TextEditingController();
@@ -344,7 +280,7 @@ class ReportController extends GetxController {
   var totalEarnings = 0.0.obs;
   var totalAccountEarnings = 0.0.obs;
 
-  Future getData() async {
+  getData() async {
     isLoadingData = true;
     update();
     
@@ -376,7 +312,6 @@ class ReportController extends GetxController {
     update();
   }
 
-
   void toggleApiPaymentType(int id) {
     if (apiSelectedPaymentTypeIds.contains(id)) {
       apiSelectedPaymentTypeIds.remove(id);
@@ -394,7 +329,6 @@ class ReportController extends GetxController {
       var response = await Api().get("employees/get", sendCompanyId: true);
       if (response.statusCode == 200) {
         userModel = UserModel.fromJson(response.data);
-
         if(userModel?.employees?.isNotEmpty ?? false) {
           apiSelectedEmployee = null;
         }
@@ -583,49 +517,121 @@ class ReportController extends GetxController {
   final TextEditingController fareController = TextEditingController();
 
   //booking graph
+  // bool isLoadingGraph = false;
+  // int totalGraphBookings = 0;
+  // double totalGraphFares = 0.0;
+  //
+  // BookingGraph? bookingGraphModel;
+  // getBookingStatisticsGraph({String? statusId}) async {
+  //   try{
+  //     isLoadingGraph = true;
+  //     update();
+  //
+  //     String formattedFromDate = DateFormat('yyyy-MM-dd').format(bookingFromDate.value);
+  //     String formattedToDate = DateFormat('yyyy-MM-dd').format(bookingToDate.value);
+  //
+  //     var response = await Api().get("bookings/booking-statistics-graph",
+  //     queryParameters: {
+  //       "booking_status_id": statusId ?? "",
+  //       "from_date": formattedFromDate,
+  //       "to_date": formattedToDate,
+  //     });
+  //
+  //     if (response.statusCode == 200) {
+  //       bookingGraphModel = BookingGraph.fromJson(response.data);
+  //
+  //       int tempBookings = 0;
+  //       double tempFares = 0.0;
+  //
+  //       if (bookingGraphModel?.data != null) {
+  //         for (var datum in bookingGraphModel!.data!) {
+  //           if (datum.payments != null) {
+  //             for (var payment in datum.payments!) {
+  //               tempBookings += payment.totalBookings ?? 0;
+  //               tempFares += (payment.totalFares ?? 0).toDouble();
+  //             }
+  //           }
+  //         }
+  //       }
+  //
+  //       totalGraphBookings = tempBookings;
+  //       totalGraphFares = tempFares;
+  //     } else {
+  //       print("Server Error Graph API: ${response.statusCode}");
+  //     }
+  //   }catch (e, stackTrace) {
+  //     print("=================== GRAPH API ERROR LOG ===================");
+  //     print("Error fetching booking statistics graph: $e");
+  //     print("Detailed StackTrace: $stackTrace");
+  //     print("=====================================================");
+  //   } finally {
+  //     isLoadingGraph = false;
+  //     update();
+  //   }
+  // }
+  // booking graph
   bool isLoadingGraph = false;
   int totalGraphBookings = 0;
   double totalGraphFares = 0.0;
 
   BookingGraph? bookingGraphModel;
+
   getBookingStatisticsGraph({String? statusId}) async {
-    try{
+    try {
       isLoadingGraph = true;
       update();
 
       String formattedFromDate = DateFormat('yyyy-MM-dd').format(bookingFromDate.value);
       String formattedToDate = DateFormat('yyyy-MM-dd').format(bookingToDate.value);
-      
+
+      print("=================== GRAPH API REQUEST LOG ===================");
+      print("Status ID: $statusId");
+      print("From Date: $formattedFromDate | To Date: $formattedToDate");
+      print("=============================================================");
+
       var response = await Api().get("bookings/booking-statistics-graph",
-      queryParameters: {
-        "booking_status_id": statusId ?? "",
-        "from_date": formattedFromDate,
-        "to_date": formattedToDate,
-      });
+          queryParameters: {
+            "booking_status_id": statusId ?? "",
+            "from_date": formattedFromDate,
+            "to_date": formattedToDate,
+          });
 
       if (response.statusCode == 200) {
+        print("RAW GRAPH API RESPONSE: ${json.encode(response.data)}");
+
         bookingGraphModel = BookingGraph.fromJson(response.data);
 
         int tempBookings = 0;
         double tempFares = 0.0;
 
-        if (bookingGraphModel?.data != null) {
+        print("=================== GRAPH DATA PARSING LOGS ===================");
+        if (bookingGraphModel?.data != null && bookingGraphModel!.data!.isNotEmpty) {
+          print("Total Dates Found in Graph Data: ${bookingGraphModel!.data!.length}");
+
           for (var datum in bookingGraphModel!.data!) {
-            if (datum.payments != null) {
+            print("Date: ${datum.date}");
+            if (datum.payments != null && datum.payments!.isNotEmpty) {
               for (var payment in datum.payments!) {
+                print("  -> Payment Type from API: '${payment.paymentType}' | Bookings: ${payment.totalBookings} | Fares: ${payment.totalFares}");
+
                 tempBookings += payment.totalBookings ?? 0;
                 tempFares += (payment.totalFares ?? 0).toDouble();
               }
+            } else {
+              print("  -> No payments list found for this date.");
             }
           }
+        } else {
+          print("WARNING: bookingGraphModel?.data is NULL or EMPTY!");
         }
+        print("===============================================================");
 
         totalGraphBookings = tempBookings;
         totalGraphFares = tempFares;
       } else {
         print("Server Error Graph API: ${response.statusCode}");
       }
-    }catch (e, stackTrace) {
+    } catch (e, stackTrace) {
       print("=================== GRAPH API ERROR LOG ===================");
       print("Error fetching booking statistics graph: $e");
       print("Detailed StackTrace: $stackTrace");
@@ -635,6 +641,7 @@ class ReportController extends GetxController {
       update();
     }
   }
+
   void clearDropdowns() {
     apiSelectedSubsidiary = null;
     apiSelectedAccount = null;
@@ -806,33 +813,155 @@ class ReportController extends GetxController {
       update();
     }
   }
-
-
-
-
   ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report income functionality
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
+
+  Rx<DateTime> companyFromDate = DateTime(DateTime.now().year, DateTime.now().month, 1).obs;
+  Rx<DateTime> companyToDate = DateTime.now().obs;
+
+  CompanyIncomeModel? companyIncomeModel;
+  RxBool companyLoader = false.obs;
+  RxList<CompanyDatum> companyListAll = <CompanyDatum>[].obs;
+  RxList<CompanyDatum> filteredCompany = <CompanyDatum>[].obs;
+
+  RxString searchPickupDate = ''.obs;
+  RxString searchPickupTime = ''.obs;
+  RxString searchPc = ''.obs;
+  RxString searchWc = ''.obs;
+  RxString searchEdc = ''.obs;
+  RxString searchMg = ''.obs;
+  RxString searchCc = ''.obs;
+  RxString searchTotal = ''.obs;
+
+  var comTotalBookings = 0.obs;
+  var comTotalEarnings = 0.0.obs;
+
+  var comCurrentPage = 1.obs;
+  var comTotalPages = 1.obs;
+  final int comLimit = 20;
+
+  getCompanyIncome() async {
+    try {
+      companyLoader(true);
+      update();
+
+      String formattedFromDate = "";
+      String formattedToDate = "";
+
+      formattedFromDate = DateFormat('yyyy-MM-dd').format(companyFromDate.value);
+      formattedToDate = DateFormat('yyyy-MM-dd').format(companyToDate.value);
+
+      var response = await Api().get(
+        "bookings/booking-statistics",
+        queryParameters: {
+          "page": comCurrentPage.value,
+          "limit": comLimit,
+          // "from_date": formattedFromDate,
+          // "to_date": formattedToDate,
+          "reference_number": searchReferenceNo.value,
+          "pickup_date": searchPickupDate.value,
+          "pickup_time": searchPickupTime.value,
+          "pickup": searchPickup.value,
+          "dropoff": searchDropOff.value,
+          // "vehicle_type": searchVehicle.value,
+          // "driver": searchDriver.value,
+          // "account": searchAcc.value.toLowerCase(),
+          // "fares": searchFare.value,
+          // "parking_charges": searchPc.value,
+          // "waiting_charges": searchWc.value,
+          // "extra_drop_charges": searchEdc.value,
+          // "meet_and_greet": searchMg.value,
+          // "congestion_charges": searchCc.value,
+          // "total_charges": searchTotal.value,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        companyIncomeModel = CompanyIncomeModel.fromJson(response.data);
+        comTotalPages.value = companyIncomeModel?.totalPages ?? 1;
+        companyListAll.value = companyIncomeModel?.data ?? [];
+        filteredCompany.value = companyListAll;
+
+        comTotalBookings.value = companyIncomeModel?.totals?.totalBookings ?? 0;
+        comTotalEarnings.value = companyIncomeModel?.totals?.totalEarnings ?? 0.0;
+        print("Total Bookings Found: ${companyIncomeModel?.totals?.totalBookings}");
+      }
+    } catch (e, stackTrace) {
+      print("=================== API ERROR LOG ===================");
+      print("Error fetching booking statistics: $e");
+      print("Detailed StackTrace: $stackTrace");
+      print("=====================================================");
+    }
+    finally {
+      companyLoader(false);
+      update();
+    }
+  }
+
+  void onLocalSearchCompany() {
+    if (searchVehicle.value.isEmpty &&
+        searchDriver.value.isEmpty &&
+        searchAcc.value.isEmpty &&
+        searchFare.value.isEmpty &&
+        searchPc.value.isEmpty &&
+        searchWc.value.isEmpty &&
+        searchEdc.value.isEmpty &&
+        searchMg.value.isEmpty &&
+        searchCc.value.isEmpty &&
+        searchTotal.value.isEmpty) {
+
+      filteredCompany.value = companyListAll;
+    } else {
+      filteredCompany.value = companyListAll.where((item) {
+        final matchVehicle = item.vehicleType?.name?.toLowerCase().contains(searchVehicle.value.toLowerCase()) ?? true;
+        final matchDriver = item.driver?.name?.toLowerCase().contains(searchDriver.value.toLowerCase()) ?? true;
+        final matchAccount = item.account?.name?.toLowerCase().contains(searchAcc.value.toLowerCase()) ?? true;
+        final matchFare = item.fares?.toLowerCase().contains(searchFare.value.toLowerCase()) ?? true;
+        final matchPc = item.parkingCharges?.toLowerCase().contains(searchPc.value.toLowerCase()) ?? true;
+        final matchWc = item.waitingCharges?.toLowerCase().contains(searchWc.value.toLowerCase()) ?? true;
+        final matchEdc = item.extraDropCharges?.toLowerCase().contains(searchEdc.value.toLowerCase()) ?? true;
+        final matchMg = item.meetAndGreet?.toLowerCase().contains(searchMg.value.toLowerCase()) ?? true;
+        final matchCc = item.congestionCharges?.toLowerCase().contains(searchCc.value.toLowerCase()) ?? true;
+        final matchTotal = item.totalCharges?.toLowerCase().contains(searchTotal.value.toLowerCase()) ?? true;
+
+        return matchVehicle && matchDriver && matchAccount && matchFare &&
+            matchPc && matchWc && matchEdc && matchMg && matchCc && matchTotal;
+      }).toList();
+    }
+    update();
+  }
+  void onSearchCompany() {
+    comCurrentPage.value = 1;
+    getCompanyIncome();
+  }
+
+  void onPageCompany(int page) {
+    comCurrentPage.value = page;
+    getCompanyIncome();
+  }
+
+
+  ///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> todo report company income functionality
 
   // var totalBookings = 0.obs;
   // var totalEarnings = 0.0.obs;
   // var totalAccountEarnings = 0.0.obs;
   // RxBool isFiltered = false.obs;
 
-  int selectedValue = 0; // 👈 groupValue
-  RxBool ptValue = false.obs;
-  RxBool cashValue = false.obs;
-  RxBool accountValue = false.obs;
-  RxBool creditCardValue = false.obs;
+  // int selectedValue = 0;
+  // RxBool ptValue = false.obs;
+  // RxBool cashValue = false.obs;
+  // RxBool accountValue = false.obs;
+  // RxBool creditCardValue = false.obs;
   RxBool creditCardPaidValue = false.obs;
 
 
   /// booking in reports
   String? selectBookingDriver;
-  String? selectEmployee;
-  String? selectSubsidiary;
-  // String? selectRefNumber;
-  // String? selectAscending;
-  String? selectAccount;
-  String? selectDepartment;
-
-
+  // String? selectEmployee;
+  // String? selectSubsidiary;
+  // // String? selectRefNumber;
+  // // String? selectAscending;
+  // String? selectAccount;
+  // String? selectDepartment;
 }

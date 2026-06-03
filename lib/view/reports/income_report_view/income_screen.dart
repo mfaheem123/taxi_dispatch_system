@@ -220,7 +220,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               "${AppText.totalBookings} ",
                               style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 15,
                               ),
                             ),
                             SizedBox(width: 8),
@@ -229,7 +229,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                                   ? "${controller.incomeModel?.totalBookings ?? 0}"
                                   : "",
                               style: mozillaTextSemiBoldText(
-                                fontSize: 16,
+                                fontSize: 15,
                               ),
                             ),
                           ],
@@ -243,7 +243,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                               "${AppText.totalEarnings} ",
                               style: mozillaTextSemiBoldText(
                                 fontWeight: FontWeight.w600,
-                                fontSize: 13,
+                                fontSize: 15,
                               ),
                             ),
                             SizedBox(width: 8),
@@ -252,7 +252,7 @@ class _IncomeScreenState extends State<IncomeScreen> {
                                   ? "£${controller.incomeModel?.totalEarnings?.toStringAsFixed(2) ?? "0.00"}"
                                   : "",
                               style: mozillaTextSemiBoldText(
-                                fontSize: 16,
+                                fontSize: 15,
                               ),
                             ),
                           ],
