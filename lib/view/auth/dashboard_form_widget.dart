@@ -1324,7 +1324,9 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     if (oldWidget.items != widget.items && _userTyped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_focusNode.hasFocus) return;
-        _filter(widget.controller.text);
+        // Late backend results arriving while the user navigates with the
+        // arrow keys must NOT snap the highlight back to the top.
+        _filter(widget.controller.text, preserveHighlight: true);
       });
     }
   }
@@ -1352,8 +1354,15 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
     _filter(widget.controller.text);
     _show();
   }
-  void _filter(String q) {
+  void _filter(String q, {bool preserveHighlight = false}) {
     final query = q.trim().toLowerCase();
+    // Remember the currently highlighted item so a list refresh can keep it.
+    final AllAddressesModel? current = (preserveHighlight &&
+            _highlighted >= 0 &&
+            _highlighted < _filtered.length)
+        ? _filtered[_highlighted]
+        : null;
+
     if (query.isEmpty) {
       _filtered = const [];
     } else {
@@ -1363,7 +1372,16 @@ class _AddressModelAutocompleteState extends State<_AddressModelAutocomplete> {
         return n.contains(query) || p.contains(query);
       }).toList();
     }
-    _highlighted = _filtered.isEmpty ? -1 : 0;
+
+    if (_filtered.isEmpty) {
+      _highlighted = -1;
+    } else if (preserveHighlight) {
+      final idx = current == null ? -1 : _filtered.indexOf(current);
+      _highlighted =
+          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+    } else {
+      _highlighted = 0;
+    }
     _entry?.markNeedsBuild();
   }
   void _show() {
@@ -1811,7 +1829,9 @@ class _CustomerModelAutocompleteState
     if (oldWidget.items != widget.items && _userTyped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || !_focusNode.hasFocus) return;
-        _filter(widget.controller.text);
+        // Late backend results arriving while the user navigates with the
+        // arrow keys must NOT snap the highlight back to the top.
+        _filter(widget.controller.text, preserveHighlight: true);
       });
     }
   }
@@ -1839,8 +1859,15 @@ class _CustomerModelAutocompleteState
     _filter(widget.controller.text);
     _show();
   }
-  void _filter(String q) {
+  void _filter(String q, {bool preserveHighlight = false}) {
     final query = q.trim().toLowerCase();
+    // Remember the currently highlighted item so a list refresh can keep it.
+    final CustomerObject? current = (preserveHighlight &&
+            _highlighted >= 0 &&
+            _highlighted < _filtered.length)
+        ? _filtered[_highlighted]
+        : null;
+
     if (query.isEmpty) {
       _filtered = const [];
     } else {
@@ -1851,7 +1878,16 @@ class _CustomerModelAutocompleteState
         return n.contains(query) || m.contains(query) || e.contains(query);
       }).toList();
     }
-    _highlighted = _filtered.isEmpty ? -1 : 0;
+
+    if (_filtered.isEmpty) {
+      _highlighted = -1;
+    } else if (preserveHighlight) {
+      final idx = current == null ? -1 : _filtered.indexOf(current);
+      _highlighted =
+          idx >= 0 ? idx : _highlighted.clamp(0, _filtered.length - 1);
+    } else {
+      _highlighted = 0;
+    }
     _entry?.markNeedsBuild();
   }
   void _show() {
