@@ -71,6 +71,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   final LocationController _controller = Get.isRegistered<LocationController>()
       ? Get.find<LocationController>()
       : Get.put(LocationController());
+
   // @override
   // void dispose() {
   //   for (final c in [
@@ -99,6 +100,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
   //   }
   //   super.dispose();
   // }
+
   @override
   void initState() {
     super.initState();
@@ -156,7 +158,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(isMobile ? 0 : 10),
-                      border: Border.all(color: _border),
+                      border: Border.all(color: _border.withOpacity(0.2)),
                     ),
                     clipBehavior: Clip.antiAlias,
                     child: FocusTraversalGroup(
@@ -165,7 +167,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                         children: [
                           _topTabs(isMobile),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal:isMobile ? 12 : 16),
+                            padding: EdgeInsets.symmetric(horizontal:isMobile ? 12 : 16,vertical: 6),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -266,7 +268,7 @@ class _BookingFormScreenState extends State<BookingFormScreen> {
                                     debugPrint('Use current location → DROP');
                                   },
                                 ),
-                                const Divider(height: 10),
+                                const Divider(height: 14),
                                 _sectionHeader(Icons.person,
                                     'PASSENGER & BOOKING DETAILS'),
                                 _grid(cols, [
